@@ -18,11 +18,16 @@
 ;
 ; EXAMPLE: klar!
 ;
+; SEE ALSO: <A HREF="#LAYERWIDTH">LayerWidth()</A>, <A HREF="#LAYERSIZE">LayerSize()</A>, 
+;           <A HREF="#LAYERDATA">LayerData</A>,
+;           <A HREF="#LAYERINDEX">LayerIndex()</A>, <A HREF="#LAYERROW">LayerRow()</A>, <A HREF="#LAYERCOL">LayerCol()</A>
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
-;       Revision 2.1  1998/01/28 16:04:07  kupper
-;       *** empty log message ***
+;       Revision 2.2  1998/01/28 16:15:28  kupper
+;              Warjanuwohlschonlangeüberfällig.
+;
 ;
 ;-
 
