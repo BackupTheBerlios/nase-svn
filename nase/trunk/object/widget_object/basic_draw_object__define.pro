@@ -47,16 +47,15 @@
 ;   The following methods -may- be overridden in derived classes.
 ;
 ;   initial_paint_hook_  : Here goes the code to paint whatever is necessary
-;                          when the widget is realized. Upon realization,
-;                          this method is called, followed by a call to
-;                          paint_hook_. Hence, this method should only contain
-;                          whatever initialization is needed in addition to the
-;                          work performed by paint_hook_.
-;                          The ShowIt widget is already opened when this method
-;                          is called, and will be closed automatically when it
-;                          returns.
+;                          when the widget is realized. The ShowIt widget is
+;                          already opened when this method is called, and will
+;                          be closed automatically when it returns.
+;                          Note: paint_hook_ is not called upon
+;                                realization. However, you are free to call
+;                                self->paint_hook_ from within initial_paint_hook_
+;                                when this comes handy.
 ;                          This method is intended to be private and is called
-;                          from the objects paint method. It should never be
+;                          from the objects Notify_Realize. It should never be
 ;                          called directly.
 ;                          Note the trailing underscore.
 ;
@@ -85,6 +84,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/03/13 13:22:48  kupper
+;        paint_hook_ is now not called upon realization any more.
+;
 ;        Revision 1.6  2000/03/12 17:00:41  kupper
 ;        Adjusted to new classname argument of Init/Cleanup_Superclasses.
 ;
@@ -107,7 +109,6 @@ Pro BDO_Notify_Realize, id
 
    showit_open, object->showit()
    object->initial_paint_hook_
-   object->paint_hook_
    showit_close, object->showit(), Save_Colors=object->save_colors_()
 
    Widget_Control, object->showit(), Timer=object->paint_interval()
