@@ -134,11 +134,11 @@ PRO TvSclLegend, _xnorm, _ynorm $
 
    ;; format the legend text
    type = Size(ma)
-   IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(ma, FORMAT='(G0.0)'), /REMOVE_ALL)
+   IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(ma, FORMAT='(G0.0)'), /REMOVE_ALL) ELSE max = ma
    type = Size(mid)
    IF type(type(0)+1) NE 7 THEN mid = STRCOMPRESS(STRING(mid, FORMAT='(G0.0)'), /REMOVE_ALL)
    type = Size(mi)
-   IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(mi, FORMAT='(G0.0)'), /REMOVE_ALL)
+   IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(mi, FORMAT='(G0.0)'), /REMOVE_ALL) ELSE min = mi
    
    ;; if center is set, the legend color array is centered to xnorm, ynorm
    ;; 
