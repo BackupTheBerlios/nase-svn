@@ -99,7 +99,7 @@
 ;                 POS/NEG-SYM/ORIENT werden dann ignoriert.
 ;  THICK:: Bei Liniensymbolen die Liniendicke. (Normal ist 1)
 ;
-;* [other Plot-Parameters]: Solche Dinge wie [X/Y]TITLE u.s.w.
+;  [other Plot-Parameters]:: Solche Dinge wie [X/Y]TITLE u.s.w.
 ;
 ;  OPLOT:: Das Koordinatensystem wird nicht neu gezeichnet, sondern nur die
 ;          Symbole in das bestehende Fenster geplottet.
@@ -118,6 +118,21 @@
 ;            Sie sollten dann im Bereich [0,1] für positive Arrays und
 ;            im Bereich [-1,1] für positiv/negative Arrays liegen.
 ;            Der Wert 0 hat stets die Symbolgröße 0 (kein Symbol).
+;  POSDISPLACE:: Generate a plotsymbols that are slightly
+;             displaced from the plotting center,
+;             perpendicular to the symbol
+;             orientation. This may be used to prevent
+;             covering of symbols when overplotting with
+;             the <*>/OPLOT</*> option. <*>DISPLACE</*>
+;             should be set to a small value, in the
+;             range of <*>[-1,1]</*>. <BR>
+;             Note: When using
+;             the <*>/FILL</*> option, lines and arrows
+;             will have a thickness of <*>0.3</*>. So
+;             setting <*>DISPLACE=0.3</*> when
+;             overplotting should place symbols right
+;             aside the original symbols.
+;  NEGDISPLACE:: See <*>POSDISPLACE</*>, for negative values. 
 ;
 ; SIDE EFFECTS: 
 ;  Das UserSymbol wird ev. umdefiniert.
@@ -153,7 +168,7 @@ Pro SymbolPlot, _a, _posx, _posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NON
                THICK=thick, FILL=fill, $
                OFFSET=offset,$
                XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift, $
-                SYMSIZE=_symsize, $
+                SYMSIZE=_symsize, POSDISPLACE=posdisplace, NEGDISPLACE=negdisplace,$
                 _EXTRA=_extra
 
    ON_ERROR,2 
@@ -216,11 +231,18 @@ Pro SymbolPlot, _a, _posx, _posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NON
                     YRANGE=[FIX(MIN(posy))-offset, FIX(MAX(posy))+offset],XSTYLE=1, YSTYLE=1, _EXTRA=_extra
        END
        
-   END ELSE BEGIN
-     ;;------------------> !X und !Y geeignet setzen
-      PrepareNasePlot, width, height, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot, $
-       XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift
-     ;;--------------------------------
+    END ELSE BEGIN
+       ;;------------------> !X und !Y geeignet setzen
+       PrepareNasePlot, width, height, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot, $
+         XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift
+       ;;--------------------------------
+       
+       ;;------------------> posx und posy anpassen:
+       ;; Dies scheint auf einen Bug in PrepareNASEPlot zurückzuführen zu sein:
+       ;; Achsenbewschriftung 0 entspricht tatsächlich Plotposition 1. Dumme Sache.
+       posx = Temporary(posx)+1
+       posy = Temporary(posy)+1
+       ;;--------------------------------      
 
       ;;------------------> Koordinatensystem plotten
       IF NOT Keyword_Set(OPLOT) THEN BEGIN 
@@ -250,14 +272,14 @@ Pro SymbolPlot, _a, _posx, _posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NON
       Endif else begin          ;kein None
          If a(x, y) gt 0 then begin
             If set(COLORS) then col = COLORS(x, y) else col = poscolor
-            If set(ORIENTATIONS) then sym = OrientSym(orientations(x, y), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
-            else If set(POSORIENT) then sym = OrientSym(posorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+            If set(ORIENTATIONS) then sym = OrientSym(orientations(x, y), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction, POSDISPLACE=posdisplace) $
+            else If set(POSORIENT) then sym = OrientSym(posorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction, POSDISPLACE=posdisplace) $
             else sym = possym
          endif
          If a(x, y) lt 0 then begin
             If set(COLORS) then col = COLORS(x, y) else col = negcolor
-            If set(ORIENTATIONS) then sym = OrientSym(orientations(x, y), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
-            else If set(NEGORIENT) then sym = OrientSym(negorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+            If set(ORIENTATIONS) then sym = OrientSym(orientations(x, y), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction, NEGDISPLACE=negdisplace) $
+            else If set(NEGORIENT) then sym = OrientSym(negorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction, NEGDISPLACE=negdisplace) $
             else sym = negsym
          endif
       Endelse                   ;kein None
