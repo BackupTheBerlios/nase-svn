@@ -36,4 +36,6 @@ PRO FreeDW, DW
       DW.SSource(target) = -1
    END
 
+   Handle_Free, DW.Learn
+
 END
