@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/02/05 13:25:34  saam
+;           kleiner BugFix
+;
 ;     Revision 2.1  1998/02/03 18:59:29  saam
 ;           Lange gefordert, endlich erstellt
 ;
@@ -39,6 +42,6 @@ PRO FreeEachHandle
    END ELSE BEGIN
       print, 'FAH: strange...!MH not defined, declaring it now'
    END
-   Handle_Create, !MH
+   !MH = Handle_Create()
       
 END
