@@ -2,6 +2,8 @@
 ; NAME:
 ;       CrossCor
 ;
+; AIM:  computes the cross correlation beetween two given signals
+;
 ; PURPOSE:
 ;       Diese Prozedur berechnet die Kreuzkorrelation zwischen zwei Kanälen im Zeitbereich.
 ;       Es kann zwischen verschiedenen Normierungen gewählt werden.
@@ -53,10 +55,13 @@
 ;       Cxy = CrossCor(x, y, PShift, CorrBranch='-', /OverlapNorm)
 ;       plot, DataVec(0:PShift)*1e03/SamplingFreq, Cxy, xTitle='time / ms'
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  2000/09/28 14:01:50  gabriel
+;            AIM tag added
+;
 ;       Revision 1.8  2000/09/27 15:59:25  saam
 ;       service commit fixing several doc header violations
 ;
@@ -80,7 +85,8 @@
 ;
 ;
 ;       Written by:     Thomas Wölbern, 23.09.94
-;-
+;
+
 FUNCTION CrossCor,_x,_y,PShift,CorrBranch=Branch,OverlapNorm=ONorm,Covariance=Covar
 
    Default, Branch, 0
