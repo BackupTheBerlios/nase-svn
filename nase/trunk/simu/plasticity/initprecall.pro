@@ -1,76 +1,82 @@
 ;+
-; NAME:               InitRecall
+; NAME: InitPrecall
 ;
-; PURPOSE:            InitRecall initialisiert Lernpotentiale fuer 
-;                     unverzoegerte und verzoegerte Gewichtsstrukturen.
-;                     Im unverzoegerten Fall wird jedem Neuron, im 
-;                     verzoegerten Fall jeder Verbindung ein Lernpotential
-;                     zugewiesen, das z.B. fuer die Lernregel <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
-;                     gebraucht wird.
-;                     Die Lernpotentiale werden mit <A HREF="#TOTALRECALL">TotalRecall</A>
-;                     'upgedated' (geupdated). Es kann zwischen mehreren 
-;                     Abklingfunktionen ausgewaehlt werden.
-;                     
+; PURPOSE: InitPrecall initialisiert eine Liste von prä- und postsynaptischen
+;          Spikezeitpunkten, die später von <A HREF="#TOTALPRECALL">TotalPrecall</A> verwendet wird.
+;          Ein Aufruf von InitPrecall ist also immer nötig, falls eine
+;          Lernregel verwendet werden soll, die die Zeitdifferenz zwischen
+;          prä- und postsynaptischem Spike als Grundlage von Gewichts- oder
+;          Delayänderungen benutzt, also beispielsweise <A HREF="#LEARNBIPOO">LearnBiPoo</A> oder
+;           <A HREF="#LEARNDELAYS">LearnDelays</A>. 
 ;
-; CATEGORY:           SIMULATION / PLASTICITY
+; CATEGORY: SIMULATION / PLASTICITY
 ;
-; CALLING SEQUENCE:   LP = InitRecall( {Struc | HEIGHT=Höhe, WIDTH=Breite} 
-;                                       { [,LINEAR='['Amplitude, Decrement']'] | 
-;                                         [,EXPO='['Amplitude, Zeitkonstante']'] |
-;                                         [,ALPHA='[Amplitude, Zeitkonstante1, Zeitkonstante2]'] } 
-;                                      [/NOACCUMULATION]
-;                                      [/SUSTAIN]
+; CALLING SEQUENCE: pc = InitPrecall( dw, lw )
 ;
-; INPUTS:             UNverzoegerte Verbindungen:
-;                               Struc: Layer            (mit Init_Layer? initialisiert)
-;                     verzoegerte Verbindungen:
-;                               Struc: Gewichtsstruktur (mit InitDW erzeugt)
-;                     ODER:  Hoehe und Breite explizit in HEIGHT,WIDTH 
-;                            (wobei eigentlich nur das Produkt entscheidend ist, also 
-;                            die Anzahl der Lernpotentiale)
+; INPUTS: dw: Die DW-Struktur, deren Verbindungen später gelernt werden 
+;             sollen. Muß natürlich wie immer mit <A HREF="../CONNECTIONS/'INITDW">InitDW</A> erzeugt worden sein.
+;         lw: Das Array, das Informationen über das Lernfenster enthält: 
+;             lw=[tmaxpre,tmaxpost,deltapre,deltanull,deltapost]
+;              tmaxpre=N_Elements(deltapre)
+;             t maxpost=N_Elements(deltapost)
+;              deltapre: Ein Array, das die Delayänderungen für die Fälle
+;                        angibt, in denen postsynaptischer VOR präsynaptischem
+;                        Spike auftritt.
+;             deltanull: Die Delayänderung für gleichzeitiges Auftretn von prä-
+;                        und postsynaptischem Spike.
+;             deltapost: Ein Array, das die Delayänderungen für die Fälle 
+;                        angibt, in denen postsynaptischer NACH präsynaptischem
+;                        Spike auftritt.
+;             Siehe dazu auch <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>.
 ;
-; KEYWORD PARAMETERS: 
-;                     LINEAR:         linearer Abfall des Lernpotentials mit Decrement, ein 
-;                                       eintreffender Spike erhoeht das Potential um Amplitude
-;                     EXPO:           exponentieller Abfall des Lernpotentials mit der 
-;                                       Zeitkonstante, ein eintreffender Spike erhoeht das
-;                                       Potential um Amplitude
-;                     ALPHA:          Tiefpass 2ter Ordnung als Lernpotential mit der 
-;                                       , ein eintreffender Spike erhoeht das Potential um Amplitude
-;                     NOACCUMULATION: Das Potential wird bei Eintreffen eines Spikes
-;                                       nicht um Amplitude erhoeht, sondern nur
-;                                       auf Amplitude gesetzt. Dadurch wird ein 
-;                                       Aufsummieren des Lernpotentials bei starker
-;                                       praesynaptischer Aktivitaet verhindert. Trotzdem
-;                                       'merkt' scih das Lernpotential, wie lange
-;                                       der letzte praesynaptische Spike zurueckliegt.
-;                     SUSTAIN:        Beginnt das Abklingen des Lernpotentials um einen
-;                                       Zeitschritt verzoegert, um absolut gleichzeitiges
-;                                       Lernen und um einen Zeitschritt verzoegertes (kausales)
-;                                       Lernen gleich zu gewichten.
-;                     SAMPLEPERIOD:   die Dauer eines Simulationszeitschritts, Default: 0.001s
 ;
-; OUTPUTS:            LP: die initialisierte Lernpotential-Struktur zur weiteren Behandlung mit TotalRecall
+; OUTPUTS: pc: Die initialisierte Precall-Struktur zur weiteren Behandlung mit
+;              <A HREF="#TOTALPRECALL">TotalPrecall</A>. Folgende Tags sind in
+;              pc enthalten:
+;          pc = { info : 'precall',$
+;                 time : 0l       ,$
+;                 pre  : Make_Array(  preSize, deltamin, /LONG, VALUE=!NONEl) ,$
+;                 post : Make_Array( postSize, deltamax, /LONG, VALUE=!NONEl) ,$
+;                 deltamin : lw(0), $
+;                 deltamax : lw(1), $
+;                 spikesinpre : 0l, $
+;                 spikesinpost: 0l ,$
+;                 postpre   : -1l } ;this will become a handle
+;
 ;
 ; EXAMPLE:
-;                     CONN = InitDW(....)
-;                     LP = InitRecall( CONN, LINEAR=[5.0, 0.5]) 
+;   CON_L1_L1 = InitDW(S_LAYER=L1, T_LAYER=L1, $
+;                      WEIGHT=0.3, /W_TRUNCATE, /W_NONSELF, DELAY=13)
+;   LearnWindow = InitLearnBiPoo(POSTV=0.2, PREV=0.2)
 ;
-;                     LAYER = InitLayer_1(...)
-;                     LP = InitRecall( LAYER, EXPO=[1.0, 10.0])
+;   PC_L1_L1 = InitPrecall(CON_L1_L1, LearnWindow)
 ;
-; SEE ALSO: <A HREF="#TOTALRECALL">TotalRecall</A>, <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
+;   <Simulationsschleife>
+;      I_L1_L = DelayWeigh(CON_L1_L1, LayerOut(L1))
+;
+;      TotalPrecall, LP_L1_L1, CON_L1_L1, L1
+;      LearnDelays, CON_L1_L1, LP_L1_L1, LearnWindow
+; 
+;
+;      InputLayer, L1, FEEDING=I_L1_F, LINKING=I_L1_L
+;      ProceedLayer, L1
+;   <Simulationsschleife>
+;
+; SEE ALSO: <A HREF="#TOTALPRECALL">TotalPrecall</A>, <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>,  <A HREF="#LEARNBIPOO">InitLearnBiPoo</A>, <A HREF="#LEARNDELAYS">LeranDelays</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1999/08/05 12:18:53  thiel
+;           New structure to save more spikes.
+;
 ;       Revision 1.1  1999/07/21 15:03:42  saam
 ;             + no docu yet
 ;
 ;
 ;-
 
-FUNCTION InitPrecall, DW, LW, deltaMax=deltaMax, deltaMin=deltaMin
+FUNCTION InitPrecall, DW, LW
 
 
    
@@ -79,11 +85,9 @@ FUNCTION InitPrecall, DW, LW, deltaMax=deltaMax, deltaMin=deltaMin
    IF Set(LW) THEN BEGIN
       deltaMin = LW(0)
       deltaMax = LW(1)
-   END ELSE BEGIN
-      IF NOT Set(deltaMin) THEN Message, 'Learning Window OR deltaMin have to be specified'
-      IF NOT Set(deltaMax) THEN Message, 'Learning Window OR deltaMax have to be specified'
-   END
-
+   ENDIF ELSE BEGIN
+      Message, 'Learning Window must be specified!'
+   ENDELSE
 
    postSize = LONG(DWDim(DW, /TW))*LONG(DWDIM(DW, /TH))
    
@@ -92,10 +96,12 @@ FUNCTION InitPrecall, DW, LW, deltaMax=deltaMax, deltaMin=deltaMin
    
    PC = { info      : 'precall',$
           time      : 0l       ,$
-          pre       : Make_Array(  preSize, /LONG, VALUE=!NONEl) ,$
-          post      : Make_Array( postSize, /LONG, VALUE=!NONEl) ,$
-          deltamin  : deltaMin                                   ,$
-          deltamax  : deltaMax                                   ,$
+          pre       : Make_Array(  preSize, lw(0), /LONG, VALUE=!NONEl) ,$
+          post      : Make_Array( postSize, lw(1), /LONG, VALUE=!NONEl) ,$
+          deltamin  : LW(0)                                   ,$
+          deltamax  : LW(1)                                   ,$
+          spikesinpre: 0l ,$
+          spikesinpost: 0l ,$
           postpre   : -1l } ;this will become a handle
    
    RETURN, Handle_Create(!MH, VALUE=PC, /NO_COPY)
