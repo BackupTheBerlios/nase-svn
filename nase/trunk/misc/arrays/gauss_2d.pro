@@ -172,6 +172,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.32  2001/09/20 11:48:14  alshaikh
+;        another rotation-of-asymmetric-gaussians bug fixed
+;        (determination of the center of rotation was buggy)
+;
 ;        Revision 1.31  2001/09/12 15:34:54  kupper
 ;        removed compile_opt hiddens.
 ;
@@ -359,11 +363,11 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
 
    ;; 2-d result, xsigma != ysigma
    IF set(XHWB) THEN BEGIN   
-      if xlen gt ylen then len = xlen*sqrt(2) $ ; to prevent surface-effects paint on a grid with width and height
-      else len = ylen*sqrt(2)                   ; equal to diagonal of the initial grid...
-      
-      yoffset = (len-ylen)/2
-      xoffset = (len-xlen)/2
+      if xlen gt ylen then len = round(xlen*sqrt(2)) $ ; to prevent surface-effects paint on a grid with width and height
+      else len = round(ylen*sqrt(2)) ; equal to diagonal of the initial grid...
+      if (len mod 2) eq 0 then len =  len + 1
+      yoffset = round((len-ylen)/2)
+      xoffset = round((len-xlen)/2)
       dist = Distance(/Quadratic, $
                       len,len,x0_arr+xoffset,y0_arr+yoffset, $
                       scale=[sigmax, sigmay], $
