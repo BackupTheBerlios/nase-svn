@@ -19,6 +19,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/04/04 12:53:51  saam
+;           sets the background to black (or
+;           something that is nearly black)
+;
 ;     Revision 2.4  1999/11/04 17:31:41  kupper
 ;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;     -extremely- slow down performance on True-Color-Displays when
@@ -47,6 +51,7 @@ PRO ULoadCt, nr, _Extra=e
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
 
       Loadct, nr, _Extra=e
+      !P.Background = RGB(0,0,0,/NOALLOC)
 
    END
 
