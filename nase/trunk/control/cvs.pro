@@ -53,10 +53,11 @@
 Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher nicht viele...)
    Print
    Print, "----------- Mehr Spaß für N.A.S.E.n:"
-   Print, "            Updating /usr/ax1303/neuroadm/nase ..."
-   CD, "/usr/ax1303/neuroadm/nase", CURRENT=old_dir
+   Print, "------------- Updating /usr/ax1303/neuroadm/nase ..."
+   CD, "/usr/ax1303/neuroadm", CURRENT=old_dir
    Spawn, "cvs update nase"
-   Print, "            Updating HTML-Help ..."
+   Print, "------------- Updating HTML-Help ..."
+   CD, "nase"
    MKHTML
    CD, old_dir
 End
@@ -74,7 +75,8 @@ common common_cvs, name
       Spawn, "cvs update """+Name+""""
       END
   'BUTTON25': BEGIN             ;Edit
-      file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=name)
+     n = name
+      file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
          Print, "----------- Making File Editable: "+file
@@ -83,7 +85,8 @@ common common_cvs, name
       endif
       END
   'BUTTON15': BEGIN              ;UnEdit
-      file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=name)
+     n = name
+      file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
          Print, "----------- UnEditing Changes on: "+file
@@ -96,7 +99,8 @@ common common_cvs, name
       Spawn, "cvs editors"
       END
   'BUTTON35': BEGIN              ;Add
-      file = PickFile(TITLE="Select File to Add", /MUST_EXIST, FILTER="*.pro", GET_PATH=path, PATH=name)
+     n = name
+      file = PickFile(TITLE="Select File to Add", /MUST_EXIST, FILTER="*.pro", GET_PATH=path, PATH=n)
       If file ne "" then begin
          Print
          Print, "----------- Establishing CVS-Control for: "+file
@@ -115,11 +119,13 @@ common common_cvs, name
       if name eq "nase" then NASE_Special ;do some nosy things
       END
   'BUTTON28': BEGIN              ;Commit File
-      file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=name)
+     n = name
+      file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
          Print, "----------- Committing File "+file
          Spawn, "cvs commit "+file
+         print, "Name:"+name
          if name eq "nase" then NASE_Special ;do some nosy things
       endif
       END
