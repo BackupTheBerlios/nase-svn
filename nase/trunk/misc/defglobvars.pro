@@ -14,6 +14,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1999/03/05 14:27:45  kupper
+;
+;     !NASE_LIB hinzugefügt.
+;
 ;     Revision 1.4  1999/02/22 11:21:57  saam
 ;           added !EXECPATHS
 ;
@@ -82,6 +86,7 @@ DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 ; eine Reihe von EXEC-Pfaden (benutzt von der COMMAND Routine)
 DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', '/usr/X11R6/bin', '/usr/bin/X11', '/vol/bin', '~/bin'], 1
 
-
+; der Pfad zu unserer Shared Library für CALL_EXTERNAL
+DefSysV, '!NASE_LIB', '/vol/lib/nase/nasec.so', 1
 
 END
