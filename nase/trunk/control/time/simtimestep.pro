@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1998/06/16 17:44:03  gabriel
+;          Ein paar neue Ausgaben
+;
 ;     Revision 1.3  1998/06/09 16:38:18  gabriel
 ;          Schreibfehler
 ;
@@ -47,14 +50,17 @@ PRO SimTimeStep
       Print, 'SimTimeStep: too many iterations...quitting'
    END
    ;;mittelwert bilden Time/Iteration
-   median = total(stat.tpi(0:stat.step-1))/FLOAT(stat.step)
-   estimation = median*(stat.maxsteps-stat.step+1)
+   median = total(stat.tpi)/FLOAT(stat.step)
+   estimation = median*(stat.maxsteps-stat.step)
    IF stat.print THEN BEGIN
       print, '-----------------------------------------------'
-      print, '  Iteration              : ', stat.step
+      print, '  Iteration              :  ', STRCOMPRESS(STRING(stat.step),/REMOVE_ALL)
+      print, '  Progress               :  ', STRCOMPRESS(STRING(((stat.step)/FLOAT(stat.maxsteps)*100)),/REMOVE_ALL),"%"
+      print, '  Time in Progress       : ', Seconds2String(Total(stat.tpi))
       print, '  Time of last Iteration : ', Seconds2String(stat.tpi(stat.step-1))
+      print, '  Mean Time/Iteration    : ', Seconds2String(median)
       print, '  Mission completed in   : ', Seconds2String(estimation)
-      print, '  Total Time             : ', Seconds2String(Total(stat.tpi))
+      print, '  Estim. total Time      : ', Seconds2String(Total(stat.tpi)+estimation)
       print, '-----------------------------------------------'
    END
 
