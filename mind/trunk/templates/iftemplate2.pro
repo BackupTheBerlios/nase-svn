@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.8  2000/06/27 17:00:16  saam
+;          + now frees memory after usage
+;
 ;     Revision 1.7  2000/06/27 16:12:17  saam
 ;           + changed from print to console
 ;
@@ -112,7 +115,8 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
       
       ; FREE
       2: BEGIN
-         console, 'IFTEMPLATE2: done'
+          Handle_Free, _TV
+          console, 'IFTEMPLATE2: done'
       END 
 
       ; PLOT
