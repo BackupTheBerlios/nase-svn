@@ -25,7 +25,8 @@
 ;* result=IMoment(x, i 
 ;*                [,MIN=...] [,MAX=...] 
 ;*                [,ORDER=...] [,ITER=...]
-;*                [,MDEV=...] [,SDEV=...] )
+;*                [,MDEV=...] [,SDEV=...]
+;*                [,/NONE])
 ;
 ; INPUTS:
 ;  x:: An n-dimenional matrix of integer-, float-, or double type.
@@ -40,6 +41,8 @@
 ;  ORDER:: Maximum order of the moment to be calculated (default: 3).
 ;  ITER:: If <*>ITER</*> is set, <*>i</*> is interpreted as the
 ;         iteration index, <*>i</*> may also be an array of indices.
+;  /NONE:: Set this keyword to ignore <*>!NONE</*>-values in your data when
+;          computing the moments.
 ;
 ; OUTPUTS:
 ;  result:: Moments of the distribution contained in
@@ -77,7 +80,8 @@
 ;
 ;-
 
-FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
+FUNCTION IMoment, A, i, ORDER=order, mdev=mdev, sdev=sdeviation $
+                  , min=min, max=max, iter=iter, NONE=none
 
    ON_ERROR, 2
    default, iter,0
@@ -147,7 +151,7 @@ FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, m
                   ltMax = WHERE(Atmp2 LT max, c)
                   IF c NE 0 THEN Atmp2 = Atmp2(ltMax) ELSE Atmp2 = [!NONE]
                END
-               m(x,*) = UMOMENT( Atmp2, SDEV=sd, MDEV=md, order=order)
+               m(x,*) = UMOMENT( Atmp2, SDEV=sd, MDEV=md, order=order, NONE=none)
                if order GT 0 then begin
                   sdeviation(x) = sd
                   mdev(x) = md
@@ -184,7 +188,7 @@ FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, m
                END
                
                
-               m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md, order=order)
+               m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md, order=order, NONE=none)
                if order gt 0 then begin
                   sdeviation(x) = sd
                   mdev(x) = md

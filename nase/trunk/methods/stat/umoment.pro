@@ -19,7 +19,9 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* result = UMoment(x [,ORDER=...] [,/DOUBLE] [,MDEV=...] [,SDEV=...])
+;* result = UMoment(x [,ORDER=...] [,/DOUBLE] 
+;*                    [,MDEV=...] [,SDEV=...]
+;*                    [/NONE])
 ;
 ; INPUTS:
 ;  x:: An n-element vector of type integer, float or double.
@@ -28,6 +30,9 @@
 ;  ORDER:: The maximal order of the moment to calculate (default: 3).  
 ;  DOUBLE:: If set to a non-zero value, computations are done in
 ;           double precision arithmetic. 
+;  /NONE:: Set this keyword to ignore <*>!NONE</*>-values in your data when
+;          computing the moments. This is the equivalent of the
+;          <*>NAN</*>-keyword of the standard IDL <*>Moment</*>-function.
 ;
 ; OUTPUTS:
 ;  result:: Moments of the distribution contained in
@@ -65,6 +70,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  2002/09/19 14:13:25  thiel
+;          Introduced keyword /NONE corresponding to /NAN in IDL's
+;          Moment-routine.
+;
 ;       Revision 1.8  2001/05/25 08:27:13  thiel
 ;          Header update.
 ;
@@ -114,14 +123,24 @@ FUNCTION DATOTAL, Arg, Double = Double
 END
 
 
-FUNCTION UMoment, X,ORDER=ORDER, Double = Double, Mdev = Mdev, Sdev = Sdev
+FUNCTION UMoment, X,ORDER=ORDER, Double = Double $
+                  , Mdev = Mdev, Sdev = Sdev, NONE=none
 
    ON_ERROR, 2
    default, order, 3
+   Default, none, 0
    
 
    if order gt 3 or order lt 0 then $
     Console, /FATAL , "Maximal order of moment is exceeded: "+str(order)
+
+   ;; If NONE set, remove NONEs and recurse:
+   IF Keyword_Set(NONE) THEN BEGIN
+      whereNotNone = Where( x NE !NONE, noneCount)
+      IF noneCount GT 0 THEN $
+       Return, UMoment( X[whereNotNone], ORDER=order, DOUBLE=double $
+                        , MDEV=mdev, SDEV=sdev) ;, Maxmoment = Maxmoment )
+   ENDIF ;; Keyword_Set(NONE)
 
    TypeX = SIZE(X)
 
