@@ -28,6 +28,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/03/22 15:52:36  kupper
+;        Using eq instead of equal() for checking if total sum is zero.
+;        equal tended to produce floating illeqal operands when using the Floor()
+;        function.
+;        I think eq will do fine here.
+;
 ;        Revision 1.3  2000/03/22 14:57:39  kupper
 ;        Oops, put in a little error...
 ;        fixed.
@@ -56,7 +62,7 @@ FUNCTION Inertia, A, COM=com
    com = round(Schwerpunkt(A))
 
    IF com(0) NE !NONE THEN BEGIN
-      IF equal(tA, 0.0) THEN $
+      IF (tA eq 0.0) THEN $
        return, 0.0 ELSE $
        return, total( A * Distance(h, w, com(0), com(1))^2 ) / tA
    END ELSE RETURN, !NONE
