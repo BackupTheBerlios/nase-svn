@@ -33,6 +33,7 @@
 ;		    Alternative Keyword-Parameter zugefügt, Rüdiger Kupper, 24.7.97
 ;                       verbindliche Keyword-Parameter, Mirko Saam, 25.7.97
 ;                       Strukturnamen entfernt, Rüdiger Kupper, 30.7.97
+;                       Dafür String-Tag Typ eingeführt, Rüdiger Kupper, 30.7.97
 ;-
 
 FUNCTION InitLayer_2, WIDTH=width, HEIGHT=height, TYPE=type
@@ -41,7 +42,8 @@ FUNCTION InitLayer_2, WIDTH=width, HEIGHT=height, TYPE=type
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   Layer = { w      : width                ,$
+   Layer = { Type   : '2'                  , $
+             w      : width                ,$
              h      : height               ,$
              para   : type                 ,$
              F      : DblArr(width*height) ,$
