@@ -9,7 +9,7 @@
 ; CATEGORY: GRAPHIC
 ;
 ; CALLING SEQUENCE: PSWeights, Matrix 
-;                               {, /FROMS |, /TOS } 
+;                               {, /FROMS |, /TOS |, PROJECTIVE |, /RECEPTIVE } 
 ;                               [, /DELAYS]
 ;                               [, WIDTH=Breite] [, HEIGHT=Hoehe]
 ;                               [, XTITLE=XText][,YTITLE=YText]
@@ -37,7 +37,7 @@
 ;                                verwendeten Grauwerte. Zahl der
 ;                                Grauwerte = 2^bitsperpixel
 ;	
-; KEYWORD PARAMETERS: FROMS / TOS : siehe ShowWeights
+; KEYWORD PARAMETERS: PROJECTIVE(FROMS) / RECEPTIVE(TOS) : siehe ShowWeights
 ;                     DELAYS      : siehe ShowWeights
 ;                     EPS         : erzeugt eine Encapsulated PostScript-Datei
 ;                     COLOR       : das PostScript-Bild ist farbig,
@@ -74,7 +74,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
-;       Revision 2.5  1997/10/16 20:37:45  thiel
+;       Revision 2.6  1997/10/30 13:49:50  kupper
+;              PROJECTIVE/RECEPTIVE
+;
+;       Revision 2.5  2028/10/16 20:37:45  thiel
 ;              Die Achsen koennen jetzt beschriftet werden.
 ;              Keywords: XTITLE und YTITLE
 ;
@@ -97,9 +100,13 @@
 
 PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, $
                XTITLE=XTitle, YTITLE=YTitle, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, $
-               EPS=eps, BPP=bpp, COLOR=Color
+               EPS=eps, BPP=bpp, COLOR=Color, $
+               PROJECTIVE=projective, RECEPTIVE=receptive
 
-If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
+   Default, FROMS, PROJECTIVE
+   Default, TOS, RECEPTIVE
+
+   If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
 if keyword_set(TOS) then begin                   ; Source- und Targetlayer vertauschen:
    Matrix = {Weights: Transpose(_Matrix.Weights), $
