@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1998/02/19 15:36:34  kupper
+;               Fehlerchen...
+;
 ;        Revision 1.2  1998/02/19 15:31:26  kupper
 ;               Header geschrieben.
 ;
@@ -102,7 +105,7 @@ Common XMAT_Widgets, Matrix, Felder, MSize
          
 WIDGET_CONTROL, MAIN13, /REALIZE          
           
-  XMANAGER, 'XMatEdit', MAIN13  
+  XMANAGER, 'MAIN13', MAIN13  
     
   M=Matrix                  
 END          
