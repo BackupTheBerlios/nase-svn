@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/06/09 08:15:28  saam
+;           new button group for repeated playing
+;
 ;     Revision 2.2  1998/06/07 19:54:55  saam
 ;           + per video scaling of colortable is implemented and default
 ;           + old per frame scaling got the new keyword SCALE
@@ -71,6 +74,15 @@ PRO VCR_Event, Event
 
   
   IF Ev EQ 'LABEL44' THEN  BEGIN ;TIMER EVENT
+     
+     ; work out loop conditions
+     IF (UD.play EQ 1) AND (UD.t EQ UD.MT-1) THEN BEGIN
+        IF UD.loop EQ 1 THEN UD.t = 0 ELSE IF UD.loop EQ 2 THEN UD.play = -1
+     END
+     IF (UD.play EQ -1) AND (UD.t EQ 0) THEN BEGIN
+        IF UD.loop EQ 1 THEN UD.t = UD.mt-1 ELSE IF UD.loop EQ 2 THEN UD.play = 1
+     END
+
      IF ((UD.Play EQ -1) AND (UD.t GT 0)) OR ((UD.Play EQ 1) AND (UD.t LT UD.MT-1)) THEN BEGIN
         UD.t = UD.t + UD.play
         VCR_Display, UD
@@ -118,6 +130,14 @@ PRO VCR_Event, Event
         'SLIDERDELAY': BEGIN
            Widget_Control, Event.ID, Get_VALUE=tmp
            UD.delay = LONG(tmp)
+        END
+        'BGROUPLOOP': BEGIN
+           CASE Event.Value OF
+              0: UD.loop = 0
+              1: UD.loop = 1
+              2: UD.loop = 2
+              ELSE: Message,'Unknown button pressed'
+           ENDCASE
         END
         'BMPBTNM1': BEGIN
            UD.Play = 0
@@ -415,6 +435,24 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
       UVALUE='SLIDERDELAY')
 
 
+
+  BASE9 = WIDGET_BASE(BASE3, $
+      ROW=1, $
+      MAP=1, $
+      UVALUE='BASE9')
+
+  BtnsLoop = [ $
+    'None',$
+    'Loop', $
+    'Bounce']
+  BGROUPLOOP = CW_BGROUP( BASE9, BtnsLoop, $
+      ROW=3, $
+      EXCLUSIVE=1, $
+      FRAME=1, $
+      SET_VALUE=0, $
+      UVALUE='BGROUPLOOP')
+  
+
   BASE6 = WIDGET_BASE(BASE3, $
       COLUMN=1, $
       FRAME=1, $
@@ -594,13 +632,14 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
                mt    : s(3)          ,$
                t     : 0l            ,$
                zoom  : zoom          ,$
-               did   : drawid        ,$
+               did   : drawid        ,$ ;id of drawing area
                timeid: FIELDTIME     ,$
                timer : LABEL44       ,$ ;its a trick, a label cant generate a timer event
                play  : 0             ,$
                nase  : nase          ,$
                scale : scale         ,$
-               delay : delay         }                 ;id of drawing area
+               delay : delay         ,$
+               loop  : 0             }           
 
 
   XMANAGER, 'VCR', MAIN_VCR
