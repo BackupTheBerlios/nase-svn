@@ -9,25 +9,25 @@
 ;
 ; CATEGORY:              STATISTICS
 ;
-; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE] , [SMAMPLPERIOD=samplperiod]  $
+; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE] , [SAMPLEPERIOD=sampleperiod]  $
 ;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase][,KERNEL=kernel])
 ;
 ; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
 ;                                  mit mind. 10 Elementen
 ;
-; KEYWORD PARAMETERS:    HAMMING:     vor der Berechnung des Spektrums wird mit der 
-;                                     Hamming-Funktion gefenstert (siehe IDL-Hilfe)
-;                        DOUBLE:      rechnet mit doppelter Genauigkeit (dies ist
-;                                     erst ab IDL-Version 4.0 moeglich)
-;                        TRUNC_PHASE: Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(ps))
-;                                     auf Null gesetzt.
-;                        KERNEL:      Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
-;                                     KEYWORD PHASE
-;                        SAMPLPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
+; KEYWORD PARAMETERS:    HAMMING:      vor der Berechnung des Spektrums wird mit der 
+;                                      Hamming-Funktion gefenstert (siehe IDL-Hilfe)
+;                        DOUBLE:       rechnet mit doppelter Genauigkeit (dies ist
+;                                      erst ab IDL-Version 4.0 moeglich)
+;                        TRUNC_PHASE:  Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(ps))
+;                                      auf Null gesetzt.
+;                        KERNEL:       Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
+;                                      KEYWORD PHASE
+;                        SAMPLEPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
 ;
-;                        COMPLEX:     als Output komplexes PowerSpec
+;                        COMPLEX:      als Output komplexes PowerSpec
 ;
-;                        NEGFREQ:     Output mit negativen Frequenzen (default ist: nur pos. freq.)
+;                        NEGFREQ:      Output mit negativen Frequenzen (default ist: nur pos. freq.)
 ;
 ;
 ; OUTPUTS:               ps      : das berechnete Powerspektrum
@@ -63,6 +63,10 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.9  1998/08/24 10:30:31  saam
+;       keyword SAMPLPERIOD replaced by SAMPLEPERIOD, the old
+;       version produces a warning but still works
+;
 ; Revision 1.8  1998/05/04 17:55:29  gabriel
 ;       COMPLEX Keyword neu
 ;
@@ -90,10 +94,15 @@
 
 
 FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,NEGFREQ=NegFreq ,$
-                    TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD,COMPLEX=Complex
+                    TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD, SAMPLEPERIOD=sampleperiod, COMPLEX=Complex
  
- PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
-                     DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD,COMPLEX=Complex)
+   IF Set(SAMPLPERIOD) THEN BEGIN
+      SamplePeriod = SamplPeriod
+      print 'POWERSPEC:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
+   END
+
+   PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
+                       DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
 
  Return,PSpec
 END

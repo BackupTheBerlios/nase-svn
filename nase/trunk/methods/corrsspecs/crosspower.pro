@@ -11,26 +11,26 @@
 ;
 ; CALLING SEQUENCE:      cp = CrossPower( xseries,yseries [,xaxis] [,/HAMMING][,/DOUBLE]        $
 ;                                        [,PHASE=phase] [,COMPLEX=complex] [,NEGFREQ=negfreq]$
-;                                        [,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel] , [SMAMPLPERIOD=samplperiod])
+;                                        [,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel] , [SAMPLEPERIOD=sampleperiod])
 ;
 ; INPUTS:                xseries : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
 ;                                  mit mind. 10 Elementen
 ;                        yseries : s. xseries
 ;
 ;
-; KEYWORD PARAMETERS:    HAMMING:     vor der Berechnung des Spektrums wird mit der 
-;                                     Hamming-Funktion gefenstert (siehe IDL-Hilfe)
-;                        DOUBLE:      rechnet mit doppelter Genauigkeit (dies ist
-;                                     erst ab IDL-Version 4.0 moeglich)
-;                        TRUNC_PHASE: Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(cp))
-;                                     auf Null gesetzt.
-;                        KERNEL:      Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
-;                                     KEYWORD PHASE
-;                        COMPLEX:     als Output complexe CrossPower
+; KEYWORD PARAMETERS:    HAMMING:      vor der Berechnung des Spektrums wird mit der 
+;                                      Hamming-Funktion gefenstert (siehe IDL-Hilfe)
+;                        DOUBLE:       rechnet mit doppelter Genauigkeit (dies ist
+;                                      erst ab IDL-Version 4.0 moeglich)
+;                        TRUNC_PHASE:  Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(cp))
+;                                      auf Null gesetzt.
+;                        KERNEL:       Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
+;                                      KEYWORD PHASE
+;                        COMPLEX:      als Output complexe CrossPower
 ;
-;                        NEGFREQ:     Output mit negativen Frequenzen (default ist: nur pos. freq.)
+;                        NEGFREQ:      Output mit negativen Frequenzen (default ist: nur pos. freq.)
 ;
-;;                       SAMPLPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
+;                        SAMPLEPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
 ;
 ;
 ; OUTPUTS:               cp      : Betrag der berechneten CrossPower
@@ -69,6 +69,10 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.5  1998/08/24 10:30:31  saam
+;       keyword SAMPLPERIOD replaced by SAMPLEPERIOD, the old
+;       version produces a warning but still works
+;
 ; Revision 1.4  1998/05/04 17:59:57  gabriel
 ;       SAMPLPERIOD Keyword neu
 ;
@@ -90,7 +94,14 @@
 
 FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
                      DOUBLE=Double ,COMPLEX=COMPLEX,Phase=Phase ,$
-                     TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel, NEGFREQ=negfreq,SAMPLPERIOD=SAMPLPERIOD
+                     TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel, NEGFREQ=negfreq,SAMPLPERIOD=SAMPLPERIOD, SAMPLEPERIOD=sampleperiod
+
+
+   IF Set(SAMPLPERIOD) THEN BEGIN
+      SamplePeriod = SamplPeriod
+      print 'CROSSPOWER:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
+   END
+
    
    IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN Message, 'wrong number of arguments'
    IF (Size(xseries))(0) NE 1                 THEN Message, 'wrong format for x-signal'
@@ -107,9 +118,8 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
    DEFAULT,negfreq,0
    Default, Double, 0
    Default,hamming,0
-   Default, SAMPLPERIOD  , 0.001   
-   SamplingPeriod = SAMPLPERIOD      ; 1 ms 
-   SamplingFreq   = 1.0 / SamplingPeriod
+   Default, SAMPLEPERIOD  , 0.001   
+   SamplingFreq   = 1.0 / SamplePeriod
    FreqRes        = SamplingFreq / N
 
    xMedian  = Total(xseries) / N
