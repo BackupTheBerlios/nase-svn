@@ -89,6 +89,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.13  2000/02/29 18:53:10  kupper
+;        Removed stupid ABS in normalization (gaussians are always positive!)
+;        Corrected use of Temporary() in normalization.
+;
 ;        Revision 1.12  2000/02/29 17:44:01  kupper
 ;        Added 1 to the sizes computed by AUTOSIZE. Thus, the array has odd size again.
 ;
@@ -163,7 +167,10 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
      xerg = REBIN(temporary(xerg),xlen,ylen,/SAMPLE)
      yerg = REBIN(temporary(yerg),xlen,ylen,/SAMPLE)
      ERG = temporary(xerg)*temporary(yerg)
-     If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(temporary(ERG)))
+     If Keyword_Set(NORM) then begin
+        i = TOTAL(ERG)
+        ERG = temporary(ERG) / i
+     Endif
     return, ERG(*,*)   
 
   ENDIF
@@ -173,7 +180,10 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
   ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
   
 
-  If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(temporary(ERG)))
+  If Keyword_Set(NORM) then begin
+     i = TOTAL(ERG)
+     ERG = temporary(ERG) / i
+  Endif
 
   return, ERG(*,*)          
 end
