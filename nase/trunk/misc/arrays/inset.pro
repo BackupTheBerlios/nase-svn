@@ -13,17 +13,20 @@
 ; INPUTS:             I: ein Element, das vielleicht in S enthalten ist.
 ;                     S: die Vergleichsmenge
 ;
-; OUTPUTS:            yn: 1, wenn I Element von S; 0, sonst
+; OUTPUTS:            yn: TRUE, wenn I Element von S; FALSE, sonst
 ;
 ; EXAMPLE:
 ;                     IF InSet(1,[4,65,7,3,7,4]) THEN print, 'YUPP' ELSE print, 'NOPE'
 ;                     ;    NOPE
-;                     IF InSet(1,[4,65,7,3,7,4]) THEN print, 'YUPP' ELSE print, 'NOPE'
+;                     IF InSet(7,[4,65,7,3,7,4]) THEN print, 'YUPP' ELSE print, 'NOPE'
 ;                     ;    YUPP
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1999/09/22 12:41:28  kupper
+;     Changed algorithm from a loop (uargh!) to an array-operation.
+;
 ;     Revision 1.2  1999/02/05 19:14:10  saam
 ;           + return if an error occurs
 ;
@@ -39,13 +42,9 @@ FUNCTION InSet, I, S
    IF N_Params() NE 2 THEN Message, 'you have to pass two arguments'
 
    NI = N_Elements(I)
-   NS = N_Elements(S)
-      
-   IF NI NE 1 THEN Message, 'first argument has to be scalar'
+   IF NI NE 1 THEN Message, 'first argument has to be scalar or a one-element-array'
    
-   FOR x=0, NS-1 DO BEGIN
-      IF I EQ S(x) THEN RETURN, 1
-   END
-   RETURN, 0
+   RETURN, Total( I(0) eq S )
+   ;;Result of Total is of type float. All non-zero floats are TRUE.
 
 END
