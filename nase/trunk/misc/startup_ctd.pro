@@ -127,7 +127,9 @@ Pro Startup_ctd
    ;; --------------------------------------------------------
   
    ResetCM
-   Foreground, 255, 255, 255    ; default foreground is white
-   Background,   0,   0,   0    ; default background is black
+   Foreground, "white"          ; default foreground is white
+   Background, "black"          ; default background is black
+   !P.Title = "Graphics by NASE" ; default window title (bit of
+                                ; product placement... ;-) )
    
 End
