@@ -16,17 +16,22 @@
 ;
 ; OUTPUTS:            dw: the recovered DelayWeigh structure 
 ;
+; OPTIONAL OUTPUTS:   FILE: returns the filename used for loading
+;
 ; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/xplore#SHOWDW>showdw</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/misc/files+dirs/#UOPENR>uopenr</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/connections/#RESTOREDW>restoredw</A>
 ;        
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.2  2000/01/11 14:16:00  saam
+;            added the FILE keyword
+;
 ;      Revision 1.1  2000/01/11 14:05:07  saam
 ;            dont know what happens if file doesn't exist
 ;
 ;
 ;-
-FUNCTION ReadDW, DWindex, INIT=init
+FUNCTION ReadDW, DWindex, INIT=init, FILE=file
 
    COMMON ATTENTION
    
