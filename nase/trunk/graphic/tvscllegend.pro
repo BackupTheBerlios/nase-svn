@@ -69,6 +69,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.17  2001/01/22 14:02:36  kupper
+;     Changed color management to meet guidelines formed during the first
+;     NASE workshop, fall 2000.
+;     Pre-Checkin due to technical reasons. Headers not yet englishified...
+;
 ;     Revision 2.16  2000/12/04 10:40:06  saam
 ;     replaced outdate getbgcolor call
 ;     updated doc header
@@ -144,33 +149,24 @@ PRO TvSclLegend, xnorm, ynorm $
 
    
 
-   If Keyword_Set(COLOR) then sc = COLOR else begin
-                                ;-----Optimale Farbe fuer die Achsen ermitteln:
-      bg = CIndex2RGB(GetBackground())
-                                ; if device is !PSGREY and !REVERTPS is on 
-      If !PSGREY then begin
-         save_rpsc = !REVERTPSCOLORS
-         !REVERTPSCOLORS = 0
-      EndIf
-      sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2))
-      If !PSGREY then !REVERTPSCOLORS = save_rpsc
-   endelse
+   If Keyword_Set(COLOR) then sc = COLOR else sc = !P.COLOR
 
    IF Keyword_Set(VERTICAL) THEN BEGIN
       x_pix =  20
       y_pix = 100
       colorarray = FindGen(y_pix)
-      colorarray = Transpose(Rebin(colorarray, y_pix, x_pix))
+      colorarray = Rebin(Transpose(Temporary(colorarray)), x_pix, y_pix)
    END ELSE BEGIN
       x_pix = 100
       y_pix =  20
       colorarray = FindGen(x_pix)
-      colorarray = Rebin(colorarray, x_pix, y_pix)
+      colorarray = Rebin(Temporary(colorarray), x_pix, y_pix)
    END      
    
 
    IF Keyword_Set(NOSCALE) THEN BEGIN
-      colorarray = (colorarray / MAX(colorarray))*(max-min)+min
+;      colorarray = (colorarray / MAX(colorarray))*(max-min)+min
+      Scl, colorarray, [min, max]
       UTv, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
    ENDif ELSE BEGIN
       If Keyword_Set(RANGE) then begin

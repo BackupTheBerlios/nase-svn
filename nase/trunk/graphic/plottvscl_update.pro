@@ -4,14 +4,13 @@
 ; AIM:
 ;  Refresh a previous PlotTVScl plot using same color coding.
 ;
-; PURPOSE: Auffrischung einer zuvor mittels <A HREF="#PLOTTVSCL">PlotTVScl</A> dargestellten
-;          Graphik
+; PURPOSE: Refresh a plot previously created using <A>PlotTVScl</A>.
 ;          Starting from revision 2.8, this routine does not need to be called
-;          directly. Instead, a PlotInfo structure can be passed through the
-;          UPDATE_INFO keyword to PlotTvScl.
+;          directly. Instead, a <*>PlotInfo</*> structure can be passed through the
+;          <*>UPDATE_INFO</*> keyword to <A>PlotTvScl</A>.
 ;          However, you may still call this routine directly.
 ;
-; CATEGORY: GRAPHICS / GENERAL
+; CATEGORY: Graphic
 ;
 ; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT] [,RANGE_IN=[a,b]]
 ;
@@ -64,6 +63,11 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.12  2001/01/22 14:02:36  kupper
+;     Changed color management to meet guidelines formed during the first
+;     NASE workshop, fall 2000.
+;     Pre-Checkin due to technical reasons. Headers not yet englishified...
+;
 ;     Revision 2.11  2000/10/27 18:59:57  gabriel
 ;          utvscl now takes care of topcolor
 ;

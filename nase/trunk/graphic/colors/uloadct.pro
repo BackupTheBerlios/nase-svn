@@ -21,6 +21,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  2001/01/22 13:59:24  kupper
+;     Changed color management to meet guidelines formed during the first
+;     NASE workshop, fall 2000.
+;     Pre-Checkin due to technical reasons. Headers not yet englishified...
+;
 ;     Revision 2.9  2000/10/05 16:00:28  saam
 ;     * disabled setting of background color for non ps device
 ;       because color managment will change
@@ -69,6 +74,9 @@ PRO ULoadCt, nr, _Extra=e
 ;      IF  !D.NAME NE 'PS' THEN BEGIN
 ;         !P.Background = RGB(0,0,0,/NOALLOC)
 ;      ENDIF
+
+      ;; set the shading range to the continuous color table:
+      Set_Shading, VALUES=[0, !TOPCOLOR]
    END
 
 END

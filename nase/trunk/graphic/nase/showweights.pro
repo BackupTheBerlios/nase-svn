@@ -21,7 +21,7 @@
 ;          Nichtexistierende Verbindungen (!NONE) werden seit Version 1.17 
 ;          dunkelblau dargestellt.
 ;   
-; CATEGORY: GRAPHICS / NASE SPECIFIC ROUTINES
+; CATEGORY: Graphic Nase
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
 ;                               [,TITEL='Titel'][,GROESSE=ZOOM=Vergrößerungsfaktor]
@@ -175,6 +175,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.32  2001/01/22 14:04:26  kupper
+;       Changed color management to meet guidelines formed during the first
+;       NASE workshop, fall 2000.
+;       Pre-Checkin due to technical reasons. Headers not yet englishified...
+;
 ;       Revision 2.31  2000/10/01 14:51:09  kupper
 ;       Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -443,18 +448,22 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
       ELSE MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
         ;;------------------> Farben setzen und Matrix skalieren:
       IF Keyword_Set(SETCOL) THEN BEGIN
-         old_topcolor = !TOPCOLOR
+;         old_topcolor = !TOPCOLOR
          IF NOT KEYWORD_SET(PRINTSTYLE) then begin
-            back = RGB("very dark yellow", INDEX=!TOPCOLOR)
-            fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
-            !TOPCOLOR = !TOPCOLOR-2
+;            back = RGB("very dark yellow", INDEX=!TOPCOLOR)
+;            fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
+            back = RGB("very dark yellow")
+            fore = RGB("pale brown")
+;            !TOPCOLOR = !TOPCOLOR-2
          ENDIF
       ENDIF ELSE BEGIN ; Keyword_Set(SETCOL) 
-         old_topcolor = !TOPCOLOR
+;         old_topcolor = !TOPCOLOR
          IF NOT KEYWORD_SET(PRINTSTYLE) then begin
-            back = RGB("very dark yellow", INDEX=!TOPCOLOR, /NOALLOC)
-            fore = RGB("pale brown", INDEX=!TOPCOLOR-1, /NOALLOC)
-            !TOPCOLOR = !TOPCOLOR-2
+;            back = RGB("very dark yellow", INDEX=!TOPCOLOR, /NOALLOC)
+;            fore = RGB("pale brown", INDEX=!TOPCOLOR-1, /NOALLOC)
+            back = RGB("very dark yellow", /NOALLOC)
+            fore = RGB("pale brown", /NOALLOC)
+;            !TOPCOLOR = !TOPCOLOR-2
          ENDIF
       ENDELSE
 
@@ -484,10 +493,10 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
          orange = 0             ;black
          fore = 0               ;black
          back = white/2         ;!D.Table_Size-1
-         !TOPCOLOR = !D.Table_Size-1
-      endif else orange = RGB('orange',/NOALLOC)
+;         !TOPCOLOR = !D.Table_Size-1
+      endif else orange = RGB('orange')
       GET_COLORS = [black, back, fore, white, !TOPCOLOR]
-      !TOPCOLOR = old_TOPCOLOR
+;      !TOPCOLOR = old_TOPCOLOR
 
       ;;--------------------------------
       ;;--------------------------------

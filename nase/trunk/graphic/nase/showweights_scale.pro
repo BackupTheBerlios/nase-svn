@@ -9,7 +9,7 @@
 ;          kann und dann aussieht wie bei ShowWeights.
 ;          Optional kann auch die Farbtabelle entsprechend gesetzt werden.
 ;
-; CATEGORY: Grafik
+; CATEGORY: Graphic
 ;
 ; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
 ;                                                       [,COLORMODE=mode]
@@ -129,6 +129,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.21  2001/01/22 14:04:26  kupper
+;        Changed color management to meet guidelines formed during the first
+;        NASE workshop, fall 2000.
+;        Pre-Checkin due to technical reasons. Headers not yet englishified...
+;
 ;        Revision 2.20  2000/10/01 14:51:09  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -216,10 +221,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    
    If not Keyword_set(PRINTSTYLE) then begin
       ts = !TOPCOLOR+1          ;ehemals !D.Table_Size
-      GET_MAXCOL = ts-3
    endif else begin
       ts = !D.Table_Size
-      GET_MAXCOL = ts-1
    endelse
 
 
@@ -245,8 +248,11 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    ;;--------------------------------
    
    ;;------------------> Optional Outputs
+   GET_MAXCOL = !TOPCOLOR       ;since the revised NASE color
+                                ;management (see proceedings of the
+                                ;first NASE workshop 2000)
    GET_RANGE_IN  = [0, Range]
-   GET_RANGE_OUT = [0, GET_MAXCOL]
+   GET_RANGE_OUT = [0, !TOPCOLOR]
    ;;--------------------------------
    
    if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
@@ -265,62 +271,59 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
 
       GET_COLORMODE = 1
       If Keyword_Set(SETCOL) then begin
-;         g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          If !D.NAME eq "PS" then begin
-;            If not Keyword_Set(PRINTSTYLE) then begin
-;             ; utvlct, GET_MAXCOL-g, GET_MAXCOL-g, GET_MAXCOL-g
-;               uloadct, FILE=GetEnv("NASEPATH")+"/graphic/NaseColors.tbl", 3, NCOLORS=GET_MAXCOL+1
-;               !REVERTPSCOLORS = 1 ;0
+            ;; Note: Greyscale Postscripts shall not be used any
+            ;;       longer (revised color management, first NASE
+            ;;       workshop 2000)
+;            If !PSGREY then begin
+;               !REVERTPSCOLORS = 1 
+;               !P.Background = !D.n_colors-1 ;weiss
 ;            endif else begin
-             ;  utvlct, g, g, g
-            If !PSGREY then begin
-               !REVERTPSCOLORS = 1 
-               !P.Background = !D.n_colors-1 ;weiss
-            endif else begin
-                                ;umgedrehte Graupalette laden:
-               uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.PAPER_POS,NCOLORS=GET_MAXCOL+1
-               !REVERTPSCOLORS = 0
-               !P.BACKGROUND = 0 ;weiss
-            endelse
+            ;;umgedrehte Graupalette laden:
+               uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.PAPER_POS
+;               !REVERTPSCOLORS = 0
+;               !P.BACKGROUND = 0 ;weiss
 ;            endelse
-         endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.POS,NCOLORS=GET_MAXCOL+1;utvlct, g, g, g ;Grauwerte
-         IF (!D.NAME eq ScreenDevice()) THEN !P.BACKGROUND = 0 ;Index für Schwarz
-         Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
+         endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.POS;utvlct, g, g, g ;Grauwerte
+;         IF (!D.NAME eq ScreenDevice()) THEN !P.BACKGROUND = 0 ;Index für Schwarz
       Endif
       
-      If (SETCOL lt 2) then MatrixMatrix = Temporary(MatrixMatrix)/double(Range)*GET_MAXCOL
+      If (SETCOL lt 2) then Scl, MatrixMatrix, [0, !TOPCOLOR], [0, Range]
 
    endif else begin             ;pos/neg Array
 
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
-;         g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
          If !D.Name eq "PS" then begin ;helle Farbpalette
-            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.PAPER_NEGPOS,NCOLORS=GET_MAXCOL+1 ;utvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
-            !REVERTPSCOLORS = 0
-            !P.BACKGROUND = GET_MAXCOL/2 ;weiss
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.PAPER_NEGPOS;utvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
+;            !REVERTPSCOLORS = 0
+;            !P.BACKGROUND = GET_MAXCOL/2 ;weiss
          endif else begin       ;dunkle Farbpalette
-            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.NEGPOS,NCOLORS=GET_MAXCOL+1;utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.NEGPOS;utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
          endelse
-         IF (!D.NAME eq ScreenDevice()) THEN !P.BACKGROUND = GET_MAXCOL/2  ;Index für Schwarz 
-         Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
+;         IF (!D.NAME eq ScreenDevice()) THEN !P.BACKGROUND = GET_MAXCOL/2  ;Index für Schwarz 
+         Set_Shading, VALUES=[!TOPCOLOR/2, !TOPCOLOR] ;Grüne Werte für Shading nehmen
       EndIf
 
-      If (SETCOL lt 2) then begin
-         MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(Range)
-         MatrixMatrix = (Temporary(MatrixMatrix)+0.5)*GET_MAXCOL
-      EndIf
+      If (SETCOL lt 2) then Scl, MatrixMatrix, [0, !TOPCOLOR], [-Range, Range]
 
    endelse
 
 
 
+;   If not keyword_set(PRINTSTYLE) then begin
+;      IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
+;      If Keyword_Set(SETCOL) then begin
+;         SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
+;         SetColorIndex, ts-1, 255, 100, 0 ;Orange die für die Trennlinien
+;      Endif
+;   EndIf
+
    If not keyword_set(PRINTSTYLE) then begin
-      IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
-      If Keyword_Set(SETCOL) then begin
-         SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
-         SetColorIndex, ts-1, 255, 100, 0 ;Orange die für die Trennlinien
-      Endif
+      If Keyword_Set(SETCOL) then $
+       noneindex = rgb("none") else $ ;;allocate a free index
+       noneindex = rgb("none", /Noalloc) ;;get the best match
+      IF count NE 0 THEN MatrixMatrix(no_connections) = noneindex
    EndIf
 
    If (SETCOL lt 2) then Return, MatrixMatrix else Return, 0

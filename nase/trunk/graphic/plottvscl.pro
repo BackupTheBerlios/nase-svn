@@ -225,7 +225,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                INIT=init, $
                _REF_EXTRA=_extra
 
-
    On_Error, 2
    IF NOT Set(_W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -254,22 +253,23 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;; -----Wir bitten ShowWeights_Scale vorab schonmal, die
       ;;     Farben richtig zu setzen, damit auch !P.Background
       ;;     stimmt
-      If (SETCOL ne 0) and (Keyword_Set(NASE) or Keyword_Set(NEUTRAL)) then $
-       forgetit = ShowWeights_Scale(_W, SETCOL=2, COLORMODE=colormode)
+;      If (SETCOL ne 0) and (Keyword_Set(NASE) or Keyword_Set(NEUTRAL)) then $
+;       forgetit = ShowWeights_Scale(_W, SETCOL=2, COLORMODE=colormode)
 
 
-      If set(PLOTCOL) then sc = plotcol else begin
-         ;;-----Optimale Farbe fuer die Achsen ermitteln:
-         bg = CIndex2RGB(GetBackground())
-         ;; if device is !PSGREY and !REVERTPS is on 
-         If !PSGREY then begin
-            save_rpsc = !REVERTPSCOLORS
-            !REVERTPSCOLORS = 0
-         EndIf
-         sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2))
-         If !PSGREY then !REVERTPSCOLORS = save_rpsc
-      EndElse
-      Get_Color = sc
+;      If set(PLOTCOL) then sc = plotcol else begin
+;         ;;-----Optimale Farbe fuer die Achsen ermitteln:
+;         bg = CIndex2RGB(GetBackground())
+;         ;; if device is !PSGREY and !REVERTPS is on 
+;         If !PSGREY then begin
+;            save_rpsc = !REVERTPSCOLORS
+;            !REVERTPSCOLORS = 0
+;         EndIf
+;         sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2))
+;         If !PSGREY then !REVERTPSCOLORS = save_rpsc
+;      EndElse
+;      Get_Color = sc
+      Get_Color = !P.COLOR ;;kept for compatibility
       
       Default, SETCOL, 1
       Default, Charsize, 1.0
@@ -313,7 +313,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize*charcor,_EXTRA=e
 
       plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
-      ;;only hole pixel or points exist
+      ;;only whole pixel or points exist
       plotregion_device = (convert_coord(plotregion_norm,/NORM,/TO_DEVICE))
       plotregion_norm = uconvert_coord(plotregion_device,/TO_NORM,/DEVICE)
 
@@ -412,13 +412,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          PlotPositionDevice(2) = MinPixelSizeDevice*(ArrayWidth+1)+OriginDevice(0)
          PlotPositionDevice(3) = MinPixelSizeDevice*(ArrayHeight+1)+OriginDevice(1)
         
-         Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
+         Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, $;Color=sc, $
           xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
           yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
           XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
       ENDIF ELSE BEGIN
          
-         Plot, indgen(2), /NODATA, Color=sc, $
+         Plot, indgen(2), /NODATA, $;Color=sc, $
           Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-LegendRandNorm(0),plotregion_norm(1,1)], $
           xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
           yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
@@ -445,92 +445,47 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
       UPDATE_INFO = {PLOTTVSCL_INFO, $
-                  defined : 1b               ,$
-                  x1      : long(PlotAreaDevice(0)),$
-                  y1      : long(PlotAreaDevice(1)),$
-                  ;;
-      ;; R Kupper, Sep 21 1999:
-      ;;   Found something looking like copy&paste-error.
-      ;;   Don't know if it was meant to be so.
-      ;;   It looked like this:
-      ;;              x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
-      ;;              y00     : long((OriginNormal(1)+TotalPlotWidthNormal*!Y.Ticklen)*!D.Y_SIZE),$ 
-      ;;   Changed it to:                   
-      ;;
-       x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
-       y00     : long((OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen)*!D.Y_SIZE),$ 
-       x00_norm:  OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen+borderthick_norm(0),$
-       y00_norm:  OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen+borderthick_norm(1),$ 
-       tvxsize : long(PlotAreaDevice(0)),$
-       tvysize : long(PlotAreaDevice(1)),$
-       subxsize: long(2.0*TotalPlotWidthNormal*!Y.Ticklen*!D.X_SIZE),$
-       subysize: long(2.0*TotalPlotHeightNormal*!X.Ticklen*!D.Y_SIZE), $
-       ;;
-      ;; Keywords to be passed to PlotTvScl_update:
-      order   : ORDER, $
-       nase    : NASE, $
-       neutral : NEUTRAL, $
-       noscale : NOSCALE, $
-       polygon : POLYGON, $
-       top     : TOP, $
-       cubic   : float(CUBIC), $
-       interp  : INTERP, $
-       minus_one: MINUS_ONE, $
-       colormode: COLORMODE, $
-       setcol  : SETCOL, $
-       ;;
-      ;; Scaling Information to be stored by PlotTvScl_update:
-      range_in: [-1.0d, -1.0d]}
+                     defined : 1b               ,$
+                     x1      : long(PlotAreaDevice(0)),$
+                     y1      : long(PlotAreaDevice(1)),$
+                     $;;
+                     $;; R Kupper, Sep 21 1999:
+                     $;;   Found something looking like copy&paste-error.
+                     $;;   Don't know if it was meant to be so.
+                     $;;   It looked like this:
+                     $;;              x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
+                     $;;              y00     : long((OriginNormal(1)+TotalPlotWidthNormal*!Y.Ticklen)*!D.Y_SIZE),$ 
+                     $;;   Changed it to:                   
+                     $;;
+                     x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
+                     y00     : long((OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen)*!D.Y_SIZE),$ 
+                     x00_norm:  OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen+borderthick_norm(0),$
+                     y00_norm:  OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen+borderthick_norm(1),$ 
+                     tvxsize : long(PlotAreaDevice(0)),$
+                     tvysize : long(PlotAreaDevice(1)),$
+                     subxsize: long(2.0*TotalPlotWidthNormal*!Y.Ticklen*!D.X_SIZE),$
+                     subysize: long(2.0*TotalPlotHeightNormal*!X.Ticklen*!D.Y_SIZE), $
+                     $;;
+                     $;; Keywords to be passed to PlotTvScl_update:
+                     order   : ORDER, $
+                     nase    : NASE, $
+                     neutral : NEUTRAL, $
+                     noscale : NOSCALE, $
+                     polygon : POLYGON, $
+                     top     : TOP, $
+                     cubic   : float(CUBIC), $
+                     interp  : INTERP, $
+                     minus_one: MINUS_ONE, $
+                     colormode: COLORMODE, $
+                     setcol  : SETCOL, $
+                     $;;
+                     $;; Scaling Information to be stored by PlotTvScl_update:
+                     range_in: [-1.0d, -1.0d]}
 
       Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
       ;;-------------------------------- End Optional Outputs
 
       
-      ;;-----Legende, falls erwuenscht:
-      IF Keyword_Set(LEGEND) THEN BEGIN
-         IF Keyword_Set(NASE) THEN BEGIN
-            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-               Default, LEG_MAX,  MAX([ABS(MaxW),ABS(MinW)])
-               Default, LEG_MIN, -MAX([ABS(MaxW),ABS(MinW)])
-               If LEG_MIN eq -LEG_MAX then Mid = '0'
-               TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-                H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-                V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-                Max=LEG_MAX, Min=LEG_MIN, Mid=Mid,$
-                CHARSIZE=Charsize, $
-                $;;NOSCALE=NoScale, $
-                /Vertical, /Center, COLOR=sc
-            END ELSE BEGIN
-               Default, LEG_MAX, MaxW
-               Default, LEG_MIN, 0
-               If LEG_MIN eq -LEG_MAX then Mid = '0'
-               TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-                H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-                V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-                Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
-                CHARSIZE=Charsize, $
-                $;;NOSCALE=NoScale, $
-                /Vertical, /Center, COLOR=sc
-            END
-         END  ELSE BEGIN;; No-NASE
-            Default, LEG_MAX, MAX(_w)
-            Default, LEG_MIN, MIN(_w)
-            IF Keyword_Set(NEUTRAL) THEN BEGIN
-               IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-                  LEG_MAX = MAX([ABS(MaxW),ABS(MinW)])
-                  LEG_MIN = -LEG_MAX
-               END ELSE LEG_MIN = 0
-            END
-           
-           
-            TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-             H_Stretch=TotalPlotWidthNormal/15.*VisualWidth/(0.5*!D.X_PX_CM), $
-             V_Stretch=TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-             Max=LEG_MAX, Min=LEG_MIN, $
-             CHARSIZE=Charsize, $
-             /Vertical, /Center, COLOR=sc, TOP=top
-         END
-      END
 
       ;;-----Restauration der urspruenglichen Device-Parameter
       !P.Region  = oldRegion 
@@ -548,5 +503,55 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    GET_INFO = UPDATE_INFO       ;Kept for compatibility
 
 
+
+   ;;-----Legende, falls erwuenscht:
+   IF Keyword_Set(LEGEND) THEN BEGIN
+      IF Keyword_Set(NASE) THEN BEGIN
+         IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+            Default, LEG_MAX,  MAX([ABS(MaxW),ABS(MinW)])
+            Default, LEG_MIN, -MAX([ABS(MaxW),ABS(MinW)])
+            If LEG_MIN eq -LEG_MAX then Mid = '0'
+            TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+             H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
+             Max=LEG_MAX, Min=LEG_MIN, Mid=Mid,$
+             CHARSIZE=Charsize, $
+             $;;NOSCALE=NoScale, $
+             /Vertical, /Center ;, COLOR=sc
+         END ELSE BEGIN
+            Default, LEG_MAX, MaxW
+            Default, LEG_MIN, 0
+            If LEG_MIN eq -LEG_MAX then Mid = '0'
+            TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+             H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
+             Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
+             CHARSIZE=Charsize, $
+             $;;NOSCALE=NoScale, $
+             /Vertical, /Center ;, COLOR=sc
+         END
+      END  ELSE BEGIN;; No-NASE
+         Default, LEG_MAX, MAX(_w)
+         Default, LEG_MIN, MIN(_w)
+         IF Keyword_Set(NEUTRAL) THEN BEGIN
+            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+               LEG_MAX = MAX([ABS(MaxW),ABS(MinW)])
+               LEG_MIN = -LEG_MAX
+            END ELSE LEG_MIN = 0
+         END
+         
+         
+         TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+          H_Stretch=TotalPlotWidthNormal/15.*VisualWidth/(0.5*!D.X_PX_CM), $
+          V_Stretch=TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
+          Max=LEG_MAX, Min=LEG_MIN, $
+          CHARSIZE=Charsize, $
+          /Vertical, /Center, TOP=top ;,COLOR=sc
+      END
+   END
+
+
    ;;-----ENDE:
+
+
 END
