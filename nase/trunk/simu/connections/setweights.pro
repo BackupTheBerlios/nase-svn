@@ -35,6 +35,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1999/08/17 14:15:07  thiel
+;         Bugfix in Old_DW_Part of SetWeights.
+;         Setweight now uses new version of SetWeights.
+;
 ;     Revision 2.4  1999/08/16 17:06:59  thiel
 ;         Now executes new version by default.
 ;
@@ -61,36 +65,42 @@ PRO SetWeights, _DW, W, NO_INIT=no_init, DIMENSIONS=dimensions
    IF Keyword_Set(NO_INIT) THEN BEGIN ; execute new version
       Message, /INFO, 'NEW version of SetWeights executed.'
 
-      ; oldstyle DW-structure:
-      IF (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') THEN BEGIN
+
+      CASE 1 OF 
+                                ; oldstyle DW-structure:
+      (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') : BEGIN
          IF Keyword_Set(DIMENSIONS) THEN $
           w = Reform(/OVERWRITE, w, DWDim(_DW,/TH)*DWDim(_DW,/TW), $
                      DWDim(_DW,/SH)*DWDim(_DW,/SW))
          Handle_Value, _DW, DW, /NO_COPY
+         help, dw, /struct
+         
          DW.Weights = W
          Handle_Value, _DW, DW, /NO_COPY, /SET
 
-      ENDIF
+         END
 
                                 ; sparse DW-structure:
-      IF (Info(_DW) NE 'SDW_WEIGHT') OR (Info(_DW) NE 'SDW_DELAY_WEIGHT') THEN BEGIN
+      (Info(_DW) EQ 'SDW_WEIGHT') OR (Info(_DW) EQ 'SDW_DELAY_WEIGHT') : BEGIN
 
          IF Keyword_Set(DIMENSIONS) THEN $
           w = Reform(/OVERWRITE, w, DWDim(_DW,/TH)*DWDim(_DW,/TW), $
                      DWDim(_DW,/SH)*DWDim(_DW,/SW))
          Handle_Value, _DW, DW, /NO_COPY
-         IF NOT (N_Elements(DW.W) EQ 1 AND DW.W(0) EQ !NONE) THEN BEGIN
-            DW.W = W(DW.c2t,DW.c2s)
-         END
+         IF NOT (N_Elements(DW.W) EQ 1 AND DW.W(0) EQ !NONE) THEN $
+          DW.W = W(DW.c2t,DW.c2s)
          Handle_Value, _DW, DW, /NO_COPY, /SET
 
-      ENDIF ELSE BEGIN          ; no DW-structure at all:
-         Message, '[S]DW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_DW))+' !'
-      ENDELSE
+         END
+
+         ELSE : Message, $
+          '[S]DW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_DW))+' !'
+      
+      ENDCASE
 
 
 
-   ENDIF ELSE BEGIN ; execute old version:
+   ENDIF ELSE BEGIN             ; execute old version:
       Message, /INFO, 'Old version of SetWeights executed.'
       IStr = Info(_DW) 
       IF (IStr EQ 'SDW_WEIGHT') OR (IStr EQ 'SDW_DELAY_WEIGHT') THEN sdw = 1 ELSE sdw = 0

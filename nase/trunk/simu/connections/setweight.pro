@@ -76,6 +76,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.20  1999/08/17 14:15:07  thiel
+;           Bugfix in Old_DW_Part of SetWeights.
+;           Setweight now uses new version of SetWeights.
+;
 ;       Revision 1.19  1999/08/17 13:36:57  thiel
 ;           Fast bugfix. Temporal use of old Setweights.
 ;
@@ -265,9 +269,10 @@ Pro SetWeight, DW, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  
 
       W(t_index, s_index) = Weight
 
-   end
+   END
 
-   SetWeights, DW, W, NO_INIT=0
+
+   SetWeights, DW, W, NO_INIT=1
 
 end   
 
