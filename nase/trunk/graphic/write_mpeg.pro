@@ -131,8 +131,7 @@ default,write,0
 default,close,0
 default,rep,1
 default,delaft,0
-default,TMPDIR , TmpNam()
-console, "Using "+TMPDIR+"as temporary directory."
+default,TMPDIR , '/tmp/idl2mpeg.frames'
 default,mpegfilename,'test.mpg'
 default,framenum,0
 default,nFrames,0
