@@ -21,6 +21,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  2000/10/05 16:00:28  saam
+;     * disabled setting of background color for non ps device
+;       because color managment will change
+;
 ;     Revision 2.8  2000/10/05 10:27:05  saam
 ;     shrinks color palette to !TOPCOLOR
 ;
@@ -62,9 +66,9 @@ PRO ULoadCt, nr, _Extra=e
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
 
       Loadct, nr, NCOLORS=!TOPCOLOR+1, _Extra=e
-      IF  !D.NAME NE 'PS' THEN BEGIN
-         !P.Background = RGB(0,0,0,/NOALLOC)
-      ENDIF
+;      IF  !D.NAME NE 'PS' THEN BEGIN
+;         !P.Background = RGB(0,0,0,/NOALLOC)
+;      ENDIF
    END
 
 END
