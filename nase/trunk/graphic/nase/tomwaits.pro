@@ -421,7 +421,6 @@ else $;höhere IDL-Versionen kennen BASE_ALIGN:
   Draw = WIDGET_DRAW( DrawBase, $
                       BUTTON_EVENTS=1, $
                       FRAME=7, $
-                      RETAIN=1, $
                       XSIZE=xsize, $ ;virtuelle größe
                       YSIZE=ysize, $
                       X_SCROLL_SIZE=x_scroll_size, $;sichtbare größe
