@@ -77,7 +77,7 @@
  
 	  CASE 1 OF 
   L LT 0:   BEGIN		; Scalar string.
-	      TXT = SPC(-L)	;   Set up TXT for input string.
+	      TXT = STRREPEAT(" ", -L)	;   Set up TXT for input string.
 	      READU, LUN, TXT	;   Read string, TXT.
 	      I = EXECUTE(TXT)	;   Execute it to get T.
 	    END
@@ -90,7 +90,7 @@
 	        err = 3
 	        goto, done2
 	      endif
-	      TXT = SPC(L)	;   Set up TXT for input string.
+	      TXT = STRREPEAT(" ",L)	;   Set up TXT for input string.
 	      READU, LUN, TXT	;   TXT contains code to set aside space.
 	      I = EXECUTE(TXT)	;   Executing TXT makes T be a string array.
 	      N = N_ELEMENTS(T)	;   Size of string array.
@@ -103,13 +103,13 @@
 	          err = 3
 	          goto, done2
 	        endif
-		TXT = SPC(L)	;     Set up string of correct length.
+		TXT = STRREPEAT(" ", L)	;     Set up string of correct length.
 		READU, LUN, TXT	;     Read string.
 		T(I) = TXT	;     Store it.
 	      ENDFOR
 	    END
   L GT 0:   BEGIN		; Other data types.
-	      TXT = SPC(L)	;   Set up TXT for input string.
+	      TXT = STRREPEAT(" ", L)	;   Set up TXT for input string.
 	      READU, LUN, TXT	;   TXT contains code to set aside space.
 	      I = EXECUTE(TXT)	;   Execute TXT to set up space for T. 
 	      READU, LUN, T	;   Now read contents of T.
