@@ -51,21 +51,26 @@
 ;
 ;-
 
-FUNCTION InitRecall, S, LINEAR=linear, EXPO=expo
+FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo
 
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
-   IF Info(S) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
-      size = WeightCount(S)
-   END ELSE BEGIN
-      IF Info(S) EQ 'LAYER' THEN BEGIN
-         size = LayerSize(S)
+   If N_Params() eq 1 then begin ;S wurde angegeben
+      IF Info(S) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
+         size = WeightCount(S)
       END ELSE BEGIN
-         Message, 'expected SDW_DELAY_WEIGHT or LAYER structur, but got '+Info(S)+' !'
+         IF Info(S) EQ 'LAYER' THEN BEGIN
+            size = LayerSize(S)
+         END ELSE BEGIN
+            Message, 'expected SDW_DELAY_WEIGHT or LAYER structur, but got '+Info(S)+' !'
+         END
       END
-   END
-   
+   Endif else Begin             ;S wurde nicht angegeben
+      If not (Keyword_Set(WIDTH) and Keyword_Set(HEIGHT) ) then Message, 'please specify a Structure or WIDTH/HEIGHT' $ 
+      else size = width*height
+   EndElse
+
    IF Keyword_Set(expo) THEN BEGIN
       IF N_Elements(expo) NE 2 THEN Message, 'amplification and time-constant expected with keyword expo'
       IF expo(0) LE 0.0        THEN Message, 'amplification <= 0 senseless'
