@@ -50,7 +50,7 @@
 ;                                 sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
 ;                                 die Deviceunabhaegigkeit ist.
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
-;                     TOP       : es werden nur die Farbindices von 0..TOP-1 belegt (siehe IDL5 Hilfe von TvSCL)
+;                     TOP       : es werden nur die Farbindices von 0..TOP belegt (siehe IDL5 Hilfe von TvSCL)
 ;                     CUBIC,
 ;                     INTERP,
 ;                     MINUS_ONE : werden an ConGrid uebergeben (s. IDL_Hilfe)
@@ -77,6 +77,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.31  1999/09/23 12:23:19  kupper
+;     Replaced weird looking __ScaleArray-Function.
+;     Hope nothing broke...
+;
 ;     Revision 2.30  1999/07/16 14:22:58  kupper
 ;     Bug fix: Min & Max of array were allways recomputed, not only in the
 ;     case of CUBIC interpolation. This led to vanishing NONEs and
@@ -176,21 +180,44 @@
 
 ; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top-1 falls top gesetzt)
 ; skalierte Version eines Arrays A zurueck
-FUNCTION __ScaleArray, A, TOP=top
+;FUNCTION __ScaleArray, A, TOP=top
 
-   DEFAULT, top, !D.TABLE_SIZE
-   _TOP = ROUND(TOP)
-   _TOP = _TOP < 255.
+;   DEFAULT, top, !D.TABLE_SIZE
+;   _TOP = ROUND(TOP)
+;   _TOP = _TOP < 255.
 
-   FAC = (_TOP/FLOAT(!D.TABLE_SIZE))
-   _A = BYTE(FLOAT(A(*,*)-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(_TOP-1))
-   IF FAC GT 1. THEN BEGIN
-      index = where(_A GT MAX(1./FAC *_A),count)
-      IF count GT 0 THEN  _A(index) = MAX(1./FAC *_A)
-   ENDIF
+;   FAC = (_TOP/FLOAT(!D.TABLE_SIZE))
+;   _A = BYTE(FLOAT(A(*,*)-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(_TOP-1))
+;   IF FAC GT 1. THEN BEGIN
+;      index = where(_A GT MAX(1./FAC *_A),count)
+;      IF count GT 0 THEN  _A(index) = MAX(1./FAC *_A)
+;   ENDIF
 
-   RETURN, _A
-END
+;   RETURN, _A
+;END
+
+
+;; Neue Version von __ScaleArray, R Kupper, Sep 23 1999
+;; Die obige, alte Version scheint mir sehr
+;; "strange"... Außerdem skaliert sie auf TOP-1 und nicht auf
+;; TOP, wie das TvScl tut. Das ist inkonsistent. Der IF-Teil
+;; hätte auch in einer "<" Anweisung erledigt werden können,
+;; aber das Abschneiden oberhalb von !D.TABLE_SIZE, falls
+;; TOP>!D.TABLE_SIZE scheint mir ohnehin nicht geheuer. Eher
+;; sollte dann eben auf deisen Wert skaliert werden.
+;; Auch das Kopieren des Arrays in _A ist nicht nötig und
+;; braucht ev. viel Speicher.
+;; Wieauchimmer, falls die neue Version Probleme hervorruft kann 
+;; man das wieder ändern...
+Function __ScaleArray, A, TOP=top
+
+   Default, top, !D.TABLE_SIZE-1
+
+   _top = top < (!D.TABLE_SIZE-1)
+
+   Return, Scl(A, [0, _top])
+
+End
 
 
 ; TvSCL-Version die das TOP-Keyword richtig behandelt
