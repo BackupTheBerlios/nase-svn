@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/28 17:44:10  saam
+;           just for transfer
+;
 ;     Revision 1.4  2000/01/27 10:48:25  saam
 ;           illegal char was in program text
 ;
@@ -67,6 +70,7 @@
 FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, JITTER=jitter, CUT=cut
                      
    COMMON COMMON_random, seed
+   COMMON ATTENTION
    ON_ERROR, 2
 
    Default, mode  , 1          ; i.e. step
