@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.15  2001/05/08 13:43:10  thiel
+%          RealFileName can be turned off now.
+%
 %       Revision 1.14  2001/03/08 17:05:11  saam
 %       moved several long fulfilled wishes and bugs to DONE list
 %
@@ -185,7 +188,6 @@ Version: \$Id$ $\$
 \item allow deletion of unnecessary tags
 \item external learning rules should display relevant information
 \item display iteration time in \texttt{console} instead of terminal
-\item \texttt{UOpenR} and partners should use IDLs streaming ZIP functionality
 \item Plotting input with /NASE option should be possible
 \item Only plot changing inputs or use \texttt{PlotTvScl_Update}.
 \end{itemize}
@@ -197,8 +199,9 @@ Version: \$Id$ $\$
 \item \texttt{StrJoin}: remove or maintain due to IDL 3.6?
 \item \texttt{Split}: bug when working with separator longer than 1 character
 \item How can marburg specific extensions be included?
-\item \texttt{RealFileName}: marburg specific actions brake other systems
 \item \texttt{XMatEdit}: obsolete 
+\item \texttt{UOpenR} and partners should use IDLs streaming ZIP functionality.
+WARNING: IDL is only able to zip since V5.3!
 \end{itemize}
 
 
@@ -245,6 +248,7 @@ Version: \$Id$ $\$
 \item \texttt{PlotTvScl}: PS and NASE option broken [i think ruediger fixed this, MS] 
 \item \texttt{PlotTvScl}: legend only approximately identical with actual coordinate system [see new routine PTVS, done, MS]
 \item \texttt{SimTime}: make it work together with console [done, AT] 
+\item \texttt{RealFileName}: marburg specific actions brake other systems [done, AT]
 \end{itemize}
 
 
