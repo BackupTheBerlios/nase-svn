@@ -24,11 +24,14 @@
 ;          Ankommende_Spikes = BasicSpikeQueue( Ruedigers_Queue, [1,0,1] ) ; Steckt in die erste und dritte Queue einen Spike,
 ;									     und liest am anderen Ende je einen Spike aus.
 ;
-; SEE ALSO:             <A HREF="#SPIKEQUEUE">BasicSpikeQueue</A>
+; SEE ALSO:             <A HREF="#BASICSPIKEQUEUE">BasicSpikeQueue</A>
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  1997/12/02 10:40:22  saam
+;             Fehler in Hyperlinks korrigiert
+;
 ;       Revision 1.1  1997/12/02 09:27:06  saam
 ;             Umbenennung von InitSpikeQueue; Header-Update
 ;

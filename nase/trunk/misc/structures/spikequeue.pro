@@ -20,11 +20,14 @@
 ;                       OutputSpikes = SpikeQueue( Queue, [1,0,1,0,1,0] ) 
 ;                       FreeSpikeQueue, Queue
 ;
-; SEE ALSO:             <A HREF="#SPIKEQUEUE">SpikeQueue</A>, <A HREF="#FREESPIKEQUEUE">FreeSpikeQueue</A>, <A HREF="#BASICSPIKEQUEUE">BasicSpikeQueue</A>
+; SEE ALSO:             <A HREF="#INITSPIKEQUEUE">InitSpikeQueue</A>, <A HREF="#FREESPIKEQUEUE">FreeSpikeQueue</A>, <A HREF="#BASICSPIKEQUEUE">BasicSpikeQueue</A>
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.6  1997/12/02 10:40:22  saam
+;             Fehler in Hyperlinks korrigiert
+;
 ;       Revision 1.5  1997/12/02 09:42:25  saam
 ;            n->o->i->s->r->e->v->r->U
 ;
