@@ -14,7 +14,28 @@
 ;  This routine was originally written by R. Sterner,
 ;  Johns Hopkins University Applied Physics Laboratory.
 ;  Since this is a low level routine, you probably want to use <A>RGB</A>,
-;  instead. 
+;  instead.<BR>
+; <B>Remarks:</B><BR> 
+;   The default NASE file with color definitions is
+;   <*>NASEPATH$/graphic/colors/clrs_xdr.save2</*>. You should never
+;   need to edit this file by hand, as <C>Color</C> supplies the
+;   necessary interface.<BR>
+;   Several color names are predifined in this file, and can be
+;   diretctly accessed through <C>Color</C> or better the <A>RGB</A>
+;   command. To get a list of all known colors, type<BR>
+;*   Color, /LIST
+;   at the command prompt. Note the special NASE colors 'none' and
+;   'clip', which are used by the NASE diplay commands to indicate
+;   missing values and values that have been clipped due to palette
+;   overflow.
+;   To learn a new color, or modify an existing one, type
+;*   Color, 'name', /LEARN
+;   and interactively define the color.
+;   IMPORTANT: When using the default NASE color file, be sure to
+;              issue an <*>cvs edit graphic/colors/clrs_xdr.save2</*>
+;              in your nase repository before the call, or changes
+;              will not be saved. The file needs committing afterwards
+;              just like any ordinary cvs file.
 ;
 ; CATEGORY:
 ;  Color
@@ -60,28 +81,6 @@
 ;
 ; COMMON BLOCKS:
 ;   COLOR_COM
-;
-; REMARKS: 
-;   The default NASE file with color definitions is
-;   <*>NASEPATH$/graphic/colors/clrs_xdr.save2</*>. You should never
-;   need to edit this file by hand, as <C>Color</C> supplies the
-;   necessary interface.<BR>
-;   Several color names are predifined in this file, and can be
-;   diretctly accessed through <C>Color</C> or better the <A>RGB</A>
-;   command. To get a list of all known colors, type<BR>
-;*   Color, /LIST
-;   at the command prompt. Note the special NASE colors 'none' and
-;   'clip', which are used by the NASE diplay commands to indicate
-;   missing values and values that have been clipped due to palette
-;   overflow.
-;   To learn a new color, or modify an existing one, type
-;*   Color, 'name', /LEARN
-;   and interactively define the color.
-;   IMPORTANT: When using the default NASE color file, be sure to
-;              issue an <*>cvs edit graphic/colors/clrs_xdr.save2</*>
-;              in your nase repository before the call, or changes
-;              will not be saved. The file needs committing afterwards
-;              just like any ordinary cvs file.
 ;
 ; SEE ALSO:
 ;  <A>RGB()</A>.
