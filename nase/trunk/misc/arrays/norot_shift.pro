@@ -84,18 +84,22 @@
 ;	tvscl,result
 ;
 ;
+;
 ; MODIFICATION HISTORY: ANDREAS GABRIEL 4. August 1997
+;
+;
+;
 ;
 ;-
 
 function create_index , S ,DIM
          if S GT (DIM ) then begin
              S = (DIM)
-             print,"Warning: Shiftsize greater than dimension of array"
+             Message,"Warning: Shiftsize greater than dimension of array"
          endif
          FROM =  ( ( DIM -1 + S + 1  ) MOD ( DIM  ) ) * ( S LT 0 ) 
          TO   = ( S LT 0 ) * (DIM-1) + ( (S - 1 ) MOD ( DIM  ) ) * ( S GT 0 ) 
-;         print, 'from' , from, 'TO', TO
+        ; print, 'from' , from, 'TO', TO
          
          index= LINDGEN (TO-FROM+1)
          index= index + from
@@ -115,7 +119,8 @@ function norot_shift,A,S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,WEIGHT = w
 
      2    : BEGIN
          TMPARR = SHIFT( A , S0 )
-         if S0 then  TMPARR(create_index(S0,DIMARR(1)))  = W
+        
+         if S0 NE 0 then  TMPARR(create_index(S0,DIMARR(1)))  = W
 
      END
      3    : BEGIN
@@ -149,7 +154,7 @@ function norot_shift,A,S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,WEIGHT = w
          if S4  NE 0 then TMPARR(*,*,*,*,create_index(S4,DIMARR(5))) = W
      END
      ELSE : BEGIN
-         print,"something is wrong: to much arguments > 7 "
+         message,"something is wrong: to much arguments > 7 "
      END
  ENDCASE
  RETURN,TMPARR
