@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/01/26 13:22:41  saam
+;             ...von wegen
+;
 ;       Revision 2.1  1998/01/26 13:01:59  saam
 ;             eine leichte Geburt
 ;
@@ -30,7 +33,7 @@ PRO FreeLayer_1, L
    
    
    IF Contains(L.info, 'LAYER') AND Contains(L.Type, '1') THEN BEGIN
-      IF Handle_Value(L.o) THEN Handle_Free, L.o ELSE Message, 'i dont understand'
+      IF Handle_Info(L.o) THEN Handle_Free, L.o ELSE Message, 'i dont understand'
    END ELSE Message, 'invalid layer structure'
    
 END 
