@@ -30,6 +30,8 @@
 ;-
 FUNCTION Handle_Val, handle
 
+   On_Error, 2
+
    Handle_Value, handle, result
    RETURN, result
 
