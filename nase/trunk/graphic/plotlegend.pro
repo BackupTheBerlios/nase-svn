@@ -34,10 +34,10 @@
 ; INPUT KEYWORDS:
 ;  LCOLORS:: Scalar or array of color indices specifying the line
 ;            colors. If a scalar value is given, all lines get
-;            this color. Default: <*>!P.COLOR</*>.
+;            this color. Default: <A>GetForeground()</A>.
 ;  TCOLORS:: Scalar or array of color indices specifying the color of
 ;            the text. If a scalar value is given, the whole text gets
-;            this color. Default: <*>!P.COLOR</*>.
+;            this color. Default: <A>GetForeground()</A>.
 ;  LSTYLES:: Array of linestyle indices. Default: increasing index MOD
 ;            6.
 ;  SSTYLES:: Array of symbolstyle indices. Default is to omit symbols
@@ -56,12 +56,12 @@
 ;  BOX:: Draw a box around the annotation. Default: off.
 ;  BSEP:: Separation between box and text in normal
 ;         cordinates. Default: 0.01.
-;  BCOLOR:: Color index used for drawing the box. Default: <*>!P.COLOR</*>.
+;  BCOLOR:: Color index used for drawing the box. Default: <A>GetForeground()</A>.
 ;  BSTYLE:: Box linestyle. Default: 0.
 ;  BTHICK:: Thickness of line used for drawing the box. Default: 1.0.
 ;
 ; RESTRICTIONS:
-;  For <*>PlotLegend</*> to function properly, the plotting device
+;  For <C>PlotLegend</C> to function properly, the plotting device
 ;  must have been established, e.g. by opening a window or of course
 ;  by actually plotting the data to be annotated.<BR>
 ;  If <*>LCOLORS</*> is set, it must have one element or the same
@@ -89,7 +89,7 @@
 ;*  ,/BOX
 ;
 ; SEE ALSO:
-;  <A>TVSclLegend</A>.
+;  <A>TVSclLegend</A>, <A>GetForeground()</A>.
 ;
 ;-
 
@@ -116,10 +116,10 @@ PRO PlotLegend, xo, yo, texts $
 
    Default, box, 0
 
-   Default, lcolors, Make_Array(number, /INTEGER, VALUE=!P.COLOR)
+   Default, lcolors, Make_Array(number, /INTEGER, VALUE=GetForeground())
    IF N_Elements(lcolors) EQ 1 THEN $
     lcolors = Make_Array(number, /INTEGER, VALUE=lcolors)
-   Default, tcolors, Make_Array(number, /INTEGER, VALUE=!P.COLOR)
+   Default, tcolors, Make_Array(number, /INTEGER, VALUE=GetForeground())
    IF N_Elements(tcolors) EQ 1 THEN $
     tcolors = Make_Array(number, /INTEGER, VALUE=tcolors)
 
@@ -178,7 +178,7 @@ PRO PlotLegend, xo, yo, texts $
    IF Keyword_Set(BOX) THEN BEGIN
 
       Default, bsep, 0.01       ; separation between box and text, normal
-      Default, bcolor, !P.COLOR
+      Default, bcolor, GetForeground()
       Default, bstyle, 0        ; box linestyle
       Default, bthick, 1.       ; box linethick
 
