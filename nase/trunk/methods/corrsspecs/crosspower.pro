@@ -10,7 +10,7 @@
 ; CATEGORY:              STATISTICS
 ;
 ; CALLING SEQUENCE:      cp = CrossPower( xseries,yseries [,xaxis] [,/HAMMING][,/DOUBLE]        $
-;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase])
+;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel])
 ;
 ; INPUTS:                xseries : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
 ;                                  mit mind. 10 Elementen
@@ -23,9 +23,10 @@
 ;                                     erst ab IDL-Version 4.0 moeglich)
 ;                        TRUNC_PHASE: Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(cp))
 ;                                     auf Null gesetzt.
+;                        KERNEL:      Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
+;                                     KEYWORD PHASE
 ;
-;
-; OUTPUTS:               cp      : die berechnete CrossPower
+; OUTPUTS:               cp      : Betrag der berechneten CrossPower
 ;
 ; OPTIONAL OUTPUTS:      xaxis   : gibt die zu cp entsprechenden Frequenzwerte zurueck
 ;                        phase  : gibt die zu cp entsprechende CrossPhasenwinkel zu den Frequenzwerten zuruek
@@ -61,6 +62,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.2  1998/01/27 18:40:30  gabriel
+;      Smooth Kernel Keyword hinzugefuegt
+;
 ; Revision 1.1  1998/01/27 11:34:38  gabriel
 ;      eine geburt
 ;
@@ -71,7 +75,7 @@
 
 
 
-FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE
+FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel
    
    IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN Message, 'wrong number of arguments'
    IF (Size(xseries))(0) NE 1                 THEN Message, 'wrong format for x-signal'
@@ -83,6 +87,8 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Ph
       Print, 'PowerSpec WARNING: time series to short'
       RETURN, -1
    END
+
+
 
    Default, Double, 0
       
@@ -121,13 +127,18 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Ph
    ; generate x-axis
    xaxis = FIndGen(N_Elements(CPower))*FreqRes
 
-
+   
    IF SET(Phase) THEN BEGIN
       IF DOUBLE THEN RE_CPower = DOUBLE(CPower) $
-      ELSE RE_CPower =  FLOAT(CPower)
-      IM_CPower = IMAGINARY(CPower)
-      Phase = ATAN(-RE_CPower, IM_CPower)
+      ELSE RE_CPower =   FLOAT(CPower)
+      IM_CPower =IMAGINARY(CPower)
+      IF SET(KERNEL) THEN BEGIN 
+         RE_CPower = convol(RE_CPower,kernel,/EDGE_TRUNCATE,/CENTER) 
+         IM_CPower = convol(IM_CPower,kernel,/EDGE_TRUNCATE,/CENTER)
+      ENDIF
+      Phase = ATAN(-IM_CPower, RE_CPower)
    ENDIF
+   CPower = Complex(RE_CPower,IM_CPower)
    CPOWER = ABS(CPOWER)
    IF SET(TRUNC_PHASE) THEN BEGIN
       TRUNC = CPower GT  (TRUNC_PHASE * MAX(CPower)) 
