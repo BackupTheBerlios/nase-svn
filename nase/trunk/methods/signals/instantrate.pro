@@ -252,7 +252,7 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
    ENDELSE ;; Keyword_Set(SPASS)
 
    IF NOT Keyword_Set(CENTER) THEN $
-    IF snt[0] EQ 1 THEN rates = NoRot_Shift(rates, smoothssize/2) $
+    IF (Size(rates))[0] EQ 1 THEN rates = NoRot_Shift(rates, smoothssize/2) $
      ELSE rates = NoRot_Shift(rates, smoothssize/2, 0)
          
    ;; remove margins to obtain original dimensions
