@@ -7,7 +7,7 @@
 ;
 ; CATEGORY: Universell, Simulation
 ;
-; CALLING SEQUENCE: Array = Queue ( MyQueue )
+; CALLING SEQUENCE: Array = Queue ( MyQueue [,/VALID] )
 ;
 ; INPUTS: MyQueue: Eine mit InitQueue()
 ;                  initialisierte Queue-Struktur.
@@ -16,6 +16,14 @@
 ;                  das zuletzt eingereihte (neuste) Element am Ende,
 ;                  und an der Position 0 das älteste Element, das noch
 ;                  in der Queue gespeichert ist.
+;
+; KEYWORDS: VALID: Ist eine Fixed Queue noch nicht bis zum Rand mit
+;                  EnQueue-Aufrufen gefüllt worden, so enthält das
+;                  Queue-Array in den ersten Einträgen den
+;                  Initialisierungswert (i.d.R. 0).
+;                  Wird /VALID angegeben, so wird nur der Teil des
+;                  Arrays zurückgeliefert, der wirklich Daten enthält, 
+;                  die mit EnQueue eingereiht wurden.
 ;          
 ; RESTRICTIONS: Queue ist bisher nur für Fixed Queues ( InitFQueue() )
 ;               implementiert, und die Implementierung fur Dynamic
@@ -40,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/05/19 18:58:44  kupper
+;               VALID implementiert.
+;
 ;        Revision 1.1  1997/11/12 17:11:10  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!
@@ -48,11 +59,14 @@
 ;
 ;-
 
-Function Queue, Queue
+Function Queue, Queue, VALID=valid
 
    If not contains(Queue.info, 'QUEUE', /IGNORECASE) then message, 'Not a Queue!'
 
-   If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then return, shift(Queue.Q, -Queue.Pointer-1)
+   If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
+      If Keyword_Set(VALID) and (Queue.valid lt Queue.length) then return, Queue.Q(0:((Queue.valid-1)>0))
+      return, shift(Queue.Q, -Queue.Pointer-1)
+   EndIf
 
    If contains(Queue.info, 'DYNAMIC_QUEUE', /IGNORECASE) then message, 'Not yet implemented for Dynamic Queues!'
 End
