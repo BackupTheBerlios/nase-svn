@@ -1,14 +1,14 @@
 /*
 **
-** $Version$
-**
-**
 **
 ** MODIFICATION HISTORY:
 **
 **       $Log$
-**       Revision 1.1  1999/02/24 19:39:32  saam
-**       Initial revision
+**       Revision 1.2  1999/02/24 20:42:26  saam
+**             removed debug messages
+**
+**       Revision 1.1.1.1  1999/02/24 19:39:32  saam
+**             NEXT GENERATION: NASE uses C
 **
 **
 */
@@ -28,6 +28,7 @@ typedef struct {
    short stype;
    char *s;
 } STRING;
+
 
 
 
