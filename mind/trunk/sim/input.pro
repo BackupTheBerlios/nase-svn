@@ -12,11 +12,14 @@
 ;                      SH_INPUT      : shares sheets with INPUT
 ;                      INPUT         : shares serveral data structures with INPUT
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>
+; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#FREEINPUT>freeinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1999/12/10 10:05:15  saam
+;           * hyperlinks for freeinput added
+;
 ;     Revision 1.1  1999/12/10 09:36:47  saam
 ;           * hope these are all routines needed
 ;           * no test, yet
