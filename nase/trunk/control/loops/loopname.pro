@@ -1,32 +1,33 @@
 ;+
 ; NAME:               LoopName
 ;
-; PURPOSE:            Liefert zu einer LoopStructure einen geeigneten
-;                     String, der als Basis fuer einen Filenamen dienen
-;                     kann. Geeignet bedeutet, dass der aktuelle Schleifen-
-;                     zustand eindeutig auf einen String abgebildet wird.
-;                     Dieser String besteht aus dem Tag-Namen und -Wert
-;                     von sich veraendernden Parametern.
+; PURPOSE:            Generates an individual string for a given loop
+;                     structure. This may serve as basis for a
+;                     filename to save iteration specific data.
+;                     The strings contains of the tag names and values
+;                     of the variable loop parameters.
 ;                         
 ; CATEGORY:           CONTROL
 ;
-; CALLING SEQUENCE:   Name = LoopName(LS [,/NOLONG] [,/PRINT])
+; CALLING SEQUENCE:   s = LoopName(LS [,/NOLONG] [,/PRINT] [,SEP=sep])
 ;
-; INPUTS:             LS: eine mit InitLoop initialisierte LoopStructure
+; INPUTS:             LS: a loop structure, initialized with InitLoop
 ;
-; OUTPUTS:            Name: der String
+; OUTPUTS:            S : the generated string 
 ;                              
-; KEYWORD PARAMETERS: NOLONG: der Tag-Name wird nicht zur Generierung des
-;                             Strings verwendet
-;                     PRINT:  falls gesetzt liefert name einen String zurueck,
-;                             der auf dem Screen ausgegeben werden kann:
-;                                  'Parameter : Wert'
+; KEYWORD PARAMETERS: NOLONG: omits tag names in the string (only the
+;                             values will be used)
+;                     PRINT:  if set, S returns a string suitable for
+;                             printing to the sreen
+;                     SEP:    the loop separator (Default: '_'), only
+;                             functional, if you have more than one
+;                             loop variable.
 ;
 ; EXAMPLE:
-;                         MeineParameter={ a: 0.5, b:1.5432, $
+;                         myParameters={ a: 0.5, b:1.5432, $
 ;                                          c:[1,2], $
 ;                                          d:['A','C'] }
-;                         LS = InitLoop(MeineParameter)
+;                         LS = InitLoop(myParameters)
 ;                         REPEAT BEGIN
 ;                           print, LoopName(LS)
 ;                           print, LoopName(LS,/NOLONG)
@@ -45,12 +46,17 @@
 ;                           _C_2_D_C
 ;                           _2_C                                   
 ;      
-; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPING">Looping</A>, <A HREF="#LOOPVALUE">LoopValue</A>
+; SEE ALSO:          InitLoop, Looping, LoopValue
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/06/19 13:06:12  saam
+;           + translated doc header
+;           + new keyword SEP for loop variable separators
+;           + removed the undocumented stuff
+;
 ;     Revision 1.7  2000/04/04 13:21:04  saam
 ;           corrected typo
 ;
@@ -81,32 +87,30 @@
 ;
 ;
 
-FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print;, PNAME=pname
+FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print, SEP=sep
 
-ON_ERROR, 2
-
+   ON_ERROR, 2
+   
+   Default, sep, '_'
    IF Contains(LS.Info,'Loop') THEN BEGIN
       
       Name = ''
-;      PName = ''
 
       tagNames = Tag_Names(LS.struct)
       countVal = CountValue(LS.counter)
 
       FOR tag = 0, LS.n-1 DO BEGIN 
-;          PName = Name
           tagSize = SIZE(LS.struct.(tag))
           IF tagSize(N_Elements(tagSize)-1) GE 1 THEN BEGIN
               IF Keyword_Set(PRINT) THEN BEGIN
                   Name = Name + STR(tagNames(tag))  + ' : ' + STR(STRING((LS.struct.(tag))(countVal(tag)))) + '    '
               END ELSE BEGIN
-                  IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
-                  Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)               
+                  IF NOT Keyword_Set(NOLONG) THEN Name = Name + STRCOMPRESS(STRING(tagNames(tag)))
+                  Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL) + sep
               END
           END 
       END
-      IF (Name EQ '') AND NOT Keyword_Set(PRINT) THEN Name = '_'
-;      IF (PName EQ '') AND NOT Keyword_Set(PRINT) THEN PName = '_'
+
       RETURN, Name
 
    END ELSE CONSOLE, 'no valid loop structure passed', /FATAL
