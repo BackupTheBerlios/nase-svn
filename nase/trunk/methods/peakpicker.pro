@@ -5,7 +5,7 @@
 ;
 ; CATEGORY:           STAT
 ;
-; CALLING SEQUENCE:   PeakPicker, ydata,tdata, ypeak,tpeak,number, yvalley,tvalley $
+; CALLING SEQUENCE:   PeakPicker, ydata,tdata, ypeak,tpeak,number [, yvalley, tvalley] $
 ;                                   [, RelativCrit=RelativeCrit] [, DataCrit=DataCrit] $
 ;                                   [ ,Intervall=Intervall]
 ;
@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/01/27 16:32:32  saam
+;           little bug in docu corrected
+;
 ;     Revision 1.1  1997/11/12 14:35:30  saam
 ;           Header angepasst
 ;
