@@ -41,36 +41,23 @@
 ;
 ;                 
 ; OUTPUTS: 
-;          Auf einem Psudoclor-Display (d.h. einem Display mit einer einzigen
-;          Farbtabelle für alle Fenster/Outputs, vgl. <A HREF="../../misc/#PSEUDOCOLOR_VISUAL()">Pseudocolor_Visual()</A>):
+;          Auf einem Pseudocolor/Truecolor-Display (vgl. <A HREF="../../misc/#PSEUDOCOLOR_VISUAL()">Pseudocolor_Visual()</A>):
 ;                 Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
 ;                 der Farbindex einer moeglichst aehnlichen Farbe bei
 ;                 Keyword NOALLOC
-;          Auf einem nicht-Pseudocolor-Display:
-;                 Seit der standardmäßigen Verwendung von DECOMPOSED=0
-;                 wird hier stets der Farbindex !TOPCOLOR, also
-;                 der höchste der Farbindices, die NASE-Routinen für
-;                 eigene Zwecke verändern dürfen, mit der entsprechenden 
-;                 Farbe belegt und zurückgegeben.
 ;
 ; COMMON BLOCKS: common_RGB, My_freier_Farbindex
 ;                (Wird bisher nur von dieser Funktion verwendet)
 ;
 ; SIDE EFFECTS: Die Farbtabelle wird verändert.
 ;
-; RESTRICTIONS: Auf einem ColorTable-Display liefert diese Funktion i.d.R. spätestens
-;                nach dem 256. Aufruf den Fehler "!Farbpalette voll!".
-;                Das kann jedoch durch Angabe eines neuen START-Wertes
-;                verhindert werden.
-;
+; RESTRICTIONS: 
 ;               WICHTIG: Damit RGB() den Displaytyp richtig ermittelt,
 ;                        muß die Farbinformation in der !D-Varible
 ;                        etabliert sein. D.h. es muß vorher mindestens
 ;                        einmal ein Fenster geöffnet worden sein!
 ;
-; PROCEDURE: Echtfarb-Display  : Belegen des Farbindex !TOPCOLOR und Rückgabe desselben.
-;
-;            Colortable-Display: 1. bestimmen des nächsten freien Farbindex I:
+; PROCEDURE:                    1. bestimmen des nächsten freien Farbindex I:
 ;                                     
 ;                                  Ist INDEX=Farbindex gesetzt?
 ;                                   ja  : I=Farbindex.
@@ -123,6 +110,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.23  2000/07/24 13:13:17  saam
+;               + true color display are now similarly handled
+;                 as color table displays, because using DECOMPOSED=0
+;                 always uses the color table (START, INDEX, ...)
+;               + allocating more than 256 color (in the whole) session
+;                 doesn't any longer produce an error, but overwrites
+;                 the oldest colors
+;
 ;        Revision 1.22  2000/04/03 13:23:48  kupper
 ;        NOALLOC broke on non-Pseudocolor visuals.
 ;        Fixed.
@@ -232,37 +227,29 @@ Common common_RGB, My_freier_Farbindex
    ;; ---------------------------------------------------------------------------
 
 
-   ;; ---- X or WIN, and not pseudocolor: ---------------------------------------
-   IF ((!D.Name EQ 'X') or (!D.Name EQ 'WIN')) $
-    and not Pseudocolor_Visual() then begin
-      ;;Changed to reflect new usage of DECOMPOSED=0, R Kupper Jan 17 2000
-      ;;       Return, RGB_berechnen(R,G,B)
-      SetColorIndex, !TOPCOLOR, R, G, B
-      Return, !TOPCOLOR
-   endif
-   ;; ---------------------------------------------------------------------------
 
-
-
-
-   ;; ---- all other devices: -------------------------------------------------
 
    if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
       Default, start, 1
       My_freier_Farbindex = start
    end
-   
-   My_Color_Map = bytarr(!D.Table_Size,3) 
-   TvLCT, My_Color_Map, /GET  
-   
    if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
 
-   My_Color_Map (SetIndex,*) = [R,G,B]  
-   TvLCT, Temporary(My_Color_Map)
-   
+
+   ;; ---- X or WIN, and not pseudocolor: ---------------------------------------
+   IF ((!D.Name EQ 'X') OR (!D.Name EQ 'WIN')) AND NOT Pseudocolor_Visual() THEN BEGIN
+      SetColorIndex, SetIndex, R, G, B  
+   ENDIF ELSE BEGIN
+   ;; ---- all other devices: -------------------------------------------------   
+       My_Color_Map = bytarr(!D.Table_Size,3) 
+       TvLCT, My_Color_Map, /GET  
+       My_Color_Map (SetIndex,*) = [R,G,B]  
+       TvLCT, Temporary(My_Color_Map)
+   END
+
    if not set(index) then begin
-      My_freier_Farbindex = (My_freier_Farbindex+1) mod !D.Table_Size  
-      if My_freier_Farbindex eq 0 then message, /INFORM, "!Farbpalette voll!"  
+      My_freier_Farbindex = (My_freier_Farbindex+1) mod !TOPCOLOR
+;      if My_freier_Farbindex eq 0 then message, /INFORM, "!Farbpalette voll!"  
       return, My_Freier_Farbindex-1
    end
    return,  SetIndex
