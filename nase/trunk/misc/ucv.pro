@@ -20,9 +20,9 @@
 ;*result = FunctionName( value, SOURCE=source, TARGET=target )
 ;
 ; INPUTS:
-;  value: value/array of values to convert (Default: 1.0)
-;  SOURCE: source unit (Default: mm) [in, ft, mm, cm]
-;  TARGET: target unit (Default: mm) [in, ft, mm, cm]
+;  VALUE:: value/array of values to convert (Default: 1.0)
+;  SOURCE:: source unit (Default: mm) [in, ft, mm, cm]
+;  TARGET:: target unit (Default: mm) [in, ft, mm, cm]
 ;
 ; OPTIONAL INPUTS:
 ;  
