@@ -1,6 +1,8 @@
 ;+
 ; NAME: FZT
 ;
+; AIM:             fischer Z-transformation
+;
 ;
 ; PURPOSE:         The Fischer Z-transformation is a practical transformation to estimate the median and
 ;                  standard deviaton of a given data, which has values beetween 0..1, like the results of
@@ -30,11 +32,14 @@
 ;                          m=umoment(result)
 ;                          mean=fzt(m,1)
 ;                          print,"MEDIAN:",mean(0),"VARIANCE:",mean(1)
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/28 09:04:16  gabriel
+;          AIM tag added
+;
 ;     Revision 2.3  2000/09/27 15:59:22  saam
 ;     service commit fixing several doc header violations
 ;
@@ -47,7 +52,7 @@
 ;          Die Fisher Z-Trafo (von A.Bruns uebernommen)
 ;
 ;
-;-
+;
 
 
 FUNCTION  FZT, data, direction
