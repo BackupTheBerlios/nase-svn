@@ -1,66 +1,57 @@
 ;+
-; NAME:               IFconst
+; NAME:
+;   IFconst()
 ;
-; AIM:                provides constant input from all neurons
+; AIM:
+;   provides temporally constant input for a layer of neurons
 ;
-; PURPOSE:            This filter generates a constant value for all neurons of the layer.
-;                     This value is by default ADDED to the already existing input.
+; PURPOSE:
+;   This filter generates a constant value for all neurons of the
+;   layer or allows the user to specify invidual values for all neurons.
+;   These values are by default ADDED to the already existing input.
 ;
-; CATEGORY:           MIND INPUT
+; CATEGORY:
+;  Input
+;  Layers
+;  MIND
 ;
 ; CALLING SEQUENCE:   
-;                     ignore_me  = IFconst( MODE=0, 
-;                                           TEMP_VALS=temp_vals
-;                                           [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
-;                                           [,LOGIC=logic] 
-;                                           [,VALUE=value])
-;
-;                     newPattern = IFconst( [MODE=1], PATTERN=pattern )
-;                     ignore_me  = IFconst( MODE=[2|3] )
+;*ignore_me  = IFconst( MODE=0, 
+;*                       TEMP_VALS=temp_vals
+;*                       [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
+;*                       [,LOGIC=logic] 
+;*                       [,VALUE=value])
+;*
+;*newPattern = IFconst( [MODE=1], PATTERN=pattern )
+;*ignore_me  = IFconst( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: DELTA_T   : passing time in ms between two sucessive calls of this filter function
-;                     HEIGHT    : height of the input to be created
-;                     LOGIC     : logical operation :
-;                                 NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
-;                                 valid values can be found <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#OPID>here</A>
-;                     MODE      : determines the performed action of the filter. 
-;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
-;                     PATTERN   : filter input
-;                     TEMP_VALS : internal structure that reflects the filter function/status. This
-;                                 is initialized when MODE=0, read/modified for MODE=1 and freed for
-;                                 MODE=2
-;                     WIDTH     : width of the input to be created
+; INPUT KEYWORDS: 
+;   DELTA_T   :: passing time in ms between two sucessive calls of this filter function
+;   HEIGHT    :: height of the input to be created
+;   LOGIC     :: logical operation :
+;               NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
+;               valid values can be found <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#OPID>here</A>
+;   MODE      :: determines the performed action of the filter. 
+;               0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
+;   PATTERN   :: filter input
+;   TEMP_VALS :: internal structure that reflects the filter function/status. This
+;               is initialized when MODE=0, read/modified for MODE=1 and freed for
+;               MODE=2
+;   WIDTH     :: width of the input to be created
+;   VALUE     :: an arbitrary scalar or a two-dimensional array
+;                (height,width) that is assigned to the specified
+;                input of a layer 
 ;
-;                     VALUE     : an arbitrary scalar that is assigned to all inputs
+; OUTPUTS:
+;   newPattern:: the filtered version of PATTERN
+;   ignore_me :: just ignore it
 ;
-;
-; OUTPUTS:            newPattern: the filtered version of PATTERN
-;                     ignore_me : just ignore it
+; COMMON BLOCKS:
+;   ATTENTION
 ;
 ; SIDE EFFECTS:       TEMP_VALS is changed by the function call!
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.5  2000/09/29 08:10:34  saam
-;     added the AIM tag
-;
-;     Revision 1.4  2000/08/11 10:30:43  thiel
-;         Added FILE and WRAP keywords.
-;
-;     Revision 1.3  2000/05/04 09:13:45  saam
-;           forgot the ATTENTION block
-;
-;     Revision 1.2  2000/01/31 09:19:17  saam
-;           print, message -> console
-;
-;     Revision 1.1  2000/01/27 10:49:06  saam
-;            useful
-;
-;
-;
 FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                   LOGIC=op, VALUE=value, FILE=file, WRAP=wrap
 
@@ -78,14 +69,22 @@ FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, 
    CASE mode OF      
       ; INITIALIZE
       0: BEGIN      
-            
-         TV =  {                                  $
-                R        : REPLICATE(value, h, w),$
-                delta_t  : delta_t               ,$
-                sim_time : .0d                   ,$
-                myop     : opID(op)               $
-               }
-         console, P.CON, STR(value)+', '+op
+          sv = SIZE(value)
+          IF sv(0) EQ 0 THEN BEGIN ; user provided scalar, use for all neurons
+              T = REPLICATE(value, h, w)
+              Console, P.CON, 'homogenous value: '+STR(value)+', '+op
+          END ELSE IF sv(0) EQ 2 THEN BEGIN 
+              IF ((sv(1) EQ h) AND (sv(2) EQ w)) THEN BEGIN
+                  T = VALUE
+                  console, P.CON, 'user values, min: '+STR(min(T))+', max: '+STR(MAX(t))+', '+op
+              END ELSE Console, 'wrong input dimensions: ('+STR(sv(1))+','+STR(sv(2))+') instead of ('+STR(h)+','+Str(w)+')', /FATAL
+          END ELSE Console, 'wrong input format: scalar or 2d array', /FATAL
+          TV =  {                                  $
+                  R        : TEMPORARY(T)          ,$
+                  delta_t  : delta_t               ,$
+                  sim_time : .0d                   ,$
+                  myop     : opID(op)               $
+                }
       END
       
       ; STEP
