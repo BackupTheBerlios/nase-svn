@@ -19,8 +19,8 @@
 ;                                 des inputs enthaelt
 ;
 ; KEYWORD PARAMETERS: RATE  : die mittlere Rate in Hz, mit der die Neuronen feueren sollen
-;                     GAUSS : gaussfoermiges Rauschen mit Amplitude GAUSS*RATE
-;                     CONST : gleichfoermiges Rauschen mit Amplitude CONST*RATE
+;                     GAUSS : gaussfoermiges Rauschen mit Amplitude GAUSS
+;                     CONST : gleichfoermiges Rauschen mit Amplitude CONST
 ;                     LAYER : die Neuronenschicht, fuer die der Input erzeugt werden soll
 ;                     WIDTH ,
 ;                     HEIGHT: Hoehe und Breite der Schicht (nur erforderlich, wenn Layer
@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/26 09:30:25  saam
+;           Rauschamplitude wird nun nicht mehr mit der Rate multipliziert
+;
 ;     Revision 2.2  1997/10/29 09:13:41  saam
 ;           Set statt Keyword_Set
 ;           Bug beim gleichverteilten Rauschen korrigiert
