@@ -132,8 +132,8 @@ PRO PTvS, data, XPos, YPos, $
    ;;; check the passed array
    ;;;
    IF NOT Set(data) THEN Console, 'argument undefined', /FATAL
-   hdata = (size(data))(2)
-   wdata = (size(data))(1)
+   hdata = (size(reform(data)))(2)
+   wdata = (size(reform(data)))(1)
    
 
    ;;;   
@@ -164,6 +164,7 @@ PRO PTvS, data, XPos, YPos, $
 
 
    ;; save orginal plot parameters for a later restore 
+   ;;  i don't really know why we should need this ?! [MS]
 ;   oldRegion   = !P.Region
 ;   oldXTicklen = !X.TickLen 
 ;   oldYTicklen = !Y.TickLen 
@@ -176,12 +177,15 @@ PRO PTvS, data, XPos, YPos, $
    !Y.TickLen = 0.02            ; this will be changed later
 
 
-;   IF hdata GE 15 THEN !Y.Minor = 0 ELSE $
-;     IF hdata GE 7 THEN !Y.Minor = 2 ELSE !Y.Minor=-1   
-;   IF wdata GE 15 THEN !X.Minor = 0 ELSE $
-;     IF wdata GE 7 THEN !X.Minor = 2 ELSE !X.Minor=-1
-   
-   
+   ; empirical settings that should reduce the number of minor
+   ; axis ticks when there are only small arrays displayed
+
+   IF hdata GE 15 THEN !Y.Minor = 0 ELSE $
+     IF hdata GE 7 THEN !Y.Minor = 0 ELSE !Y.Minor=-1   
+   IF wdata GE 15 THEN !X.Minor = 0 ELSE $
+     IF wdata GE 7 THEN !X.Minor = 0 ELSE !X.Minor=-1
+
+
 
    ;; need to get plot positions, because they may be unset, when no
    ;; plot has already been done. This is important for an initial
@@ -396,13 +400,25 @@ PRO PTvS, data, XPos, YPos, $
    IF Keyword_Set(FITPLOT) THEN BEGIN
        PTMP = !P.MULTI
        !P.MULTI(0) = 1
-       Plot, indgen(2), /NODATA, /NOERASE, $ 
-         Position=[Origin_norm(0),Origin_norm(1),xyrange_norm(0,1)-legwidth_norm(0),xyrange_norm(1,1)], $
-         xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
-         yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
-         charsize=charsize,COLOR=color,_EXTRA=_extra
+       IF Keyword_Set(QUADRATIC) THEN BEGIN 
+           Plot, indgen(2), /NODATA, /NOERASE,$
+             xrange=XBeschriftung, xstyle=1, xtickformat=xtf,$
+             yrange=YBeschriftung, ystyle=1, ytickformat=ytf,$
+             charsize=Charsize,$
+             Position=[Origin_norm(0),Origin_norm(1),$
+                       Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
+                       Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
+             _EXTRA=_extra
+       ENDIF ELSE BEGIN
+           Plot, indgen(2), /NODATA, /NOERASE,$ 
+             Position=[Origin_norm(0),Origin_norm(1),xyrange_norm(0,1)-legwidth_norm(0),xyrange_norm(1,1)], $
+             xrange=XBeschriftung, xstyle=1, xtickformat=xtf, $
+             yrange=YBeschriftung, ystyle=1, ytickformat=ytf, $
+             charsize=Charsize,COLOR=color, _EXTRA=_extra
+       END
        !P.MULTI = PTMP
    END
+
 
 
    ;;
@@ -424,6 +440,7 @@ PRO PTvS, data, XPos, YPos, $
 
 
    ;; restore original device parameters
+   ;;  i don't really know why we should need this ?! see above [MS]
 ;   !P.Region  = oldRegion 
 ;   !X.TickLen = oldXTicklen 
 ;   !Y.TickLen = oldYTicklen 
