@@ -26,8 +26,8 @@
 ;
 ; CALLING SEQUENCE:
 ;* BalanceCT, data [,TOP=...]  [, {/TOPRED | /TOPGREEN | /TOPBLUE} ]
-;                              [, {/ZEROBLACK | /ZEROWHITE} ]
-;                              [, {/BOTTOMRED | /BOTTOMGREEN | /BOTTOMBLUE} ]
+;*                             [, {/ZEROBLACK | /ZEROWHITE} ]
+;*                             [, {/BOTTOMRED | /BOTTOMGREEN | /BOTTOMBLUE} ]
 ;
 ; INPUTS:
 ;  data :: the color table is adapted to this specific data
