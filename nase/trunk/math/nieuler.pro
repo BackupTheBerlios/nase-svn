@@ -17,10 +17,11 @@
 ;  <A>NIShuntDyn()</A>, since it allows the user to specify an arbitray
 ;  differential equation. It also is able to compute the solution of the
 ;  stochastic differential equation 
-;* dx<SUB>i</SUB>(t)/dt = f(x<SUB>1</SUB>...x<SUB>n</SUB>)+g(x<SUB>i</SUB>)*GWN(t) ,
-;  with <*>i=1...n</*> and <*>GWN(t)</*> being Gaussian white noise of zero mean
-;  and standard deviation of 1. The routine cares for correctly scaling the noise
-;  amplitude as a function of time resolution.
+;* dx<SUB>i</SUB>(t)/dt = f(x<SUB>1</SUB>...x<SUB>n</SUB>)+g<SUB>i</SUB>(t)*GWN(t) ,
+;  with <*>i=1...n</*> and <*>GWN(t)</*> being Gaussian white noise of
+;  zero mean and standard deviation of 1. The routine cares for
+;  correctly scaling the noise amplitude as a function of time
+;  resolution.
 ;
 ; CATEGORY:
 ;  Math
@@ -48,13 +49,14 @@
 ;  deqpara:: An array of numerical type containing various
 ;            parameters that are passed to the function
 ;            <*>deqname</*>. More complex parameters like
-;            arrays may be passed to<*>deqname</*> using input
+;            arrays may be passed to <*>deqname</*> using input
 ;            keywords.
 ;
 ; INPUT KEYWORDS:
 ;  DT:: Time resolution, default <*>DT=1.0</*>. Note that the
 ;       precision of the result depends on the choice of <*>dt</*>. 
-;  G:: The standard deviation of the additive noise. This may either
+;  G:: The standard deviation of the additive noise at time
+;      <*>t</*>. This may either 
 ;      be a scalar value, in this case it is applied uniformly to all
 ;      <*>x<SUB>i</SUB></*>. It is also possible to specify a
 ;      <*>g<SUB>i</SUB></*> seperately for each <*>x<SUB>i</SUB></*>
@@ -79,10 +81,11 @@
 ;  The euler method is the simplest and therefore most inaccurate
 ;  method to numerically solve a differential equation, so its results
 ;  should be treated with care, especially if large values of
-;  <*>dt</*> are used.
+;  <*>dt</*> are used. See <A>NIHeun()</A> for a more precise method.
 ;
 ; PROCEDURE:
-;  + Compute the additive noise.<BR>
+;  + Small syntax check.<BR>
+;  + Compute the additive noise if needed.<BR>
 ;  + Compute the derivative via <C>Call_Function()</C>.<BR>
 ;  + Calculate the new value.
 ;
@@ -113,13 +116,16 @@
 ;*  OPlot, time2, y2, COLOR=RGB('red')
 ;
 ; SEE ALSO:
-;  <A>NIExpEul()</A>, <A>NIShuntDyn()</A>, IDL's <C>RK4()</C>.
+;  <A>NIExpEul()</A>, <A>NIShuntDyn()</A>, <A>NIHeun()</A>, IDL's <C>RK4()</C>.
 ;-
 
 FUNCTION NIEuler, x, deqname, deqpara, DT=dt, G=g, DW=dw $
                   , _EXTRA=_extra
    
    COMMON common_random, seed
+
+   IF (N_Params() LT 2) OR (N_Params() GT 3) THEN $
+    Console, /FATAL, 'Wrong number of arguments.'
 
    Default, dt, 1.
    Default, g, 0.
@@ -129,11 +135,10 @@ FUNCTION NIEuler, x, deqname, deqpara, DT=dt, G=g, DW=dw $
       addnoise = g*dw
    ENDIF ELSE addnoise = 0.
 
-   CASE N_Params() OF
-      2: dxdt = Call_FUNCTION(deqname, x, _EXTRA=_extra)
-      3: dxdt = Call_FUNCTION(deqname, x, deqpara, _EXTRA=_extra)
-      ELSE: Console, /FATAL, 'Wrong number of arguments.'
-   ENDCASE
+   IF NOT Set(deqpara) THEN $
+      dxdt = Call_FUNCTION(deqname, x, _EXTRA=_extra) $
+   ELSE $
+      dxdt = Call_FUNCTION(deqname, x, deqpara, _EXTRA=_extra)
 
    Return, x+dxdt*dt+addnoise
 
