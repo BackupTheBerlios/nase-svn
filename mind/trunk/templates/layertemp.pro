@@ -11,6 +11,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/07/04 08:58:14  saam
+;           added WRAP tag
+;
 ;     Revision 1.2  2000/01/25 15:23:16  alshaikh
 ;           new layer-structure!
 ;
@@ -27,6 +30,9 @@ LW(0) = Handle_Create(!MH, VALUE={INFO   : 'LAYER'           ,$
                                   h      :     21            ,$
                                   name   : 'Simple Cells'    ,$
                                   file   : 's'               ,$
+                                  wrap   : 0                 ,$ ; toroidal boundary conditions for input generation if set to 1
+                                                              $ ; (only if IFfilter cares for this option)
+                                                              $ ; for compatibility this tag may bo omitted; it is assumed to be zero.
                                   NPW    : {  INFO : 'INITPARA_1' ,$  ; the following values are
                                               tauf  :   10.0      ,$  ; directly passed to 
                                               taul  :   5.0       ,$  ; 'initpara_1'
