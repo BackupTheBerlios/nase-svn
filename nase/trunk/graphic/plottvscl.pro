@@ -104,6 +104,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.46  1999/08/12 10:11:11  thiel
+;         Replaced 'NoNone' with 'NoNone_Func', because 'NoNone' is no longer in use.
+;
 ;     Revision 2.45  1999/06/18 15:00:37  kupper
 ;     Removed weird NOSCALE-Option to TvSclLegend.
 ;     Why should the legend's colors scale with its inscription???
@@ -314,7 +317,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    W = _W
    IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
       maxW = Max(W)
-      minW = Min(NoNone(W))
+      minW = Min(NoNone_Func(W))
    END
 
    IF Keyword_Set(NASE) THEN BEGIN
