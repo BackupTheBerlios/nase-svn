@@ -1,8 +1,6 @@
 ;+
 ; NAME:
-; (Hint: Insert name in THIS line, if you want it to appear in the
-; HTML-help. If you put it elsewhere, the HTML-help item will be 
-; generated from the filename.)
+;  class leaky_integrator_array
 ;
 ; PURPOSE: 
 ;
@@ -42,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2000/08/29 09:56:54  kupper
+;        Filled in name entry.
+;
 ;        Revision 1.8  2000/03/17 13:24:27  kupper
 ;        Now checks and ignores floating underflows.
 ;        (This means floating underflows will not be reported any more when !EXCEPT=1,
