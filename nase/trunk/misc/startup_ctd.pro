@@ -1,6 +1,9 @@
 ;+
 ; NAME: Startup_Ctd
 ;
+; VERSION:
+;   $Id$
+;
 ; AIM: central NASE startup routine
 ;  
 ; PURPOSE: Does nearly everything that is needed to run NASE.
@@ -12,13 +15,13 @@
 ;   process.
 ;    
 ; CATEGORY:
-;*  NASE/MIND Startup
+;   NASE/MIND Startup
 ;
 ; CALLING SEQUENCE:
 ;   Startup_Ctd
 ;
 ; SEE ALSO:
-;  <A>Check_Nase_Lib</A>, <A>DefYGlobVars</A>, <A>ShowLogo</A> 
+;   <A>Check_Nase_Lib</A>, <A>DefGlobVars</A>, <A>ShowLogo</A> 
 ;
 ;-
 
@@ -81,7 +84,6 @@ Pro Startup_ctd
    SetEnv, "NASEDIRS="+NASEDIRS ;for compatibility reasons
    !PATH = !PATH+separator+NASEDIRS
 ;------------------------------------------------------------------
-
 
    defglobvars                  ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt
 
