@@ -7,7 +7,38 @@
 ; CODE MODIFICATIONS MADE ABOVE THIS COMMENT WILL BE LOST.
 ; DO NOT REMOVE THIS COMMENT: BEGIN HEADER
 
-
+;+
+; NAME:
+;
+; PURPOSE:
+;
+; CATEGORY:
+;
+; CALLING SEQUENCE:
+; 
+; INPUTS:
+;
+; OPTIONAL INPUTS:
+;	
+; KEYWORD PARAMETERS:
+;
+; OUTPUTS:
+;
+; OPTIONAL OUTPUTS:
+;
+; COMMON BLOCKS:
+;
+; SIDE EFFECTS:
+;
+; RESTRICTIONS:
+;
+; PROCEDURE:
+;
+; EXAMPLE:
+;
+; MODIFICATION HISTORY:
+;
+;-
 
 
 ; DO NOT REMOVE THIS COMMENT: END HEADER
@@ -21,7 +52,7 @@
 
 
 PRO MAIN13_Event, Event
-common common_cvs, name, searchpath
+common common_cvs, name
 
   WIDGET_CONTROL,Event.Id,GET_UVALUE=Ev
 
@@ -30,22 +61,23 @@ common common_cvs, name, searchpath
   'BUTTON5': BEGIN              ;Update
       Print
       Print, "----------- Updating CVS:"
-      Spawn, "cvs update "+Name
+      Spawn, "cvs update """+Name+""""
       END
   'BUTTON25': BEGIN             ;Edit
-      file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=searchpath)
+      file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=name)
       If file ne "" then begin
          Print
          Print, "----------- Making File Editable: "+file
-         Spawn, "cvs edit "+file
+         Spawn, "cvs edit """+file+""""
+         Spawn, "gnudoit -q '(find-file """+file+""")'"
       endif
       END
   'BUTTON15': BEGIN              ;UnEdit
-      file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=searchpath)
+      file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=name)
       If file ne "" then begin
          Print
          Print, "----------- UnEditing Changes on: "+file
-         Spawn, "cvs unedit "+file
+         Spawn, "cvs unedit """+file+""""
       endif
       END
   'BUTTON19': BEGIN              ;Editors
@@ -54,12 +86,16 @@ common common_cvs, name, searchpath
       Spawn, "cvs editors"
       END
   'BUTTON35': BEGIN              ;Add
-      file = PickFile(TITLE="Select File to Add", FILTER="*.pro", PATH=searchpath)
+      file = PickFile(TITLE="Select File to Add", /MUST_EXIST, FILTER="*.pro", GET_PATH=path, PATH=name)
       If file ne "" then begin
          Print
          Print, "----------- Establishing CVS-Control for: "+file
-         Spawn, "cvs add "+file
-         Spawn, "cvs commit "+file
+         parts = str_sep(file, "/")
+         file = parts((size(parts))(1)-1); Das gibt den reinen Filenamen ohne Pfad!
+         CD, path, CURRENT=olddir
+         Spawn, "cvs add """+file+""""
+         Spawn, "cvs commit "+file+""""
+         CD, olddir
       endif
       END
   'BUTTON23': BEGIN              ;Commit All
@@ -68,7 +104,7 @@ common common_cvs, name, searchpath
       Spawn, "cvs commit"
       END
   'BUTTON28': BEGIN              ;Commit File
-      file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=searchpath)
+      file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=name)
       If file ne "" then begin
          Print
          Print, "----------- Committing File "+file
@@ -84,13 +120,14 @@ END
 
 
 
-PRO cvs, CVS_Name, PATH=path, GROUP=Group
-common common_cvs, name, searchpath
+PRO cvs, CVS_Name, nasPATH=path, GROUP=Group
+common common_cvs, name
 
   default, CVS_Name, "nase"
-  default, path, "."
+  default, naspath, "~/IDL"
   name = CVS_Name
-  searchpath = path
+
+  CD, naspath, CURRENT=old_dir
 
   IF N_ELEMENTS(Group) EQ 0 THEN GROUP=0
 
@@ -170,4 +207,6 @@ common common_cvs, name, searchpath
   WIDGET_CONTROL, MAIN13, /REALIZE
 
   XMANAGER, 'MAIN13', MAIN13
+
+  CD, old_dir
 END
