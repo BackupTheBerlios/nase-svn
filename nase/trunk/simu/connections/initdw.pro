@@ -12,7 +12,8 @@
 ;                                   [,/D_NONSELF] [,/W_NONSELF] 
 ;                                   [,/W_TRUNCATE [,W_TRUNC_VALUE]]
 ;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
-;                                   [,NOCON] )
+;                                   [,NOCON]
+;                                   [,/OLDSTYLE] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;
@@ -49,16 +50,17 @@
 ;
 ; KEYWORD PARAMETERS: s.o.
 ;                     TRUNCATE, TRUNC_VALUE: s. SetWeight.
+;                     OLDSTYLE: Ist dieses Schlüsselwort gesetz, so
+;                               wird keine SDW, sondern eine
+;                               DW-Struktur zurückgeliefert. (Die ist
+;                               für Simulationen ungeeignet, aber alle 
+;                               Gewichtsmodifikationen darauf sind
+;                               wesentlich schneller!)
+;                               Die beiden Typen können mittels
+;                               <A HREF="#SDW2DW">SDW2DW</A> und <A HREF="#DW2SDW">DW2SDW</A>
+;                               (weitgehend) ineinander umgewandelt werden.
 ;
 ; OUTPUTS: Eine Initialisiert Delay-Weight-Struktur. Wird keines der Delay-Schlüsselwörter angegeben, so enthält die Struktur keine Delays.
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Default, Set, SetGaussWeight, SetGaussDelay,
 ;            SetLinearWeight, SetLinearDelay, SetDOGWeight.
@@ -90,9 +92,9 @@
 ;           Gewichts-/Delaybelegung. Wird eine detailliertere Angabe der
 ;           Verknüpfungseigenschaften gewünscht, so kann je nach
 ;           Bedarf jede der obigen Funktionen genutzt werden.
-;           Natürlich kann nach wie vor auch direkt auf die Felder
-;           .Delays und .Weights in der Delay-Weight-Struktur zugegriffen
-;           werden.
+;       !!  Inzwischen kann übrigens NICHT MEHR direkt auf die Felder
+;       !!  .Delays und .Weights in der Delay-Weight-Struktur zugegriffen
+;       !!  werden!
 ;         ----------------------------------------------------------
 ;
 ;
@@ -112,6 +114,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.12  1998/02/26 17:24:18  kupper
+;              OLDSTYLE-Schlüsselwort hinzugefügt.
+;
 ;       Revision 2.11  1998/02/11 14:56:08  saam
 ;             Handle-Hierarchie vervollstaendigt
 ;
@@ -246,7 +251,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
                  W_NOCON=w_nocon, NOCON=nocon, $
-                 SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source
+                 SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source, $
+                 OLDSTYLE=oldstyle
 
    Default, nocon, w_nocon
    if keyword_set(w_nocon) then message, /INFORM, "Das W_NOCON-Schlüsselwort ist übrigens seit Version 2.7 wieder in NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
@@ -371,8 +377,9 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 ; ================================ Ende der Initialisierungen ====================================================================================================================
 
 
-      ; init lists
-      DW2SDW, _DW
+      ;;------------------> Want DW or SDW?
+      If not Keyword_Set(OLDSTYLE) then DW2SDW, _DW ;init lists
+      ;;--------------------------------
       
       RETURN, _DW
       
