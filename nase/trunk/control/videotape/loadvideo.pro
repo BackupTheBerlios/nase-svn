@@ -67,9 +67,10 @@
 ;-
 
 Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
-                                         GET_LENGTH=get_length, GET_SIZE=get_size, $
-                                         GET_TITLE=get_title ,GET_SYSTEM=get_system, GET_STARRING=get_starring, $
-                                         GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year
+                    GET_LENGTH=get_length, GET_SIZE=get_size, $
+                    GET_TITLE=get_title ,GET_SYSTEM=get_system, GET_STARRING=get_starring, $
+                    GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year, $
+                    EDIT=edit
    
    Default, __title, _Title
    Default, __title, "The Spiking Neuron"   
@@ -150,7 +151,13 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    Free_Lun, infounit
 
    Get_Lun, unit
-   openr, unit, filename
+   If Keyword_Set(EDIT) then begin
+      openu, unit, filename
+      VideoMode = 'EDIT'
+   endif else begin
+      openr, unit, filename
+      VideoMode = 'PLAY'
+   endelse
            
 
    If Keyword_set(VERBOSE) then begin
@@ -171,7 +178,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    end
 
 
-   return, {VideoMode   : 'PLAY', $
+   return, {VideoMode   : VideoMode, $
             title       : title, $
             year        : year, $
             company     : company, $
