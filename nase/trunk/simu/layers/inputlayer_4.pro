@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 2.2  1998/02/11 14:57:36  saam
+;            Spike hat nun wieder normale Hoehe
+;
 ;      Revision 2.1  1998/02/05 13:47:33  saam
 ;            Cool
 ;
@@ -46,21 +49,21 @@ PRO InputLayer_4, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
    IF Set(feeding) THEN BEGIN
       IF Feeding(0,0) GT 0 THEN BEGIN
          neurons = Feeding(0,1:Feeding(0,0))
-         Layer.F(neurons) = Layer.F(neurons) + Feeding(1,1:Feeding(0,0))*(1.-Layer.para.df)
+         Layer.F(neurons) = Layer.F(neurons) + Feeding(1,1:Feeding(0,0));*(1.-Layer.para.df)
       END
    END
 
    IF Set(linking) THEN BEGIN
       IF Linking(0,0) GT 0 THEN BEGIN
          neurons = Linking(0,1:Linking(0,0))
-         Layer.L(neurons) = Layer.L(neurons) + Linking(1,1:Linking(0,0))*(1.-Layer.para.dl)
+         Layer.L(neurons) = Layer.L(neurons) + Linking(1,1:Linking(0,0));*(1.-Layer.para.dl)
       END
    END
          
    IF Set(inhibition) THEN BEGIN
       IF Inhibition(0,0) GT 0 THEN BEGIN
          neurons = Inhibition(0,1:Inhibition(0,0))
-         Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0))*(1.-Layer.para.di)
+         Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0));*(1.-Layer.para.di)
       END
    END
 

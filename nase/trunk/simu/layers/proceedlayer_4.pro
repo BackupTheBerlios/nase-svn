@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.2  1998/02/11 14:57:36  saam
+;            Spike hat nun wieder normale Hoehe
+;
 ;      Revision 2.1  1998/02/05 13:47:34  saam
 ;            Cool
 ;
@@ -42,8 +45,8 @@ common common_random, seed
 
    firedLast = WHERE(Layer.AR EQ 1, count); neurons with abs refractory period gone
    IF count NE 0 THEN BEGIN
-      Layer.R(firedLast) = Layer.R(firedLast) + Layer.para.vr*(1.-Layer.para.dr)
-      Layer.S(firedLast) = Layer.S(firedLast) + Layer.para.vs*(1.-Layer.para.ds)
+      Layer.R(firedLast) = Layer.R(firedLast) + Layer.para.vr;*(1.-Layer.para.dr)
+      Layer.S(firedLast) = Layer.S(firedLast) + Layer.para.vs;*(1.-Layer.para.ds)
       Layer.AR(firedLast) = 0
    END
 
