@@ -1,6 +1,8 @@
 ;+
 ; NAME:                TYPEOF
 ;
+; AIM:                 returns the type of an arbitrary variable
+;
 ; PURPOSE:             Ermittelt den Typ einer beliebigen Variable und gibt 
 ;                      NAME sowie INDEX zurueck. Folgende Zuordnung wird
 ;                      IDL-conform definiert:
@@ -34,9 +36,15 @@
 ;
 ; SEE ALSO:            SIZE (IDL-Doku)
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1998/11/17 11:25:17  saam
 ;           it was necessary
 ;

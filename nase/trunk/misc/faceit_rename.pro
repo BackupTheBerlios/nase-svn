@@ -1,6 +1,8 @@
 ;+
 ; NAME: Faceit_Rename
 ;
+; AIM: renames all IDL source file and their respective calls in a directory
+;
 ; PURPOSE: Benennt die Files in einem Verzeichnis um und ersetzt auch in deren
 ;          Programmtext das Vorkommen der alten Filenamen durch neue. Dies
 ;          ist hilfreich, wenn man eine Kopie der <A HREF="../graphic/widgets/#FACEIT">FaceIt</A>-Gerüst-Routinen in 
@@ -29,6 +31,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:10:32  saam
+;        * appended AIM tag
+;        * some routines got a documentation update
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  1999/09/13 15:59:42  kupper
 ;        Now changing filenames to lower case.
 ;

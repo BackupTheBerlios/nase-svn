@@ -1,7 +1,7 @@
 ;+
 ; NAME:                COMMAND
 ; 
-; AIM:                 Full pathname for executables.
+; AIM:                 returns the full pathname to executables
 ;
 ; PURPOSE:             Searches for an executable in all directories
 ;                      specified in the PATH environment variable and
@@ -31,6 +31,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  2000/09/18 12:44:15  saam
 ;           + uses PATH environment variable, now
 ;           + switched to console

@@ -9,15 +9,15 @@
 ;                     This is especially useful, if the second
 ;                     argument is only defined if the first argument
 ;                     is TRUE. The syntax can be signficantly shortend
-;                     and is better to read:
+;                     and is better to read.
 ;       
-;                     IF CAND("Set(P)", "TypeOf(P) EQ 'STRING'") THEN ....
+;* IF CAND("Set(P)", "TypeOf(P) EQ 'STRING'") THEN ....
 ;
 ;                     instead of 
 ;                     
-;                     IF (Set(P)) THEN BEGIN
-;                       IF (TypeOf(P) EQ 'STRING') THEN ...
-;                     END
+;* IF (Set(P)) THEN BEGIN
+;*   IF (TypeOf(P) EQ 'STRING') THEN ...
+;* END
 ;
 ; CATEGORY:           MISC MATH BOOLEAN OPERATOR
 ;  
@@ -30,18 +30,12 @@
 ; OUTPUTS:            tf: the boolean result of the AND-operation
 ;  
 ; EXAMPLE:
-;                     if CAND('0', 'notEvaluated') THEN notEvaluated
-;                     if CAND('1', '0')            THEN notEvaluated
-;                     if CAND('1', '1')            THEN Evaluated
+;* if CAND('0', 'notEvaluated') THEN notEvaluated
+;* if CAND('1', '0')            THEN notEvaluated
+;* if CAND('1', '1')            THEN Evaluated
 ;  
-; SEE ALSO:           COR
+; SEE ALSO:           <A>COR</A>
 ;  
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.1  2000/06/19 14:13:55  saam
-;              long used, finally committed
-;
 ;-
 
 FUNCTION CAND, a, b

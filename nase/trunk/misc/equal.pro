@@ -1,6 +1,7 @@
 ;+
-; NAME: equal(a,b,[precision])
+; NAME: equal
 ;
+; AIM: checks with selectable precision if two floating scalars/arrays are equal
 ;
 ; PURPOSE: Vergleicht zwei beliebige Werte/Arrays. Wenn dies floats sind, wird auf 
 ;          beliebige Praezision hin ueberprueft, z.B. bis zur 5. Nachkommastelle.
@@ -51,6 +52,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  1998/11/17 14:49:17  brinks
 ;     *** empty log message ***
 ;

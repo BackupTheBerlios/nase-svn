@@ -1,6 +1,8 @@
 ;+
 ; NAME:               UNDEF
 ;
+; AIM:                erases an IDL variable
+;
 ; PURPOSE:            Loescht eine Variable. Der von der Variable benutzte Speicher
 ;                     wird freigegeben und die Variable ist undefiniert.
 ;    
@@ -21,6 +23,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1998/08/14 11:12:56  saam
 ;           thanks to Ruediger for the idea
 ;

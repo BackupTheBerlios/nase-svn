@@ -1,6 +1,7 @@
 ;+
 ; NAME: SPIKETIMING_DEMO
 ;
+; AIM: demo simulation that demonstrates the usage of <A>DoSpikeTiming</A> and its partners
 ;
 ; PURPOSE: DEMONSTRATIONSPROGRAMM fuer die routinen initspiketiming, dospiketiming,showspiketiming
 ;          und freespiketiming 
@@ -32,6 +33,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1999/11/10 15:06:27  alshaikh
 ;           initial version
 ;

@@ -2,6 +2,8 @@
 ; NAME:
 ;   Pseudocolor_Visual()
 ;
+; AIM: checks if the graphics device uses pseudocolor mode
+;
 ; PURPOSE:
 ;   On the X or WIN graphics device, determine whether the device runs in Pseudocolor 
 ;   mode or not.
@@ -60,6 +62,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/09/25 09:10:32  saam
+;        * appended AIM tag
+;        * some routines got a documentation update
+;        * fixed some hyperlinks
+;
 ;        Revision 1.6  2000/08/31 10:19:51  kupper
 ;        Added handling of MAC device (hope it's correct, can't test it.)
 ;

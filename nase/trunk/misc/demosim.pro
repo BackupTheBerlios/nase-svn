@@ -1,6 +1,8 @@
 ;+
 ; NAME: DEMOSIM
 ;
+; AIM: demo simulation demonstrating the basic usage of important NASE routines
+;
 ; PURPOSE: Dieses Demonstrationsprogramm soll anhand eines Beispiel-
 ;          netzwerks die Benutzung einiger wichtiger N.A.S.E.-Routinen 
 ;          verdeutlichen. Im einzelnen sind dies Routinen
@@ -41,6 +43,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.17  2000/09/25 09:10:32  saam
+;       * appended AIM tag
+;       * some routines got a documentation update
+;       * fixed some hyperlinks
+;
 ;       Revision 1.16  1999/07/16 09:40:44  thiel
 ;           Endlich das "stop" am Ende entfernt.
 ;

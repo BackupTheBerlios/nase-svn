@@ -1,6 +1,8 @@
 ;+
 ; NAME:                 DefGlobVars
 ;
+; AIM:                  defines all NASE specific system variables
+;
 ; PURPOSE:              Definiert eine Reihe von Systemvariablen, die von 
 ;                       diversen NASE-Routinen benutzt werden (koennen).
 ;                       Diese Routine wird vom Start-Script misc/startup
@@ -11,9 +13,20 @@
 ;
 ; CALLING SEQUENCE:     DefGlobvars
 ;
+; SIDE EFFECTS:         sets several system variables
+;
+; AUTHOR:               Andreas Gabriel
+;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.14  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.13  2000/09/18 12:44:45  saam
 ;           + removed !EXECPATHS because command
 ;             doesn't need it anymore

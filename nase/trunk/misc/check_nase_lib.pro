@@ -1,9 +1,46 @@
+;+
+; NAME: 
+;   Check_Nase_Lib
+;
+; VERSION:
+;   $Id$
+;
+; AIM:
+;   provides the existence of a recent version of the NASE library (UNIX only)
+;
+; PURPOSE:
+;   To extend the functionality of IDL, there are several routines that
+;   use external C-programs. This routine checks, if the shared library
+;   providing these functionalities exists and is up to date in your 
+;   working copy of the NASE repository in $NASEDIR/shared/<architecture>. 
+;   If not, it tries to compile it for you. You probably do not 
+;   want to call this routine, because it is used during NASE's startup 
+;   process. (UNIX only)
+;  
+; CATEGORY:
+;*  NASE/MIND Startup
+;*  Operating System Access
+;
+; CALLING SEQUENCE:
+;*  Check_Nase_Lib
+;  
+; SIDE EFFECTS:
+;  creates a shared object file in your NASE working copy in shared/<architecture>
+;  
+; RESTRICTIONS:
+;  requires make and a proper c-compiler on the machines you are running IDL
+;
+; AUTHOR:
+;  Ruediger Kupper
+;-
+
+
 Pro Check_NASE_LIB
 
    If IDLVersion() gt 3 then begin
       ;; !Version.OS_Family doesn't exist on IDL3.6
       If !Version.OS_Family eq "Windows" then $
-       console, /Warn, "Making of the NASE support library is curently " + $
+       console, /Warn, "Making of the NASE support library is currently " + $
        "not supported for Windows. You will encounter problems " + $
        "(crashes) when accesing routines form the support library."
       return

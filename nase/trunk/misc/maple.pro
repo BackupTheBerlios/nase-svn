@@ -1,6 +1,8 @@
 ;+
 ; NAME:                Maple
 ;
+; AIM:                 interface to the general mathematics program MAPLE
+;
 ; PURPOSE:             Moeglichkeit zur "Kommunikation" mit dem Mathematik-
 ;                      Programm "MAPLE". Mit der Maple-Routine kann Maple
 ;                      remote Berechnungen durchfuehren. Dazu schreibt man
@@ -52,6 +54,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.5  1998/11/08 14:56:15  saam
 ;           improved RSH usage
 ;

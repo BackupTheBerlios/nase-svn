@@ -1,3 +1,27 @@
+;+
+; NAME: Startup_Ctd
+;
+; AIM: central NASE startup routine
+;  
+; PURPOSE: Does nearly everything that is needed to run NASE.
+;   * NASE search paths
+;   * calls several satellite routines like <A>Check_Nase_Lib</A>, <A>DefYGlobVars</A>
+;   * sets graphics device properly
+;   * shows the NASE logo via <A>ShowLogo</A>
+;   You probably do not want to call this routine, because it is only used during NASE's startup 
+;   process.
+;    
+; CATEGORY:
+;*  NASE/MIND Startup
+;
+; CALLING SEQUENCE:
+;   Startup_Ctd
+;
+; SEE ALSO:
+;  <A>Check_Nase_Lib</A>, <A>DefYGlobVars</A>, <A>ShowLogo</A> 
+;
+;-
+
 ;; This procedure is not called again, if misc/startup is executed for
 ;; the second time by mistake.
 

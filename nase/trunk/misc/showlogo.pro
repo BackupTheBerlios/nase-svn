@@ -1,6 +1,8 @@
 ;+
 ; NAME: ShowLogo
 ;
+; AIM: displays the well known NASE logo
+;
 ; PURPOSE: Stellt das NASE-Logo auf dem Bildschirm dar.
 ;          Auﬂerdem wird im WINDOW-Command COLORS=256, also eine
 ;          private Colormap  verlangt.
@@ -16,6 +18,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/09/25 09:10:32  saam
+;        * appended AIM tag
+;        * some routines got a documentation update
+;        * fixed some hyperlinks
+;
 ;        Revision 1.7  2000/08/28 14:53:23  kupper
 ;        Now using FilePath for plaotform independency.
 ;

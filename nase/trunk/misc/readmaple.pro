@@ -1,6 +1,8 @@
 ;+
 ; NAME:               ReadMaple 
 ;
+; AIM:                restores variables saved with the mathematics program MAPLE in IDL
+;
 ; PURPOSE:            Liest eine mit Maples SAVE-Funktion abgespeicherte
 ;                     Variable ein. Darf nur eine Variable gespeichert 
 ;                     worden sein. Dei Anzahl der einzulesenden Elemente
@@ -18,6 +20,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  1998/11/08 14:57:05  saam
 ;           now deletes temporary files
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                IDLVERSION
 ;
+; AIM:                 returns the used version of IDL
+;
 ; PURPOSE:             Liefert die momentan laufende IDL-Version als LONG
 ;                      zurueck.
 ;
@@ -25,6 +27,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:10:32  saam
+;     * appended AIM tag
+;     * some routines got a documentation update
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  1999/11/04 16:24:03  kupper
 ;     Added FULL keyword.
 ;
