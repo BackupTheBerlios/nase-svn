@@ -60,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/08/31 10:19:51  kupper
+;        Added handling of MAC device (hope it's correct, can't test it.)
+;
 ;        Revision 1.5  2000/03/07 14:43:51  kupper
 ;        Updated Header.
 ;
@@ -101,6 +104,9 @@ Function PseudoColor_Visual
       Endelse
 
       "WIN" : $
+       Return, !D.N_COLORS le 256
+      
+      "MAC" : $
        Return, !D.N_COLORS le 256
       
       else: begin
