@@ -156,7 +156,7 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    CASE mmode OF
       0: for i=0, n_elements(yell)-1 do print, yell(i)
       1: Widget_Control,GetHTag(_console, 'cons'),set_value=queue(viz, /valid), $
-       SET_TEXT_TOP_LINE=MAX([0,ContainedElements(viz, /VALID)-10])
+       SET_TEXT_TOP_LINE=MAX([0,ContainedElements(viz, /VALID)-15+1])
    END
    
 
