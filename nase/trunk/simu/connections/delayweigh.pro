@@ -6,31 +6,16 @@
 ;
 ; CATEGORY:               SIMULATION
 ;
-; CALLING SEQUENCE:       Initialisierung ::  Matrix    = DelayWeigh( INIT_WEIGHTS=init_weights [, INIT_DELAYS=init_delays] )
-;                         Aufruf          ::  OutVector = DelayWeigh( Matrix, InVector)
+; CALLING SEQUENCE:       OutVector = DelayWeigh( Matrix, InVector)
 ;
 ; INPUTS:                 Matrix       : eine zuvor initialisierte Struktur 
-;                         InKector     : Vector mit n Elementen
+;                         InVector     : Vector mit n Elementen
 ;
-; OPTIONAL INPUTS:        INIT_DELAYS  : Matrix der Dimension (m x n), die verbindungsspezifische Verzoegerungen enthaelt (max.15)
+; OPTIONAL INPUTS:        ---
 ;
-; KEYWORD PARAMETERS:     INIT_WEIGHTS : Matrix der Dimension (m x n), die den Source-Layer (n Elemente) mit dem Target-Layer (m Elemente) verbindet
+; KEYWORD PARAMETERS:     ---
 ;
-;                         SOURCE_CL          : Source-Cluster                           ODER ALTERNATIV
-;                         SOURCE_W, SOURCE_H : Breite und Hoehe des Source-Clusters    
-;
-;                         TARGET_CL          : Target-Cluster                           ODER ALTERNATIV
-;                         TARGET_W, TARGET_H : Breite und Hoehe des Target-Clusters    
-;
-;                         VP, TAUP           : jeder Verbindung wird ein Lernpotential (Leckintegrator 1. Ordnung) mit Verst"arkung VP und
-;                                              Zeitkonstante TAUP zugeordnet
-;                                              diese Option ist nur zum Lernen verzoegerte Verbindungen SINNVOLL
-;                                              wenn, dann muessen immer beide Parameter angegeben werden
-;
-; OUTPUTS:                wenn INIT_WEIGHTS  angegeben wurde:
-;                                 Output:  die initialisierte Matrix-Struktur
-;                         wurde INIT_WEIGHTS  NICHT angegeben:
-;                                 Output: ein Vektor mit m Elementen, der den gewichteten (verzoegerten) Output aus der Verbindungsstruktur darstellt
+; OUTPUTS:                OutVector: ein Vektor mit m Elementen, der den gewichteten (verzoegerten) Output aus der Verbindungsstruktur darstellt
 ;
 ; OPTIONAL OUTPUTS:       ---
 ;
@@ -49,7 +34,9 @@
 ;                         weights(0,6) = 2.0  ; connection from 6 --> 0
 ;                         delays = Make_Array(4,12,/BYTE,VALUE=3) ; each connection has a delay of 3 BINs
 ;
-;                         MyDelMat =  DelayWeigh( INIT_WEIGHTS=weights, INIT_DELAYS=delays, SOURCE_W=4, SOURCE_H=3, TARGET_W=4, TARGET_H=1)
+;                         MyDelMat = InitDW(S_WIDTH=2, T_HEIGHT=2, T_WIDTH=6, T_HEIGHT=2, $
+;                                           WEIGHT=3.0,$
+;                                           D_CONST=[4,2])
 ;
 ;                         InVector = [1,1,1,1,1,1,1]
 ;                         OutVector = DelayWeigh ( MyDelMat, InVector)
@@ -58,6 +45,12 @@
 ;                         FOR z=0,6 DO print, DelayWeigh( MyDelMat, [0,0,0,0,0,0,0] )
 ;
 ; MODIFICATION HISTORY:
+;
+;       Wed Sep 3 11:35:20 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Header war super-veraltet, muesste jetzt wieder stimmen
+;
 ;
 ;       Mon Sep 1 13:13:27 1997, Andreas Thiel
 ;		Geschwindigkeit des Teils ohne Delays wurde erhoeht.
@@ -148,12 +141,6 @@ FUNCTION DelayWeigh, DelMat, In
 
       noweights = WHERE(res LE !NONE, count)
       IF count NE 0 THEN res(noweights) = 0
-
-      
-                                ; update the learning potential if needed
-      IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
-         DelMat.lp =  ((DelMat.lp - delmat.dp) > 0) + DelMat.vp*spikes
-      END
 
       IF (SIZE(res))(0) EQ 2 THEN RETURN, TOTAL(res, 2) ELSE RETURN, TOTAL(res)
 
