@@ -23,37 +23,37 @@
 ;         übergeben. Dabei handelt es sich um die beiden Pointer dataptr und 
 ;         displayptr, das Widget w_userbase und die Struktur event.
 ;
-;          PRO <A HREF="./FACEIT_DEMO/#HAUS2_INITDATA">name_INITDATA</A>, dataptr
+;          PRO <A HREF="./faceit_demo/#HAUS2_INITDATA">name_INITDATA</A>, dataptr
 ;             Zum Festlegen der Simulationsparameter und -datenstrukturen,
 ;             zB Layers und DWs.
-;          PRO <A HREF="./FACEIT_DEMO/#HAUS2_INITDISPLAY">name_INITDISPLAY</A>, dataptr, displayptr, w_userbase
+;          PRO <A HREF="./faceit_demo/#HAUS2_INITDISPLAY">name_INITDISPLAY</A>, dataptr, displayptr, w_userbase
 ;             Hierin sollte der Aufbau der benutzereigenen Widget-Hierarchie
 ;             stattfinden.
-;          FUNCTION <A HREF="./FACEIT_DEMO/#HAUS2_SIMULATE">name_SIMULATE</A>, dataptr 
+;          FUNCTION <A HREF="./faceit_demo/#HAUS2_SIMULATE">name_SIMULATE</A>, dataptr 
 ;           ---> Return, 1
 ;             Sollte den Simulationskern enthalten: Inputbestimmung, Lernen,
 ;             Berechnen des neuen Netwerkzustands und dergleichen.
-;          FUNCTION <A HREF="./FACEIT_DEMO/#HAUS2_DISPLAY">name_DISPLAY</A>, dataptr, displayptr
+;          FUNCTION <A HREF="./faceit_demo/#HAUS2_DISPLAY">name_DISPLAY</A>, dataptr, displayptr
 ;           ---> Return, 1
 ;             Hier soll die Darstellung des Netzwerkzustands während der 
 ;             Simulation erfolgen.
-;          FUNCTION <A HREF="./FACEIT_DEMO/#HAUS2_USEREVENT">name_USEREVENT</A>, Event
+;          FUNCTION <A HREF="./faceit_demo/#HAUS2_USEREVENT">name_USEREVENT</A>, Event
 ;           ---> Return, 0
 ;             Die Reaktion der benutzerdefinierten Widgets auf äußere 
 ;             Ereignisse (Mausklicks, Sliderbewegungen) muß hier festgelegt
 ;             werden.
-;          PRO <A HREF="./FACEIT_DEMO/#HAUS2_RESET">name_RESET</A>, dataptr, displayptr, w_userbase
+;          PRO <A HREF="./faceit_demo/#HAUS2_RESET">name_RESET</A>, dataptr, displayptr, w_userbase
 ;             Falls notwendig, können hier Aktionen bestimmt werden, die bei
 ;             Betätigung des RESET-Buttons ausgeführt werden sollen.
-;          PRO <A HREF="./FACEIT_DEMO/#HAUS2_FILEOPEN">name_FileOpen</A>, dataptr, displayptr, group
+;          PRO <A HREF="./faceit_demo/#HAUS2_FILEOPEN">name_FileOpen</A>, dataptr, displayptr, group
 ;             Diese Routine wird vom Menüpunkt 'File.Open' aufgerufen. Hier
 ;             können zuvor gespeicherte Simulationsdaten eingelesen werden.
 ;             (Der 'group'-Parameter dient dem Dateiauswahl-Widget als Eltern-
 ;             teil, ist für den Benutzer uninteressant.)
-;          PRO <A HREF="./FACEIT_DEMO/#HAUS2_FILE_SAVE">name_FileSave</A>, dataptr, group
+;          PRO <A HREF="./faceit_demo/#HAUS2_FILE_SAVE">name_FileSave</A>, dataptr, group
 ;             Der Menüeintrag 'File.Save' ruft diese Routine auf. Der Benutzer
 ;             kann damit bei Bedarf Simulationsdaten speichern.
-;          FUNCTION <A HREF="./FACEIT_DEMO/#HAUS2_KILL_REQUEST">name_KILL_REQUEST</A>, dataptr, displayptr
+;          FUNCTION <A HREF="./faceit_demo/#HAUS2_KILL_REQUEST">name_KILL_REQUEST</A>, dataptr, displayptr
 ;           ---> Return, 1
 ;             Die hierin enthaltenen Befehle werden vor der Zerstörung des
 ;             FaceIt-Widgets ausgeführt. ZB können Datenstrukturen freigegeben
@@ -76,7 +76,7 @@
 ;                         der Simulationablauf bei erneutem Start-Drücken 
 ;                         an der gleichen Stelle fortgesetzt. Ein Zurücksetzen
 ;                         erfolgt nicht (siehe RESET).
-;           RESET: Führt die Prozedur <A HREF="./FACEIT_DEMO/#HAUS2_RESET">name_RESET</A> aus, zB, um die 
+;           RESET: Führt die Prozedur <A HREF="./faceit_demo/#HAUS2_RESET">name_RESET</A> aus, zB, um die 
 ;                  Simulationsdaten auf ihren ursprünglichen Stand zu setzen
 ;                  oder die Bildschirmdarstellung zu erneuern. Außerdem wird
 ;                  der Zähler 'Steps' zurückgesetzt.
@@ -111,6 +111,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1999/09/02 14:56:58  kupper
+;        Carrected misspelled hyperling.
+;
 ;        Revision 1.3  1999/09/02 12:20:42  thiel
 ;            Hyperlinks corrected.
 ;
