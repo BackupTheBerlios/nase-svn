@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2000/02/29 14:56:10  kupper
+;        Added a "Temporary" here and there.
+;
 ;        Revision 1.8  1999/04/13 17:10:30  thiel
 ;               Noch ein Bugfix bei XHWB/YHWB und NORM-Zusammenarbeit.
 ;
@@ -110,10 +113,10 @@ Function Gauss_2D, xlen,ylen, $
      sigmay=yhwb/sqrt(alog(4))
      xerg = exp(-shift(dist(xlen,1),x0_arr)^2d / 2d /sigmax^2d)
      yerg = exp(-shift(dist(1,ylen),x0_arr,y0_arr)^2d / 2d /sigmay^2d)
-     xerg = REBIN(xerg,xlen,ylen,/SAMPLE)
-     yerg = REBIN(yerg,xlen,ylen,/SAMPLE)
-     ERG = xerg*yerg
-     If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
+     xerg = REBIN(temporary(xerg),xlen,ylen,/SAMPLE)
+     yerg = REBIN(temporary(yerg),xlen,ylen,/SAMPLE)
+     ERG = temporary(xerg)*temporary(yerg)
+     If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(temporary(ERG)))
     return, ERG(*,*)   
 
   ENDIF
@@ -123,7 +126,7 @@ Function Gauss_2D, xlen,ylen, $
   ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
   
 
-  If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
+  If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(temporary(ERG)))
 
   return, ERG(*,*)          
 end
