@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/14 16:37:01  saam
+;           Rueckgabewert nun SpassVector
+;
 ;     Revision 2.2  1997/11/11 16:05:22  saam
 ;           Doc-Header hatte kein '-'
 ;
@@ -63,6 +66,6 @@ FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset,
    
    signal = offset + deviation*RandomN(seed, w, h)
    
-   RETURN, signal
+   RETURN, SpassMacher(signal)
    
 END
