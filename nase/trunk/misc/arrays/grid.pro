@@ -1,69 +1,56 @@
 ;+
-; NAME:               Grid
-;  
-; AIM:                generates indices addressing a subgrid of a two dimensional array 
+; NAME:
+;   Grid
 ;
-; PURPOSE:            Extracts indices for positions placed
-;                     on a two-dimensional evenly spaced grid.
-;                     In the current version the grid is center
-;                     in the array (if possible).
+; VERSION:
+;   $Id$
 ;  
-; CATEGORY:           ARRAY
+; AIM:
+;   generates indices addressing a subgrid of a two dimensional array 
+;
+; PURPOSE:
+;   Extracts indices for positions placed
+;   on a two-dimensional evenly spaced grid.
+;   In the current version the grid is center
+;   in the array (if possible).
 ;  
-; CALLING SEQUENCE:   idx = Grid {,dims | ,SIZE=size} [,STEP=step]
-;                                [,COUNT=count] [,CSHIFT=cshift] 
+; CATEGORY:
+;  Array
 ;  
-; OPTIONAL INPUTS:    dims : array of dimensions of the underlying array
-;                            or speciy SIZE instead
+; CALLING SEQUENCE:
+;* idx = Grid {,dims | ,SIZE=...} [,STEP=...] [,COUNT=...] [,CSHIFT=...] 
 ;  
-; KEYWORD PARAMETERS:
-;                     SIZE:   array determining the array's size as
-;                             returned by IDLs size
-;                             function. Alternatively, you can use the
-;                             dims input
-;                     COUNT:  array containing the number of grid
-;                             points in each direction. If !NONE is
-;                             specified for a dimension, it is filled
-;                             to the arrays edges.
-;                     STEP:   array containing the step width for each
-;                             dimension (default: 1)
-;                     CSHIFT: array containing the shift of the grid
-;                             relative to the array's center for each
-;                             dimension (default: 0)
+; OPTIONAL INPUTS:
+;   dims :: array of dimensions of the underlying array
+;           or speciy SIZE instead
+;  
+; INPUT KEYWORDS:
+;   SIZE::   array determining the array's size as
+;            returned by IDLs size
+;            function. Alternatively, you can use the
+;            dims input
+;   COUNT::  array containing the number of grid
+;            points in each direction. If !NONE is
+;            specified for a dimension, it is filled
+;            to the arrays edges.
+;   STEP::   array containing the step width for each
+;            dimension (default: 1)
+;   CSHIFT:: array containing the shift of the grid
+;            relative to the array's center for each
+;            dimension (default: 0)
 ;           
 ;  
-; OUTPUTS:            idx :  array containing the one-dimensional
-;                            indices of the grid
+; OUTPUTS:
+;   idx ::  array containing the one-dimensional
+;           indices of the grid
 ;  
 ; EXAMPLE:
-;                     a = FltArr(21,11)
-;                     idx = Grid(SIZE=SIZE(a), STEP=[4,2], COUNT=[!NONE,2])
-;                     a(idx) = 1
-;                     plottvscl, a
+;* a = FltArr(21,11)
+;* idx = Grid(SIZE=SIZE(a), STEP=[4,2], COUNT=[!NONE,2])
+;* a(idx) = 1
+;* plottvscl, a
 ;  
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.5  2000/09/25 09:12:54  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.4  2000/06/28 17:01:23  saam
-;              returns one dimensional in every case, now
-;
-;        Revision 1.3  2000/06/19 13:26:21  saam
-;              + removed main part
-;              + fixed bug if count is not specified
-;
-;        Revision 1.2  2000/05/18 08:18:57  saam
-;              added keyword CSHIFT
-;
-;        Revision 1.1  2000/05/11 09:35:53  saam
-;              seems to work
-;
-;
 FUNCTION GRID, _dims, STEP=step, COUNT=count, SIZE=_size, CSHIFT=cshift
 
 ; check dimensions
