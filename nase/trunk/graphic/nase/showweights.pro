@@ -19,7 +19,7 @@
 ;   
 ; CATEGORY: GRAPHIC
 ;
-; CALLING SEQUENCE: ShowWeights, Matrix {, /FROMS |, /TOS }
+; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
 ;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr][,/DELAYS]
 ;                               [/SLIDE [,XVISIBLE] [,YVISIBLE] ]
 ;
@@ -34,11 +34,11 @@
 ;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
 ;                            Titel und Groessen unwirksam (klar,
 ;                            Fenster war ja schon vorher offen).
-;                     FROMS: Muß gesetzt werden, wenn man in den
+;     PROJECTIVE oder FROMS: Muß gesetzt werden, wenn man in den
 ;                            Untermatrizen die Verbindungen VON den
-;                            Neuronen sehen will.
-;                     TOS  : Muß gesetzt werden, wenn man die
-;                            Verbindungen ZU den Neuronen sehen will.
+;                            Neuronen sehen will. (Projektive Felder)
+;      RECEPTIVE oder TOS  : Muß gesetzt werden, wenn man die
+;                            Verbindungen ZU den Neuronen sehen will. (Rezeptive Felder)
 ;                     DELAYS: Falls gesetzt, werden nicht die Gewichte, sondern die Delays visualisiert
 ;                     SLIDE: Ist dieses Keword gesetzt, so wird die Matrix in einem SLIDE_WINDOW angezeigt
 ;                            (nützlich, wenn sie nicht auf den Bildschirm paßt!)
@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.4  1997/10/30 13:00:53  kupper
+;              PROJECTIVE, RECEPTIVE als Alternative zu TOS, FROMS eingeführt.
+;
 ;       Revision 2.3  1997/10/14 15:46:18  saam
 ;              Delays konnten zwischenzeitlich nicht dargestellt
 ;              werden...geht wieder
@@ -109,9 +112,13 @@
 
 PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, $
-                 FROMS=froms,  TOS=tos, DELAYS=delays
+                 FROMS=froms,  TOS=tos, DELAYS=delays, $
+                 PROJECTIVE=projective, RECEPTIVE=receptive
 
-   If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
+   Default, FROMS, PROJECTIVE
+   Default, TOS, RECEPTIVE
+
+   If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
    if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
 

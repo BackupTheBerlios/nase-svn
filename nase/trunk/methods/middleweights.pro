@@ -7,14 +7,15 @@
 ; CATEGORY: STATISTICS
 ;
 ; CALLING SEQUENCE: Gemittelt = MiddleWeights ( Matrix 
-;                                               {,/FROMS | ,/TOS }
+;                                               {,/FROMS | ,/TOS |, PROJECTIVE |, /RECEPTIVE }
 ;                                               [,/WRAP] )
 ;
 ; INPUTS: Matrix: Eine DW-Struktur
 ;
 ; OPTIONAL INPUTS: ---
 ;
-; KEYWORD PARAMETERS: FROMS / TOS : Gibt an, ob ueber einlaufende oder
+; KEYWORD PARAMETERS: PROJECTIVE(FROMS) / RECEPTIVE(TOS) :
+;                                   Gibt an, ob ueber einlaufende oder
 ;                                   auslaufende Verbindugen gemittelt
 ;                                   werden soll. (siehe ShowWeights)
 ;                     WRAP: Fuer zyklische Randbedingungen.
@@ -43,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1997/10/30 13:01:21  kupper
+;              PROJECTIVE, RECEPTIVE als Alternative zu TOS, FROMS eingeführt.
+;
 ;       Revision 1.4  1997/09/30 11:37:23  thiel
 ;       *** empty log message ***
 ;
@@ -57,9 +61,13 @@
 
 
 
-FUNCTION MiddleWeights, _Matrix, FROMS=Froms, TOS=Tos, WRAP=Wrap
+FUNCTION MiddleWeights, _Matrix, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
+                        PROJECTIVE=projective, RECEPTIVE=receptive
 
-If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
+   Default, FROMS, PROJECTIVE
+   Default, TOS, RECEPTIVE
+
+   If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
 if keyword_set(TOS) then begin  ; Source- und Targetlayer vertauschen:
    IF _Matrix.Info EQ 'DW_DELAY_WEIGHT' THEN BEGIN 
