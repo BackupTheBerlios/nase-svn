@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.25  1998/08/07 19:08:01  gabriel
+;           TOP Keyword implementiert
+;
 ;     Revision 2.24  1998/08/07 15:33:39  gabriel
 ;          PolyPlot implementiert
 ;
@@ -139,65 +142,6 @@
 ;
 ;
 ;-
-PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCALE ,DEVICE=DEVICE $
-                     ,CENTIMETERS=centimeters 
-   ;ON_ERROR, 2
-   as = size(A)
-   xsize = as(1)
-   ysize = as(2)
-   default,Xnorm,0
-   default,Ynorm,0
-   default,X_size,xsize
-   default,Y_size,ysize
-   default,noscale,0
-   default,device,1
-   default,centimeters,0 ;;dummy
-
-   IF  (NOSCALE EQ 1) THEN BEGIN
-      ARRAY = A
-   END ELSE BEGIN
-       ARRAY = FLOOR(FLOAT(A-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(!D.TABLE_SIZE-1)) 
-      ;ARRAY = FLOOR(FLOAT(A-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(256-1)) 
-         ;ARRAY = BYTSCL(ARRAY,TOP=!D.N_COLORS-1) 
-      
-        
-      
-      UTVLCT,R,G,B,/GET
-      print,max(ARRAY),min(ARRAY)
-      help,R,G,B
-;      print,!D.N_COLORS-1
-      
-   ENDELSE
-   xpix = FLOAT(X_size)/FLOAT(xsize)
-   ypix = FLOAT(Y_size)/FLOAT(ysize)
-   IF  DEVICE EQ 1 THEN BEGIN
-      X_PX_CM = !D.X_PX_CM
-      Y_PX_CM = !D.Y_PX_CM
-   END ELSE BEGIN
-      X_PX_CM = 1.0
-      Y_PX_CM = 1.0
-   ENDELSE
-   print,Xnorm,Ynorm,X_SIZE,Y_SIZE
-   FOR i = 0 , xsize -1 DO BEGIN
-      FOR j = 0 , ysize -1 DO BEGIN
-         x = [ i - 0.5 , i + 0.5 , i + 0.5 , i - 0.5 ] + 0.5
-         y = [ j - 0.5 , j - 0.5 , j + 0.5 , j + 0.5 ] + 0.5
-         x(*) = (x(*)*xpix + Xnorm) *X_PX_CM
-         y(*) = (y(*)*ypix + Ynorm )*Y_PX_CM
-         
- 
-         IF  (NOSCALE EQ 1) THEN BEGIN
-            polyfill,x,y,COLOR=ARRAY(i,j), /DEVICE 
-         END ELSE BEGIN
-            ;print,R(ARRAY(i,j)),G(ARRAY(i,j)),B(ARRAY(i,j))
-            polyfill,x,y,COLOR=RGB(R(ARRAY(i,j)) ,G(ARRAY(i,j)) ,B(ARRAY(i,j)),/NOALLOC),/DEVICE
-
-            ;polyfill,x,y,COLOR=ARRAY(i,j),/DEVICE
-
-         ENDELSE
-      ENDFOR
-   ENDFOR
-END
 
 
 PRO UTvScl, __Image, XNorm, YNorm, Dimension $
@@ -210,7 +154,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , DEVICE=device $
             , POLYGON=POLYGON $
             , _EXTRA=e
-
+   ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
    _Image = __Image
 
@@ -354,3 +298,68 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 END
 
 
+;; POLYGONE STATT PIXEL PLOTTEN
+PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCALE ,DEVICE=DEVICE $
+                     ,CENTIMETERS=centimeters , TOP=TOP
+   ON_ERROR, 2
+   as = size(A)
+   xsize = as(1)
+   ysize = as(2)
+   default,Xnorm,0
+   default,Ynorm,0
+   default,X_size,xsize
+   default,Y_size,ysize
+   default,noscale,0
+   default,device,1
+   default,centimeters,0 ;;dummy
+   default,top,!D.TABLE_SIZE
+
+   IF  (NOSCALE EQ 1) THEN BEGIN
+      ARRAY = A
+   END ELSE BEGIN
+      
+      _TOP = ROUND(TOP)
+ 
+      _TOP = _TOP < 255.
+      FAC = (_TOP/FLOAT(!D.TABLE_SIZE))
+      ARRAY = BYTE(FLOAT(A(*,*)-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(_TOP-1))
+      IF FAC GT 1. THEN BEGIN
+         index = where(ARRAY GT MAX(1./FAC *ARRAY),count)
+         IF count GT 0 THEN  ARRAY(index) = MAX(1./FAC *ARRAY)
+      ENDIF
+      TVLCT,R,G,B,/GET
+   
+   ENDELSE
+
+   xpix = FLOAT(X_size)/FLOAT(xsize)
+   ypix = FLOAT(Y_size)/FLOAT(ysize)
+
+   IF  DEVICE EQ 1 THEN BEGIN
+      X_PX_CM = !D.X_PX_CM
+      Y_PX_CM = !D.Y_PX_CM
+   END ELSE BEGIN
+      X_PX_CM = 1.0
+      Y_PX_CM = 1.0
+   ENDELSE
+
+   
+      FOR j = 0L , ysize -1 DO BEGIN
+         FOR i = 0L , xsize -1 DO BEGIN
+         x = [ i  , i + 1 , i + 1 , i  ] 
+         y = [ j  , j   , j + 1 , j + 1 ]
+         x(*) = (x(*)*xpix + Xnorm) * X_PX_CM
+         y(*) = (y(*)*ypix + Ynorm) * Y_PX_CM
+         
+         IF  (NOSCALE EQ 1) THEN BEGIN
+            polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
+          
+           
+         END ELSE BEGIN
+           polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
+           colorindex = RGB(R(ARRAY(i,j)) ,G(ARRAY(i,j)) ,B(ARRAY(i,j)),/NOALLOC)
+           polyfill,x,y,COLOR=colorindex ,/DEVICE
+            
+         ENDELSE
+      ENDFOR
+   ENDFOR
+END
