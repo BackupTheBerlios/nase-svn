@@ -1,7 +1,7 @@
 
 ;; ------------ Member access methods -----------------------
 Function image_factory::image
-   If self.recompute then self->recompute
+   self->recompute
    return, (*self.image)
 End
 Function image_factory::imageptr
@@ -90,10 +90,12 @@ Function image_factory::types
 End
 
 Pro image_factory::recompute
-   Message, /INFO, "Creating image."
-   call_method, self.type+"_", self
-   *self.image = *self.image * self.brightness
-   self.recompute = 0
+   If self.recompute then begin
+      Message, /INFO, "Creating image."
+      call_method, self.type+"_", self
+      *self.image = *self.image * self.brightness
+      self.recompute = 0
+   EndIf
 End
 ;; ------------ Private --------------------
 Function image_factory::mindim_
