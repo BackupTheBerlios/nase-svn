@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
+#
 # $Header$
+#
 
 
 # CGI module
@@ -18,7 +20,7 @@ import_names('P');
 $DOCDIR="/mhome/saam/sim";
 $CGIROOT="/usr/lib";
 
-$INDEX="$CGIROOT/naseindex.tmp";
+$INDEX="/tmp/nase-routineindex";
 
 
 
@@ -33,18 +35,32 @@ $fullurl = $myurl.$sub;
 
 
 
+
+
+sub readRoutineIdx {
+
+  createRoutineIdx() unless -r $INDEX;
+  open (IDX, "<$INDEX") || die "can't open $! for read";
+  @ridx = <IDX>; chomp @ridx;
+  close (IDX) || die "can't close $!";
+
+  return @ridx;
+}
+
+
 sub createRoutineIdx {
 
+  open (IDX, ">$INDEX") || die "can't open $! for write";
   find(\&appendFile, $DOCDIR);
-
+  close (IDX) || die "can't close $!";
    
+
   sub appendFile {
     if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
-#      print;
       my $file = $File::Find::name;
       $file =~ s/$DOCDIR//; 
       $file =~ s/^(\/)+//; 
-#      print "   ",$file, br;
+      print IDX "$file\n";
     }
 # to output directories as status 
 #    else {
@@ -81,6 +97,7 @@ sub showheader {
   while (<IN>){
     last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
     s/^;//;
+
     if (/NAME\s*:\s*(\w+)/i){
       print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1).".pro&mode=source>source</A> <A HREF=huhe2>modifications</A></FONT>");
     } else {
