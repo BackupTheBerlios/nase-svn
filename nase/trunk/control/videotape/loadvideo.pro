@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.11  1998/04/29 17:36:35  kupper
+;              Sagt jetzt, wenns zippt.
+;
 ;       Revision 2.10  1998/03/31 12:27:38  saam
 ;             if zipped and unzipped version exists
 ;             now the zipped version is the reference
@@ -97,7 +100,6 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
 
    c = ZipStat(filename, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
    IF nzf(0) NE '-1'  THEN zipped = 0 ELSE zipped = 1
-   IF zipped THEN Unzip, filename
 
    IF NOT fileExists(infoname) THEN BEGIN
       error = 1
@@ -174,15 +176,8 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    close, infounit
    Free_Lun, infounit
 
-   Get_Lun, unit
-   If Keyword_Set(EDIT) then begin
-      openu, unit, filename
-      VideoMode = 'EDIT'
-   endif else begin
-      openr, unit, filename
-      VideoMode = 'PLAY'
-   endelse
            
+
 
    If Keyword_set(VERBOSE) then begin
       print
@@ -200,7 +195,20 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    endif else IF NOT keyword_set(shutup) THEN begin
       print, 'Opening Video "'+title+'".'
    end
+   IF zipped THEN begin
+      message, /INFORM, " ...unzipping..."
+      Unzip, filename
+      if not !QUIET then print, !key.up+"                                                          "+!key.up
+   EndIf
 
+   Get_Lun, unit
+   If Keyword_Set(EDIT) then begin
+      openu, unit, filename
+      VideoMode = 'EDIT'
+   endif else begin
+      openr, unit, filename
+      VideoMode = 'PLAY'
+   endelse
 
    return, {VideoMode   : VideoMode, $
             filename    : filename,$
