@@ -3,8 +3,8 @@
 #
 package NASE::globals;
 
-use diagnostics;
-use strict;
+#use diagnostics;
+#use strict;
 use CGI::Carp;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @hentry %pro %catl $dbh);
 use DBI;
