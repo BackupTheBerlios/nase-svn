@@ -25,7 +25,10 @@
 ;	  	   XHWB, YHWB	   : Die Halbwertsbreite in Gitterpunkten bzgl. x und y (alternativ zu sigma und HWB)
 ;                  PHI             : an assymetric distribution can be
 ;                                    rotated by an angle of PHI in
-;                                    degree (clockwise)
+;                                    degree (clockwise). Center of
+;                                    rotation is the array center,
+;                                    shifting (x0,y0 NE 0) is done
+;                                    prior to rotation.
 ;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
 ;			  	     Feldes. (Genauer: bei Laenge/2.0).
 ;                  x0_arr,y0_arr   : wie x0,y0, relativ zur linken oberen Arrayecke
@@ -69,6 +72,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.17  2000/07/19 13:54:44  kupper
+;        Added comment on order of shifting/roztation.
+;
 ;        Revision 1.16  2000/07/19 13:36:47  kupper
 ;        Now using non-cyclic Distance() instead of dist().
 ;        Hence, for non-centered tip-locations, mask is not cyclic shifted but
@@ -118,6 +124,9 @@
 ;        Keywords X0_ARR und Y0_ARR zugefügt, 30.7.1997, Rüdiger Kupper
 ;-
 
+Function Gauss_function, x, sigma
+   return, exp( -0.5 * (x/float(sigma))^2 )
+End
 
 Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
                    sigma,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
@@ -160,8 +169,8 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
            xn = ROT(xn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
            yn = ROT(yn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
        END
-       xerg = exp(-xn^2d / 2d /sigmax^2d)
-       yerg = exp(-yn^2d / 2d /sigmay^2d)
+       xerg = Gauss_function(xn, sigmax)
+       yerg = Gauss_function(yn, sigmay)
 
        ERG = temporary(xerg)*temporary(yerg)
        If Keyword_Set(NORM) then begin
@@ -172,9 +181,10 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
 
   ENDIF
 
-  if ylen eq 1 then return, exp(-Distance(xlen,1,x0_arr,0.5)^2d / 2d /sigma^2d)           
+  if ylen eq 1 then return, $
+   Gauss_function(Distance(xlen,1,x0_arr,0.5), sigma)           
  
-  ERG =  exp(-Distance(xlen,ylen,x0_arr,y0_arr)^2d / 2d /sigma^2d) 
+  ERG = Gauss_function(Distance(xlen,ylen,x0_arr,y0_arr), sigma) 
   
 
   If Keyword_Set(NORM) then begin
