@@ -12,6 +12,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1998/02/05 13:24:29  saam
+;             + FreeDW's ergaenzt
+;             + Bug im Aufruf von InitRecall der letzten Revision korrigiert
+;
 ;       Revision 1.5  1998/02/03 16:10:27  thiel
 ;              Mal wieder auf den neuesten Stand gebracht.
 ;
@@ -73,8 +77,12 @@ Window, 2, XSIZE=800, YSIZE=400
    ;   ++ connections exceeding the layer-dimensions are truncated and not cyclically continued (W_TRUNCATE)
    CON_L1_L1 = InitDW(S_LAYER=L1, T_LAYER=L1, $
                       W_CONST=[0.001, 4], /W_TRUNCATE, /W_NONSELF, NOCON=4)
+   LP_L1_L1 = InitRecall(L1, EXPO=[5.0,10.0])
 
-   LP_L1_L1 = InitRecall(CON_L1_L1, EXPO=[5.0,10.0])
+;   with delays
+;   CON_L1_L1 = InitDW(S_LAYER=L1, T_LAYER=L1, $
+;                      W_CONST=[0.001, 4], /W_TRUNCATE, /W_NONSELF, DELAY=3, NOCON=4)
+;   LP_L1_L1 = InitRecall(CON_L1_L1, EXPO=[5.0,10.0])
 
    ; show the connections in a window
    ShowWeights, CON_L1_L1, /TOS, WINNR=1
@@ -118,6 +126,7 @@ Window, 2, XSIZE=800, YSIZE=400
       TotalRecall, LP_L1_L1, CON_L1_L1
       LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
 
+      IF t EQ 3000 THEN ShowNoMercy, CON_L1_L1, LESSTHAN=0.01
 
 ;-------------> PROCEED NEURONS
       ; Input -> Layer -> Output
@@ -144,6 +153,14 @@ Window, 2, XSIZE=800, YSIZE=400
       IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MAX(Weights(CON_L1_L1))
    END
    Print, 'Main Simulation Loop done'
+
+
+   FreeDw, CON_L1_L1
+   FreeDw, CON_L1_L2
+   FreeDw, CON_L2_L1
+
+   FreeLayer_1, L1
+   FreeLayer_1, L2
 
 
 
