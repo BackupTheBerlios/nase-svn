@@ -1,15 +1,16 @@
 ;+
-; NAME:  ShowSpikeTiming.pro
+; NAME:
+;  ShowSpikeTiming
 ;
+; AIM: Show results of pre-/postsynaptic spike interval count. 
 ;
 ; PURPOSE: -Visualisierung der mittels DoSpikeTiming gezaehlten Abstaende von prae- und postsynaptischen
 ;           Spikes durch ein Histogramm 
 ;          -Berechnung des Verhaeltnisses von anzahl(t_post-t_prae<0) zu anzahl(t_post-t_prae>0)   
 ;          -Rueckgabe der Werte in einem Array 
 ;
-;
-; CATEGORY:  SIMULATION PLASTICITY
-;
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE: ShowSpikeTiming, Counter [,RATIO=ratio] [,RESULT=result]
 ;
@@ -28,15 +29,18 @@
 ;           print,'Anzahl der Spikes mit t_post-t_pre>0', $
 ;                              total(result((3+result(0)):(N_elements(result)-1)))
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/26 15:13:43  thiel
+;         AIMS added.
+;
 ;     Revision 2.1  1999/11/10 15:06:01  alshaikh
 ;           initial version
 ;
-;
-;-
 
 
 PRO ShowSpikeTiming, _COUNT, RATIO=ratio, RESULT=result

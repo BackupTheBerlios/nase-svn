@@ -1,5 +1,8 @@
 ;+
-; NAME: LearnHebbSharp
+; NAME:
+;  LearnHebbSharp
+;
+; AIM: Learn connection strengths according to spike based Hebb rule.
 ;
 ; PURPOSE: Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;          Aktivitaeten in Source- und Targetcluster
@@ -17,7 +20,8 @@
 ;          Ist dies der Fall, so wird die Verbindung geschwaecht
 ;          (Subtraktion des alten Gewichts),falls kein praesynaptischer Spike vorliegt.
 ;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:   LearnHebbSharp, G, TARGET_CL=TargetCluster, 
 ;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
@@ -53,9 +57,14 @@
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
+;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 1.7  1998/02/05 13:17:42  saam
 ;                  + Gewichte und Delays als Listen
 ;                  + keine direkten Zugriffe auf DW-Strukturen
@@ -94,7 +103,7 @@
 ;
 ; erste Version vom 5. August '97. Andreas.
 ;
-;-
+
 PRO LearnHebbSharp, _DW, SOURCE_CL=Source_Cl, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    Default, rate, entlernrate

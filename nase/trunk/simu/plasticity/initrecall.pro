@@ -1,5 +1,8 @@
 ;+
-; NAME:               InitRecall
+; NAME:
+;  InitRecall()
+;
+; AIM: Initialize structure containing learning potentials.
 ;
 ; PURPOSE:            InitRecall initialisiert Lernpotentiale fuer 
 ;                     unverzoegerte und verzoegerte Gewichtsstrukturen.
@@ -12,7 +15,8 @@
 ;                     Abklingfunktionen ausgewaehlt werden.
 ;                     
 ;
-; CATEGORY:           SIMULATION / PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:   LP = InitRecall( {Struc | HEIGHT=Höhe, WIDTH=Breite} 
 ;                                       { [,LINEAR='['Amplitude, Decrement']'] | 
@@ -61,6 +65,8 @@
 ;
 ; SEE ALSO: <A HREF="#TOTALRECALL">TotalRecall</A>, <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       Fri Sep 12 11:39:40 1997, Mirko Saam
@@ -80,7 +86,6 @@
 ;
 ;		Schoepfung
 ;
-;-
 
 FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, ALPHA=alpha, $
                      NOACCUMULATION=noaccumulation, SUSTAIN=sustain, SAMPLEPERIOD=sampleperiod

@@ -1,11 +1,14 @@
 ;+
-; NAME: ShowNoMercy
+; NAME:
+;  ShowNoMercy
 ;
+; AIM: Eliminate connections with strengths less than certain value (pruning).
 ;
 ; PURPOSE: Elimination von Verbindungen mit kleinen Gewichten
 ;          Klein bedeutet hier: abs(Gewicht) ist klein.
 ;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE: ShowNoMercy, DWMatrix, LESSTHAN=Abschneidewert
 ;
@@ -23,9 +26,14 @@
 ;          Setzt die Gewichte in der Delay-Weigh-Struktur W90_90, die
 ;          absolut genommen kleiner als 0.01 sind, auf !NONE
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.12  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 1.11  1998/02/05 13:17:42  saam
 ;                  + Gewichte und Delays als Listen
 ;                  + keine direkten Zugriffe auf DW-Strukturen
@@ -66,7 +74,7 @@
 ;       Wed Aug 20 14:38:59 1997, Andreas Thiel
 ;		Erste Version erstellt.
 ;
-;-
+
 PRO ShowNoMercy, DW, LESSTHAN=LessThan
 
 

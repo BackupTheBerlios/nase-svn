@@ -1,5 +1,8 @@
 ;+
-; NAME: InitPrecall
+; NAME:
+;  InitPrecall()
+;
+; AIM: Initialize list able to store pre-/postsynaptic spike time differences.
 ;
 ; PURPOSE: InitPrecall initialisiert eine Liste von prä- und postsynaptischen
 ;          Spikezeitpunkten, die später von <A HREF="#TOTALPRECALL">TotalPrecall</A> verwendet wird.
@@ -9,7 +12,8 @@
 ;          Delayänderungen benutzt, also beispielsweise <A HREF="#LEARNBIPOO">LearnBiPoo</A> oder
 ;           <A HREF="#LEARNDELAYS">LearnDelays</A>. 
 ;
-; CATEGORY: SIMULATION / PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE: pc = InitPrecall( dw, lw )
 ;
@@ -64,17 +68,20 @@
 ;
 ; SEE ALSO: <A HREF="#TOTALPRECALL">TotalPrecall</A>, <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>,  <A HREF="#LEARNBIPOO">InitLearnBiPoo</A>, <A HREF="#LEARNDELAYS">LeranDelays</A>.
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 1.2  1999/08/05 12:18:53  thiel
 ;           New structure to save more spikes.
 ;
 ;       Revision 1.1  1999/07/21 15:03:42  saam
 ;             + no docu yet
 ;
-;
-;-
 
 FUNCTION InitPrecall, DW, LW
 

@@ -1,5 +1,8 @@
 ;+
-; NAME: LearnBiPoo
+; NAME:
+;  LearnBiPoo
+;
+; AIM: Learn coupling strengths according to pre-/postsynaptic spike times.
 ;
 ; PURPOSE:            Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;                     Aktivitaeten in Source- und Targetcluster.
@@ -12,8 +15,8 @@
 ;                     postsynaptischer Aktivitaet.                    
 ;                     Das Lernfenster muss vorher mit InitLearnBiPoo definiert worden sein...
 ;
-;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:     LearnBiPoo, G, LP, LearnWindow
 ;                                  [,DELEARN=delearn] [,/SELF] [,/NONSELF] 
@@ -44,11 +47,16 @@
 ;               ...
 ;               Totalprecall, LP,DW_structure, target_layer
 ;               LearnBiPoo, DW_structure, LP,LearnWindow
-;               ...               
+;               ...
+;
+;-
 ;                
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 1.4  1999/11/01 13:31:00  alshaikh
 ;             header geschrieben
 ;
@@ -62,8 +70,7 @@
 ;             + this is learnbipoo version1
 ;             + no header yet, no time yet....
 ;
-;
-;-
+
 PRO LearnBiPoo, _DW, _PC, LW, SELF=Self, NONSELF=NonSelf, DELEARN=delearn
   
 

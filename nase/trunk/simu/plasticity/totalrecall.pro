@@ -1,5 +1,8 @@
 ;+
-; NAME:               TotalRecall
+; NAME:
+;  TotalRecall
+;
+; AIM: Update learning potentials.
 ;
 ; PURPOSE:            Die Prozedur erhaelt als Input die 
 ;                     (verzoegerten oder unverzoegerten) praesynaptischen 
@@ -10,7 +13,8 @@
 ;                     In-Handle uebergeben, so werden die Potentiale 
 ;                     nur abgeklungen.
 ;
-; CATEGORY:           SIMULATION / PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:   TotalRecall, LP [, DW]
 ;
@@ -39,10 +43,14 @@
 ;
 ; SEE ALSO: <A HREF="#INITRECALL">InitRecall</A>, <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
 ;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.12  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 2.11  1998/11/08 17:51:38  saam
 ;             LearnTag added
 ;
@@ -77,7 +85,6 @@
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;		Schoepfung
 ;
-;-
 
 PRO TotalRecall, _LP, _DW, LearnTag=LearnTag
 

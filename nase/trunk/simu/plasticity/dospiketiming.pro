@@ -1,5 +1,8 @@
 ;+
-; NAME:  DoSpikeTiming.pro
+; NAME:
+;  DoSpikeTiming
+;
+; AIM: Count combinations of intervals between pre-/postsynaptic spikes.
 ;
 ;
 ; PURPOSE: Zaehlt alle Kombinationen der pro Simulationsschritt vorkommenden Abstaende von
@@ -7,7 +10,8 @@
 ;          Lernfenster fallen.
 ;
 ;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ;
 ; CALLING SEQUENCE:  DoSpikeTiming, LP, Counter
@@ -29,10 +33,15 @@
 ;          ShowSpikeTiming, Counter
 ;          FreeSpikeTiming, Counter
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/26 15:13:43  thiel
+;         AIMS added.
+;
 ;     Revision 2.1  1999/11/10 15:06:01  alshaikh
 ;           initial version
 ;

@@ -1,11 +1,15 @@
 ;+
-; NAME:  FreeSpikeTiming.pro
+; NAME:
+;  FreeSpikeTiming
+;
+; AIM: Free memory allocated by InitSpikeTiming.
 ;
 ;
 ; PURPOSE: Gibt den von InitSpikeTiming belegten dynamischen Speicher frei
 ;
 ;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ;
 ; CALLING SEQUENCE: FreeSpikeTiming, COUNT
@@ -26,17 +30,18 @@
 ;                         ....
 ;                         FreeSpikeTiming, Counter 
 ;                          
-;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/26 15:13:43  thiel
+;         AIMS added.
+;
 ;     Revision 2.1  1999/11/10 15:06:02  alshaikh
 ;           initial version
 ;
-;
-;-
 
 
 PRO FreeSpikeTiming, _COUNT

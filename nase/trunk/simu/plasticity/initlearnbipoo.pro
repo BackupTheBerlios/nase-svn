@@ -1,5 +1,8 @@
 ;+
-; NAME:               InitLearnBiPoo
+; NAME:
+;  InitLearnBiPoo()
+;
+; AIM: Initialize learning function for LearnBiPoo learning rule.
 ;
 ; PURPOSE:            Initialisiert das Lernfenster fuer die LearnBiPoo - Lernregel:
 ;                                    
@@ -42,17 +45,21 @@
 ;           xaxis = FIndGen(n-2)*sample*1000.-T(0)
 ;           plot, xaxis, T(2:n-1), XSTYLE=1, XTITLE='t_post - t_pre / ms', YTITLE='Delta_W'
 ;
+;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 2.2  1999/07/26 12:51:45  thiel
 ;           Array now contains right values of tmaxpre/tmaxpost.
 ;
 ;       Revision 2.1  1999/02/03 13:35:59  saam
 ;              + part of the new learning system
 ;
-;
-;-
+
 FUNCTION InitLearnBiPoo, POSTTAU=posttau, PRETAU=pretau, POSTV=postv, PREV=prev, SAMPLE=sample, CUTFRAC=cutfrac, PREBAL=prebal, POSTBAL=postbal
 
    Default, POSTV  , 0.0001

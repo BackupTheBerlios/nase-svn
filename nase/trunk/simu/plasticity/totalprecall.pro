@@ -1,5 +1,8 @@
 ;+
-; NAME: TotalPrecall
+; NAME:
+;  TotalPrecall
+;
+; AIM: Update list containing pre-/postsynaptic spike time differences.
 ;
 ; PURPOSE: Diese Prozedur wird zur Aktualisierung einer Liste von 
 ;          Zeitdifferenzen zwischen prä- und postsynaptischen Spikes verwendet.
@@ -10,7 +13,8 @@
 ;          positiv, falls der postsynaptische Spike NACH dem präsynaptsichen 
 ;          auftritt. 
 ;
-; CATEGORY: SIMULATION / PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE: TotalPrecall, PC, DW, postL
 ;
@@ -39,12 +43,19 @@
 ;      ProceedLayer, L1
 ;   <Simulationloop STOP>
 ;
+;   FreeRecall, PC_L1_L1
+;   <free the rest as well>
+;
 ; SEE ALSO: <A HREF="#INITPRECALL">InitPrecall</A>, <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>, <A HREF="#LEARNBIPOO">LearnBiPoo</A> 
 ;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 1.10  1999/08/05 16:00:26  thiel
 ;           Tried to speed it up.
 ;
@@ -77,8 +88,6 @@
 ;       Revision 1.1  1999/07/21 15:03:42  saam
 ;             + no docu yet
 ;
-;
-;-
 
 PRO TotalPrecall, _PC, _DW, postL
 

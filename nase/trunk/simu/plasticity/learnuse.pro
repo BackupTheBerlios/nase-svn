@@ -1,5 +1,8 @@
-
-; NAME: LearnUse
+;+
+; NAME:
+;  LearnUse
+;
+; AIM: Learn use parameter of dynamical synapses using spike time differences.
 ;
 ; PURPOSE:            Aendern von U_se in Abhaengigkeit der
 ;                     Aktivitaeten in Source- und Targetcluster.
@@ -13,7 +16,8 @@
 ;                     Das Lernfenster muss vorher mit InitLearnBiPoo definiert worden sein...
 ;
 ;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:     LearnUse, G, LP, LearnWindow
 ;                                  [,DELEARN=delearn] [,/SELF] [,/NONSELF] 
@@ -45,18 +49,19 @@
 ;               Totalprecall, LP,DW_structure, target_layer
 ;               LearnUse, DW_structure, LP,LearnWindow
 ;               ...               
-;                
-
+;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/26 15:13:43  thiel
+;         AIMS added.
+;
 ;     Revision 2.1  1999/11/05 13:19:30  alshaikh
 ;           initial version
 ;
-;
-;-
-;+
 
 
 

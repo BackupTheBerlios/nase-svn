@@ -1,5 +1,8 @@
 ;+
-; NAME: LearnHebbLP
+; NAME:
+;  LearnHebbLP
+;
+; AIM: Learn coupling strengths according to Hebb rule with learning potential.
 ;
 ; PURPOSE: Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;          Aktivitaeten in Source- und Targetcluster
@@ -24,8 +27,8 @@
 ;       
 ;             mit: ENTLERNRATE=Rate,  LERNRATE=Rate*alpha
 ;          
-;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:     LearnHebbLP, G, LP, TARGET_CL=TargetCluster, 
 ;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
@@ -66,9 +69,14 @@
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
+;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.22  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 1.21  1998/11/09 10:58:53  saam
 ;             adapted to new layer type
 ;
@@ -149,12 +157,10 @@
 ;
 ;             Behandlung von nicht vorhandenen Verbindungen
 ;
-;
-;
-;		 erste Version vom 30 Juli
-;                '97. Andreas.  neue Keyword-Abfrage und
-;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
-;-
+;       erste Version vom 30 Juli '97. Andreas.  
+;       neue Keyword-Abfrage und
+;       Geschwindigkeitsoptimierung. 5. August '97. Andreas.
+
 PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
                     LERNRATE=lernrate, ENTLERNRATE=entlernrate
   

@@ -1,5 +1,8 @@
 ;+
-; NAME: LearnABS
+; NAME:
+;  LearnABS
+;
+; AIM: Learn connection strengths according to ABS rule.
 ;
 ; PURPOSE: Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;          Aktivitaeten in Source- und Targetcluster
@@ -24,7 +27,8 @@
 ;          und ThetaPlus liegt. Ist es groesser als ThetaPlus, wird die Verbindung
 ;          verstaerkt, ansonsten wird sie nicht veraendert.
 ;
-; CATEGORY: SIMULATION, PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE: LearnABS, G, TARGET_CL=TargetCluster, 
 ;                             RATE=Rate, ALPHA=Alpha,
@@ -71,9 +75,19 @@
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
+; REFERENCES: Artola et al., "Different voltage-dependent thresholds
+;             for inducing long-term depression and long-term
+;             potentiation in slices of rat visual cortex", Nature
+;             347, 1990.
+;
+;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.7  2000/09/26 15:13:43  thiel
+;     AIMS added.
+;
 ; Revision 2.6  1998/08/23 12:59:21  saam
 ;       + Delayed-Version didn't work at all -> its ok now i guess
 ;       + syntax change: the specificaion of a source cluster is
@@ -103,8 +117,6 @@
 ; Revision 2.1  1997/11/04 15:32:48  thiel
 ;        Ab heute fuer alle: eine einfache ABS-Lernregel.
 ;
-;
-;-
 
 
 PRO LearnABS, _DW, $

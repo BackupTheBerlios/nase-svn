@@ -1,5 +1,8 @@
 ;+
-; NAME:               LearnHebbLP2
+; NAME:
+;  LearnHebbLP2
+;
+; AIM: Hebb rule with learning potential and progressive decay of coupling.
 ;
 ; PURPOSE:            Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;                     Aktivitaeten in Source- und Targetcluster
@@ -18,7 +21,8 @@
 ;                     (Subtraktion des alten Gewichts),falls der letzte praesynaptische Spike schon zu lange
 ;                     zurueckliegt (das resultiert dann naemlich in kleinem Wert des Lernpotentials) 
 ;
-; CATEGORY: SIMULATION PLASTICITY
+; CATEGORY:
+;  Simulation / Plasticity
 ;
 ; CALLING SEQUENCE:     LearnHebbLP, G, LP, TARGET_CL=TargetCluster, 
 ;                                    ALPHA=alpha, GAMMA=gamma, DELEARN=delearn
@@ -56,9 +60,14 @@
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
+;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.6  2000/09/26 15:13:43  thiel
+;           AIMS added.
+;
 ;       Revision 2.5  1998/11/08 17:52:42  saam
 ;             changed to new layer type
 ;
@@ -78,8 +87,7 @@
 ;       Revision 2.1  1998/01/21 21:54:52  saam
 ;             Aus LearnHebbLP hervorgegangen.
 ;
-;
-;-
+
 PRO LearnHebbLP2, _DW, LP, TARGET_CL=Target_CL,SELF=Self,NONSELF=NonSelf, $
                 ALPHA=alpha, GAMMA=gamma, DELEARN=delearn
   
