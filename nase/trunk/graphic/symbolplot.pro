@@ -8,7 +8,8 @@
 ;
 ; CATEGORY: Graphic, Visualisierung
 ;
-; CALLING SEQUENCE: SymbolPlot, Array [,/OPLOT]
+; CALLING SEQUENCE: SymbolPlot, Array [,posx, posy [,OFFSET = Offset]]
+;                               [,/OPLOT]
 ;                               [,POSSYM = SymbolIndex] [,NEGSYM = SymbolIndex]
 ;                               [,POSCOLOR = color] [,NEGCOLOR = color] [,COLORS = ColorIndexArray] [,/NASCOL]
 ;                               [,POSORIENT= angle] [,NEGORIENT= angle] [,ORIENTATIONS=OrientArray] [,/RAD] [,/DIRECTION] [,/FILL]
@@ -19,7 +20,12 @@
 ; INPUTS: Array: Das zu plottende Array.
 ;                Wird /NOSCALE angegeben, so sollten alle Werte im Bereich [-1,+1] liegen.
 ;
-; OPTIONAL INPUTS: POSSYM: Das Symbol, das für positive Werte verwendet wird.
+; OPTIONAL INPUTS: 
+;                  posx,
+;                  posy  : Optionale Arrays, die die Position des jeweiligen Symbols angeben. Die Groesse dieser
+;                          Arrays muss identisch mit Array sein. Die Achsen werden entsprechend skaliert (siehe
+;                          auch Keyword OFFSET).
+;                  POSSYM: Das Symbol, das für positive Werte verwendet wird.
 ;                          Default: leeres Kästchen.
 ;                  NEGSYM: Das Symbol, das für positive Werte verwendet wird.
 ;                          Default: X.
@@ -54,7 +60,10 @@
 ;                          (Man beachte, daß hier -hoffentlich- auch auf TrueColor-Displays die Farbtabelle 
 ;                          benutzt wird).
 ;                          NEG/POSCOLOR wird dann ignoriert.
-;
+;                  OFFSET: (!zeigt nur einen Effekt, wenn posx und posy uebergeben werden!) Offset soll das Problem
+;                          beheben, dass grosse Symbole am Achsenrand ueber die Achsen hinaus gezeichnet werden.
+;                          Daher kann ein positiver Wert von OFFSET die Achsenskalierung erweitern, sodass die
+;                          die Achsen von MIN(posx)-OFFSET bis MAX(posx)+OFFSET (und analog fuer y) gezeichnet werden.
 ;               POSORIENT: Wenn angegeben, für positive Werte ein Orientierungs-/Richtungssymbol
 ;                          mit entsprechendem Winkel benutzt (vgl. <A HREF="#ORIENTSYM">OrientSym</A>).
 ;                          POSSYM wird dann ignoriert.
@@ -112,6 +121,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.7  1999/12/02 15:02:15  saam
+;              + new positional arguments posx, posy for
+;                arbitrary symbol positions
+;              + keyword parameter OFFSET to change the
+;                scaling behaviour
+;
 ;        Revision 2.6  1999/11/04 17:31:40  kupper
 ;        Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;        -extremely- slow down performance on True-Color-Displays when
@@ -142,11 +157,12 @@
 ;
 ;-
 
-Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, $
+Pro SymbolPlot, _a, posx, posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, $
                POSCOLOR=poscolor, NEGCOLOR=negcolor, NONECOLOR=nonecolor, COLORS=_colors, NASCOL=nascol, $
                POSORIENT=posorient, NEGORIENT=negorient, ORIENTATIONS=_orientations, RAD=rad, DIRECTION=direction, $
                NASE=nase, noscale=noscale, $
                THICK=thick, FILL=fill, $
+               OFFSET=offset,$
                XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift, $
                 _EXTRA=_extra
 
@@ -158,8 +174,7 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
    Default, POSCOLOR, !P.COLOR
    Default, NEGCOLOR, RGB("red", /NOALLOC)
    Default, NONECOLOR, RGB("pale blue", /NOALLOC)
-   Default, XTICKNAMESHIFT, 0
-   Default, YTICKNAMESHIFT, 0
+   Default, OFFSET, 1
 
    If Keyword_Set(NASCOL) then begin
       If not Keyword_Set(NASE) then message, /INFORM, "/NASCOL-Schlüsselwort gesetzt, aber nicht /NASE - sicher?"
@@ -187,15 +202,26 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
    height = s(2)
 
 
-   ;;------------------> !X und !Y geeignet setzen
-   PrepareNasePlot, height, width, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot, $
-    XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift
-   ;;--------------------------------
+   IF Set(posx) AND Set(posy) THEN BEGIN
+      noprepare = 1
+      If Keyword_Set(OPLOT) then noerase = 1 else noerase = 0
+      plot, [0], /NODATA, NOERASE=noerase, XRANGE=[FIX(MIN(posx))-offset, FIX(MAX(posx))+offset], YRANGE=[FIX(MIN(posy))-offset, FIX(MAX(posy))+offset],XSTYLE=1, YSTYLE=1, _EXTRA=_extra
+   END ELSE BEGIN
+     ;;------------------> !X und !Y geeignet setzen
+      PrepareNasePlot, width, height, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot, $
+       XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift
+     ;;--------------------------------
 
-   ;;------------------> Koordinatensystem plotten
-   If Keyword_Set(OPLOT) then noerase = 1 else noerase = 0
-   plot, [0], /NODATA, NOERASE=noerase, _EXTRA=_extra
-   ;;--------------------------------
+      ;;------------------> Koordinatensystem plotten
+      If Keyword_Set(OPLOT) then noerase = 1 else noerase = 0
+      plot, [0], /NODATA, NOERASE=noerase, _EXTRA=_extra
+      ;;--------------------------------
+   END
+
+   Default, posx, REBIN(Indgen(width)+1, width, height)
+   Default, posy, TRANSPOSE(REBIN(Indgen(height)+1, height, width))   
+
+
 
    ;;------------------> PlotBereich bestimmen
    dev00 = Convert_Coord(0, 0, /DATA, /TO_DEVICE)
@@ -209,21 +235,21 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
 
    ;;------------------> Symbole plotten
    Sym = 0                      ;Nur damits definiert ist!
-   For y=1, height do $
-    For x=1, width do begin
-      If Keyword_Set(NASE) and TOTAL(((y-1)*width+x-1) eq nones) gt 0 then begin
-         If set(COLORS) then col = COLORS(x-1, y-1) else col = nonecolor
+   For y=0, height-1 do $
+    For x=0, width-1 do begin
+      If Keyword_Set(NASE) and TOTAL((y*width+x) eq nones) gt 0 then begin
+         If set(COLORS) then col = COLORS(x, y) else col = nonecolor
          sym = nonesym
       Endif else begin          ;kein None
-         If a(x-1, y-1) gt 0 then begin
-            If set(COLORS) then col = COLORS(x-1, y-1) else col = poscolor
-            If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+         If a(x, y) gt 0 then begin
+            If set(COLORS) then col = COLORS(x, y) else col = poscolor
+            If set(ORIENTATIONS) then sym = OrientSym(orientations(x, y), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
             else If set(POSORIENT) then sym = OrientSym(posorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
             else sym = possym
          endif
-         If a(x-1, y-1) lt 0 then begin
-            If set(COLORS) then col = COLORS(x-1, y-1) else col = negcolor
-            If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+         If a(x, y) lt 0 then begin
+            If set(COLORS) then col = COLORS(x, y) else col = negcolor
+            If set(ORIENTATIONS) then sym = OrientSym(orientations(x, y), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
             else If set(NEGORIENT) then sym = OrientSym(negorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
             else sym = negsym
          endif
@@ -239,12 +265,12 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
          sym = 8                ;use user Symbol
       EndIf      
       ;;--------------------------------
-      If a(x-1, y-1) ne 0 then PlotS, x, y, PSym=sym, Color=col, SYMSIZE=symsize*abs(a(x-1, y-1)), THICK=thick
+      If a(x, y) ne 0 then PlotS, posx(x,y), posy(x,y), PSym=sym, Color=col, SYMSIZE=symsize*abs(a(x, y)), THICK=thick
    EndFor
    ;;--------------------------------
   
    ;;------------------> !X und !Y restaurieren
-   PrepareNasePlot, RESTORE_OLD=oldplot
+   IF NOT Set(noprepare) THEN PrepareNasePlot, RESTORE_OLD=oldplot
    ;;--------------------------------
 
 End
