@@ -10,7 +10,7 @@
 ; CALLING SEQUENCE:    id = opID(operatorString)
 ;
 ; INPUTS:              operatorString: currently the following strings are
-;                                      allowed: ADD, OR, AND (case insensitive)
+;                                      allowed: ADD, OR, AND, MULT, DIV (case insensitive)
 ;
 ; OUTPUTS:             id : a numeric value for the specified operation and
 ;                           !NONE if the operation is unknown
@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/05/17 08:22:01  saam
+;           added new operators "*" and "/"
+;
 ;     Revision 1.1  2000/01/21 12:45:19  saam
 ;           extracted from iftemplate2
 ;
@@ -34,7 +37,7 @@ FUNCTION opID, logicStr
    
    On_Error, 2
    
-   logiclist = ['AND','OR','ADD']
+   logiclist = ['AND','OR','ADD','MULT','DIV']
    mylogic = WHERE(STRUPCASE(logicStr) EQ STRUPCASE(logiclist),c)
    
    IF c EQ 0 THEN BEGIN

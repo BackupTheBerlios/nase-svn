@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/05/17 08:22:01  saam
+;           added new operators "*" and "/"
+;
 ;     Revision 1.1  2000/01/21 12:45:19  saam
 ;           extracted from iftemplate2
 ;
@@ -35,7 +38,9 @@ FUNCTION Operator, op, A, B
    CASE op OF
       0   : RETURN, A AND B
       1   : RETURN, A OR  B
-      2   : RETURN, A +   B
+      2   : RETURN, A + B
+      3   : RETURN, A * B
+      4   : RETURN, A / B
       ELSE: Message, 'unknown operator'
    ENDCASE
 
