@@ -1,56 +1,73 @@
 ;+
-; NAME:               UMOMENT
+; NAME:
+;  UMoment()
 ;
-; AIM:                mean, variance, skewness and kurtosis of an n-element vector
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            This function computes the mean, variance, skewness and kurtosis
-;                     of an n-element vector. if values are not defined !NONE  will
-;                     be returned instead
+; AIM:
+;  Mean, variance, skewness and kurtosis of an n-element vector.
 ;
-; CATEGORY:           METHODS STATISTICS
+; PURPOSE:
+;  This function computes the mean, variance, skewness and kurtosis of
+;  an n-element vector.  <BR> 
+;  Reference: APPLIED STATISTICS (third edition), J. Neter,
+;             W. Wasserman, G.A. Whitmore, ISBN 0-205-10328-6
 ;
-; CALLING SEQUENCE:   Result = UMoment(X [,ORDER=ORDER] [,/DOUBLE] [,MDEV=mdev] [,SDEV=sdev])
+; CATEGORY:
+;  Statistics
+;  Signals
 ;
-; INPUTS:             X :        An n-element vector of type integer, float or double.
-
+; CALLING SEQUENCE:
+;* result = UMoment(x [,ORDER=...] [,/DOUBLE] [,MDEV=...] [,SDEV=...])
 ;
-; KEYWORD PARAMETERS: DOUBLE: If set to a non-zero value, computations are done in
-;                             double precision arithmetic.
-;                     MDEV:   Use this keyword to specify a named variable which returns
-;                             the mean absolute deviation of X.
+; INPUTS:
+;  x:: An n-element vector of type integer, float or double.
 ;
-;                     SDEV:   Use this keyword to specify a named variable which returns
-;                             the standard deviation of X.
-;                     ORDER:  the maximal order of the moment to calculate
-;                             (default: 3)  
+; INPUT KEYWORDS:
+;  ORDER:: The maximal order of the moment to calculate (default: 3).  
+;  DOUBLE:: If set to a non-zero value, computations are done in
+;           double precision arithmetic. 
+;
+; OUTPUTS:
+;  result:: Moments of the distribution contained in
+;           <*>x</*>. Undefined values are returned as <*>!NONE</*>.
+;
+; OPTIONAL OUTPUTS:
+;  MDEV:: Use this keyword to specify a named variable which returns
+;         the mean absolute deviation of <*>x</*>. 
+;  SDEV:: Use this keyword to specify a named variable which returns
+;         the standard deviation of <*>x</*>.
+;
 ; SIDE EFFECTS:
-;                    if keyword ORDER is equal zero, no MDEV and SDEV are
-;                    calculated
-;
-; EXAMPLE:
-;       Define the n-element vector of sample data.
-;         x = [65, 63, 67, 64, 68, 62, 70, 66, 68, 67, 69, 71, 66, 65, 70]
-;       Compute the mean, variance, skewness and kurtosis.
-;         result = moment(x)
-;       The result should be the 4-element vector: 
-;       [66.7333, 7.06667, -0.0942851, -1.18258]
+;  If keyword <*>ORDER</*> is equal zero, no MDEV and SDEV are
+;  calculated.
 ;
 ; PROCEDURE:
-;       UMOMENT computes the first four "moments" about the mean of an 
-;       n-element vector of sample data. The computational formulas 
-;       are given in the Univariate Statistics section of the Mathematics
-;       Guide.
-; 
+;  <C>UMoment()</C> computes the first four "moments" about the mean
+;  of an n-element vector of sample data. The computational formulas
+;  are given in the Univariate Statistics section of the Mathematics
+;  Guide.
 ;
+; EXAMPLE:
+;  Define the n-element vector of sample data.
+;*  x = [65, 63, 67, 64, 68, 62, 70, 66, 68, 67, 69, 71, 66, 65, 70]
+;  Compute the mean, variance, skewness and kurtosis.
+;*  result =UMoment(x)
+;  The result should be the 4-element vector: 
+;*> [66.7333, 7.06667, -0.0942851, -1.18258]
 ;
-; REFERENCE:
-;       APPLIED STATISTICS (third edition)
-;       J. Neter, W. Wasserman, G.A. Whitmore
-;       ISBN 0-205-10328-6
+; SEE ALSO:
+;  <A>IMoment()</A>. 
+;
 ;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  2001/05/25 08:27:13  thiel
+;          Header update.
+;
 ;       Revision 1.7  2000/10/05 16:39:14  gabriel
 ;            KEYWORD order new
 ;
