@@ -44,10 +44,10 @@
 ; + hide plots behing others by adding polyfills in background color.
 ;
 ; EXAMPLE:
-;*a = Gauss_2D(15,15)
-;*Plot3D, a,ax=30 ,az=10
-;*Plot3D, a, [0,2,3,5,7,10,16,17,18,19,19.5,20,21,22,24] $
-;* , Indgen(15)-7, ax=30 ,az=10
+;* a = Gauss_2D(15,15)
+;* Plot3D, a,ax=30 ,az=10
+;* Plot3D, a, [0,2,3,5,7,10,16,17,18,19,19.5,20,21,22,24] $
+;*  , Indgen(15)-7, ax=30 ,az=10
 ;
 ; SEE ALSO:
 ;  IDL's <C>Surface</C>.
@@ -119,9 +119,9 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    ;-----> 
    ;-----> OUTPUT RESULT
    ;----->    
-   b=TVRD()	        ; Read image.
+   b = TVRD()	        ; Read image.
    USet_Plot, current_device	; Select previous output device.
-   UTVScl, b	        ; Output the image.
+   UTV, b, /ALLOWCOLORS             ; Output the image.
 
 END
 
