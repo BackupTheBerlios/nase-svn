@@ -19,13 +19,12 @@
 ;  + Handling of the special NASE value !NONE<BR>
 ;
 ;  <I>Note on clipping:</I><BR>
-;    Color clipping naturally only occurs when the <C>/NOSCALE</C>
-;    option is used. Clipped values will be indicated by dark yellow
-;    for the upper bound and very dark yellow for the lower bound.
-;    In <C>/NOSCALE</C> mode, this function displays all entries
-;    inside the array that lie above <*>!TOPCOLOR</*> or below 0 in
-;    the special yellowish colors. The value <*>!NONE</*> is displayed
-;    in the standard blue color.
+;    Clipped values will be indicated by dark yellow for the upper
+;    bound and very dark yellow for the lower bound. This function
+;    displays all entries inside the array that lie (after a possible
+;    scaling) above <*>!TOPCOLOR</*> or below 0 in the special
+;    yellowish colors. The value <*>!NONE</*> is always displayed in
+;    the standard blue color.
 ;    If <C>/ALLOWCOLORS</C> is set, at the upper end of the palette,
 ;    only colors above the color table size are clipped, leaving the
 ;    indices between <*>!TOPCOLOR</*> and <*>!D.TABLE_SIZE-1</*>
@@ -56,6 +55,7 @@
 ;*               [,CUBIC=...][,/INTERP][,/MINUS_ONE]
 ;*               [,/NASE]
 ;*               [,/ALLOWCOLORS]
+;*               [,TOP=...] [,RANGE_IN=[..., ...]]
 ;
 ;  <C>UTvScl</C> passes unknown options to <C>TvScl</C>, e.g. <*>/ORDER</*>.
 ;
@@ -96,6 +96,12 @@
 ;       coloring. <*>TOP</*> is automatically limited to !TOPCOLOR (to !D.TABLE_SIZE-1 for
 ;       truecolor images). This mimicks the bahaviour of <C>TVScl</C>.
 ;       See also IDL online help for this routine.
+; RANGE_IN:: 2-element array specifying the correspondance range for
+;            color scaling: The first value will be scaled to color
+;            index <*>0</*>, the second value will be scaled to color
+;            index <*>!TOPCOLOR</*> (or <*>TOP</*>, if set). This
+;            parameter defaults to <*>[min(Image),max(Image)]</*>,
+;            mimicking the behaviour of IDL's <C>TvScl</C>.
 ; CUBIC, /INTERP, /MINUS_ONE:: These keywords are used to interpolate
 ;                            the final image. They are passed to the
 ;                            <C>Congrid</C> routine that accomplishes
@@ -143,6 +149,7 @@
 ;    is interpreted as the x-coordinate, and y defaults to zero. This
 ;    is wrong, positions in the window should be counted in this case,
 ;    see documentation of IDL's <C>TV</C> or POLY=0-behaviour.
+;  o (more see the NASE ToDo list).
 ;                
 ; EXAMPLE:
 ;* bild = FIndgen(100,100)
@@ -159,14 +166,16 @@
 
 
 ; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top falls top gesetzt)
-; skalierte Version eines Arrays A zurueck
-Function __ScaleArray, A, TOP=top, TRUE=true
+; skalierte Version eines Arrays A zurueck.
+; NONEs are preserved.
+Function __ScaleArray, A, TOP=top, TRUE=true, RANGE_IN=range_in
    ;; for truecolor, just do scaling to [0,TOP], no special
    ;; handling at all (mimick behaviour of IDL's TVSCL).
    If Keyword_Set(TRUE) then begin
       Default, top, !D.TABLE_SIZE
       _top = top < !D.TABLE_SIZE
-      return, Scl(A, [0, _top])
+      Default, range_in, [min(A), max(A)]
+      return, Scl(A, [0, _top], range_in)
    endif
 
    Default, top, !TOPCOLOR
@@ -178,14 +187,16 @@ Function __ScaleArray, A, TOP=top, TRUE=true
 
    if nononecount ne 0 then begin
       ;; there is at least one value that is not !NONE
-
       min = min(A[nonones])
       max = max(A[nonones])
-      result = Scl(A, [0, _top], [min, max])
+      Default, range_in, [min, max]
+      
+      result = Scl(A, [0, _top], range_in)
    endif
 
-   ;; set nones to correct color:
-   if nonecount ne 0 then result[nones] = rgb("none")
+   ;; restore nones:
+;;   if nonecount ne 0 then result[nones] = rgb("none")
+   if nonecount ne 0 then result[nones] = !NONE
 
    Return, result
 End
@@ -230,6 +241,7 @@ End
 PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
                      , NOSCALE=NOSCALE, DEVICE=device $
                      , TOP=TOP ,ORDER=ORDER, ALLOWCOLORS=allowcolors, $
+                     RANGE_IN=range_in, $
                      _EXTRA=extra
 
    ON_ERROR, 2
@@ -247,7 +259,7 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
    IF (NOSCALE EQ 1) THEN BEGIN
       ARRAY = __ClipArray(A, ALLOWCOLORS=allowcolors, TRUE=true)
    END ELSE BEGIN
-      ARRAY = __ScaleArray(A, TOP=top, TRUE=true)
+      ARRAY = __ClipArray(__ScaleArray(A, TOP=top, TRUE=true, RANGE_IN=range_in), TRUE=true)
       TVLCT,R,G,B,/GET   
    ENDELSE
 
@@ -289,6 +301,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , TOP=top $
             , NASE=nase  $
             , ALLOWCOLORS=allowcolors $
+            , RANGE_IN=range_in $
             , _EXTRA=e
 
    ON_ERROR, 2
@@ -454,31 +467,31 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e 
             END ELSE BEGIN
-               TV, __ScaleArray(Image, TOP=top, TRUE=true), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(__ScaleArray(Image, TOP=top, TRUE=true, RANGE_IN=range_in), TRUE=true), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               TV, __ScaleArray(Image, TOP=top, TRUE=true), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(__ScaleArray(Image, TOP=top, TRUE=true, RANGE_IN=range_in), TRUE=true), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygons instead of pixels
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                , /NOSCALE, DEVICE = device, TOP=top, _EXTRA=e 
+                , /NOSCALE, DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e 
             END ELSE BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                , DEVICE = device, TOP=top, _EXTRA=e
+                , DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                , /NOSCALE, DEVICE = device, TOP=top, _EXTRA=e
+                , /NOSCALE, DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e
             END ELSE BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                , DEVICE = device, TOP=top, _EXTRA=e
+                , DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e
             END
          END 
       ENDELSE
@@ -491,33 +504,33 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xnorm, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               TV, __ScaleArray(Image, TOP=top, TRUE=true), xnorm, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(__ScaleArray(Image, TOP=top, TRUE=true, RANGE_IN=range_in), TRUE=true), xnorm, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xpos, ypos, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               TV, __ScaleArray(Image, TOP=top, TRUE=true), xpos, ypos, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(__ScaleArray(Image, TOP=top, TRUE=true, RANGE_IN=range_in), TRUE=true), xpos, ypos, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygons instead of pixels
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                , /NOSCALE, DEVICE = device, TOP=top $
+                , /NOSCALE, DEVICE = device, TOP=top, RANGE_IN=range_in $
                 ;;, TRUE=true $ ;; TRUE not supported for polygons
                , _EXTRA=e 
             END ELSE BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                , DEVICE = device, TOP=top, _EXTRA=e
+                , DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                , /NOSCALE, DEVICE = device, TOP=top, _EXTRA=e
+                , /NOSCALE, DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e
             END ELSE BEGIN
                __MultiPolyPlot, ALLOWCOLORS=allowcolors, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                , DEVICE = device, TOP=top, _EXTRA=e
+                , DEVICE = device, TOP=top, RANGE_IN=range_in, _EXTRA=e
             END
          END 
          
