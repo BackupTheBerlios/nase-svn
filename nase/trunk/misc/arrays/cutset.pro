@@ -15,7 +15,7 @@
 ;   Math
 ;
 ; CALLING SEQUENCE:
-;*   cs = CutSet(SetA,SetB)
+;*   cs = CutSet(SetA,SetB[,cnt])
 ;
 ; INPUTS:
 ;   SetA:: the first set (array) of any type and any dimension;
@@ -27,6 +27,10 @@
 ;        the elements are sorted in ascending order (due to the way IDL's <*>Uniq</*> works);
 ;        if one of the arguments is an empty set (=!None, not undefined!)
 ;        the result will also be empty (=!None)
+;
+; OPTIONAL OUTPUTS:
+;   cnt:: a longinteger containing the number of elements in the resulting array (set); <BR>
+;         zero if result represents empty set
 ;
 ; RESTRICTIONS:
 ;  If one argument is of type string, then the other has to be as well.
@@ -44,6 +48,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2002/04/30 15:39:05  gail
+;     introduced optional counter output to contain power of resulting sets;
+;     unified handling of empty sets
+;
 ;     Revision 1.5  2001/03/15 15:07:12  gail
 ;     bug fix: string handling
 ;
@@ -65,7 +73,7 @@
 ;
 ;-
 
-FUNCTION CutSet, SetA, SetB
+FUNCTION CutSet, SetA, SetB, cnt
 
   On_Error, 2
 
@@ -77,16 +85,16 @@ FUNCTION CutSet, SetA, SetB
 
 ; if called with an empty set then return an empty set
   IF (SIZE(SetA, /TYPE) EQ 7) THEN BEGIN
-    IF (SetA(0) EQ '')    OR (SetB(0) EQ '')    THEN Return, ''
+    IF (SetA(0) EQ '')    OR (SetB(0) EQ '')    THEN BEGIN cnt = 0  &  Return, ''     &  ENDIF
   ENDIF ELSE BEGIN
-    IF (SetA(0) EQ !None) OR (SetB(0) EQ !None) THEN Return, !None
+    IF (SetA(0) EQ !None) OR (SetB(0) EQ !None) THEN BEGIN cnt = 0  &  Return, !None  &  ENDIF
   ENDELSE
 
 ; reduce to a set for the case that SetA contains multiple instances of the same value (array!)
   ElmA = Elements(SetA)
 
   ; mark all elements of ElmA that are also in SetB and return them
-  R = Where(Equal(ElmA,SetB))
-  IF R(0) NE -1 THEN  Return, ElmA(R)  ELSE Return, !None
+  R = Where(Equal(ElmA,SetB),cnt)
+  IF cnt NE 0 THEN  Return, ElmA(R)  ELSE Return, !None
 
 END

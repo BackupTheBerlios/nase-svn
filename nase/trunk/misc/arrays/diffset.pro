@@ -19,7 +19,7 @@
 ;   Math
 ;
 ; CALLING SEQUENCE:
-;*   ds = DiffSet(SetA,Sub)
+;*   ds = DiffSet(SetA,Sub[,cnt])
 ;
 ; INPUTS:
 ;   SetA:: the set (array) that will be reduced (any type, any dimension)
@@ -30,6 +30,9 @@
 ;   ds:: an linear array of the same type as the first argument;
 ;        if one of the arguments is an empty set (=!None, not undefined!)
 ;        the result will be identical to <*>SetA</*>.
+;
+; OPTIONAL OUTPUTS:
+;   cnt:: a longinteger containing the number of elements in the resulting array (set)
 ;
 ; INPUT KEYWORDS:
 ;  ARRAY:: set this keyword to avoid sorting the result and removing multiple entries
@@ -49,6 +52,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2002/04/30 15:39:05  gail
+;     introduced optional counter output to contain power of resulting sets;
+;     unified handling of empty sets
+;
 ;     Revision 1.4  2001/03/15 15:07:12  gail
 ;     bug fix: string handling
 ;
@@ -67,7 +74,7 @@
 ;
 ;-
 
-FUNCTION DiffSet, SetA, Sub, array=array
+FUNCTION DiffSet, SetA, Sub, cnt, array=array
 
   On_Error, 2
 
@@ -78,18 +85,14 @@ FUNCTION DiffSet, SetA, Sub, array=array
     Console, /FATAL, 'both or no arguments may be strings'
 
   ; if called with an empty set then return SetA (because there's nothing to do)
-  IF (SIZE(SetA, /TYPE) EQ 7) THEN BEGIN
-    IF (SetA(0) EQ ''   ) OR (Sub(0) EQ ''   ) THEN Return, SetA
-  ENDIF ELSE BEGIN
-    IF (SetA(0) EQ !None) OR (Sub(0) EQ !None) THEN Return, SetA
-  ENDELSE
+  IF EmptySet(SetA,cnt) THEN Return, SetA
 
   ; evtl. reduce to a set for the case that SetA contains multiple instances of the same value (array!)
   IF Keyword_Set(array) THEN ElmA = SetA  $
                         ELSE ElmA = Elements(SetA)
 
   ; mark all elements of ElmA that are not in Sub and return them
-  R = Where(NotEqual(ElmA,Sub))
-  IF R(0) NE -1 THEN  Return, ElmA(R)  ELSE Return, !None
+  R = Where(NotEqual(ElmA,Sub),cnt)
+  IF cnt NE 0 THEN  Return, ElmA(R)  ELSE Return, !None
 
 END
