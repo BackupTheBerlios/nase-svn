@@ -88,9 +88,9 @@
 ;                    Das Setzen eines dieser Schlüsselworte
 ;                    entscheidet darüber, welche Information des
 ;                    OutputLayers zur Berechnung der RFs benutzt wird:
-;                    Die reine Spike-Information (OBSERVE_SPIKES, dies 
+;                    Die reine Spike-Information (<*>OBSERVE_SPIKES</*>, dies 
 ;                    ist der Default) oder das Membranpotential
-;                    (OBSERVE_POTENTIALS), also eine Art
+;                    (<*>OBSERVE_POTENTIALS</*>), also eine Art
 ;                    intrazelluläre Ableitung. Man beachte, daß das
 ;                    Spikemuster lediglich Auskunft darüber gibt, ob
 ;                    eine Zelle genügend erregt war, um zu
@@ -103,9 +103,9 @@
 ;<BR>
 ;
 ;  (automatic input generation)::
-;       Alle weiteren Schlüsselworte und das "Picture"-Argument
-;         betreffen die Art des Inputs.
-;         Dabei werden drei mögliche Inputmethoden unterschieden:<BR><BR>
+;       Alle weiteren Schlüsselworte und das <*>Picture</*>-Argument
+;       betreffen die Art des Inputs.
+;       Dabei werden drei mögliche Inputmethoden unterschieden:<BR><BR>
 ;
 ;         <I>1. Die manuelle Methode:</I><BR>
 ;                                  Wird keins der <*>AUTO_*</*>-Schlüsselworte 
@@ -121,8 +121,8 @@
 ;                                  Methode initialisiert, so wird eine 
 ;                                  informative Message darüber
 ;                                  ausgegeben.<BR><BR>
-;         <I>2. Die halbautomatische</I><BR>
-;                         Methode: Wird bei der Initialisierung ein
+;         <I>2. Die halbautomatische Methode:</I><BR>
+;                                  Wird bei der Initialisierung ein
 ;                                  Bild als <*>Picture</*>-Argument
 ;                                  übergeben (auf richtige Ausmaße
 ;                                  achten!), so sorgt <A>RFScan_Zeigmal</A>
