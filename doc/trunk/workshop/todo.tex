@@ -1,108 +1,10 @@
-% FILE:     workshop (Master) 
+% FILE:     workshop (Master)
 %
 % LOCATION: /mhome/saam/sim/doc/workshop/
 %
 % AUTHOR:   saam
 %
 % DATE:     Sun Oct  1 18:59:58 MEST 2000
-%
-% MODIFICATION HISTORY:
-%
-%       $Log$
-%       Revision 1.31  2003/08/15 10:04:41  thiel
-%          This time its a real update.
-%
-%       Revision 1.30  2003/08/15 09:15:20  thiel
-%          Another test.
-%
-%       Revision 1.29  2003/08/15 08:48:19  kupper
-%       testitest
-%
-%       Revision 1.28  2003/08/14 14:42:22  thiel
-%          hm
-%
-%       Revision 1.27  2003/08/14 14:31:29  kupper
-%       still still
-%
-%       Revision 1.26  2003/08/14 14:29:41  kupper
-%       still
-%
-%       Revision 1.25  2003/08/14 14:26:00  kupper
-%       even more testing
-%
-%       Revision 1.24  2003/08/14 14:06:11  thiel
-%          Automatically?
-%
-%       Revision 1.23  2003/08/14 13:50:11  kupper
-%       still testing
-%
-%       Revision 1.22  2003/08/14 13:11:07  kupper
-%       testing todo-automaking.
-%
-%       Revision 1.21  2003/08/14 12:45:45  kupper
-%       just testing.
-%
-%       Revision 1.20  2003/08/14 09:52:53  thiel
-%          Test.
-%
-%       Revision 1.19  2003/08/13 13:35:46  kupper
-%       added new bug to utvscl.
-%
-%       Revision 1.18  2003/08/13 12:59:07  thiel
-%          Small changes for test purpose.
-%
-%       Revision 1.17  2003/03/26 16:03:51  kupper
-%       added two bugs for UTvScl in todo-list.
-%
-%       Revision 1.16  2001/11/27 14:25:25  thiel
-%          FloatWeigh fulfilled.
-%
-%       Revision 1.15  2001/05/08 13:43:10  thiel
-%          RealFileName can be turned off now.
-%
-%       Revision 1.14  2001/03/08 17:05:11  saam
-%       moved several long fulfilled wishes and bugs to DONE list
-%
-%       Revision 1.13  2001/03/08 16:32:33  thiel
-%          SimTime uses Console when you want it to.
-%
-%       Revision 1.12  2001/03/07 16:57:01  thiel
-%          2 new entries, and one fulfilled.
-%
-%       Revision 1.11  2000/11/30 18:14:50  thiel
-%           Fake/ForEach: SKEL and SEP no longer documeneted.
-%
-%       Revision 1.10  2000/10/17 08:41:12  saam
-%       updated Help System section
-%
-%       Revision 1.9  2000/10/13 09:22:01  thiel
-%           "WhoUses" doesnt work.
-%
-%       Revision 1.8  2000/10/12 16:29:45  thiel
-%           Some new To Dos to do.
-%
-%       Revision 1.7  2000/10/11 16:21:30  thiel
-%           DSim up to date.
-%
-%       Revision 1.6  2000/10/10 11:47:51  thiel
-%           Some more To-Dos fulfilled.
-%
-%       Revision 1.5  2000/10/06 15:17:38  saam
-%       new todo :(
-%
-%       Revision 1.4  2000/10/06 12:07:31  saam
-%        new version including the, fri, wed
-%
-%       Revision 1.3  2000/10/03 16:16:51  saam
-%       updated
-%
-%       Revision 1.2  2000/10/02 16:39:52  saam
-%       todos from monday inserted
-%
-%       Revision 1.1  2000/10/02 16:35:10  saam
-%       append one entry
-%
-%
 %-
 \documentclass[12pt]{article}
 
@@ -156,18 +58,54 @@
 \begin{document}
 
 \begin{center}
-{\Huge\textbf{Bugs, ToDos and Feature Requests}}\\[2cm]
+{\HUGE\textbf{Bugs, ToDos and Feature Requests}}\\[2cm]
 Version: \$Id$ $\$ 
 \end{center}
 
-\section{Help System \& Documentation Header} 
 
+\begin{abstract}
+    \textbf{How to use this file.} The to-do-list is maintained by the
+    NASE developers. This HTML page is automatically generated from a
+    \LaTeX file, which is under CVS control. Each developer may
+    check out, modify, and check in this list. To retrieve a local copy,
+    use ``\texttt{cvs checkout todo}''. This will get you a copy of
+    the \LaTeX file, as well as the \texttt{bugs} subdirectory from
+    the normal NASE tree.
+    
+    If you discover a bug in a NASE routine or any issue that should
+    be looked after, please try to go and have it fixed right away. If
+    this is not possible at that moment, put a short description of
+    the issue into this list. You may create new sections as
+    appropriate. If you discovered a bug, please create a short,
+    commented program that reproduces it, and put it into the
+    \texttt{bugs} directory.
+
+    If you are bored, refer to this list and resolve as many issues as
+    possible \texttt{;-)}. As soon as an issue is resolved, move it
+    from its current position in the list to the ``Fulfilled ToDos''
+    section (\ref{sec:fulfilled}) below.
+
+    Thank you!
+
+    \medskip
+    Rüdiger
+\end{abstract}
+
+
+
+\section{Help System \& Documentation Header} 
 \begin{itemize}
 \item standards Makefile broken for non-saam environment
 \item move Traps and Bugs into the standards document
 \item \texttt{WhoUses} doesn't work and its wrapper calls routine with wrong path.
 \item Parser confuses occasional \texttt{NAME::}--keywords with name
   of the routine given by the \texttt{NAME:} statement in the header.
+\item nasecvscommit.ps-File seems to be broken (see my mail to the
+  NASE-list from aug-15-2003): In the "nase" CVS module, syntax check
+  seems to pass always. In the "CVSROOT" CVS module, the script fails,
+  causing CVS to cancel the commit process. This prevents checking in
+  of any CVS administration files!
+  For a workaround to this problem, see the mail.
 \end{itemize}
 
 
@@ -238,6 +176,7 @@ WARNING: IDL is only able to zip since V5.3!
 
 
 \section{Fulfilled ToDos}
+\label{sec:fulfilled}
 \begin{itemize}
 \item LExtrac: removed because obsolete [done, AT]
 \item \texttt{DelayWeigh}: improvement in processing speed and memory consumption? NOPE [done]
@@ -268,7 +207,7 @@ WARNING: IDL is only able to zip since V5.3!
 \item \texttt{RealFileName}: marburg specific actions brake other systems [done, AT]
 \item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well [FloatWeigh function is now included in DelayWeigh, AT].
 \item The To Do--list on the WWW page needs to be updated by
-  hand. [now updated automatically, RK]
+  hand. [done, now updated automatically, RK]
 \end{itemize}
 
 
