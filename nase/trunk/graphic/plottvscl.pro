@@ -131,16 +131,10 @@
 ;                 Note that when NASE or NEUTRAL is specified, only the highest
 ;                 absolute value of the passed array is used, as according to NASE 
 ;                 conventions, the value 0 is always mapped to
-;                 color index 0 (black).
-;                 If used in conjunction with UPDATE_INFO, this
-;                 keyword overrides the values regarding color
-;                 scaling that are part of the PLOTTVSCL_INFO
-;                 struct. However, the new scaling is valid for
-;                 this call only, and is not stored in the
-;                 struct, unless you also specify /INIT.<BR> 
-;                 <I>Note: if used in conjunction with UPDATE_INFO and
-;                       LEGEND, inconsistencies will arise, as the
-;                       legend is not correctly updated (todo).</I>
+;                 color index 0 (black).<BR>
+;                 Note: Any value stored inside an initialized
+;                 UPDATE_INFO-structure overrides this value, unless 
+;                 you also specify /INIT.
 ;   UPDATE_INFO:: When omitted, undefined, or passend an empty
 ;                 PLOTTVSCL_INFO structure, the call acts like
 ;                 a normal PlotTvScl call. Axes as well as the
@@ -221,11 +215,6 @@
 ;  If <C>/NASE</C> or <C>/NSCALE</C> is set, and unless <C>SETCOL</C><*>=0</*> is passed, the
 ;  appropriate NASE color table is loaded.
 ;
-; RESTRICTIONS:
-;  If RANGE_IN is used in conjunction with UPDATE_INFO and LEGEND,
-;  inconsistencies will arise, as the legend is not correctly updated
-;  (todo).
-;
 ; EXAMPLE: 
 ;*          width = 25
 ;*          height = 50
@@ -275,6 +264,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
    
    Default, UPDATE_INFO, {PLOTTVSCL_INFO}
+
+
+   ;; if struct is initialized, but colorscaling could not be
+   ;; initialized yet, the legend must be redrawn:
+   If (UPDATE_INFO.defined eq 1) and $
+     a_eq(UPDATE_INFO.range_in, [-1d, -1d]) then $
+     REDRAW_LEGEND = 1
+
 
    If UPDATE_INFO.defined eq 0 then begin
       ;; UPDATE_INFO either was not specified, or it was passed an empty
@@ -552,16 +549,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;;------------ Handling of legend: ----------------------------
 
    ;; determine min, mid and max values for (an eventual) legend
-   ;; draw. This must only be done, when /INIT is set!
-   If keyword_set(INIT) then begin
-
+   ;; draw. This must only be done, when /INIT or /REDRAW_LEGEND is set!
+   If keyword_set(INIT) or keyword_set(REDRAW_LEGEND) then begin
       ;; if nothing was explicitely specified, we lable the legend
       ;; according to the range our array has been scaled to.
       ;; UPDATE_INFO.range_in has been updated accordingly by the
       ;; above PlotTvScl_update call:
       Default, LEG_MIN, UPDATE_INFO.range_in[0]
       Default, LEG_MAX, UPDATE_INFO.range_in[1]
-
       If LEG_MIN eq -LEG_MAX then leg_mid_str = '0' else $
         leg_mid_str = ''
 

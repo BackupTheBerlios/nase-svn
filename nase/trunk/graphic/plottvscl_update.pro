@@ -12,7 +12,7 @@
 ;
 ; CATEGORY: Graphic
 ;
-; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT] [,RANGE_IN=[a,b]]
+; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT ,RANGE_IN=[a,b]]
 ;
 ; INPUTS: Array   :: Der neue Inhalt der Graphik. Muﬂ
 ;                   selbstverst‰ndlich die gleichen Ausmaﬂe wie
@@ -37,6 +37,8 @@
 ;               color index 0, the scond is scaled to the highest available
 ;               index (or to PlotInfo.Top in the no-NASE, no-NEUTRAL, no-NOSCALE 
 ;               case)).
+;               This keyword has effect only if /INIT is set.
+;               Otherwise the range stored inside PlotInfo is used.
 ;               Note that when Info.NASE, Info.NSCALE or Info.NEUTRAL is specified, only the highest
 ;               absolute value of the passed array is used, as according to NASE 
 ;               conventions, the value 0 is always mapped to color index 0 (black).
@@ -81,28 +83,32 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
    Default, ALLOWCOLORS, Info.allowcolors
 
    ;; ---------- handling of incoming RANGE_IN keyword --------------
-   ;; ------- outgoing value will be handled according to -----------
-   ;; ------- different cases (see below) ---------------------------
-   ;;If RANGE_IN was explicitely specified, it shall override the
-   ;;value stored in the Info struct, but only for this call. We will
-   ;;use that value for scaling, in both cases (INT and not).
    ;; a value of Info.RANGE_IN=[-1d,-1d] indicates uninitialized
    ;; color-scaling.
-   Default, RANGE_IN, Info.Range_In
-
-   If a_eq(RANGE_IN, [-1d, -1d]) then begin
-      ;; colorscaling is uninitialized and unspecified, so we force INIT:
+   If a_eq(Info.RANGE_IN, [-1d, -1d]) then begin
+      ;; colorscaling is uninitialized, so we force INIT:
       INIT = 1
-      ;; Showweights_Scale_Range_In is left undefined,
-      ;; showweights_scale() will chose a value.
+   endif
+   
+   if keyword_set(INIT) then begin
+      ;; this is INIT, use value if explicitely specified:
+      Default, RANGE_IN, Info.Range_In
    endif else begin
+      ;; this is no INIT, stored value overrides in any case:
+      RANGE_IN = Info.Range_In
+   endelse
+
+   if a_ne(RANGE_IN, [-1d, -1d]) then begin
       ;; colorscaling is explicitely specified, or already
       ;; established, so we want to tell Showweights_Scale what to do:
       Showweights_Scale_Range_In = max(abs(RANGE_IN))
       ;;Note that while info.Range_In and the value passed in the keyword
       ;;are arrays of two elements, the local variable
       ;;Showweights_Scale_Range_In is scalar.
-   endelse
+   endif
+   ;; otherwise, Showweights_Scale_Range_In is left undefined,
+   ;; showweights_scale() will chose a value.
+
 
    If not Keyword_Set(INIT) then begin ;Just plot in new image
       SETCOL = 0  ; We never want to have the colortable set at an update.
@@ -165,31 +171,38 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
          ;;      utvscl-call
          If Keyword_Set(INIT) then begin ;store array Range in info
             ;;               PRINT, "INIT"
-            nonones = where(W ne !NONE, nononecount)
-            if nononecount ne 0 then begin
-               ;; there is at least one entry that is not !NONE
-               min = min(W[nonones])
-               max = max(W[nonones])
-               Info.Range_In = [min, max]
-               ;; if RANGE_IN was originally not passed and
-               ;; colorscaling is uninitialized, we want to use
-               ;; this scaling.
-               if a_eq(RANGE_IN, [-1d, -1d]) then RANGE_IN = [min, max]
-               if (min eq max) then begin
-                  console, /Warning, "/INIT: Unable to establish " + $
-                           "color scaling, because all entries " + $
-                           "are equal (value: "+str(min)+")."
-                  console, /Warning, "Postponed initialization to next call."
-                  ;; we want to indicate this by setting Info.Range_In to
+
+            ;; if RANGE_IN was originally not passed and
+            ;; colorscaling is uninitialized, we want to determine the scaling:
+            if a_eq(RANGE_IN, [-1d, -1d]) then begin
+               nonones = where(W ne !NONE, nononecount)
+               if nononecount ne 0 then begin
+                  ;; there is at least one entry that is not !NONE
+                  min = min(W[nonones])
+                  max = max(W[nonones])
+                  RANGE_IN = [min, max]
+                  if (min eq max) then begin
+                     console, /Warning, "/INIT: Unable to establish " + $
+                              "color scaling, because all entries " + $
+                              "are equal (value: "+str(min)+")."
+                     console, /Warning, "Postponed initialization to next call."
+                     ;; we want to indicate this by (re)setting Range_In to
+                     ;; "uninitialized":
+                     RANGE_IN = [-1d, -1d]
+                  endif
+               endif  else begin
+                  ;; all entries are !NONE
+                  ;; we want to indicate this by (re)setting Range_In to
                   ;; "uninitialized":
-                  Info.Range_In = [-1d, -1d]
-               endif
-            endif  else begin
-               ;; all entries are !NONE
-               Info.Range_In = [-1d, -1d]
-               console, /Warning, "/INIT: Unable to establish " + $
-                        "color scaling, because all entries are !NONE."
-            endelse
+                  RANGE_IN = [-1d, -1d]
+                  console, /Warning, "/INIT: Unable to establish " + $
+                           "color scaling, because all entries are !NONE."
+                  console, /Warning, "Postponed initialization to next call."
+               endelse
+            endif
+            
+            ;; store it:
+            Info.Range_In = RANGE_IN
          Endif               
          
          
