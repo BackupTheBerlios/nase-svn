@@ -31,7 +31,7 @@
 ;*           [, GET_XTICKS=...] [, GET_YTICKS=...]
 ;*           [, GET_PIXELSIZE=...]
 ;*           [, GET_INFO=...]
-;*           [, LAGMARGIN=...]
+;*           [, LEGMARGIN=...]
 ;*           [, /NEUTRAL]
 ;*           [, /POLYGON]
 ;*           [, CUBIC=...] [, /INTERP] [, /MINUS_ONE]
@@ -510,8 +510,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                        $;;Data needed to (re)produce the legend:
                        leg_x: OriginNormal[0]+TotalPlotWidthNormal*1.15, $
                        leg_y: OriginNormal[1]+TotalPlotHeightNormal/2.0, $
-                       leg_hstretch: TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-                       leg_vstretch: TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
+                       leg_stretch: TotalPlotHeightNormal, $;TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
                        charsize: CHARSIZE, $
                        legend: LEGEND, $
                        leg_min: 0.0, $ ;will be set below, see there!
@@ -584,8 +583,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;; now draw the legend:
       TVSclLegend, UPDATE_INFO.leg_x, $
                    UPDATE_INFO.leg_y, $
-                   H_Stretch=UPDATE_INFO.leg_hstretch, $
-                   V_Stretch=UPDATE_INFO.leg_vstretch, $
+                   Stretch=UPDATE_INFO.leg_stretch, $
                    Max=UPDATE_INFO.leg_max, $
                    Min=UPDATE_INFO.leg_min, $
                    Mid=UPDATE_INFO.leg_mid_str, $

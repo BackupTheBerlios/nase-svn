@@ -60,8 +60,7 @@ Pro PLOTTVSCL_INFO__Define
                        $;;Data needed to (re)produce the legend:
                        leg_x: 0.0, $
                        leg_y: 0.0, $
-                       leg_hstretch: 0.0, $
-                       leg_vstretch: 0.0, $
+                       leg_stretch: 0.0, $
                        charsize: 0.0, $
                        legend: 0, $
                        leg_min: 0.0, $
