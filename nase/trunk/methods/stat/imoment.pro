@@ -1,5 +1,7 @@
 ;+
 ; NAME:               IMOMENT
+;
+; AIM:                mean, variance, ... of an multidimensinal array (index supp.)
 ; 
 ; PURPOSE:            Diese Funktion berechnet die ersten 4 Momente einer
 ;                     multidimensionalen Verteilung fuer eine bestimmte
@@ -53,11 +55,14 @@
 ;
 ;
 ;
-; SEE ALSO:           <A HREF="#UMOMENT">UMoment</A>
-;
+; SEE ALSO:           <A>UMoment</A>
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/28 09:52:31  gabriel
+;             AIM tag added , message <> console
+;
 ;       Revision 1.6  2000/06/08 10:13:55  gabriel
 ;               ITER  keword supports arrays of indices
 ;
@@ -79,7 +84,7 @@
 ;             creation
 ;
 ;
-;-
+;
 
 FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
 
@@ -88,11 +93,11 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
    s = Size(A)
 
 
-      IF s(0) LT max(i) THEN Message, 'index too large for array'+string(s(0))
-      IF max(i)    GT 7 THEN Message, 'maximal index is 7'
-      IF min(i)    LT 1 THEN Message, 'index has to be greater equal 1'
-      IF N_ELEMENTS(i) GE s(0) THEN MESSAGE,'index has to many elements'
-      IF N_ELEMENTS(i) GT 1 AND ITER EQ 0 THEN MESSAGE,'index array only with keyword ITER possible'
+      IF s(0) LT max(i) THEN Console, /fatal, 'index too large for array'+string(s(0))
+      IF max(i)    GT 7 THEN Console, /fatal, 'maximal index is 7'
+      IF min(i)    LT 1 THEN Console,/fatal, 'index has to be greater equal 1'
+      IF N_ELEMENTS(i) GE s(0) THEN Console, /fatal,'index has to many elements'
+      IF N_ELEMENTS(i) GT 1 AND ITER EQ 0 THEN Console, /fatal,'index array only with keyword ITER possible'
       IF iter EQ 1 THEN BEGIN
          ;; wo ist denn der boese index
          ind = -1

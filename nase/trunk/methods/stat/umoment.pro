@@ -1,6 +1,8 @@
 ;+
 ; NAME:               UMOMENT
 ;
+; AIM:                mean, variance, skewness and kurtosis of an n-element vector
+;
 ; PURPOSE:            This function computes the mean, variance, skewness and kurtosis
 ;                     of an n-element vector. if values are not defined !NONE  will
 ;                     be returned instead
@@ -37,10 +39,13 @@
 ;       APPLIED STATISTICS (third edition)
 ;       J. Neter, W. Wasserman, G.A. Whitmore
 ;       ISBN 0-205-10328-6
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/09/28 09:48:34  gabriel
+;             AIM tag added , message <> console
+;
 ;       Revision 1.5  1999/07/28 08:48:19  saam
 ;             SDEV and MDEV are now set to !NONE, if necessary
 ;
@@ -60,7 +65,7 @@
 ;             this is IDL4s moment-function with minor corrections
 ;
 ;
-;-
+;
 
 FUNCTION DATOTAL, Arg, Double = Double
 
@@ -95,7 +100,7 @@ FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
    END
 
    if TypeX(TypeX(0)+2) lt 2 then $
-    MESSAGE, "X array must contain 1 or more elements."
+    Console, /FATAL , "X array must contain 1 or more elements."
 
   ;If the DOUBLE keyword is not set then the internal precision and
   ;result are identical to the type of input.
