@@ -23,16 +23,15 @@
 ;
 ; CALLING SEQUENCE:
 ;* result=IMoment(x, i 
-;*                [,MDEV=...] [,SDEV=...] 
 ;*                [,MIN=...] [,MAX=...] 
-;*                [,ORDER=...] [,ITER=...] )
+;*                [,ORDER=...] [,ITER=...]
+;*                [,MDEV=...] [,SDEV=...] )
 ;
 ; INPUTS:
 ;  x:: An n-dimenional matrix of integer-, float-, or double type.
 ;  i:: Index over which moments are computed (see also keyword <*>ITER</*>).
 ;
 ; INPUT KEYWORDS:
-;  MDEV, SDEV:: See <A>UMoment</A>.
 ;  MIN, MAX:: Set lower and upper boundary to exclude lower and higher
 ;             entries of <*>x</*> from being considered in the
 ;             calculation. If, for example, <*>-1</*> is contained in
@@ -45,6 +44,9 @@
 ; OUTPUTS:
 ;  result:: Moments of the distribution contained in
 ;           <*>x</*>. Undefined values are returned as <*>!NONE</*>.
+;
+; OPTIONAL OUTPUTS:
+;  MDEV, SDEV:: See <A>UMoment()</A>.
 ;
 ; EXAMPLE:
 ; First example:
@@ -71,7 +73,7 @@
 ;*> FLOAT     = Array(10, 10, 4) 
 ; 
 ; SEE ALSO:
-;  <A>UMoment</A>.
+;  <A>UMoment()</A>.
 ;
 ;-
 
