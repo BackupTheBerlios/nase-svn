@@ -14,14 +14,14 @@
 ;                     entsprechenden denen von UMoment. Fuer nicht definierte
 ;                     Werte wird !NONE zurueckgegeben.
 ;
-; CATEGORY:           STATISTICS.
+; CATEGORY:           STATISTICS
 ;
-; CALLING SEQUENCE:   Result = IMoment(X, i [,ITER=iter] [,MDEV=mdev] [,SDEV=sdev] [,MIN=min] [,MAX=max])
+; CALLING SEQUENCE:   Result = IMoment(X, i [,ORDER=ORDER] [,ITER=iter] [,MDEV=mdev] [,SDEV=sdev] [,MIN=min] [,MAX=max])
 ;
 ; INPUTS:             X:  Eine n-dimensionale Matrix vom Typ integer, float or double.
 ;                     I:  Index dessen Moment berechnet werden soll (s.a. keyword ITER)                    
 ;
-; KEYWORD PARAMETERS: MDEV/SDEV: siehe UMoment
+; KEYWORD PARAMETERS: MDEV/SDEV: <A>UMoment</A>
 ;                     MIN/MAX  : definiert eine untere und/oder eine obere Grenze fuer
 ;                                Messwerte die in die Berechnung einbezogen werden sollen.
 ;                                Ist in der Matrix X z.B. -1 als 'kein sinnvoller Wert'
@@ -29,28 +29,39 @@
 ;
 ;                     ITER: I ist dann der Iterationsindex (default: 0) und
 ;                           I kann alternativ auch ein Array von Indizes sein
-; EXAMPLE:            
-;                     ;first example:
-;                     x = [[1,2,3,4,5],[0.9,2.1,3.5,4.1,5.0],[1.05,1.99,3.0,4.02,5.1]]
-;                     m = IMoment(x,1) 
-;                     print, 'MEANS:', m(*,0)
-;                     print, 'VAR  :', m(*,1)   
 ;
-;                     ;second example:
-;                     X=randomu(s,10,10,30) ; here: x means an array of type (xdim,ydim,iter)
-;                     m=imoment(x,3,/ITER)
-;                     
-;                     help,m
-;                     ;idl returns:
-;                     ;<Expression>    FLOAT     = Array(10, 10, 4)
-;                     surfit,m(*,*,0) ; plots the mean of the 2-dimensional iterations
-;                     
-;                     ;third example:
-;                     X=randomu(s,10,10,30,20) ; here: x means an array of type (xdim,ydim,iter1,iter2)
-;                     m=imoment(x,[3,4],/ITER)
-;                    
-;                     help,m
-;                     ;idl returns:   FLOAT     = Array(10, 10, 4) 
+;                     ORDER:  the maximal order of the moment to calculate
+;                             (default: 3)                       
+;
+;
+; EXAMPLE:            
+;*                     ;first example:
+;*                     x = [[1,2,3,4,5],[0.9,2.1,3.5,4.1,5.0],[1.05,1.99,3.0,4.02,5.1]]
+;*                     m = IMoment(x,1) 
+;*                     print, 'MEANS:', m(*,0)
+;*                     print, 'VAR  :', m(*,1)   
+;*
+;*                     ;second example:
+;*                     X=randomu(s,10,10,30) ; here: x means an array of type (xdim,ydim,iter)
+;*                     m=imoment(x,3,/ITER)
+;*                     
+;*                     help,m
+;*                     ;idl returns:
+;*                     ;<Expression>    FLOAT     = Array(10, 10, 4)
+;*                     surfit,m(*,*,0) ; plots the mean of the 2-dimensional iterations
+;*
+;*                     m=imoment(x,3,/ITER,order=1) ;calculate only the mean and the variance
+;*                     help,m
+;*                     ;idl returns:
+;*                     ;<Expression>   FLOAT     = Array[10, 10, 2] 
+;*
+;*
+;*                     ;third example:
+;*                     X=randomu(s,10,10,30,20) ; here: x means an array of type (xdim,ydim,iter1,iter2)
+;*                     m=imoment(x,[3,4],/ITER)
+;*                    
+;*                     help,m
+;*                     ;idl returns:   FLOAT     = Array(10, 10, 4) 
 ;                     
 ;
 ;
@@ -60,6 +71,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  2000/10/05 16:29:23  gabriel
+;            Keyword ORDER new
+;
 ;       Revision 1.7  2000/09/28 09:52:31  gabriel
 ;             AIM tag added , message <> console
 ;
@@ -86,10 +100,12 @@
 ;
 ;
 
-FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
+FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
 
    ON_ERROR, 2
    default, iter,0
+   default, order, 3
+
    s = Size(A)
 
 
@@ -98,6 +114,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
       IF min(i)    LT 1 THEN Console,/fatal, 'index has to be greater equal 1'
       IF N_ELEMENTS(i) GE s(0) THEN Console, /fatal,'index has to many elements'
       IF N_ELEMENTS(i) GT 1 AND ITER EQ 0 THEN Console, /fatal,'index array only with keyword ITER possible'
+
       IF iter EQ 1 THEN BEGIN
          ;; wo ist denn der boese index
          ind = -1
@@ -108,12 +125,15 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
          ind = ind(1:*)
          
          ;; dimensionen bestimmen fuer m , sdeviation , mdev ohne den zu mittelnden index
-         new_s1 = [s(0),s(ind+1),4,4,product([s(ind+1),4])]
+         new_s1 = [s(0),s(ind+1),order+1,4,product([s(ind+1),order+1])]
          new_s2 = [s(0)-1,s(ind+1),4,product(ind+1)]
          ;; arrays basteln
          m = make_array(size=new_s1)
-         mdev = make_array(size=new_s2)
-         sdeviation = make_array(size=new_s2)
+
+         if order GT 0 then begin
+            mdev = make_array(size=new_s2)
+            sdeviation = make_array(size=new_s2)
+         endif
 
          ;;hier tauschen wir den zu mittelnden index an die letzte stelle
          Atmp = utranspose(A,[ind,i-1])
@@ -138,7 +158,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
             IF s(0) GT 2 THEN BEGIN
                ;; hier gehts ab recursiv ! (Glaube ist besser als Wissen)
                ;; solange bis (size(a))(0) > 2 und immer nach den letzten index,den  haben wir ja oben getauscht
-               m(x,*,*,*,*,*,*) = imoment(Atmp2,last(indtot)+1,/iter)
+               m(x,*,*,*,*,*,*) = imoment(Atmp2,last(indtot)+1,/iter, order=order)
             END ELSE BEGIN
                ;; hier wenn (size(a))(0) = 2
                ;;stop
@@ -150,10 +170,11 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
                   ltMax = WHERE(Atmp2 LT max, c)
                   IF c NE 0 THEN Atmp2 = Atmp2(ltMax) ELSE Atmp2 = [!NONE]
                END
-               m(x,*) = UMOMENT( Atmp2, SDEV=sd, MDEV=md)
-               
-               sdeviation(x) = sd
-               mdev(x) = md
+               m(x,*) = UMOMENT( Atmp2, SDEV=sd, MDEV=md, order=order)
+               if order GT 0 then begin
+                  sdeviation(x) = sd
+                  mdev(x) = md
+               endif
             ENDELSE 
          END
          
@@ -163,7 +184,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
          ;return,imoment(A, ind+1 , mdev = mdev, sdev = sdeviation, min=min, max=max,/iter)
          ;;old version
          IF 1 EQ 1 THEN BEGIN
-            m    = FltArr(s(i),4)
+            m    = FltArr(s(i),order+1)
             mdev = FltArr(s(i))
             sdeviation = FltArr(s(i))
             FOR x=0,s(i)-1 DO BEGIN
@@ -186,9 +207,11 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
                END
                
                
-               m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md)
-               sdeviation(x) = sd
-               mdev(x) = md
+               m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md, order=order)
+               if order gt 0 then begin
+                  sdeviation(x) = sd
+                  mdev(x) = md
+               endif
             END
          
             RETURN, m
