@@ -107,6 +107,9 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Mon Sep 1 00:29:58 1997, Andreas Thiel
+;		W_NONSELF-Schluesselwort setzt Verbindungen jetzt auf !NONE.
+;
 ;       Thu Aug 28 21:51:10 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -272,7 +275,7 @@ if set (D_NRANDOM) then DelMat.Delays  = DelMat.Delays  + d_nrandom(0) + d_nrand
 
 if keyword_set(W_NONSELF) then begin
    if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-   DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = 0
+   DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = !NONE
 end
 
 if keyword_set(D_NONSELF) then begin
