@@ -6,11 +6,13 @@
 
 use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp qw(fatalsToBrowser);
-use File::Find;
 use File::Basename;
+use NASE::globals;
+use NASE::parse;
+use NASE::xref;
 use strict;
 
-my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $DIRINDEX, $ALPHINDEX, $INDEXURL, $myurl, $fullurl, $sub, $lastmod);
+my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $IDXDIR, $INDEXURL, $myurl, $fullurl, $sub, $lastmod);
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -22,18 +24,21 @@ chop ($hostname = `uname -a`);
   $hostname =~ /SMP/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
 			     $DOCDIR="/vol/neuro/nase/nasedocu"; 
 			     $CGIROOT="/vol/neuro/www";
+			     $IDXDIR="$DOCDIR";
 			     last;};
   $DOCDIR="/mhome/saam/sim"; 
   $CGIROOT="/usr/lib"; 
+  $IDXDIR="/tmp";
 }
 
 
-$DIRINDEX="$DOCDIR/index-by-dir";
-$ALPHINDEX="$DOCDIR/index-by-name";
-$INDEXURL="/vol/neuro/nase/nase/nindex.html";
+$INDEXURL="$DOCDIR/nindex.html";
 
 # global variables
 ($myurl = $0) =~ s/$CGIROOT//;
+setIndexDir($IDXDIR);
+setDocDir($DOCDIR);
+setBaseURL($myurl);
 
 # the directory we are currently
 $sub = path_info();
@@ -46,24 +51,24 @@ $fullurl = "$myurl/$sub";
 ###################################################################################
 ###################################################################################
 ###################################################################################
-sub fixhl { 
-  my (@lines, @ridx, @url, $routine, @res, @fixed);
+#sub fixhl { 
+#  my (@lines, @ridx, @url, $routine, @res, @fixed);
   
-  @lines = @_;
-  @ridx = readRoutineIdx($DIRINDEX);
-  foreach (@lines){
-    s/<[^<>]*>//g; # remove HTML stuff
-    s/\s+//g;      # remove whitespaces    
-    s,\(.*?\),,g;  # remove braces like routine()
-    @url = split(',', $_);
-    foreach $routine (@url){
-      @res = grep { /\/$routine\.pro/i  } @ridx; 
-      $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=text&show=header>$routine</A>" : $routine);
-    }
-    push(@fixed, join(', ', @url));
-  }
-  return @fixed;
-}
+#  @lines = @_;
+#  @ridx = readRoutineIdx($DIRINDEX);
+#  foreach (@lines){
+#    s/<[^<>]*>//g; # remove HTML stuff
+#    s/\s+//g;      # remove whitespaces    
+#    s,\(.*?\),,g;  # remove braces like routine()
+#    @url = split(',', $_);
+#    foreach $routine (@url){
+#      @res = grep { /\/$routine\.pro/i  } @ridx; 
+#      $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=text&show=header>$routine</A>" : $routine);
+#    }
+#    push(@fixed, join(', ', @url));
+#  }
+#  return @fixed;
+#}
 
 
 
@@ -72,49 +77,49 @@ sub fixhl {
 ###################################################################################
 ###################################################################################
 ###################################################################################
-sub readRoutineIdx{
+#sub readRoutineIdx{
 
-  my ($file) = @_;
+#  my ($file) = @_;
 
-  createRoutineIdx() unless -r $DIRINDEX;
-  open (IDX, "<$file") || die "can't open $file for read: $!\n";
-  my @ridx = <IDX>; chomp @ridx;
-  close (IDX) || die "can't close $file, $!\n";
+#  createRoutineIdx() unless -r $DIRINDEX;
+#  open (IDX, "<$file") || die "can't open $file for read: $!\n";
+#  my @ridx = <IDX>; chomp @ridx;
+#  close (IDX) || die "can't close $file, $!\n";
   
-  return @ridx;
-}
+#  return @ridx;
+#}
 
 
 
 
 
-###################################################################################
-###################################################################################
-###################################################################################
-sub createRoutineIdx {
+####################################################################################
+####################################################################################
+####################################################################################
+#sub createRoutineIdx {
 
-  my %alpha;
+#  my %alpha;
   
-  open (IDX, ">$DIRINDEX") || die "can't open $DIRINDEX for write: $!\n";
-  find(\&appendFile, $DOCDIR);
-  close (IDX) || die "can't close $DIRINDEX: $!\n";
+#  open (IDX, ">$DIRINDEX") || die "can't open $DIRINDEX for write: $!\n";
+#  find(\&appendFile, $DOCDIR);
+#  close (IDX) || die "can't close $DIRINDEX: $!\n";
    
-  open (IDX, ">$ALPHINDEX") || die "can't open $ALPHINDEX for write: $!\n";
-  foreach (sort keys %alpha){
-    print IDX "$alpha{$_}\n";
-  }
-  close (IDX) || die "can't close $ALPHINDEX: $!\n";
+#  open (IDX, ">$ALPHINDEX") || die "can't open $ALPHINDEX for write: $!\n";
+#  foreach (sort keys %alpha){
+#    print IDX "$alpha{$_}\n";
+#  }
+#  close (IDX) || die "can't close $ALPHINDEX: $!\n";
 
-  sub appendFile {
-    if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
-      my $file = $File::Find::name;
-      $file =~ s/$DOCDIR//; 
-      $file =~ s/^(\/)+//; 
-      print IDX "$file\n";
-      $alpha{basename($file)} = $file;
-    }
-  }
-}
+#  sub appendFile {
+#    if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
+#      my $file = $File::Find::name;
+#      $file =~ s/$DOCDIR//; 
+#      $file =~ s/^(\/)+//; 
+#      print IDX "$file\n";
+#      $alpha{basename($file)} = $file;
+#    }
+#  }
+#}
 
 
 
@@ -159,32 +164,6 @@ sub updatedoc {
 ###################################################################################
 ###################################################################################
 ###################################################################################
-sub showedit {
-  my ($res, $file, $name);
-
-  $file = shift(@_);
-  $file .= ".pro" unless $file =~ /\.pro$/i;
-  $name = basename($file);
-  $name =~ s,\.pro$,,;
-  
-  
-  open (CMD, "cd ".dirname($file)."; cvs editors ".basename($file)."|") || warn "can't open pipe: $!\n";
-  $res = '';
-  while (<CMD>){
-    if (m,^$name.pro\s+(\w+)\s+(.*GMT),){$res = "currently edited by $1 since $2";}
-
-  }
-  close(CMD) || warn "can't close pipe: $!\n";
-  return $res;
-}
-
-
-
-
-
-###################################################################################
-###################################################################################
-###################################################################################
 sub showlog {
 
   my ($file,$name);
@@ -220,23 +199,24 @@ sub showheader {
   $file = shift(@_);
   $file .= ".pro" unless $file =~ /\.pro$/i;
   
-  open(IN, "$file") || die "can't open $file";
-  print "<PRE>";
-  while (<IN>){
-    last if (/;+/) 
-  }
-  while (<IN>){
-    last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
-    s/^;//;
+#  open(IN, "$file") || die "can't open $file";
+#  print "<PRE>";
+#  while (<IN>){
+#    last if (/;+/) 
+#  }
+#  while (<IN>){
+#    last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
+#    s/^;//;
 
-    {
-      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>"); $namefound=1; } else {print;};  last;};
-      /(SEE\s+ALSO\s*:\s+)(.*)/i && do {print $1, fixhl($2); last; };
-      print;
-    }
-  }
-  print "</PRE>";
-  close(IN) || die "can't close $file";
+#    {
+#      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>"); $namefound=1; } else {print;};  last;};
+#      /(SEE\s+ALSO\s*:\s+)(.*)/i && do {print $1, fixhl($2); last; };
+#      print;
+#    }
+#  }
+#  print "</PRE>";
+#  close(IN) || die "can't close $file";
+  parseHeader($file);
   
 }
 
@@ -254,6 +234,7 @@ sub showsource {
 		     ENDIF ENDREP ENDWHILE EQ FOR FUNCTION GE GOTO GT IF INHERITS
 		     LE LT MOD NE NOT OF ON_IOERROR OR PRO REPEAT THEN UNTIL WHILE XOR
 		     RETURN);
+
 
 
 
@@ -341,11 +322,7 @@ print header;
 #print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
 print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE></HEAD>";
 
-if ((! -r $DIRINDEX)||(! -r $ALPHINDEX)){
-  createRoutineIdx();
-}
-
-
+$lastmod = checkRoutineIdx();
 if ($P::mode){
   $_ = $P::mode;
  TRUNK: {
@@ -353,10 +330,9 @@ if ($P::mode){
 		      last TRUNK;};
     /list/i   && do { print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
-		      $lastmod = (stat($DIRINDEX))[9] || die "can't stat() $DIRINDEX: $!\n";
 		      print font({size=>"-2"}, 
 				 hr,
-				 "last update: ".localtime($lastmod).", ",
+				 "last update: $lastmod, ",
 				 a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), br,
 		      font({size=>"-2"}, 
 			   '$Id$ ');
