@@ -10,11 +10,12 @@
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  DestroySheet, Sheet [,Multi-Index]
+; CALLING SEQUENCE: 
+;*                   DestroySheet, Sheet [,Multi-Index]
 ;
-; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
+; INPUTS:            Sheet:: eine mit DefineSheet definierte Sheet-Struktur
 ;
-; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
+; OPTIONAL INPUTS:  Multi-Index:: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
 ;                                 kann hier der Index des "Sheetchens" 
 ;                                 angegeben werden, das geschlossen
 ;                                 werden soll.
@@ -24,19 +25,22 @@
 ;                                 die Angabe des Index auch unterbleiben.
 ;
 ; EXAMPLE:
-;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;                    OpenSheet, sheety
-;                    Plot, Indgen(200)
-;                    CloseSheet, sheety
-;                    dummy = Get_Kbrd(1)
-;                    DestroySheet, sheety
+;*                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;*                    OpenSheet, sheety
+;*                    Plot, Indgen(200)
+;*                    CloseSheet, sheety
+;*                    dummy = Get_Kbrd(1)
+;*                    DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
-;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#OPENSHEET">OpenSheet</A>,<A HREF="#CLOSESHEET">CloseSheet</A>.
-;
+; SEE ALSO: <A>ScrollIt</A>,
+;           <A>DefineSheet</A>, <A>OpenSheet</A>,<A>CloseSheet</A>.
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  2000/11/02 09:46:12  gabriel
+;          doc header modified
+;
 ;     Revision 2.9  2000/10/01 14:51:35  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -78,7 +82,7 @@
 ;           Creation
 ;
 ;
-;-
+;
 PRO DestroySheet, __sheet, multi_nr
 
    Handle_Value, __sheet, _sheet, /NO_COPY

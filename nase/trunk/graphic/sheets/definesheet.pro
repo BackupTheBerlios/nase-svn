@@ -20,29 +20,31 @@
 ;
 ; CATEGORY:           GRAPHIC, WIDGETS, allgemein
 ;
-; CALLING SEQUENCE:   Sheet = DefineSheet( [ Parent ]
-;                                          [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
-;                                          [,/INCREMENTAL] [,/VERBOSE]
-;                                          [,/PRIVATE_COLORS]
-;                                          (,OPTIONS)*
+; CALLING SEQUENCE:   
+;*                      Sheet = DefineSheet( [ Parent ]
+;*                                          [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
+;*                                          [,/INCREMENTAL] [,/VERBOSE]
+;*                                          [,/PRIVATE_COLORS]
+;*                                          (,OPTIONS)*
 ;
-; OPTIONAL INPUTS: Parent: Eine Widget-ID des Widgets, dessen Kind das 
+; OPTIONAL INPUTS: 
+;                 Parent:: Eine Widget-ID des Widgets, dessen Kind das 
 ;                          neue Sheet-Widget werden soll.
 ;
-; KEYWORD PARAMETERS: WINDOW     : Das Sheet wird auf dem Bildschirm dargestellt
-;                     PS         : Das Sheet wird als PS in ein File gespeichert.
-;                     NULL       : Das Sheet unterdrueckt jegliche Ausgabe
-;                     MULTI      : Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
+; KEYWORD PARAMETERS: WINDOW::     Das Sheet wird auf dem Bildschirm dargestellt
+;                     PS::         Das Sheet wird als PS in ein File gespeichert.
+;                     NULL::       Das Sheet unterdrueckt jegliche Ausgabe
+;                     MULTI::      Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
 ;                                  Beschreibung des MULTI-Parameters s. <A HREF="../#SCROLLIT">ScrollIt()</A>.
 ;                                  Wenn angegeben, ist das Ergebnis von DefineSheet ein MultiSheet (Array von Sheets).
-;                     INCREMENTAL: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
+;                    INCREMENTAL:: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
 ;                                  File geschlossen. Malt man nun mehrmals in ein Sheet gibt es 
 ;                                  zwei Moeglichkeit auf PS damit umzugehen. Entweder wird das
 ;                                  alte File immer wieder ueberschrieben, oder ein neues File
 ;                                  wird angelegt. Dies macht die Option INCREMENTAL; der Filename
 ;                                  wird dabei um einen laufenden Index erweitert.
-;                     VERBOSE    : DefineSheet wird gespraechig...
-;                  PRIVATE_COLORS: Nur sinnvoll bei Windows. 
+;                     VERBOSE::    DefineSheet wird gespraechig...
+;                 PRIVATE_COLORS:: Nur sinnvoll bei Windows. 
 ;                                  Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
 ;                                  jedes Sheetchen, verarbeitet dann Tracking-Events, dh, die Farbtabelle
 ;                                  wird richtig gesetzt, wenn der Mauszeiger in das Widget weist.
@@ -50,14 +52,14 @@
 ;                                  privaten Colormap wird von closesheet erledigt.
 ;                                  Dieses Schlüsselwort wird auf nicht-Pseudocolor-Displays (TrueColor,
 ;                                  DirectColor) ignoriert.
-;                     OPTIONS    : Alle Optionen die das jeweilige Device versteht sind erlaubt.
+;                     OPTIONS::    Alle Optionen die das jeweilige Device versteht sind erlaubt.
 ;                                  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
 ;                                              [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
 ;                                              [XY]DrawSize
-;                                  PS       : siehe Hilfe von Device, z.B.
+;                    PS::          siehe Hilfe von Device, z.B.
 ;                                              /ENCAPSULATED, BITS_PER_PIXEL, /COLOR, FILENAME
 ;
-; OUTPUTS:            Sheet: eine Struktur, die alle Sheet-Informationen enthaelt und an OpenSheet,
+; OUTPUTS:            Sheet:: eine Struktur, die alle Sheet-Informationen enthaelt und an OpenSheet,
 ;                            CloseSheet und DestroySheet uebergeben wird.
 ;
 ; RESTRICTIONS: Man beachte, dass das
@@ -68,23 +70,26 @@
 ;
 ;
 ; EXAMPLE:
-;                     window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
-;                     ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
-;                     ps_sheet2    = DefineSheet( /PS, /VERBOSE, /INCREMENTAL, FILENAME='test2')
-;
-;                     sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;                     OpenSheet, sheety
-;                     Plot, Indgen(200)
-;                     CloseSheet, sheety
-;                     dummy = Get_Kbrd(1)
-;                     DestroySheet, sheety
+;*                     window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
+;*                     ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
+;*                     ps_sheet2    = DefineSheet( /PS, /VERBOSE, /INCREMENTAL, FILENAME='test2')
+;*
+;*                     sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;*                     OpenSheet, sheety
+;*                     Plot, Indgen(200)
+;*                     CloseSheet, sheety
+;*                     dummy = Get_Kbrd(1)
+;*                     DestroySheet, sheety
 ;
 ; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
 ;           <A HREF="#OPENSHEET">OpenSheet</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.22  2000/11/02 09:40:28  gabriel
+;          doc header modified
+;
 ;     Revision 2.21  2000/11/02 09:32:52  gabriel
 ;          uset_plot instead of setplot
 ;

@@ -10,28 +10,33 @@
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  OpenSheet, Sheet [,Multi-Index]
+; CALLING SEQUENCE:  
+;*                    OpenSheet, Sheet [,Multi-Index]
 ;
 ; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
 ;
-; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
+; OPTIONAL INPUTS:   
+;                   Multi-Index:: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
 ;                                 der Index des "Sheetchens", das geöffnet werden soll. Befindet sich das MultiSheet
 ;                                 noch nicht auf dem Bildschirm, so wird es dargestellt.
 ;
 ; EXAMPLE:
-;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;                    OpenSheet, sheety
-;                    Plot, Indgen(200)
-;                    CloseSheet, sheety
-;                    dummy = Get_Kbrd(1)
-;                    DestroySheet, sheety
+;*                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;*                    OpenSheet, sheety
+;*                    Plot, Indgen(200)
+;*                    CloseSheet, sheety
+;*                    dummy = Get_Kbrd(1)
+;*                    DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
-;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
-;
+; SEE ALSO: <A>ScrollIt</A>,
+;           <A>DefineSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>.
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.26  2000/11/02 09:42:45  gabriel
+;          doc header modified
+;
 ;     Revision 2.25  2000/11/02 09:31:37  gabriel
 ;          uset_plot instead of set_plot
 ;
@@ -135,7 +140,7 @@
 ;           Creation
 ;
 ;
-;-
+;
 
 ;PRO _sheetkilled, id            ;This is only called for Top-Level-Sheets,
 ;                                ;not for Sheets that belong to a Parent Widget.

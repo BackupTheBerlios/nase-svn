@@ -19,15 +19,16 @@
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  CloseSheet, Sheet [,Multi-Index] [,SAVE_COLORS=0]
+; CALLING SEQUENCE:
+;*                    CloseSheet, Sheet [,Multi-Index] [,SAVE_COLORS=0]
 ;
-; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
+; INPUTS:            Sheet:: eine mit DefineSheet definierte Sheet-Struktur
 ;
-; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
+; OPTIONAL INPUTS:  Multi-Index:: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
 ;                                 der Index des "Sheetchens", das
 ;                                 geschlossen werden soll.
 ;
-; KEYWORDS:          SAVE_COLORS: Default: gesetzt.
+; KEYWORDS:         SAVE_COLORS:: Default: gesetzt.
 ;                                 Dieses Schluesselwort hat nur
 ;                                 Effekt, wenn bei <A HREF="#DEFINESHEET">DefineSheet()</A>
 ;                                 die Option /PRIVATE_COLORS angegeben 
@@ -48,19 +49,22 @@
 ;                                 gespeicherte Farbtabelle erneut gesetzt.
 ;
 ; EXAMPLE:
-;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;                    OpenSheet, sheety
-;                    Plot, Indgen(200)
-;                    CloseSheet, sheety
-;                    dummy = Get_Kbrd(1)
-;                    DestroySheet, sheety
+;*                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;*                    OpenSheet, sheety
+;*                    Plot, Indgen(200)
+;*                    CloseSheet, sheety
+;*                    dummy = Get_Kbrd(1)
+;*                    DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
-;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#OPENSHEET">OpenSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
-;
+; SEE ALSO: <A>ScrollIt</A>,
+;           <A>DefineSheet</A>, <A>OpenSheet</A>,<A>DestroySheet</A>.
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  2000/11/02 09:44:32  gabriel
+;          doc header modified
+;
 ;     Revision 2.14  2000/11/02 09:25:07  gabriel
 ;          uset_plot instead of set_plot
 ;
@@ -120,7 +124,8 @@
 ;           Creation
 ;
 ;
-;-
+;
+
 PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
 
    On_Error, 2
