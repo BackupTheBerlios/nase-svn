@@ -9,7 +9,8 @@
 ;  
 ;
 ; PURPOSE:
-;  
+;  (When referencing this very routine in the text, please use
+;  <C>RoutineName</C>.)
 ;
 ; CATEGORY:
 ;  Algebra
