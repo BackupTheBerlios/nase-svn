@@ -22,7 +22,8 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* result = HistMD(vectors [,NBINS=...] [/BIN_START]
+;* result = HistMD(vectors [,NBINS=...] [MIN=...] [MAX=...] 
+;*                         [/BIN_START]
 ;*                         [,GET_BINVALUES=...] [,REVERSE_INDICES=...])
 ;
 ; INPUTS:
@@ -34,6 +35,10 @@
 ;          desired for each of the n dimensions. <*>NBINS(i)</*>
 ;          therefore specifies the number of bins to be used for the
 ;          <*>i</*>th dimension. The default is 10 for all dimensions.
+;  MIN/MAX:: Use these keywords to manually set the ranges inside which
+;            you want to compute the histogram. Both <*>min</*> and
+;            <*>max</*> have 
+;            to have n entries. See restrictions as well.  
 ;  BIN_START:: Return bin values as those where bins start, otherwise
 ;              return bin values as those in the middle of
 ;              bins. Default: <*>BIN_START=0</*>.
@@ -64,10 +69,10 @@
 ;                    <C>Histogram()</C> for an example.
 ;
 ; RESTRICTIONS:
-;  At present, <C>HistMD()</C> computes its values using excatly the
-;  complete range of data in each dimension. The option of setting
-;  ranges by the user has been omitted for the sake of simplicity for
-;  the time being, but may be added later. 
+;  The <*>MIN</*> and <*>MAX</*> keywords have been added recently but
+;  not been tested extensively. For ranges that are larger than the
+;  data ranges, they seem to work ok, but it has not yet been tried to
+;  clip the data. 
 ;
 ; PROCEDURE:
 ;  Generate onedimensional array form multidimensional one and apply
@@ -103,6 +108,7 @@
 
 FUNCTION HistMD, s, NBINS=nbins $
                  , BIN_START=bin_start $
+                 , MAX=max, MIN=min $
                  , GET_BINVALUES=get_binvalues $
                  , REVERSE_INDICES=reverse_indices
 
@@ -122,10 +128,11 @@ FUNCTION HistMD, s, NBINS=nbins $
     Console, /FATAL, 'Need number of bins for each stimulus dimension.'
 
    IF sdim GT 1 THEN BEGIN
-      smin = IMin(s, 1)
-      smax = IMax(s, 1)
+      IF NOT Set(MIN) THEN smin = IMin(s, 1) ELSE smin = min
+      IF NOT Set(MAX) THEN smax = IMax(s, 1) ELSE smax = max
    ENDIF ELSE BEGIN
-      smin = Min(s, MAX=smax)
+      IF NOT Set(MIN) THEN smin = Min(s) ELSE smin = min
+      IF NOT Set(MAX) THEN smax = Max(s) ELSE smax = max
    ENDELSE 
 
    ;;   sbinsize = (smax-smin)/(nbins-1) ;; old version
