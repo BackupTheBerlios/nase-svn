@@ -1,5 +1,9 @@
 ;+
 ;       $Log$
+;       Revision 1.9  1998/03/13 14:05:47  kupper
+;              Color-Postscripts werden jetzt richtig behandelt -
+;               die Verwendung von Sheets vorrausgesetzt.
+;
 ;       Revision 1.8  1998/03/04 17:17:17  kupper
 ;              Noch in Doubles umgewandelt...
 ;
@@ -19,6 +23,7 @@
 DefSysV, '!NONE', -999999.0, 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
 DefSysV, '!REVERTPSCOLORS', 1
+DefSysV, '!PSGREY', 1
 DefSysV, '!MH', Handle_Create()
 
 DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
