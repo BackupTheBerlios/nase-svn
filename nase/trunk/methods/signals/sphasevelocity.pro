@@ -13,7 +13,7 @@
 ;
 ; CALLING SEQUENCE:    vel = SPHASEVELOCITY(  A [, distance_ax] [, delay_ax][, time_ax][, ICHISQ=ICHISQ],[ISUPPORTP=ISUPPORTP]
 ;                                                    [,CORRSTRENGHTH_CRIT=CORRSTRENGHTH_CRIT][,IMED_CORRSTRENGTH=IMED_CORRSTRENGTH]
-;                                                    [,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT][,CHISQ_CRIT=CHISQ_CRIT,] [PLOT=PLOT])
+;                                                    [,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT][,CHISQ_CRIT=CHISQ_CRIT,] [PLOT=PLOT],[INTERPOL=INTERPOL])
 
 ;
 ; 
@@ -31,6 +31,7 @@
 ;                      SUPPORTPOINTS_CRIT: The minimum of points, which should be  used for the fit in percent (default: 0.5)
 ;                      CORRSTRENGTH_CRIT: The maximum of the standard deviation of the correllation strenght, which (default: 0.1)
 ;                      PLOT: plots the actual processing results
+;                      INTERPOL: zoom factor of result's spatiotemporal  dimensions (interpolation after correlation is systemtheoretical allowed) 
 ;
 ; OUTPUTS:             vel: reciprocal phase velocity
 ;
@@ -80,6 +81,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  1999/03/12 10:07:50  gabriel
+;          INTERPOL Keyword new
+;
 ;     Revision 1.2  1999/02/12 15:52:49  gabriel
 ;          An Handle sheets angepasst
 ;
@@ -90,14 +94,15 @@
 ;-
 FUNCTION SPHASEVELOCITY, A, distance_ax, delay_ax, time_ax, ICHISQ=ICHISQ,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT,ISUPPORTP=ISUPPORTP,$
                          CORRSTRENGTH_CRIT=CORRSTRENGTH_CRIT,IMED_CORRSTRENGTH=IMED_CORRSTRENGTH,$
-                         CHISQ_CRIT=CHISQ_CRIT, PLOT=PLOT,VERBOSE=VERBOSE
+                         CHISQ_CRIT=CHISQ_CRIT, PLOT=PLOT,VERBOSE=VERBOSE,INTERPOL=INTERPOL
 
 COMMON SPHASEVELOCITY_BLOCK, SHEET_1,PLOTFLAG
 
 sa = size(a)
 IF sa(0) NE 3 THEN message,"Array isn't a three dimensional array A(distance,delay,time)"
-default,distance_ax,lindgen(sa(1))-sa(1)/2
-default,delay_ax,lindgen(sa(2))-sa(2)/2
+default,INTERPOL,1
+default,distance_ax,lindgen(sa(1))-sa(1)/2.
+default,delay_ax,lindgen(sa(2))-sa(2)/2.
 default, time_ax,lindgen(sa(3))
 default,CHISQ_CRIT,1.0
 default,SUPPORTPOINTS_CRIT,0.5
@@ -105,13 +110,17 @@ default,CORRSTRENGTH_CRIT,0.05
 default,PLOTFLAG,0
 default,plot,0
 default,verbose,0
+
+distance_ax = (lindgen(sa(1)*interpol)/FLOAT(interpol)-sa(1)/2.)/FLOAT(sa(1))*last(distance_ax)*2.
+delay_ax = (lindgen(sa(2)*interpol)/FLOAT(interpol)-sa(2)/2.)/FLOAT(sa(2))*last(delay_ax)*2.
+
 iCHISQ = fltarr(sa(3))
 iMED_CORRSTRENGTH = fltarr(sa(3))
 ISUPPORTP =  fltarr(sa(3))
 vel = fltarr(sa(3))
 default, XSIZE , 300
 IF PLOTFLAG EQ 0 AND PLOT EQ 1 THEN BEGIN
-   sheet_1 =  definesheet(/window,XSIZE=XSIZE,YSIZE=1.5*XSIZE,colors=256)
+   sheet_1 =  definesheet(/window,XSIZE=XSIZE,YSIZE=1.5*XSIZE,colors=255)
    plotflag = 1
 ENDIF
 
@@ -121,13 +130,21 @@ IF PLOT EQ 1 THEN BEGIN
 ENDIF
 
 FOR i=0 ,sa(3)-1 DO BEGIN
-   tmpmax =  imax(a(*,*,i),0,index)
+  
+   
+
+   IF interpol EQ 1 THEN BEGIN
+      tmparray = a(*,*,i)
+   END ELSE BEGIN 
+      tmparray = congrid(a(*,*,i),sa(1)*interpol,sa(2)*interpol,cubic=-0.5,/MINUS)
+   ENDELSE   
+   tmpmax =  imax(tmparray,0,index)
    t_indtmp = DELAY_AX(index) 
    X_indtmp = DISTANCE_AX
    IF PLOT EQ 1 THEN BEGIN
       opensheet,pix_1
       !p.multi = 0
-      plottvscl,(1+BYTSCL(a(*,*,i))/255.*FLOAT(!D.TABLE_SIZE-3)),$
+      plottvscl,(1+BYTSCL(tmparray)/255.*FLOAT(!D.TABLE_SIZE-3)),$
        /full,xrange=[ROUND(distance_ax(0))+1,ROUND(last(distance_ax))-1],YRANGE=[delay_ax(0),last(delay_ax)],YTITLE="delay / !8ms!X",$
        XTITLE="distance / !8mm!X",TITLE="Spatiotemporal Correlation",/NOSCALE
       inscription,STRING(FORMAT='("Time:", (I5)," ")',ROUND(time_ax(i))),/INSIDE,/RIGHT,/BOTTOM
