@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  1998/05/18 19:39:09  saam
+;           added Keyword OVERSAMPLING
+;
 ;     Revision 2.10  1998/05/16 16:28:42  kupper
 ;            Stürzt nun nicht mehr ab bei TIME=1
 ;
@@ -92,6 +95,7 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
 
    Default, OVERSAMPLING, 1
    Default, TIME, 100l
+   time = time / OVERSAMPLING
    Default, YMIN, 0.0
    Default, YMAX, 1.0
    Default, Rays, 1
