@@ -83,8 +83,8 @@ Pro SurfIt_Event, Event
  
  WIDGET_CONTROL, Event.Top, GET_UVALUE=info, /NO_COPY
  If Event.Top eq Event.Id then Ev = info else WIDGET_CONTROL, Event.Id, GET_UVALUE=Ev
-  CASE Ev.Widget OF 
-     "Main": Begin ;Unser Main-Widget wird resized
+  CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
+     "WIDGET_BASE": Begin ;Unser Main-Widget wird resized
         info.xsize = Event.X
         info.ysize = Event.Y
         WIDGET_CONTROL, Event.Top, $ ;Das ist unser Main-Widget! Frag mich nicht, warum, aber auch das muss von Hand resized werden...
@@ -102,7 +102,7 @@ Pro SurfIt_Event, Event
         shade_surf, info.surface, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0)
         xyouts, /device, 0, 0, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
      End      
-     "Draw": Begin
+     "WIDGET_DRAW": Begin
         Case Event.Type of
            0: Begin ;Button Press
               info.Button_Pressed = (1 eq 1) ;TRUE
@@ -129,15 +129,41 @@ Pro SurfIt_Event, Event
            Endcase          
      End
   Endcase
+
+
+   ;;-----------Deliver Events to other Widgets?-------------------------
+   deliver_events = info.deliver_events
+   if deliver_events(0) ne -1 then begin
+      valid = WIDGET_INFO(deliver_events, /VALID_ID)
+      For wid=1, n_elements(deliver_events) do $
+       If valid(wid-1) then begin
+         sendevent = Event
+         sendevent.ID = deliver_events(wid-1)
+         next = deliver_events(wid-1)
+         repeat begin
+            top = next
+            next = WIDGET_INFO(top, /PARENT)
+         endrep until next eq 0
+         sendevent.TOP = top
+         sendevent.HANDLER = 0
+         WIDGET_CONTROL, deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
+      EndIf
+   endif
+   ;;-----------End: Deliver Events to other Widgets?-------------------------
+
   WIDGET_CONTROL, Event.Top, SET_UVALUE=info, /NO_COPY
 End
 
-PRO SurfIt, data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, GROUP=group, JUST_REG=Just_Reg
+PRO SurfIt, data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, GROUP=group, JUST_REG=Just_Reg, $
+            DELIVER_EVENTS=deliver_events, GET_BASE=get_base, $
+            TITLE=title
 
 Default, xpos, 500
 Default, ypos, 100
 Default, xsize, 500
 Default, ysize, 500   
+Default, deliver_events, [-1]
+Default, title, "Surf It!"
 
 window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
 
@@ -148,7 +174,7 @@ window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
 
   SurfWidget = WIDGET_BASE(GROUP_LEADER=Group, $
       MAP=1, $
-      TITLE='Surf It!', $
+      TITLE=title, $
       UVALUE={Widget        : "Main", $
               surface       : data, $
               Button_Pressed: (0 eq 1), $ ;FALSE
@@ -159,7 +185,8 @@ window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
               pixwin        :!D.Window, $
               drawwin       :0, $ ;still unknown!
               xsize         :xsize, $
-              ysize         :ysize $
+              ysize         :ysize, $
+              deliver_events:deliver_events $
              }, $
       /NO_COPY, $
       XSIZE=xsize, $
@@ -191,7 +218,10 @@ window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
   shade_surf, data
   xyouts, /device, 0, 0, "AX="+string(30.0)+"      AZ="+string(30.0)
 
-  XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg
+  get_base = SurfWidget
+
+  If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, /NO_BLOCK $
+  else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg
  
 
 END

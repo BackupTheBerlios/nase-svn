@@ -68,12 +68,34 @@
 ;-
 
 Pro ScrollIt_Event, Event
-; Die einzigen Events, die ankommen, sind Size-Events
+; Die einzigen Events, die ankommen, sollten Size-Events sein!
 
-   Draw = WIDGET_INFO(Event.Top, /CHILD) ;das ist unser Draw-Widget!
-
-   WIDGET_CONTROL, Draw, SCR_XSIZE=Event.X, SCR_YSIZE=Event.Y
-
+   If TAG_NAMES(Event, /STRUCTURE_NAME) eq "WIDGET_BASE" then begin
+      Draw = WIDGET_INFO(Event.Top, /CHILD) ;das ist unser Draw-Widget!
+      
+      WIDGET_CONTROL, Draw, SCR_XSIZE=Event.X, SCR_YSIZE=Event.Y
+   EndIf
+   
+   ;;-----------Deliver Events to other Widgets?-------------------------
+   WIDGET_CONTROL, Event.Top, GET_UVALUE=base_uval
+   if base_uval.deliver_events(0) ne -1 then begin
+      valid = WIDGET_INFO(base_uval.deliver_events, /VALID_ID)
+      For wid=1, n_elements(base_uval.deliver_events) do $
+       If valid(wid-1) then begin
+         sendevent = Event
+         sendevent.ID = base_uval.deliver_events(wid-1)
+         next = base_uval.deliver_events(wid-1)
+         repeat begin
+            top = next
+            next = WIDGET_INFO(top, /PARENT)
+         endrep until next eq 0
+         sendevent.TOP = top
+         sendevent.HANDLER = 0
+         WIDGET_CONTROL, base_uval.deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
+      EndIf
+   endif
+   ;;-----------End: Deliver Events to other Widgets?-------------------------
+  
 End
 
 Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
@@ -81,7 +103,8 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                    TITLE=title, $
                    PIXMAP=pixmap, $
                    RETAIN=retain, COLORS=colors, $
-                   GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify
+                   GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify, $
+                   DELIVER_EVENTS=deliver_events
 
    Default,  xsize, 300
    Default,  ysize, 300
@@ -93,6 +116,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    Default,  colors, 0
    Default,  retain, 1
    Default,  kill_notify, ''
+   Default,  deliver_events, [-1]
 
    If not Keyword_Set(XDRAWSIZE) then begin
       XDRAWSIZE = XSIZE
@@ -105,7 +129,8 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
  
    Base = Widget_Base(GROUP_LEADER=group, TITLE=title, $
                      XOFFSET=xpos, YOFFSET=ypos, $
-                     /TLB_SIZE_EVENTS, MAP=1-PIXMAP)
+                     /TLB_SIZE_EVENTS, MAP=1-PIXMAP, UVALUE={info          : 'ScrollIt_Base', $
+                                                             deliver_events: [deliver_events]} )
    Draw = Widget_Draw(Base, $
                       XSIZE=xdrawsize, YSIZE=ydrawsize, $
                       X_SCROLL_SIZE=xsize, Y_SCROLL_SIZE=ysize, $
