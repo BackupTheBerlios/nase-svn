@@ -1,10 +1,12 @@
 ;+
-; NAME: NoRot_Shift
+; NAME:
+;  NoRot_Shift()
 ;
 ; VERSION:
 ;  $Id$
 ;
-; AIM: edge truncating version of IDL's <C>SHIFT</C> function
+; AIM:
+;  edge truncating version of IDL's <C>SHIFT</C> function.
 ;
 ; PURPOSE: 
 ;  The <C>NoRot_Shift</C> function shifts elements of vectors or arrays
@@ -15,12 +17,12 @@
 ;  All shifts are not circular (the circular shifted regions are
 ;  set to zero).   
 ;
-; CATEGORY: 
+; CATEGORY:
 ;  Array
 ;  Image
-:
+;
 ; CALLING SEQUENCE: 
-;* result = NoRot_Shift(Array,S0,..,S6)
+;* result = NoRot_Shift(Array, S0,..,S6 [,WEIGHT=])
 ;
 ; INPUTS: 
 ;  Array:: The array to be shifted.
@@ -38,7 +40,7 @@
 ;  WEIGHT:: Value to set the circular shifted regions (default is zero).
 ;	    
 ; OUTPUTS: 
-;   Result is the shifted Array
+;   Result is the shifted array.
 ;
 ; RESTRICTIONS:
 ;   If one shiftparameter Sn exceeds the size of nth dimension of the
@@ -47,7 +49,7 @@
 ;
 ; EXAMPLE:   	
 ;*    A = shift(DIST(50,50,25,25))  ; two dimensional indexed array  	
-;*    B = exp(-A^2/75)              ; gaussean derviation
+;*    B = exp(-A^2/75)              ; gaussean deviation
 ;*    result = norot_shift(A,20,20)
 ;*	tvscl,result
 ;
