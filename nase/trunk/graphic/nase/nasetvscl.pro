@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  1998/03/03 14:40:50  kupper
+;              Benutzt jetzt UTVScl für Kompatibilität mit allerlei Devices...
+;
 ;       Revision 2.2  1997/09/12 11:32:52  kupper
 ;       Keyword ZOOM für automatisches Rebin zugefügt.
 ;
@@ -32,17 +35,21 @@ Pro NaseTvScl, array, par1, par2, par3, ZOOM=zoom, ORDER=order, _EXTRA = _extra
    
    if keyword_set(ORDER) then order = 0 else order = 1
 
-   Default, zoom, 1
+;   Default, zoom, 1
 
-   xsize = (SIZE(array))(1) * zoom
-   ysize = (SIZE(array))(2) * zoom
+;   xsize = (SIZE(array))(1) * zoom
+;   ysize = (SIZE(array))(2) * zoom
 
    case N_Params() of
 
-      1:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra
-      2:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
-      3:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
-      4:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
+;      1:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra
+;      2:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
+;      3:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
+;      4:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
+      1:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
+      2:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
+      3:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
+      4:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
 
    endcase
 

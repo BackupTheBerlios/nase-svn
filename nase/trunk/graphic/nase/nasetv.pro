@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.4  1998/03/03 14:40:50  kupper
+;              Benutzt jetzt UTVScl für Kompatibilität mit allerlei Devices...
+;
 ;       Revision 2.3  1998/02/26 15:49:33  kupper
 ;              Schlüsselwort BLACKBACK hinzugefügt.
 ;
@@ -47,26 +50,31 @@ Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackback
      
    if keyword_set(ORDER) then order = 0 else order = 1
 
-   Default, zoom, 1
+;   Default, zoom, 1
 
-   xsize = (SIZE(array))(1) * zoom
-   ysize = (SIZE(array))(2) * zoom
+;   xsize = (SIZE(array))(1) * zoom
+;   ysize = (SIZE(array))(2) * zoom
 
-   If Keyword_Set(BLACKBACK) then begin
+   If Keyword_Set(BLACKBACK) and (!P.BACKGROUND ne 0) then begin
       nullen = Where(array eq 0, count)
       If count ne 0 then array(nullen) = !P.BACKGROUND
    Endif
 
    case N_Params() of
 
-      1:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra
-      2:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
-      3:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
-      4:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
+;      1:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra
+;      2:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
+;      3:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
+;      4:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
+      1:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
+      2:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
+      3:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
+      4:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
+
    endcase
 
    ;;------------------> Veränderungen am Array rückgängig machen:
-   If Keyword_Set(BLACKBACK) then if (count ne 0) then array(nullen) = 0
+   If Keyword_Set(BLACKBACK) and (!P.BACKGROUND ne 0) then if (count ne 0) then array(nullen) = 0
    ;;--------------------------------
 
 End
