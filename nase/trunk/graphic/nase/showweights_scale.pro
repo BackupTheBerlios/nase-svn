@@ -174,8 +174,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    GET_MAXCOL = !TOPCOLOR       ;since the revised NASE color
                                 ;management (see proceedings of the
                                 ;first NASE workshop 2000)
-   GET_RANGE_IN  = [0, Range]
    GET_RANGE_OUT = [0, !TOPCOLOR]
+   ;; GET_RANGE_OUT see below!
    ;;--------------------------------
    
    if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
@@ -191,6 +191,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    if COLORMODE eq 1 then begin ;positives Array
 
       GET_COLORMODE = 1
+      GET_RANGE_IN  = [0, Range]
       If Keyword_Set(SETCOL) then begin
          If !D.NAME eq "PS" then begin
             ;;umgedrehte Graupalette laden:
@@ -203,6 +204,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    endif else begin             ;pos/neg Array
 
       GET_COLORMODE = -1
+      GET_RANGE_IN  = [-Range, Range]
       If Keyword_Set(SETCOL) then begin
          If !D.Name eq "PS" then begin ;helle Farbpalette
             uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASEP.TABLESET.PAPER_NEGPOS
