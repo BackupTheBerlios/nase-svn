@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/11/08 19:36:06  saam
+;           some plotting details improved
+;
 ;     Revision 2.1  1998/11/08 14:20:09  saam
 ;           the marriage of trainspotting and plotcilloscope
 ;
@@ -61,6 +64,9 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
    If not keyword_set(_EXTRA) then _extra = {YTITLE: ytitle} else begin
       If not extraset(_extra, "ytitle") then _extra = create_struct(_extra, "ytitle", ytitle)
    EndElse
+
+
+   plot, FltArr(10), /NODATA, YRANGE=[-1, neurons], XRANGE=[-1,time/oversampling+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
 
 
    ;----------------> define UserSymbol: filled square
@@ -93,8 +99,6 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
           fill   : fill           ,$
           _extra : _extra}
 
-
-   plot, FltArr(10), /NODATA, YRANGE=[-2, PS.neurons+2], XRANGE=[-2,PS.time/PS.os+2], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
 
    RETURN, HANDLE_CREATE(!MH, VALUE=ps, /NO_COPY)
 END

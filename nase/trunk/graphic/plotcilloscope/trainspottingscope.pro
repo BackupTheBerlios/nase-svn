@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.4  1998/11/08 19:36:05  saam
+;           some plotting details improved
+;
 ;     Revision 2.3  1998/11/08 17:53:35  saam
 ;           changed to new layer type
 ;
@@ -55,13 +58,12 @@ PRO TrainspottingScope, _SR, _y, $
       neuronC = LIndGen(SR.neurons)
       vertLine = Make_Array(SR.neurons, VALUE=SR.t)
 
-      PlotS, vertLine, neuronC, PSYM=8, SYMSIZE=1, COLOR=!P.BACKGROUND
-      PlotS, vertLine(0:y(0)), y(2:y(0)+1), PSYM=8, SYMSIZE=1.0
+      PlotS, vertLine(0:y(0)-1), y(2:y(0)+1), PSYM=8, SYMSIZE=1.0
    END
    SR.t = SR.t + 1
 
    IF (SR.T MOD SR.TIME) EQ 0 THEN BEGIN
-      plot, FltArr(10), /NODATA, YRANGE=[-2, SR.neurons+2], XRANGE=[-2+SR.T,SR.T+SR.time/SR.os+2], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
+      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[-1+SR.T,SR.T+SR.time/SR.os+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
    END
 
 
