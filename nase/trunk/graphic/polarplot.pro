@@ -5,18 +5,21 @@
 ;
 ; CATEGORY: GRAPHICS / GENERAL
 ;
-; CALLING SEQUENCE: PolarPlot, radiusarray, winkelarray
+; CALLING SEQUENCE: PolarPlot, radiusarray, winkelarray [,sdev]
 ;                              [,TITLE=title] [,CHARSIZE=charsize]
 ;                              [,XRANGE=xrange] [,YRANGE=yrange]
 ;                              [,XSTYLE=xstyle] [,YSTYLE=ystyle]
 ;                              [,MINORANGLETICKS=minorangleticks]
-;                              [,THICK=thick]
+;                              [,THICK=thick],[CLOSE=CLOSE]
 ;
 ; INPUTS: radiusarray: Die in diesem Array enthaltenen Werte werden als Abstaende
 ;                      gemessen vom Ursprung dargestellt.
 ;         winkelarray: Die zugehoerigen Winkel in Rad.
+
 ;
-; OPTIONAL INPUTS: title: Ein String, der nachher ueber dem Plot steht.
+; OPTIONAL INPUTS: 
+;                  sdev       : Array, das die Standardabweichung enthaelt 
+;                  title: Ein String, der nachher ueber dem Plot steht.
 ;                  charsize: Groesse der Beschriftung bezogen auf die Normalgroesse
 ;                            von 1.0.
 ;                  xrange, yrange: Plotbereiche.
@@ -31,6 +34,8 @@
 ;                                   n Zwischenwinkelmarkierungen, z.B. liefert
 ;                                   n=1 Markierungen bei 45, 135, 225 und 315 Grad. 
 ;                  thick: Die Liniendicke, Normal: 1.0, Default: 3.0
+;                  close: Endpunkt wird mit Anfangspunkt verbunden: 
+;                         Darstellung als geschlossene Kurve (default: 0) 
 ;
 ; OUTPUTS: Polardarstellung der Daten auf dem aktuellen Plot-Device.
 ;
@@ -46,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1999/02/12 14:48:50  gabriel
+;             Keyword CLOSE und Input SDEV neu
+;
 ;        Revision 2.3  1998/02/18 14:07:55  thiel
 ;               CHARSIZE-Keyword hinzugefuegt.
 ;
@@ -58,29 +66,51 @@
 ;-
 
 
-PRO PolarPlot, radiusarray, winkelarray, $
+PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor, $
                TITLE=title, $
                CHARSIZE=charsize, $
                XRANGE=xrange, YRANGE=yrange, $
                XSTYLE=xstyle, YSTYLE=ystyle, $
                MINORANGLETICKS=minorangleticks, $
-               THICK=thick
+               THICK=thick , CLOSE=CLOSE, _EXTRA=e
 
+
+
+_radiusarray = radiusarray
+_winkelarray = winkelarray
+IF set(SDEV) THEN _sdev = sdev
+
+Default, MCOLOR , RGB(255,255,255,/NOALLOC)
+Default, SDCOLOR, RGB(100,100,200,/NOALLOC)
+DEFAULT,CLOSE ,0
 Default, xstyle, 4
 Default, ystyle, 4
-
-Default, xrange, [-Max(RadiusArray),Max(RadiusArray)]
-Default, yrange, [-Max(RadiusArray),Max(RadiusArray)]
-
+Default, xrange, [-Max(_RadiusArray),Max(_RadiusArray)]
+Default, yrange, [-Max(_RadiusArray),Max(_RadiusArray)]
 Default, title, ''
 Default, charsize, 1.0
-
 Default, thick, 3.0
 
-Plot, radiusarray, winkelarray, /polar, THICK=thick, $
+
+IF CLOSE EQ 1 THEN BEGIN
+   _radiusarray = [_radiusarray,_radiusarray(0)]
+   _winkelarray = [_winkelarray,_winkelarray(0)]
+   IF set(SDEV) THEN _sdev = [_sdev,_sdev(0)]
+ENDIF
+
+Plot, _radiusarray, _winkelarray, /polar, THICK=thick, COLOR=MCOLOR,$
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
- TITLE=title
+ TITLE=title , _EXTRA=e
+IF set(_SDEV) THEN BEGIN
+   x1 = (_radiusarray(*)-_sdev(*))*cos(_winkelarray(*))
+   m1 = (_radiusarray(*)-_sdev(*))*sin(_winkelarray(*))
+   x2 = (_radiusarray(*)+_sdev(*))*cos(_winkelarray(*))
+   m2 = (_radiusarray(*)+_sdev(*))*sin(_winkelarray(*))
+   polyfill, [x1,last(x1),REVERSE(x2),x2(0)], [m1,last(m1), REVERSE(m2),m2(0)], COLOR=sdcolor
+ENDIF
+oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
+
 Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
  XSTYLE=xstyle, XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
 Axis, 0,0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
