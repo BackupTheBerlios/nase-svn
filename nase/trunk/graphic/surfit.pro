@@ -196,101 +196,128 @@ PRO SurfIt, _data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
             TITLE=title, PLOT_TITLE=plot_title, $
             NASE=nase, GRID=grid, SHADES=_shades, _EXTRA=_extra
 
-data = _data                    ;Do not change Contents!
-Default, shades, _shades        ;Do not change Contents!
-Default, xpos, 500
-Default, ypos, 100
-Default, xsize, 500
-Default, ysize, 500   
-Default, deliver_events, [-1]
-Default, title, "Surf It!"
-Default, plot_title, Title
-If plot_title eq "Surf It!" then plot_title = ""
-Default, nase, 0
-If not Keyword_Set(_extra) then _extra = {title: plot_title} else _extra = Create_Struct(_extra, 'title', plot_title)
-center = 0
-If extraset(_extra, "LEGO") then begin
-   grid = 1                     ;lego implies grid
-   center = 1
-endif
-If Keyword_Set(GRID) then plotproc = "SURFACE" else plotproc = "SHADE_SURF"
-Default, no_block, 1
-Default, modal, 0
+   data = _data                 ;Do not change Contents!
+   Default, shades, _shades     ;Do not change Contents!
+   Default, xpos, 500
+   Default, ypos, 100
+   Default, xsize, 500
+   Default, ysize, 500   
+   Default, deliver_events, [-1]
+   Default, title, "Surf It!"
+   Default, plot_title, Title
+   If plot_title eq "Surf It!" then plot_title = ""
+   Default, nase, 0
+   If not Keyword_Set(_extra) then _extra = {title: plot_title} else _extra = Create_Struct(_extra, 'title', plot_title)
+   center = 0
+   If extraset(_extra, "LEGO") then begin
+      grid = 1                  ;lego implies grid
+      center = 1
+   endif
+   If Keyword_Set(GRID) then plotproc = "SURFACE" else plotproc = "SHADE_SURF"
+   Default, no_block, 1
+   Default, modal, 0
 
-;;------------------> NASE-Array:
-If Keyword_Set(NASE) then begin
-   data = rotate(data, 3)
-   If Keyword_Set(Shades) then shades = rotate(shades, 3)
-endif
-;;--------------------------------
-PrepareNasePlot, (size(data))(2), (size(data))(1), get_old=oldplot, CENTER=center, NONASE=1-NASE
+   ;;------------------> NASE-Array:
+   If Keyword_Set(NASE) then begin
+      data = rotate(data, 3)
+      If Keyword_Set(Shades) then shades = rotate(shades, 3)
+   endif
+   ;;--------------------------------
+   PrepareNasePlot, (size(data))(2), (size(data))(1), get_old=oldplot, CENTER=center, NONASE=1-NASE
 
-If Keyword_Set(Shades) then _extra = Create_Struct(_extra, 'shades', shades)
+   If Keyword_Set(Shades) then _extra = Create_Struct(_extra, 'shades', shades)
 
-window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
+   window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
 
-  IF N_ELEMENTS(Group) EQ 0 THEN GROUP=0
+   IF N_ELEMENTS(Group) EQ 0 THEN GROUP=0
 
-  SurfWidget = WIDGET_BASE(GROUP_LEADER=Group, $
-                           MODAL=modal, $
-                           MAP=1, $
-                           TITLE=title, $
-                           UVALUE={Widget        : "Main", $
-                                   surface       : data, $
-                                   Button_Pressed: (0 eq 1), $ ;FALSE
-                                   Press_x       :0, $
-                                   Press_y       :0, $
-                                   CurrentPos    :[30.0, 30.0, 0.0], $
-                                   delta         :[0.0, 0.0, 0.0], $ ; Diese Arrays haben nur der Bequemlichkeit halber drei Elemente...
-                                   pixwin        :!D.Window, $
-                                   drawwin       :0, $ ;still unknown!
-                                   xsize         :xsize, $
-                                   ysize         :ysize, $
-                                   deliver_events:deliver_events, $
-                                   plot_title    :plot_title, $
-                                   nase          :nase, $
-                                   plotproc      :plotproc, $
-                                   center        :center, $
-                                   _extra        :_extra $
-                                  }, $
-                           /NO_COPY, $
-                           XOFFSET=xpos, $
-                           YOFFSET=ypos, $
-                           /COLUMN, $
-                           SPACE=10, $
-                           /TLB_SIZE_EVENTS)
+   If fix(!VERSION.Release) ge 5 then $ ;Ab IDL 5 ist MODAL ein BASE-Keyword
+    SurfWidget = WIDGET_BASE(GROUP_LEADER=Group, $
+                             MODAL=modal, $
+                             TITLE=title, $
+                             UVALUE={Widget        : "Main", $
+                                     surface       : data, $
+                                     Button_Pressed: (0 eq 1), $ ;FALSE
+                                     Press_x       :0, $
+                                     Press_y       :0, $
+                                     CurrentPos    :[30.0, 30.0, 0.0], $
+                                     delta         :[0.0, 0.0, 0.0], $ ; Diese Arrays haben nur der Bequemlichkeit halber drei Elemente...
+                                     pixwin        :!D.Window, $
+                                     drawwin       :0, $ ;still unknown!
+                                     xsize         :xsize, $
+                                     ysize         :ysize, $
+                                     deliver_events:deliver_events, $
+                                     plot_title    :plot_title, $
+                                     nase          :nase, $
+                                     plotproc      :plotproc, $
+                                     center        :center, $
+                                     _extra        :_extra $
+                                    }, $
+                             /NO_COPY, $
+                             XOFFSET=xpos, $
+                             YOFFSET=ypos, $
+                             /COLUMN, $
+                             SPACE=10, $
+                             /TLB_SIZE_EVENTS) $
+   else SurfWidget = WIDGET_BASE(GROUP_LEADER=Group, $ ; IDL 4 oder früher
+                                 TITLE=title, $
+                                 UVALUE={Widget        : "Main", $
+                                         surface       : data, $
+                                         Button_Pressed: (0 eq 1), $ ;FALSE
+                                         Press_x       :0, $
+                                         Press_y       :0, $
+                                         CurrentPos    :[30.0, 30.0, 0.0], $
+                                         delta         :[0.0, 0.0, 0.0], $ ; Diese Arrays haben nur der Bequemlichkeit halber drei Elemente...
+                                         pixwin        :!D.Window, $
+                                         drawwin       :0, $ ;still unknown!
+                                         xsize         :xsize, $
+                                         ysize         :ysize, $
+                                         deliver_events:deliver_events, $
+                                         plot_title    :plot_title, $
+                                         nase          :nase, $
+                                         plotproc      :plotproc, $
+                                         center        :center, $
+                                         _extra        :_extra $
+                                        }, $
+                                 /NO_COPY, $
+                                 XOFFSET=xpos, $
+                                 YOFFSET=ypos, $
+                                 /COLUMN, $
+                                 SPACE=10, $
+                                 /TLB_SIZE_EVENTS)
 
-  Draw =  WIDGET_DRAW(SurfWidget, $
-                      COLORS=256, $
-                      /MOTION_EVENTS, $
-                      /BUTTON_EVENTS, $
-                      RETAIN=1, $
-                      UVALUE={Widget: "Draw"}, $
-                      XSIZE=xsize, $
-                      YSIZE=ysize)
+
+   Draw =  WIDGET_DRAW(SurfWidget, $
+                       COLORS=256, $
+                       /MOTION_EVENTS, $
+                       /BUTTON_EVENTS, $
+                       RETAIN=1, $
+                       UVALUE={Widget: "Draw"}, $
+                       XSIZE=xsize, $
+                       YSIZE=ysize)
 
 
-  WIDGET_CONTROL, SurfWidget, /REALIZE
+   WIDGET_CONTROL, SurfWidget, /REALIZE
 
-  WIDGET_CONTROL, SurfWidget, GET_UVALUE=info, /NO_COPY
-  WIDGET_CONTROL, Draw, GET_VALUE=drawwin        ;Die Fensternummer des Draw-Widgets
-  info.drawwin = drawwin
-  WIDGET_CONTROL, SurfWidget, SET_UVALUE=info, /NO_COPY
-  
-  wset, drawwin
-  If Keyword_Set(NASE) then call_Procedure, plotproc, data, Title=plot_title, MIN_VALUE=!NONE+1, _EXTRA=_extra else $
-   call_Procedure, plotproc, data, Title=plot_title, _EXTRA=_extra
-  xyouts, /device, 10, 10, "AX="+string(30.0)+"      AZ="+string(30.0)
+   WIDGET_CONTROL, SurfWidget, GET_UVALUE=info, /NO_COPY
+   WIDGET_CONTROL, Draw, GET_VALUE=drawwin ;Die Fensternummer des Draw-Widgets
+   info.drawwin = drawwin
+   WIDGET_CONTROL, SurfWidget, SET_UVALUE=info, /NO_COPY
+   
+   wset, drawwin
+   If Keyword_Set(NASE) then call_Procedure, plotproc, data, Title=plot_title, MIN_VALUE=!NONE+1, _EXTRA=_extra else $
+    call_Procedure, plotproc, data, Title=plot_title, _EXTRA=_extra
+   xyouts, /device, 10, 10, "AX="+string(30.0)+"      AZ="+string(30.0)
 
-  get_base = SurfWidget
+   get_base = SurfWidget
 
-  If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, NO_BLOCK=no_block $
-  else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg
- 
-  ;;------------------> NASE-Array:
-  If Keyword_Set(NASE) then begin
-     PrepareNasePlot, restore_old=oldplot
-  EndIf
+   If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, NO_BLOCK=no_block $
+   else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, MODAL=modal
+   
+   ;;------------------> NASE-Array:
+   If Keyword_Set(NASE) then begin
+      PrepareNasePlot, restore_old=oldplot
+   EndIf
    ;;------------------
    
 END
