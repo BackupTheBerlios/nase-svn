@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/19 09:08:55  saam
+;           + wrong handling of delta_t fixed
+;
 ;     Revision 1.4  2000/01/14 10:34:40  saam
 ;           bug in print corrected
 ;
@@ -301,8 +304,8 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          R = {  type  : 9                ,$
                 index : IN.index         ,$
                 t     : 0l               ,$
-                hs    : InitHotSpot(WIDTH=w, HEIGHT=h, /UNIQUE),$
-                ed    : InitEventDist(POISSON=IN.f),$
+;                hs    : InitHotSpot(WIDTH=w, HEIGHT=h, /UNIQUE),$
+;                ed    : InitEventDist(POISSON=IN.f),$
                 poi   : [0l,0l]          ,$ ;current hotspot
                 input : IN.input         ,$
                 curin : IN.input         ,$
@@ -323,8 +326,8 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          R = {  type  : 10               ,$
                 index : IN.index         ,$
                 t     : 0l               ,$
-                hs    : InitHotSpot(WIDTH=w, HEIGHT=h, /UNIQUE),$
-                ed    : InitEventDist(EQUAL=IN.f),$
+;                hs    : InitHotSpot(WIDTH=w, HEIGHT=h, /UNIQUE),$
+ ;               ed    : InitEventDist(EQUAL=IN.f),$
                 poi   : [0l,0l]          ,$ ;current hotspot
 		hst   : 0l               ,$ ;time of last hot spot
                 p     : pr               ,$
@@ -344,12 +347,14 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          FOR i=0,number_filter-1 DO BEGIN
             tempo(i) = Handle_Create(!MH, VALUE=0);, /NO_COPY)
          ENDFOR
+
+         IF (IN.time_step EQ -1) THEN dt = P.SIMULATION.SAMPLE*1000. ELSE dt =  IN.time_step
          
          R =  { type            : 11                     ,$ ; input type (11=extern) 
                 index           : IN.index               ,$ 
                 period          : IN.period              ,$ ; period time
                 number_filter   : N_elements(IN.filters) ,$ ; how many filters are used?
-                delta_t         : IN.time_step           ,$ ; time resolution
+                delta_t         : dt                     ,$ ; time resolution
                 t               : 0l                     ,$ ; internal sim-time
                 filters         : IN.filters             ,$ ; filters
                 temps           : tempo                  ,$ ; for storing internal filter-data
