@@ -1,7 +1,8 @@
 ;; Welcome to the NASE object definition template.
 ;; Please use your editor's replace option to replace all occurences of
 ;; "MyClass" by your desired classname. Then change header and object definition
-;; to suit your object.
+;; to suit your object. All methods described in this header are examples.
+;; Do not forget to delete this text.
 ;; Have fun!
 
 ;+
@@ -64,7 +65,11 @@
 ;
 ; ABSTRACT METHODS:
 ;
-;  Abstract methods must be overridden in derived classes:
+;  Abstract methods are used to indicate that a class is designed to have a
+;  respective member function, but that functionality needs to be defined
+;  in a derived class. Abstract methods must be overriden in derived classes.
+;  Classes containing abstract methods (so-called abstract classes) are designed
+;  for derivation only. Instantiation of abstract classes is an error.
 ;
 ;  public:
 ;   -please remove any sections that do not apply-
@@ -73,7 +78,7 @@
 ;   -please remove any sections that do not apply-
 ;
 ;  private:
-;   -please remove any sections that do not apply-
+;   override_me_ : insert abstract-to-paper filter here.
 ;
 ; RESTRICTIONS: 
 ;  -please remove any sections that do not apply-
@@ -164,6 +169,11 @@ End
 
 
 ;; ------------ Private --------------------
+Pro basic_draw_object::override_me_; -ABSTRACT-
+   ;; use this template for all abstract methods.
+   On_error, 2
+   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
+End
 
 
 
