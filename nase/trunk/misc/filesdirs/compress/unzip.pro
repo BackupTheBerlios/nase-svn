@@ -7,12 +7,16 @@
 ;
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    UnZip, filepattern [, /NOKEEPORG]
+; CALLING SEQUENCE:    UnZip, filepattern [,/NOKEEPORG]
 ;
 ; INPUTS:              filepattern: das zu dekomprimierende Filepattern ohne
 ;                            '.gz'-Endung
 ;
 ; KEYWORD PARAMETERS:  NOKEEPORG: das gezippte File wird geloescht
+;                      FORCE    : ist sowohl das gezippte als auch das nicht-gezippte File
+;                                 vorhanden, wird das nicht-gezippte durch auspacken
+;                                 des gezippten Files ueberschrieben
+;                      VERBOSE  : ein bisschen mehr Ausgabe
 ;
 ; EXAMPLE:             ; in einer Simulation, in zwei Schritten erfolgt:
 ;                      
@@ -30,11 +34,15 @@
 ;                      Auswertung
 ;                      ZipFix, Data
 ;
-; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#ZIPFIX">ZipFix</A>, <A HREF="#ZIPSTAT">ZipStat</A>
+; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#ZIPFIX">ZipFix</A>, <A HREF="#ZIPSTAT">ZipStat</A>, <A HREF="#CHECKZIP">CheckZip</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/06/16 12:24:49  saam
+;           + new Keywords FORCE, VERBOSE
+;           + misleading status-message changed
+;
 ;     Revision 2.4  1998/03/16 14:30:59  saam
 ;           the file-check of the gzip-integrity is
 ;           broken on alpha (doesn't recognize gzip-
@@ -51,34 +59,37 @@
 ;
 ;
 ;-
-PRO UnZip, filepattern, NOKEEPORG=nokeeporg
+PRO UnZip, filepattern, NOKEEPORG=nokeeporg, FORCE=force, VERBOSE=verbose
 
    Default, suffix, 'gz'
    IF suffix NE '' THEN suffix = '.'+suffix
    unzip = 'gunzip'
 
 
-   IF ZipStat(filepattern, ZIPFILES=gzfiles) AND gzfiles(0) NE '-1' THEN BEGIN
+   ok = ZipStat(filepattern, ZIPFILES=gzfiles, BOTHFILES=bfiles)
+   IF Keyword_Set(FORCE) AND bfiles(0) NE '-1' THEN BEGIN
+      IF Keyword_Set(VERBOSE) THEN print, 'UNZIP: forced decompression'
+      IF gzfiles(0) NE '-1' THEN gzfiles = [gzfiles,bfiles] ELSE gzfiles = bfiles
+   END
+
+   IF ok AND gzfiles(0) NE '-1' THEN BEGIN
       FOR i=0,N_Elements(gzfiles)-1 DO BEGIN
          IF FileExists(gzfiles(i)+suffix, INFO=info) THEN BEGIN
             
-;            IF NOT Contains(info, 'gzip') THEN BEGIN 
-;               Print, 'UNZIP: file not compressed...renaming to original name...'+file
-;               Spawn, 'mv -f '+gzfile+' '+file
-;            ENDIF ELSE BEGIN
-               IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
-                  Spawn, unzip+' -c '+gzfiles(i)+suffix+' > '+gzfiles(i), r
-               ENDIF ELSE BEGIN
-                  Spawn, unzip+' -f '+gzfiles(i)+suffix, r
-               ENDELSE
-               IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
-;            ENDELSE
+            IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
+               Spawn, unzip+' -c '+gzfiles(i)+suffix+' > '+gzfiles(i), r
+            ENDIF ELSE BEGIN
+               Spawn, unzip+' -f '+gzfiles(i)+suffix, r
+            ENDELSE
+            IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
             
          ENDIF
       ENDFOR
-   ENDIF ELSE BEGIN      
-      Print, 'UNZIP: there are no files matching '+filepattern+suffix
-      Print, 'UNZIP: hoping that anybody else can handle that...'
+   ENDIF ELSE BEGIN
+      IF bfiles(0) NE '-1' AND NOT Keyword_Set(FORCE) THEN print, 'UNZIP: there are ZIP/NOZIP-file-pairs...dont like to touch them' ELSE BEGIN
+         Print, 'UNZIP: there are no files matching '+filepattern+suffix
+         Print, 'UNZIP: hoping that anybody else can handle that...'
+      END
    ENDELSE
       
 END
