@@ -81,7 +81,8 @@
 ;                     except for the zero-shift value. Setting <*>OVERLAPNORM</*> does normalize each correlation value
 ;                     to the "right" energy, but this procedure is not very common in the scientific community, and it
 ;                     is also enormously time-consuming (it takes about 3 times as long as the conventional energy
-;                     normalization).
+;                     normalization). Note also that the edge values, of course, are always +/-1, because they represent
+;                     the normalized correlation between two 1-element epochs, which is always +/-1.
 ;
 ; OUTPUTS:
 ;  cc:: A float array of the same dimensional structure as <*>x</*> and <*>y</*>, except that the first dimension contains
@@ -173,7 +174,7 @@ FUNCTION  CCFFT, X, Y,   ShiftAxis,  $
      Yi[0:NS-1] = Y[*,i]
      ; The result has to be shifted, reversed and truncated by the last element in order to establish the right order
      ; of the samples in the time domain.
-     C[*,i] = Float((Reverse(Shift( FFT(FFT(Xi)*Conj(FFT(Yi)), 1) , NS )))[0:2*NS-2])
+     C[*,i] = (Reverse(Shift( Float(FFT(FFT(Xi)*Conj(FFT(Yi)), 1)) , NS )))[0:2*NS-2]
    ENDFOR
    C = 2*NS * Temporary(C)   ; The scaling factor is necessary because of the inherent scaling factor of the FFT.
 
@@ -186,11 +187,11 @@ FUNCTION  CCFFT, X, Y,   ShiftAxis,  $
    IF  Keyword_Set(energynorm)  THEN  BEGIN
 
      IF  Keyword_Set(overlapnorm)  THEN  BEGIN
-       XPower  = Float(X)^2            ; power of x
-       YPower  = Float(Y)^2            ; power of y
-       BoxCar  = FltArr(NS,N) + 1      ; a rectangular window to get the energies of epoch sections by cross-correlation
-       XEnergy = CCFFT(        XPower , BoxCar)   ; cumulative sums of x power values, computed via cross-correlation
-       YEnergy = CCFFT(Reverse(YPower), BoxCar)   ; cumulative sums of y power values, computed via cross-correlation
+       XPower  = Float(X)^2               ; power of x
+       YPower  = Float(Y)^2               ; power of y
+       BoxCar  = FltArr(NS,N) + 1         ; a rectangular window to get the energies of epoch sections by cross-correlation
+       XEnergy = CCFFT(XPower , BoxCar)   ; cumulative sums of x power values, computed via cross-correlation
+       YEnergy = CCFFT(BoxCar , YPower)   ; cumulative sums of y power values, computed via cross-correlation
        Energy  = sqrt(XEnergy * YEnergy)
        ; Only those epochs are valid whose energy is greater than zero (otherwise the correlation is left zero):
        Valid   = Where(Energy NE 0, NValid)
