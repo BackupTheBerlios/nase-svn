@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/06/29 14:46:14  saam
+;           + _EXTRA added
+;
 ;     Revision 1.2  2000/06/20 13:20:07  saam
 ;          + new keyword A to specify amplitude
 ;
@@ -52,7 +55,7 @@
 ;
 
 
-FUNCTION IFgwn, MODE=mode, PATTERN=pattern, CORR=corr, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, A=a
+FUNCTION IFgwn, MODE=mode, PATTERN=pattern, CORR=corr, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, A=a, _EXTRA=e
 
  COMMON ATTENTION
  Common COMMON_RANDOM, seed
