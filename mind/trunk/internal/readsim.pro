@@ -22,7 +22,11 @@
 ;                     MEMBRANE: read membrane potentials of layer
 ;                     MUA     : read multiple unit activity
 ;                     TIME    : reads the simulation from BIN start to BIN end specified
-;                               as [start,end]
+;                               as [start,end]. if end is negative,
+;                               data is read to the (-end)-last
+;                               element. Therefore end=-1 reads to
+;                               the file's end. If end is omitted,
+;                               data is read from 0 to start.
 ;                     SELECT  : an array of neuron indices to be read
 ;
 ; OPTIONAL OUTPUTS:   INFO    : returns the VIDEO informations
@@ -37,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.6  2000/05/16 16:16:20  saam
+;            extended TIME syntax
+;
 ;      Revision 1.5  2000/04/06 09:34:24  saam
 ;            + added loading of LFP signals
 ;            + new info keyword
@@ -70,79 +77,78 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
       OUTPUT = 1
       kc = 1
    END
-   IF kc NE 1 THEN Message, 'can only read one type of data simultanously'
+   IF kc NE 1 THEN Console, 'can only read one type of data simultanously', /FATAL
    
    IF Set(INPUT) THEN BEGIN
       filename = file+'.'+STR(INPUT)+'.in.sim' 
-      print, 'READSIM: loading input spikes ('+STR(INPUT)+') ...'
+      console, 'loading input spikes ('+STR(INPUT)+') ...'
    END
    IF Keyword_Set(OUTPUT)   THEN BEGIN
       filename = file+'.o.sim'
-      print, 'READSIM: loading output spikes...'
+      console, 'loading output spikes...'
    END
    IF Keyword_Set(MEMBRANE) THEN BEGIN
       filename = file+'.m.sim'
-      print, 'READSIM: loading membrane potentials...'
+      console, 'loading membrane potentials...'
    END
    IF Keyword_Set(MUA) THEN BEGIN
       filename = file+'.mua.sim'
-      print, 'READSIM: loading MUA...'
+      console, 'loading MUA...'
    END
    IF Keyword_Set(LFP) THEN BEGIN
       filename = file+'.lfp'
-      print, 'READSIM: loading LFP...'
+      console, 'loading LFP...'
    END
 
 
    Video = LoadVideo( TITLE=filename, GET_SIZE=anz, GET_LENGTH=max_time, /SHUTUP, GET_STARRING=log1, GET_COMPANY=log2, ERROR=error)
    IF Error THEN BEGIN
-      print, 'READSIM: data doesnt exist...'+filename
-      print, 'READSIM: stopping'
-      stop
+       console, 'data doesnt exist...'+filename, /WARN
+       console, 'stopping', /FATAL
    END
    INFO = log1 + ', ' + log2
    IF Set(TIME) THEN BEGIN
-      IF max_time-1 LT TIME(1) THEN BEGIN
-         TIME(1) = max_time-1
-         print, 'READSIM: requested time interval larger than actual recorded!!'
-         print, ''
-      END
+       IF TIME(1) LT 0 THEN TIME(1)=max_time+TIME(1)
+       IF max_time-1 LT TIME(1) THEN BEGIN
+           TIME(1) = max_time-1
+           console, 'requested time interval larger than actual recorded!!', /WARN
+           console, '', /WARN
+       END
    END ELSE TIME = [0,max_time-1]
-
+   IF TIME(0) GT TIME(1) THEN Console, 'start time ('+STR(Time(0))+') is larger than stop time ('+STR(Time(1))+')', /FATAL
 
    anz = anz(1)
    IF Set(Select) THEN BEGIN
       IF (MAX(Select) GE anz) OR (MIN(Select) LT 0) THEN BEGIN
-         print, 'READSIM: illegal SELECT index'
-         stop
+         console, 'illegal SELECT index', /FATAL
       END
       anz =  N_Elements(SELECT)
    END
    IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
 
-   print, ''
    TIME = LONG(TIME)
-   REWIND, Video, TIME(0)
+   print, 'READSIM REMINDER!! TIME is somewhat corrupted'
+   REWIND, Video, TIME(0), /SHUTUP
    IF Set(Select) THEN BEGIN
       FOR t=TIME(0), TIME(1) DO BEGIN
          tmp = Replay(Video)
          xt(*,t-TIME(0)) = tmp(Select)
-         IF ((t-time(0)) MOD ((time(1)-time(0))/20)) EQ 0 THEN print, !Key.UP, 'READSIM: ', (t-time(0))*100/(time(1)-time(0)), ' %' 
+         IF ((t-time(0)) MOD ((time(1)-time(0))/20)) EQ 0 THEN console, 'loading...'+STR((t-time(0))*100/(time(1)-time(0)))+' %',/UP
       END
    END ELSE BEGIN
       FOR t=TIME(0), TIME(1) DO BEGIN
          xt(*,t-TIME(0)) = Replay(Video)
-         IF ((t-time(0)) MOD ((time(1)-time(0))/20)) EQ 0 THEN print, !Key.UP, 'READSIM: ', (t-time(0))*100/(time(1)-time(0)), ' %' 
+         IF ((t-time(0)) MOD ((time(1)-time(0))/20)) EQ 0 THEN console, 'loading...'+STR((t-time(0))*100/(time(1)-time(0)))+' %', /UP
       END
    END
    Eject, Video, /SHUTUP
 
 
-   IF Keyword_Set(INPUT)    THEN print, 'READSIM: loading input spikes...done'
-   IF Keyword_Set(OUTPUT)   THEN print, 'READSIM: loading output spikes...done'
-   IF Keyword_Set(MEMBRANE) THEN print, 'READSIM: loading membrane potentials...done'
-   IF Keyword_Set(MUA)      THEN print, 'READSIM: loading MUA...done'
-   IF Keyword_Set(LFP)      THEN print, 'READSIM: loading LFP...done'
+   IF Keyword_Set(INPUT)    THEN console, 'loading input spikes...done', /UP
+   IF Keyword_Set(OUTPUT)   THEN console, 'loading output spikes...done', /UP
+   IF Keyword_Set(MEMBRANE) THEN console, 'loading membrane potentials...done', /UP
+   IF Keyword_Set(MUA)      THEN console, 'loading MUA...done', /UP
+   IF Keyword_Set(LFP)      THEN console, 'loading LFP...done', /UP
 
    RETURN, xt
 END
