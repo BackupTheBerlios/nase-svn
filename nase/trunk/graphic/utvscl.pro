@@ -208,8 +208,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    ;; NASE stanard is that TV and partners use the palette
    ;; only from 0..!TOPCOLOR, this is ensured here if nothing
    ;; else is specified
-   IF NOT ExtraSet(E, 'TOP') THEN SetTag, E, "TOP", !TOPCOLOR
-
+   IF Keyword_Set(TRUE) THEN BEGIN
+       ;; TRUE color images also uses a color palette! Have to set it properly...later
+       IF ExtraSet(E, 'TOP') THEN Console, '/TRUE and TOP simultaneously set, hope you what you are doing!', /WARN
+       SetTag, E, "TOP", 255
+   END ELSE BEGIN
+       IF NOT ExtraSet(E, 'TOP') THEN SetTag, E, "TOP", !TOPCOLOR
+   END
 
    IF Keyword_Set(CENTER) THEN BEGIN
        XCENTER = 1
@@ -320,14 +325,12 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       EndIf
    EndIf
    IF !D.Name EQ 'PS' THEN BEGIN ; a Postscript-Device
-      ; flip array-values if wanted because B/W-Postcript doesn't use colortables
-;      IF !REVERTPSCOLORS THEN BEGIN
-;;         MinPix = MIN(Image)
-;;         MaxPix = MAX(Image)
-;;         Image = MaxPix - Image 
-;         Image = !D.Table_Size-1-Image
-;      END
       IF NOT Keyword_Set(POLYGON) THEN BEGIN 
+          IF Keyword_Set(TRUE) THEN BEGIN
+              UTVLCT, sp, /GET
+              LoadCT, 0
+          END
+
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e 
@@ -356,7 +359,9 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             END
          END 
       ENDELSE
-   END ELSE BEGIN   ;; it is a WINDOW
+      IF Keyword_Set(TRUE) THEN TVLCT, sp
+ 
+  END ELSE BEGIN   ;; it is a WINDOW
       IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
       
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
