@@ -1,33 +1,56 @@
 ;+
-; NAME:                PRODUCT
+; NAME:
+;  Product()
 ;
-; AIM:                 product over the elements of an array (index supported) 
+; AIM:
+;  Calculates the product over the elements of an array (index supported)
 ;
-; PURPOSE:             Bildet das Produkt ueber alle Elemente eines uebergebenen Arrays
-;                      und bildet damit das Gegenstueck zu TOTAL. 
-;                      
+; PURPOSE:
+;  To calculate the product over all elements of the passed array, thus corresponding to the IDL function <*>Total</*>.
 ;
-; CATEGORY:            MATH
+; CATEGORY:
+;  Algebra
+;  Array
+;  CombinationTheory
+;  Math
+;  NumberTheory
+;  Statistics
 ;
-; CALLING SEQUENCE:    p = PRODUCT(A [,ind][,DOUBLE])
+; CALLING SEQUENCE:
+;*    out = Product(a, [, dim] [, /DOUBLE])
 ;
-; INPUTS:              A: irgendein Array, was nicht vom Typ String ist.
-;                      ind: Index ueber den das Array multipliziert werden soll.
+; INPUTS:
+;  a::   Array of any type except string or structure.
+;  dim:: The dimension (subscript position) over which the product is meant to be calculated.
 ;
-; KEYWORD PARAMETERS:  DOUBLE: Wird ein Float-Array uebergeben, so erfolgt die
-;                              Produktbildung mit doppelter Genauigkeit.
+; INPUT KEYWORDS:
+;  DOUBLE:: In case <*>A</*> is a float array, set this keyword to use double precision floating point values
+;           in calculating the result.
 ;
-; OUTPUTS:             p: das Produkt (Skalar) vom Typ long (bei int/long) oder
-;                         float/double.
+; OUTPUTS:
+;  out:: The resulting product has the same dimensional structure as <*>A</*>, but with the <*>dim</*>th dimension
+;        missing. It is of long64 type if <*>A</*> is of any integer type; otherwise it is of the same type as <*>A</*>,
+;        except the keyword <*>DOUBLE</*> is set.
+;
+; SIDE EFFECTS:
+;  Be careful when passing an integer array; even the range of a long64 variable might not be sufficient to
+;  represent the result appropriately!
 ;
 ; EXAMPLE:
-;                      A = [5,4,7]
-;                      print, product(A)
-;                           140
+;* A = [5,4,7]
+;* print, Product(A)
+;  IDL prints:
+;* >140
+;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/11/28 13:22:18  bruns
+;     * translated doc header
+;     * fixed syntax violations in the doc header
+;     * fixed wrong handling of the DOUBLE keyword for multi-dimensional arrays
+;
 ;     Revision 2.3  2000/09/28 08:59:32  gabriel
 ;         AIM Tag added
 ;
@@ -39,79 +62,51 @@
 ;
 ;
 ;-
-FUNCTION PRODUCT, A, ind, DOUBLE=DOUBLE
+
+
+
+FUNCTION Product, A, dim, DOUBLE=DOUBLE
 
    On_Error, 2
-   
-   S = SIZE(A)
-   AType = S(S(0)+1)
-   IF N_Params() EQ 1 THEN ind = 0
-   IF N_Params() GT 2 THEN Message, 'too many arguments'
 
-   IF (AType GE 1) AND (AType LE 3) THEN BEGIN
-      fac = 1l                  ; array is of type byte, int or long
-   END ELSE IF (AType EQ 4) THEN BEGIN ; array is float
-      IF Keyword_Set(DOUBLE) THEN fac = 1.d ELSE fac = 1.
-   END ELSE IF (AType EQ 5) THEN fac = 1.d $ ;array is double 
-   ELSE Message, 'cannot handle array type'
-   IF ind EQ 0 THEN BEGIN       ; no index given
-      FOR i=0,S(S(0)+2)-1 DO BEGIN
-         fac = fac * A(i) 
-      END
-      RETURN, fac
-      
+   S = Size(A)
+   AType = S[S[0]+1]
+   IF N_Params() EQ 1 THEN dim = 0
+   IF N_Params() GT 2 THEN Console, '   Too many arguments.', /fatal
+   IF dim GT S[0]     THEN Console, '   Dimension index too large for array.', /fatal
+
+   CASE  AType  OF
+     4   : IF  Keyword_Set(DOUBLE)  THEN  PType = 5  ELSE  PType = 4
+     5   : PType = 5
+     6   : IF  Keyword_Set(DOUBLE)  THEN  PType = 9  ELSE  PType = 6
+     9   : PType = 9
+     ELSE: IF  ((AType GE 1) AND (AType LE 3)) OR (AType GE 12)  THEN  PType = 14  $
+                                                                 ELSE  Console, '   Cannot handle array type.', /fatal
+   ENDCASE
+
+   IF dim EQ 0 THEN BEGIN   ; no dimension given
+
+      Prod = (Make_Array(dimension = [1], type = PType, value = 1))[0]   ; generate a scalar 1 of the desired type
+      FOR i=0,S[S[0]+2]-1 DO Prod = Prod * A[i]   ; calculate the product over all elements
+
+      Return, Prod
+
    END ELSE BEGIN
-      ;;Message, 'index multiplication not working ... yet'
-      IF ind GT S(0) THEN Message, 'index too large for array'
-      
-      ;; determine resulting array's size
-      Sfac = S(0)-1
-      FOR i=1,S(0) DO IF i NE ind THEN Sfac = [Sfac, S(i)]
-      Sfac = [Sfac, S(S(0)+1), S(S(0)+2)/S(ind)]
-      SR = Make_Array(SIZE=SFac,VALUE=FAC)
-      CASE 1 EQ 1  OF
-         ind EQ 1: BEGIN 
-            
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*) = REFORM(A(i,*,*,*,*,*,*)) * SR(*,*,*,*,*,*,*)
-            
-            
-         END       
-         ind EQ 2: BEGIN 
-            
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*) = REFORM(A(*,i,*,*,*,*,*)) * SR(*,*,*,*,*,*,*)
-            
-         END
-         ind EQ 3: BEGIN 
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*)  = REFORM(A(*,*,i,*,*,*,*)) * SR(*,*,*,*,*,*,*)
 
-         END
-         ind EQ 4: BEGIN 
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*) = REFORM(A(*,*,*,i,*,*,*)) * SR(*,*,*,*,*,*,*)
-
-         END 
-         ind EQ 5: BEGIN 
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*) = REFORM(A(*,*,*,*,i,*,*)) * SR(*,*,*,*,*,*,*)
-
-         END
-         ind EQ 6: BEGIN 
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*) = REFORM(A(*,*,*,*,*,i,*)) * SR(*,*,*,*,*,*,*)
-
-         END
-         ind EQ 7: BEGIN 
-            FOR i=0,S(ind)-1 DO $
-             SR(*,*,*,*,*,*,*) = REFORM(A(*,*,*,*,*,*,i)) * SR(*,*,*,*,*,*,*)
-
-         END
+      ; generate an array of the desired dimensional structure and type
+      Prod = Make_Array(dimension = S[ Where( (IndGen(S[0])+1) NE dim ) + 1 ], type = PType, value = 1)
+      CASE  dim  OF   ; calculate the product over the specified dimension
+        1: FOR  i=0,S(dim)-1  DO  Prod(*) = A(i,*,*,*,*,*,*) * Prod(*)
+        2: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,i,*,*,*,*,*) * Prod(*)
+        3: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,i,*,*,*,*) * Prod(*)
+        4: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,i,*,*,*) * Prod(*)
+        5: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,*,i,*,*) * Prod(*)
+        6: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,*,*,i,*) * Prod(*)
+        7: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,*,*,*,i) * Prod(*)
       ENDCASE
-      
 
-      return,SR(*,*,*,*,*,*,*)  
+      Return, Prod
+
    END
 
 END
