@@ -28,6 +28,10 @@
 ;
 ; EXAMPLE:
 ;*print, CIndex2RGB(234)
+;
+; SEE ALSO:
+;  <A>SetColorIndex</A>, <A>RGB</A>
+;
 ;-
 
 FUNCTION CIndex2RGB, cindex
