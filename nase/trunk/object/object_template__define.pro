@@ -1,7 +1,9 @@
 ;; Welcome to the NASE object definition template.
-;; Please use your editor's replace option to replace all occurences of
-;; "MyClass" by your desired classname. Then change header and object definition
-;; to suit your object. All methods described in this header are examples.
+;; Please use your editor's replace option to replace all occurrences of
+;; "MyClass" by your desired classname. You might also want to replace all
+;; occurrences of "MySuperClass" and "MyOtherSuperClass" by the names of your
+;; classes superclasses. Then change header and object definition to suit your
+;; object. All methods described in this header are examples.
 ;; Do not forget to delete this text.
 ;; Have fun!
 
@@ -14,22 +16,22 @@
 ; CATEGORY: 
 ;
 ; SUPERCLASSES:
-;   class MySuperClass
-;   class MyOtherSuperClass
+;   <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A>
+;   <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A>
 ;
 ; CONSTRUCTION: 
 ;
 ;   o = Obj_New("MyClass"
 ;               [,KEYWORD=value]
-;               [-keywords inherited from class MySuperClass-]
-;               [-keywords inherited from class MyOtherSuperClass-])
+;               [-keywords inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A>-]
+;               [-keywords inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A>-])
 ;
 ; DESTRUCTION:
 ;
 ;   Obj_Destroy, o
 ;               [,KEYWORD=value]
-;               [-keywords inherited from class MySuperClass-]
-;               [-keywords inherited from class MyOtherSuperClass-]
+;               [-keywords inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A>-]
+;               [-keywords inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A>-]
 ;                                               
 ; INPUTS: *please remove any sections that do not apply*
 ;
@@ -49,8 +51,8 @@
 ;   foo(parameter)       : computes the meaning of life.
 ;   bar, parameter       : crashes the system. Delay: parameter.
 ;
-;   -plus those inherited from class MySuperClass (see there for details)-
-;   -plus those inherited from class MyOtherSuperClass (see there for details)-
+;   -plus those inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A> (see there for details)-
+;   -plus those inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A> (see there for details)-
 ;
 ;  protected: Protected methods may only be called from within a derived class's
 ;             methods.
