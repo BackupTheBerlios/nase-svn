@@ -73,6 +73,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.15  2000/10/10 15:09:28  kupper
+;     Fixed minor bug in display of multi-line-messages on text consoles.
+;
 ;     Revision 2.14  2000/10/10 15:05:45  kupper
 ;     Now can be passed string arrays for multi-line-messages.
 ;
@@ -186,7 +189,7 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    For i=0, n_elements(yell)-1 do EnQueue, viz, yell(i)
 
    CASE status.mode OF
-      0: print, yell
+      0: for i=0, n_elements(yell)-1 do print, yell(i)
       1: Widget_Control,status.cons,set_value=queue(viz, /valid), $
        SET_TEXT_TOP_LINE=MAX([0,ContainerElements(viz, /VALID)-10])
    END
