@@ -60,9 +60,15 @@
 ; NOTE:
 ;  This routine is intended to be extended :-)
 ;  Please add any new algorithms for size estimation as they come along.
-;  The only restriction is that the return value is normalized to the array
-;  dimensions, i.e. return values can be expected to be roughly inside the range 
-;  of 0.0 .. 1.0.
+;  The only restrictions are: 
+;    1. the return value is normalized to the array dimensions, i.e. return
+;       values can be expected to be roughly inside the range of 0.0 .. 1.0.
+;    2. the measure is linear to size changes, i.e.
+;       for a given array g of dimensions (d x d):
+;         g2=inssubarray(fltarr(d,d),/center,congrid(g,d/x,d/x))
+;         print, Size_Estimate(g,/your_keyword)/size_estimate(g2,/your_keyword)
+;       should approximately yield the value x.
+;
 ;  Examples for possible new algorithms include
 ;    o size estimation by frequency analysis
 ;    o size estimation in Meierfrankenfeld-style (Mexwalls). See diploma theses, 
@@ -74,6 +80,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/03/24 14:28:48  kupper
+;        Updated header.
+;
 ;        Revision 1.2  2000/03/23 17:06:32  kupper
 ;        Updated header.
 ;
