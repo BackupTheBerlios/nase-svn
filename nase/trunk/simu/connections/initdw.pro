@@ -11,7 +11,7 @@
 ;                                   [,D_NONSELF] [,W_NONSELF] 
 ;                                   [,W_TRUNCATE [,W_TRUNC_VALUE]]
 ;                                   [,D_TRUNCATE [,D_TRUNC_VALUE]]
-;                                   [,NOCON] )
+;                                   [,W_NOCON] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;
@@ -30,7 +30,7 @@
 ;                  D_NONSELF, W_NONSELF : Sind Source- und Targetlayer gleichgroß (oder identisch), so läßt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
 ;                  LEARN_TAUP, LEARN_VP : Zeitkonstante und Verstaerkung f"ur das Lernpotential (Leckintegrator 1. Ordnung) 
 ;                                            LEARN_TAUP muss zur Initialisierung gesetzt werden, LEARN_VP hat Default 1.0 
-;                  NOCON                : Neuronen, deren Abstand groesser als NOCON ist, werden nicht verbunden;
+;                  W_NOCON              : Neuronen, deren Abstand vom HotSpot groesser als NOCON ist, werden nicht verbunden;
 ;                                         zwischen diesen Neuronen koennen auch keine Gewichte gelernt werden
 ;               
 ;
@@ -107,6 +107,13 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Tue Aug 19 15:24:06 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		NOCON durch W_NOCON ersetzt, damit alles einheitlich
+;		ist. NOCON kann zur Zeit noch benutzt werden, wird
+;		jedoch in einer der kommenden Versionen entfernt.
+;
 ;       Mon Aug 18 16:39:12 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -167,8 +174,10 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
                  LEARN_TAUP=learn_taup,       LEARN_VP=learn_vp, $
-                 NOCON=nocon
+                 NOCON=nocon, W_NOCON=w_nocon
 
+   Default, w_nocon, nocon
+   if keyword_set(nocon) then message, /INFORMATIVE, "Das NOCON-Schlüsselwort ist übrigens seit Version 1.19 in W_NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
 
 
    IF set(S_LAYER) THEN BEGIN
@@ -268,8 +277,8 @@ end
 
 
 
-IF keyword_set(NOCON) THEN BEGIN
-   SetConstWeight, DelMat, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+IF keyword_set(W_NOCON) THEN BEGIN
+   SetConstWeight, DelMat, !NONE, w_nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
 END
 
 
