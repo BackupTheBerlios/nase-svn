@@ -27,7 +27,7 @@
 ;                                    rotated by an angle of PHI in
 ;                                    degree (clockwise)
 ;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
-;			  	     Feldes. (Genauer: bei fix(Laenge/2)).
+;			  	     Feldes. (Genauer: bei Laenge/2.0).
 ;                  x0_arr,y0_arr   : wie x0,y0, relativ zur linken oberen Arrayecke
 ;
 ; KEYWORD PARAMETERS: HWB, x0_arr, y0_arr, s.o.
@@ -49,10 +49,8 @@
 ;               wenn der Berg symmetrisch im Array liegen soll!
 ;
 ;               Für XHWB != YHWB liefert die Funktion das Produkt zweier
-;               eindimensionaler Gaussfunktionen. Dies ist nicht wirklich
-;               äquivalent zu einer elliptischen Gaussfunktion. (?)
-;               Abhilfe: Eine noch zu implementierende elliptische
-;                        DIST()-Funktion als Grundlage verwenden!
+;               eindimensionaler Gaussfunktionen. (Dies ist 
+;               äquivalent zu einer elliptischen Gaussfunktion.)
 ;
 ;               Es ist zu beachten, dass bei gesetztem AUTOSIZE maximal 
 ;               ein Positionsparameter (sigma) uebergeben werden
@@ -71,6 +69,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.16  2000/07/19 13:36:47  kupper
+;        Now using non-cyclic Distance() instead of dist().
+;        Hence, for non-centered tip-locations, mask is not cyclic shifted but
+;        properly computed. Tip locations my now be outside the array, too.
+;
 ;        Revision 1.15  2000/07/18 13:32:02  kupper
 ;        Changed /CUBIC to CUBIC=-0.5 in ROT() call.
 ;
@@ -151,8 +154,8 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
    IF set(XHWB) THEN BEGIN
        Default, phi, 0d
 
-       xn = REBIN(shift(dist(xlen,1),x0_arr)       , xlen, ylen, /SAMPLE)
-       yn = REBIN(shift(dist(1,ylen),x0_arr,y0_arr), xlen, ylen, /SAMPLE)
+       xn = REBIN(Distance(xlen,1, x0_arr, 0.5  ), xlen, ylen, /SAMPLE)
+       yn = REBIN(Distance(1,ylen, 0.5   ,y0_arr), xlen, ylen, /SAMPLE)
        IF PHI NE 0d THEN BEGIN
            xn = ROT(xn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
            yn = ROT(yn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
@@ -165,13 +168,13 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
            i = TOTAL(ERG)
            ERG = temporary(ERG) / i
        Endif
-       return, ERG(*,*)   
+       return, ERG
 
   ENDIF
 
-  if ylen eq 1 then return, exp(-shift(dist(xlen,ylen),x0_arr)^2d / 2d /sigma^2d)           
+  if ylen eq 1 then return, exp(-Distance(xlen,1,x0_arr,0.5)^2d / 2d /sigma^2d)           
  
-  ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
+  ERG =  exp(-Distance(xlen,ylen,x0_arr,y0_arr)^2d / 2d /sigma^2d) 
   
 
   If Keyword_Set(NORM) then begin
@@ -179,5 +182,5 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
      ERG = temporary(ERG) / i
   Endif
 
-  return, ERG(*,*)          
+  return, ERG          
 end
