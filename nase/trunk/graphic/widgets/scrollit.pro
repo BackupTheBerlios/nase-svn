@@ -395,7 +395,7 @@ endif else console, /WARNING, 'This does look like an 8-bit-display! - Will prod
          Widget_Control, GET_VALUE=WinID, Draws(i-1)
          WinIDs(i-1) = WinID
       Endfor
-      WSet, WinIDs(0)
+      UWSet, WinIDs(0)
       If n_elements(WinIDs) eq 1 then begin
          Window_ID = WinIDs(0)  ;Do not return an array of one!
       endif else begin
