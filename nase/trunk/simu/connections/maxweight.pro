@@ -24,11 +24,15 @@
 ;                                     W_RANDOM=[0,0.3], /W_NONSELF)
 ;                    print, MaxWeight(DWS)
 ;
-; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights</A>, <A HREF="#MINWEIGHT">MinWeight</A>
+; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights()</A>, <A HREF="#MINWEIGHT">MinWeight()</A>,
+;                    <A HREF="#MEANWEIGHT">MeanWeight()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/03/09 16:02:46  kupper
+;            Nimmt jetzt auch oldstyle-DWs.
+;
 ;     Revision 2.2  1998/02/19 13:47:44  saam
 ;           Hyperlinks geupdated
 ;
@@ -41,9 +45,14 @@
 ;-
 FUNCTION MaxWeight, _DW
 
-   Handle_Value, _DW, DW, /NO_COPY
-   M = MAX(DW.W)
-   Handle_Value, _DW, DW, /NO_COPY, /SET
+   TestInfo, _DW, "DW"          ;Ist es überhaupt eine DW oder SDW?
 
+   Handle_Value, _DW, DW, /NO_COPY
+ 
+   If contains(Info(DW), "SDW") then M = MAX(DW.W) $ ;SDW
+   else M = MAX(DW.Weights)     ;DW
+   
+   Handle_Value, _DW, DW, /NO_COPY, /SET
+      
    RETURN, M
 END
