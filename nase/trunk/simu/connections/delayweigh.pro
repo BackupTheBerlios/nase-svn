@@ -105,7 +105,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                     target_w: target_w,$
                     target_h: target_h,$
                     Weights : DOUBLE(init_weights) ,$
-                    Matrix  : BytArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ,$
+;                    Matrix  : BytArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ,$
                     Delays  : init_delays  ,$
                     Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) ),$
                     VP      : FLOAT(vp),$
@@ -123,14 +123,17 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
       RETURN, DelMat.Weights # In 
    END ELSE BEGIN
-     tmptmp = WHERE(DelMat.Weights NE 0.0, count) 
-     IF (count NE 0) THEN BEGIN
-         DelMat.Matrix( tmptmp ) =  1
-      END ELSE BEGIN
-         DelMat.Matrix = 0  ; geht nur, weil Matrix in Struktur steht; sonst waere Matrix keine Matrix mehr
-      END
-      tmp = DelMat.Matrix AND Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
-      tmp = REFORM(tmp, N_Elements(tmp))
+;     tmptmp = WHERE(DelMat.Weights NE 0.0, count) 
+;     IF (count NE 0) THEN BEGIN
+;         DelMat.Matrix( tmptmp ) =  1
+;      END ELSE BEGIN
+;         DelMat.Matrix = 0  ; geht nur, weil Matrix in Struktur steht; sonst waere Matrix keine Matrix mehr
+;      END
+
+
+;      tmp = DelMat.Matrix AND Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
+;      tmp = REFORM(tmp, N_Elements(tmp))
+      tmp = Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
       
       ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
       tmpQU = DelMat.Queue
