@@ -57,7 +57,7 @@
 ;                   relation between bins and time is the same. For
 ;                   example, setting <*>OVERSAMPLING=1000</*> yields
 ;                   annotation in seconds, if bins are still 1 ms long.   
-;  TITLE:: Title of the plot, default: 'Spikeraster'
+;  TITLE:: Title of the plot, default: empty string.
 ;  XTITLE:: Annotation of the x-axis, default: 'Time / ms'
 ;  YTITLE:: Annotation of the y-axis, default: 'Neuron #' 
 ;  WIN:: Opens and uses window no. <*>WIN</*> to display
@@ -167,7 +167,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
       END
    ENDELSE
 
-   Default, title, 'Spikeraster'
+   ;; Default, title, 'Spikeraster'
+   Default, title, ''
    Default, xtitle, 'Time / ms'
    Default, ytitle, 'Neuron #'
    Default, level, 0.0
