@@ -51,6 +51,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/01/21 10:23:39  saam
+;           + handles period=-1
+;           + viz_mode=3 working with oversampling
+;
 ;     Revision 1.6  2000/01/20 16:28:07  alshaikh
 ;          SOME bugfixes
 ;
@@ -122,6 +126,9 @@ Default, NUMBER, 0
    
    handle_value,in(number),inn
    period = inn.period
+   IF period EQ -1 THEN period = P.SIMULATION.time
+   delta_t =   INN.delta_t      ; resolution in ms
+   IF delta_t EQ -1 THEN delta_t = P.SIMULATION.SAMPLE*1000.0
    Handle_Value, P.INPUT(INN.INDEX), INP
    curLayer = Handle_Val(P.LW(INP.LAYER))
    w  = curLayer.w
@@ -137,7 +144,7 @@ Default, NUMBER, 0
    FOR j=0,INn.number_filter-1 DO BEGIN    
       IF viz_mode[j] EQ 3 THEN BEGIN
          opensheet,sheet,j
-         TS(j) = InitTrainspottingScope(NEURONS=w*h, TIME=p.simulation.time/(1000.0*P.SIMULATION.SAMPLE),/nonase)
+         TS(j) = InitTrainspottingScope(NEURONS=w*h, TIME=period*FIX(1./delta_t)+1,/nonase, OVERSAMPLING=FIX(1./delta_t))
          closesheet,sheet,j
       END 
       
@@ -150,10 +157,7 @@ Default, NUMBER, 0
    Print, '  '
 
 
-   IF period EQ -1 THEN period = P.SIMULATION.time
    
-   delta_t =   INN.delta_t      ; resolution in ms
-   IF delta_t EQ -1 THEN delta_t = P.SIMULATION.SAMPLE*1000.0
 
    number_filter =  INn.number_filter
    
