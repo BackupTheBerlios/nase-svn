@@ -65,69 +65,6 @@
 ;  <A>UTvScl</A>.
 ;
 ;-
-;       
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.17  2001/01/22 14:02:36  kupper
-;     Changed color management to meet guidelines formed during the first
-;     NASE workshop, fall 2000.
-;     Pre-Checkin due to technical reasons. Headers not yet englishified...
-;
-;     Revision 2.16  2000/12/04 10:40:06  saam
-;     replaced outdate getbgcolor call
-;     updated doc header
-;
-;     Revision 2.15  2000/11/28 16:27:11  thiel
-;         Just minor change in header.
-;
-;     Revision 2.14  2000/11/28 16:21:34  thiel
-;         Header translation and debugging.
-;
-;     Revision 2.13  2000/11/02 14:04:26  gabriel
-;          doc header modified; fgcolor bug eliminated
-;
-;     Revision 2.12  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.11  2000/09/08 12:45:00  kupper
-;     Added RANGE keyword.
-;
-;     Revision 2.10  1999/06/06 14:44:33  kupper
-;     Added documentation for COLOR-Keyword.
-;
-;     Revision 2.9  1998/06/10 13:44:49  kupper
-;            Mal wieder Postscript-Farbverwirrung
-;
-;     Revision 2.8  1998/03/16 14:40:43  kupper
-;            Schlüsselwort TOP ersetzt durch CEILING für Kompatibilität mit TVScl
-;
-;     Revision 2.7  1997/12/17 15:31:43  saam
-;           Keyword NOSCALE ergaenzt
-;
-;     Revision 2.6  1997/11/27 13:28:05  thiel
-;            Option CHARSIZE hinzugefuegt.
-;
-;     Revision 2.5  1997/11/13 13:15:16  saam
-;           Device Null wird nun unterstuetzt
-;
-;     Revision 2.4  1997/11/11 16:56:43  saam
-;           Bug im Example der Docu
-;
-;     Revision 2.3  1997/11/11 16:53:56  saam
-;           Fehler bei Rahmen mit BW-PS korrigiert
-;
-;     Revision 2.2  1997/11/06 14:57:20  saam
-;           statt eigenem TvScl wird nun UTvScl benutzt
-;           NEG_COLORS-Option wird durch SysVar !REVERTPSCOLORS geregelt
-;           Argumente von UTvScl werden weitergereicht
-;
-;     Revision 2.1  1997/11/05 10:04:06  saam
-;           man war das ne Arbeit; diese Procedure
-;           ist NICHT vom Himmel gefallen
-;
-
-
 
 PRO TvSclLegend, xnorm, ynorm $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
@@ -149,7 +86,7 @@ PRO TvSclLegend, xnorm, ynorm $
 
    
 
-   If Keyword_Set(COLOR) then sc = COLOR else sc = !P.COLOR
+   If Keyword_Set(COLOR) then sc = COLOR else sc = GetForeground()
 
    IF Keyword_Set(VERTICAL) THEN BEGIN
       x_pix =  20
