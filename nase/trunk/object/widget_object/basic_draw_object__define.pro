@@ -10,14 +10,55 @@
 ;
 ; PUBLIC METHODS:
 ;
-;   showit()             : returns widget id of the contained showit_widget
+;   showit()             : returns widget id of the contained ShowIt widget.
+;   paint                : calls the user-defined method paint_hook_ (see
+;                          below), if painting is allowed.
 ;   paint_interval()     : return paint interval in seconds. Negative value means
 ;                          auto-paint is off.
-;   paint_interval, secs : enables auto-paint with interval secs
-;   paint                : an empty procedure that issues an error message.
-;                          --OVERRIDE THIS METHOD IN DERIVED CLASSES!--
-;                          Do not call basic_draw_object::paint from within
-;                          overridden method.
+;   paint_interval, secs : enables auto-paint with interval secs. Set secs to a
+;                          negative value to turn off auto-painting.
+;   allow_paint          : allows updating via the paint method (default).
+;   prevent_paint        : disallows updating via the paint method.
+;   save_colors          : tell the object to save the current colormap when
+;                          closing the ShowIt widget (see <A HREF="../../graphic/widgets/#WIDGET_SHOWIT">Widget_Showit()</A>).
+;                          This is default, if /PRIVATE_COLORS was specified
+;                          upon initialization.
+;   ignore_colors        : tell the object not to save the current colormap when 
+;                          closing the ShowIt widget (see <A HREF="../../graphic/widgets/#WIDGET_SHOWIT">Widget_Showit()</A>).
+;                          This is default, unless /PRIVATE_COLORS was specified
+;                          upon initialization.
+;                          It may be admirable to disable color saving in special 
+;                          cases, e.g. when frequent updates happen, or when
+;                          connecting to an X server accross a network.
+;
+; ABSTRACT METHODS:
+;
+;   The following methods -must- be overridden in derived classes:
+;
+;   paint_hook_          : Here goes the code to update the ShowIt widget. The
+;                          ShowIt widget is already opened when this method is
+;                          called, and will be closed automatically when it
+;                          returns.
+;                          This method is intended to be private and is called
+;                          from the objects paint method. It should never be
+;                          called directly.
+;                          Note the trailing underscore.
+;
+;   The following methods -may- be overridden in derived classes.
+;
+;   initial_paint_hook_  : Here goes the code to paint whatever is necessary
+;                          when the widget is realized. Upon realization,
+;                          this method is called, followed by a call to
+;                          paint_hook_. Hence, this method should only contain
+;                          whatever initialization is needed in addition to the
+;                          work performed by paint_hook_.
+;                          The ShowIt widget is already opened when this method
+;                          is called, and will be closed automatically when it
+;                          returns.
+;                          This method is intended to be private and is called
+;                          from the objects paint method. It should never be
+;                          called directly.
+;                          Note the trailing underscore.
 ;
 ; INPUTS: 
 ;
@@ -44,6 +85,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/03/12 15:16:10  kupper
+;        Extended object.
+;        Now including save_colors/ignore_colors and allow_paint/prevent_paint methods.
+;        Added paint_hook_ and initial_paint_hook_ methods.
+;
 ;        Revision 1.4  2000/03/10 21:06:30  kupper
 ;        Should work and be complete.
 ;
@@ -55,7 +101,12 @@
 Pro BDO_Notify_Realize, id
    On_Error, 2
    Widget_Control, id, Get_Uvalue=object
-   object->paint
+
+   showit_open, self.w_showit
+   self->initial_paint_hook_
+   self->paint_hook_
+   showit_close, self.w_showit, Save_Colors=self.save_colors
+
    Widget_Control, object->showit(), Timer=object->paint_interval()
 End
 
@@ -90,6 +141,7 @@ End
 Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                           PAINT_INTERVAL=paint_interval, $
                           $;;to be passed top widget_showit:
+                          PRIVATE_COLORS=private_colors, $
                           BUTTON_EVENTS=button_events, $
                           EXPOSE_EVENTS =expose_events, $ 
                           MOTION_EVENTS =motion_events, $ 
@@ -118,12 +170,15 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
+   Default, private_colors, 1
+   self.save_colors = private_colors ;colors must only be saved when they are to 
+                                     ;be set!
 
    ;; add any widgets
    ;; all widgets we add here should have self as their user-value.
    ;;
    ;; add showit to present picture
-   self.w_showit = widget_showit(self.widget, /Private_Colors, $
+   self.w_showit = widget_showit(self.widget, Private_Colors=private_colors, $
                                  UValue=self, $
                                  Notify_Realize="BDO_Notify_realize", $
                                  Event_Func="BDO_Event_Func", $
@@ -172,12 +227,36 @@ End
 
 ;; ------------ Public --------------------
 Pro basic_draw_object::paint
-   ;; for overriding on subclass!
-   On_error, 2
-   message, "Abstract method 'paint' was not overridden in derived class '"+Obj_Class(self)+"'!"
+   If not self.prevent_paint_flag then begin
+      showit_open, self.w_showit
+      self->paint_hook_
+      showit_close, self.w_showit, Save_Colors=self.save_colors
+End
+
+Pro basic_draw_object::prevent_paint
+   self.prevent_paint_flag = 1
+End
+Pro basic_draw_object::allow_paint
+   self.prevent_paint_flag = 0
+End
+
+Pro basic_draw_object::save_colors
+   self.save_colors = 1
+End
+Pro basic_draw_object::ignore_colors
+   self.save_colors = 0
 End
 
 ;; ------------ Private --------------------
+Pro basic_draw_object::paint_hook_; -ABSTRACT-
+   ;; for overriding in subclass!
+   On_error, 2
+   message, "Abstract method 'paint_hook_' was not overridden in derived class '"+Obj_Class(self)+"'!"
+End
+
+Pro basic_draw_object::initial_paint_hook_; -ABSTRACT-
+   ;; for overriding in subclass!
+End
 
 ;; ------------ Object definition ---------------------------
 Pro basic_draw_object__DEFINE
@@ -186,7 +265,11 @@ Pro basic_draw_object__DEFINE
             inherits basic_widget_object, $
             $
             w_showit: 0l, $
+            save_colors: 0b, $
             $
-            paint_interval: 0.0 $
+            paint_interval: 0.0, $
+            $
+            prevent_paint_flag: 0b, $
+            delayed_paint_request_flag: 0b
            }
 End
