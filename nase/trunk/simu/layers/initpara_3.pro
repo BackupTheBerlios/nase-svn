@@ -1,11 +1,14 @@
 ;+
-; NAME:                 InitPara_1
+; NAME:                 InitPara_3
 ;
-; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 1 enthaelt
+; PURPOSE:              initialisiert Parameterstruktur Para3, die Neuronenparameter fuer Neuronentyp 3 enthaelt
 ;
 ; CATEGORY:             SIMULATION
 ;
-; CALLING SEQUENCE:     Para = InitPara_1( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VS=vs] [, TAUS=taus] [, TH0=th0] [SIGMA=sigma] )
+; CALLING SEQUENCE:     Para = InitPara_3( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] 
+;                                          [, VS=vs] [, TAUS=taus] [,TH0=th0] 
+;                                          [, VP=Vp] [,TAUP=taup]
+;                                          [, SIGMA=sigma] )
 ;
 ; INPUTS:               ---
 ;
@@ -14,12 +17,14 @@
 ; KEYWORD PARAMETERS:   tauf  : Feeding-Zeitkonstante
 ;                       taul  : Linking-Zeitkonstante
 ;                       taui  : Inihibition-Zeitkonstante
-;                       vaus  : Schwellen-Verstaerkung
+;                       Vs    : Schwellen-Verstaerkung
 ;                       taus  : Schwellen-Zeitkonstante
 ;                       th0   : Schwellen-Offset
+;                       Vp    : Lernpotential-Verstaerkung
+;                       taup  : Lernpotential-Zeitkonstante (Lernfenster)
 ;                       sigma : Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
 ;
-; OUTPUTS:              Para : Struktur namens Para1, die alle Neuronen-Informationen enthaelt, s.u.
+; OUTPUTS:              Para : Struktur namens Para3, die alle Neuronen-Informationen enthaelt, s.u.
 ;
 ; OPTIONAL OUTPUTS:     ---
 ;
@@ -31,13 +36,13 @@
 ;
 ; PROCEDURE:            ---
 ;
-; EXAMPLE:              para1 = InitPara_1(tauf=10.0, vs=1.0)
+; EXAMPLE:              para3 = InitPara_3(tauf=10.0, vs=1.0, taup=30.0)
 ;
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
-;
+;                       Neue Parameter fuers Lernpotential: Vp und taup, Andreas 29. Juli 97
 ;-
-FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma
+FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, VP=Vp, TAUP=taup, SIGMA=sigma
 
    Default, tauf , 10.0
    Default, taul , 10.0
@@ -45,16 +50,21 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
    Default, vs   , 10.0
    Default, taus , 10.0
    Default, th0  ,  1.0
+   Default, Vp   , 1.0
+   Default, taup , 10.0
+   
    Default, sigma,  0.0
 
 
-   Para = { Para1               ,$
+   Para = { Para3               ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             di   : exp(-1./taui)  ,$
             vs   : vs             ,$
             ds   : exp(-1./taus)  ,$
             th0  : th0            ,$
+            Vp   : Vp             ,$
+            dp   : exp(-1./taup)  ,$
             sigma: sigma          }
 
    RETURN, Para
