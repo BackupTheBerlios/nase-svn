@@ -28,6 +28,7 @@
 ;* BalanceCT, data [,TOP=...]  [, {/TOPRED | /TOPGREEN | /TOPBLUE} ]
 ;*                             [, {/ZEROBLACK | /ZEROWHITE} ]
 ;*                             [, {/BOTTOMRED | /BOTTOMGREEN | /BOTTOMBLUE} ]
+;*                             [ {,EXP=...} | {,LOG=...} ]
 ;
 ; INPUTS:
 ;  data :: the color table is adapted to this specific data
@@ -40,11 +41,16 @@
 ; INPUT KEYWORDS:
 ;  TOPRED,TOPGREEN,TOPBLUE :: positive values are displayed red, green
 ;                             or blue (default: <*>TOPRED</*>)
-;  ZEROBLACK, ZEROWHITE    :: value zero will be black (good for
+;  ZEROBLACK,ZEROWHITE    :: value zero will be black (good for
 ;                             screen display) or white (good for
 ;                             postscripts), respectively. Default is <*>ZEROBLACK</*>. 
 ;  BOTTOMRED,BOTTOMGREEN,BOTTOMBLUE :: negative values are displayed red, green
 ;                             or blue (default: <*>BOTTOMBLUE</*>)
+;  EXP,LOG :: allows an exponential or logarithmic scaling of the
+;             otherwise linear color map. You may either enable the
+;             nonlinearity using <*>/EXP</*> or <*>/LOG</*>, but if
+;             you want more control, you can also give a positive
+;             value to either <*>EXP</*> or <*>LOG</*>.   
 ;
 ; SIDE EFFECTS:
 ;  overwrites the existing colormap
@@ -55,12 +61,34 @@
 ;*  plottvscl, n,/legend     
 ;
 ;-
+
+
+; returns n elements scaled from 0 to 1 with linear, log, or exp scaling
+FUNCTION _FINDGEN, n, LOG=logs, EXPS=exps
+
+  ON_ERROR, 2
+
+  z = Findgen(n)/(n-1)
+  IF Set(LOGS) OR Set(EXPS) THEN BEGIN
+      IF Set(LOGS) THEN f=logs ELSE f=exps
+      IF F LE 0.0 THEN Console, 'EXP or LOG argument has to be positive', /FATAL
+      z = alog(z*(exp(f*3)-1.)+1) 
+  END
+  IF Set(EXPS) THEN z = REVERSE(MAX(z)-z) ;;; this has to be the exact reverse of the log 
+                                          ;;; setting because
+                                          ;;; /ZEROWHITE relies on this
+  RETURN, z/MAX(z)
+END
+
+
 PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue, ZEROWHITE=zerowhite, ZEROBLACK=zeroblack, $
-               BOTTOMRED=bottomred, BOTTOMGREEN=bottomgreen, BOTTOMBLUE=bottomblue
+               BOTTOMRED=bottomred, BOTTOMGREEN=bottomgreen, BOTTOMBLUE=bottomblue, $
+               LOG=log, EXP=exp
 
    ON_ERROR, 2
 
 
+   IF Set(LOG) AND Set(EXP) THEN Console, 'specify either EXP or LOG', /FATAL 
    IF Set(bottomred)+Set(bottomgreen)+Set(bottomblue) GT 1 THEN Console, 'only one bottom color a time', /FATAL
    IF Set(bottomred)+Set(bottomgreen)+Set(bottomblue) EQ 0 THEN bottomblue=1
    IF Set(topred)+Set(topgreen)+Set(topblue) GT 1 THEN Console, 'only one top color a time', /FATAL
@@ -87,13 +115,13 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
    ndf = intarr(cid)+255
    IF mid GE 0.0 THEN BEGIN
        perc = 0.0
-       puf = FIX(FIndGen(cid)/(cid-1)*255)
-       pdf = REVERSE(puf)
+       puf = FIX(_FIndGen(cid, LOG=log, EXP=exp)*255)
+       pdf = max(puf)-puf
    END ELSE BEGIN
        IF mad LE 0.0 THEN BEGIN
            perc = 1.0
-           ndf = FIX(FIndGen(cid)/(cid-1)*255)
-           nuf = REVERSE(ndf)
+           ndf = FIX(_FIndGen(cid)*255)
+           nuf = MAX(ndf)-ndf
        END ELSE BEGIN
            perc = mid / (mid-mad) 
            border = mici + fix (cid * perc)
@@ -106,10 +134,10 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
                scale_b = 255
            END
            
-           puf(border:maci) = FIX( FindGen(maci+1-border) / (maci+1-1-border) * scale_r )
-           pdf(border:maci) = REVERSE(FIX( FindGen(maci+1-border) / (maci+1-1-border) * scale_r )) + (255-scale_r)
-           nuf(mici:border) = REVERSE(FIX( FindGen(border-mici+1) / Float(border-mici) * scale_b ))
-           ndf(mici:border) = (FIX( FindGen(border-mici+1) / Float(border-mici) * scale_b)) + (255-scale_b)
+           puf(border:maci) =         FIX( _FindGen(maci+1-border, LOG=log, EXP=exp) * scale_r )
+           pdf(border:maci) = REVERSE(FIX( _FindGen(maci+1-border, LOG=exp, EXP=log) * scale_r )) + (255-scale_r)
+           nuf(mici:border) = REVERSE(FIX( _FindGen(border-mici+1, LOG=log, EXP=exp) * scale_b ))
+           ndf(mici:border) =        (FIX( _FindGen(border-mici+1, LOG=exp, EXP=log) * scale_b))  + (255-scale_b)
        END
    END
 
