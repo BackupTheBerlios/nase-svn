@@ -52,9 +52,15 @@ Pro widget_image_factory::brightness, value
    self->paint_
 End
 
+Pro widget_image_factory::prevent_update
+   self.prevent_update_flag = 1
+End
+Pro widget_image_factory::allow_update
+   self.prevent_update_flag = 0
+End
 
 
-;; ------------ Constructor & Destructor --------------------
+;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA=_ref_extra
    message, /Info, "I am created."
 
@@ -108,12 +114,20 @@ Pro widget_image_factory::cleanup
    self->image_factory::cleanup
 End
 
-
+Pro widget_image_factory::reset
+   self->prevent_update         ;We don't want to have the image re-computed for 
+                                ;every single slider that is reset!
+   self->image_factory::reset
+   self->allow_update
+   self->paint_
+End
 
 ;; ------------ Public --------------------
 
 ;; ------------ Private --------------------
 Pro widget_image_factory::paint_
+   If self.prevent_update_flag then return
+
    Widget_Control, self.showit_id, Get_Uvalue=object
    Showit_open, self.showit_id
    PlotTvScl_Update, $
@@ -124,6 +138,8 @@ Pro widget_image_factory::paint_
 End
 
 Pro widget_image_factory::initial_paint_
+   If self.prevent_update_flag then return
+
    Widget_Control, self.showit_id, UPDATE=0 ;prevent screen updates
 
    Showit_open, self.showit_id
@@ -169,7 +185,9 @@ Pro widget_image_factory__DEFINE
             $
             w_size: 0l, $
             w_brightness: 0l, $
-            w_type: 0l $
+            w_type: 0l, $
+            $
+            prevent_update_flag: 0b $
            }
 End
 
