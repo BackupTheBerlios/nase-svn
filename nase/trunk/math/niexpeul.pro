@@ -96,7 +96,7 @@ FUNCTION NIExpEul, y, A=a, B=b, DT=dt
    IF (NOT Set(a)) OR (NOT Set(b)) THEN $
     Console, /FATAL, 'Parameters A and B need to be specified.'
 
-   d = Exp(-b*dt)
+   d = Exp(-b*dt) & IgnoreUnderflows
 
    Return, y*d+a*(1.-d)/b
 
