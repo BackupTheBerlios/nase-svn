@@ -14,7 +14,7 @@ use NASE::xref;
 use NASE::parse;
 
 local $SIG{__WARN__} = \&Carp::cluck;
-my ($hostname, $DOCDIR, $DOCURL, $myurl, $fullurl, $sub, $lastmod);
+my ($hostname, $DOCDIR, $DOCURL, $myurl, $fullurl, $sub, $lastmod, $relpath);
 
 $CGI::POSTMAX         = 1024*100; # maximal post is 100k
 #$CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -23,6 +23,7 @@ import_names('P');
 
 # global variables
 ($myurl = url(-absolute=>1)) =~ s,\/\.\/,,g;  # without the http://server/ stuff
+($relpath = $myurl) =~ s,\/[^\/]+$,,i;
 setBaseURL($myurl);
 $DOCURL = getDocURL();
 $DOCDIR = getDocDir();
@@ -178,6 +179,7 @@ if ($P::mode){
 			  '<TR CLASS="title"><TD CLASS="title">Update</TD></TR>',
 			  '<TR><TD CLASS="left">',
 #			    "<LI>",a({href=>getBaseURL()."?mode=update", target=>"_new"}, "update now"), "</LI>", 
+			    "<LI>",a({href=>"$relpath/nasenews.pl", target=>"text"}, "Add news"), "</LI>",
 			    '<LI>$Id$ </LI>',
 			  "</TD></TR></TABLE>",
 			"</TD></TR>",
