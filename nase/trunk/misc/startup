@@ -1,5 +1,9 @@
 ;+
 ;       $Log$
+;       Revision 1.24  1999/09/01 16:50:52  thiel
+;           Changed tree structure: New directories graphic/widgets and
+;            graphic/widgets/faceit_demo.
+;
 ;       Revision 1.23  1999/09/01 13:52:57  thiel
 ;           Added simu/faceit_demo directory to repository.
 ;
@@ -87,6 +91,8 @@ NASEDIRS = NASEPATH+"/alien:"$
  +NASEPATH+"/graphic/plotcilloscope:"$
  +NASEPATH+"/graphic/sheets:"$
  +NASEPATH+"/graphic/support:"$
+ +NASEPATH+"/graphic/widgets:"$
+ +NASEPATH+"/graphic/widgets/faceit_demo:"$
  +NASEPATH+"/math:"$
  +NASEPATH+"/methods:"$
  +NASEPATH+"/methods/fits:"$
@@ -107,7 +113,6 @@ NASEDIRS = NASEPATH+"/alien:"$
  +NASEPATH+"/simu:"$
  +NASEPATH+"/simu/input:"$
  +NASEPATH+"/simu/connections:"$
- +NASEPATH+"/simu/faceit_demo:"$
  +NASEPATH+"/simu/layers:"$
  +NASEPATH+"/simu/plasticity"
 SetEnv, "NASEDIRS="+NASEDIRS    ;for compatibility reasons
