@@ -36,7 +36,7 @@
 ;*                           |,AUTO_VERTICALEDGE={-2|-1|1|2|3}
 ;*                           |,AUTO_HORIZONTALEDGE={-2|-1|1|2|3}
 ;*                         ]
-;*                         [,/OBSERVE_SPIKES | ,/OBSERVE_POTENTIALS]
+;*                         {,/OBSERVE_SPIKES | ,/OBSERVE_POTENTIALS | ,/OBSERVE_SPECIFIED}
 ;*                         [,VISUALIZE=Array(InZoom,OutZoom,DWZoom,Period)
 ;*                           [,/WRAP]
 ;*                         ]
@@ -90,9 +90,14 @@
 ;
 ;
 ;         OBSERVE_SPIKES | OBSERVE_POTENTIALS::
+;                    If one of these keywords is set, the output data
+;                    from which RFs are computed will be taken from a
+;                    NASE layer. The respective layer needs to be
+;                    given in the subsequent calls to <A>RFScan_Schaumal</A>.<BR>
+; 
 ;                    Das Setzen eines dieser Schlüsselworte
 ;                    entscheidet darüber, welche Information des
-;                    OutputLayers zur Berechnung der RFs benutzt wird:
+;                    Output-Layers zur Berechnung der RFs benutzt wird:<BR>
 ;                    Die reine Spike-Information (<*>OBSERVE_SPIKES</*>, dies 
 ;                    ist der Default) oder das Membranpotential
 ;                    (<*>OBSERVE_POTENTIALS</*>), also eine Art
@@ -105,7 +110,11 @@
 ;                    Hemmung der Zelle (M < 0) erkannt. Die so
 ;                    bestimmten RFs können daher auch negative Anteile 
 ;                    enthalten.<BR>
-;<BR>
+;
+;  OBSERVE_SPECIFIED:: If this keyword is set, the output data from
+;                      which RFs are computed needs to be specified as
+;                      a two-dimensional floatingpoint array in
+;                      spubsequent calls to <A>RFScan_Schaumal</A>.
 ;
 ;  (automatic input generation)::
 ;       Alle weiteren Schlüsselworte und das <*>Picture</*>-Argument
@@ -231,17 +240,18 @@
 
 
 Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
-               WIDTH=width, HEIGHT=height, $
-               OUTWIDTH=outwidth, OUTHEIGHT=outheight, $
-               AUTO_SINGLEDOT=auto_singledot, $
-               AUTO_RANDOMDOTS=auto_randomdots, $
-               AUTO_VERTICALEDGE=auto_verticaledge, $
-               AUTO_HORIZONTALEDGE=auto_horizontaledge, $
-               AUTO_VERTICALLINE=auto_verticalline, $
-               AUTO_HORIZONTALLINE=auto_horizontalline, $
-               SHIFT_VERTICAL=shift_vertical, SHIFT_HORIZONTAL=shift_horizontal, $
-               OBSERVE_SPIKES=observe_spikes, OBSERVE_POTENTIALS=observe_potentials, $
-               VISUALIZE=visualize, WRAP=wrap
+                      WIDTH=width, HEIGHT=height, $
+                      OUTWIDTH=outwidth, OUTHEIGHT=outheight, $
+                      AUTO_SINGLEDOT=auto_singledot, $
+                      AUTO_RANDOMDOTS=auto_randomdots, $
+                      AUTO_VERTICALEDGE=auto_verticaledge, $
+                      AUTO_HORIZONTALEDGE=auto_horizontaledge, $
+                      AUTO_VERTICALLINE=auto_verticalline, $
+                      AUTO_HORIZONTALLINE=auto_horizontalline, $
+                      SHIFT_VERTICAL=shift_vertical, SHIFT_HORIZONTAL=shift_horizontal, $
+                      OBSERVE_SPIKES=observe_spikes, OBSERVE_POTENTIALS=observe_potentials, $
+                      OBSERVE_SPECIFIED=observe_specified, $
+                      VISUALIZE=visualize, WRAP=wrap
 
    If keyword_set(VISUALIZE) and n_elements(VISUALIZE) ne 4 then $
     console, /fatal, "Keyword VISUALIZE is expected to be set to a four-elementary Array!"
@@ -326,13 +336,23 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
    EndIf
 
    ;;------------------> The Default is to observe Spikes...
-   If not Keyword_Set(OBSERVE_SPIKES) and not Keyword_Set(OBSERVE_POTENTIALS) then begin
+   If not Keyword_Set(OBSERVE_SPIKES) and $
+     not Keyword_Set(OBSERVE_POTENTIALS) and $
+     not Keyword_Set(OBSERVE_SPECIFIED) then begin
       OBSERVE_SPIKES = 1
       OBSERVE_POTENTIALS = 0
+      OBSERVE_SPECIFIED = 0
    endif
-   If Keyword_Set(OBSERVE_POTENTIALS) then OBSERVE_SPIKES = 0
+   If Keyword_Set(OBSERVE_POTENTIALS) then begin
+      OBSERVE_SPIKES = 0
+      OBSERVE_SPECIFIED = 0
+   EndIf
+   If Keyword_Set(OBSERVE_SPECIFIED) then begin
+      OBSERVE_SPIKES = 0
+      OBSERVE_POTENTIALS = 0
+   EndIf
    ;;--------------------------------
-
+   
    ;;------------------> DW-Structure for estimated RFs:
    RFs = InitDW(S_WIDTH = WIDTH, S_HEIGHT=HEIGHT,$
                 T_Width=OUTWIDTH, T_Height=OUTHEIGHT, $
@@ -370,6 +390,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
    Default, shiftpositions2, -1
    Default, OBSERVE_SPIKES, 1
    Default, OBSERVE_POTENTIALS, 0
+   Default, OBSERVE_SPECIFIED, 0
    Default, WinIn, -1
    Default, WinOut, -1
    Default, WinRFs, -1
@@ -383,6 +404,8 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
    Return, {info:                "RFSCAN", $
             width:               WIDTH, $
             height:              HEIGHT, $
+            outwidth:            OUTWIDTH, $
+            outheight:           OUTHEIGHT, $
             RFs:                 RFs, $
             original:            Picture, $
             picture:             fltarr(HEIGHT, WIDTH), $
@@ -401,6 +424,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
             shiftpositions2:     shiftpositions2, $
             observe_spikes:      OBSERVE_SPIKES, $
             observe_potentials:  OBSERVE_POTENTIALS, $
+            observe_specified:   OBSERVE_SPECIFIED, $
             winin:               WinIn, $
             winout:              WinOut, $
             winRFs:              WinRFs, $
