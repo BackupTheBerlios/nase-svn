@@ -13,7 +13,7 @@
 ;
 ; CATEGORY: GRAPHICS / WIDGETS
 ;
-; CALLING SEQUENCE: FaceIt, name
+; CALLING SEQUENCE: FaceIt, name [,/COMPILE]
 ;
 ; INPUTS: name: Ein String, der den Namen der auszuführenden Simulation 
 ;               enthält.
@@ -83,6 +83,14 @@
 ;          Desweiteren besitzt die erzeugte Anwendung ein Widget namens 
 ;          w_userbase, das sich unter den Bedienelementen befindet und zur 
 ;          Aufnahme der simulationsspezifischen Widgets dient.
+;
+; KEYWORDS: COMPILE:  Wenn gesetzt, werden alle Teilroutinen der
+;                     in "name" angegebenen Simulation vor dem
+;                     Start neu kompiliert. Das ist in der
+;                     Probephase nützlich, wenn oft Änderungen
+;                     in verschiedenen Teilroutinen vorgenommen
+;                     werden. Hier geht das Neukompilieren sonst 
+;                     oft vergessen.
 ;           
 ; COMMON BLOCKS: WidgetSimulation, MyFont, MySmallFont
 ;                mit: MyFont = '-adobe-helvetica-bold-r-normal$
@@ -123,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  1999/09/21 13:15:35  kupper
+;        Added Keyword COMPILE.
+;
 ;        Revision 1.7  1999/09/16 12:03:55  thiel
 ;            Progress display now stays insensitive after display activation.
 ;
@@ -171,6 +182,22 @@
 ;-
 
 
+
+PRO FaceIt_Compile, simname
+
+   Resolve_Routine, simname+"_display"
+   Resolve_Routine, simname+"_fileopen"
+   Resolve_Routine, simname+"_filesave"
+   Resolve_Routine, simname+"_freedata"
+   Resolve_Routine, simname+"_initdata"
+   Resolve_Routine, simname+"_initdisplay"
+   Resolve_Routine, simname+"_kill_request", /IS_FUNCTION
+   Resolve_Routine, simname+"_reset"
+   Resolve_Routine, simname+"_resetsliders"
+   Resolve_Routine, simname+"_simulate", /IS_FUNCTION
+   Resolve_Routine, simname+"_userevent"
+
+END; FaceIt_Compile
 
 FUNCTION FaceIt_CreateData, simname
 
@@ -390,7 +417,7 @@ END ; faceit_EVENT
 
 
 
-PRO FaceIt, simname
+PRO FaceIt, simname, COMPILE=compile
 
    COMMON WidgetSimulation, MyFont, MySmallFont
 
@@ -407,7 +434,8 @@ PRO FaceIt, simname
    Widget_Control, DEFAULT_FONT=MySmallFont ;Let it be default.
 
 
-
+   ;--- Recompile all Simulation-Routines, if requested:
+   If Keyword_Set(COMPILE) then FaceIt_Compile, simname
 
    ;--- Base:
    W_Base = Widget_Base (TITLE='FaceIt! '+simname, $
