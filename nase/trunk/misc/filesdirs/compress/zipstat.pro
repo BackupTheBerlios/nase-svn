@@ -32,6 +32,10 @@
 ; MODIFICATION HISTORY:
 ; 
 ;     $Log$
+;     Revision 2.4  1998/06/16 11:57:13  saam
+;           BOTHFILES sometimes contained empty strings
+;           makeing some trouble
+;
 ;     Revision 2.3  1998/03/14 13:28:31  saam
 ;           corrected some nasty bugs
 ;
@@ -108,7 +112,8 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
             nzc = nzc+1
          END
       END
-      
+      bothfiles = bothfiles(0:bc-1); cut empty strings
+
       FOR i=0,tzc-1 DO BEGIN
          j     = 0
          found = 0
