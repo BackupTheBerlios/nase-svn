@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/01/21 21:56:37  saam
+;           BUG: Abbruch bei t > MAX(Int) ... korrigiert
+;
 ;     Revision 2.3  1998/01/08 16:59:05  saam
 ;           mehere Strahlen sind nun moeglich
 ;
@@ -53,9 +56,9 @@
 ;-
 FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
                              RAYS=rays,$
-                             NOSCALEALL=noscaleall, NOSCALEYMIN=yminnoscale, NOSCALEYMAX=ymaxnoscale
+                             NOSCALEALL=noscaleall, NOSCALEYMIN=noscaleymin, NOSCALEYMAX=noscaleymax
 
-   Default, TIME, 100
+   Default, TIME, 100l
    Default, YMIN, 0.0
    Default, YMAX, 1.0
    Default, Rays, 1
@@ -74,12 +77,12 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
           maxAx: ymax          ,$
           y    : Make_Array(rays, time, /FLOAT, VALUE=((ymax-ymin)/2.+ymin)),$
           rays : rays          ,$
-          t    : 0             ,$
-          time : time          ,$
+          t    : 0l            ,$
+          time : LONG(time)    ,$
           maxSc: maxSc         ,$
           minSc: minSc         }
    
-   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time]
+   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time], XSTYLE=1
 
    RETURN, PS
 END
