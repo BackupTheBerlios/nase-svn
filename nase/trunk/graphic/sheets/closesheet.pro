@@ -21,6 +21,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/01/21 21:57:25  saam
+;           es werden nun ALLE (!!!) Window-Parameter
+;           gesichert.
+;
 ;     Revision 2.2  1997/12/02 10:08:07  saam
 ;           Sheets merken sich nun ihren persoenlichen
 ;           !P.Multi-Zustand; zusaetzlicher Tag: multi
@@ -32,6 +36,21 @@
 ;-
 PRO CloseSheet, sheet
 
+   IF sheet.type EQ 'ps' OR sheet.type EQ 'X' THEN BEGIN 
+      new = !P
+      !P =  sheet.p
+      sheet.p = new
+      new = !X
+      !X =  sheet.x
+      sheet.x = new
+      new = !Y
+      !Y =  sheet.y 
+      sheet.y = new
+      new = !Z
+      !Z =  sheet.z
+      sheet.z = new
+   END
+
    IF sheet.type EQ 'ps' THEN BEGIN
       IF  sheet.open THEN BEGIN
          Device, /CLOSE
@@ -39,12 +58,10 @@ PRO CloseSheet, sheet
          sheet.open = 0
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
 
-      newMulti = !P.Multi
-      !P.Multi =  sheet.multi
-      sheet.multi = newMulti
-      
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'X'
    END
+      
+
 
 END

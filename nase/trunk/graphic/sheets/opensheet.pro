@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/01/21 21:57:26  saam
+;           es werden nun ALLE (!!!) Window-Parameter
+;           gesichert.
+;
 ;     Revision 2.3  1997/12/02 10:08:08  saam
 ;           Sheets merken sich nun ihren persoenlichen
 ;           !P.Multi-Zustand; zusaetzlicher Tag: multi
@@ -51,10 +55,18 @@ PRO OpenSheet, sheet
          END
          sheet.winid = !D.Window
       END
-
-      oldMulti = !P.Multi
-      !P.Multi = sheet.multi
-      sheet.multi = oldMulti
+      old = !P
+      !P = sheet.p
+      sheet.p = old
+      old = !X
+      !X = sheet.x
+      sheet.x = old
+      old = !Y 
+      !Y = sheet.y
+      sheet.y = old
+      old = !Z
+      !Z = sheet.z
+      sheet.z = old
 
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN
       IF NOT sheet.open THEN BEGIN
@@ -75,10 +87,19 @@ PRO OpenSheet, sheet
          END
       END ELSE Print, 'OpenSheet: Sheet already open!'
       
-      oldMulti = !P.Multi
-      !P.Multi = sheet.multi
-      sheet.multi = oldMulti
-
+      old = !P
+      !P = sheet.p
+      sheet.p = old
+      old = !X
+      !X = sheet.x
+      sheet.x = old
+      old = !Y 
+      !Y = sheet.y
+      sheet.y = old
+      old = !Z
+      !Z = sheet.z
+      sheet.z = old
+      
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'NULL'
    END ELSE Message, 'no initialized sheet???'
