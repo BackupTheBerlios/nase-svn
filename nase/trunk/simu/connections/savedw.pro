@@ -17,13 +17,17 @@
 ; OUTPUTS:             SavDW:: eine Struktur, die z.B. mit der IDL-Routine SAVE
 ;                            gespeichert werden kann
 ;
-; SEE ALSO: RestoreDW
+; SEE ALSO: <A>RestoreDW</A>
 ;
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2003/08/28 13:30:39  michler
+;
+;             header corrections (link to restoreDW)
+;
 ;     Revision 2.6  2003/08/27 15:39:47  michler
 ;
 ;     Modified Files:
