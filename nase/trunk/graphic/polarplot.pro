@@ -92,6 +92,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.20  2000/07/24 10:28:35  saam
+;             sorry, forgot to remove a debugging stop
+;
 ;        Revision 2.19  2000/07/24 10:22:09  saam
 ;              + supresses labelling of tickmarks <1E-10
 ;                using new absoluteNZticks routine
@@ -239,7 +242,6 @@ IF Set(sdevarray) THEN opolarplot, radiusarray, anglearray, sdevarray, RADIUSINT
 Axis, 0,0, xax=0, /DATA, XTICKFORMAT=('AbsoluteNZTicks'), CHARSIZE=charsize, XTICK_GET=TA, XRANGE=xrange
 Axis, 0,0, yax=0, /DATA, YTICKFORMAT=('AbsoluteNZTicks'), CHARSIZE=charsize, YRANGE=yrange
 
-stop
 ; plot a solid circle (constant radius) at each tick position
 ; avoids problems with double plotting of -x, x and circles near zero
 ; radius (this often produced incriptions like 0.343434E-17 which was
