@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.20  1998/03/21 16:27:44  saam
+;           now handles array of types like (1,m,n)
+;
 ;     Revision 2.19  1998/03/14 17:34:52  saam
 ;           new Keywords [XY]_SIZE_NORM blocked the use of [XY]_SIZE
 ;           because of ambiguous keyword abbreviation, therefore
@@ -136,6 +139,10 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    IF !D.Name EQ 'NULL' THEN RETURN
 
    IF N_Params() LT 1 THEN Message, 'argument expected'
+   IF (Size(_Image))(0) GT 2 THEN BEGIN
+      _Image = Reform(_Image)
+      IF (Size(_Image))(0) GT 2 THEN Message, 'array has more than 2 effective dimensions'
+   END
    IF (Size(_Image))(0) NE 1 AND (Size(_Image))(0) NE 2 THEN Message, 'array with one or two dimensions expected'
    IF N_Params() LT 3 AND     Keyword_Set(CENTER) THEN YNorm = 0.5
    IF N_Params() LT 3 AND NOT Keyword_Set(CENTER) THEN YNorm = 0.0
