@@ -6,12 +6,17 @@
 ;  $Id$
 ;
 ; AIM:
-;  NASE compliant way to set the plot device (use instead of IDLs <C>SET_PLOT</C>)  
+;  NASE compliant way to set the plot device (use instead of IDL's <C>SET_PLOT</C>)  
 ;
 ; PURPOSE:
 ;  This is a simple wrapper for IDLs internal <C>SET_PLOT</C> routine, that
 ;  ensures NASE color management guidelines. Calling conventions are
-;  identical to <C>SET_PLOT</C>
+;  identical to <C>SET_PLOT</C>. <BR>
+;  In cases, where setting the specified device fails, the 'Z' device
+;  is set instead. Program execution is not interrupted. <BR> 
+;  When the 'X' device is requested, but connecting to the X server is
+;  forbidden (see <A>XAllowed()</A>), the 'Z' device is set
+;  instead. Program execution is not interrupted.
 ;
 ; CATEGORY:
 ;  Color
@@ -25,7 +30,7 @@
 ;  colors for postscript devices may be swapped (feature!).
 ;
 ; SEE ALSO:
-;  <A>ResetCM</A>
+;  <A>ResetCM</A>, <A>XAllowed()</A>
 ;
 ;-
 
@@ -38,6 +43,7 @@ pro uset_plot, Device, _EXTRA=extra
       IF Error_status NE 0 THEN BEGIN
          printf,-2, "% WARN: (USET_PLOT) Cannot set device to '"+ __Device+"'"
          printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
+         flush, -2
          __Device = 'Z'
       endif
      
@@ -45,11 +51,24 @@ pro uset_plot, Device, _EXTRA=extra
       if __Device EQ 'X' and GetEnv('DISPLAY') EQ "" then begin
          printf,-2, "% WARN: (USET_PLOT) DISPLAY environment variable not set: cannot set device to '"+ __Device+"'"
          printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
+         flush, -2
          __Device = 'Z'
       end
    endelse
 
+   If __Device eq 'X' and not XAllowed() then begin
+      printf, -2, "% WARN: (USET_PLOT) "+ $
+        "Connecting to X server is forbidden. Setting device to 'Z'."
+      flush, -2
+      __Device = 'Z'
+      return
+   endif 
+
+
+
    set_plot, __Device, _EXTRA=extra
+
+
 
    case 1 of
       !D.Name EQ ScreenDevice() AND !D.NAME NE 'NULL' : begin
