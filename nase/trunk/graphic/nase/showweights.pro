@@ -61,7 +61,15 @@
 ; MODIFICATION HISTORY: Erste Version vom 25. Juli '97, Andreas.
 ;                       Diese Version (Verbesserte Parameterabfrage) vom 28. Juli '97, Andreas
 ;                       Versucht, Keyword FROMS zuzufügen, Rüdiger, 30.7.1997
-;                       Es ist mir gelungen! Außerdem hat die Darstellung jetzt Gitterlinien!
+;                       Es ist mir gelungen! Außerdem hat die Darstellung jetzt Gitterlinien!, Rüdiger, 31.7.1997
+;                       Ich hab die interne Verarbeitung von Source und Target vertauscht, da sie so unseren Arraystrukturen angemessener ist.
+;                           Ausserdem hab ich die Array-Operationen beim TV zusammengefasst.
+;                           Das alles sollte einen gewissen Geschwindigkeitsvorteil bringen.
+;                           Ausserdem normiert die Routine jetzt auf den maximal verfügbaren ColorTable-Index,
+;                           was auf Displays mit weniger als 256 freien Indizes (d.h. wenn IDL eine Public Colormap benutzt)
+;                           den maximalen Kontrast erreicht.
+;                           Rüdiger, 1.8.1997
+;
 ;-
 
 
@@ -69,7 +77,7 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, FROMS=froms
 
 If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
-if keyword_set(FROMS) then begin                   ; Source- und Targetlayer vertauschen:
+if keyword_set(TOS) then begin                   ; Source- und Targetlayer vertauschen:
    Matrix = {Weights: Transpose(_Matrix.Weights), $
              source_w: _Matrix.target_w, $
              source_h: _Matrix.target_h, $
@@ -87,16 +95,18 @@ Endif Else Begin
     Endelse
 
 If Not Set(WINNR) Then Begin
-    Window, 0 , XSize=(XGroesse*Matrix.source_w +1)*Matrix.target_w, YSize=(YGroesse*Matrix.source_h +1)*Matrix.target_h, Title=titel
+    Window, 0 , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
     WSet, 0
          Endif Else Begin 
-                      XGroesse = (!D.X_Size-Matrix.Target_w)/(Matrix.Source_W*Matrix.Target_W)
-                      YGroesse = (!D.Y_Size-Matrix.Target_h)/(Matrix.Source_H*Matrix.Target_H)
+                      XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
+                      YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
                       WSet, WinNr
                   EndElse    
 
-SetColorIndex, 255,  255,100,0
-erase,  255
+MaxFarbe = !D.Table_Size-1
+
+SetColorIndex, MaxFarbe,  255,100,0
+erase, MaxFarbe
 
 
 
@@ -104,14 +114,15 @@ erase,  255
 Max_Amp = max(Matrix.Weights)
 if Max_Amp eq 0 then Max_Amp = 1 ;falls Array nur Nullen enthält
 
-;MatrixMatrix= reform(Matrix.Weights/Max_Amp*255, Matrix.source_h, Matrix.source_w, Matrix.target_h, Matrix.target_w)
-MatrixMatrix= reform(Matrix.Weights/Max_Amp*254, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+MatrixMatrix= reform(Matrix.Weights/Max_Amp*(MaxFarbe-1), Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
 
-for YY= 0, Matrix.target_h-1 do begin
-   for XX= 0, Matrix.target_w-1 do begin
-      m = reform(MatrixMatrix(YY, XX, *, *))
-      m =  transpose(rebin(/sample, M, yGroesse*Matrix.source_h,  xGroesse*Matrix.source_w) )
-      tv, M, /Order, XX*(1+Matrix.source_w*xGroesse), (Matrix.target_h-1-YY)*(1+Matrix.source_h*yGroesse)
+for YY= 0, Matrix.source_h-1 do begin
+   for XX= 0, Matrix.source_w-1 do begin  
+      tv, rebin( /sample, $
+                 transpose(MatrixMatrix(*, *, YY, XX)), $
+                 xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
+          /Order, $
+          XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
    end
 end
 
