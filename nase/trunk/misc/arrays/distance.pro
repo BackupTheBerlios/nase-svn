@@ -187,6 +187,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/08/11 14:53:24  kupper
+;        Removed left over comment.
+;
 ;        Revision 1.5  2000/08/10 16:44:22  kupper
 ;        Corrected msitake in header.
 ;
@@ -333,4 +336,3 @@ Function distance, xlen, ylen, cx, cy, QUADRATIC=quadratic, $
    endelse
 
 End
-; LocalWords:  ABSWARP
