@@ -183,6 +183,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.64  2000/03/07 17:08:52  kupper
+;     Didn't know that structures can not be compared. Now using new "defined" tag to
+;     indentify an undefined PLOTTVSCL_INFO struct.
+;
 ;     Revision 2.63  2000/03/07 16:28:28  kupper
 ;     Now treating zeroed PLOTTVSCL_INFO as undefined.
 ;
@@ -436,9 +440,10 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
    Default, UPDATE_INFO, {PLOTTVSCL_INFO}
 
-   If UPDATE_INFO eq {PLOTTVSCL_INFO} then begin
+   If UPDATE_INFO.defined eq 0 then begin
       ;; UPDATE_INFO either was not specified, or it was passed an empty
-      ;; PLOTTVSCL_INFO struct.
+      ;; PLOTTVSCL_INFO struct. ("defined" is never 0 in a properly initialized 
+      ;; PLOTTVSCL_INFO struct.)
       ;;This is a normal PlotTvScl-Call
 
       INIT = 1
@@ -644,8 +649,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
       UPDATE_INFO = {PLOTTVSCL_INFO, $
-                  x0      : 0                ,$
-                  y0      : 0                ,$
+                  defined : 1b               ,$
                   x1      : long(PlotAreaDevice(0)),$
                   y1      : long(PlotAreaDevice(1)),$
                   ;;
