@@ -34,7 +34,9 @@
 ; console_struct:: the console, where the message 
 ;                  should go; if omitted the
 ;                  standard console in !CONSOLE is used
-; message:: the message to be displayed
+; message:: the message string to be displayed. This may be a single
+;           line or a string array in the case of
+;           multi-line-messages.
 ;
 ; KEYWORD PARAMETERS:
 ;
@@ -71,6 +73,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.14  2000/10/10 15:05:45  kupper
+;     Now can be passed string arrays for multi-line-messages.
+;
 ;     Revision 2.13  2000/10/10 15:03:09  kupper
 ;     Now using Fixed String Queue for storing the messages. Much simpler
 ;     now. Should behave exactly the same.
@@ -178,7 +183,7 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    viz = status.viz
 
    IF Keyword_Set(UP) THEN dummy = DeQueue(viz)
-   EnQueue, viz, yell
+   For i=0, n_elements(yell)-1 do EnQueue, viz, yell(i)
 
    CASE status.mode OF
       0: print, yell
