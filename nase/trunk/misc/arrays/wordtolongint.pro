@@ -6,55 +6,20 @@
 ;  $Id$
 ;
 ; AIM:
-;  
+;  convert a four byte data word to long int
 ;
 ; PURPOSE:
-;  (When referencing this very routine in the text as well as all IDL
-;  routines, please use <C>RoutineName</C>.)
+;  convert a four byte data word to long int
 ;
 ; CATEGORY:
-;  Algebra
-;  Animation
 ;  Array
-;  Color
-;  CombinationTheory
-;  Connections
-;  DataStorage
-;  DataStructures
-;  Demonstration
-;  Dirs
-;  ExecutionControl
-;  Files
-;  Fonts
-;  Graphic
-;  Help
-;  Image
-;  Input
-;  Internal
-;  IO
-;  Layers
 ;  Math
-;  MIND
-;  NASE
-;  NumberTheory
-;  Objects
-;  OS
-;  Plasticity
-;  Startup
-;  Statistics
-;  Signals
-;  Simulation
-;  Strings
-;  Structures
-;  Widgets
-;  Windows
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;*result = WordToLongInt(four_byte_array)
 ;
 ; INPUTS:
-;  
+;  four_byte_array:: array of four bytes
 ;
 ; OPTIONAL INPUTS:
 ;  
@@ -85,7 +50,6 @@
 ;*>
 ;
 ; SEE ALSO:
-;  <A>RoutineName</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
