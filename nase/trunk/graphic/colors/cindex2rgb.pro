@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/10/27 18:57:22  gabriel
+;          TrueColorMode only with colortables (nase restriction)
+;
 ;     Revision 2.3  2000/10/01 14:50:57  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -39,12 +42,15 @@
 ;
 ;-
 FUNCTION CIndex2RGB, cindex
-
    IF !D.Name EQ ScreenDevice() AND !D.N_COLORS EQ 16777216 THEN BEGIN
-      b = cindex / 65536 
-      g = (cindex MOD 65536)/256
-      r = cindex MOD 256
-      RETURN, [r,g,b]
-   END ELSE RETURN, GetColorIndex(cindex) 
+      utvlct, R, G, B, /get
+      RETURN, [r(cindex),g(cindex),b(cindex)]
+   end ELSE RETURN, GetColorIndex(cindex) 
+  ; IF !D.Name EQ ScreenDevice() AND !D.N_COLORS EQ 16777216 THEN BEGIN
+  ;    b = cindex / 65536 
+  ;    g = (cindex MOD 65536)/256
+  ;    r = cindex MOD 256
+  ;    RETURN, [r,g,b]
+  ; END ELSE RETURN, GetColorIndex(cindex) 
 
 END
