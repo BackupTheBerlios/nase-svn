@@ -66,7 +66,17 @@
 ;  A Hill() is constructed from two Ramp()s.
 ;  
 ; EXAMPLE:
-;  -please specify-
+;  Plot, Hill(100, LEFT=-10, RIGHT=10, TOP=50), /ISO
+;
+;  for i=0, 100 do begin $
+;    Plot, Hill(100,i , LEFT=-10, RIGHT=10, TOP=50), yrange=[0,100], /ISO & $
+;    wait, 0.1 & $
+;  endfor
+;  
+;  for i=0, 100 do begin $
+;    Plot, Hill(100,i , LANGLE=45, RSLOPE=2, TOP=50), /ISO, yrange=[0,100] & $
+;    wait, 0.1 & $
+;  endfor
 ;  
 ; SEE ALSO:
 ;  Ramp(), Angle2Slope()
@@ -74,6 +84,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/08/09 17:16:53  kupper
+;        Added some examples.
+;
 ;        Revision 1.2  2000/07/20 14:15:36  kupper
 ;        Tip positions outside the array are now allowed!
 ;
