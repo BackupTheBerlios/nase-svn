@@ -142,7 +142,7 @@
 ;  FORNAME SURNAME
 ;
 ;-
-PRO CloseAnalayer, _AS, _EXTRA=e
+PRO FreeAnalayer, _AS, _EXTRA=e
 
    Handle_Value, _AS, AS, /NO_COPY
 
