@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.3  2000/01/14 11:10:11  saam
+;            chaged dw to anonymous/handles
+;
 ;      Revision 1.2  2000/01/11 14:16:00  saam
 ;            added the FILE keyword
 ;
@@ -35,7 +38,8 @@ FUNCTION ReadDW, DWindex, INIT=init, FILE=file
 
    COMMON ATTENTION
    
-   file = P.file+'.'+P.DWW(DWindex).file
+   curDW = Handle_Val(P.DWW(DWindex))
+   file = P.file+'.'+curDW.file
    IF Keyword_Set(INIT) THEN file = file + '.ini.dw' ELSE file = file + '.dw'
    
    lun = UOpenR(file)
