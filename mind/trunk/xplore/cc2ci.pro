@@ -8,7 +8,8 @@
 ;
 ; CATEGORY:                 MIND XPLORE
 ;                            
-; CALLING SEQUENCE:         compute: CC2CI [,CC] [,FILE=file] [,LAYER=layer]
+; CALLING SEQUENCE:         compute: CC2CI [,CC] [,CI] [,FILE=file]
+;                                    [,LAYER=layer] [,/NOSAVE]
 ;                           show   : CC2CI [,FILE=file] [,LAYER=layer],/S 
 ;                           load   : CC2CI, CI [,FILE=file] [,LAYER=layer],/R 
 ;  
@@ -19,6 +20,7 @@
 ;                           layer  : the layer to be calculated,
 ;                                    important for loading and saving
 ;                                    data (Default: 0)
+;                           NOSAVE : don't save the results
 ;  
 ; OUTPUTS:                  CI     : the array of correlation indices
 ;                                    if /R is set.
@@ -34,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/06/20 13:24:50  saam
+;              + changed calling syntax
+;
 ;        Revision 1.2  2000/04/07 10:11:46  saam
 ;              Keyword in call to CCI changed
 ;
@@ -42,7 +47,7 @@
 ;
 ;
 ;
-PRO _CC2CI, cc, FILE=file, LAYER=layer
+PRO _CC2CI, cc, ci, FILE=file, LAYER=layer, NOSAVE=nosave, _EXTRA=e
 
 COMMON ATTENTION
 
@@ -57,22 +62,25 @@ dim    = S(0)-1    ; without pshift
 pshift = S(dim+1)  ; elements in last dimension
 
 IF (dim LT 1) THEN Console, 'illegal dimension ('+STR(dim)+')', /FATAL
+ccs = SIZE(cc)
 cc = REFORM(cc, N_Elements(cc)/pshift, pshift, /OVERWRITE) ; to handle arbitrary dimensions
 
 Console, 'processing...'
-FOR i=0,N_Elements(cc)/pshift-1 DO BEGIN
-    IF Set(CI) THEN ci=[ci,CorrIndex(REFORM(cc(i,*)))] ELSE ci = CorrIndex(REFORM(cc(i,*)))
+ci = FltArr(N_Elements(cc)/pshift)
+FOR i=0l,N_Elements(cc)/pshift-1 DO BEGIN
+    ci(i)=CorrIndex(REFORM(cc(i,*)))
 END
+cc = REFORM(cc, ccs(1:ccs(0)), /OVERWRITE)
 ci = REFORM(ci, S(1:dim), /OVERWRITE)
 Console, 'processing...done', /UP
 
-
-Console, 'saving...'
-V = InitVideo( ci, TITLE=P.File+'.'+cL.File+file+'.ci', STARRING='', COMPANY='', /SHUTUP)
-dummy = CamCord(V, ci)
-Eject, V, /NOLABEL, /SHUTUP
-Console, 'saving...done', /UP
-
+IF NOT Keyword_Set(NOSAVE) THEN BEGIN
+    Console, 'saving...'
+    V = InitVideo( ci, TITLE=P.File+'.'+cL.File+file+'.ci', STARRING='', COMPANY='', /SHUTUP)
+    dummy = CamCord(V, ci)
+    Eject, V, /NOLABEL, /SHUTUP
+    Console, 'saving...done', /UP
+END
 
 END
 
@@ -146,7 +154,7 @@ END
 
 
 
-PRO CC2CI, cc_or_ci, FILE=FILE, S=S, R=R, _EXTRA=e
+PRO CC2CI, cc_or_ci, ci, FILE=FILE, S=S, R=R, _EXTRA=e
 
 Default, FILE,  ''
 Default, layer, 0
@@ -155,7 +163,7 @@ if Keyword_Set(R) THEN BEGIN
     cc_or_ci = _RCC2CI(FILE=file, _EXTRA=e)
 END ELSE BEGIN
     IF NOT Keyword_Set(S) THEN BEGIN
-        IF Set(cc_or_ci) THEN _CC2CI, cc_or_ci, FILE=file, _EXTRA=e  ELSE _CC2CI, FILE=file, _EXTRA=e
+        IF Set(cc_or_ci) THEN _CC2CI, cc_or_ci, ci, FILE=file, _EXTRA=e  ELSE _CC2CI, FILE=file, _EXTRA=e
     END ELSE _SCC2CI, FILE=file, _EXTRA=e 
 END
 
