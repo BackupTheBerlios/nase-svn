@@ -6,14 +6,21 @@
 ;  $Id$
 ; 
 ; AIM:
-;  iterates a procedure for several loops
+;  Iterates a procedure for several loops.
 ;
 ; PURPOSE: 
 ;  Performs a special action for various iterations and over several
 ;  loop variables.
 ;  The LoopValues have to be given by __TVxxx, the corresponding tag
 ;  names by __TNxxx in the AP-structure, where xxx may be an arbitrary
-;  string.
+;  string.<BR>
+;  <*>ForEach</*> also generates filenames for saving results during
+;  different iterations automatically. The skeleton (string added to
+;  all filenames) can be set using the <*>skel</*> tag in the
+;  <*>SIMULATION</*> structure of your <*>MIND</*> masterfile
+;  (Default: '_'). The iteration names may also be seperated by the
+;  string given in the  <*>sep</*> tag of <*>SIMULATION</*> (Default:
+;  '_').
 ;
 ; CATEGORY:
 ;  ExecutionControl
@@ -22,10 +29,8 @@
 ; CALLING SEQUENCE:
 ;*  iter = ForEach(procedure [,p1[,p2[,p3[,p4[,p5[,p6[,p7[p8[,p9]]]]]]]]] $
 ;*                           [,LSKIP=...] [,LCONST=...]
-;*                           [,SEP=...]
 ;*                           [,__XX (see below!)]
 ;*                           [,ZZYY (see below!)]
-;*                           [,SKEL=...]
 ;*                           [,/W] [,VALUES=...]
 ;*                           [,/FAKE] [,/QUIET] [,_EXTRA=E] )
 ;
@@ -52,8 +57,6 @@
 ;  LCONST:: While LSKIP skips various loops, LCONST just assumes a
 ;           constant value for them (the one they currently have). The
 ;           syntax is the same as for LSKIP.  
-;  SEP   :: iteration separator for filenames (default '_')
-;  SKEL  :: string added to filename after iteration info (default '_')
 ;  __XX  :: Loop Variables may be modified/set as keywords. If you have
 ;           a loop variable ITER, you can change the default value by passing
 ;           __ITER={whatever_you_like}. ForEach will then use your
@@ -78,12 +81,20 @@
 ;  see <A>dforeach</A>
 ;
 ; SEE ALSO:
-;  <A>fakeeach</A>, <A>initloop</A>, <A>loopvalue</A>, <A>looptags</A>
+;  <A>fakeeach</A>, <A>initloop</A>, <A>loopvalue</A>, <A>looptags</A>.
 ;
 ;-
+
+
+
 FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9 $
                   , W=w, values=values, ltags=ltags, fake=fake, quiet=quiet $
                   , LSKIP=_lskip, LCONST=_lconst, SKEL=skel, SEP=sep, _EXTRA=e
+
+; The following keywords have been removed from the documentation
+; because they should be defined in the SIMULATION structure.
+;  SKEL  :: string added to filename after iteration info (default '_')
+;  SEP   :: iteration separator for filenames (default '_')
 
    COMMON ATTENTION
    
