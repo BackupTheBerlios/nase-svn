@@ -82,7 +82,7 @@
 ;  Farbrtabelle wird verändert.
 ;
 ; PROCEDURE:
-;  Basiert auf <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="nonase/#SURFIT">Surfit</A>, <A HREF="nonase/#EXAMINEIT">Examineit</A>.
+;  based on <A>ShowWeights</A>, <A>Surfit</A>, <A>Examineit</A>.
 ;
 ; SEE ALSO:
 ;  <A>ShowWeights</A>, <A>Surfit</A>, <A>Examineit</A>.
@@ -344,7 +344,7 @@ PRO TomWaits, GROUP=Group, $
                                 ; widget. Therefore i set the default,
                                 ; to generate a blocking but working
                                 ; widget in this case.
-  Default, NO_BLOCK, SIZE(callstack()) LE 2 
+  Default, NO_BLOCK, (SIZE(callstack()))(2) LE 2 
   Default, TITLE, TITEL
   Default, TITLE, "Tom Waits"
   Default, ZOOM, GROESSE       ;Die Schlüsselworte können alternativ verwendet werden.
