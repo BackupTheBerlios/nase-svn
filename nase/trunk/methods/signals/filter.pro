@@ -16,7 +16,7 @@
 ;
 ;
 ; CALLING SEQUENCE:
-;                          Result = FILTER(Flow, Fhigh, A, Nterms,[SAMPLPERIOD=SAMPLPERIOD])
+;                          Result = FILTER(Flow, Fhigh, A, Nterms,[SAMPLEPERIOD=SAMPLEPERIOD])
 ;
 ; 
 ; INPUTS:                  
@@ -34,7 +34,7 @@
 ;	
 ;
 ; KEYWORD PARAMETERS:
-;                          SAMPLPERIOD:  The time between data samples (default: 0.001 s)
+;                          SAMPLEPERIOD:  The time between data samples (default: 0.001 s)
 ;
 ; OUTPUTS:                 The result are the Coefficents of the filter
 ;
@@ -51,23 +51,26 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1998/08/17 16:20:05  gabriel
+;           Keyword SAMPLPERIOD auf SAMPLEPERIOD umbenannt
+;
 ;     Revision 1.1  1998/07/27 09:58:21  gabriel
 ;          First Commit
 ;
 ;
 ;-
-FUNCTION filter,flow,fhigh,a,Nterms,SAMPLPERIOD=SamplPeriod
+FUNCTION filter,flow,fhigh,a,Nterms,SAMPLEPERIOD=SamplePeriod
 
-default,Samplperiod, 0.001
+default,Sampleperiod, 0.001
 default,flow,0
-nyquistfreq =  1./(2. * Samplperiod)
+nyquistfreq =  1./(2. * Sampleperiod)
 default,fhigh,nyquistfreq
 
 nyflow = flow/nyquistfreq
 
-nyhigh = fhigh/nyquistfreq
+nyfhigh = fhigh/nyquistfreq
 
-IF nyflow GT 1 OR nyhigh GT 1 THEN message,'flow or fhigh greater than Nyquest-Frequency (1/(2*SamplPeriod))'
+IF nyflow GT 1 OR nyfhigh GT 1 THEN message,'flow or fhigh greater than Nyquest-Frequency (1/(2*SamplePeriod))'
 
 coeff = digital_filter(nyflow,nyfhigh,A,Nterms)
 
