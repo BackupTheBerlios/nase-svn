@@ -14,6 +14,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/03/28 12:52:08  saam
+;          new SysV !CONSOLE for use with console
+;
 ;     Revision 1.7  2000/03/27 13:48:54  saam
 ;           TOPCOLOR is now !D.Table_Size-2 which is
 ;           much better (at least for TRUE COLOR Displays)
@@ -97,5 +100,9 @@ DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', 
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
 DefSysV, '!NASE_LIB', '/vol/lib/nase/nasec.so', 0
+
+
+; defines a standard console
+DefSysV, '!CONSOLE', InitConsole(TITLE='Standard Output')
 
 END
