@@ -324,11 +324,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , _EXTRA=e
 
 
-   ON_ERROR, 2
+;;;;;;;;;;;;;;   ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
-   ;; remeber the size of the array PRIOR to any reforms
-   sizeimage_orig = Size(__image)
+   IF N_Params() LT 1 THEN Console, 'at least one positional argument expected', /FATAL
 
    ;;NASE implies NORDER and NSCALE:
    Default, NASE, 0
@@ -354,33 +353,91 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
        YCENTER = 1
    END
 
-   ; don't modify the original image, and
+
+   ;; don't modify the original image
+   Image = __Image
+
+   ;; --- Start: handling of excess/missing dimensions: ----
+   ;;
+   ;; remove possible leading 1-dimensions, and add possible missing ones
+   ;; Warning: this is a tricky thing to do!
+   ;; (1) If TRUE is set, the image must have at least three
+   ;;     dimensions. We are only interested in the last three
+   ;;     dimensions, and all leading dimensions must be 1. If this is
+   ;;     not the case, we don't know what to do and raise an error.
+   ;; (2) If TRUE is not set, the image is allowed to be one- or
+   ;;     two-dimensional.
+   ;;  (a)If it has only one dimension, it is a "horizontal" array,
+   ;;     and we will append a dimension of 1 and then proceed processing with
+   ;;     step (b).
+   ;;  (b)The image must now have at least two dimensions, meaning
+   ;;     that either it is a 2-d array, or it WAS a "horizontal" 1-d
+   ;;     array which had one dimension appended in step (a), or it is a
+   ;;     "vertical" 1-d array with a width of 1. (In the last case,
+   ;;     the leading dimension of 1 MUST NOT be removed!)
+   ;;     Anyway, we are only interested in the last two dimensions,
+   ;;     and all OTHER leading dimensions must be 1. If this is
+   ;;     not the case, we don't know what to do and raise an error.
+   If keyword_set(_TRUE) then begin
+      ;; (1)
+      n_dims = size(Image, /N_Dimensions) 
+      dims   = size(Image, /Dimensions)
+      assert, n_dims ge 3, "/TRUE is set, but array has less than three dimensions!"
+      if n_dims gt 3 then begin
+         leading_dims = dims[0:n_dims-4]
+         assert, total(leading_dims) eq (n_dims-3), "Array has excess " + $
+                 "dimensions which are not 1! Don't know what to show."
+      endif
+      Image = reform(Image, dims[(n_dims-3):(n_dims-1)], /Overwrite)
+   endif else begin
+      ;; (2)
+      n_dims = size(Image, /N_Dimensions) 
+      dims   = size(Image, /Dimensions)
+      If n_dims eq 1 then begin
+         ;; (a)
+         Image = reform(Image, [dims, 1], /Overwrite)
+      endif
+      ;; (b)
+      n_dims = size(Image, /N_Dimensions) 
+      dims   = size(Image, /Dimensions)
+      assert, n_dims ge 2, "This must not happen."
+      if n_dims gt 2 then begin
+         leading_dims = dims[0:n_dims-3]
+         assert, total(leading_dims) eq (n_dims-2), "Array has excess " + $
+                 "dimensions which are not 1! Don't know what to show."
+      endif
+      Image = reform(Image, dims[(n_dims-2):(n_dims-1)], /Overwrite)
+   endelse
+
+   ;; PUH!!
+   ;; We now have an array that
+   ;;   (1) if /TRUE is set, has exactly three dimensions.
+   ;;   (2) if TRUE is not set, has exactly two dimensions.
+   If keyword_set(_TRUE) then $
+     assert, size(Image, /N_Dimensions) eq 3, "This must not happen!" $
+   else assert, size(Image, /N_Dimensions) eq 2, "This must not happen!"
+   ;;
+   ;; --- End: handling of excess/missing dimensions ----
+
+
+
    ; do NASE-transpose if /NASE or /NORDER was set:
-   IF N_Params() LT 1 THEN Console, 'at least one positional argument expected', /FATAL
-   If Keyword_Set(NORDER) then $
-     Image = Rotate(REFORM(__Image), 3) $
-    else $
-     Image = REFORM(__Image)
+   If Keyword_Set(NORDER) then Image = Rotate(Temporary(Image), 3)
 
    ; TRUE stands for TRUE color support, see IDL help of TV
    Default, _TRUE, 0
    IF _TRUE GT 0 THEN BEGIN
        IF Keyword_Set(POLYGON) THEN Console, 'TRUE color option not supported for /POLYGON', /FATAL
-       IF _TRUE EQ 1 THEN Image = Transpose(Image, [1,2,0])
-       IF _TRUE EQ 2 THEN Image = Transpose(Image, [0,2,1])
+       IF _TRUE EQ 1 THEN Image = Transpose(Temporary(Image), [1,2,0])
+       IF _TRUE EQ 2 THEN Image = Transpose(Temporary(Image), [0,2,1])
        IF _TRUE GT 3 THEN Console, 'invalid value for TRUE', /FATAL
        IF (SIZE(Image))(3) NE 3 THEN Console, 'TRUE color option expects (3,x,y), (x,3,y) or (x,y,3) array, see IDLs TV help'
        TRUE=3
    END ELSE BEGIN
-       IF (SIZE(Image))(0) GT 2 THEN $
-        Console, 'Array has more than 2 dimensions.', /FATAL
        ;; Add a third dimension to be compatioble to the TRUE color
        ;; option. 
        currsize = size(image, /Dimensions)
-       ;; handle 1dim arrays:
-       if size(image, /n_dimensions) eq 2 then $
-         newsize = [currsize, 1] else $
-         newsize = [currsize, 1, 1]
+       newsize = [currsize, 1]
        image = Reform(image, newsize, /OVERWRITE)
        TRUE=0
    END
