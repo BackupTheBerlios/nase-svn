@@ -23,6 +23,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/04/10 12:13:54  saam
+;           fuser was not in every users PATH, so
+;           the PATH variable was completed
+;
 ;     Revision 2.1  1998/04/09 14:35:41  saam
 ;           here we go
 ;
@@ -33,6 +37,7 @@ FUNCTION FileOpen, filename
    On_Error, 2
 
    IF FileExists(filename) THEN BEGIN
+      SetEnv, 'PATH=/usr/sbin:/bin:'+GetEnv('PATH')
       spawn, 'fuser '+filename, result
       IF result(0) NE '' THEN RETURN, 1 ELSE RETURN, 0
    END ELSE Message,'no such file!' 
