@@ -81,7 +81,7 @@ PRO MSPLOT, z, zz, zzz $
             , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
             , _EXTRA=extra
 
-   On_Error, 2
+;   On_Error, 2
 
    Default, SDCOLOR, RGB(100,100,200)
    Default, MCOLOR, GetForeground()
@@ -161,14 +161,14 @@ PRO MSPLOT, z, zz, zzz $
          xtitle = extratitles.xtitle
          ytitle = extratitles.ytitle
       ENDIF ELSE BEGIN
-         IF Tag_Names(extratitles) EQ 'XTITLE' THEN BEGIN ;; xtitle is set, 
-                                                          ;; but ytitle is not
+         IF (Tag_Names(extratitles))[0] EQ 'XTITLE' THEN BEGIN 
+            ;; xtitle is set, but ytitle is not
             xtitle = extratitles.xtitle
             ytitle = ''
          ENDIF ELSE BEGIN ;; vice versa
             xtitle = ''
             ytitle = extratitles.ytitle
-         ENDELSE ;; Tag_Names(extratitles) EQ 'XTITLE'
+         ENDELSE ;; (Tag_Names(extratitles))[0] EQ 'XTITLE'
       ENDELSE ;; N_TAGS(extratitles) EQ 2 
    ENDELSE ;; Size(extratitles, /TNAME) NE 'STRUCT'
 
