@@ -111,6 +111,8 @@ Function Scl, A, Range, Range_In
    Default, Range_In, [min(A), max(A)       ]
 
    If Range_In(0) eq Range_In(1) then begin
+      console, /Warning, "Target interval is a single point! Returning " + $
+               "flat array of value "+str(Range(0))+"."
       return, Make_Array(/FLOAT, SIZE=size(A), VALUE=Range(0))
    endif else begin
       Return, (A - Range_In(0)) $
