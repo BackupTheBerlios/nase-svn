@@ -14,6 +14,7 @@
 ;                             [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
+;                             [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
 ;
 ; INPUTS:             image: ein ein- oder zweidimensionales Array
 ;
@@ -50,6 +51,9 @@
 ;                                 die Deviceunabhaegigkeit ist.
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
 ;                     TOP       : es werden nur die Farbindices von 0..TOP-1 belegt (siehe IDL5 Hilfe von TvSCL)
+;                     CUBIC,
+;                     INTERP,
+;                     MINUS_ONE : werden an ConGrid uebergeben (s. IDL_Hilfe)
 ;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
 ;                
@@ -66,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.28  1999/06/07 14:40:44  kupper
+;     Added CUBIC,INTERP,MINUS_ONE-Keywords for ConGrid.
+;
 ;     Revision 2.27  1999/03/17 16:29:58  saam
 ;           TOP keyword implemented
 ;
@@ -257,6 +264,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , NOSCALE=noscale $
             , DEVICE=device $
             , POLYGON=POLYGON $
+            , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one $
             , _EXTRA=e
 
    ON_ERROR, 2
@@ -362,7 +370,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    END ELSE BEGIN   ;; it is a WINDOW
       Device, BYPASS_TRANSLATION=0
       IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
-         IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1)         
+         IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)         
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
