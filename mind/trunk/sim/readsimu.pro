@@ -1,67 +1,63 @@
 ;+
-; NAME:               ReadSimu
+; NAME:
+;  ReadSimu()
 ;
-; AIM:                restores all kind of neural actitvity from a simulation
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            This routine reads your simulation data. 
+; AIM:
+;  restores all kind of neural actitvity from a simulation
 ;
-; CATEGORY:           MIND SIM
+; PURPOSE:
+;  This routine reads your simulation data. 
 ;
-; CALLING SEQUENCE:   R = ReadSimu([LAYER] [,FILE=file] [,OS=os]
-;                                  [,SUFF=suff] [,/TD])
+; CATEGORY:
+;  DataStorage
+;  Layers
+;  MIND
+;  Simulation
 ;
-; KEYWORD PARAMETERS: LAYER : species the layer to be read. You may
-;                             use the layer index or the file string
-;                             associated with the layer
-;                     FILE  : you may specify a path/file (without suffices), if not the latest
-;                             simulation (COMMON BLOCK ATTENTION) is taken
-;                     SUFF  : specify a suffix that will be appended
-;                             behind the layer's ID
-;                     OS    : the data's oversampling factor (it takes latest ATTENTION value if
-;                             not specified)
-;                     TD    : returns the result in dimensions of the actual layer
+; CALLING SEQUENCE:
+;  R = ReadSimu([{LAYER | LAYER=...} [,FILE=file] [,OS=os]
+;               [,SUFF=suff] [,/TD] [UDS=uds])
 ;
-;    ---------
-;    IMPORTANT:       see ReadSim for additional keywords
-;    ---------
+; INPUTS:
+;   LAYER :: species the layer to be read. You may
+;            use the layer index or the file string
+;            associated with the layer
+;  
+; INPUT KEYWORDS:
+;   LAYER :: species the layer to be read. You may
+;            use the layer index or the file string
+;            associated with the layer
+;   FILE  :: you may specify a path/file (without suffices), if not the latest
+;            simulation (COMMON BLOCK ATTENTION) is taken
+;   SUFF  :: specify a suffix that will be appended
+;            behind the layer's ID
+;   OS    :: the data's oversampling factor (it takes latest ATTENTION value if
+;            not specified)
+;   TD    :: returns the result in dimensions of the actual
+;            layer. This option is ignored if you restore partial data
+;            using <*>SELECT<*> as documented in <A>ReadSim</A>.
+;   UDS  :: will contain parameters (saved as structur) saved during simulation.
+;           This can be used to preserve simulation or other
+;           relevant parameters.
 ;
-; OUTPUTS:            R: complete data read 
+;*---------
+;*IMPORTANT: see ReadSim for additional keywords
+;*---------
 ;
-; COMMON BLOCKS:      ATTENTION
+; OUTPUTS:
+;  R :: data read 
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/internal#READSIM>readsim</A>
+; COMMON BLOCKS:
+;  ATTENTION
 ;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 1.8  2000/09/29 08:10:38  saam
-;       added the AIM tag
-;
-;       Revision 1.7  2000/06/20 13:16:16  saam
-;             + new keyword SUFF
-;
-;       Revision 1.6  2000/05/16 16:25:11  saam
-;             layer syntax extended
-;
-;       Revision 1.5  2000/04/06 09:34:51  saam
-;             passes INFO keyword from and to readsim
-;
-;       Revision 1.4  2000/01/05 13:53:48  saam
-;             minus in doc was missing
-;
-;       Revision 1.3  1999/12/21 09:49:39  saam
-;             doc header updated
-;
-;       Revision 1.2  1999/12/21 09:48:54  saam
-;            error in TD section
-;
-;       Revision 1.1  1999/12/21 09:43:14  saam
-;            first version
-;            changed from PRO to FUNCTION
-;
+; SEE ALSO:
+;  <A>ReadSim</A>
 ;
 ;-
-FUNCTION ReadSIMU, Layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=info, _EXTRA=e
+FUNCTION ReadSIMU, Layer, LAYER=layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=info, UDS=uds, _EXTRA=e
 
    COMMON ATTENTION
 
@@ -105,8 +101,12 @@ FUNCTION ReadSIMU, Layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=info, _EXTRA=
    
    console, 'restoring '+L.name
    
-   data = ReadSim(filename+suff, INFO=info, _EXTRA=e)
-   IF Keyword_Set(TD) THEN data = REFORM(data, h, w, (SIZE(data))(2), /OVERWRITE)
+   data = ReadSim(filename+suff, INFO=info, UDS=uds, _EXTRA=e)
+   
+   IF Keyword_Set(TD) THEN BEGIN
+       IF ExtraSet(e, "SELECT") THEN Console, "can't reform a partial restore to array dimensions ... ignoring /TD"  $
+       ELSE data = REFORM(data, h, w, (SIZE(data))(2), /OVERWRITE)
+   END
 
    RETURN, data
 END
