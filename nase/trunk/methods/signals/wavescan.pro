@@ -10,7 +10,7 @@
 ;
 ;
 ; CALLING SEQUENCE:   distvel = wavescan(array,timearr,[TRANSP=TRANSP],[FBAND=FBAND],$
-;                              [STEPSIZE=STEPSIZE],[WSIZE=WSIZE],[WAVECRIT=WAVECRIT],[ELDIST=ELDIST],$
+;                              [STEPSIZE=STEPSIZE],[WSIZE=WSIZE],[VELCRIT=VELCRIT],[ELDIST=ELDIST],$
 ;                              [SAMPLPERIOD=SAMPLPERIOD],[NEIGHBORS=NEIGHBORS],[PLOT=PLOT],[NULLHYPO=NULLHYPO])
 ;
 ; 
@@ -136,6 +136,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  1998/07/10 10:21:45  gabriel
+;          Falsches Keyword in Doku Statt WAVECRIT heisst es VELCRIT
+;
 ;     Revision 1.4  1998/07/07 20:08:40  gabriel
 ;          Tja viele neue Keywords ......
 ;
