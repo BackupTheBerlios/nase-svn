@@ -7,9 +7,15 @@
 ; CATEGORY: SIMUALTION / CONNECTIONS
 ;
 ; CALLING SEQUENCE: Entweder als Funktion:
-;                      W_neu = NoNone_Func(W_alt [,VALUE=wert] [,NONES=Indices)
+;                      W_neu = NoNone_Func(W_alt
+;                                          [,VALUE=wert]
+;                                          [,NONES=Indices]
+;                                          [,COUNT=occurrences])
 ;                   oder als Prozedur:
-;                      <A HREF="#NONONE_PROC">NoNone_Proc</A>, W_alt [,VALUE=wert] [,NONES=Indices]
+;                      <A HREF="#NONONE_PROC">NoNone_Proc</A>, W_alt 
+;                                   [,VALUE=wert]
+;                                   [,NONES=Indices]
+;                                   [,COUNT=occurrences]
 ;
 ; INPUTS: W_alt: Eine Gewichtsmatrix mit !NONE-Eintraegen,
 ;                in der Regel wohl das Ergebnis eines <A HREF="#WEIGHTS">Weights</A>-
@@ -25,6 +31,11 @@
 ; OPTIONAL OUPUTS: NONES: Die Indices der ersetzten Elemente.
 ;                         Enthielt die Matrix keine !NONEs, so wird -1 
 ;                         zurückgegeben.
+;                         (Ergebnis wird von WHERE
+;                         durchgeschleift.)
+;                  COUNT: Anzahl der ersetzten Werte.
+;                         (Ergebnis wird von WHERE
+;                         durchgeschleift.)
 ;
 ; PROCEDURE: Eigentlich nur eine IDL-Where-Anweisung nett verpackt.
 ;
@@ -41,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/09/22 10:16:57  kupper
+;        Added COUNT Keyword.
+;
 ;        Revision 2.1  1998/06/08 10:09:44  thiel
 ;               Die eine Haelfte der NoNone-Routine.
 ;
@@ -56,7 +70,7 @@
 ;-
 
 
-FUNCTION NoNone_Func, w, VALUE=value, NONES=nones
+FUNCTION NoNone_Func, w, VALUE=value, NONES=nones, COUNT=count
 
    Default, value, 0.0
 

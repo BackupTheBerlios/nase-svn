@@ -6,10 +6,17 @@
 ;
 ; CATEGORY: SIMUALTION / CONNECTIONS
 ;
-; CALLING SEQUENCE: Entweder als Prozedur:
-;                      NoNone_Proc, W_alt [,VALUE=wert] [,NONES=Indices]
-;                   oder als Funktion:
-;                      W_neu = <A HREF="#NONONE_FUNC">NoNone_Func</A>(W_alt [,VALUE=wert] [,NONES=Indices)
+; CALLING SEQUENCE: Entweder als Funktion:
+;                      W_neu = NoNone_Func(W_alt
+;                                          [,VALUE=wert]
+;                                          [,NONES=Indices]
+;                                          [,COUNT=occurrences])
+;                   oder als Prozedur:
+;                      <A HREF="#NONONE_PROC">NoNone_Proc</A>, W_alt 
+;                                   [,VALUE=wert]
+;                                   [,NONES=Indices]
+;                                   [,COUNT=occurrences]
+;
 ; INPUTS: W_alt: Eine Gewichtsmatrix mit !NONE-Eintraegen,
 ;                in der Regel wohl das Ergebnis eines <A HREF="#WEIGHTS">Weights</A>-
 ;                Aufrufs.
@@ -21,6 +28,9 @@
 ; OPTIONAL OUPUTS: NONES: Die Indices der ersetzten Elemente.
 ;                         Enthielt die Matrix keine !NONEs, so wird -1 
 ;                         zurückgegeben.
+;                  COUNT: Anzahl der ersetzten Werte.
+;                         (Ergebnis wird von WHERE
+;                         durchgeschleift.)
 ;
 ; SIDE EFFECTS: Die uebergebene Matrix wird verandert, soll ja auch, also
 ;               nicht wirklich ein Side Effect, ich wollts ja nur gesagt haben.
@@ -41,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/09/22 10:16:41  kupper
+;        Added COUNT Keyword.
+;
 ;        Revision 2.1  1998/06/08 10:12:24  thiel
 ;               Die andere Haelfte der NoNone-Routine.
 ;
@@ -56,7 +69,7 @@
 ;-
 
 
-PRO NoNone_Proc, w, VALUE=value, NONES=nones
+PRO NoNone_Proc, w, VALUE=value, NONES=nones, COUNT=count
 
    Default, value, 0.0
 
