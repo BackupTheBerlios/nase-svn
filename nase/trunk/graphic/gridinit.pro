@@ -41,7 +41,6 @@
 ;  
 ;
 ; CATEGORY:
-;  Algebra
 ;  Graphic
 ;  NASE
 ;  Widgets
