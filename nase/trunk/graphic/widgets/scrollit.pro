@@ -8,48 +8,52 @@
 ;          Scrollbalken.
 ;          Ab Revision 2.21 auch als Kind-Widgets in einer Widget-Applikation. 
 ;
-; CATEGORY: Darstellung, Widgets, allgemein
+; CATEGORY:
+;  Graphic
+;  Image
+;  Widgets
 ;
-; CALLING SEQUENCE: Win_Nr = ScrollIt ( [ Parent ]
-;                                       [, TITLE=FensterTitel ]
-;                                       [, XPOS=Hauptfenster_X_Position] [, YPOS=Hauptfenster_Y_Position ]
-;                                       [, BASE_XSIZE=Hauptfenster_X_Größe] [, BASE_YSIZE=Hauptfenster_Y_Größe]
-;                                       [, XSIZE=Fensterchen_X_Größe ]  [, YSIZE=Fensterchen_Y_Größe ]
-;                                       [, XDRAWSIZE=Virtuelle_Fensterchen_X_Größe] [, YDRAWSIZE=Virtuelle_Fensterchen_Y_Größe]
-;                                       [, /PIXMAP ]
-;                                       [, GET_BASE=Widget_ID] [, GROUP=Leader_Widget_ID ]
-;                                       [, KILL_NOTIFY=KillPro ]
-;                                       [, DELIVER_EVENTS=Array_of_Widget_IDs ]
-;                                       [, /BUTTON_EVENTS]
-;                                       [, MULTI=Multi-Array ]
-;                                       [, GET_DRAWID=Array_of_Draw-Widget-IDs]
-;                                       [, /PRIVATE_COLORS] [, NO_BLOCK=0])
+; CALLING SEQUENCE:
+;*Win_Nr = ScrollIt ( [ Parent ]
+;*                    [, TITLE=FensterTitel ]
+;*                    [, XPOS=Hauptfenster_X_Position] [, YPOS=Hauptfenster_Y_Position ]
+;*                    [, BASE_XSIZE=Hauptfenster_X_Größe] [, BASE_YSIZE=Hauptfenster_Y_Größe]
+;*                    [, XSIZE=Fensterchen_X_Größe ]  [, YSIZE=Fensterchen_Y_Größe ]
+;*                    [, XDRAWSIZE=Virtuelle_Fensterchen_X_Größe] [, YDRAWSIZE=Virtuelle_Fensterchen_Y_Größe]
+;*                    [, /PIXMAP ]
+;*                    [, GET_BASE=Widget_ID] [, GROUP=Leader_Widget_ID ]
+;*                    [, KILL_NOTIFY=KillPro ]
+;*                    [, DELIVER_EVENTS=Array_of_Widget_IDs ]
+;*                    [, /BUTTON_EVENTS]
+;*                    [, MULTI=Multi-Array ]
+;*                    [, GET_DRAWID=Array_of_Draw-Widget-IDs]
+;*                    [, /PRIVATE_COLORS] [, NO_BLOCK=0])
 ;
-; OPTIONAL INPUTS: Parent: Eine Widget-ID des Widgets, dessen Kind das 
+; OPTIONAL INPUTS: Parent:: Eine Widget-ID des Widgets, dessen Kind das 
 ;                          neue ScrollIt-Widget werden soll.
 ;                          Man beachte, dass in diesem Fall der
 ;                          Rueckgabewert Win_Nr=-1 ist, da die
 ;                          Fensternummer eines Draw-Widgets erst nach
 ;                          dessen Realisierung ermittelt werden kann.
 ; 
-; KEYWORD PARAMETERS: XPOS, YPOS              : Position des Fensters, das tatsächlich auf
+; INPUT KEYWORDS:     XPOS, YPOS              :: Position des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
-;                     XSIZE, YSIZE            : Größe des Fensters, das tatsächlich auf
+;                     XSIZE, YSIZE            :: Größe des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
 ;                                               Bei Verwendung von MULTI (s.u.) die tatsächlich sichtbare Größe
 ;                                               eines "Fensterchens".
-;                     XDRAWSIZE, YDRAWSIZE    : Größe des gesamten virtuellen Fensters bzw. bei MULTI eines virtuellen "Fensterchens".
-;                     BASE_[XY]SIZE           : Bei Verwendung von MULTI die absolute Größe des Haptfensters. Passen nicht alle "Fensterchen"
+;                     XDRAWSIZE, YDRAWSIZE    :: Größe des gesamten virtuellen Fensters bzw. bei MULTI eines virtuellen "Fensterchens".
+;                     BASE_[XY]SIZE           :: Bei Verwendung von MULTI die absolute Größe des Haptfensters. Passen nicht alle "Fensterchen"
 ;                                               in dieses Fenster, so bekommt es (das Haptfenster) Scrollbalken.
-;                     PIXMAP                  : Wird PIXMAP gesetzt, so wird das Widget nicht geMAPped,
+;                     PIXMAP                  :: Wird PIXMAP gesetzt, so wird das Widget nicht geMAPped,
 ;                                               was bedeutet, daß es nicht auf dem Bildschirm erscheint.
 ;                                               Der Effekt ist also ähnlich der /PIXMAP-Option von Standard-IDL-Fenstern.
 ;                                               Man vergesse jedoch nicht, das Widget nach Gebrauch zu zuerstören! (S.u.)
 ;                                               Dazu muß die Base-ID mit GET_BASE angefordert werden.
 ;                                               Das Widget kann später beliebig mit WIDGET_CONTROL, Widget_ID, MAP={0|1}
 ;                                               ein- und ausgeblendet werden.
-;                     GROUP                   : Eine Widget-ID des Widgets, das als Group-Leader dienen soll.
-;                     KILL_NOTIFY             : wie für alle Widgets kann hier ein String mit dem Namen einer Prozedur
+;                     GROUP                   :: Eine Widget-ID des Widgets, das als Group-Leader dienen soll.
+;                     KILL_NOTIFY             :: wie für alle Widgets kann hier ein String mit dem Namen einer Prozedur
 ;                                               übergeben werden, die aufgerufen wird, wenn das Widget stirbt.
 ;                                               Dieser Prozedur wird als einziger Parameter die ID des Draw-Widgets übergeben,
 ;                                               Und up-to-date (IDL 5) ist das EINZIGE, was diese Prozedur damit anfangen kann,
@@ -58,14 +62,14 @@
 ;                                               {info      : 'DRAWWIDGET', $
 ;                                                Window_ID : Window_ID};
 ;                                               gesetzt, damit man auch erfährt, welches Fenster gestorben ist.
-;                     DELIVER_EVENTS          : Hier kann ein Array
+;                     DELIVER_EVENTS          :: Hier kann ein Array
 ;                                               von Widget-Indizes übergeben werden, an die alle 
 ;                                               ankommenden Events weitergereicht werden.
-;                     BUTTON_EVENTS           : Wird dieses Schlüsselwort gesetzt, so generiert das im ScrollIt enthaltene
+;                     BUTTON_EVENTS           :: Wird dieses Schlüsselwort gesetzt, so generiert das im ScrollIt enthaltene
 ;                                               DrawWidget bei Mausklicks in seinem Bereich entsprechende Events, die
 ;                                               dann an die in DELIVER_EVENTS aufgeführten Widgets weitergegeben werden.
 ;                                               Default: 0.
-;                     MULTI                   : Implementiert eine Funktionalität ähnlich der
+;                     MULTI                   :: Implementiert eine Funktionalität ähnlich der
 ;                                               IDL-!P.Multi-Variable (mehrere "Fensterchen" in einem Fenster).
 ;                                               In MULTI kann ein maximal fünfelementiges Array angegeben werden, das
 ;                                               das gleiche Format wie !P.Multi hat:
@@ -81,7 +85,7 @@
 ;                                               Wird MULTI gesetzt, so ist das Ergebnis von ScrollIt()
 ;                                               ein ARRAY VON FENSTERNUMMERN.
 ;                                               Nach dem Aufruf aktiv ist das linke obere Fenster.
-;                     PRIVATE_COLORS          : Diese Option ist für den Gebrauch durch die Sheet-Routinen gedacht.
+;                     PRIVATE_COLORS          :: Diese Option ist für den Gebrauch durch die Sheet-Routinen gedacht.
 ;                                               Sie ist sinnvoll bei 8-bit-Displays.
 ;                                               Wenn gesetzt, verarbeiten die Draw-Widgets Tracking-events, und setzen jedesmal,
 ;                                               wenn der Cursor in das Widget kommt, die Farbtabelle auf einen Wert, der im User-
@@ -90,7 +94,7 @@
 ;                                               Wird diese Option benutzt, sollte man sich mit GET_DRAWID die IDs der Widgets liefern
 ;                                               lassen, um Zugriff auf die User-Values der DrawWidgets zu haben. Die Werte der
 ;                                               privaten Colormap finden sich in uvalue.MyPalette.[R|G|B]
-;                                     NO_BLOCK: Wird ab IDL 5 an den XMANAGER
+;                                     NO_BLOCK:: Wird ab IDL 5 an den XMANAGER
 ;                                               weitergegeben. (Beschreibung
 ;                                               s. IDL-Hilfe)
 ;                                               Der Default ist 1, also kein
@@ -98,7 +102,7 @@
 ;                                               NO_BLOCK explizit auf 0 gesetzt werden.
 ;
 ;
-; OUTPUTS: Win_Nr: Ein  Window-Index für folgende Graphikbefehle,
+; OUTPUTS: Win_Nr:: Ein  Window-Index für folgende Graphikbefehle,
 ;                   bzw. ein Array von Indizes im Fall von MULIT.
 ;                  Das geöffnete Fenster wird aber auch zum aktuellen Fenster.
 ;
@@ -108,8 +112,8 @@
 ;                   dessen Realisierung ermittelt werden kann.
 ;                   (S. dazu Abschnitt RESTRICTIONS.)
 ;
-; OPTIONAL OUTPUTS: GET_BASE: ID des erstellten Base-Widgets.
-;                   GET_DRAWID: ID des Draw-Widgets, bzw. ein Array
+; OPTIONAL OUTPUTS: GET_BASE:: ID des erstellten Base-Widgets.
+;                   GET_DRAWID:: ID des Draw-Widgets, bzw. ein Array
 ;                    von IDs im Fall von MULTI.
 ;                    Dieses Schlüsselwort ist für den Gebrauch mit den 
 ;                    Sheets gedacht, die eine private Colormap in
@@ -146,86 +150,18 @@
 ;
 ; PROCEDURE: Einfaches Base- und Draw-Widget mit einfachem Resize-Event-Handler.
 ;
-; EXAMPLE: 1. My_Win = ScrollIt ()
-;             Plot, indgen(100)
-;             XManager
+; EXAMPLE:
+;*1.> My_Win = ScrollIt ()
+;*  > Plot, indgen(100)
+;*  > XManager
+;*
+;*2.> My_MultiWin = ScrollIt (MULTI=[4,2,2], XSIZE=200, YSIZE=200, XDRAWSIZE=300, YDRAWSIZE=300)
+;*  > Plot, indgen(10)
+;*  > WSet, My_MultiWin(3)
+;*  > Plot, 10-indgen(10)
 ;
-;          2. My_MultiWin = ScrollIt (MULTI=[4,2,2], XSIZE=200, YSIZE=200, XDRAWSIZE=300, YDRAWSIZE=300)
-;             Plot, indgen(10)
-;             WSet, My_MultiWin(3)
-;             Plot, 10-indgen(10)
-;
-; SEE ALSO: Slide_Image  (Standard-IDL-Routine)
-;           <A HREF="#DEFINESHEET">DefineSheet()</A>.
-;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 1.3  2000/10/01 14:51:58  kupper
-;       Added AIM: entries in document header. First NASE workshop rules!
-;
-;       Revision 1.2  1999/10/28 16:16:05  kupper
-;       Color-Management with sheets was not correct on a
-;       true-color-display.
-;       (Table was not set when the sheet was opened).
-;       We now do different things for pseudocolor and
-;       truecolor-displays, to make them "feel" alike... (hopefully).
-;
-;       Revision 1.1  1999/09/01 16:43:53  thiel
-;           Moved from other directory.
-;
-;       Revision 2.23  1999/08/16 16:37:56  thiel
-;           Now delivers button-presses if wanted.
-;
-;       Revision 2.22  1999/06/15 17:36:38  kupper
-;       Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
-;       und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
-;       eingebaut werden. Die Modifikationen machten es notwendig, den
-;       WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
-;       Realisierung der Widget-Hierarchie bestimmt werden kann.
-;       Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
-;       WIDGET_CONTROL ab.
-;       Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
-;       ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
-;       Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
-;       entsprechend angepasst.
-;       Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
-;       nicht voellig auszuschliessen.
-;
-;       Revision 2.21  1999/06/10 16:50:02  kupper
-;       Bugfix: VARIABLE used with GETDTAWID-Keyword needs to be defines
-;       before call with IDL 3.6
-;
-;       Revision 2.20  1999/06/01 13:45:27  kupper
-;       (Kontroll-Messages auskommentiert)
-;
-;       Revision 2.19  1999/06/01 13:41:28  kupper
-;       Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
-;       Definesheet, opensheet und closesheet unterstützen nun das abspeichern
-;       privater Colormaps.
-;
-;       Revision 2.18  1999/06/01 13:20:15  kupper
-;       *** empty log message ***
-;
-;       Revision 2.17  1999/03/08 10:38:40  thiel
-;              Größe des Plotbereichs ein klein wenig verändert,
-;              um unnötige Scrollbars zu vermeiden.
-;
-;       Revision 2.16  1998/05/20 14:17:39  kupper
-;              SPACE=0 hinzugefügt.
-;
-;       Revision 2.15  1998/05/19 14:19:59  kupper
-;              BASE_[XY]SIZE hinzugefügt.
-;
-;       Revision 2.14  1998/05/18 17:42:56  kupper
-;              Beispiel für MULTI, UPDATE-Kontrolle im Event-Handler.
-;
-;
-;       Thu Sep 4 16:18:27 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		Urversion.
-;
+; SEE ALSO: <C>Slide_Image</C>  (Standard-IDL-Routine)
+;           <A>DefineSheet</A>.
 ;-
 
 ;Pro Scrollit_Draw_Notify_Realize, DrawID
@@ -238,6 +174,7 @@
 
 
 Pro ScrollIt_Event, Event
+   COMPILE_OPT HIDDEN
 
    WIDGET_CONTROL, Event.Handler, GET_UVALUE=base_uval
 
@@ -334,7 +271,6 @@ Function ScrollIt, Parent, $
    Default,  group, 0
    Default,  pixmap, 0
    Default,  colors, 0
-   Default,  retain, 1
    Default,  kill_notify, ''
    Default,  deliver_events, [-1]
    Default, button_events, 0
