@@ -1,3 +1,18 @@
+;+
+; NAME: 
+;   SkipSyntax
+;
+; VERSION:
+;   $Id$
+;
+; AIM:
+;   internal use, only
+;   
+; CATEGORY:
+;  Internal
+;
+;-
+
 ;
 ; this is an internal routine used by ForEach and partners
 ;
