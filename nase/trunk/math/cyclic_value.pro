@@ -13,25 +13,25 @@
 ;  MATH
 ;  
 ; CALLING SEQUENCE:
-;  result = cyclic_value(value, interval)
+;*  result = cyclic_value(value, interval)
 ;  
 ; INPUTS:
-;  val: value in (-oo, oo)
-;  interval: the norm interval, specified as a 2-element array
-;            [b1, b2].
-;  
-;            This interval is half-open: [.), or (.], depending on
-;            the following rules:
-;
-;            b1 must not equal b2.                   
-;            b1 always denotes the closed end of the interval.
-;            b2 always denotes the open   end of the interval.                 
-;            If b1<b2, the norm interval used is [b1,b2).
-;            If b1>b2, the norm interval used is (b2,b1].
-;
+;  value   :: value in <*>(-oo, oo)</*>
+;  interval:: the norm interval, specified as a 2-element array
+;            <*>[b1, b2]</*>.<BR>
+;<BR>
+;            This interval is half-open: <*>[.)</*>, or <*>(.]</*>, depending on
+;            the following rules:<BR>
+;<BR>
+;            b1 must not equal b2.<BR>                   
+;            b1 always denotes the closed end of the interval.<BR>
+;            b2 always denotes the open   end of the interval.<BR>                
+;            If b1<b2, the norm interval used is <*>[b1,b2)</*>.<BR>
+;            If b1>b2, the norm interval used is <*>(b2,b1]</*>.<BR>
+;<BR>
 ;            See below for examples.  
 ; OUTPUTS:
-;  The value's norm equivalent in the interval [b1, b2).
+;  The value's norm equivalent in the interval <*>[b1, b2)</*>.
 ;  The output is always of type double, regardless of the input
 ;  type.
 ;  
@@ -39,23 +39,23 @@
 ;  Basic computations using Floor().
 ;  
 ; EXAMPLE:
-;  ;; project angle in degrees onto [0,360):
-;  print, cyclic_value(-3601, [0,360])
-;
-;  ;; project angle in radians onto [-pi,pi):
-;  print, cyclic_value(23, [-!DPI,!DPI])
-;  
-;  ;; this demonstrates the handling of open/closed interval ends:
-;  ;;   project number onto [1,4):
-;  Print, cyclic_value(1, [1, 4])   -> 1
-;  Print, cyclic_value(2, [1, 4])   -> 2
-;  Print, cyclic_value(3, [1, 4])   -> 3
-;  Print, cyclic_value(4, [1, 4])   -> 1
-;  ;;   project number onto (1,4]:
-;  Print, cyclic_value(1, [4, 1])   -> 4
-;  Print, cyclic_value(2, [4, 1])   -> 2
-;  Print, cyclic_value(3, [4, 1])   -> 3
-;  Print, cyclic_value(4, [4, 1])   -> 4
+;*  ;; project angle in degrees onto [0,360):
+;*  print, cyclic_value(-3601, [0,360])
+;*
+;*  ;; project angle in radians onto [-pi,pi):
+;*  print, cyclic_value(23, [-!DPI,!DPI])
+;*  
+;*  ;; this demonstrates the handling of open/closed interval ends:
+;*  ;;   project number onto [1,4):
+;*  Print, cyclic_value(1, [1, 4])   -> 1
+;*  Print, cyclic_value(2, [1, 4])   -> 2
+;*  Print, cyclic_value(3, [1, 4])   -> 3
+;*  Print, cyclic_value(4, [1, 4])   -> 1
+;*  ;;   project number onto (1,4]:
+;*  Print, cyclic_value(1, [4, 1])   -> 4
+;*  Print, cyclic_value(2, [4, 1])   -> 2
+;*  Print, cyclic_value(3, [4, 1])   -> 3
+;*  Print, cyclic_value(4, [4, 1])   -> 4
 ;
 ; SEE ALSO:
 ;  Rad(), Deg(), Floor(), MOD
@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2003/03/14 10:28:57  kupper
+;        header fontification.
+;
 ;        Revision 2.2  2003/03/14 10:23:29  kupper
 ;        Extended documentation.
 ;
