@@ -77,6 +77,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Thu Sep 4 12:09:09 1997, Andreas Thiel
+;		EPS-Files erhalten jetzt explizit Hoehe und Breite.
+;
 ;       Wed Aug 27 14:15:02 1997, Andreas Thiel
 ;		Farbe der !NONEs ist jetzt hellblau.
 ;
@@ -145,6 +148,8 @@ If Not Set(EPS) Then Begin
     Endif Else Begin
         DEVICE, Filename = PSFile+'.eps'
         DEVICE, /Encapsulated
+        DEVICE, XSize=width
+        DEVICE, YSize=height
     Endelse
 
 If Set(COLOR) Then DEVICE, /Color Else DEVICE, Color=0
