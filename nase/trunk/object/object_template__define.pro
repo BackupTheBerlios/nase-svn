@@ -5,7 +5,7 @@
 ;; class's superclasses. Then change header and object definition to suit your
 ;; object. All methods described in this header are examples.
 ;; Do not forget to delete this text.
-;; Have fun!
+;; Have fun! (And always remember: Don't drink and derive ;-) )
 
 ;+
 ; NAME:
