@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  1998/04/29 17:35:19  kupper
+;              sagt jetzt, wenns zippt.
+;
 ;       Revision 2.5  1998/03/14 13:32:45  saam
 ;             now handles zipped and non-zipped videos
 ;
@@ -67,7 +70,11 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
       Free_Lun, Video.unit
       Free_Lun, Video.infounit
       
-      IF video.zipped THEN Zip, Video.filename
+      IF video.zipped THEN begin
+         message, /INFORM, " ...zipping..."
+         Zip, Video.filename
+         message, /INFORM, " ...done."         
+      endif
    endif else begin             ; VideoMode="PLAY"
       
       if keyword_set(VERBOSE) then begin
@@ -82,7 +89,11 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
       close, Video.unit
       Free_Lun, Video.unit
 
-      IF Video.zipped THEN ZipFix, Video.filename
+      IF Video.zipped THEN begin
+         message, /INFORM, " ...zipfixing..."
+         ZipFix, Video.filename
+         if not !QUIET then print, !Key.up+"                                "+!key.up
+      endif
          
    endelse
 
