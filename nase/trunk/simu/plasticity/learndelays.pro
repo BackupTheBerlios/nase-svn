@@ -84,6 +84,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  2000/04/12 16:25:22  thiel
+;           Variable name 'queue' collided with function of same name.
+;
 ;       Revision 1.6  1999/09/29 12:58:45  thiel
 ;           Rounding deaktivated.
 ;
@@ -152,14 +155,14 @@ PRO LearnDelays, _DW, _PC, LW, SHUTUP=shutup;, SELF=Self, NONSELF=NonSelf;, DELE
 ;--- Now the queue-delays have to be changed also:
 
    ; Read spikequeue-structure into 'queue':
-   Handle_Value, DW.queuehdl, queue, /NO_COPY
+   Handle_Value, DW.queuehdl, qu, /NO_COPY
    
    ; Read last Basicspikequeue into 'tmpqu'
-   Handle_Value, queue(queue(0)), tmpqu
+   Handle_Value, qu(qu(0)), tmpqu
 
 
    ; Determine current delays form spikequeue-array:
-   queuedelays = (queue(queue(0)+1:N_Elements(queue)-1))(wi)
+   queuedelays = (qu(qu(0)+1:N_Elements(qu)-1))(wi)
 
 ;   Print, 'DW.D(wi): ',DW.D(wi)
 ;   Print, 'queuedelays: ',queuedelays
@@ -168,8 +171,8 @@ PRO LearnDelays, _DW, _PC, LW, SHUTUP=shutup;, SELF=Self, NONSELF=NonSelf;, DELE
    ; Determine current delays from 'starts' in Basicspikequeues:
    ; (This is only for testing!)
 ;   realqueuedelays = FltArr(N_Elements(wi))
-;   FOR handlei=1,queue(0) DO BEGIN
-;      Handle_Value, queue(handlei), tmpqu
+;   FOR handlei=1,qu(0) DO BEGIN
+;      Handle_Value, qu(handlei), tmpqu
 ;      realqueuedelays = realqueuedelays+alog(tmpqu.starts(wi))/alog(2.)
 ;   ENDFOR
 ;   Print, 'real queuedelays: ',realqueuedelays
@@ -189,20 +192,20 @@ PRO LearnDelays, _DW, _PC, LW, SHUTUP=shutup;, SELF=Self, NONSELF=NonSelf;, DELE
       IF c NE 0 THEN BEGIN
          IF NOT Keyword_Set(SHUTUP) THEN $
           Message, /INFO, 'Warning! Queue-reset. Possible loss of spikes.'
-         FreeSpikeQueue, queue
-         queue = InitSpikeQueue(INIT_DELAYS=DW.D)
+         FreeSpikeQueue, qu
+         qu = InitSpikeQueue(INIT_DELAYS=DW.D)
       ENDIF ELSE BEGIN
          ; change STARTS in BasicSpikeQueue:
          tmpqu.starts(wi(diffidx)) = newstarts
          ; change Delays in S
-         queue(queue(0)+1+wi(diffidx)) = $
+         qu(qu(0)+1+wi(diffidx)) = $
           queuedelays(diffidx)+Round(diff(diffidx))
-         Handle_Value, queue(queue(0)), tmpqu, /NO_COPY, /SET
+         Handle_Value, qu(qu(0)), tmpqu, /NO_COPY, /SET
       ENDELSE
    ENDIF
 
    
-   Handle_Value, DW.queuehdl, queue, /NO_COPY, /SET
+   Handle_Value, DW.queuehdl, qu, /NO_COPY, /SET
    Handle_Value, PC.postpre, ConTiming, /NO_COPY, /SET
    Handle_Value, _PC, PC, /NO_COPY, /SET
    Handle_Value, _DW, DW, /NO_COPY, /SET
