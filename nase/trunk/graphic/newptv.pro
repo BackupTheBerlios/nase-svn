@@ -104,7 +104,7 @@
 ;  Well.
 ;
 ; EXAMPLE:
-;* NewPTV, Scl(IndGen(20,5),[0,!topcolor]), FIndGen(20)*0.02, /LEGEND, XRANGE=[0.1,0.3]
+;* NewPTV, Scl(IndGen(20,5),[0,!topcolor]), FIndGen(20)/50., /LEGEND, XRANGE=[0.1,0.3]
 ;
 ; SEE ALSO:
 ;  <A>newPTVS</A>, <A>PTV</A>, <A>PlotTV</A>, IDL's <C>TV</C> and <C>Congrid</C>.
