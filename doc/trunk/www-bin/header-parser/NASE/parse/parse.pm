@@ -1,7 +1,7 @@
 package NASE::parse;
 
-#use diagnostics;
-#use strict;
+use diagnostics;
+use strict;
 use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp;
 use File::Basename;
@@ -137,6 +137,8 @@ sub deleteDB {
   $sql = "DROP TABLE pro\n";
   $dbh->do($sql);
   warn "$DBI::errstr\n" if $DBI::err;
+
+  createTablesIfNotExist();
 }
 
 
@@ -403,7 +405,6 @@ sub scanFile {
     $parser->yyparse(\*IDLSOURCE);
   };
   if ($@) {
-#    print STDERR "error processing $filepath\n";
     @hentry = (undef, $p{'file'}, "_error", "_Error", "An error has occurred while parsing the doc header. Please check for correct syntax!");
   }
 
@@ -416,10 +417,10 @@ sub scanFile {
     foreach $cat (split (",",$hentry[3])) {
       if (! defined $catl{$cat}) {
 	print STDERR "error: unknown category '$cat'\n";
-	$hentry[1]="_error";
+	$hentry[2]="_error";
       } 
     }
-    return ("dir"=>$hentry[0], "rname"=>$hentry[1], "aim"=>$hentry[2], "cats"=>$hentry[3], "aim"=>$hentry[4] );
+    return ("dir"=>$hentry[0], "fname"=>$hentry[1], "rname"=>$hentry[2], "cats"=>$hentry[3], "aim"=>$hentry[4]);
   } else {
     # insert routine into pro
     delete $pro{$p{'file'}} if exists $pro{$p{'file'}}; # next command is not atomar
@@ -459,7 +460,7 @@ sub deleteFile {
   
   
   # delete cats for routine
-  $sql = 'DELETE FROM cat WHERE fname LIKE "'.$p{'file'}.'"'."\n";
+  my $sql = 'DELETE FROM cat WHERE fname LIKE "'.$p{'file'}.'"'."\n";
   $dbh->do($sql);
   warn "$DBI::errstr\n" if $DBI::err;
   

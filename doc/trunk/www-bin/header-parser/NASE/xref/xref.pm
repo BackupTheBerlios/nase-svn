@@ -3,8 +3,8 @@
 #
 package NASE::xref;
 
-#use diagnostics;
-#use strict;
+use diagnostics;
+use strict;
 use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp;
 use File::Basename;
