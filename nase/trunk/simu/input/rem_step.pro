@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/06/24 13:12:20  thiel
+;               Bugfix: Jetzt keine Positionen kleiner 0 mehr m"oglich.
+;
 ;        Revision 2.2  1998/05/11 13:32:20  thiel
 ;               Neues Schluesselwort FORCE
 ;
@@ -73,8 +76,8 @@ ENDIF ELSE BEGIN
    ENDELSE
 ENDELSE
 
-xpos = xpos > 0 < (REM_Structure.pw-REM_Structure.cw-1)
-ypos = ypos > 0 < (REM_Structure.ph-REM_Structure.ch-1)
+xpos = xpos < (REM_Structure.pw-REM_Structure.cw-1) > 0
+ypos = ypos < (REM_Structure.ph-REM_Structure.ch-1) > 0
 
 ausschnitt = REM_Structure.pa(XPos:Xpos+REM_Structure.cw-1,YPos:Ypos+REM_Structure.ch-1,*)
 
