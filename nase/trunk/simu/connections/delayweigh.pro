@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.29  1998/02/05 14:18:50  saam
+;             loop variables now long
+;
 ;       Revision 1.28  1998/02/05 13:16:00  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -168,7 +171,7 @@ FUNCTION DelayWeigh, _DW, InHandle
       ; wi  : weight indices
       vector = FltArr(tw*th)
       
-      FOR asi=2,In(0)+1 DO BEGIN
+      FOR asi=2l,In(0)+1 DO BEGIN
          asn = In(asi)
          IF DW.S2C(asn) NE -1 THEN BEGIN
             Handle_Value, DW.S2C(asn), wi
@@ -198,7 +201,7 @@ FUNCTION DelayWeigh, _DW, InHandle
 
 
       ; compute the weight indices receiving input from IN in a list named ACILI
-      FOR asi= 2, In(0)+1 DO BEGIN
+      FOR asi= 2l, In(0)+1 DO BEGIN
          asn = In(asi)
          IF DW.S2C(asn) NE -1 THEN BEGIN
             Handle_Value, DW.S2C(asn), wi            
@@ -234,7 +237,7 @@ FUNCTION DelayWeigh, _DW, InHandle
          acilo = acilo(2:acilo(0)+1)
          
          ; wi: weight index
-         FOR i=0,N_Elements(acilo)-1 DO BEGIN
+         FOR i=0l,N_Elements(acilo)-1 DO BEGIN
             wi = acilo(i)
             ; get corresponding target index
             vector(DW.C2T(wi)) = vector(DW.C2T(wi)) + DW.W(wi)
