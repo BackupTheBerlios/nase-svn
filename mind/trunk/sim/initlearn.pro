@@ -15,6 +15,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/19 17:16:12  saam
+;           + handles learning of non-delay weight matrices
+;             for alpha learning (all other cases should be
+;             handled equally)
+;
 ;     Revision 1.2  2000/01/14 11:02:01  saam
 ;           changed dw structures to anonymous/handles
 ;
@@ -72,7 +77,7 @@
 ;               prop    : proportional control (REGLER)
 ;               change  : factor between correction calculated by REGLER and delearning change
 
-PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
+PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
 
    COMMON ATTENTION
    COMMON SH_LEARN, LEARNwins, LEARN_1, LEARN_2, LEARN_3, LEARN_4
@@ -129,8 +134,8 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
 
          IF MaxWin GE 1 THEN LEARN_1 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200, MULTI=[MaxWin,MaxWin,1], TITLE='Weight Watchers')
          IF (LS.SHOWW NE 0) THEN BEGIN
-            width  = LS.ZOOM*LayerWidth(CON(LS.DW), /TARGET)*(LayerWidth(CON(LS.DW), /SOURCE)) + 50
-            height = LS.ZOOM*LayerHeight(CON(LS.DW), /TARGET)*(LayerHeight(CON(LS.DW), /SOURCE)) + 50
+            width  = LS.ZOOM*LayerWidth(_CON(LS.DW), /TARGET)*(LayerWidth(_CON(LS.DW), /SOURCE)) + 50
+            height = LS.ZOOM*LayerHeight(_CON(LS.DW), /TARGET)*(LayerHeight(_CON(LS.DW), /SOURCE)) + 50
             print, width, height
             
             LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
@@ -167,17 +172,25 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
    curSLayer = Handle_Val(P.LW(curDW.SOURCE))
    curTLayer = Handle_Val(P.LW(curDW.TARGET))
    Print, 'LEARNING: ',curSLayer.NAME, ' -> ', curTLayer.NAME,' with ', LS.RULE
+
+
+   ;determine if correpsonding DW is delayed or not, cause this changes the call of initrecall
+   IF INFO(_CON(0)) EQ 'SDW_WEIGHT' THEN delay = 0 ELSE delay = 1
+
+
    IF lRule EQ 0 THEN BEGIN
       IL = {TYPE : 0} ; do nothing at all
    END ELSE IF InSet(lRule, [1,2]) THEN BEGIN
       CASE lWin OF 
          1: BEGIN; ALPHA
             Print, 'LEARNWIN: ALPHA, ', STR(LS.tau_inc), ' ms, ', STR(LS.tau_dec),' ms' 
-            win = InitRecall(CON(LS.DW), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
+            stop
+            IF delay THEN win = InitRecall(_CON(LS.DW), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE) $
+             ELSE win = InitRecall(P.LW(curDW.SOURCE), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
          2: BEGIN; EXPO
             Print, 'LEARNWIN: EXPO, ', STR(LS.tau), ' ms'
-            win = InitRecall(CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
+            win = InitRecall(_CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
          ELSE: Message, 'Learning Window for these learning rule expected!'
       END
@@ -194,7 +207,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
          LW = InitLearnBiPoo(postv=LS.v_post, prev=LS.v_pre, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE)
          Print, 'LEARN: BIPOO, delearn, ', STR(LS.v_pre), '  ', STR(LS.tau_pre), ' ms, learn, ', STR(LS.v_post), '  ', STR(LS.tau_post)
       END
-      win = InitPrecall(CON(LS.DW), LW)
+      win = InitPrecall(_CON(LS.DW), LW)
       SetTag, LS, 'TYPE', lrule
       SetTag, LS, '_WIN', win
       SetTag, LS, '_WIN2', LW
@@ -216,7 +229,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
       1: BEGIN
          reg = InitRegler()
          SetTag, LS, '_CONTROLLER', reg
-         SetTag, LS, '_CONT_MW', MeanWeight(CON(LS.DW))
+         SetTag, LS, '_CONT_MW', MeanWeight(_CON(LS.DW))
          OpenSheet, LEARN_4(LS.index)
          PCLC = InitPlotcilloscope(TIME=200, RAYS=2, OVERSAMPLING=1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON), TITLE='Loop Control: '+curDW.NAME+'(Error/Corr)')
          CloseSheet, LEARN_4(LS.index)
@@ -240,7 +253,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
    ExampleFrame =  DblArr(3)
    vidDist = InitVideo( ExampleFrame, TITLE=P.File+'.'+curDW.FILE+'.dist', /SHUTUP, /ZIP )
    SetTag, LS, '_VIDDIST', vidDist
-   distMat = Handle_Create(!MH, VALUE=Weights(CON(LS.DW)))
+   distMat = Handle_Create(!MH, VALUE=Weights(_CON(LS.DW)))
    SetTag, LS, '_DISTMAT', distMat 
 
    Handle_Value, _LS, LS, /NO_COPY, /SET
