@@ -91,6 +91,7 @@
 
 ;; ------------ Widget support routines ---------------------
 Pro MyWidget_Notify_Realize, id
+   COMPILE_OPT HIDDEN, IDL2
    Widget_Control, id, Get_Uvalue=object
    ;;
    ;; insert code here if necessary, remove procedure if not
@@ -98,6 +99,7 @@ Pro MyWidget_Notify_Realize, id
 End
 
 Pro widget_MyClass_example_handler, event
+   COMPILE_OPT HIDDEN, IDL2
    Widget_Control, event.id, Get_Uvalue=object
    ;; What to do when the widget produces an event (e.g. is modified
    ;; interactively by the user)
@@ -112,6 +114,7 @@ End
 
 ;; ------------ Member access methods -----------------------
 Pro widget_MyClass::example, value
+   COMPILE_OPT IDL2
    ;;
    ;; insert code here: set data member and adjust widget
    ;;
@@ -121,6 +124,7 @@ Pro widget_MyClass::example, value
 End
 
 Function widget_MyClass::example
+   COMPILE_OPT IDL2
    ;;
    ;; insert code here
    ;;
@@ -130,6 +134,7 @@ End
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_MyClass::init, _REF_EXTRA=_ref_extra
+   COMPILE_OPT IDL2
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
@@ -168,6 +173,7 @@ Function widget_MyClass::init, _REF_EXTRA=_ref_extra
 End
 
 Pro widget_MyClass::cleanup, _REF_EXTRA = _ref_extra
+   COMPILE_OPT IDL2
    DMsg, "I'm dying!"
    Cleanup_Superclasses, self, "widget_MyClass", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
@@ -179,6 +185,7 @@ Pro widget_MyClass::cleanup, _REF_EXTRA = _ref_extra
 End
 
 Pro widget_MyClass::reset
+   COMPILE_OPT IDL2
    ;; set all data members to defaults, using the member access methods (this
    ;; will also set the widgets correctly!)
    ;;
@@ -191,6 +198,7 @@ End
 ;; Member access methods
 ;;  (for any data members that should be open to the public)
 Pro widget_MyClass::example, value
+   COMPILE_OPT IDL2
    ;;
    ;; insert code here
    ;;
@@ -198,6 +206,7 @@ Pro widget_MyClass::example, value
    ;; self.example = value
 End
 Function widget_MyClass::example
+   COMPILE_OPT IDL2
    ;;
    ;; insert code here
    ;;
@@ -207,9 +216,11 @@ End
 ;;
 ;; Other public methods:
 Function widget_MyClass::foo, parameter
+   COMPILE_OPT IDL2
 End
 
 Pro widget_MyClass::bar, parameter
+   COMPILE_OPT IDL2
 End
 
 
@@ -218,6 +229,7 @@ End
 
 ;; ------------ Private --------------------
 Pro widget_MyClass::override_me_; -ABSTRACT-
+   COMPILE_OPT IDL2
    ;; use this template for all abstract methods.
    On_error, 2
    Console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
@@ -228,6 +240,7 @@ End
 
 ;; ------------ Object definition ---------------------------
 Pro widget_MyClass__DEFINE
+   COMPILE_OPT IDL2
    dummy = {widget_MyClass, $
             $
             inherits basic_widget_object, $

@@ -91,6 +91,7 @@
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function MyClass::init, KEYWORD = keyword, _REF_EXTRA=_ref_extra
+   COMPILE_OPT IDL2
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
@@ -110,6 +111,7 @@ Function MyClass::init, KEYWORD = keyword, _REF_EXTRA=_ref_extra
 End
 
 Pro MyClass::cleanup, KEYWORD = keyword, _REF_EXTRA = _ref_extra
+   COMPILE_OPT IDL2
    DMsg, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
@@ -122,6 +124,7 @@ Pro MyClass::cleanup, KEYWORD = keyword, _REF_EXTRA = _ref_extra
 End
 
 Pro MyClass::reset
+   COMPILE_OPT IDL2
    ;; Set all data members to defaults. You may want to use the member access
    ;; methods, in case they perform any side effects.
    ;; Remove this method if nothing is to reset on your object.
@@ -136,6 +139,7 @@ End
 ;; Member access methods
 ;;  (for any data members that should be open to the public)
 Pro MyClass::example, value
+   COMPILE_OPT IDL2
    ;;
    ;; insert code here
    ;;
@@ -143,6 +147,7 @@ Pro MyClass::example, value
    ;; self.example = value
 End
 Function MyClass::example
+   COMPILE_OPT IDL2
    ;;
    ;; insert code here
    ;;
@@ -152,9 +157,11 @@ End
 ;;
 ;; Other public methods:
 Function MyClass::foo, parameter
+   COMPILE_OPT IDL2
 End
 
 Pro MyClass::bar, parameter
+   COMPILE_OPT IDL2
 End
 
 
@@ -163,6 +170,7 @@ End
 
 ;; ------------ Private --------------------
 Pro MyClass::override_me_; -ABSTRACT-
+   COMPILE_OPT IDL2
    ;; use this template for all abstract methods.
    On_error, 2
    Console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
@@ -173,6 +181,7 @@ End
 
 ;; ------------ Object definition ---------------------------
 Pro MyClass__DEFINE
+   COMPILE_OPT IDL2
    dummy = {MyClass, $
             $
             inherits MySuperClass, $
