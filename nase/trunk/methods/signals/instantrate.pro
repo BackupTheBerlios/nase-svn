@@ -2,6 +2,8 @@
 ; NAME: 
 ;  InstantRate
 ;
+; AIM: Calculation of the instantaneous firing rate from a spiketrain
+;
 ; PURPOSE: 
 ;  Calculation of the instantaneous firing rate from a train of action
 ;  potentials. Computation is done either by counting the spikes
@@ -76,11 +78,14 @@
 ;  plot, axis+50, av
 ;  plot, axisg, avg
 ;
-; SEE ALSO: <A HREF="../#SLICES">Slices</A>, <A HREF="../#ISI">ISI</A>.
-;
+; SEE ALSO: <A>Slices</A>, <A>ISI</A>.
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/09/28 10:02:55  gabriel
+;             AIM tag added
+;
 ;        Revision 1.4  2000/08/01 15:04:13  thiel
 ;            Now handles 1-dim spiketrains with /GAUSS correctly.
 ;
@@ -93,7 +98,7 @@
 ;        Revision 1.1  1999/12/06 15:37:12  thiel
 ;            Neu.
 ;
-;-
+;
 
 FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
                       , SSIZE=ssize, SSHIFT=sshift $
