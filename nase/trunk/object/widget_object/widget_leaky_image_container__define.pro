@@ -88,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2001/09/17 14:56:17  kupper
+;        added no_copy option to input method.
+;
 ;        Revision 1.1  2001/08/24 13:41:17  kupper
 ;        Useful combination.
 ;
@@ -157,9 +160,9 @@ End
 ;End
 ;;
 ;; Other public methods:
-Pro widget_leaky_image_container::input, val
+Pro widget_leaky_image_container::input, val, NO_COPY=no_copy
    self.lia->input, val
-   self->widget_image_container::image, val
+   self->widget_image_container::image, val, NO_COPY=no_copy
 End
 
 ;; Methods passed to member lia:
