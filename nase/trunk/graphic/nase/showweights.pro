@@ -72,6 +72,7 @@
 ;                           Rüdiger, 1.8.1997
 ;                       Schluesselwort DELAYS hinzugefuegt, sodass nun auch alternativ auch die Verzoegerungen dargestellt werden koennen, Mirko, 3.8.97
 ;                       Bug bei WSet korrigiert, wenn WinNR uebergeben wird, Mirko, 3.8.97
+;                       wird WINNR nicht gesetzt, so wird NEUES Fenster aufgemacht, Mirko, 3.8.97
 ;-
 
 
@@ -98,8 +99,7 @@ Endif Else Begin
     Endelse
 
 If Not Set(WINNR) Then Begin
-    Window, 0 , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
-    WSet, 0
+    Window, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
          Endif Else Begin 
                       WSet, WinNr
                       XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
