@@ -1,58 +1,59 @@
 ;+
 ; NAME: RoofArray
 ;
-; AIM: two dimensional version of hill?
+; AIM: 
+;  Generates 2-dim array with values resembling shape of a roof.
+;  
+; PURPOSE:
+;  Assigns stepwise decreasing values (seen from the center) to a two
+;  dimensional array. In case of a square-sized array it looks like a
+;  pyramid.<BR>  It is the two dimensional version of <C>Hill</C>, though more
+;  restricted.  
 ;
-; PURPOSE: Belegen eines Arrays mit stufenfoermig abfallenden
-;          Werten, bei quadratischen Arrays sieht das aus wie
-;          eine Pyramide.
+; CATEGORY: 
+;  Array
 ;
-; CATEGORY: MISCELLANEOUS / ARRAY OPERATIONS
+; CALLING SEQUENCE: 
+;*  array = RoofArray(n [,m] [/INVERSE])
 ;
-; CALLING SEQUENCE: array = RoofArray(n [,m] [/INVERSE]
+; INPUTS: 
+;  n:: Number of columns in resulting object. If optional input
+;      <*>m</*> is not set then it also indicates the number of rows of
+;      the (thus square) output.
 ;
-; INPUTS: n: Zahl der Spalten des resultierenden Arrays
+; OPTIONAL INPUTS: 
+;  m:: Number of rows in the resulting array. Is <*>m</*>
+;      not indicated the resulting array is sized <*>n x
+;      <*>n</*>.
 ;
-; OPTIONAL INPUTS: m: Zahl der Zeilen des resultierenden Arrays.
-;                     Wird m nicht angegeben, so ist das Ergebnis
-;                     Ein Array der Groesse n x n.
+; INPUT KEYWORDS: 
+;  INVERSE:: Is <*>INVERSE</*> set, the border of the array
+;            has the highest value, otherwise the center is
+;            highest in value.
 ;
-; KEYWORD PARAMETERS: INVERSE: Wird INVERSE gesetzt, so hat der Rand
-;                              des Arrays den groessten Wert, ansonsten
-;                              die Mitte.
+; OUTPUTS: 
+;  array:: Outputs the resulting array. It is of type float.
 ;
-; OUTPUTS: array: Das entsprechende Array, uebrigens vom Typ float.
+; PROCEDURE: 
+;  1. syntax control<BR>
+;  2. generating a square array assigned values resembling a
+;            pyramid<BR>
+;  3.  copiing the middle row resp. column for generating a
+;            rectangular array
 ;
-; PROCEDURE: 1. Syntaxkontrolle
-;            2. quadratisches Array erzeugen, das pyramidenfoermig
-;               belegt ist (Man beachte, dass dies in einer einzigen
-;               Zeile moeglich ist, Danke auch an Ruediger!)
-;            3. Kopien der mittleren Zeile oder Spalte in der Mitte 
-;               einflicken, um rechteckiges Array zu erzeugen.
+; EXAMPLE: 
+;* print, RoofArray(5,7) <BR>
+;  ergibt: <BR>
+;> 0.00000      0.00000      0.00000      0.00000      0.00000 <BR>
+;  0.00000      1.00000      1.00000      1.00000      0.00000 <BR>
+;  0.00000      1.00000      2.00000      1.00000      0.00000 <BR>
+;  0.00000      1.00000      2.00000      1.00000      0.00000 <BR> 
+;  0.00000      1.00000      2.00000      1.00000      0.00000 <BR> 
+;  0.00000      1.00000      1.00000      1.00000      0.00000 <BR>
+;  0.00000      0.00000      0.00000      0.00000      0.00000 <BR>
 ;
-; EXAMPLE: print, RoofArray(5,7)
-;          
-;          ergibt:
-;
-;      0.00000      0.00000      0.00000      0.00000      0.00000
-;      0.00000      1.00000      1.00000      1.00000      0.00000
-;      0.00000      1.00000      2.00000      1.00000      0.00000
-;      0.00000      1.00000      2.00000      1.00000      0.00000
-;      0.00000      1.00000      2.00000      1.00000      0.00000
-;      0.00000      1.00000      1.00000      1.00000      0.00000
-;      0.00000      0.00000      0.00000      0.00000      0.00000
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.2  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.1  1998/05/28 16:01:46  thiel
-;               Neu!
-;
+; SEE ALSO:
+;  <A>Hill</A>
 ;-
 
 
@@ -69,9 +70,11 @@ FUNCTION RoofArray, n, m, INVERSE=inverse
 
    center = Round(centerfloat)
 
-   i = indgen(quadrat,quadrat)
-
-   a = Float(Fix(Abs(layercol(index=i,height=quadrat,widt=quadrat)-centerfloat) > abs(layerrow(ind=i,hei=quadrat,widt=quadrat)-centerfloat)))
+   i_row = indgen(quadrat)
+   i_row = rebin(i_row, quadrat, quadrat, /SAMPLE)
+   i_col = transpose(i_row)
+  
+   a = Float(Fix(Abs(i_col-centerfloat) > abs(i_row-centerfloat)))
 
    IF (n EQ m) THEN IF Keyword_Set(INVERSE) THEN Return, a $
     ELSE Return, Abs(a-Max(a))
