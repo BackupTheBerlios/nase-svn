@@ -11,7 +11,7 @@
 ;
 ; CALLING SEQUENCE:   distvel = wavescan(array,timearr,[TRANSP=TRANSP],[AMPLITUDE=AMPLITUDE],[COUNT=COUNT],[FBAND=FBAND],$
 ;                              [STEPSIZE=STEPSIZE],[WSIZE=WSIZE],[WAVECRIT=WAVECRIT],[ELDIST=ELDIST],$
-;                              [SAMPLPERIOD=SAMPLPERIOD],[NEIGHBORS=NEIGHBORS],[PLOT=PLOT])
+;                              [SAMPLPERIOD=SAMPLPERIOD],[NEIGHBORS=NEIGHBORS],[PLOT=PLOT],[NULLHYPO=NULLHYPO])
 ;
 ; 
 ; INPUTS:
@@ -47,7 +47,12 @@
 ;
 ;                     SAMPLPERIOD: Sampling-Periode (default: 0.001 sec) des Signals
 ;
-;                     PLOT:        graphische Ausgabe
+;                     PLOT:        graphische Ausgabe (default: 0)
+;
+;                     NULLHYPO:    verrauscht (gleichverteilt) die Phasen der CrossPower bei gleichbleibender Amplitudenverteilung
+;                                  (nuetzlich fuer Null-Hypothese)
+;
+;
 ;
 ;
 ;
@@ -106,6 +111,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  1998/06/02 16:06:13  gabriel
+;          Keyword NULLHYPO neu
+;
 ;     Revision 1.2  1998/05/12 17:55:24  gabriel
 ;          Falsches KEYWORD in Funktion (TRANSP ergaenzt)
 ;
@@ -115,19 +123,21 @@
 ;
 ;-
 FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,WAVECRIT=WAVECRIT,ELDIST=ELDIST,$
-              SAMPLPERIOD=SAMPLPERIOD,NEIGHBORS=NEIGHBORS,PLOT=PLOT,AMPLITUDE=AMPLITUDE,TRANSP=TRANSP
+              SAMPLPERIOD=SAMPLPERIOD,NEIGHBORS=NEIGHBORS,PLOT=PLOT,AMPLITUDE=AMPLITUDE,TRANSP=TRANSP,NULLHYPO=NULLHYPO
+
+   IF N_Params() NE 2 THEN Message, 'wrong number of parameters'
    COMMON wavescan_BLOCK, SHEET_1, SHEET_2 ,PLOTFLAG
 
    DEFAULT,Plotflag,0
-   
+   DEFAULT,NULLHYPO,0
    DEFAULT,WSIZE,128   
    DEFAULT,STEPSIZE,WSIZE/16
    DEFAULT,SAMPLPERIOD,0.001
    DEFAULT,ELDIST,1.0
    DEFAULT,WAVECRIT,0.05
    DEFAULT,plot,0
-   RELCRIT = SAMPLPERIOD*1000/ELDIST*WAVECRIT
-   IF plot AND (PLOTFLAG EQ 0) THEN BEGIN
+
+   IF plot eq 1 AND (PLOTFLAG EQ 0) THEN BEGIN
       sheet_1 = definesheet( /WINDOW ,XSIZE=500,ySIZE=250,/PIXMAP)
       SHEET_2 = definesheet( /WINDOW ,XSIZE=500,ySIZE=250*1.5,TITLE="max. Amplitudes of SlidCorr")
       plotflag = 1
@@ -139,7 +149,7 @@ FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=ST
 
    DEFAULT,NEIGHBORS,datas(2)
    DEFAULT,TIMEARR,indgen(datas(1))
-
+   ;NEIGHBORS = FLOAT(NEIGHBORS)
    IF NEIGHBORS GT datas(2) THEN message , "count of neighbors must be <= available channels"  
 
    m_size = datas(2)
@@ -160,8 +170,8 @@ FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=ST
                n = chanindex_1*neighbors+chanindex_2 
                xdata = work_array(*,chan1)
                ydata = work_array(*,chan2)
-               erg =  slidcorr(xdata,ydata,timearr, stepsize=stepsize,$
-                               FBAND=fband,SAMPLPERIOD=samplperiod,PLOT=PLOT,/NOPERIOD,wsize=wsize)
+               erg =  slidcorr(xdata,ydata,timearr, stepsize=stepsize,NULLHYPO=NULLHYPO,$
+                               FBAND=fband,SAMPLPERIOD=samplperiod,PLOT=PLOT,wsize=wsize)
              
                IF chanindex_1 EQ 0 AND chanindex_2 EQ 0 THEN BEGIN
                   ;;ergarr =  erg 
@@ -189,9 +199,13 @@ FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=ST
          
       ENDFOR   
 
+    ;ha = hist(timeshift,x,1)
+;     wset,0
+
+;      ubar_plot,x,ha
       
       as = size(timeshift)
-      distance = transpose(FLOOR(indgen(as(2),as(1)) MOD neighbors^2) / neighbors )$
+      distance = transpose(FLOOR(indgen(as(2),as(1)) MOD neighbors^2) / FLOOR(neighbors) )$
        - transpose(indgen(as(2),as(1)) MOD neighbors) 
       index = where(distance NE 0 )
       velocity = FLOAT(timeshift)*0
@@ -201,6 +215,7 @@ FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=ST
       sigvel = fltarr(as(1),as(2)/neighbors)
       FOR n=0, as(2)/neighbors -1 DO BEGIN
          medampl(*,n) = TOTAL( lextrac(amplshift(*,n * neighbors : (n+1)*neighbors -1),2,[n],/COMPL),2)/FLOAT(neighbors-1)
+         IF total(medampl(*,n) LT 0) GT 1 THEN stop
          medvel(*,n) = TOTAL( lextrac(velocity(*,n * neighbors : (n+1)*neighbors -1),2,[n],/COMPL),2)/FLOAT(neighbors-1)
          FOR k=0, neighbors -1 DO BEGIN
             IF (n * neighbors + k) NE (n * neighbors + n ) THEN $
@@ -208,27 +223,31 @@ FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=ST
          ENDFOR
          sigvel(*,n) = sigvel(*,n)/FLOAT(neighbors-1)
       ENDFOR
+
+      RELCRIT = (erg.tau(1)-erg.tau(0))/FLOAT(ELDIST)*WAVECRIT
+      ;;stop
       sigvel = sqrt(sigvel)
       index = where(sigvel LT relcrit , count)      
       
       astmp = sigvel LT relcrit
       psarr = 0.
       chan = 0
-      ;;gemitteltes Spektrum der Amplituden der CrossCorrelationen
-      FOR k = 0 ,as(2)-1 DO begin 
-         
-         IF K  NE chan THEN BEGIN
-            IF (k MOD neighbors) EQ 0 AND (k GT 0) THEN  CHAN =  CHAN + 1
-            tmparr = [ REFORM(amplshift(*,k)) , FLTARR(N_ELEMENTS(REFORM(amplshift(*,k)))) ]
-            ps = powerspec(tmparr,psf,SAMPLPERIOD=(erg.T(1)-erg.T(0))/1000.)
-            psarr = psarr + ps /FLOAT(as(1)-1)
-            
-         ENDIF
-         
-      ENDFOR 
-      ;;plotten der gefundenen Wellen
-      IF PLOT THEN BEGIN
 
+      ;;plotten der gefundenen Wellen
+      
+      IF PLOT eq 1 THEN BEGIN
+         ;;gemitteltes Spektrum der Amplituden der CrossCorrelationen
+         FOR k = 0 ,as(2)-1 DO begin 
+            
+            IF K  NE chan THEN BEGIN
+               IF (k MOD neighbors) EQ 0 AND (k GT 0) THEN  CHAN =  CHAN + 1
+               tmparr = [ REFORM(amplshift(*,k)) , FLTARR(N_ELEMENTS(REFORM(amplshift(*,k)))) ]
+               ps = powerspec(tmparr,psf,SAMPLPERIOD=(erg.T(1)-erg.T(0))/1000.)
+               psarr = psarr + ps /FLOAT(as(1)-1)
+               
+            ENDIF
+         
+         ENDFOR 
          opensheet,sheet_1
          !P.MULTI = 0
          TITLE = "Selected max. Amplitudes"
