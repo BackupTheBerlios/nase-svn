@@ -1,67 +1,76 @@
 ;+
-; NAME:               TvSclLegend
+; NAME:
+;  TVSclLegend
 ;
-; VERSION: $Id$
+; VERSION:
+;  $Id$
 ;
 ; AIM:
 ;  Display a legend indicating color coding, compatible to TvScl routine.
 ;
-; PURPOSE:            Erzeugt eine horizontale oder vertikale Legende fuer 
-;                     TvScl-Darstellungen unabhaengig fuer X-Windows(256 COLOR/TRUE COLOR) 
-;                     und Postscript (BW/COLOR)
+; PURPOSE:
+;  Generate horizontal or vertical legend indicating the color coding
+;  in <*>TVScl</*> displays, independent of the plotting device.
 ;
-; CATEGORY:           GRAPHIC
+; CATEGORY:
+;  Color
+;  Graphic
+;  Image
 ;
-; CALLING SEQUENCE: 
-;*                     TvSclLegend, xnorm, ynorm 
-;*                                  [, CHARSIZE=Schriftgroesse]
-;*                                  [,/HORIZONTAL] [,/VERTICAL] 
-;*                                  [,/LEFT] [,/RIGHT] [,/CEILING] [,/BOTTOM]
-;*                                  [,MAX=max] [,MID=mid] [,MIN=min]
-;*                                  [,/NOSCALE] [,COLOR=color]
-;*
-;*                     alle Argumente von UTvScl werden ebenfalls akzeptiert, i.w.
-;*                                  [,/CENTER]
-;*                                  [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
+; CALLING SEQUENCE:
+;* TvSclLegend, xnorm, ynorm 
+;*  [,CHARSIZE=...]
+;*  [,MAX=...] [,MID=...] [,MIN=...]
+;*  [,COLOR=...]
+;*  [,RANGE=...]
+;*  [,/HORIZONTAL] [,/VERTICAL] 
+;*  [,/LEFT] [,/RIGHT] 
+;*  [,/CEILING] [,/BOTTOM]
+;*  [,/NOSCALE]
+;*  [,STRETCH=...] [,H_STRETCH=...] [,V_STRETCH=...]
+;*  [,/CENTER]
 ;
-; INPUTS:             xnorm:: x-Position des Zentrums der Legende in Normalkoordinaten
-;                     ynorm:: y-Position des Zentrums der Legende in Normalkoordinaten
+; INPUTS:
+;  xnorm:: X-position of legend's center in normal coordinates.
+;  ynorm:: Y-position of legend's center in normal coordinates.
 ;
-; OPTIONAL INPUTS: Schriftgroesse: Faktor, der die Schriftgroesse in Bezug auf die
-;                                  Standardgroesse (1.0) angibt
-;
-; KEYWORD PARAMETERS: 
-;                     HORIZONTAL,
-;                     VERTICAL::   horizontale oder vertikale Legende
-;                                  (Def.: HORIZONTAL)
-;                     LEFT/RIGHT:: bei vertikaler Legende kann Beschriftung links oder
-;                                  rechts erfolgen (Def.: RIGHT)
-;                     CEILING/BOTTOM:: bei horizontaler Legende kann Beschriftung oben oder
-;                                  unten erfolgen (Def.: BOTTOM)
-;                     MAX/MID/MIN:: Beschriftung des maximalen, mittleren und minimalen
-;                                   Legendenwertes als String oder Zahl 
-;                                  (Def.: MAX=255, MID='', MIN=0)
-;                     RANGE::      Set this keyword to a two-element
-;                                  array, containing the lowest and
-;                                  the highest color index to use for
-;                                  the legend color range. If omitted,
-;                                  the legend will span the whole
-;                                  color table.
-;                     NOSCALE::    die Legende wird analog zu Tv nicht skaliert; fuer
-;                                  eine korrekte Darstellung MUESSEN(!!!!) die Keywords
-;                                  MIN und MAX uebergeben werden.
-;                     COLOR::      Farbe des Rahmens. Wenn nicht
-;                                  angegeben, wird eine moeglichst
-;                                  passende Farbe ermittelt.
+; INPUT KEYWORDS:
+;  CHARSIZE:: Factor determining the charsize relative to the standard
+;             size (1.0).
+;  MAX,MID,MIN:: Strings or numbers used as labels for maximum, middle
+;                and minimum legend value (default: <*>MAX=255</*>, <*>MID=''</*>, <*>MIN=0</*>)
+;  COLOR:: Color used for drawing the legend's frame. If <*>COLOR</*>
+;          is not set, a suitable color is chosen.
+;  RANGE:: Set this keyword to a two-element array, containing the
+;          lowest and the highest color index to use for the legend
+;          color range. If omitted, the legend will span the whole
+;          color table.
+;  HORIZONTAL, VERTICAL:: Horizontal or vertical legend (default:
+;                         horizontal).
+;  LEFT, RIGHT:: Vertical legends may be labeled on left or right side
+;                (default: right).
+;  CEILING, BOTTOM:: Horizontal legends may be labeled on top or
+;                    bottom (default: bottom).
+;  NOSCALE:: Legend will not be scaled analogous to diplaying data
+;            with the <*>TV</*> command. To give correct results,
+;            <*>MIN</*> and <*>MAX</*> MUST BE SET!
+;  STRETCH, H_STRETCH, V_STRETCH, CENTER:: See <A>UTVScl</A>.
 ;
 ; EXAMPLE:
-;*           TvSclLegend, 0.5, 0.5, /CENTER
-;*           TvSclLegend, 0.2, 0.2, MAX=10, MIN=-10, MID='Null', /VERTICAL, /LEFT 
+;* TvSclLegend, 0.5, 0.5, /CENTER
+;* TvSclLegend, 0.2, 0.2, MAX=10, MIN=-10, MID='Null', /VERTICAL, /LEFT 
 ;
-; -       
+; SEE ALSO: 
+;  <A>UTvScl</A>.
+;
+;-
+;       
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  2000/11/28 16:21:34  thiel
+;         Header translation and debugging.
+;
 ;     Revision 2.13  2000/11/02 14:04:26  gabriel
 ;          doc header modified; fgcolor bug eliminated
 ;
@@ -104,8 +113,9 @@
 ;           man war das ne Arbeit; diese Procedure
 ;           ist NICHT vom Himmel gefallen
 ;
-;
-;
+
+
+
 PRO TvSclLegend, xnorm, ynorm $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
                  ,MAX=max, MID=mid, MIN=min $
