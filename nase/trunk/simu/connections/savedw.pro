@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/01/05 17:45:26  saam
+;           testversion
+;
 ;     Revision 2.1  1997/12/10 16:05:41  saam
 ;           Birth
 ;
@@ -24,6 +27,9 @@
 FUNCTION SaveDW, _DW
 
    Handle_Value, _DW, DW
+   DW.SSource = -1
+   DW.STarget = -1
+   DW.Learn = -1
    RETURN, DW
 
 END
