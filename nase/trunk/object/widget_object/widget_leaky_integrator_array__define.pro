@@ -91,6 +91,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/15 19:00:45  kupper
+;        Looks perfect!
+;        No Header yet.
+;
 ;        Revision 1.1  2000/03/15 16:56:31  kupper
 ;        Initial revision
 ;
@@ -99,12 +103,20 @@
 
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
-Function widget_leaky_integrator_array::init, KEYWORD = keyword, _REF_EXTRA=_ref_extra
+Function widget_leaky_integrator_array::init, MAX_IN=max_in, _REF_EXTRA=_ref_extra
    message, /Info, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, "widget_leaky_integrator_array", _EXTRA=_ref_extra) then return, 0
+   ;; (we let my image container watch the LIA, so we can't use the
+   ;; Init_Superclasses routine):
+   If not self->leaky_integrator_array::init(_EXTRA=_ref_extra) then return, 0
+   If not self->widget_image_container::init(IMAGE=self->resultptr(), $
+                                             Range_In=[0, self->asymptote(max_in)], $
+                                             _EXTRA=_ref_extra) then begin
+      self->leaky_integrator_array::cleanup
+      return, 0
+   End
 
    ;; Try whatever initialization is needed for a widget_leaky_integrator_array object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -134,9 +146,8 @@ Pro widget_leaky_integrator_array::reset
    ;; Set all data members to defaults. You may want to use the member access
    ;; methods, in case they perform any side effects.
    ;; Remove this method if nothing is to reset on your object.
-   ;;
-   ;; insert code here
-   ;;
+   self->leaky_integrator_array::reset
+   self->paint
 End
 
 
@@ -144,38 +155,16 @@ End
 ;;
 ;; Member access methods
 ;;  (for any data members that should be open to the public)
-Pro widget_leaky_integrator_array::example, value
-   ;;
-   ;; insert code here
-   ;;
-   ;; EXAMPLE:
-   ;; self.example = value
-End
-Function widget_leaky_integrator_array::example
-   ;;
-   ;; insert code here
-   ;;
-   ;; EXAMPLE:
-   ;; return, self.example
-End
 ;;
 ;; Other public methods:
-Function widget_leaky_integrator_array::foo, parameter
+Pro widget_leaky_integrator_array::input, val
+   self->leaky_integrator_array::input, val
+   self->paint
 End
-
-Pro widget_leaky_integrator_array::bar, parameter
-End
-
 
 ;; ------------ Protected ------------------
 
-
 ;; ------------ Private --------------------
-Pro widget_leaky_integrator_array::override_me_; -ABSTRACT-
-   ;; use this template for all abstract methods.
-   On_error, 2
-   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
-End
 
 
 
@@ -185,8 +174,6 @@ Pro widget_leaky_integrator_array__DEFINE
    dummy = {widget_leaky_integrator_array, $
             $
             inherits widget_image_container, $
-            inherits leaky_integrator_array, $
-            $
-            example: 0 $
+            inherits leaky_integrator_array $
            }
 End
