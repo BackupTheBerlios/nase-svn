@@ -9,8 +9,10 @@
 ;  Construct a gabor patch.
 ;
 ; PURPOSE:
-;  <C>Gabor()</C> returns a square array containing a Gabor patch of
-;  arbitrary wavelength, size, and orientation.
+;  <C>Gabor()</C> returns a square array containing a (real value)
+;  Gabor patch of zero mean, and of arbitrary wavelength, size, and
+;  orientation. Optionally, the peak amplitude, or the power of the
+;  whole patch, can be normalized to <*>1.0</*>.
 ;
 ; CATEGORY:
 ;  Array
@@ -29,7 +31,7 @@
 ;
 ; OPTIONAL INPUTS:
 ;  HMW        :: Width of the gabor patch (half mean width of the
-;                gaussmask). <BR>
+;                gaussmask), specified in array points (pixels). <BR>
 ;                <I>Default value:</I> Will be taken from <A>Gauss_2d</A>'s
 ;                default. 
 ;
@@ -44,21 +46,18 @@
 ;                <I>Default value:</I> Miximum at center of the patch.
 ;
 ;  WAVELENGTH :: Wavelength of underlying cosine function, specified
-;                in pixels.<BR>
+;                in array points (pixels). <BR>
 ;                <I>Default value:</I> Array size (as specified in
 ;                <*>size</*> parameter).
 ;
 ; INPUT KEYWORDS:
-;  NORM        :: Normalize the gabor patch, for image processing
-;                 purposes. If <*>/NORM</*> is set, the gabor wavelet
-;                 is scaled to yield <*>1.0</*> as maximum value, when
-;                 convolved with a sine grating of the same wavelength
-;                 (in case of oriented patches). This makes
+;  NORM        :: Normalize the power of the whole gabor patch for
+;                 filtering or image processing purposes. If
+;                 <*>/NORM</*> is set, the gabor wavelet is scaled to
+;                 a total power of <*>1.0</*>. I.e.,
+;                 <*>Total(Sqr(Gabor(...)) eq 1.0</*>. This makes
 ;                 convolution results for different wavelengths
 ;                 comparable.
-;                 Note: I do NOT KNOW if this is the mathematically
-;                       correct way to normalize a gabor wavelet for
-;                       filtering purposes. It probably is NOT.
 ;
 ;  MAXONE      :: If <*>PHASE</*> is different from <*>0</*>, the
 ;                 maximum values of the cosine function and the gauss
@@ -72,7 +71,7 @@
 ;                 <*>/MAXONE</*> switch. <BR>
 ;                 Note that <*>/MAXONE</*> overrides <*>/NORM</*>.
 ;
-;  NICEDETECTOR:: Gabor wavelet have only restricted use as
+;  NICEDETECTOR:: Gabor wavelets have only restricted use as
 ;                 orientation detectors, as, for instance, in a <*>0°</*>
 ;                 oriented patch the integral (total) of the whole
 ;                 patch equals zero, but not so the individual column
@@ -94,7 +93,7 @@
 ;
 ; OUTPUTS:
 ;  A <*>size x size</*> array of type DOUBLE, containing the gabor
-;  patch. The result is normalized to a total of zero.
+;  patch. The result is shifted to have zero mean.
 ;
 ; RESTRICTIONS:
 ;  Like all other routines using array rotations, this routine suffers
@@ -109,11 +108,6 @@
 ;  values will be adjusted as to virtually meat the correct maximum in
 ;  between the middle two points. As a fact, <A>Hill</A> and
 ;  <A>Distance</A> are called to produce the correct cosine function.
-;
-;  Note on the /NORM option:
-;  I do NOT KNOW if this is the mathematically correct way to
-;  normalize a gabor wavelet for filtering purposes. It probably is
-;  NOT.
 ;
 ; PROCEDURE:
 ;  Create a shifted linear or concentric cosine function, and multiply
@@ -158,15 +152,9 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
       result = distance(size)
    Endelse
 
-   cosfunc = cos(phase + temporary(result)*2*!PI/float(wavelength))
-   gauss   = gauss_2d(size, size, HWB=hwb)
-   result  = cosfunc*gauss
+   result  = cos(phase + temporary(result)*2*!PI/float(wavelength)) $
+     * gauss_2d(size, size, HWB=hwb)
    
-
-   ;; If NORM was set, normalize as to yield 1.0 when filtering a pure
-   ;; sinus of given wavelength:
-   If Keyword_Set(NORM) then $
-     result = temporary(result)/total(temporary(cosfunc)^2.0*temporary(gauss))
 
 
    If Keyword_Set(NICEDETECTOR) then begin ; adjust eauch column to have total 0
@@ -185,7 +173,7 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
          Gabor_rotate_array, result, orientation
       endif
 
-   endif else begin; adjust whole array to have total 0
+   endif else begin; adjust whole array to have total 0 (remove mean)
       ;; in this case, we can rotate first!
       
       If keyword_set(ORIENTATION) then begin ;nothing to be done for orientation=0...
@@ -193,16 +181,22 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
       endif
 
       ;;max of gaussmask was 1
-      total_offset = total(result)/(size*size) ;Volume of gabor
+      total_offset = total(result)/(size^2.) ;Volume of gabor
       result = temporary(result)-total_offset ;Volume=0
-      center_offset = total_offset
-
    endelse
 
-   
-   If Keyword_Set(MAXONE) then result = result/max(result) $
-    else result = temporary(result)/(1-center_offset) ;Thus max of gaussmask is 1 again
 
+   if Keyword_Set(NORM) then begin
+      ;; Normalize power to 1.0
+      A = sqrt(Total(result^2.))
+      result = Temporary(result)/A
+   endif
+
+   If Keyword_Set(MAXONE) then begin
+      ;; Normalize max amplitude to 1.0
+      m = max(result)
+      result = Temporary(result)/m 
+   endif
 
    return, result
 End
