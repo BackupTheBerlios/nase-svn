@@ -147,6 +147,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/05/19 19:05:03  kupper
+;               Ein /VALID für den I-Teil...
+;
 ;        Revision 2.2  1997/11/13 18:42:21  kupper
 ;               Ergänzungen zum Header.
 ;
@@ -172,7 +175,7 @@ Function Regler, Regler, Ist, Soll, P=p, D=d, I=i
    Last_S = Head(Regler)        ;Stellgröße vom letzten Aufruf
    delta_S = S-Last_S
 
-   Durchschnitt = Total(Queue(Regler))/n_elements(Regler.Q) ;Durchschnitt über die gesamte Gedächtnislänge
+   Durchschnitt = Total(Queue(Regler, /VALID))/n_elements(Regler.Q) ;Durchschnitt über die gesamte Gedächtnislänge
    ;;--------------------------------
    
    ;;------------------> aktuelle Stellgröße merken:
