@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1998/08/23 12:50:47  saam
+;           the old integer->long--bug
+;
 ;     Revision 1.3  1998/06/22 09:56:52  saam
 ;           inadvertently inserted line removed
 ;
@@ -61,8 +64,8 @@ FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_P
    N = N_Elements(series)
    IF (N LT slicesize) THEN Message, 'number of elements less than slicesize!!'
    
-   i = 0
-   FOR slicestart= 0, N - slicesize, slicesize / 2 DO BEGIN
+   i = 0l
+   FOR slicestart= 0l, N - slicesize, slicesize / 2 DO BEGIN
       IF SET(Phase) THEN BEGIN
          sliceSpec = PowerSpec(series(slicestart : slicestart+slicesize-1), x, /DOUBLE, /HAMMING,PPHASE=slidephase)
       END ELSE BEGIN 
