@@ -17,7 +17,7 @@
 ;  
 ; CALLING SEQUENCE:
 ;*  MSPlot [,x] ,mean ,sd 
-;*         [,/SDMEAN]  [,/POSITIVE]
+;*         [,/SDMEAN]
 ;*         [{[,MCOLOR=...] [,SDCOLOR=...]} | /BW ]
 ;*         [,/OPLOT]
 ;*         [,_EXTRA=...]
@@ -54,8 +54,8 @@
 ;
 ; PROCEDURE:
 ;  + establish coordinate system<BR>
-;  + error area via PolyFill<BR>
-;  + mean via OPlot<BR>
+;  + error area via multiple <C>PolyFill</C>s<BR>
+;  + mean via <C>OPlot</C><BR>
 ;  + plot axes to overwrite error area<BR>
 ;  
 ; EXAMPLE:
@@ -89,14 +89,16 @@ PRO MSPLOT, z, zz, zzz $
    Default, xstyle, 0
    Default, ystyle, 0
 
+   polysize = 250
+
    IF N_Params() LT 2 THEN Console, /FATAL, 'Wrong number of arguments.'
-   n = N_Elements(z)
+   
    IF N_Params() EQ 3 THEN BEGIN
       x  = REFORM(z)
       m  = REFORM(zz)
       sd = REFORM(zzz)
    END ELSE BEGIN
-      x  = LindGen(n)
+      x  = LindGen(N_Elements(z))
       m  = REFORM(z)
       sd = REFORM(zz)
    END
@@ -118,14 +120,26 @@ PRO MSPLOT, z, zz, zzz $
    END
 
    IF Set(XRANGE) THEN BEGIN
-      xri = [(Where(x GE xrange(0)))(0), last((Where(x LE xrange(1))))] 
-      xf = x > XRANGE(0) < XRANGE(1)
-      yr = [MIN(m(xri(0):xri(1))-sd(0,xri(0):xri(1))) $
-            , MAX(m(xri(0):xri(1))+sd(1,xri(0):xri(1)))]
+      xri = LonArr(2)
+      ;; Compute first and last index inside the XRANGE
+      whf = Where(x LT xrange[0], c)
+      IF c NE 0 THEN xri[0] = Last(whf) ELSE xri[0] = 0
+      whl = Where(x GT xrange[1], c)
+      IF c NE 0 THEN xri[1] = whl[0] ELSE xri[1] = N_Elements(x)-1
+;      xri = [Last(Where(x LT xrange[0])), ((Where(x GT xrange[1])))[0]]
    ENDIF ELSE BEGIN
-      xf = x
-      yr = [MIN(m-sd(0,*)), MAX(m+sd(1,*))]
+      ;; All indices are in XRANGE
+      xri = [0, N_Elements(x)-1]
    ENDELSE
+
+   ;; Generate index array for XRANGE
+   idx = LIndGen(xri[1]-xri[0]+1)+xri[0]
+
+   ;; Compute YRANGE for actually visible data
+   yr = [Min(m[idx]-sd[0,idx]), Max(m[idx]+sd[1,idx])]
+
+   n = N_Elements(idx)
+
    IF Set(YRANGE) THEN yr=YRANGE ;if not the default is already set above
    
 
@@ -136,15 +150,48 @@ PRO MSPLOT, z, zz, zzz $
     , YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=extra
 
    IF Keyword_Set(BW) THEN BEGIN
-      OPlot, x, m+sd(1,*), LINESTYLE=1
-      OPlot, x, m-sd(0,*), LINESTYLE=1
+
+      OPlot, x, m+sd[1,*], LINESTYLE=1
+      OPlot, x, m-sd[0,*], LINESTYLE=1
       OPlot, x, m 
+
    END ELSE BEGIN
-      PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] ,$
-       [m+sd(1,*), m(n-1)-sd(0,n-1), REVERSE(m-sd(0,*)), m(0)+sd(1,0)],$
-       COLOR=sdcolor, NOCLIP=0
+      ;; divide polygon for sd into seperate parts each polysize long,
+      ;; to avoid large single polygons whose postscript size strangely
+      ;; explodes if they contains more than ca. 16000 points. Maybe
+      ;; they are then generated as a bitmap? Ask IDL's Polyfill.
+      steps = n/polysize ;; integer division!
+      rest = n MOD polysize
+
+      FOR si=0, steps-1 DO BEGIN
+         ;; +2 in IndGen is to generate overlap, otherwise, small gaps
+         ;; may be visible
+         idx = LIndGen(polysize+2)+si*polysize+xri[0]
+         ;; choose the present part of data to be drawn
+         xnow = x[idx]
+         mnow = m[idx]
+         sdnow = sd[*, idx]
+         PolyFill, [xnow, Reverse(xnow), xnow[0]] $
+          , [mnow+sdnow[1,*], Reverse(mnow-sdnow[0,*]), mnow[0]+sdnow[1,0]] $
+          , COLOR=sdcolor, NOCLIP=0
+      ENDFOR ;; si
+
+      ;; draw the last polygon, which may be smaller then polysize
+      IF rest NE 0 THEN BEGIN
+         idx = LIndGen(rest+2)+steps*polysize+xri[0]
+         xnow = x[idx]
+         mnow = m[idx]
+         sdnow = sd[*, idx]
+         PolyFill, [xnow, Reverse(xnow), xnow[0]] $
+          , [mnow+sdnow[1,*], Reverse(mnow-sdnow[0,*]), mnow[0]+sdnow[1,0]] $
+          , COLOR=sdcolor, NOCLIP=0
+      ENDIF ;;rest NE 0 
+
+      ;; draw the mean 
       OPlot, x, m, COLOR=mcolor
-   END
+
+   ENDELSE ;; Keyword_Set(BW) 
+
 
    ;; extract titles from extra keywords, because they should not
    ;; appear at all four axes, but only left and below the plot as usual 
