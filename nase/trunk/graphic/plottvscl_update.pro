@@ -7,7 +7,7 @@
 ;
 ; CATEGORY: GRAPHICS / GENERAL
 ;
-; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT]
+; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT] [,RANGE_IN=[a,b]]
 ;
 ; INPUTS: Array   : Der neue Inhalt der Graphik. Muß
 ;                   selbstverständlich die gleichen Ausmaße wie
@@ -25,6 +25,15 @@
 ;               ursprünglich übergeben wurden (NASE, SETCOL,
 ;               COLORMODE,...) werden, soweit sie sich auf die
 ;               Farbskalierung beziehen, unverändert übernommen.
+;
+;     RANGE_IN: When passed, the two-element array is taken as the range to
+;               scale to the plotting colors. (I.e. the first element is scaled to
+;               color index 0, the scond is scaled to the highest available
+;               index (or to PlotInfo.Top in the no-NASE, no-NEUTRAL, no-NOSCALE 
+;               case)).
+;               Note that when Info.NASE or Info.NEUTRAL is specified, only the highest
+;               absolute value of the passed array is used, as according to NASE 
+;               conventions, the value 0 is always mapped to color index 0 (black).
 ;
 ; PROCEDURE: Ausgelagert aus PlotTvScl. Es werden keine neuen
 ;            Positionsberechnungen durchgeführt. Alle nötigen
@@ -48,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.8  2000/03/06 14:59:57  kupper
+;     Added RANGE_IN-Keyword.
+;
 ;     Revision 2.7  1999/11/22 14:05:54  kupper
 ;     Modified a detail in Range_In-Handling, to correctly interpret a
 ;     Info.Range_In-value possibly modified directly by the user.
@@ -77,7 +89,7 @@
 ;
 ;-
 
-PRO PlotTvscl_update, W, Info, INIT=init
+PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
 ;print, "PlotTvScl_update"
    On_Error, 2
@@ -96,18 +108,26 @@ PRO PlotTvscl_update, W, Info, INIT=init
    Default, COLORMODE, Info.colormode
    Default, SETCOL, Info.setcol
 
-   Default, TOP, Info.top
-   Default, TOP, !D.Table_Size-1
+   If Keyword_Set(RANGE_IN) then Showweights_Scale_Range_In = max(abs(RANGE_IN))
+   ;;If RANGE_IN was specified, use that value for scaling, in both cases (INT
+   ;;and not).
 
-   If not Keyword_Set(INIT) then begin ;Just plot in new image with same scaling
-      Range_In = max(abs(Info.Range_In))  ;use given scaling, let not choose showweights_scale
+;Note that while info.Range_In and the value passed in the keyword are arrays of two
+;elements, the local variable Showweights_Scale_Range_In is scalar.
+
+   If not Keyword_Set(INIT) then begin ;Just plot in new image
+      Default, Showweights_Scale_Range_In, max(abs(Info.Range_In))
+                                ;use given scaling, let not
+                                ;choose showweights_scale.
+                                ;(If RANGE_IN was specified, use that value. If
+                                ;not, use the value in Info.Range_In.)
+      
       SETCOL    = 0             ;We never want to have the colortable set at an update.
-   EndIf
+   Endif
 ;Note that the above does not cover the non-NASE, non-NEUTRAL,
 ;non-NOSCALE case (As it relies on ShowWeights_Scale). 
 ;The INIT/update of this case is therefore
 ;handled in special in the Plotting part below.
-
   
    
 ;   ;-----Behandlung der NASE und ORDER-Keywords:
@@ -142,7 +162,7 @@ PRO PlotTvscl_update, W, Info, INIT=init
 ;         print, "NASE"
          UTV, $
           ShowWeights_Scale(Transpose(W),SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
-                            RANGE_IN=Range_In, GET_RANGE_IN=get_range_in), $
+                            RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM,$
           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
@@ -159,7 +179,7 @@ PRO PlotTvscl_update, W, Info, INIT=init
 ;         print, "NEUTRAL"
          UTV, $
           ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
-                            RANGE_IN=Range_In, GET_RANGE_IN=get_range_in), $
+                            RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM, $
           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
@@ -180,22 +200,19 @@ PRO PlotTvscl_update, W, Info, INIT=init
             If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]            
          endif else begin       ;CASE: None of NASE, NEUTRAL, NOSCALE set
 ;            print, "NONE"
-            If Keyword_Set(INIT) then begin ;Use normal UTvScl and store Range
+            If Keyword_Set(INIT) then begin ;store array Range in info
 ;               PRINT, "INIT"
-               Info.Range_In = [min(W), max(W)]
-               UTVSCL, W, $
-                Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-                Info.y00_norm, $
-                X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-                ORDER=UpSideDown, POLYGON=POLYGON, TOP=top
-            Endif Else begin    ;this is an update: Use UTV and scale as stored at last INIT 
-;               PRINT, "UPDATE"
-               UTV, Scl(W, [0, TOP], Info.Range_In), $
+               If Keyword_Set(RANGE_IN) then Info.Range_In = RANGE_IN else $
+                Info.Range_In = [min(W), max(W)]
+            Endif               
+            ;; If defined, RANGE_IN overrides the value stored in info:
+            Default, Range_In, Info.Range_In
+            ;;scale as stored in info 
+               UTV, Scl(W, [0, Info.Top], Range_In), $
                 Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
                 Info.y00_norm, $
                 X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
                 ORDER=UpSideDown, POLYGON=POLYGON
-            Endelse
          EndElse
 
      END
