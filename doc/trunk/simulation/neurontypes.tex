@@ -3,13 +3,12 @@
 %
 % LOCATION: doc
 %
-% AUTHOR:   saam
-%
-% DATE:     Sun Oct  1 18:59:58 MEST 2000
-%
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.5  2004/09/16 14:40:12  thiel
+%          Added hint on skipped type '13'.
+%
 %       Revision 1.4  2004/09/16 14:00:53  thiel
 %          Update: added types 12 and 14.
 %
@@ -321,7 +320,8 @@ Version: \$Id$ $\$
 
 \item[Synapses:] feeding, linking, inhibition, shunting
 
-\item[Output:] \texttt{f = f * exp(-1/tauf * sqrt((1-x) > 0.0)), m = f * (1 + l) - i, o = m GE (s + th0)}
+\item[Output:] \texttt{f = f * exp(-1/tauf * sqrt((1-x) > 0.0)),\\
+ m = f * (1 + l) - i, o = m GE (s + th0)}
 
 \item[Comments:] SMMN +taux 
 \end{description}
@@ -339,6 +339,6 @@ Version: \$Id$ $\$
 
 \item[Output:] \texttt{m = (f2 + (1+l) * (f1-i1) / (1+i2)), o = m GE (r+ s + th0)}
 
-\item[Comments:] 
+\item[Comments:] Type '13' seems to have been skipped.
 \end{description}
 \end{document}
