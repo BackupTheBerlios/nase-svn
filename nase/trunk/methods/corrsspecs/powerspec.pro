@@ -1,44 +1,51 @@
 ;+
 ; NAME:                  PowerSpec
 ;
-; PURPOSE:               Berechnet das Powerspektrum aus einer Zeitreihe
-;                        + Zeitreihe muss eine Aufloesung von 1 BIN haben 
-;                           (bei Marburger Modellneuronen eh nur moeglich!)
-;                        + gefenstert wird delaultmaessig nicht, optional 
-;                           ist ein Hamming-Fenster moeglich 
+; AIM:                   computes power spectrum
 ;
-; CATEGORY:              STATISTICS
+; PURPOSE:               Computes the power spectrum for a single or
+;                        multiple time series.
 ;
-; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE] , [SAMPLEPERIOD=sampleperiod]  $
-;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase][,KERNEL=kernel])
+; CATEGORY:              METHODS CORRS+SPECS
 ;
-; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
-;                                  mit mind. 10 Elementen
+; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING] [,/DOUBLE] [,SAMPLEPERIOD=sampleperiod]
+;                                        [,PHASE=phase]
+;                                        [,TRUNC_PHASE=trunc_phase]
+;                                        [,KERNEL=kernel])
 ;
-; KEYWORD PARAMETERS:    HAMMING:      vor der Berechnung des Spektrums wird mit der 
-;                                      Hamming-Funktion gefenstert (siehe IDL-Hilfe)
-;                        DOUBLE:       rechnet mit doppelter Genauigkeit (dies ist
-;                                      erst ab IDL-Version 4.0 moeglich)
-;                        TRUNC_PHASE:  Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(ps))
-;                                      auf Null gesetzt.
-;                        KERNEL:       Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
-;                                      KEYWORD PHASE
-;                        SAMPLEPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
+; INPUTS:                series : a single time series or multiple
+;                                 time series (dimension: iter, time)
+;                                 with at least 10 elements
 ;
-;                        COMPLEX:      als Output komplexes PowerSpec
+; KEYWORD PARAMETERS:    HAMMING:      filtering with a hamming window
+;                                      (see IDL Online Help)
+;                        DOUBLE:       calculation is done with double
+;                                      precision (only working for IDL
+;                                      versions >= 4.0)
+;                        TRUNC_PHASE:  phase contributions dP will be
+;                                      set to zero, if dP <= (TRUNC_PHASE * MAX(ps))
+;                                      with 0 <= TRUNC_PHASE <= 1
+;                        KERNEL:       filter kernel for smoothinh the
+;                                      cross spectrum (useful if
+;                                      PHASES are evaluated)
+;                        SAMPLEPERIOD: sample period of time series in
+;                                      seconds (default: 0.001 sec) 
+;                        COMPLEX:      if set, the complex fourier
+;                                      spectrum is returned, instead
+;                                      of their absolute value
+;                        NEGFREQ:      outputs also negative frequency
+;                                      components
 ;
-;                        NEGFREQ:      Output mit negativen Frequenzen (default ist: nur pos. freq.)
+;
+; OUTPUTS:               ps : the calculated power spectra
+;
+; OPTIONAL OUTPUTS:      xaxis : returns the corresponding frequencies to ps
+;                        phase : returns the phase angles 
 ;
 ;
-; OUTPUTS:               ps      : das berechnete Powerspektrum
+; SIDE EFFECTS:          xaxis will be overwritten
 ;
-; OPTIONAL OUTPUTS:      xaxis   : gibt die zu ps entsprechenden Frequenzwerte zurueck
-;                        phase  : gibt die zu ps entsprechende Phasenwinkel zu den Frequenzwerten zuruek
-;
-;
-; SIDE EFFECTS:          Falls xaxis uebergeben wird, wird es neu gesetzt
-;
-; RESTRICTIONS:          series muss mind. 10 Elemente enthalten
+; RESTRICTIONS:          series has to contain at least 10 elements
 ;
 ; EXAMPLE:          
 ;                        f1 = 3
@@ -55,14 +62,18 @@
 ;                        Plot, series, TITLE='Time Series'
 ;                        
 ;                        ps = PowerSpec(series, xaxis)
-;                        Plot, xaxis(0:40), ps(0:40), TITLE='Powerspektrum', XTITLE='Frequency / Hz', YTITLE='Power'
+;                        Plot, xaxis(0:40), ps(0:40),
+;                              TITLE='Powerspektrum', 
+;                              XTITLE='Frequency / Hz', YTITLE='Power'
 ;
-;
-;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.11  2000/07/26 09:25:45  saam
+;       + translated doc header
+;       + now handles multiple powerspecs
+;
 ; Revision 1.10  1998/08/24 10:34:00  saam
 ;       think i programmed perl a little bit too much
 ;
@@ -88,24 +99,30 @@
 ;
 ;       Tue Aug 19 20:58:57 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;		Schon vorher bestehende Funktion 
+;               dokumentiert und in den CVS-Baum
+;               hinzugefuegt
 ;
-;		Schon vorher bestehende Funktion dokumentiert und in den CVS-Baum hinzugefuegt
 ;
-;-
-
-
-
 
 FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,NEGFREQ=NegFreq ,$
                     TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD, SAMPLEPERIOD=sampleperiod, COMPLEX=Complex
  
-   IF Set(SAMPLPERIOD) THEN BEGIN
-      SamplePeriod = SamplPeriod
-      print, 'POWERSPEC:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
+   IF (SIZE(series))(0) EQ 2 THEN BEGIN
+       slicec = (SIZE(series))(1)
+       FOR i=0l, slicec-1 DO BEGIN
+           _series = REFORM(series(i,*))
+           _PSpec = crosspower( _series, _series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
+                                DOUBLE=Double ,Phase=_Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLEPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
+           IF Set(PSpec) THEN PSpec = [PSpec, _PSpec] ELSE PSpec=_PSpec
+           IF Set(Phase) THEN Phase = [Phase, _Phase] ELSE Phase=_Phase
+       END
+       PSpec = TRANSPOSE(REFORM(PSpec, N_Elements(xaxis), slicec))
+       Phase = TRANSPOSE(REFORM(Phase, N_Elements(xaxis), slicec))
+   END ELSE BEGIN
+       PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
+                           DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLEPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
    END
-
-   PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
-                       DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLEPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
 
  Return,PSpec
 END
