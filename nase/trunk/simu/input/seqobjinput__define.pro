@@ -10,7 +10,9 @@
 ;
 ; PURPOSE:
 ; <C>seqobjinput__define</C> provides an object, which can handle
-; multiple sequence objects. 
+; multiple sequence objects.  It creates an set of input objects (see
+; <A>seqobject__define</A>). Each input object consists of a grid of
+; sequence elements (see <A>seqelement__define</A>).
 ;
 ; CATEGORY:
 ;  Input
