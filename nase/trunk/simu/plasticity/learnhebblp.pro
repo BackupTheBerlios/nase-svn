@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.16  1997/12/11 14:07:57  saam
+;             Bug bei Handles korrigiert
+;
 ;       Revision 1.15  1997/12/10 15:56:48  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -139,8 +142,6 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
    If Not Set(RATE) Then Rate = Entlernrate
    If Not Set(ALPHA) Then Alpha = Lernrate/Entlernrate
 
-   Handle_Value, _DW, DW, /NO_COPY
-
    ; update learning potentials
    ; TotalRecall, LP, DW.Learn
 
@@ -149,6 +150,8 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
  
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then Return
+
+   Handle_Value, _DW, DW, /NO_COPY
 
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
