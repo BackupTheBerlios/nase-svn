@@ -77,8 +77,8 @@ If Not Set(INDEX) Then Index=IndGen(LayerSize(Layer))
 Default, StartTime, 0
 StartTime = Long(StartTime)
 
-Info = size(Index)
-Length = Info(1)
+ArrayInfo = size(Index)
+Length = ArrayInfo(1)
 
 Tape = { t  : StartTime               ,$
          i  : index                   ,$
