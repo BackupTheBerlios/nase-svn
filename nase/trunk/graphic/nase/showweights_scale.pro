@@ -9,6 +9,8 @@
 ; CATEGORY: Grafik
 ;
 ; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,/SETCOL]
+;                                                       [,COLORMODE=mode]
+;                                                       [,GET_COLORMODE={+1,-1}]
 ;                                                       [,GET_MAXCOL=Farbindex] )
 ;
 ; INPUTS: Array: Ein (nicht notwendigerweise, ober wohl meist)
@@ -20,6 +22,11 @@
 ;                             Farbtabelle.
 ;                             (Graustufen für positive Arrays,
 ;                             Rot/Grün für gemischtwertige.)
+;                  COLORMODE: Mit diesem Schlüsselwort kann unabhängig 
+;                             von den Werten im Array die
+;                             schwarz/weiss-Darstellung (COLORMODE=+1) 
+;                             oder die rot/grün-Darstellung
+;                             (COLORMODE=-1) erzwungen werden.
 ;
 ; OUTPUTS: TV_Array: Das geeignet skalierte Array, das direkt mit TV
 ;                    oder NASETV dargestellt werden kann.
@@ -31,6 +38,12 @@
 ;                               nicht mehr alle Farbindizes zur
 ;                               Verfügung. In GET_MAXCOL kann der
 ;                               letzte verwendbare Index abgefragt werden.
+;                GET_COLORMODE: Liefert als Ergebnis +1, falls der
+;                               schwarz/weiss-Modus zur Darstellung
+;                               benutzt wurde (DW-Matrix enthielt nur
+;                               positive Werte), und -1, falls der
+;                               rot/grün-Modus benutzt wurde (DW-Matrix
+;                               enthielt negative Werte).
 ;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
 ;
@@ -46,34 +59,47 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/02/18 13:48:18  kupper
+;               Schlüsselworte COLORMODE,GET_COLORMODE,GET_MAXCOL zugefügt.
+;
 ;        Revision 2.1  1998/02/11 15:36:32  kupper
 ;               Schöpfung durch Auslagern.
 ;
 ;-
 
-Function ShowWeights_Scale, MatrixMatrix, SETCOL=setcol, GET_MAXCOL=get_maxcol
+Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
+                    COLORMODE=colormode, GET_COLORMODE=get_colormode
+
+   MatrixMatrix = Matrix
+
    no_connections = WHERE(MatrixMatrix EQ !NONE, count)
    IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
 
    min = min(MatrixMatrix)
    max = max(MatrixMatrix)
    ts = !D.Table_Size
+   GET_MAXCOL = ts-3
 
    if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
 
-   if min ge 0 then begin
+   If not Keyword_Set(COLORMODE) then $
+    If min ge 0 then COLORMODE = 1 else COLORMODE = -1
+
+   if COLORMODE eq 1 then begin       ;positives Array
+      GET_COLORMODE = 1
       If Keyword_Set(SETCOL) then begin
-         g = indgen(ts)/double(ts-1)*255
+         g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          tvlct, g, g, g         ;Grauwerte
       EndIf
-      MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
-   endif else begin
+      MatrixMatrix = MatrixMatrix/double(max)*GET_MAXCOL
+   endif else begin             ;pos/neg Array
+      GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
-         g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
+         g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
          tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
       EndIf
       MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-      MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
+      MatrixMatrix = (MatrixMatrix+0.5)*GET_MAXCOL
    endelse
 
    IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
@@ -81,7 +107,6 @@ Function ShowWeights_Scale, MatrixMatrix, SETCOL=setcol, GET_MAXCOL=get_maxcol
       SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
       SetColorIndex, ts-1, 255, 100, 0 ;Orange die für die Trennlinien
    EndIf
-   GET_MAXCOL = ts-3
 
    Return, MatrixMatrix
 End

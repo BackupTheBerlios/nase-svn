@@ -26,7 +26,11 @@
 ;                               [,MAXSIZE=(Xmax,ymax)]
 ;                               [,WINNR=FensterNr | ,/NOWIN] [,GET_WIN=FensterNr]
 ;                               [,/DELAYS]
-;                               [,SLIDE={1,2} [,XVISIBLE=Fensterbreite] [,YVISIBLE=Fensterhöhe] [,GET_BASE=Base_ID] ]
+;                               [,SLIDE={1,2}
+;                               [,XVISIBLE=Fensterbreite]
+;                               [,YVISIBLE=Fensterhöhe]
+;                               [,GET_BASE=Base_ID] 
+;                               [,GET_MAXCOL=Farbindex] [,GET_COLORMODE=cm] ]
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
 ;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
@@ -83,6 +87,20 @@
 ;                             später mit einem
 ;                               WIDGET_CONTROL, Base_ID, /DESTROY
 ;                             schließen zu können.
+;                 GET_MAXCOL: ShowWeights benutzt die Farben Blau für 
+;                             !NONE-Verbindungen und Orange für das
+;                             Liniengitter.
+;                             Daher stehen für die Bilddarstellung
+;                             nicht mehr alle Farbindizes zur
+;                             Verfügung. In GET_MAXCOL kann der
+;                             letzte verwendbare Index abgefragt
+;                             werden.
+;              GET_COLORMODE: Liefert als Ergebnis +1, falls der
+;                             schwarz/weiss-Modus zur Darstellung
+;                             benutzt wurde (DW-Matrix enthielt nur
+;                             positive Werte), und -1, falls der
+;                             rot/grün-Modus benutzt wurde (DW-Matrix
+;                             enthielt negative Werte).
 ;
 ; EXAMPLE:
 ;          MyMatrix = InitDW( S_WIDTH=4, S_HEIGHT=3, T_WIDTH=2, T_HEIGHT=2 )
@@ -110,6 +128,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.16  1998/02/18 13:48:18  kupper
+;              Schlüsselworte COLORMODE,GET_COLORMODE,GET_MAXCOL zugefügt.
+;
 ;       Revision 2.15  1998/02/05 14:13:17  saam
 ;             bug in FROMS (noncritical) corrected
 ;
@@ -197,7 +218,8 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin, GET_WIN=get_win, $
-                 MAXSIZE=maxsize
+                 MAXSIZE=maxsize, $
+                 GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode
 
    IF !D.Name EQ 'NULL' THEN RETURN
 
@@ -328,33 +350,33 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    END
 
 
-   no_connections = WHERE(MatrixMatrix EQ !NONE, count)
-   IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
+;   no_connections = WHERE(MatrixMatrix EQ !NONE, count)
+;   IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
 
-   min = min(MatrixMatrix)
-   max = max(MatrixMatrix)
-   ts = !D.Table_Size-1
+;   min = min(MatrixMatrix)
+;   max = max(MatrixMatrix)
+;   ts = !D.Table_Size;-1
 
-   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
+;   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
 
-   if min ge 0 then begin
-      g = indgen(ts)/double(ts-1)*255
-      tvlct, g, g, g            ;Grauwerte
-      MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
-   endif else begin
-      g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
-      tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
-      MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-      MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
-   endelse
+;   if min ge 0 then begin
+;      g = indgen(ts)/double(ts-1)*255
+;      tvlct, g, g, g            ;Grauwerte
+;      MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
+;   endif else begin
+;      g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
+;      tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+;      MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
+;      MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
+;   endelse
 
-   IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
+;   IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
 
-   SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
+;   SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
+;   erase, rgb(255,100,0, INDEX=ts-1) ;Orange die für die Trennlinien
 
-
-   erase, rgb(255,100,0, INDEX=ts-1) ;Orange die für die Trennlinien
-
+MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, GET_MAXCOL=GET_MAXCOL, GET_COLORMODE=GET_COLORMODE)
+erase, GET_MAXCOL+2
 
    for YY= 0, Matrix.source_h-1 do begin
       for XX= 0, Matrix.source_w-1 do begin  
