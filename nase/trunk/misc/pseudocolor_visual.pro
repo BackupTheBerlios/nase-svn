@@ -4,6 +4,8 @@
 ;
 ; AIM: checks if the graphics device uses pseudocolor mode
 ;
+; VERSION: $Id$
+;
 ; PURPOSE:
 ;   On the X or WIN graphics device, determine whether the device runs in Pseudocolor 
 ;   mode or not.
@@ -57,11 +59,15 @@
 ; EXAMPLE:
 ;
 ; SEE ALSO:
-;   <A HREF="../graphic/colors/#RGB">RGB()</A>
-;
+;   <A>RGB</A>
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/10/20 09:04:13  gabriel
+;             obsolete info messages deleted.
+;             doc header modifications.
+;
 ;        Revision 1.7  2000/09/25 09:10:32  saam
 ;        * appended AIM tag
 ;        * some routines got a documentation update
@@ -91,7 +97,7 @@
 ;        We now do different things for pseudocolor and
 ;        truecolor-displays, to make them "feel" alike... (hopefully).
 ;
-;-
+;
 
 Function PseudoColor_Visual
    
@@ -117,8 +123,9 @@ Function PseudoColor_Visual
        Return, !D.N_COLORS le 256
       
       else: begin
-         Message, /INFO, "You are trying to determine the visual-class of a "+!D.NAME+"-device."
-         Message, /INFO, "(Returning true.)"
+         ;Not realy interesting:
+         ;Message, /INFO, "You are trying to determine the visual-class of a "+!D.NAME+"-device."
+         ;Message, /INFO, "(Returning true.)"
          Return, 1
       endelse
 
