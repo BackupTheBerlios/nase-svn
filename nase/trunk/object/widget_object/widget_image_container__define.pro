@@ -8,46 +8,53 @@
 ;   <A HREF="../../nase/graphic/#PLOTTVSCL">PlotTvScl</A>-Plot. Image data can be set and retrieved. Alternatively, the
 ;   image can be addressed through a pointer, allowing for online-monitoring of
 ;   array contents.
-;   Auto-painting is inherited from <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>.
+;   Auto-painting is inherited from <A>class Basic_Draw_Object</A>.
 ;
 ; CATEGORY: 
 ;   Graphic, Widgets
 ;
 ; SUPERCLASSES:
-;   <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>
+;   <A>class Basic_Draw_Object</A>
 ;
 ; CONSTRUCTION: 
 ;
 ;   o = Obj_New("widget_image_container",
-;               IMAGE=img_or_imgptr
+;               IMAGE=img_or_imgptr [,/NO_COPY]
 ;               [,XPOS=x]
 ;               [,YPOS=y] 
-;               [-keywords inherited from <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class basic_draw_object</A>-]
-;               [-all additional keywords are passed to <A HREF="../../nase/graphic/#PLOTTVSCL">])
+;               [-keywords inherited from <A>class basic_draw_object</A>-]
+;               [-all additional keywords are passed to <A>PlotTvScl</A>])
 ;
 ; DESTRUCTION:
 ;
 ;   Obj_Destroy, o
 ;                                               
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;
-;   IMAGE: This keyword must either be present, or the image must be supplied
-;          using the image method, before the widget is realized!
-;          It might either be
+;  IMAGE:: This keyword must either be present, or the image must be supplied
+;          using the image method, before the widget is realized!<BR>
+;          It might either be<BR>
 ;            o a two-dimensional array containing the image data.
-;              Array contents will be copied into the object.
+;              Array contents will be copied into the object, unless
+;              the /NO_COPY keyword is set, see below.<BR>
 ;            o a pointer to an array containing the image data.
 ;              The pointer will be stored inside the object.
-;              The pointer will not be freed, when the object dies.
+;              The pointer will not be freed, when the object dies.<BR>
 ;          Array contents are used to determine the plot dimensions and
 ;          initialize the color scaling. Both can be modified afterwards, using
 ;          the renew_[scaling|plot] methods described below.
 ;
-;   XPOS, YPOS: Lower left corner of the plot window inside the draw widget,
-;               specified in normal coordinates. 
+;  /NO_COPY:: If set, the contents of <*>IMAGE</*> will not be copied but
+;             moved into the container. The <*>IMAGE</*> argument will be
+;             undefined after the call.<BR>
+;             This keyword has no effect if a pointer is passed in the
+;             <*>IMAGE</*> argument.
 ;
+;  XPOS, YPOS:: Lower left corner of the plot window inside the draw widget,
+;               specified in normal coordinates.<BR>
+;<BR>
 ;   XPOS and YPOS, as well as all additional keywords, will be passed
-;   to <A HREF="../../nase/graphic/#PLOTTVSCL">. /SETCOL will always be passed,
+;   to <A>PlotTvScl</A>. /SETCOL will always be passed,
 ;   whether it was specified or not.
 ;
 ; SIDE EFFECTS: 
@@ -57,46 +64,46 @@
 ;
 ;  public: Public methods may be called from everywhere.
 ;   
-;   image()                      : returns image data. (Array)
-;   image, img [,/NO_COPY]       : sets image data to img. Display is updated,
+;   image()                     :: returns image data. (Array)
+;   image, img [,/NO_COPY]      :: sets image data to img. Display is updated,
 ;                                  unsing the last established color scaling
-;                                  (see UPDATE_INFO keyword to <A HREF="../../nase/graphic/#PLOTTVSCL"> for details).
+;                                  (see UPDATE_INFO keyword to <A>PlotTvScl</A> for details).
 ;                                  Data is copied into the object, unless
 ;                                  NO_COPY is set. In that case, img will be
 ;                                  undefined after the call.
-;   imageptr()                   : returns a pointer to the image array, such
+;   imageptr()                  :: returns a pointer to the image array, such
 ;                                  that image data can be modified "outside the
 ;                                  object".
-;   size([KEYWORDS_TO_SIZE])     : returns the result of IDL's
+;   size([KEYWORDS_TO_SIZE])    :: returns the result of IDL's
 ;                                  <C>SIZE()</C> function applied to
 ;                                  the image data. Any Keywords are
 ;                                  passed on to <C>SIZE()</C>.
-;   renew_scaling [,keywords=kw] : requests the re-intialization of color
+;   renew_scaling [,keywords=kw]:: requests the re-intialization of color
 ;                                  scaling when the display is next updated. All 
-;                                  keywords will be passed to <A HREF="../../nase/graphic/#PLOTTVSCL">, together
+;                                  keywords will be passed to <A>PlotTvScl</A>, together
 ;                                  with the /INIT keywords set. (See there for details.)
 ;
 ;   renew_plot [,XPOS=x]
 ;              [,YPOS=y]
-;              [,keywords=kw]    : requests the re-intialization of all plot
+;              [,keywords=kw]   :: requests the re-intialization of all plot
 ;                                  parameters when the display is next
-;                                  updated. All keywords will be passed to <A HREF="../../nase/graphic/#PLOTTVSCL">,
+;                                  updated. All keywords will be passed to <A>PlotTvScl</A>,
 ;                                  together with an unintialized
 ;                                  {PLOTTVSCL_INFO} struct. (See there for details.)
 ;
-;  -plus those inherited from <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class basic_draw_object</A> (see there for details)-
+;  -plus those inherited from <A>class basic_draw_object</A> (see there for details)-
 ;   among which to note especially:
 ;
-;   paint                        : update the display.
+;   paint                       :: update the display.
 ;
-;   paint_interval, secs         : auto-update the display all secs seconds.
+;   paint_interval, secs        :: auto-update the display all secs seconds.
 ;                                  (Pass a negative value to disable auto-painting.)
 ;
 ;  as well as "realize" and "register" for creation of top level bases.
 ;
 ;
 ; PROCEDURE:
-;  Combine features of <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A> and <A HREF="../../nase/graphic/#PLOTTVSCL">
+;  Combine features of <A>class Basic_Draw_Object</A> and <A>PlotTvScl</A>
 ;  while providing a transparent user-interface. No magic.
 ;
 ; EXAMPLE:
@@ -143,38 +150,14 @@
 ;   SurfIt! and ExamineIt! support, as known from the TomWaits widget.
 ;
 ; SEE ALSO:
-;   <A HREF="../../nase/graphic/#PLOTTVSCL">, <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.9  2001/09/17 14:05:07  kupper
-;        Implemented size() method.
-;
-;        Revision 1.8  2001/08/02 14:30:01  kupper
-;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
-;
-;        Revision 1.7  2000/03/23 15:01:43  kupper
-;        Added header comment on IMAGE keyword.
-;
-;        Revision 1.6  2000/03/16 13:23:26  kupper
-;        Corrected hyperlink.
-;
-;        Revision 1.5  2000/03/15 14:29:16  kupper
-;        Renamed member "image" to "contents" to allow for polymorphic inheritance from
-;        class widget_image_container and class image_factory.
-;
-;        Revision 1.4  2000/03/15 13:44:39  kupper
-;        Complete.
-;        Filled in header.
-;
+;   <A>PlotTvScl</A>, <A>class Basic_Draw_Object</A>
 ;-
 
 
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_image_container::init, IMAGE=image, XPOS=xpos, YPOS=ypos, $
-                               _EXTRA=_extra
+                                       NO_COPY=no_copy, _EXTRA=_extra
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
@@ -189,7 +172,7 @@ Function widget_image_container::init, IMAGE=image, XPOS=xpos, YPOS=ypos, $
    If Size(image, /TName) eq "POINTER" then begin
       self.contents=image
    endif else begin
-      self.contents=Ptr_New(image)
+      self.contents=Ptr_New(image, NO_COPY=no_copy)
       self.free_image_flag = 1
    Endelse
    
