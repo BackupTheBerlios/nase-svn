@@ -21,7 +21,7 @@ RETURN, image24
 
 END
 
-PRO WRITE_MPEG, mpegFileName, image_array, delaft=delaft, rep=rep,TMPDIR=TMPDIR
+
 ;+
 ; NAME: 
 ;        WRITE_MPEG
@@ -37,35 +37,59 @@ PRO WRITE_MPEG, mpegFileName, image_array, delaft=delaft, rep=rep,TMPDIR=TMPDIR
 ;
 ;
 ;
-; CALLING SEQUENCE:
-;        WRITE_MPEG,'movie.mpg',ims
+; CALLING SEQUENCE: 
+;     There are two methods
+;     1. method:
 ;
+;            WRITE_MPEG,ims [,mpegFileName=mpegFileName] [,TMPDIR=TMPDIR] [,DLAFT=DLAFT] [,REP=REP]
+;
+;     2. method:
+;
+;            WRITE_MPEG,INIT=nims,[,mpegFileName=mpegFileName] [,TMPDIR=TMPDIR] [,REP=REP]
+;            WRITE_MPEG,image,/WRITE
+;            WRITE_MPEG,/CLOSE
 ;
 ; INPUTS:
-;         ims: sequence of images as a 3D array with dimensions [sx, sy, nims]
-;              where sx = xsize of images
-;                    sy = ysize of images
-;                    nims = number of images
+;     1. method:
 ;
-; OPTIONAL INPUTS:
+;            ims: sequence of images as a 3D array with dimensions [sx, sy, nims]
+;                 where sx = xsize of images
+;                       sy = ysize of images
+;                       nims = number of images
+;
+;     2. method:
+;
+;            image: image as a 2D array with dimensions [sx, sy]    
+;                   where sx = xsize of images
+;                         sy = ysize of images
 ;
 ;
 ;
 ; KEYWORD PARAMETERS:
-;             delaft:   if set delete temporary array after movie was created
-;                       you should actually always do it otherwise you get
-;                       problems with permissions on multiuser machines (since
-;                       /tmp normally has the sticky bit set)
-;             rep:      if given means repeat every image 'rep' times
-;                       (as a workaround to modify replay speed)
-;             tmpdir:   directory for temporal data
+;
+;     only 2. method:
+;                        INIT:          calls write_mpeg to initialice image writing,
+;                                       where INIT is the number of images (default: 0)
+;                        WRITE:         calls write_mpeg to write the image
+           ;             CLOSE:         calls write_mpeg to produce a mpeg
+;
+;     1.+ 2. method: 
+;                        delaft:        if set delete temporary array after movie was created
+;                                       you should actually always do it otherwise you get
+;                                       problems with permissions on multiuser machines (since
+;                                       /tmp normally has the sticky bit set)
+;                        rep:           if given means repeat every image 'rep' times
+;                                       (as a workaround to modify replay speed)
+;                        tmpdir:        directory for temporal data (default: "/tmp/idl2mpeg.frames")
+;                        mpegfilename:  name of mpeg file (default: "test.mpg")
+;
 ;
 ; OUTPUTS: None
 ;
 ; OPTIONAL OUTPUTS:
 ;
 ; COMMON BLOCKS:
-;
+;                COMMON WRITE_MPEG_BLOCK , info
 ; SIDE EFFECTS:
 ;          creates some files in TMPDIR which are only removed when
 ;          the DELAFT keyword is used
@@ -73,7 +97,8 @@ PRO WRITE_MPEG, mpegFileName, image_array, delaft=delaft, rep=rep,TMPDIR=TMPDIR
 ;
 ; RESTRICTIONS:
 ;          depends on the program mpeg_encode from University of
-;          California, Berkeley, which must be installed in /usr/local/bin
+;          California, Berkeley, which must be installed in a directory, 
+;          which is used in the PATH environment.
 ;
 ;
 ; PROCEDURE:
@@ -85,11 +110,29 @@ PRO WRITE_MPEG, mpegFileName, image_array, delaft=delaft, rep=rep,TMPDIR=TMPDIR
 ;
 ; EXAMPLE:
 ;
+;          1. method:
+;                     frames=findgen(100,75,100) ;; 100 frames (3D array)
+;                     write_mpeg,frames                 
 ;
+;          2. method:
+;                     ;;here with function TVRD
+;                     write_mpeg,init=100
+;                     window,xsiz=100,ysize=75
+;
+;                     FOR i =0l ,100-1 DO BEGIN
+;                      utvscl,findgen(100,75)*reform(randomu(S,1))
+;                      image=tvrd(/order)
+;                      write_mpeg,image,/write
+;                     ENDFOR
+;                     
+;                     write_mpeg,/close
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1999/05/13 15:35:59  gabriel
+;          Nochmals angepasst und etwas optimiert
+;
 ;     Revision 2.1  1999/05/07 14:23:06  gabriel
 ;          Toll musste ich nicht schreiben, nur Keyword TMPDIR neu
 ;
@@ -100,75 +143,160 @@ PRO WRITE_MPEG, mpegFileName, image_array, delaft=delaft, rep=rep,TMPDIR=TMPDIR
 ;		grabbed original from the net and made slight modifications
 ;
 ;-
+PRO WRITE_MPEG, image_array,mpegFileName=mpegFileName,delaft=delaft, rep=rep,TMPDIR=TMPDIR,INIT=INIT,WRITE=WRITE,CLOSE=CLOSE
+COMMON WRITE_MPEG_BLOCK,info
 
-if n_elements(rep) eq 0 then rep=1
 
-movieSize = SIZE(image_array)
-xSize = movieSize(1)
-ySize = movieSize(2)
-nFrames = movieSize(3)*rep
 
-nDigits = 1+FIX(ALOG10(nFrames))
-formatString = STRCOMPRESS('(i'+STRING(nDigits)+'.'+STRING(nDigits)$
-             +             ')', /REMOVE_ALL)
-ON_IOERROR, badWrite
 
-; Make a temporary directory if necessary or clear it otherwise'
+default,status_flag,0
+default,init,0
+default,write,0
+default,close,0
+default,rep,1
+default,delaft,0
 default,TMPDIR , '/tmp/idl2mpeg.frames'
 default,mpegfilename,'test.mpg'
-SPAWN, 'if test -d ' + TMPDIR + '; then echo "exists"; fi', result, /SH
-dirExists = result(0) EQ 'exists'
-IF dirExists THEN command = 'rm ' + TMPDIR + '/*' $
-  ELSE command = 'mkdir ' + TMPDIR
-SPAWN, command
+default,framenum,0
+default,nFrames,0
+IF init GT 0 THEN undef,info
+default,info,{status_flag: status_flag,$
+              init: init,$
+              rep: rep,$
+              TMPDIR: TMPDIR,$
+              framenum: framenum,$
+              delaft: delaft,$
+              mpegfilename: mpegfilename,$
+              nFrames:nFrames}
 
-; Write each frame into TMPDIR as a 24-bit .ppm image file
-framenum=0
-FOR ino = 0, movieSize(3)-1 DO BEGIN
-  image = pseudo_to_true(image_array(*,*,ino))
-  for j=0,rep-1 do begin
-     fileName = TMPDIR + '/frame.' + STRING(frameNum,FORMAT=formatString)$
-           + '.ppm'
-     WRITE_PPM, fileName, image
-     PRINT, 'Wrote temporary PPM file for frame ', frameNum+1
-     framenum=framenum+1
-  endfor
-ENDFOR
 
-; Build the mpeg parameter file
-paramFile = TMPDIR + '/idl2mpeg.params'
-OPENW, unit, paramFile, /GET_LUN
-PRINTF, unit, 'PATTERN		IBBBBBBBBBBP'
-PRINTF, unit, 'OUTPUT		' + mpegFileName
-PRINTF, unit, 'GOP_SIZE	16'
-PRINTF, unit, 'SLICES_PER_FRAME	5'
-PRINTF, unit, 'BASE_FILE_FORMAT	PNM'
-PRINTF, unit, 'INPUT_CONVERT *'
-PRINTF, unit, 'INPUT_DIR	/tmp/idl2mpeg.frames'
-PRINTF, unit, 'INPUT'
-PRINTF, unit, 'frame.*.ppm ['+string(FORMAT=formatString,0) + $
-  '-' + string(FORMAT=formatString,nFrames-1) + ']'
-PRINTF, unit, 'END_INPUT'
-PRINTF, unit, 'PIXEL		FULL'
-PRINTF, unit, 'RANGE		5'
-PRINTF, unit, 'PSEARCH_ALG	LOGARITHMIC'
-PRINTF, unit, 'BSEARCH_ALG	SIMPLE'
-PRINTF, unit, 'IQSCALE		6'
-PRINTF, unit, 'PQSCALE		6'
-PRINTF, unit, 'BQSCALE		6'
-PRINTF, unit, 'REFERENCE_FRAME	ORIGINAL'
-PRINTF, unit, 'FORCE_ENCODE_LAST_FRAME'
-FREE_LUN, unit
+IF init GT 0 THEN BEGIN 
+   info.status_flag = 1
+   info.framenum = 0
+ENDIF
 
-; spawn a shell to process the mpeg_encode command
-SPAWN, 'mpeg_encode ' + paramFile
+IF write EQ 1 THEN info.status_flag = 2
+IF close EQ 1 THEN info.status_flag = 3
+IF (info.init EQ 0 AND write EQ 1) OR (info.init EQ 0 AND close EQ 1) THEN $
+ message,"You must call WRITE_MPEG  first with KEYWORD INIT" 
 
-IF KEYWORD_SET(delaft) then $
-  SPAWN, 'rm -r ' + TMPDIR
+IF info.STATUS_FLAG EQ 0 OR  info.STATUS_FLAG EQ 2 THEN BEGIN
+   movieSize = SIZE(image_array)
+   xSize = movieSize(1)
+   ySize = movieSize(2)
+ENDIF
 
-RETURN
 
+
+
+ON_IOERROR, badWrite
+
+
+IF info.status_flag LE 1 THEN BEGIN
+   ;; Make a temporary directory if necessary or clear it otherwise'
+
+   SPAWN, 'if test -d ' + info.TMPDIR + '; then echo "exists"; fi', result, /SH
+   dirExists = result(0) EQ 'exists'
+   IF dirExists THEN command = 'rm -f ' + info.TMPDIR + '/*' $
+   ELSE command = 'mkdir ' + info.TMPDIR
+   SPAWN, command
+   ;;so das reicht fuer init
+   IF info.status_flag EQ 1 THEN BEGIN
+      info.nFrames = info.init * info.rep 
+      return 
+   END ELSE info.nFrames = movieSize(3)*info.rep
+
+ENDIF
+nDigits = 1+FIX(ALOG10(info.nFrames))
+formatString = STRCOMPRESS('(i'+STRING(nDigits)+'.'+STRING(nDigits)$
+             +             ')', /REMOVE_ALL)
+
+
+CASE 1  OF
+
+   info.status_flag EQ 2: BEGIN
+      image = pseudo_to_true(image_array(*,*)) 
+      for j=0,info.rep-1 do begin
+         fileName = info.TMPDIR + '/frame.' + STRING(info.frameNum,FORMAT=formatString)$
+          + '.ppm'
+         IF j EQ 0 THEN begin
+            WRITE_PPM, fileName, image
+            firstfileName = fileName
+
+         END ELSE BEGIN
+            spawn, "ln -s " +firstfileName+ " " + fileName
+         ENDELSE
+         PRINT, 'Wrote temporary PPM file for frame ', info.frameNum+1
+         info.framenum=info.framenum+1
+      ENDFOR
+  
+      IF info.framenum GT info.nFrames THEN BEGIN
+         print,'Warning:Deleting temporally written files'
+         SPAWN, 'rm -r ' + TMPDIR
+          ;stop
+         undef,info
+         
+         message,"Written more files than given with init!!"
+
+      ENDIF
+      return
+   END 
+   info.status_flag EQ 0 OR (info.status_flag EQ 3): BEGIN
+      IF  info.status_flag EQ 0 THEN BEGIN
+         ;; Write each frame into TMPDIR as a 24-bit .ppm image file
+         info.framenum=0
+         FOR ino = 0, movieSize(3)-1 DO BEGIN
+            image = pseudo_to_true(image_array(*,*,ino))
+            for j=0,info.rep-1 do begin
+               fileName = info.TMPDIR + '/frame.' + STRING(info.frameNum,FORMAT=formatString)$
+                + '.ppm'
+               IF j EQ 0 THEN begin
+                  WRITE_PPM, fileName, image
+                  firstfileName = fileName
+               END ELSE BEGIN
+                  spawn, "ln -s " +firstfileName+ " " + fileName
+               ENDELSE
+               PRINT, 'Wrote temporary PPM file for frame ', info.frameNum+1
+               info.framenum=info.framenum+1
+            ENDFOR
+         ENDFOR
+      ENDIF
+      ;; Build the mpeg parameter file
+      paramFile = info.TMPDIR + '/idl2mpeg.params'
+      OPENW, unit, paramFile, /GET_LUN
+      PRINTF, unit, 'PATTERN		IBBBBBBBBBBP'
+      PRINTF, unit, 'OUTPUT		' + info.mpegFileName
+      PRINTF, unit, 'GOP_SIZE	16'
+      PRINTF, unit, 'SLICES_PER_FRAME	5'
+      PRINTF, unit, 'BASE_FILE_FORMAT	PNM'
+      PRINTF, unit, 'INPUT_CONVERT *'
+      PRINTF, unit, 'INPUT_DIR	'+ info.TMPDIR
+      PRINTF, unit, 'INPUT'
+      PRINTF, unit, 'frame.*.ppm ['+string(FORMAT=formatString,0) + $
+       '-' + string(FORMAT=formatString,info.nFrames-1) + ']'
+      PRINTF, unit, 'END_INPUT'
+      PRINTF, unit, 'PIXEL		FULL'
+      PRINTF, unit, 'RANGE		5'
+      PRINTF, unit, 'PSEARCH_ALG	LOGARITHMIC'
+      PRINTF, unit, 'BSEARCH_ALG	SIMPLE'
+      PRINTF, unit, 'IQSCALE		6'
+      PRINTF, unit, 'PQSCALE		6'
+      PRINTF, unit, 'BQSCALE		6'
+      PRINTF, unit, 'REFERENCE_FRAME	ORIGINAL'
+      PRINTF, unit, 'FORCE_ENCODE_LAST_FRAME'
+      FREE_LUN, unit
+   
+      ;; spawn a shell to process the mpeg_encode command
+      SPAWN, 'mpeg_encode '  + paramFile
+
+      IF info.delaft EQ 1 THEN $
+       SPAWN, 'rm -r ' + info.TMPDIR
+      undef,info
+      RETURN
+   END
+ENDCASE
 badWrite:
-alert, 'Unable to write MPEG file!'
+undef,info
+message, 'Unable to write MPEG file!'
 
 END
