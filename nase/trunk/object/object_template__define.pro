@@ -2,7 +2,7 @@
 ;; Please use your editor's replace option to replace all occurrences of
 ;; "MyClass" by your desired classname. You might also want to replace all
 ;; occurrences of "MySuperClass" and "MyOtherSuperClass" by the names of your
-;; classes superclasses. Then change header and object definition to suit your
+;; class's superclasses. Then change header and object definition to suit your
 ;; object. All methods described in this header are examples.
 ;; Do not forget to delete this text.
 ;; Have fun!
