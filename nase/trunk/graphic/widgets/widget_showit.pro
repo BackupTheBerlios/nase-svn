@@ -25,6 +25,8 @@
 ; OPTIONAL INPUTS: _extra: Alle Inputs und Schlüsselworte werden an das
 ;                           Draw-Widget weitergereicht. Siehe IDL-Online-
 ;                           Hilfe über 'Widget_Draw'
+;                          Ausnahme: NOTIFY_REALIZE wird an das Base-Widget
+;                           weitergeleitet.
 ;
 ; KEYWORD PARAMETERS: /PRIVATE_COLORS: Ist dieses Schlüsselwort gesetzt, so
 ;                                      wird die private
@@ -33,7 +35,7 @@
 ;                                      wenn sich der Mauszeiger im 
 ;                                      Bereich des Widgets befindet. Zum
 ;                                      Speichern der gewünschten Farbtabelle
-;                                      siehe <A HREF="#SHOWIT_CLOSE">ShowIt_Close</A>. 
+;                                      siehe <A HREF="#SHOWIT_CLOSE">ShowIt_Close</A>.
 ;
 ; OUTPUTS: widgetid: Die Identifikationsnummer des generierten Widgets.
 ;
@@ -55,6 +57,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/02/22 15:52:07  kupper
+;        Keyword NOTIFY_REALIZE is now passed correctly to the base-widget, not the draw
+;        widget!
+;
 ;        Revision 1.3  1999/11/16 17:05:13  kupper
 ;        Incorporated changes previously made to the sheet/scrollit routines:
 ;        Will not produce tracking events for TrueColor or DirectColor
@@ -120,9 +126,10 @@ END
 
 
 FUNCTION Widget_ShowIt, Parent, $
-               PRIVATE_COLORS=private_colors, $
-               TRACKING_EVENTS=tracking_events, $
-               _EXTRA=_extra
+                        PRIVATE_COLORS=private_colors, $
+                        TRACKING_EVENTS=tracking_events, $
+                        NOTIFY_REALIZE=Notify_Realize, $
+                        _EXTRA=_extra
 
    Default, private_colors, 0
    Default, tracking_events, 0
@@ -147,7 +154,7 @@ FUNCTION Widget_ShowIt, Parent, $
                 }
 
    ; create outer base to have free uservalue:
-   b = Widget_Base(Parent)
+   b = Widget_Base(Parent, Notify_Realize=Notify_Realize)
 
    
    ; put draw-widget inside base and store xtra-values in its UVALUE:
