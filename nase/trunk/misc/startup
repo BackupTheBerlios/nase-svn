@@ -1,5 +1,10 @@
 ;+
 ;       $Log$
+;       Revision 1.6  1998/02/26 17:31:11  kupper
+;              Die neue !TOPCOLOR-Systemvariable hinzugefügt...
+;       	Wird z.B. von Showweights_Scale benutzt, damit es nicht
+;       	immer die Farben des Benutzers überschreibt.
+;
 ;       Revision 1.5  1998/02/23 15:21:54  kupper
 ;              Definition der !KEY-Variable hinzugefügt.
 ;
@@ -37,3 +42,5 @@ DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
 			TAB	: string(9b), $
 			ESC	: string(27b), $
 			BEL	: string(7b)}, 1
+
+DefSysV, '!TOPCOLOR', !D.Table_Size-1
