@@ -5,17 +5,15 @@
 ;
 ; CATEGORY:           STAT
 ;
-; CALLING SEQUENCE:   UPeakPicker, ydata,tdata, ymax,tmax,maxnumber [, ymin=ymin, tmin=tmin, minnumber=minnumber] $
+; CALLING SEQUENCE:   UPeakPicker, ydata,tdata, ymax,tmax,maxnumber [,ymin, tmin, minnumber] $
 ;                                   [, RelativCrit=RelativeCrit] [, DataCrit=DataCrit] $
-;                                   [ ,DELTA=delta][ ,MaxIndex=MaxIndex][ ,MinIndex=MinIndex]
+;                                   [, DELTA=delta][, MaxIndex=MaxIndex][, MinIndex=MinIndex]
 ;
 ; INPUTS:             ydata: Vector of data values.
 ;                     tdata: Vector of corresponding times (,or whatever)
 ;
 ; KEYWORD PARAMETERS:     
-;                     ymin:           Like ymax for minimas.
-;                     tmin:           Like tmax for minimas.
-;                     minnumber:      Like maxnumber for minimas.
+;
 ;
 ;                     RelativeCrit:   An optional criterion for peak/noise discrimination
 ;                                     given in fraction of maximal data range (Def.: 5%)
@@ -38,19 +36,25 @@
 ;                     The lengths of the resulting vectors are according to the number of
 ;                     peaks and valleys found.
 ;
-
+; OPTIONAL OUTPUTS:
+;                     ymin:           Like ymax for minimas.
+;                     tmin:           Like tmax for minimas.
+;                     minnumber:      Like maxnumber for minimas.
 ;
 ; AUHTOR:             A.Gabriel
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/03/02 16:08:53  gabriel
+;          keywords wieder als argumente fuer ymin, tmin, minumber
+;
 ;     Revision 1.1  1998/02/27 11:20:29  gabriel
 ;          ein PeakPicker mit Methoden aus der Analysis
 ;
 ;
 ;-
-PRO UPeakPicker, ydata,tdata, ymax,tmax,maxnumber,ymin=ymin,tmin=tmin,minnumber=minnumber,$
+PRO UPeakPicker, ydata,tdata, ymax,tmax,maxnumber,ymin,tmin,minnumber,$
              RelativCrit=RelativeCrit,DataCrit=DataCrit,DELTA=delta,MAXINDEX=maxIndex,MININDEX=minIndex
 
    ;;Initialization
@@ -79,7 +83,7 @@ PRO UPeakPicker, ydata,tdata, ymax,tmax,maxnumber,ymin=ymin,tmin=tmin,minnumber=
    maxindex = where((ddydata *cutmax)EQ -2, maxcount)
    minindex = where((ddydata *cutmin)EQ  2, mincount)
 
-   IF maxcount GT 0 AND set(maxnumber) THEN BEGIN 
+   IF maxcount GT 0  THEN BEGIN 
       ymax = ydata(maxindex)
       tmax = tdata(maxindex)
       maxnumber =  maxcount
@@ -87,7 +91,7 @@ PRO UPeakPicker, ydata,tdata, ymax,tmax,maxnumber,ymin=ymin,tmin=tmin,minnumber=
       maxnumber =  -1
    ENDELSE
 
-   IF (mincount GT 0) AND set(minnumber) THEN BEGIN
+   IF (mincount GT 0) THEN BEGIN
       ymin = ydata(minindex)
       tmin = tdata(minindex)
       minnumber = mincount
