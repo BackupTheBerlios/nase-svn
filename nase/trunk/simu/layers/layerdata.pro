@@ -123,19 +123,28 @@ PRO LayerData, _Layer, $
 
 ;---  handle FEEDING
    CASE Layer.TYPE OF
-      '6' : IF n GT 1 THEN feeding  = REFORM(Layer.para.corrAmpF*(Layer.F2-Layer.F1), Layer.H, Layer.W) ELSE  feeding  = Layer.para.corrAmpF*(Layer.F2-Layer.F1)
-      '7' : BEGIN
-         IF n GT 1 THEN BEGIN
-            ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
-            sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
-         END ELSE BEGIN
-            ffeeding = Layer.F1
-            sfeeding = Layer.F2
-         END
-      END
-      '8' : feeding = !NONE
-      '9' : feeding = !NONE
-      ELSE: IF n GT 1 THEN feeding = REFORM(Layer.F, Layer.H, Layer.W) ELSE feeding = Layer.F
+       '6' : IF n GT 1 THEN feeding  = REFORM(Layer.para.corrAmpF*(Layer.F2-Layer.F1), Layer.H, Layer.W) ELSE  feeding  = Layer.para.corrAmpF*(Layer.F2-Layer.F1)
+       '7' : BEGIN
+           IF n GT 1 THEN BEGIN
+               ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
+               sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
+           END ELSE BEGIN
+               ffeeding = Layer.F1
+               sfeeding = Layer.F2
+           ENDELSE
+       END
+       '8' : feeding = !NONE
+       '9' : feeding = !NONE
+       '14' : BEGIN
+           IF n GT 1 THEN BEGIN
+               ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
+               sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
+           END ELSE BEGIN
+               ffeeding = Layer.F1
+               sfeeding = Layer.F2
+           ENDELSE
+       END
+       ELSE: IF n GT 1 THEN feeding = REFORM(Layer.F, Layer.H, Layer.W) ELSE feeding = Layer.F
    ENDCASE
 
 
@@ -164,6 +173,15 @@ PRO LayerData, _Layer, $
             sinhibition = Layer.I2
          END
       END
+      '14' : BEGIN
+         IF n GT 1 THEN BEGIN 
+            finhibition = REFORM(Layer.I1, Layer.H, Layer.W) 
+            sinhibition = REFORM(Layer.I2, Layer.H, Layer.W)
+         END ELSE BEGIN
+            finhibition = Layer.I1 
+            sinhibition = Layer.I2
+         END
+      END
 
       '12' : BEGIN
          IF n GT 1 THEN shunting = REFORM(Layer.X, Layer.H, Layer.W) $
@@ -182,37 +200,42 @@ PRO LayerData, _Layer, $
 
 ;--- handle THRESHOLD
    CASE Layer.TYPE OF
-      '2' : IF n GT 1 $
-       THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
-       ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+       '2' : IF n GT 1 $
+         THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+             ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
       '6' : IF n GT 1 $
-       THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
-       ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+        THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+            ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
       '7' : IF n GT 1 $
-       THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
-       ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+        THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+            ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+      '14' : IF n GT 1 $
+        THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+             ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
       '8' : threshold = !NONE
       '9' : threshold = !NONE
       'LIF' : threshold = layer.para.th0
       'GRN' : threshold = !NONE
       ELSE: IF n GT 1 THEN $
-       threshold = REFORM(layer.S+layer.para.th0, Layer.H, Layer.W) $
-      ELSE threshold = layer.S+layer.para.th0
-   ENDCASE
-   schwelle = threshold         ; use new english keywords but be compatible
-      
+        threshold = REFORM(layer.S+layer.para.th0, Layer.H, Layer.W) $
+            ELSE threshold = layer.S+layer.para.th0
+  ENDCASE
+  schwelle = threshold          ; use new english keywords but be compatible
+  
 
 
    ; handle SPECIAL TAGS
-   IF (Layer.Type EQ '2') $
+  IF (Layer.Type EQ '2') $
     OR (Layer.Type EQ '6') $
-    OR (Layer.Type EQ '7') THEN BEGIN
+    OR (Layer.Type EQ '7') $
+    OR (Layer.Type EQ '14') THEN BEGIN
       IF n GT 1 THEN $
-       sthreshold = Reform(Layer.R, Layer.H, Layer.W) $
+        sthreshold = Reform(Layer.R, Layer.H, Layer.W) $
       ELSE sthreshold = Layer.R
       lschwelle = sthreshold    ; use new english keywords but be compatible 
-   END
+  ENDIF
 
+  
 ;--- Type 3 (learning potential neuron) was obsolete has been removed 
 ;   IF Layer.Type EQ '3' THEN BEGIN
 ;      IF n GT 1 THEN lernpotential = Reform(Layer.P, Layer.H, Layer.W) ELSE lernpotential = Layer.P
