@@ -69,10 +69,21 @@ Pro assert, condition, text
    
    if not condition then begin
       assertionstring = currentline(1)
+      
+      posbegin = strpos(strupcase(assertionstring), "ASSERT")
+      assertionstring = (split(StrMid(assertionstring, posbegin), $
+                               ","))(1)
+      assertionstring = (split(assertionstring, ";"))(0)
       assertionstring = str(assertionstring)
       
-      Console, /Fatal, PickCaller=1, $
-       ["FAILED ASSERTION: " + "'"+assertionstring+"'.", $
-        "Reason: "+text]
+      If Set(text) then begin
+         message = ["FAILED ASSERTION: " + "'"+assertionstring+"'.", $
+                    "Reason: "+text]
+      endif else begin
+         message = "FAILED ASSERTION: " + "'"+assertionstring+"'."         
+      endelse
+      
+      Console, /Fatal, PickCaller=1, message
+    
    endif
 End
