@@ -10,7 +10,7 @@
 ;                       InitLayer ist lediglich eine Rahmenfunktion, die
 ;                       selbständig die für den jeweiligen Neuronentyp
 ;                       spezifische <A HREF="../simu/layers/#INITLAYER_1">
-;                       InitLayer_i<\A>-Funktion aufruft.
+;                       InitLayer_i</A>-Funktion aufruft.
 ;
 ; CATEGORY:             SIMULATION / LAYERS
 ;
@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/11/06 14:14:30  thiel
+;              Hyperlink-Fehler
+;
 ;       Revision 2.1  1998/11/04 16:32:54  thiel
 ;              Rahmen fuer InitLayer_i-Funktionen.
 ;
