@@ -85,6 +85,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.21  2000/11/02 09:32:52  gabriel
+;          uset_plot instead of setplot
+;
 ;     Revision 2.20  2000/10/01 14:51:35  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -218,7 +221,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
          Print, '   Filename: ', filename+'.'+ty
       END
       
-      Set_Plot, 'ps'      
+      uSet_Plot, 'ps'      
       sheet = { type     : 'ps'         ,$
                 filename : filename     ,$
                 inc      : incremental  ,$
@@ -231,7 +234,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
                 multi    : multi        ,$
                 extra    : e            ,$
                 open     : 0 }
-      Set_Plot, ScreenDevice()
+      uSet_Plot, ScreenDevice()
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN
      
