@@ -143,6 +143,7 @@
 
 ;; ------------ Widget support routines ---------------------
 Pro BDO_Notify_Realize, id
+   COMPILE_OPT HIDDEN
    On_Error, 2
    Widget_Control, id, Get_Uvalue=object
 
@@ -154,21 +155,32 @@ Pro BDO_Notify_Realize, id
    Widget_Control, object->showit(), Timer=object->paint_interval()
 End
 
-Function BDO_Event_Func, event
+Function BDO_ShowIt_Event_Func, event
+   COMPILE_OPT HIDDEN
    If TAG_NAMES(event, /STRUCTURE_NAME) EQ 'WIDGET_TIMER' then begin 
       ;; handle and swallow timer event:
       Widget_Control, event.id, Get_Uvalue=object
       Widget_Control, event.id, Timer=object->paint_interval()
       object->paint
       return, 0
-   Endif else begin
-      return, event             ;pass-through
-   Endelse
+   Endif 
+
+   return, event                ;pass-through
+End
+
+Pro BDO_Event_Pro_xct_button, event
+   COMPILE_OPT HIDDEN
+   ;; only events from the xct-button arrive here.
+   ;; All our widgets have self
+   ;; as uvalue.
+   Widget_Control, event.id, Get_Uvalue=object
+   object -> xct
 End
 
 Pro BDO_UXLoadCT_Callback, DATA=o
-   print,  "call"
-   o->paint_hook_
+   COMPILE_OPT HIDDEN
+;;   o->paint_hook_
+   o->paint
 End
 
 ;; ------------ Member access methods -----------------------
@@ -228,11 +240,33 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
    ;; add any widgets
    ;; all widgets we add here should have self as their user-value.
    ;;
+   ;; use column subbase for buttons and showit:
+   w_column = widget_base(self.widget, UValue=self, $
+                          /Column, Space=0, XPad=0, YPad=0)
+   ;;
+   ;; use row subbase for buttons:
+   w_buttons = widget_base(w_column, UValue=self, $
+                           /Row, Space=0, XPad=0, YPad=0)
+
+   ;;
+   ;; add button for interactive palette selection:
+   ;; all widgets shall have self as UVALUE.
+   ;; we use the UNAME to identify our buttons.
+   self.b_xct = widget_button(w_buttons, UValue=self, $
+                              frame=0, $
+                              Event_Pro="BDO_Event_Pro_xct_button", $
+                              Value=CvtToBm([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], $ 
+                                             [1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1], $
+                                             [1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1], $
+                                             [1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1], $
+                                             [1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1], $
+                                             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]))
+   ;; 
    ;; add showit to present picture
-   self.w_showit = widget_showit(self.widget, Private_Colors=private_colors, $
+   self.w_showit = widget_showit(w_column, Private_Colors=private_colors, $
                                  UValue=self, $
                                  Notify_Realize="BDO_Notify_realize", $
-                                 Event_Func="BDO_Event_Func", $
+                                 Event_Func="BDO_ShowIt_Event_Func", $
                                  BUTTON_EVENTS=button_events, $
                                  EXPOSE_EVENTS =expose_events, $ 
                                  MOTION_EVENTS =motion_events, $ 
@@ -251,6 +285,8 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                                  X_SCROLL_SIZE = x_scroll_size, $ 
                                  Y_SCROLL_SIZE = y_scroll_size, $
                                  FRAME=subframe)
+
+   ;; the showit widget will also produce the timer events
 
    ;; note: adding widgets will never fail.
 
@@ -351,7 +387,7 @@ Pro basic_draw_object::xct, _EXTRA=_extra
       
       ;; do it:
       showit_open, self.w_showit
-      UXLoadCt, _EXTRA=_extra, UPDATECALLBACK=updatecallback, UPDATECBDATA=updatecbdata
+      UXLoadCt, GROUP=self->widget(), /MODAL, _EXTRA=_extra, UPDATECALLBACK=updatecallback, UPDATECBDATA=updatecbdata
       showit_close, self.w_showit, Save_Colors=self.save_colors
    Endif else begin
       console, /Warning, "Skipping xct call for unrealized widget."
@@ -389,6 +425,8 @@ Pro basic_draw_object__DEFINE
             prevent_paint_flag: 0b, $
             delayed_paint_request_flag: 0b, $
             $
-            ct: 0l $ ;; color table
+            ct: 0l, $ ;; color table
+            $
+            b_xct: 0l $ ;; button for interactive palette selection
            }
 End
