@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.30  2000/02/09 18:05:18  kupper
+;       now requesting TRUE_COLOR device, to stop IDL from running on a DIRECT_COLOR, which does not seem to work (???)
+;
 ;       Revision 1.29  1999/12/21 14:59:32  kupper
 ;       DECOMPOSED=0 ist jetzt Standard!
 ;
@@ -157,6 +160,7 @@ defglobvars ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemva
 
 @precompile ;Compile some modules that cannot be compiled automatically
 
+DEVICE, TRUE_COLOR=24; try to get it, if available, but no DIRECT_COLOR!
 DEVICE, DECOMPOSED=0
 
 If WillShowLogo then ShowLogo, SECS=3
