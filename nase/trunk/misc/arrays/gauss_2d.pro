@@ -11,7 +11,7 @@
 ;
 ;
 ;
-; CALLING SEQUENCE: Array = Gauss_2D (x_Laenge, y_Laenge [,sigma | ,HWB=hwb] [,x0] [,y0] )
+; CALLING SEQUENCE: Array = Gauss_2D (x_Laenge, y_Laenge [,NORM] [,sigma | ,HWB=hwb] [,x0] [,y0] )
 ;
 ;
 ; 
@@ -19,6 +19,7 @@
 ;
 ;
 ; OPTIONAL INPUTS: sigma           : Die Standardabweichung in Gitterpunkten. (Default = X_Laenge/6)
+;                  Norm   : Volumen der Gaussmaske auf Eins normiert
 ;	  	   HWB		   : Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu sigma angegeben werden.
 ;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
 ;			  	     Feldes. (Genauer: bei fix(Laenge/2)).
@@ -58,15 +59,19 @@
 ;
 ;
 ;
-; MODIFICATION HISTORY: Urversion irgendwann 1995 (?), Rüdiger Kupper
-;			Keyword HWB zugefügt am 21.7.1997, Rüdiger Kupper
-;			Standard-Arbeitsgruppen-Header angefügt am 25.7.1997, Rüdiger Kupper
-;                            Keywords X0_ARR und Y0_ARR zugefügt, 30.7.1997, Rüdiger Kupper
+; MODIFICATION HISTORY:
+;
+;        $LOG$
+;
+;        Urversion irgendwann 1995 (?), Rüdiger Kupper
+;        Keyword HWB zugefügt am 21.7.1997, Rüdiger Kupper
+;        Standard-Arbeitsgruppen-Header angefügt am 25.7.1997, Rüdiger Kupper
+;        Keywords X0_ARR und Y0_ARR zugefügt, 30.7.1997, Rüdiger Kupper
 ;-
 
 
 Function Gauss_2D, xlen,ylen, $
-                   sigma, hwb=HWB, x0, y0, $ ;(optional)
+                   sigma,NORM=norm,hwb=HWB, x0, y0, $ ;(optional)
                    X0_ARR=x0_arr, Y0_ARR=y0_arr ;(optional)
 
   ; Defaults:
@@ -78,5 +83,7 @@ Function Gauss_2D, xlen,ylen, $
     If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
 
   if ylen eq 1 then return, exp(-shift(dist(xlen,ylen),x0_arr)^2d / 2d /sigma^2d)           
-  return, exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d)          
+  ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
+  If keyword_set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
+  return, ERG(*,*)          
 end
