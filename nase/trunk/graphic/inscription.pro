@@ -6,35 +6,40 @@
 ;  $Id$
 ; 
 ; AIM:
-;  Add text to a plot, with easy positioning.
+;  Annotate a plot using predefined positions
 ;
 ; PURPOSE:
 ;  A procedure for plotting text inside, outside, left, right, ...  of a data plot box
-;  with automatical arrangement.
+;  with automatical aligment.
 ;
 ; CATEGORY:
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*  inscription ,TEXT [,INSIDE=...] [,OUTSIDE=...] [,/LEFT | ,/RIGHT | ,/CENTER]
-;*                    [,/BOTTOM | ,/TOP | ,/MIDDLE] [,XCORR=...] [,YCORR=...]
-;*                    [,_EXTRA=e]
+;*inscription, text [,/INSIDE | ,/OUTSIDE ] 
+;*                  [,/LEFT   | ,/CENTER | ,/RIGHT]
+;*                  [,/BOTTOM | ,/MIDDLE | ,/TOP  ]
+;*                  [,XCORR=...] [,YCORR=...]
+;*
+; all additional keywords will be passed to IDL's <*>XYOuts</*>
 ; 
 ; INPUTS: 
-;  TEXT:: a string variable
+;  text:: string variable
 ;
 ; INPUT KEYWORDS:      
-;  INSIDE::  inside of data plot box
-;  OUTSIDE:: outside of data plot box (default)
-;  LEFT::    near to the left border of data plot box (default)
-;  CENTER::  in the vertical center of data plot box
-;  RIGHT::   near to the right border of data plot box
-;  TOP::     near to the top  of data plot box (default)
-;  MIDDLE::  in the horizontal center of data plot box
-;  BOTTOM::  near to the bottom of data plot box
-;  XCORR::   coordinate correction of the text position in x direction (multiples of !D.X_CH_SIZE)
-;  YCORR::   coordinate correction of the text position in y direction (multiples of !D.Y_CH_SIZE)
-;  _EXTRA::  see the XYOUTS procedure
+;  INSIDE,OUTSIDE   :: text is either positioned inside or outside the
+;                      data plot box (default: <*>/OUTSIDE</*>)
+;  LEFT,CENTER,RIGHT:: text is placed on the left, center or right
+;                      side of data plot box (default: <*>/LEFT</*>)
+;  TOP,MIDDLE,BOTTOM:: text is placed at the top, center or bottom of
+;                      the data plot box (default: <*>/TOP</*>). The
+;                      <*>/MIDDLE</*> option rotates the text 90 degree
+;                      (counter) clockwise, if the horizontal
+;                      alignment is <*>/LEFT</*> or <*>/RIGHT</*>.
+;  XCORR,YCORR::       coordinate correction of the text position in
+;                      horizontal/vertical direction (multiples of
+;                      !D.X_CH_SIZE). Positive <*>X/YCORR</*> shifts
+;                      text to the top/right of the plot.
 ;
 ; RESTRICTIONS:
 ;  Before using this procedure, a plot routine with a data plot box must be used.
@@ -46,95 +51,101 @@
 ;
 ;-
 PRO inscription ,TEXT,INSIDE=INSIDE,OUTSIDE=OUTSIDE,LEFT=LEFT,RIGHT=RIGHT,CENTER=CENTER,BOTTOM=BOTTOM,TOP=TOP,$
-                  CHARSIZE=CHARSIZE,MIDDLE=MIDDLE,ORIENTATIOn=ORIENTATION,ALIGNMENT=ALIGNMENT,XCORR=XCORR,$
+                 CHARSIZE=_CHARSIZE,MIDDLE=MIDDLE,ORIENTATION=ORIENTATION,ALIGNMENT=ALIGNMENT,XCORR=XCORR,$
                  YCORR=ycorr,_EXTRA=e
-   on_ERROR,2
+   On_ERROR,2
 
-   IF NOT set(left) AND NOT set(right) AND NOT set(center) THEN  default,left,1
-   IF NOT set(top) AND NOT set(bottom) AND NOT set(middle) THEN  default,top,1
-   IF NOT set(inside) AND NOT set(outside)  THEN  default,outside,1 
-   default,xcorr,0
-   default,ycorr,0
-   default,inside,0
-   default,outside,0
-   default,LEFT,0
-   default,RIGHT,0
-   default,CENTER,0
-   DEFAULT,BOTTOM,0
-   DEFAULT,TOP,0
-   DEFAULT,CHARSIZE,1.0
-   DEFAULT,MIDDLE,0
-   plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
-   ;print,plotregion_norm
-   plotregion_device = UCONVERT_COORD(plotregion_norm,/NORM,/TO_DEVICE)
-   ;print,plotregion_device
-   top_rand =  !D.Y_VSIZE - plotregion_device(1,1)
-   bottom_rand = plotregion_device(1,0)
-   left_rand =  !D.X_VSIZE - plotregion_device(0,1)
-   right_rand = plotregion_device(0,0)
+   IF NOT Keyword_Set(left)   AND NOT Keyword_Set(right)   AND NOT Keyword_Set(center) THEN Default, left, 1
+   IF NOT Keyword_Set(top)    AND NOT Keyword_Set(bottom)  AND NOT Keyword_Set(middle) THEN Default, top , 1
+   IF NOT Keyword_Set(inside) AND NOT Keyword_Set(outside) THEN Default,outside,1 
+   Default, xcorr,0
+   Default, ycorr,0
+   Default, _CHARSIZE, !P.Charsize
+   CHARSIZE = _CHARSIZE*sqrt(1./MAX([1.,(!P.MULTI(1)), (!P.MULTI(2))])) 
+   
+   ; pr : plotregion
+   pr_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
+   pr_dev = UCONVERT_COORD(pr_norm,/NORM,/TO_DEVICE)
 
-   hw = reform(plotregion_device(*,1)-plotregion_device(*,0)) ; hoehe und breite 
-;stop
-   facy = 1
-   facx = 1
+   tick_norm = [(!X.Window(1)-!X.Window(0))*!Y.Ticklen, (!Y.Window(1)-!Y.Window(0))*!X.Ticklen]
+   tick_dev  = UCONVERT_COORD(tick_norm,/NORM,/TO_DEVICE)
+
+   char_dev  = Charsize*[!D.X_CH_SIZE, !D.Y_CH_SIZE]
+
+   hw = reform(pr_dev(*,1)-pr_dev(*,0)) ; height-to-width ratio
+
+
+   ;; determine ordinate of text
    CASE 1 OF 
-      BOTTOM EQ 1: BEGIN
-         y0 = plotregion_device(1,0)
-         facy = -1
-         default,ORIENTATION,0
-     END
-      TOP EQ 1: BEGIN
-         y0 = plotregion_device(1,1)
-         facy = +2
-         default,ORIENTATION,0
-      END
-      MIDDLE EQ 1: BEGIN 
-         y0 = plotregion_device(1,0) + hw(1)/2.
-         facy = 0
-         
-         default,ORIENTATION,90
-      END
+       Keyword_Set(BOTTOM): BEGIN
+           IF Keyword_Set(INSIDE) THEN y0 = pr_dev(1,0)+tick_dev(1)+char_dev(1)/2. $
+                                  ELSE y0 = pr_dev(1,0)-char_dev(1) 
+           default, ORIENTATION, 0
+       END
+       Keyword_Set(TOP): BEGIN
+           IF Keyword_Set(INSIDE) THEN y0 = pr_dev(1,1)-tick_dev(1)-char_dev(1) $
+                                  ELSE y0 = pr_dev(1,1)+char_dev(1)/2. 
+           Default, ORIENTATION, 0
+       END
+       Keyword_Set(MIDDLE): BEGIN 
+           y0 = pr_dev(1,0)+hw(1)/2.
+           default,ORIENTATION,90
+       END
    ENDCASE
+   
+
+   ;; and now the abscissa
    CASE 1  OF 
-      LEFT EQ 1: BEGIN 
-         x0 = plotregion_device(0,0)
-         facx = -1
-         IF MIDDLE EQ 1 THEN default ,ALIGNMENT , 0.5
-         default ,ALIGNMENT , 0
-         ORIENTATION = ORIENTATION
-      END
-      RIGHT EQ 1: BEGIN 
-         x0 = plotregion_device(0,1)
-         facx = 1
-         IF MIDDLE EQ 1 THEN default ,ALIGNMENT , 0.5
-         default,ALIGNMENT ,1
-         ORIENTATION = ORIENTATION*(-1)
-      END
-      CENTER EQ 1:BEGIN 
-         x0 = plotregion_device(0,0) + hw(0)/2.
-         default,ALIGNMENT ,0.5
-         facx = 0
-      END
+       Keyword_Set(LEFT): BEGIN 
+           IF Keyword_Set(MIDDLE) THEN BEGIN
+               Default, ALIGNMENT, 0.5
+               IF Keyword_Set(INSIDE) THEN x0=pr_dev(0,0)+tick_dev(0)+char_dev(1) $
+                                      ELSE x0=pr_dev(0,0)-char_dev(1)/2. 
+           END ELSE BEGIN
+               Default, ALIGNMENT, 0
+               x0 = pr_dev(0,0)+tick_dev(0)+char_dev(0)/2. 
+           END
+       END
+       Keyword_Set(RIGHT): BEGIN 
+           IF Keyword_Set(MIDDLE) THEN BEGIN
+               Default, ALIGNMENT, 0.5
+               IF Keyword_Set(INSIDE) THEN x0=pr_dev(0,1)-tick_dev(0)-char_dev(1) $
+                                      ELSE x0=pr_dev(0,1)+char_dev(1)/2.
+           END ELSE BEGIN
+               Default, ALIGNMENT, 1
+               x0 = pr_dev(0,1)-tick_dev(0)-char_dev(0)/2. 
+           END
+           Orientation = Orientation*(-1)
+       END
+       Keyword_Set(CENTER): BEGIN 
+           x0 = pr_dev(0,0)+hw(0)/2.
+           Default, ALIGNMENT, 0.5
+       END
    ENDCASE
-   CASE  1 OF
-      INSIDE EQ 1:BEGIN
-         facx = facx*(-1)
-         facy = facy*(-1)
-         IF MIDDLE EQ 1 THEN facx =  facx *4
-         x0 = x0 +facx*!D.X_CH_SIZE & y0 = y0 + facy *!D.Y_CH_SIZE
-      END
-   
-      OUTSIDE EQ 1 :BEGIN
-         IF TOP EQ 1 THEN FACy = facy/2.
-         IF BOTTOM EQ 1 THEN FACy = facy*3.
-         IF (RIGHT EQ 1 OR left EQ 1) AND (MIDDLE EQ 0) THEN facx = 0
-         IF MIDDLE EQ 1 AND LEFT EQ 1 THEN facx = -4
-         x0 = x0 + facx*!D.X_CH_SIZE & y0 = y0 + facy *!D.Y_CH_SIZE
-        ; stop
-      END
-   ENDCASE
-   ;print,x0,y0,hw
-   
+
    xyouts,xcorr*CHARSIZE*!D.X_CH_SIZE+x0,ycorr*CHARSIZE*!D.y_CH_SIZE+y0,TEXT,$
-    /DEVICE,ALIGNMENT=ALIGNMENT,ORIENTATION=ORIENTATION,CHARSIZE=CHARSIZE,_EXTRA=e
+     /DEVICE,ALIGNMENT=ALIGNMENT,ORIENTATION=ORIENTATION,CHARSIZE=CHARSIZE,_EXTRA=e
 END
+
+
+;plot, indgen(10)
+;inscription,"inside left top", /INSIDE,/LEFT,/TOP
+;inscription,"inside center top", /INSIDE,/CENTER,/TOP
+;inscription,"inside right top", /INSIDE,/RIGHT,/TOP
+;inscription,"outside left top", /outSIDE,/LEFT,/TOP
+;inscription,"outside center top", /OUTSIDE,/CENTER,/TOP
+;inscription,"outside right top", /outSIDE,/RIGHT,/TOP
+;inscription,"outside right bottom", /OUTSIDE,/RIGHT,/BOTTOM
+;inscription,"outside center bottom", /OUTSIDE,/CENTER,/bottom
+;inscription,"outside left bottom", /OUTSIDE,/LEFT,/BOTTOM
+;inscription,"inside left bottom", /INSIDE,/LEFT,/BOTTOM
+;inscription,"inside center bottom", /inSIDE,/CENTER,/bottom
+;inscription,"inside right bottom", /INSIDE,/RIGHT,/bottom
+;inscription,"outside right middle", /OUTSIDE,/RIGHT,/MIDDLE
+;inscription,"outside center middle", /OUTSIDE,/CENTER,/middle
+;inscription,"outside left middle", /OUTSIDE,/LEFT,/MIDDLE
+;inscription,"inside left middle", /INSIDE,/LEFT,/MIDDLE
+;inscription,"inside center middle", /inSIDE,/CENTER,/middle
+;inscription,"inside right middle", /INSIDE,/RIGHT,/MIDDLE
+
+;END
