@@ -1,6 +1,8 @@
 ;+
 ; NAME: RFScan_Schaumal
 ;
+; AIM: 
+;
 ; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
 ;
 ; CALLING SEQUENCE: RFScan_Schaumal, My_RFScan, OutLayer [,/NOVISUALIZE]
@@ -22,10 +24,13 @@
 ; EXAMPLE: RFScan_Schaumal, My_RFScan, SimpleCells
 ;
 ; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2000/09/28 12:40:35  gabriel
+;             AIM tag added , message <> console
+;
 ;        Revision 1.8  1999/06/07 16:11:41  kupper
 ;        Wasnt working with OBSERVE_SPIKES as layers are handles now. Fixed.
 ;
@@ -60,7 +65,7 @@
 ;                 Header mach ich noch...
 ;                 VISUALIZE-Keyword ist noch nicht implementiert...
 ;
-;-
+;
 
 Pro RFScan_Schaumal, RFS, OutLayer, NOVISUALIZE=novisualize
 

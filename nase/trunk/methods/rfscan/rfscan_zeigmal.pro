@@ -1,6 +1,8 @@
 ;+
 ; NAME: RFScan_Zeigmal()
 ;
+; AIM:  
+;
 ; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
 ;
 ; CALLING SEQUENCE: Inputbild = RFScan_Zeigmal( My_RFScan [,Picture] )
@@ -27,10 +29,13 @@
 ; EXAMPLE: MyPic = RFScan_Zeigmal( My_RFScan )
 ;
 ; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/09/28 12:39:57  gabriel
+;             AIM tag added , message <> console
+;
 ;        Revision 1.6  2000/06/16 08:53:15  kupper
 ;        Added AUTO_SINGLEDOT.
 ;
@@ -58,7 +63,7 @@
 ;                 Header mach ich noch...
 ;                 VISUALIZE-Keyword ist noch nicht implementiert...
 ;
-;-
+;
 
 Function ReturnPic, RFS
    If Keyword_Set(RFS.VISUALIZE) then begin
@@ -102,7 +107,7 @@ Function RFScan_Zeigmal, RFS, Picture
    
    ;;------------------> Manual Definition of Picture
    If RFS.manual then begin
-      If not set(Picture) then message, "Please specify Picture to present!"
+      If not set(Picture) then console, /fatal , "Please specify Picture to present!"
       RFS.Picture = Picture
       RFS.count = RFS.count+1
       Return, ReturnPic(RFS)
@@ -134,8 +139,8 @@ Function RFScan_Zeigmal, RFS, Picture
    If Keyword_Set(RFS.auto_horizontaledge) then begin
       If RFS.auto_horizontaledge le 2 then begin ;Einzelne Kanten
          If RFS.count eq RFS.height-1 then begin
-            message, /INFORM, "Edge has been presented at all possible vertical positions"
-            message, /INFORM, " - new cycle starting NOW."
+            console, /msg, "Edge has been presented at all possible vertical positions"
+            console, /msg, " - new cycle starting NOW."
             RFS.shiftpositions = all_random(RFS.height) 
          Endif
          RFS.count = (RFS.count+1) mod RFS.height ;Index of next Position
@@ -146,8 +151,8 @@ Function RFScan_Zeigmal, RFS, Picture
       End
       If RFS.auto_horizontaledge eq 3 then begin ;Zwei Kanten
          If RFS.count eq RFS.height-1 then begin
-            message, /INFORM, "Edges have been presented at all possible vertical positions"
-            message, /INFORM, " - new cycle starting NOW."
+            console, /msg, "Edges have been presented at all possible vertical positions"
+            console, /msg, " - new cycle starting NOW."
             RFS.shiftpositions = all_random(RFS.height)
             RFS.shiftpositions2 = all_random(RFS.height)
          Endif
@@ -164,8 +169,8 @@ Function RFScan_Zeigmal, RFS, Picture
    If Keyword_Set(RFS.auto_verticaledge) then begin
       If RFS.auto_verticaledge le 2 then begin ;Einzelne Kanten
          If RFS.count eq RFS.width-1 then begin
-            message, /INFORM, "Edge has been presented at all possible horizontal positions"
-            message, /INFORM, " - new cycle starting NOW."
+            console, /msg, "Edge has been presented at all possible horizontal positions"
+            console, /msg, " - new cycle starting NOW."
             RFS.shiftpositions = all_random(RFS.width) 
          Endif
          RFS.count = (RFS.count+1) mod RFS.width ;Index of next Position
@@ -176,8 +181,8 @@ Function RFScan_Zeigmal, RFS, Picture
       EndIf
       If RFS.auto_verticaledge eq 3 then begin ;Zwei Kanten
          If RFS.count eq RFS.width-1 then begin
-            message, /INFORM, "Edges have been presented at all possible vertical positions"
-            message, /INFORM, " - new cycle starting NOW."
+            console, /msg, "Edges have been presented at all possible vertical positions"
+            console, /msg, " - new cycle starting NOW."
             RFS.shiftpositions = all_random(RFS.width)
             RFS.shiftpositions2 = all_random(RFS.width)
          Endif
@@ -195,8 +200,8 @@ Function RFScan_Zeigmal, RFS, Picture
    ;;------------------> Vertically Shift predefined Picture (SHIFT_VERTICAL)
    If Keyword_Set(RFS.shift_vertical) then begin
       If RFS.count eq RFS.height-1 then begin
-         message, /INFORM, "Picture has been presented at all possible vertical positions"
-         message, /INFORM, " - new cycle starting NOW."
+         console, /msg, "Picture has been presented at all possible vertical positions"
+         console, /msg, " - new cycle starting NOW."
          RFS.shiftpositions = all_random(RFS.height) 
       Endif
       RFS.count = (RFS.count+1) mod RFS.height ;Index of next Position
@@ -209,8 +214,8 @@ Function RFScan_Zeigmal, RFS, Picture
    ;;------------------> Horizontally Shift predefined Picture (SHIFT_HORIZONTAL)
    If Keyword_Set(RFS.shift_horizontal) then begin
       If RFS.count eq RFS.width-1 then begin
-         message, /INFORM, "Picture has been presented at all possible horizontal positions"
-         message, /INFORM, " - new cycle starting NOW."
+         console, /msg, "Picture has been presented at all possible horizontal positions"
+         console, /msg, " - new cycle starting NOW."
          RFS.shiftpositions = all_random(RFS.width) 
       Endif
       RFS.count = (RFS.count+1) mod RFS.width ;Index of next Position
@@ -223,8 +228,8 @@ Function RFScan_Zeigmal, RFS, Picture
    ;;------------------> Shift predefined Picture in both directions (SHIFT_BOTH)
    If Keyword_Set(RFS.shift_both) then begin
       If RFS.count eq (RFS.width*RFS.height)-1 then begin
-         message, /INFORM, "Picture has been presented at all possible positions"
-         message, /INFORM, " - new cycle starting NOW."
+         console, /msg, "Picture has been presented at all possible positions"
+         console, /msg, " - new cycle starting NOW."
          RFS.shiftpositions = all_random(RFS.width*RFS.height) 
       Endif
       RFS.count = (RFS.count+1) mod (RFS.width*RFS.height) ;Index of next Position
