@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-; Init_SuperClasses()
+;       Init_SuperClasses()
 ;
 ; PURPOSE: Well-behaved initialization of an object's superclasses.
 ;            When deriving a new class from one or more superclasses, the user
@@ -46,19 +46,26 @@
 ;
 ;          Function MyClass::INIT, MY_KEYWORD=m, _REF_EXTRA=other_keywords
 ;
-;           ; Do whatever initialization is needed for a MyClass object,
-;           ; IN ADDITION to initialization of the superclasses:
+;           ; Try to initialize the superclass-portion of the
+;           ; object. If it fails, exit returning false:
+;           If not Init_Superclasses(self, _EXTRA=other_keywords) then return, 0
+;
+;           ; Try whatever initialization is needed for a MyClass object,
+;           ; IN ADDITION to the initialization of the superclasses:
 ;           [...]
 ;
-;           ; If this initialization failed, cleanup whatever necessary and
-;           ; return false:
+;           ; If this initialization failed, cleanup whatever
+;           ; necessary after this fail, then cleanup the
+;           ; superclass-portion again, then exit returning false:
 ;           If not success then begin
 ;             [...]
+;             <A HREF="#CLEANUP_SUPERCLASSES">Cleanup_SuperClasses</A>, self, KEYWORD1=k1, ...
 ;             return, 0
 ;           EndIf
 ;
-;           ; Otherwise, try to initialize the superclass-part of the object.
-;           return, Init_Superclasses(self, _EXTRA=other_keywords)
+;           ; If we reach this point, initialization of the
+;           ; whole object succeeded, and we can return true:
+;           return, 1
 ;
 ;          End
 ;            
@@ -67,6 +74,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/02/21 18:58:50  kupper
+;        Oops! My example was wrong... sorry.
+;
 ;        Revision 1.1  2000/02/21 18:10:18  kupper
 ;        Why is the fucking IDL compiler not doing all this work???
 ;
