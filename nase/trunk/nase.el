@@ -1,5 +1,6 @@
 ;(setq comment-start-skip ";+\\*?[ \t]*")
 
+
 ;(defun idlwave-nase-fill-paragraph (&optional nohang)
 ;  "Fills paragraphs in comments.
 ;A paragraph is made up of all contiguous lines having the same comment
