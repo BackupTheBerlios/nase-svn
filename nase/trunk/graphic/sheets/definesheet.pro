@@ -19,7 +19,7 @@
 ;                     PS         : Das Sheet wird als PS in ein File gespeichert.
 ;                     NULL       : Das Sheet unterdrueckt jegliche Ausgabe
 ;                     MULTI      : Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
-;                                  Beschreibung des MULTI-Parameters s. <A HREF="#SCROLLIT">ScrollIt()</A>.
+;                                  Beschreibung des MULTI-Parameters s. <A HREF="../#SCROLLIT">ScrollIt()</A>.
 ;                                  Wenn angegeben, ist das Ergebnis von DefineSheet ein MultiSheet (Array von Sheets).
 ;                     INCREMENTAL: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
 ;                                  File geschlossen. Malt man nun mehrmals in ein Sheet gibt es 
@@ -50,12 +50,15 @@
 ;                     dummy = Get_Kbrd(1)
 ;                     DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
 ;           <A HREF="#OPENSHEET">OpenSheet</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  1998/06/18 15:01:11  kupper
+;            Hyperlings geupgedatet nach Veraenderigung der Verzeichnischtrugdur.
+;
 ;     Revision 2.10  1998/06/03 10:30:54  saam
 ;           now ps works with multi
 ;

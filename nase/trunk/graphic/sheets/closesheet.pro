@@ -21,12 +21,15 @@
 ;                    dummy = Get_Kbrd(1)
 ;                    DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
 ;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#OPENSHEET">OpenSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/06/18 15:01:10  kupper
+;            Hyperlings geupgedatet nach Veraenderigung der Verzeichnischtrugdur.
+;
 ;     Revision 2.4  1998/05/18 18:25:10  kupper
 ;            Multi-Sheets implementiert!
 ;
