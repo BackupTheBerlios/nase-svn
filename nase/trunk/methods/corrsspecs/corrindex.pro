@@ -1,6 +1,8 @@
 ;+
 ; NAME:               CorrIndex
 ;
+; AIM:                computes the correlation index of an auto or  cross correlation
+;
 ; PURPOSE:            Diese Funktion berechnet den Correlationsindex einer Auto-
 ;                     oder Kreuzkorrelation (CH). Der Korrelationsindex ist die signifikante
 ;                     Flaeche unter dem mittelwertfreien, zentralen Korrelationspeak:
@@ -41,10 +43,13 @@
 ;                     ach    = CrossCor(signal, signal, length)
 ;                     t      = FIndGen(2*length+1)-length
 ;                     CI     = CorrIndex(ach, t, PEAKWIDTH=1, /PLOT) 
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 14:09:08  gabriel
+;          AIM tag added, console <> message
+;
 ;     Revision 1.2  1998/06/14 15:52:28  saam
 ;           + now returns to calling procedure if an error occurs
 ;           + time axis is now optional
@@ -54,15 +59,15 @@
 ;           dokumentiert
 ;
 ;
-;-
+;
 
 FUNCTION CorrIndex, ch, t, PEAKWIDTH=peakwidth, PLOT=plot
 
    On_Error,2
    
    IF (N_PARAMS()    LT 2 )    THEN t=IndGen(N_Elements(ch))-N_ELements(ch)/2
-   IF ((Size(ch))(0) NE 1 )    THEN Message, 'wrong format for signal'
-   IF ((Size(t))(0)  NE 1 )    THEN Message, 'wrong format for signal'
+   IF ((Size(ch))(0) NE 1 )    THEN console, /fatal, 'wrong format for signal'
+   IF ((Size(t))(0)  NE 1 )    THEN console, /fatal, 'wrong format for signal'
 
    IF (NOT Keyword_Set(peakwidth)) THEN peakwidth = 30.0
    
