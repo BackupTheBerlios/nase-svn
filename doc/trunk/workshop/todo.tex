@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.6  2000/10/10 11:47:51  thiel
+%           Some more To-Dos fulfilled.
+%
 %       Revision 1.5  2000/10/06 15:17:38  saam
 %       new todo :(
 %
@@ -141,7 +144,6 @@ Version: \$Id$ $\$
 \section{Control}
 \begin{itemize}
 \item allow \texttt{console} to log into a file, simultaneously
-\item \texttt{console} ignores level keyword and outputs filename instead of procedure/function name
 \item \texttt{console} fails, if xwindow id closed and a console command occurs
 \item \texttt{console} should not be the son of !MH
 \item \texttt{SimTime}: make it work together with console
@@ -153,25 +155,21 @@ Version: \$Id$ $\$
 \begin{itemize}
 \item \texttt{PlotTvScl}: PS and NASE option broken
 \item \texttt{PlotTvScl}: legend only approximately identical with actual coordinate system
-\item \texttt{CAW}: doesn't work for Andreas
 \end{itemize}
 
 
 \section{Methods}
 \begin{itemize}
-\item \texttt{peakPicker}: strange or wrong keyword handling
 \end{itemize}
 
 
 \section{MIND}
-
 \begin{itemize}
 \item simulation and analysis routines save their evaluation parameters via \texttt{Video}s
 \item allow deletion of unnecessary tags
 \item external learning rules should display relevant information
 \item \texttt{DSim}: not up to date
 \item \texttt{FakeEach}: omit the skel keyword, or delete from documentation
-\item modify \texttt{foreach} to process multiple parameter variations synchronously. 
 \item display iteration time in \texttt{console} instead of terminal
 \item \texttt{UOpenR} and partners should use IDLs streaming ZIP functionality
 \end{itemize}
@@ -191,7 +189,6 @@ Version: \$Id$ $\$
 
 
 \section{Simulation Kernel}
-
 \begin{itemize}
 \item \texttt{saveDW} and \texttt{restoreDW} should work with \texttt{SDW}
 \item initialize T2C on demand and in a separate function
@@ -206,9 +203,14 @@ Version: \$Id$ $\$
 
 \section{Fulfilled ToDos}
 \begin{itemize}
-\item lExtrac: removed because obsolete [done, AT]
-\item \texttt{delayWeigh}: improvement in processing speed and memory consumption? NOPE [done]
-\item improve \texttt{mSetSDW} with \texttt{temporary}: no improvement [done, BAS]
+\item LExtrac: removed because obsolete [done, AT]
+\item \texttt{DelayWeigh}: improvement in processing speed and memory consumption? NOPE [done]
+\item Improve \texttt{MSetSDW} with \texttt{temporary}: no improvement [done, BAS]
+\item \texttt{Console} ignores level keyword and outputs filename instead of procedure/function name [fixed, BAS]
+\item \texttt{CAW}: doesn't work for Andreas, but \texttt{Widget_Control, /RESET} does.
+\item \texttt{PeakPicker}: strange or wrong keyword handling. [fixed, AT]
+\item Modify \texttt{foreach} to process multiple parameter variations synchronously. [done, MS & AT] 
+\item Commit neuron type file [done, AT]
 \end{itemize}
 
 
