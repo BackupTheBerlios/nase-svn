@@ -56,23 +56,23 @@
 ;   interpreted as pointers into the buffer.
 ;
 ; EXAMPLE:
-;*   IDL> MyQueue = InitQueue()
+;*   MyQueue = InitQueue()
 ;*
-;*   IDL> EnQueue, MyQueue, "erster"       ; immer
-;*   IDL> EnQueue, MyQueue, "zweiter"      ; hinten
-;*   IDL> EnQueue, MyQueue, "letzter"      ; anstellen!
+;*   EnQueue, MyQueue, "erster"       ; immer
+;*   EnQueue, MyQueue, "zweiter"      ; hinten
+;*   EnQueue, MyQueue, "letzter"      ; anstellen!
 ;*   
-;*   IDL> print, Head( MyQueue )           
+;*   print, Head( MyQueue )           
 ;*   > erster
-;*   IDL> print, Tail( MyQueue )           
+;*   print, Tail( MyQueue )           
 ;*   > letzter
 ;*   
-;*   IDL> print, DeQueue( MyQueue )        
+;*   print, DeQueue( MyQueue )        
 ;*   > erster
-;*   IDL> print, DeQueue( MyQueue )        
+;*   print, DeQueue( MyQueue )        
 ;*   > zweiter
 ;*   
-;*   IDL> FreeQueue, MyQueue 
+;*   FreeQueue, MyQueue 
 ;
 ; SEE ALSO:
 ;   <A>EnQueue</A>, <A>DeQueue()</A>, <A>DeTail</A>, <A>Head()</A>,
@@ -83,6 +83,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/10/16 14:12:24  kupper
+;        header polishing.
+;
 ;        Revision 1.5  2000/10/11 16:50:39  kupper
 ;        Re-implemented fixed queues to allow for using them as bounded queues
 ;        also. (HOPE it works...) Implemented dequeue for these queues and

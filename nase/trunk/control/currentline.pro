@@ -20,7 +20,7 @@
 ;  Help
 ;
 ; CALLING SEQUENCE:
-;  result = currentline( [pick] )
+;* result = currentline( [pick] )
 ;  
 ; OPTIONAL INPUTS:
 ;  pick:: The number of the routine on the callstack that information
@@ -57,11 +57,11 @@
 ;  
 ; EXAMPLE:
 ;   1. enter at the prompt:
-;   IDL> print, currentline()
-;   > (main level code)
+;*  print, currentline()
+;*  > (main level code)
 ;   
 ;   2. run a program and interrup anywhere
-;   IDL> print, currentline()
+;*  print, currentline()
 ;   see what happens.
 ;  
 ; SEE ALSO:
