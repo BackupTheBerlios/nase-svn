@@ -14,7 +14,7 @@
 ;  least-squares problem.  In its typical use, MPFIT will be used to
 ;  fit a user-supplied function (the "model") to user-supplied data
 ;  points (the "data") by adjusting a set of parameters.
-;
+;*
 ;  For example, a researcher may think that a set of observed data
 ;  points is best modelled with a Gaussian curve.  A Gaussian curve is
 ;  parameterized by its mean, standard deviation and normalization.
@@ -22,14 +22,14 @@
 ;  which best fits the data.  The fit is "best" in the least-squares
 ;  sense; that is, the sum of the weighted squared differences between
 ;  the model and data is minimized.
-;
+;*
 ;  The Levenberg-Marquardt technique is a particular strategy for
 ;  iteratively searching for the best fit.  This particular
 ;  implementation is drawn from MINPACK-1 (see NETLIB), and seems to
 ;  be more robust than routines provided with IDL.  This version
 ;  allows upper and lower bounding constraints to be placed on each
 ;  parameter, or the parameter can be held fixed.
-;
+;*
 ;  The IDL user-supplied function should return an array of weighted
 ;  deviations between model and data.  In a typical scientific problem
 ;  the residuals should be weighted so that each deviate has a
@@ -38,23 +38,23 @@
 ;  represents the error in the measurements, then the deviates could
 ;  be calculated as follows:
 ;
-;    DEVIATES = (Y - F(X)) / ERR
+;*    DEVIATES = (Y - F(X)) / ERR
 ;
 ;  where F is the analytical function representing the model.  You are
 ;  recommended to use the convenience functions MPFITFUN and
 ;  MPFITEXPR, which are driver functions that calculate the deviates
 ;  for you.  If ERR are the 1-sigma uncertainties in Y, then
 ;
-;    TOTAL( DEVIATES^2 ) 
+;*    TOTAL( DEVIATES^2 ) 
 ;
 ;  will be the total chi-squared value.  MPFIT will minimize the
 ;  chi-square value.  The values of X, Y and ERR are passed through
 ;  MPFIT to the user-supplied function via the FUNCTARGS keyword.
-;
+;*
 ;  MPFIT does not perform more general optimization tasks.  See TNMIN
 ;  instead.  MPFIT is customized, based on MINPACK-1, to the
 ;  least-squares minimization problem.
-;
+;*
 ;  In the search for the best-fit solution, MPFIT calculates
 ;  derivatives numerically via a finite difference approximation, by
 ;  default.  The user-supplied function need not calculate the
@@ -76,12 +76,12 @@
 ;  Math
 ;
 ; CALLING SEQUENCE:
-;   parms = MPFIT(MYFUNCT, start_parms, FUNCTARGS=fcnargs, NFEV=nfev,
-;                 MAXITER=maxiter, ERRMSG=errmsg, NPRINT=nprint, QUIET=quiet, 
-;                 FTOL=ftol, XTOL=xtol, GTOL=gtol, NITER=niter, 
-;                 STATUS=status, ITERPROC=iterproc, ITERARGS=iterargs,
-;                 COVAR=covar, PERROR=perror, BESTNORM=bestnorm,
-;                 PARINFO=parinfo)
+;*   parms = MPFIT(MYFUNCT, start_parms, FUNCTARGS=fcnargs, NFEV=nfev,
+;*                 MAXITER=maxiter, ERRMSG=errmsg, NPRINT=nprint, QUIET=quiet, 
+;*                 FTOL=ftol, XTOL=xtol, GTOL=gtol, NITER=niter, 
+;*                 STATUS=status, ITERPROC=iterproc, ITERARGS=iterargs,
+;*                 COVAR=covar, PERROR=perror, BESTNORM=bestnorm,
+;*                 PARINFO=parinfo)
 ;
 ; INPUTS:
 ;   MYFUNCT:: a string variable containing the name of the function to
@@ -89,15 +89,15 @@
 ;             deviations between the model and the data.  It should be
 ;             declared in the following way (or in some equivalent):
 ;
-;             FUNCTION MYFUNCT, p, dp, X=x, Y=y, ERR=err
-;              ; Parameter values are passed in "p"
-;              model = F(x)
-;              ; Optionally compute derivatives -- NOT REQUIRED
-;              if n_params() GT 1 then dp = ...  ; NOT REQUIRED
-;
-;              ; Calculation of deviations occurs here
-;              return, (y-model)/err
-;             END
+;*             FUNCTION MYFUNCT, p, dp, X=x, Y=y, ERR=err
+;*              ; Parameter values are passed in "p"
+;*              model = F(x)
+;*              ; Optionally compute derivatives -- NOT REQUIRED
+;*              if n_params() GT 1 then dp = ...  ; NOT REQUIRED
+;*
+;*              ; Calculation of deviations occurs here
+;*              return, (y-model)/err
+;*             END
 ;
 ;             The keyword parameters X, Y, and ERR in the example
 ;             above are suggestive but not required.  Any parameters
@@ -105,12 +105,12 @@
 ;             to MPFIT.  Use MPFITFUN and MPFITEXPR if you need ideas
 ;             on how to do that.  The function *must* accept a
 ;             parameter list, P, and *at least* one keyword.
-;
+;*
 ;             In general there are no restrictions on the number of
 ;             dimensions in X, Y or ERR.  However the deviates *must*
 ;             be returned in a one-dimensional array, and must have
 ;             the same type (float or double) as the input arrays.
-;
+;*
 ;             You may wish to compute your own derivatives (rather
 ;             than allowing MPFIT to compute them for you), if for
 ;             example, it is straightforward to do it analytically.
@@ -124,18 +124,18 @@
 ;             sufficient and even faster to allow MPFIT to calculate
 ;             the derivatives numerically, and so AUTODERIVATIVE=0 is
 ;             not necessary.
-;             
+;*             
 ;             The derivatives with respect to fixed parameters are
 ;             ignored; zero is an appropriate value to insert for
 ;             those derivatives.  If the data is higher than one
 ;             dimensional, then the *last* dimension should be the
 ;             parameter dimension.  Example: fitting a 50x50 image,
 ;             "dp" should be 50x50xNPAR.
-;
+;*
 ;             User functions can automatically decide whether they are
 ;             expected to provide derivatives if N_PARAMS() is greater
 ;             than one.
-;
+;*
 ;             User functions may also indicate a fatal error condition
 ;             using the ERROR_CODE common block variable, as described
 ;             below under the MPFIT_ERROR common block definition.
@@ -145,7 +145,7 @@
 ;                  should be fewer than the number of measurements.
 ;                  Also, the parameters should have the same data type
 ;                  as the measurements (double is preferred).
-;
+;*
 ;                  This parameter is optional if the PARINFO keyword
 ;                  is used (but see PARINFO).  The PARINFO keyword
 ;                  provides a mechanism to fix or constrain individual
@@ -176,9 +176,9 @@
 ;           Parameter errors are also returned in PERROR.
 ;
 ;           To compute the correlation matrix, PCOR, use this example:
-;           IDL> PCOR = COV * 0
-;           IDL> FOR i = 0, n-1 DO FOR j = 0, n-1 DO $
-;                PCOR(i,j) = COV(i,j)/sqrt(COV(i,i)*COV(j,j))
+;*           IDL> PCOR = COV * 0
+;*           IDL> FOR i = 0, n-1 DO FOR j = 0, n-1 DO $
+;*                PCOR(i,j) = COV(i,j)/sqrt(COV(i,i)*COV(j,j))
 ;
 ;           If NOCOVAR is set or MPFIT terminated abnormally, then
 ;           COVAR is set to a scalar with value !VALUES.D_NAN.
@@ -208,11 +208,11 @@
 ;               using common blocks.
 ;
 ;               Consider the following example:
-;                if FUNCTARGS = { XVAL:[1.D,2,3], YVAL:[1.D,4,9],
-;                                 ERRVAL:[1.D,1,1] }
+;*                if FUNCTARGS = { XVAL:[1.D,2,3], YVAL:[1.D,4,9],
+;*                                 ERRVAL:[1.D,1,1] }
 ;                then the user supplied function should be declared
 ;                like this:
-;                FUNCTION MYFUNCT, P, XVAL=x, YVAL=y, ERRVAL=err
+;*                FUNCTION MYFUNCT, P, XVAL=x, YVAL=y, ERRVAL=err
 ;
 ;               By default, no extra parameters are passed to the
 ;               user-supplied function, but your function should
@@ -236,15 +236,15 @@
 ;              iteration of the MPFIT routine.  It should be declared
 ;              in the following way:
 ;
-;              PRO ITERPROC, MYFUNCT, p, iter, fnorm, FUNCTARGS=fcnargs, $
-;                PARINFO=parinfo, QUIET=quiet, ...
-;                ; perform custom iteration update
-;              END
+;*              PRO ITERPROC, MYFUNCT, p, iter, fnorm, FUNCTARGS=fcnargs, $
+;*                PARINFO=parinfo, QUIET=quiet, ...
+;*                ; perform custom iteration update
+;*              END
 ;         
 ;              ITERPROC must either accept all three keyword
 ;              parameters (FUNCTARGS, PARINFO and QUIET), or at least
 ;              accept them via the _EXTRA keyword.
-;          
+;*          
 ;              MYFUNCT is the user-supplied function to be minimized,
 ;              P is the current set of model parameters, ITER is the
 ;              iteration number, and FUNCTARGS are the arguments to be
@@ -252,7 +252,7 @@
 ;              chi-squared value.  QUIET is set when no textual output
 ;              should be printed.  See below for documentation of
 ;              PARINFO.
-;
+;*
 ;              In implementation, ITERPROC can perform updates to the
 ;              terminal or graphical user interface, to provide
 ;              feedback while the fit proceeds.  If the fit is to be
@@ -262,7 +262,7 @@
 ;              ITERPROC should probably not modify the parameter
 ;              values, because it may interfere with the algorithm's
 ;              stability.  In practice it is allowed.
-;
+;*
 ;              Default: an internal routine is used to print the
 ;                       parameter values.
 ;
@@ -300,56 +300,56 @@
 ;             element of the array, in numerical order.  The structure
 ;             can have the following entries (none are required):
 ;
-;                .VALUE - the starting parameter value (but see
-;                         START_PARAMS above).
-;
-;                .FIXED - a boolean value, whether the parameter is to 
-;                         be held fixed or not.  Fixed parameters are
-;                         not varied by MPFIT, but are passed on to 
-;                         MYFUNCT for evaluation.
-;
-;                .LIMITED - a two-element boolean array.  If the
-;                 first/second element is set, then the parameter is
-;                 bounded on the lower/upper side.  A parameter can be
-;                 bounded on both sides.  Both LIMITED and LIMITS must
-;                 be given together.
-;
-;                .LIMITS - a two-element float or double array.  Gives
-;                 the parameter limits on the lower and upper sides,
-;                 respectively.  Zero, one or two of these values can
-;                 be set, depending on the values of LIMITED.  Both 
-;                 LIMITED and LIMITS must be given together.
-;
-;                .STEP - the step size to be used in calculating the
-;                 numerical derivatives.  If set to zero, then the
-;                 step size is computed automatically.
-;
-;                .PARNAME - a string, giving the name of the parameter.  The
-;                 fitting code of MPFIT does not use this tag in any
-;                 way.  However, the default ITERPROC will print the
-;                 parameter name if available.
-;
-;                .TIED - a string expression which "ties" the
-;                 parameter to other free or fixed parameters.  Any
-;                 expression involving constants and the parameter
-;                 array P are permitted.  Example: if parameter 2 is
-;                 always to be twice parameter 1 then use the
-;                 following: parinfo(2).tied = '2 * P(1)'.  Since they
-;                 are totally constrained, tied parameters are
-;                 considered to be fixed; no errors are computed for
-;                 them.  [ NOTE: the PARNAME can't be used in
-;                 expressions. ]
+;*                .VALUE - the starting parameter value (but see
+;*                         START_PARAMS above).
+;*
+;*                .FIXED - a boolean value, whether the parameter is to 
+;*                         be held fixed or not.  Fixed parameters are
+;*                         not varied by MPFIT, but are passed on to 
+;*                         MYFUNCT for evaluation.
+;*
+;*                .LIMITED - a two-element boolean array.  If the
+;*                 first/second element is set, then the parameter is
+;*                 bounded on the lower/upper side.  A parameter can be
+;*                 bounded on both sides.  Both LIMITED and LIMITS must
+;*                 be given together.
+;*
+;*                .LIMITS - a two-element float or double array.  Gives
+;*                 the parameter limits on the lower and upper sides,
+;*                 respectively.  Zero, one or two of these values can
+;*                 be set, depending on the values of LIMITED.  Both 
+;*                 LIMITED and LIMITS must be given together.
+;*
+;*                .STEP - the step size to be used in calculating the
+;*                 numerical derivatives.  If set to zero, then the
+;*                 step size is computed automatically.
+;*
+;*                .PARNAME - a string, giving the name of the parameter.  The
+;*                 fitting code of MPFIT does not use this tag in any
+;*                 way.  However, the default ITERPROC will print the
+;*                 parameter name if available.
+;*
+;*                .TIED - a string expression which "ties" the
+;*                 parameter to other free or fixed parameters.  Any
+;*                 expression involving constants and the parameter
+;*                 array P are permitted.  Example: if parameter 2 is
+;*                 always to be twice parameter 1 then use the
+;*                 following: parinfo(2).tied = '2 * P(1)'.  Since they
+;*                 are totally constrained, tied parameters are
+;*                 considered to be fixed; no errors are computed for
+;*                 them.  [ NOTE: the PARNAME can't be used in
+;*                 expressions. ]
 ; 
 ;             Other tag values can also be given in the structure, but
 ;             they are ignored.
 ;
 ;             Example:
-;             parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
-;                                  limits:[0.D,0]}, 5)
-;             parinfo(0).fixed = 1
-;             parinfo(4).limited(0) = 1
-;             parinfo(4).limits(0)  = 50.D
-;             parinfo(*).value = [5.7D, 2.2, 500., 1.5, 2000.]
+;*             parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
+;*                                  limits:[0.D,0]}, 5)
+;*             parinfo(0).fixed = 1
+;*             parinfo(4).limited(0) = 1
+;*             parinfo(4).limits(0)  = 50.D
+;*             parinfo(*).value = [5.7D, 2.2, 500., 1.5, 2000.]
 ;
 ;             A total of 5 parameters, with starting values of 5.7,
 ;             2.2, 500, 1.5, and 2000 are given.  The first parameter
@@ -362,20 +362,20 @@
 ;            from the covariance matrix.  If a parameter is held
 ;            fixed, or if it touches a boundary, then the error is
 ;            reported as zero.
-;
+;*
 ;            If the fit is unweighted (i.e. no errors were given, or
 ;            the weights were uniformly set to unity), then PERROR
 ;            will probably not represent the true parameter
 ;            uncertainties.  
-;
+;*
 ;            *If* you can assume that the true reduced chi-squared
 ;            value is unity -- meaning that the fit is implicitly
 ;            assumed to be of good quality -- then the estimated
 ;            parameter uncertainties can be computed by scaling PERROR
 ;            by the measured chi-squared value.
 ;
-;              DOF     = N_ELEMENTS(X) - N_ELEMENTS(PARMS) ; deg of freedom
-;              PCERROR = PERROR * SQRT(BESTNORM / DOF)   ; scaled uncertainties
+; *             DOF     = N_ELEMENTS(X) - N_ELEMENTS(PARMS) ; deg of freedom
+; *             PCERROR = PERROR * SQRT(BESTNORM / DOF)   ; scaled uncertainties
 ;
 ;   QUIET:: - set this keyword when no textual output should be printed
 ;           by MPFIT
@@ -384,30 +384,30 @@
 ;            than zero can represent success.  It can have one of the
 ;            following values:
 ;
-;	   0  improper input parameters.
+;*	   0  improper input parameters.
 ;         
-;	   1  both actual and predicted relative reductions
-;	      in the sum of squares are at most FTOL.
+;*	   1  both actual and predicted relative reductions
+;*	      in the sum of squares are at most FTOL.
 ;         
-;	   2  relative error between two consecutive iterates
-;	      is at most XTOL
+;*	   2  relative error between two consecutive iterates
+;*	      is at most XTOL
 ;         
-;	   3  conditions for STATUS = 1 and STATUS = 2 both hold.
+;*	   3  conditions for STATUS = 1 and STATUS = 2 both hold.
 ;         
-;	   4  the cosine of the angle between fvec and any
-;	      column of the jacobian is at most GTOL in
-;	      absolute value.
+;*	   4  the cosine of the angle between fvec and any
+;*	      column of the jacobian is at most GTOL in
+;*	      absolute value.
 ;         
-;	   5  the maximum number of iterations has been reached
+;*	   5  the maximum number of iterations has been reached
 ;         
-;	   6  FTOL is too small. no further reduction in
-;	      the sum of squares is possible.
+;*	   6  FTOL is too small. no further reduction in
+;*	      the sum of squares is possible.
 ;         
-;	   7  XTOL is too small. no further improvement in
-;	      the approximate solution x is possible.
+;*	   7  XTOL is too small. no further improvement in
+;*	      the approximate solution x is possible.
 ;         
-;	   8  GTOL is too small. fvec is orthogonal to the
-;	      columns of the jacobian to machine precision.
+;*	   8  GTOL is too small. fvec is orthogonal to the
+;*	      columns of the jacobian to machine precision.
 ;
 ;   XTOL :: a nonnegative input variable. Termination occurs when the
 ;          relative error between two consecutive iterates is at most
@@ -422,12 +422,12 @@
 ;
 ; COMMON BLOCKS:
 ;  
-;   COMMON MPFIT_ERROR, ERROR_CODE
+;*   COMMON MPFIT_ERROR, ERROR_CODE
 ;     User routines may stop the fitting process at any time by
 ;     setting an error condition.  This condition may be set in either
 ;     the user's model computation routine (MYFUNCT), or in the
 ;     iteration procedure (ITERPROC).
-;
+;*
 ;     To stop the fitting, the above common block must be declared,
 ;     and ERROR_CODE must be set to a negative number.  After the user
 ;     procedure or function returns, MPFIT checks the value of this
@@ -435,9 +435,9 @@
 ;     condition has been set.  By default the value of ERROR_CODE is
 ;     zero, indicating a successful function/procedure call.
 ;
-;   COMMON MPFIT_PROFILE
-;   COMMON MPFIT_MACHAR
-;   COMMON MPFIT_CONFIG
+;*   COMMON MPFIT_PROFILE
+;*   COMMON MPFIT_MACHAR
+;*   COMMON MPFIT_CONFIG
 ;
 ;     These are undocumented common blocks are used internally by
 ;     MPFIT and may change in future implementations.
