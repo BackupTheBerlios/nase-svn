@@ -25,6 +25,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.5  1997/12/18 11:37:39  saam
+;             fieser Rundungsfehler bei Float-Delays
+;
 ;       Revision 1.4  1997/12/02 09:42:24  saam
 ;            n->o->i->s->r->e->v->r->U
 ;
@@ -33,7 +36,7 @@
 FUNCTION InitSpikeQueue, INIT_DELAYS=init_delays
 
    tmpDelay = init_delays
-   md       = MAX(tmpDelay)
+   md       = ROUND(MAX(tmpDelay))
    
    numQu = (md-1)/30 + 1
    
