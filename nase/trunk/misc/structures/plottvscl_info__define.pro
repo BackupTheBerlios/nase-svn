@@ -5,37 +5,22 @@
 ;
 ; PURPOSE: Support: Definiert den PLOTTVSCL_INFO Struktur.
 ;
-; CATEGORY: Support
+; CATEGORY: Internal
 ;
 ; CALLING SEQUENCE: -implizit-
 ;
 ; SIDE EFFECTS: Die PLOTTVSCL_INFO Struktur wird definiert.
 ;
-; PROCEDURE: Die Definition wurde aus <A HREF="../../graphic#PLOTTVSCL">PlotTvScl</A>
+; PROCEDURE: Die Definition wurde aus <A>PlotTvScl</A>
 ;            übernommen.
 ;            Die Routine wird implizit (ab IDL 5) aufgerufen,
 ;            wenn ein PLOTTVSCL_INFO Struct verwendet wird, und
 ;            dieser noch nicht definiert wurde.
 ;
-; EXAMPLE: my_plotinfos = Replicate({PLOTTVSCL_INFO}, 23)
+; EXAMPLE:
+;* my_plotinfos = Replicate({PLOTTVSCL_INFO}, 23)
 ;
-; SEE ALSO: <A HREF="../../graphic#PLOTTVSCL">PlotTvScl</A>, <A HREF="../../graphic#PLOTTVSCL_UPDATE">PlotTvScl_Update</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.3  2000/09/25 09:13:13  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.2  2000/03/07 17:01:04  kupper
-;        Removed x0, yo tags from structure (have never been used!)
-;        Added "defined" tag.
-;
-;        Revision 1.1  1999/11/16 16:58:47  kupper
-;        For easier programming with IDL 5.
-;
+; SEE ALSO: <A>PlotTvScl</A>, <A>PlotTvScl_Update</A>
 ;-
 
 Pro PLOTTVSCL_INFO__Define
@@ -65,6 +50,7 @@ Pro PLOTTVSCL_INFO__Define
               minus_one: 0, $
               colormode: 0, $
                setcol  : 0, $
+          allowcolors  : 0, $
 ;
 ; Scaling Information to be stored by PlotTvScl_update:
                range_in: [-1.0d, -1.0d]}
