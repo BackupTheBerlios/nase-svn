@@ -17,6 +17,8 @@
 ;
 ; OPTIONAL INPUTS:    XNorm, YNORM: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
 ;                                   bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
+;                                   ;wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
+;                                   von XNorm nebeneinander positioniert, siehe Docu von TV
 ;
 ; KEYWORD PARAMETERS: CENTER    : Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
 ;                     X_SIZE    ,
@@ -46,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1997/11/07 16:10:48  saam
+;          Doku ergaenzt
+;
 ;     Revision 2.5  1997/11/07 16:08:11  saam
 ;           das Pos-Argument scheint zu fktionieren
 ;
