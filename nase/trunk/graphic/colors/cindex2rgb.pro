@@ -1,15 +1,15 @@
-
 ;+
 ; NAME:                CIndex2RGB
 ;
 ; VERSION:             $Id$
 ;
-; AIM: (-outdated-) Compute 8 bit RGB values from a 24 bit Truecolor value.
+; AIM: Compute 8 bit RGB values from a 24 bit Truecolor value.
 ;
 ; PURPOSE:             Errechnet aus einem Color-Index den
 ;                      zugehoerigen RGB-Wert. Die Translation-
 ;                      Tables bei True-Color-Displays werden 
-;                      ignoriert                    
+;                      ignoriert. 
+;                      DEVICE, DECOMPOSED=xx  will be considered.                    
 ;
 ; CATEGORY:            GRAPHIC
 ;
@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/10/30 18:31:26  gabriel
+;          header bug
+;
 ;     Revision 2.5  2000/10/30 10:40:34  gabriel
 ;           DEVICE DECOMPOSED is now considered
 ;
