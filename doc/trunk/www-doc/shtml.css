@@ -1,4 +1,4 @@
-body { margin-top:10px; margin-bottom:10px; background-color:#FFFFFF; text-color=#000000; }
+body { margin-top:10px; margin-bottom:10px; margin-left:0px; background-color:#FFFFFF; text-color=#000000; }
 
 
 /* margin-top = Abstand zwischen Fensterrand und Inhalt oben */
@@ -167,7 +167,7 @@ a:active { color:#000000; text-decoration:none; }
 
 a.an { text-decoration:none; }
 
-
+blockquote { margin-left:0px; }
 
 
 /* Wenn Sie sich mit Style-Sheets */
