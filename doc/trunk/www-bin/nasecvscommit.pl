@@ -7,24 +7,16 @@ use diagnostics;
 use strict;
 
 my ($dir, @files) = split(" ", $ARGV[0]);
+
+my $fdir = "/vol/neuro/nase/www-nase-copy/$dir";
+
 my $file;
-my $pwd = $ENV{"PWD"};
-
-my $cut = $pwd;
-while ($cut =~ /(nase)|(mind)/){
-  $cut =~ s/\/[^\/]*$//;
-}
-$pwd =~ s/$cut//;
-$pwd =~ s/\/$//g;
-$pwd =~ s/^\///g;
-
-
 foreach $file (@files){
   # just work on IDL source files
   if ($file =~ /\.pro$/){
-    if (-r $file){
-      scanFile(skel=>$cut, path=>$pwd, file=>basename($file,""));
-      print STDERR "$file: updated/inserted using $pwd/$file\n";
+    if (-r "$fdir/$file"){
+      scanFile(repdir=>$dir, filepath=>"$fdir/$file");
+      print STDERR "$file: updated/inserted using $dir/$file\n";
     } else {
       deleteFile(file=>basename($file,""));
       print STDERR "$file: deleted\n";
