@@ -9,7 +9,9 @@
 ; CALLING SEQUENCE:   PS = InitPlotcilloscope([TIME=time] $
 ;                            [,YMIN=ymin] [,YMAX=ymax] $
 ;                            [,/NOSCALEALL] [,/NOSCALEYMIN] $
-;                            [,/NOSCALEYMAX]
+;                            [,/NOSCALEYMAX] $
+;                            [-other-Plot-Keywords-] $
+;                            [,/INSTANTREFRESH])
 ;
 ; KEYWORD PARAMETERS:  TIME       : die Laenge der dargestellten Zeitachse (Def.:100)
 ;                      RAYS       : die Anzahl der benutzten Strahlen
@@ -18,6 +20,12 @@
 ;                      NOSCALEYMAX/
 ;                      NOSCALEALL : verhindert eine dyn. Anpassung des oberen/
 ;                                   unteren/beider Ordinatenwerte  
+;                   INSTANTREFRESH: bewirkt, daß die Achsen gleich
+;                                   beim ersten geplotteten Wert neu
+;                                   skaliert werden.
+;
+;                   Außerdem sind alle Schlüsselworte erlaubt, die
+;                   auch PLOT nimmt. Der Default für XTITLE ist "t / ms".
 ;
 ; OUTPUTS:             PS : ein Struktur zum Benutzen mit Plotcilloscope
 ;
@@ -40,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/03/18 12:43:34  kupper
+;            INSTANTREFRESH und _EXTRA implementiert.
+;
 ;     Revision 2.5  1998/01/28 09:57:54  saam
 ;           now handles oversampling with new keyword OVERSAMP
 ;
@@ -60,16 +71,21 @@
 FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
                              RAYS=rays,$
                              NOSCALEALL=noscaleall, NOSCALEYMIN=noscaleymin, NOSCALEYMAX=noscaleymax,$
-                             OVERSAMP=oversamp
+                             OVERSAMP=oversamp, $
+                             INSTANTREFRESH=instantrefresh, $
+                             XTITLE=xtitle, _EXTRA=_extra
 
    Default, OVERSAMP, 1
    Default, TIME, 100l
    Default, YMIN, 0.0
    Default, YMAX, 1.0
    Default, Rays, 1
+   Default, XTITLE, 't / ms'
+   Default, _extra, {dummy:0}
    time =  time*OVERSAMP
    maxSc = 1
    minSc = 1
+   If Keyword_Set(INSTANTREFRESH) then startvalue = 0. else startvalue = ((ymax-ymin)/2.+ymin)
    
    IF Keyword_Set(NOSCALEYMIN) THEN minSc = 0
    IF Keyword_Set(NOSCALEYMAX) THEN maxSc = 0
@@ -78,18 +94,20 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
       minSc = 0 
    END
 
-   PS = { info : 'T_PLOT'      ,$
-          minAx: ymin          ,$
-          maxAx: ymax          ,$
-          y    : Make_Array(rays, time, /FLOAT, VALUE=((ymax-ymin)/2.+ymin)),$
-          rays : rays          ,$
-          t    : 0l            ,$
-          time : LONG(time)    ,$
-          maxSc: maxSc         ,$
-          minSc: minSc         ,$
-          os   : oversamp      }
+   PS = { info  : 'T_PLOT'      ,$
+          minAx : ymin          ,$
+          maxAx : ymax          ,$
+          y     : Make_Array(rays, time, /FLOAT, VALUE=startvalue), $
+          rays  : rays          ,$
+          t     : 0l            ,$
+          time  : LONG(time)    ,$
+          maxSc : maxSc         ,$
+          minSc : minSc         ,$
+          os    : oversamp      ,$
+          xtitle: xtitle        ,$
+          _extra: _extra}
    
-   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, XTITLE='t [ms]'
+   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, XTITLE=xtitle, _EXTRA=_extra
 
    RETURN, PS
 END
