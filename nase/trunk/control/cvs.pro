@@ -17,27 +17,41 @@
 ;
 ; CALLING SEQUENCE: CVS [,CVS_Name] [,NASPATH=Pfad]
 ; 
-; INPUTS:
+; INPUTS: ---
 ;
-; OPTIONAL INPUTS:
-;	
-; KEYWORD PARAMETERS:
+; OPTIONAL INPUTS: CVS_Name: Der Name des CVS-Projektes. Default ist "nase"
+;	 
+; KEYWORD PARAMETERS: NASPATH: Der Pfad, in dem sich das CVS-Directory befindet. Default ist "~/IDL".
+;                              Die Defaults verweisen somit auf das CVS-Directory "~/IDL/nase"
 ;
-; OUTPUTS:
+; OUTPUTS: ---
 ;
-; OPTIONAL OUTPUTS:
+; OPTIONAL OUTPUTS: ---
 ;
-; COMMON BLOCKS:
+; COMMON BLOCKS: common_cvs
+;                           Dieser Block enthaelt die Variable name, die auf den CVS-Projektnamen gesetzt wird.
 ;
-; SIDE EFFECTS:
+; SIDE EFFECTS: Die Routine versucht, bei jedem EDIT-Befehl, das zugehörige File im Emacs zu öffnen, sofern dieser läuft und entsprechend eingerichtet ist.
+;                          (Dazu muß im .emacs-File die Zeile "(gnuserv-start)" stehen.)
 ;
-; RESTRICTIONS:
+; RESTRICTIONS: ---
 ;
-; PROCEDURE:
+; PROCEDURE: Benutzte Routinen: Default.
+;            Das Programm erstellt ein Widget und ruft die entsprechenden cvs-Befehle über "SPAWN" auf.
+;            Außerdem spricht es den Emacs über "GnuDoIt" an, und falls das Projekt "nase" heißt, updatet
+;            es auch gleich bei jedem commit-Befehl das zentrale Archiv in /usr/ax1303/neuroaedm/nase und
+;            ebenfalls das HTML-Helpfile.
 ;
-; EXAMPLE:
+; EXAMPLE: 1. cvs
+;          2. cvs, NASPATH="$HOME/hierstehtnase"
+;          3. cvs, "mind", NASPATH="~/nevermind"
 ;
 ; MODIFICATION HISTORY:
+;
+;       Sun Aug 17 23:42:47 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Urversion fertiggestellt. Sollte voll funktionieren...
 ;
 ;-
 
@@ -52,14 +66,15 @@
 
 Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher nicht viele...)
    Print
-   Print, "----------- Mehr Spaß für N.A.S.E.n:"
-   Print, "------------- Updating /usr/ax1303/neuroadm/nase ..."
+   Print, "=========== Mehr Spaß für N.A.S.E.n:"
+   Print, "============= Updating /usr/ax1303/neuroadm/nase ..."
    CD, "/usr/ax1303/neuroadm", CURRENT=old_dir
    Spawn, "cvs update nase"
-   Print, "------------- Updating HTML-Help ..."
+   Print, "============= Updating HTML-Help ..."
    CD, "nase"
    MKHTML
    CD, old_dir
+   Print, "============= done."
 End
 
 PRO MAIN13_Event, Event
@@ -71,17 +86,19 @@ common common_cvs, name
 
   'BUTTON5': BEGIN              ;Update
       Print
-      Print, "----------- Updating CVS:"
+      Print, "=========== Updating CVS:"
       Spawn, "cvs update """+Name+""""
+      Print, "============= done."
       END
   'BUTTON25': BEGIN             ;Edit
      n = name
       file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
-         Print, "----------- Making File Editable: "+file
+         Print, "=========== Making File Editable: "+file
          Spawn, "cvs edit """+file+""""
          Spawn, "gnudoit -q '(find-file """+file+""")'"
+         Print, "============= done."
       endif
       END
   'BUTTON15': BEGIN              ;UnEdit
@@ -89,13 +106,14 @@ common common_cvs, name
       file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
-         Print, "----------- UnEditing Changes on: "+file
+         Print, "=========== UnEditing Changes on: "+file
          Spawn, "cvs unedit """+file+""""
+         Print, "============= done."
       endif
       END
   'BUTTON19': BEGIN              ;Editors
       Print
-      Print, "----------- Current CVS-Editors:"
+      Print, "=========== Current CVS-Editors:"
       Spawn, "cvs editors"
       END
   'BUTTON35': BEGIN              ;Add
@@ -103,19 +121,21 @@ common common_cvs, name
       file = PickFile(TITLE="Select File to Add", /MUST_EXIST, FILTER="*.pro", GET_PATH=path, PATH=n)
       If file ne "" then begin
          Print
-         Print, "----------- Establishing CVS-Control for: "+file
+         Print, "=========== Establishing CVS-Control for: "+file
          parts = str_sep(file, "/")
          file = parts((size(parts))(1)-1); Das gibt den reinen Filenamen ohne Pfad!
          CD, path, CURRENT=olddir
          Spawn, "cvs add """+file+""""
          Spawn, "cvs commit "+file+""""
          CD, olddir
+         Print, "============= done."
       endif
       END
   'BUTTON23': BEGIN              ;Commit All
       Print
-      Print, "----------- Committing all your changed CVS-Files:"
+      Print, "=========== Committing all your changed CVS-Files:"
       Spawn, "cvs commit"
+      Print, "============= done."
       if name eq "nase" then NASE_Special ;do some nosy things
       END
   'BUTTON28': BEGIN              ;Commit File
@@ -123,12 +143,13 @@ common common_cvs, name
       file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
-         Print, "----------- Committing File "+file
+         Print, "=========== Committing File "+file
          Spawn, "cvs commit "+file
          print, "Name:"+name
+         Print, "============= done."
          if name eq "nase" then NASE_Special ;do some nosy things
       endif
-      END
+   END
   ENDCASE
 END
 
