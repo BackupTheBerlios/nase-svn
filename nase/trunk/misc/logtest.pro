@@ -28,10 +28,21 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Fri Sep 12 13:00:04 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		$Log$
+;		Revision 1.5  1997/09/12 10:59:40  kupper
+;		TEST!
+;
+;
 ;       Fri Sep 12 12:54:30 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		$Log$
+;		Revision 1.5  1997/09/12 10:59:40  kupper
+;		TEST!
+;
 ;		Revision 1.4  1997/09/12 10:54:08  kupper
 ;		Hallo!
 ;		Halli!
