@@ -35,32 +35,6 @@
 ;  <A>ForEach</A>, <A>Sim</A>.
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.6  2000/11/30 18:12:22  thiel
-;         Removed SKEL and SEP from the documentation and added hint
-;         to use SIMULATION.skel/sep instead.
-;
-;     Revision 1.5  2000/11/19 14:41:58  saam
-;     added defualt SKEL as _
-;
-;     Revision 1.4  2000/09/29 08:10:28  saam
-;     added the AIM tag
-;
-;     Revision 1.3  2000/06/08 10:29:20  saam
-;           + new keyword SKEL added
-;
-;     Revision 1.2  2000/04/12 13:30:44  saam
-;           added the initialization of P.FILE and P.OFILE
-;           here, so it is not in the master deffile any more.
-;
-;     Revision 1.1  1999/12/21 08:56:25  saam
-;           nothing to comment
-;
-
-
 
 PRO FakeEach, SKEL=skel
    
@@ -70,7 +44,6 @@ PRO FakeEach, SKEL=skel
 
    COMMON ATTENTION
    
-   Default, SKEL, "_"
    IF ExtraSet(AP.SIMULATION, 'SKEL') THEN Default, skel, AP.SIMULATION.skel ELSE Default, skel, '_'
    Spawn, 'pwd', WorkDir
    WorkDir = WorkDir(0)
