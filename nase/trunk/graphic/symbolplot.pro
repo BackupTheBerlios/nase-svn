@@ -19,7 +19,7 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;* SymbolPlot, Array [,posx, posy [,OFFSET = Offset]]
+;* SymbolPlot, Z [,X, Y [,OFFSET = Offset]]
 ;*  [,/OPLOT]
 ;*  [,POSSYM = SymbolIndex] [,NEGSYM = SymbolIndex]
 ;*  [,POSCOLOR = color] [,NEGCOLOR = color] [,COLORS = ColorIndexArray] [,/NASCOL]
@@ -29,14 +29,23 @@
 ;*  [other Plot-Parameters]
 ;
 ; INPUTS: 
-;  Array:: Das zu plottende Array.
-;          Wird /NOSCALE angegeben, so sollten alle Werte im Bereich [-1,+1] liegen.
+;  Z:: Das zu plottende Array.
+;      Wird /NOSCALE angegeben, so sollten alle Werte im Bereich [-1,+1] liegen.
 ;
 ; OPTIONAL INPUTS: 
-;  posx,
-;  posy  :: Optionale Arrays, die die Position des jeweiligen Symbols angeben. Die Groesse dieser
-;           Arrays muss identisch mit Array sein. Die Achsen werden entsprechend skaliert (siehe
-;           auch Keyword OFFSET).
+;  X :: A vector or two-dimensional array specifying the X
+;          coordinates for the symbol positions. If X is a vector,
+;          each element of X specifies the X coordinate for a column
+;          of Z (e.g., X[0] specifies the X coordinate for Z[0,*]). If
+;          X is a two-dimensional array, each element of X specifies
+;          the X coordinate of the corresponding point in Z (i.e., X<SUB>ij</SUB>
+;          specifies the X coordinate for Z<SUB>ij</SUB>).
+;  Y :: A vector or two-dimensional array specifying the Y coordinates
+;      for the contour surface. If Y is a vector, each element of Y
+;      specifies the Y coordinate for a row of Z (e.g., Y[0] specifies
+;      the Y coordinate for Z[*,0]). If Y is a two-dimensional array,
+;      each element of Y specifies the Y coordinate of the
+;      corresponding point in Z (Y<SUB>ij</SUB> specifies the Y coordinate for Z<SUB>ij</SUB>).
 ;
 ; INPUT KEYWORDS:
 ;  POSSYM:: Das Symbol, das für positive Werte verwendet wird.
@@ -51,14 +60,14 @@
 ;           die Symbole Nr.9 und Nr.11, ein ausgefülltes
 ;           Kästchen und ein 'N'.
 ;           Es gibt also Folgende vordefinierte Symbole:
-;* 1	Plus sign (+)	
-;* 2	Asterisk (*)	
-;* 3	Period (.)	
-;* 4	Diamond	
-;* 5	Triangle	
-;* 6	Square	
-;* 7	X	
-;* 8	User-defined. See USERSYM procedure. (Standard-IDL)
+;* 1    Plus sign (+)	
+;* 2    Asterisk (*)	
+;* 3    Period (.)	
+;* 4    Diamond	
+;* 5    Triangle	
+;* 6    Square	
+;* 7    X
+;* 8    User-defined. See USERSYM procedure. (Standard-IDL)
 ;* 9    Filled Square
 ;* 11   N.
 ;
@@ -136,7 +145,7 @@
 ;
 ;-
 
-Pro SymbolPlot, _a, posx, posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, $
+Pro SymbolPlot, _a, _posx, _posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, $
                POSCOLOR=poscolor, NEGCOLOR=negcolor, NONECOLOR=nonecolor, COLORS=_colors, NASCOL=nascol, $
                POSORIENT=posorient, NEGORIENT=negorient, ORIENTATIONS=_orientations, RAD=rad, DIRECTION=direction, $
                NASE=nase, noscale=noscale, $
@@ -144,6 +153,8 @@ Pro SymbolPlot, _a, posx, posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONES
                OFFSET=offset,$
                XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift, $
                 _EXTRA=_extra
+
+   ON_ERROR,2 
 
    Default, thick, 0
    Default, nase, 0
@@ -180,8 +191,19 @@ Pro SymbolPlot, _a, posx, posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONES
    width = s(1)
    height = s(2)
 
-   Default, posx, REBIN(Indgen(width)+1, width, height)
-   Default, posy, TRANSPOSE(REBIN(Indgen(height)+1, height, width))   
+   Default, posx, _posx
+   Default, posy, _posy
+   Default, posx, Indgen(width)
+   Default, posy, Indgen(height)  
+
+   IF (SIZE(posx))(0) EQ 1 THEN BEGIN
+       IF N_Elements(posx) NE width THEN Console, 'wrong number of abszissa coordinates', /FATAL
+       posx = REBIN(posx, width, height, /SAMPLE) 
+   END
+   IF (SIZE(posy))(0) EQ 1 THEN BEGIN
+       IF N_Elements(posy) NE height THEN Console, 'wrong number of ordinate coordinates', /FATAL
+       posy = TRANSPOSE(REBIN(posy, height, width, /SAMPLE))
+   END
 
    IF NOT Keyword_Set(NASE) THEN BEGIN
 
