@@ -1,58 +1,46 @@
 ;+
-; NAME:                UOpenW
+; NAME:
+;  UOpenW()
 ;
-; AIM:                 generalized version of IDL's openw function (allows zipping)
+; AIM:
+;  opens a file for read/write access (generalizes IDL's <C>OpenW</C> function)
 ;
-; PURPOSE:             Erweitert die Funktionalitaet von OpenW, um die 
-;                      Faehigkeit gezippte Files zu erzeugen.
+; PURPOSE:
+;  This routine extends IDLs <C>OpenW</C> with a simpler Handling of
+;  the LUNs and additionally allows file compression for IDL older
+;  versions. New IDL version should use <*>/COMPRESS</*> because no
+;  temporary file is created.
 ;
-; CATEGORY:            FILES+DIRS ZIP
+; CATEGORY:
+;  Files
+;  IO
 ;
-; CALLING SEQUENCE:    lun = UOpenW(file [,/VERBOSE] [,/ZIP] [,/FORCE])
+; CALLING SEQUENCE:
+;  lun = UOpenW(file [,/VERBOSE] [,/ZIP] [,_EXRA=...])
 ;
-; INPUTS:              file: die zu oeffnende Datei (ohne ZIP-Endung)
+; INPUTS:
+;  file:: file to be opened
 ;
-; KEYWORD PARAMETERS:  VERBOSE: die Routine wird geschwaetzig
-;                      ZIP    : das File wird nach dem Schliessen gezippt
-;                      FORCE  : non-existent directories will be
-;                               created. This behaviour may be set to
-;                               the default, by setting the system
-;                               variable !CREATEDIR to 1.
+; KEYWORD PARAMETERS:
+;  VERBOSE:: some debugging output is generated
+;  ZIP    :: compresses file after it is closed, consider using IDLs
+;            <*>/COMPRESS</*>, if available.
+;  FORCE  :: non-existent directories will be
+;            created. This behaviour may be set to
+;            the default, by setting the system
+;            variable <*>!CREATEDIR</*> to 1.
 ;
-; OUTPUTS:             lun : die lun des Files bzw. !NONE falls die Aktion fehlschlug
+; OUTPUTS:
+;  lun : LogicalUnitNumber of the file or <*>!NONE</*> if the action failed
 ;
-; COMMON BLOCKS:       UOPENR: enthaelt Filename und Zipstati der geoeffneten Files
+; COMMON BLOCKS:
+;  UOPENR:: contains filenames and status of all open files
 ;
-; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 40 begrenzt
+; RESTRICTIONS:
+;  the number of simulaneously open files is currently restricted to 40
 ;
-; SEE ALSO:            UClose            
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.5  2000/09/25 09:13:03  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 2.4  2000/06/19 13:21:58  saam
-;           + print goes console
-;           + lun's are not aquired via /FREE_LUN
-;             because their number is restricted to max 32.
-;             another mechanism now provides up to 97 luns.
-;             the maximal lun number is increased respectively.
-;           + new keyword FORCE in uopenw to create nonexisting
-;             directories
-;
-;     Revision 2.3  1999/02/16 17:23:45  thiel
-;            Bloﬂ ein kleiner Druckfehler im Header.
-;
-;     Revision 2.2  1998/11/08 15:01:45  saam
-;           maximum file number is now 40
-;
-;     Revision 2.1  1998/10/28 14:57:07  saam
-;           simple but works
-;
+; SEE ALSO:
+;  <A>UOpenR</A>, <A>UClose</A>
 ;
 ;-
 FUNCTION UOpenW, file, VERBOSE=verbose, ZIP=zip, FORCE=force, _EXTRA=e
@@ -99,7 +87,7 @@ FUNCTION UOpenW, file, VERBOSE=verbose, ZIP=zip, FORCE=force, _EXTRA=e
    lun = 2 ; reserved for stdin/stdout/stderr
    REPEAT BEGIN
        lun = lun + 1
-       Openw, lun, file, ERROR=err
+       Openw, lun, file, ERROR=err, _EXTRA=e
    END UNTIL ((lun GT 2+MaxFiles) OR (err EQ 0))
    IF (lun GT 2+MaxFiles) THEN Console, 'unable to aquire a lun: '+!ERR_STRING, /FATAL
 
