@@ -144,7 +144,7 @@ PRO PlotLegend, xo, yo, texts $
    ENDFOR
 
    ;; Calculate text positions
-   xpos = Replicate(xpos(1),3)+ltgap*xcsn
+   xpos = Replicate(xpos(1),number)+ltgap*xcsn
    ypos = ypos(*,0)-ycsn*tbase
 
    maxwidth = 0.
