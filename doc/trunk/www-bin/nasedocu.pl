@@ -270,6 +270,7 @@ if ($P::mode){
 		      print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
 		      print hr,
+		      a({href=>"/nase.list/", target=>"text"}, "mailing list"), ", ",
 		      a({href=>"$URL/".getROUTINES, target=>"text"}, "routine index"), ", ",
 		      "keyword index (",a({href=>"$URL/".getKEYA, target=>"text"}, "name"), ", ",
 		      a({href=>"$URL/".getKEYO, target=>"text"}, "count"), ")",
