@@ -1,74 +1,67 @@
 ;+
-; NAME:               CutTorus                
+; NAME:
+;  CutTorus()                
 ;
-; AIM:                sets all elements in an arrays outside a specified torus
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            Setzt alle Elemente eines Arrays ausserhalb eines Kreisrings (Torus)
-;                     auf einen bestimmten Wert. Der Mittelpunkt des Kreisrings ist standardmaeesig
-;                     in der Mitte des Arrays.
+; AIM:
+;  sets all array elements outside a specfied torus to a constant value 
 ;
-; CATEGORY:           ARRAYS
+; PURPOSE:
+;  Sets all array elements outside a specfied torus to a constant value.
+;  The center of the torus is placed in the center of the array.
 ;
-; CALLING SEQUENCE:   Torus = CutTorus(array, outer_radius [,inner_radius] [X_CENTER=x_center] 
-;                                             [,Y_CENTER=y_center] [,/TRUNCATE] [,CUT_VALUE=cut_value]
-;                                             [,/WHERE] [,COUNT=count])
+; CATEGORY:
+;  Array
+;  Image
+;
+; CALLING SEQUENCE:
+;* torus = CutTorus(array, outer_radius [,inner_radius]
+;*                  [X_CENTER=...] [,Y_CENTER=...] [,/TRUNCATE] [,CUT_VALUE=...]
+;*                  [,/WHERE] [,COUNT=count])
 ;                         
+; INPUTS:
+;  array       :: two-dimmensional array
+;  outer_radius:: elements with a distance > outer_radius from the
+;                 center will be set to zero or the value specified by
+;                 <*>CUT_VALUE</*>. 
 ;
-; INPUTS:             array       : ein zweidimensionales Array
-;                     outer_radius: Elemente mit Abstand > outer_radius werden auf Null gesetzt
+; OPTIONAL INPUTS:
+;  inner_radius:: elements with a distance <= inner_radius from the
+;                 center will be set to zero or the value specified by
+;                 <*>CUT_VALUE</*>.
 ;
-; OPTIONAL INPUTS:    inner_radius: Elemente mit Abstand <= inner_radius werden auf Null gesetzt
-;
-; KEYWORD PARAMETERS: X_CENTER/
-;                     Y_CENTER : Gibt die Verschiebung des Kreisrings vom Mittelpunkt an.
-;                                Es koennen natuerlich auch negative Wert angegeben werden.
-;                                Die Randbedingungen sind zyklisch.
-;                     TRUNCATE : Nicht-zyklische Randbedingungen. Der Torus wird abgeschnitten,
-;                                wenn [XY]_Center zu gross sind.
-;                     CUT_VALUE: Alle Werte ausserhalb des Torus werden auf CUT_VALUE gesetzt.
-;                                Default ist Null.
-;                     WHERE    : falls gesetzt werden statt des modifizierten Arrays, die Indizes
-;                                der ueberlebenden Elemente zurueckgegeben. Falls keins ueberlebt 
-;                                ist der Rueckgabewert !NONE, siehe auch: COUNT
-; 
+; INPUT KEYWORD:
+;  X_CENTER/
+;  Y_CENTER :: Shift of the torus' center relative to the center of the array.
+;              Toroidal boundary conditions apply unless
+;              <*>/TRUNCATE</*> is set.
+;  TRUNCATE :: Non-toroidal boundary conditions will be used, i.e. the
+;              torus will be cut, if it doesn't fit.
+;  CUT_VALUE:: Each element outside the torus will be set to this
+;              value. Default is zero.
+;  WHERE    :: If set, the indices specifying the elements of the
+;              torus will be returned. If none matches, <*>!NONE</*>
+;              will be returned, see also <*>COUNT</*>; 
 ;                               
-; OUTPUTS:            Torus: ein Array mit den array-Werten im definierten Torus und CUT_VALUE sonst.
+; OUTPUTS:
+;  torus:: the modified <*>array</*>, with the original values inside
+;          the torus OR the indices of the array elements belonging to
+;          the torus (see <*>/WHERE</*>).
 ;
-; OPTIONAL OUTPUTS:   COUNT    : enthaelt die Zahl der ueberlebenden Elemente und zwar nur, wenn das
-;                                Keyword WHERE gesetzt wurde.
+; OPTIONAL OUTPUTS:
+;  COUNT    :: will contain the count of the torus elements, if
+;              <*>/WHERE</*> was set
 ;
 ; EXAMPLE:            
-;                     a = IntArr(100,100)
-;                     a = a+150
-;                     tv, cuttorus(a, 40, 30)
-;                     for i=-100,100 DO tv, cuttorus(a, 40, 30, Y_CENTER=i, X_CENTER=i)  
-;                     for i=-100,100 DO tv, cuttorus(a, 40, 30, Y_CENTER=i, /TRUNCATE)  
-;                     for i=-100,100 DO tv, cuttorus(a, 40, 30, Y_CENTER=i, X_CENTER=i, /TRUNCATE, CUT_VALUE=50)      
+;*a = IntArr(100,100)
+;*a = a+150
+;*ptvs, cuttorus(a, 40, 30)
+;*for i=-100,100 DO tv, cuttorus(a, 40, 30, Y_CENTER=i, X_CENTER=i)  
+;*for i=-100,100 DO tv, cuttorus(a, 40, 30, Y_CENTER=i, /TRUNCATE)  
+;*for i=-100,100 DO tv, cuttorus(a, 40, 30, Y_CENTER=i, X_CENTER=i, /TRUNCATE, CUT_VALUE=50)      
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.5  2000/09/25 09:12:54  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.4  1999/01/18 21:24:59  saam
-;           + allows the return of the surviving indices instead
-;             of the whole array with new keyword WHERE
-;           + an optional output COUNT provides the count of
-;             these elements
-;
-;     Revision 1.3  1999/01/01 14:00:09  saam
-;           + the distance is now rounded, which provides a smoooother torus
-;
-;     Revision 1.2  1997/12/19 13:04:19  saam
-;           Keywords [XY]_CENTER, TRUNCATE und CUT_VALUE hinzugefuegt
-;
-;     Revision 1.1  1997/11/21 18:25:15  saam
-;           Neu und Toll
-;
-;     
 ;-
 FUNCTION CutTorus, data, outer_radius, inner_radius, X_CENTER=x_center, Y_CENTER=y_center, TRUNCATE=truncate, CUT_VALUE=cut_value, COUNT=count, WHERE=where
 
