@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1999/07/28 08:45:06  saam
+;          dunno whats changed, but there had to be a reason...
+;
 ;     Revision 2.4  1998/11/08 17:54:49  saam
 ;           new keyword SUBSTRING added
 ;
@@ -65,53 +68,54 @@ FUNCTION ExtraDiff, extra, keywords, LEAVE=leave, SUBSTRING=substring
    IF N_Params() NE 2 THEN Message, 'wrong syntax'
 
    ; is extra defined ??
-   IF NOT Set(extra) THEN RETURN, !NONE
-   
-   tNames = Tag_Names(extra)
-
-   keyc   = N_Elements(keywords)
-   extrac = N_Tags(extra)
-   
+   IF Set(extra) THEN BEGIN   
+      tNames = Tag_Names(extra)
+      
+      keyc   = N_Elements(keywords)
+      extrac = N_Tags(extra)
+      
   
 
-   ; make a list of keywords found in the structure
-   FOR i=0,extrac-1 DO BEGIN
-      FOR j=0,keyc-1 DO BEGIN
-         IF Keyword_Set(SUBSTRING) THEN BEGIN
-            IF Contains(StrUpCase(tNames(i)), StrUpCase(keywords(j)))  THEN BEGIN
+      ; make a list of keywords found in the structure
+      FOR i=0,extrac-1 DO BEGIN
+         FOR j=0,keyc-1 DO BEGIN
+            IF Keyword_Set(SUBSTRING) THEN BEGIN
+               IF Contains(StrUpCase(tNames(i)), StrUpCase(keywords(j)))  THEN BEGIN
                                 ; ok, we've got one keyword that is in the structure
-               IF Set(keysfound) THEN keysfound = [keysfound, tNames(i)] ELSE keysfound = tNames(i)
-               IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
-            END
-         END ELSE BEGIN
-            IF StrUpCase(keywords(j)) EQ  StrUpCase(tNames(i)) THEN BEGIN
+                  IF Set(keysfound) THEN keysfound = [keysfound, tNames(i)] ELSE keysfound = tNames(i)
+                  IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
+               END
+            END ELSE BEGIN
+               IF StrUpCase(keywords(j)) EQ  StrUpCase(tNames(i)) THEN BEGIN
                                 ; ok, we've got one keyword that is in the structure
-               IF Set(keysfound) THEN keysfound = [keysfound, keywords(j)] ELSE keysfound = keywords(j)
-               IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
+                  IF Set(keysfound) THEN keysfound = [keysfound, keywords(j)] ELSE keysfound = keywords(j)
+                  IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
+               END
             END
          END
       END
-   END
-   
-   ; create the result containing the tags found
-   IF Set(keysfound) THEN BEGIN
-      diff = Create_Struct(keysfound(0), extra.(tagnumbers(0)))
-      FOR i=1, N_Elements(keysfound)-1 DO BEGIN
-         diff = Create_Struct(diff, keysfound(i), extra.(tagnumbers(i)))
-      END
-   END
-   
-   ; delete tags from extra if wanted
-   IF (NOT Keyword_Set(LEAVE)) AND Set(tagnumbers) THEN BEGIN
-      staytags = DiffSet(Indgen(extrac), tagnumbers)
-      IF staytags(0) NE !NONE THEN BEGIN
-         newextra = Create_Struct(tNames(staytags(0)),extra.(staytags(0)))
-         FOR i=1, N_Elements(staytags)-1 DO newextra =  Create_Struct(newextra, tNames(staytags(i)),extra.(staytags(i)))
-      END      
-      IF Set(newextra) THEN extra = newextra ELSE undef, extra
-   END
+      
 
+      IF Set(keysfound) THEN BEGIN
+         ; create the result containing the tags found
+         diff = Create_Struct(keysfound(0), extra.(tagnumbers(0)))
+         FOR i=1, N_Elements(keysfound)-1 DO BEGIN
+            diff = Create_Struct(diff, keysfound(i), extra.(tagnumbers(i)))
+         END
    
-   IF NOT Set(diff) THEN RETURN, !NONE ELSE RETURN, diff
+         ; delete tags from extra if wanted
+         IF (NOT Keyword_Set(LEAVE)) AND Set(tagnumbers) THEN BEGIN
+            staytags = DiffSet(Indgen(extrac), tagnumbers)
+            IF staytags(0) NE !NONE THEN BEGIN
+               newextra = Create_Struct(tNames(staytags(0)),extra.(staytags(0)))
+               FOR i=1, N_Elements(staytags)-1 DO newextra =  Create_Struct(newextra, tNames(staytags(i)),extra.(staytags(i)))
+            END      
+            IF Set(newextra) THEN extra = newextra ELSE undef, extra
+         END
+
+      END 
+   END
+   IF Set(diff) THEN RETURN, diff ELSE RETURN, !NONE
+
 
 END
