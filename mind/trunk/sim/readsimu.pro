@@ -5,13 +5,16 @@
 ;
 ; CATEGORY:           MIND SIM
 ;
-; CALLING SEQUENCE:   R = ReadSimu([LAYER] [,FILE=file] [,OS=os] [,/TD])
+; CALLING SEQUENCE:   R = ReadSimu([LAYER] [,FILE=file] [,OS=os]
+;                                  [,SUFF=suff] [,/TD])
 ;
 ; KEYWORD PARAMETERS: LAYER : species the layer to be read. You may
 ;                             use the layer index or the file string
 ;                             associated with the layer
 ;                     FILE  : you may specify a path/file (without suffices), if not the latest
 ;                             simulation (COMMON BLOCK ATTENTION) is taken
+;                     SUFF  : specify a suffix that will be appended
+;                             behind the layer's ID
 ;                     OS    : the data's oversampling factor (it takes latest ATTENTION value if
 ;                             not specified)
 ;                     TD    : returns the result in dimensions of the actual layer
@@ -29,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/06/20 13:16:16  saam
+;             + new keyword SUFF
+;
 ;       Revision 1.6  2000/05/16 16:25:11  saam
 ;             layer syntax extended
 ;
@@ -50,12 +56,13 @@
 ;
 ;
 ;-
-FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, INFO=info, _EXTRA=e
+FUNCTION ReadSIMU, Layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=info, _EXTRA=e
 
    COMMON ATTENTION
 
    On_Error, 2
    Default, INFO, ''
+   Default, SUFF, ''
 
    ;----->
    ;-----> COMPLETE COMMAND LINE SYNTAX
@@ -93,7 +100,7 @@ FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, INFO=info, _EXTRA=e
    
    console, 'restoring '+L.name
    
-   data = ReadSim(filename, INFO=info, _EXTRA=e)
+   data = ReadSim(filename+suff, INFO=info, _EXTRA=e)
    IF Keyword_Set(TD) THEN data = REFORM(data, h, w, (SIZE(data))(2), /OVERWRITE)
 
    RETURN, data
