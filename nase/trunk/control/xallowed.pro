@@ -16,7 +16,7 @@
 ;  example, it is used inside the <A>UTVLct</A> and <A>USet_Plot</A>
 ;  routines.) <BR>
 ;  Connecting to the X server may either be impossible (if there is no
-;  such server, or if the DEVICE environment variable is improperly
+;  such server, or if the DISPLAY environment variable is improperly
 ;  set), which would cause program interruption, or it may be
 ;  undesired (e.g. in <*>nohup</*> sessions, where it would violently
 ;  cause the IDL process to terminate, when the X server process
