@@ -1,6 +1,8 @@
 ;+
 ; NAME:                  SimTimeStop
 ;
+; VERSION:  $Id$
+;
 ; AIM: see <A>simtimeinit</A>
 ;
 ; PURPOSE:               Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
@@ -14,16 +16,20 @@
 ; COMMON BLOCKS:         SimTime
 ;
 ; EXAMPLE:
-;                        SimTimeInit, GRAPHIC=5, /PRINT
-;                        FOR a=1,10 DO BEGIN
-;                           Wait, 5.*RandomU(seed)
-;                           SimTimeStep
-;                        END
-;                        SimTimeStop
-;             
+;*                        SimTimeInit, GRAPHIC=5, /PRINT
+;*                        FOR a=1,10 DO BEGIN
+;*                           Wait, 5.*RandomU(seed)
+;*                           SimTimeStep
+;*                        END
+;*                        SimTimeStop
+;
+;-             
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/11/17 12:57:59  gabriel
+;          BUG fixed for stat.step GT stat.maxsteps
+;
 ;     Revision 1.5  2000/09/28 13:25:36  alshaikh
 ;           added AIM
 ;
@@ -41,7 +47,7 @@
 ;           vom Himmel gefallen
 ;
 ;
-;-
+;
 PRO SimTimeStop
    
    COMMON SimTime, stat
@@ -53,6 +59,10 @@ PRO SimTimeStop
       print, '  Total Time           : ', Seconds2String(Total(stat.tpi))
       print, '-----------------------------------------------'
    END ELSE BEGIN
+      if stat.step GT stat.maxsteps then begin
+         CONSOLE, /warn, 'too many iterations...quitting'
+         return
+      end
       m  = TOTAL(stat.tpi(0:stat.step-1))/FLOAT(stat.step)
       sd = StDev(stat.tpi(0:stat.step-1)) 
       
