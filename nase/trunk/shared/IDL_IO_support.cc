@@ -10,6 +10,12 @@ extern "C" {
 #include "export.h"
 }
 
+// IDL_EFS_STDIO was new in IDL 5.3:
+#ifndef IDL_EFS_STDIO
+#define IDL_EFS_STDIO IDL_EFS_NOT_NOSTDIO
+#endif
+
+
 #include "IDL_IO_support.h"
 
 
