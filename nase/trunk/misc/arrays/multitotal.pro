@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  MultoTotal()
+;  MultiTotal()
 ;
 ; AIM: returns sum or mean over several dimensions of an array (obsolete! use IMOMENT)
 ;
@@ -15,7 +15,7 @@
 ; CALLING SEQUENCE: result = MultiTotal(Array, Dimensions[ ,/MEAN])
 ;
 ; INPUTS: Array     : Array to process
-;         Dimensions: Array specifying the dimensions to total 
+;         Dimensions: Array specifying the dimensions to total
 ;
 ; KEYWORD PARAMETERS: /MEAN: Do not sum, but calculate the mean value
 ;                            over the given dimensions.
@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/12/20 17:29:04  bruns
+;        * preparations for removal from repository (warning message)
+;
 ;        Revision 1.2  2000/09/25 09:12:55  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -44,6 +47,8 @@
 ;-
 
 Function MultiTotal, Array, DimensionArray, MEAN=mean
+
+   Console, '  This routine will be removed from the repository soon. Use IMean() instead.', /warning
 
    Default, DimensionArray
 
