@@ -39,6 +39,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.5  2000/03/28 15:35:52  saam
+;           view is now centered at the latest messages
+;
 ;     Revision 2.4  2000/03/28 12:55:07  saam
 ;           docu updated, again
 ;
@@ -57,7 +60,7 @@
 ;
 ;
 
-PRO Console, _console, _message, MSG=msg,WARNING=warning,FATAL=fatal,LEVEL=level, UP=up
+PRO Console, _console, _message, MSG=msg, WARNING=warning, FATAL=fatal, LEVEL=level, UP=up
 
 ON_ERROR,2 
 
@@ -109,7 +112,7 @@ IF level GE status.threshold THEN begin
     
     CASE status.mode OF
         0: print, status.viz(status.act-1)
-        1: Widget_Control,status.cons,set_value=status.viz 
+        1: Widget_Control,status.cons,set_value=status.viz, SET_TEXT_TOP_LINE=MAX([0,status.act-10])
     END
     
 END 
