@@ -1,16 +1,20 @@
 ;+
 ; NAME:               InitRecall
 ;
-; PURPOSE:            InitRecall erzeugt eine Struktur bestehend aus ja einem Lernpotential pro Synapse, die 
-;                     mit TotalRecall 'upgedated' werden. Es kann zwischen mehreren Abklingfunktionen 
-;                     ausgewaehlt werden. Diese Routine wird nur fuer verzoegerte Verbindungen benoetigt, sonst
-;                     erfuellt der Neuronentyp 3 eine aequivalente Aufgabe.
+; PURPOSE:            InitRecall initialisiert Lernpotentiale fuer unverzoegerte und verzoegerte Gewichtsstrukturen.
+;                     Im unverzoegerten Fall wird jedem Neuron, im verzeogerten Fall jeder Verbindung ein Lernpotential
+;                     zugewiesen. Die Lernpotentiale werden mit TotalRecall 'upgedated' werden. Es kann zwischen mehreren 
+;                     Abklingfunktionen ausgewaehlt werden.
+;                     
 ;
 ; CATEGORY:           LEARNING
 ;
-; CALLING SEQUENCE:   LP = InitRecall( DelMat { [,LINEAR='['Amplitude, Decrement']'] | [,EXPO='['Amplitude, Zeitkonstante']'] } 
+; CALLING SEQUENCE:   LP = InitRecall( Struc { [,LINEAR='['Amplitude, Decrement']'] | [,EXPO='['Amplitude, Zeitkonstante']'] } 
 ;
-; INPUTS:             DelMat: eine mit InitDW initialisierte Gewichtsstruktur
+; INPUTS:             UNverzoegerte Verbindungen:
+;                               Struc: Layer            (mit Init_Layer? initialisiert)
+;                     verzoegerte Verbindungen:
+;                               Struc: Gewichtsstruktur (mit InitDW erzeugt)
 ;
 ; OPTIONAL INPUTS:    ---
 ;
@@ -32,19 +36,42 @@
 ; PROCEDURE:          ---
 ;
 ; EXAMPLE:
-;                     LP = InitRecall( DelMat, LINEAR=[5.0, 0.5]) 
-;                     LP = InitRecall( DelMat, EXPO=[1.0, 10.0])
+;                     CONN = InitDW(....)
+;                     LP = InitRecall( CONN, LINEAR=[5.0, 0.5]) 
+;
+;                     LAYER = InitLayer_1(...)
+;                     LP = InitRecall( LAYER, EXPO=[1.0, 10.0])
 ;
 ; MODIFICATION HISTORY:
+;
+;       Thu Sep 4 15:32:25 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Es werden nun sowohl neuronenspezifische als auch synapsenspez. Lernpotentiale behandelt
 ;
 ;       Thu Sep 4 11:24:28 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
-;		Urversion erstellt
+;		Schoepfung
 ;
 ;-
 
-FUNCTION InitRecall, DelMat, LINEAR=linear, EXPO=expo
+FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
+
+   IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
+
+   IF Struc.info EQ 'DW_WEIGHT' OR Struc.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+      xsize = Struc.target_w*Struc.target_h
+      ysize = Struc.source_w*Struc.source_h
+   END ELSE BEGIN
+      IF Struc.Info EQ 'LAYER' THEN BEGIN
+         xsize = Struc.w
+         ysize = Struc.h
+      END ELSE BEGIN
+         Message, 'first argument has to be a delayweigh- or a cluster-structure'
+      END
+   END
+   
    IF Keyword_Set(expo) THEN BEGIN
       IF N_Elements(expo) NE 2 THEN Message, 'amplification and time-constant expected with keyword expo'
       IF expo(0) LE 0.0        THEN Message, 'amplification <= 0 senseless'
@@ -53,7 +80,7 @@ FUNCTION InitRecall, DelMat, LINEAR=linear, EXPO=expo
       LP = { info   : 'e'     ,$
              v      : expo(0) ,$
              dec    : exp(-1./expo(1)) ,$
-             values : FltArr( DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h )  }
+             values : FltArr( xsize, ysize )  }
 
       RETURN, LP
    END
@@ -67,11 +94,10 @@ FUNCTION InitRecall, DelMat, LINEAR=linear, EXPO=expo
       LP = { info   : 'l'     ,$
              v      : linear(0) ,$
              dec    : linear(1) ,$
-             values : FltArr( DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h )  }
+             values : FltArr( xsize, ysize )  }
       
       RETURN, LP
    END
 
-   Message, 'you must specify one decay-function'
    
 END
