@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/10/11 10:16:52  kupper
+;        Implementation for fixed queues was wrong. Fixed.
+;
 ;        Revision 1.4  2000/10/11 09:30:41  kupper
 ;        Added a Temporary().
 ;
@@ -72,9 +75,9 @@ Function DeQueue, Queue
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
       assert, Queue.valid ge 1, "Fixed queue does not contain any " + $
        "valid values."
-      Wert = Queue.Q(Queue.Pointer)
-      Queue.Q(Queue.Pointer) = Queue.sample ;; erase value
-      Queue.Pointer = cyclic_value(Queue.Pointer-1, [0, Queue.Length])
+      HeadPointer = cyclic_value(Queue.Pointer-Queue.valid+1, [0, Queue.Length])
+      Wert = Queue.Q(HeadPointer)
+      Queue.Q(HeadPointer) = Queue.sample ;; erase value
       Queue.valid = (Queue.valid-1)
       return, Wert
    endif
