@@ -18,6 +18,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/06/20 10:21:12  saam
+;          + i changed read&plot to read all and then plot all.
+;            dunno why, but there was some important reason
+;
 ;     Revision 1.2  2000/01/04 11:06:46  saam
 ;           + DOC-header updated
 ;           + file- and layer-titles are displayed
@@ -64,18 +68,13 @@ PRO _ShowMUA, STOP=stop, _EXTRA=e
    END
    
 
-   ;------> SUCCESSIVELY READ DATA
-   FOR i=0, MUAmax DO BEGIN
-      tmp = ReadSimu(LAYER=MUA(i), /MUA, _EXTRA=e)
-      IF Set(SIGNAL) THEN Signal = [Signal,tmp] ELSE Signal = tmp
-   END
 
-
-   ;------> SUCCESSIVELY PLOT DATA
+   ;------> SUCCESSIVELY READ & PLOT DATA
    FOR i=0, MUAmax DO BEGIN 
+      Sig = ReadSimu(MUA(i), /MUA, _EXTRA=e)
       OpenSheet, SM_1, i
       L = Handle_Val(P.LW(MUA(i)))
-      Plot, FIndGen(N_Elements(SIGNAL(i,*)))*(1000*P.SIMULATION.SAMPLE), SIGNAL(i,*), TITLE='MUA: '+L.NAME, XTITLE='t [ms]'
+      Plot, FIndGen(N_Elements(sig))*(1000*P.SIMULATION.SAMPLE), sig, TITLE='MUA: '+L.NAME, XTITLE='t [ms]'
       Inscription, AP.ofile, /OUTSIDE, /RIGHT, /TOP, CHARSIZE=0.4, CHARTHICK=1
       CloseSheet, SM_1, i
    END
