@@ -10,7 +10,10 @@
 ;
 ; CATEGORY: Misc
 ;
-; CALLING SEQUENCE: K = GetKey()
+; CALLING SEQUENCE: K = GetKey( [ Mode={0,1} ] )
+;
+; INPUTS: Mode: Für Mode=0 kehrt GetKey sofort zurück,
+;               für Mode=1 (Default) wird auf einen Tastendruck gewartet.
 ;
 ; OUTPUTS: K: String, bei druckbaren Zeichen eben diese (Länge 1), bei 
 ;             nichtdruckbaren Zeichen (den meisten, weitere können
@@ -30,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/03/16 17:54:16  kupper
+;               Mode implementiert.
+;
 ;        Revision 2.1  1998/02/23 15:17:06  kupper
 ;               Schöpfung.
 ;               Die Funktion dieser Routine wurde aus ihren diversen Aufrufen
@@ -39,9 +45,11 @@
 ;
 ;-
 
-Function GetKey
+Function GetKey, arg
 
-   k = Get_KBRD(1)
+   Default, arg, 1
+
+   k = Get_KBRD(arg)
    Repeat begin
       g = Get_KBRD(0)
       k = k+g
