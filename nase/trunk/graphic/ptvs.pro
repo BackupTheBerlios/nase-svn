@@ -31,6 +31,7 @@
 ;*      [,/POLYGON]
 ;*      [,/SMOOTH] [,CUBIC=...] [, /INTERP] [, /MINUS_ONE]
 ;*      [,TOP=...]
+;*      [,TRUE=...]
 ;*      [,GET_POSITION=...] [,GET_PIXELSIZE=...]
 ;*
 ;* all other Keywords are passed to <C>PLOT</C>
@@ -75,6 +76,16 @@
 ;  TOP       :: uses the colormap entries from 0 up to TOP (default:
 ;               <*>!TOPCOLOR</*>). This does't do anything, if
 ;               <*>/NOSCALE</*> is set. 
+;  TRUE      :: Set this keyword to a nonzero value to indicate that a
+;               TrueColor (16-, 24-, or 32-bit) image is to be
+;               displayed. The value assigned to TRUE specifies the
+;               index of the dimension over which color is
+;               interleaved. The image parameter must have three
+;               dimensions, one of which must be equal to three. For
+;               example, set <*>TRUE</*> to 1 to display an image that
+;               is pixel interleaved and has dimensions of (3, m, n).
+;               Specify 2 for row-interleaved images, of size (m, 3,
+;               n), and 3 for band-interleaved images of the form (m, n, 3).
 ;  [XY]RANGE :: array containing values for an alternative [XY]-axis
 ;               labeling. This have to be at least two elements
 ;               (minimum and  maximum value) but can also contain more
@@ -135,6 +146,7 @@ PRO PTvS, data, XPos, YPos, $
           POLYGON=POLYGON, $
           CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth, $
           GET_Position=Get_Position, GET_PIXELSIZE=Get_PixelSize, $
+          TRUE=true, $
           _EXTRA=_extra
 
    On_Error, 2
@@ -145,9 +157,28 @@ PRO PTvS, data, XPos, YPos, $
    ;;; check the passed array
    ;;;
    IF NOT Set(data) THEN Console, 'argument undefined', /FATAL
-   hdata = (size(reform(data)))(2)
-   wdata = (size(reform(data)))(1)
-   
+   Default, TRUE, 0
+   sd = SIZE(reform(data))
+   CASE TRUE OF
+       0 : BEGIN
+           hdata = sd(2)
+           wdata = sd(1)
+       END
+       1 : BEGIN
+           hdata = sd(3)
+           wdata = sd(2)
+       END
+       2 : BEGIN
+           hdata = sd(3)
+           wdata = sd(1)
+       END
+       3 : BEGIN
+           hdata = sd(2)
+           wdata = sd(1)
+       END
+       ELSE: CONSOLE, 'invalid value for TRUE', /FATAL
+   END 
+
 
    ;;;
    ;;; extract parameters for the legend
@@ -170,6 +201,7 @@ PRO PTvS, data, XPos, YPos, $
    ;;;   
    ;;; assure default settings
    ;;;
+   Default, TRUE, 0
    Default, _Charsize, !P.CHARSIZE
                                 ; lower the passed or default charsize, when there are multiple
                                 ; plots per window
@@ -390,7 +422,7 @@ PRO PTvS, data, XPos, YPos, $
        UTV, data, posbitmap_norm(0), posbitmap_norm(1), $
          X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
          ORDER=UpSideDown, POLYGON=POLYGON ,$
-         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
+         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
    END ELSE BEGIN
        IF Set(_ZRANGE) THEN BEGIN
                                 ; the user wants the data to use a
@@ -447,7 +479,7 @@ PRO PTvS, data, XPos, YPos, $
            UTV, Scl(_data, [0, top], ZRANGE), posbitmap_norm(0), posbitmap_norm(1), $
              X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
              ORDER=UpSideDown, POLYGON=POLYGON, $
-             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
+             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
 
            IF ch GT 0 THEN Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cuthi MOD wdata)/(wdata-1) , $
                                   _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cuthi  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
@@ -463,7 +495,7 @@ PRO PTvS, data, XPos, YPos, $
            UTVSCL, data, posbitmap_norm(0), posbitmap_norm(1), $
              X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
              ORDER=UpSideDown, POLYGON=POLYGON, $
-             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
+             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
        END
    END
    ;; These lines are needed because there are still no axes when

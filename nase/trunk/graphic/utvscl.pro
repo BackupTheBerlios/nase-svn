@@ -197,6 +197,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , DEVICE=device $
             , POLYGON=POLYGON $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one $
+            , TRUE=_true $
             , _EXTRA=e
 
    ON_ERROR, 2
@@ -216,14 +217,26 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    END
 
    ; don't modify the original image
-   Image = __Image
+   IF N_Params() LT 1 THEN Console, 'at leat one positional argument expected', /FATAL
+   Image = REFORM(__Image)
+   
 
-   IF N_Params() LT 1 THEN Message, 'argument expected'
-   IF (Size(Image))(0) GT 2 THEN BEGIN
-      Image = Reform(Image, /OVERWRITE)
-      IF (Size(Image))(0) GT 2 THEN Message, 'array has more than 2 effective dimensions'
+   ; TRUE stands for TRUE color support, see IDL help of TV
+   Default, _TRUE, 0
+   IF _TRUE GT 0 THEN BEGIN
+       IF Keyword_Set(POLYGON) THEN Console, 'TRUE color option not supported for /POLYGON', /FATAL
+       IF _TRUE EQ 1 THEN Image = Transpose(Image, [1,2,0])
+       IF _TRUE EQ 2 THEN Image = Transpose(Image, [0,2,1])
+       IF _TRUE GT 3 THEN Console, 'invalid value for TRUE', /FATAL
+       IF (SIZE(Image))(3) NE 3 THEN Console, 'TRUE color option expects (3,x,y), (x,3,y) or (x,y,3) array, see IDLs TV help'
+       TRUE=3
+   END ELSE BEGIN
+       IF (SIZE(Image))(0) GT 2 THEN Console, 'array has more than 2 dimensions', /FATAL
+       Image = REFORM(Image, (SIZE(image))(1), (SIZE(image))(2), 1, /OVERWRITE)
+       TRUE=0
    END
-   IF (Size(Image))(0) NE 1 AND (Size(Image))(0) NE 2 THEN Message, 'array with one or two dimensions expected'
+
+
    IF N_Params() LT 3 AND     Keyword_Set(YCENTER) THEN YNorm = 0.5
    IF N_Params() LT 3 AND NOT Keyword_Set(YCENTER) THEN YNorm = 0.0
    IF N_Params() LT 2 AND     Keyword_Set(XCENTER) THEN XNorm = 0.5
@@ -288,11 +301,14 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
           _smooth = 1./(2.54/72.)*[1, 1] 
       END ELSE BEGIN
           _smooth = [!D.X_PX_CM, !D.Y_PX_CM]
-      END
-      Image = Congrid(Image, (xsize*_smooth(0)) > 1, (ysize*_smooth(1)) > 1, $
-                      CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
+      END      
+      _Image = FltArr((xsize*_smooth(0)) > 1, (ysize*_smooth(1)) > 1, TRUE > 1)
+      FOR i=0, 2 * (TRUE GT 0) DO $
+        _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1, (ysize*_smooth(1)) > 1, $
+                                CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
+      Image = Temporary(_Image)
 
-     ;;If CUBIC was used, the maximum or
+      ;;If CUBIC was used, the maximum or
       ;;minimum may have been changed by
       ;;congrid. This may produce color
       ;;artefacts. So rescale to have the
@@ -314,15 +330,15 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       IF NOT Keyword_Set(POLYGON) THEN BEGIN 
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e 
+               TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e 
             END ELSE BEGIN
-               __HelpTVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __HelpTVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygone statt pixel
@@ -334,7 +350,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE , _EXTRA=e
+               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, _EXTRA=e
             END ELSE BEGIN
                 __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
             END
@@ -345,29 +361,29 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+               TV, Image, xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __HelpTVScl, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
+               TV, Image, xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __HelpTVScl, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygone statt pixel
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __multipolyplot , Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, _EXTRA=e 
+               __multipolyplot , Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, TRUE=true, _EXTRA=e 
             END ELSE BEGIN
-               __multipolyplot, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __multipolyplot, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE , _EXTRA=e
+               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END 
          
