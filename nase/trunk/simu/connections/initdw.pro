@@ -138,6 +138,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.19  2000/01/20 15:05:02  saam
+;             D_NONSELF is ignored if delays are not activated
+;
 ;       Revision 2.18  1999/11/05 13:09:58  alshaikh
 ;             1)jede synapse hat jetzt ihr eigenes U_se
 ;             2)keyword REALSCALE
@@ -452,7 +455,7 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
          DW.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = !NONE
       end
 
-      if keyword_set(D_NONSELF) then begin
+      if (hasDelay AND keyword_set(D_NONSELF)) then begin
          if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
          DW.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = 0
       end
@@ -462,7 +465,7 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 ;         SetConstWeight, DW, w_ident, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
          DW.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = w_ident
       END
-      if set (D_IDENT) then BEGIN
+      if (HasDelay AND set (D_IDENT)) then BEGIN
          if t_width*t_height ne s_width*s_height then message, "Schluesselwort D_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
 ;         SetConstDelay,  DW, d_ident, 1, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
          DW.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = d_ident
