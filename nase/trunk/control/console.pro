@@ -75,6 +75,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.18  2000/10/10 16:20:03  kupper
+;     Added assert-message.
+;
 ;     Revision 2.17  2000/10/10 16:17:45  kupper
 ;     Added hyperlink to DMsg.
 ;
@@ -182,7 +185,7 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    
    help, calls=m
    assert, pickcaller ge 0
-   assert, (pickcaller+1) lt N_Elements(m) 
+   assert, (pickcaller+1) lt N_Elements(m), "Too few elements on the callstack."
    m = m(pickcaller+1)
 
    _called_by = (split(m,' <'))(0)
