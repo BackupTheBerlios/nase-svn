@@ -40,6 +40,8 @@ h2.sh2 { font-size:16pt; }
 
 
 
+
+
 h3,h3.xmp,h3.xpl,h3.inf,h3.tip { font-size:12pt; }
 
 /* Zwischenueberschriften wie 'Beispiel', 'Erlaeuterung' */
@@ -77,7 +79,7 @@ pre { font-family:Courier New,Courier; font-size:12pt; color:#0000C0; }
 /* #0000C0 = blau, Wert aenderbar */
 
 
-tt { font-family:Courier New,Courier; font-size:10pt; color:#0000C0; }
+tt { font-family:Courier New,Courier; font-size:12pt; color:#0000C0; }
 
 /* Quelltext-Befehle im normalen Fliesstext */
 /* font-family = Schriftart */
@@ -150,9 +152,14 @@ pre.normal { color:#000000; }
 /* #000000 = schwarz, Wert aenderbar */
 
 
-a:link { color:#AA5522; text-decoration:underline; }
-a:visited { color:#772200; text-decoration:underline; }
-a:active { color:#000000; text-decoration:none; }
+/* a:link { color:#AA5522; text-decoration:underline; } */
+/* a:visited { color:#772200; text-decoration:underline; } */
+/* a:active { color:#000000; text-decoration:none; } */
+a:nase { color:#FFFFFF; text-decoration:none; } 
+a:link { color:#0000C0; text-decoration:underline; }
+a:visited { color:#0000C0; text-decoration:underline; }
+a:active { color:#0000C0; text-decoration:underline; }
+
 
 /* a:link = Verweise zu noch nicht besuchten Seiten */
 /* a:visited = Verweise zu bereits besuchten Seiten */
@@ -167,7 +174,7 @@ a:active { color:#000000; text-decoration:none; }
 
 a.an { text-decoration:none; }
 
-blockquote { margin-left:0px; }
+blockquote { margin-left:10px; }
 
 
 /* Wenn Sie sich mit Style-Sheets */
