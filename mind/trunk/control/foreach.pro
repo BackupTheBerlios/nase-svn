@@ -9,7 +9,7 @@
 ; CATEGORY:           MIND CONTROL
 ;
 ; CALLING SEQUENCE:   iter = ForEach(procedure [,p1 [,p2 [,p3 [,p4 [,p5 [,p6 [,p7 [p8 [,p9]]]]]]]]] $
-;                                     [,ISKIP=iskip] [,OSKIP=oskip]
+;                                     [,LSKIP=lskip] [,LCONST=lconst]
 ;                                     [,__XX (see below!)]
 ;                                     [,ZZYY (see below!)]
 ;                                     [,/W] [,VALUES=values]
@@ -24,12 +24,21 @@
 ;                     QUIET : supresses the output of the latest iteration
 ;                     FAKE  : simulates the routine without actually calling procedure
 ;                     E     : all other keywords are passed to procedure
-;                     ISKIP ,
-;                     OSKIP : skips the specified number of inner and
-;                             outer loop hierarchies, this is
-;                             espacially useful for metaroutines that
-;                             evaluate data accross multiple iterations
-;                             negative values mean: skip all but  
+;                     LSKIP : various loops in a hierarchie can be
+;                             skipped, this is
+;                             especially useful for metaroutines that
+;                             evaluate data accross multiple iterations.
+;                             You can specify a scalar or an array of
+;                             loop indices to be skipped (1 denotes
+;                             the most inner loop).
+;                             negative values mean: skip all but this
+;                             index. Note that the loop is completely
+;                             omitted (including the filename). See
+;                             also LCONST.
+;                     LCONST: While LSKIP skips various loops, LCONST
+;                             just assumes a constant value for them
+;                             (the one they currently have). The
+;                             Syntax is the same as for LSKIP. 
 ;                     __XX  : Loop Variables may be modified/set as
 ;                             Keywords. If you have a loop variable
 ;                             ITER, you can change the default value by passing
@@ -57,6 +66,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/04/12 13:28:41  saam
+;           modified the undocumented I- and OSKIP
+;           thing to the more flexible and easier to
+;           implement LSKIP/LCONST mechanims
+;
 ;     Revision 1.6  2000/04/06 09:32:13  saam
 ;           new keyword setting system
 ;
@@ -81,8 +95,8 @@
 ;
 ;
 ;-
-FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet,$; setvalues=setvalues ,$;, pname=pname, $
-                  ISKIP=_iskip, OSKIP=_oskip, _EXTRA=e
+FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet,$
+                  LSKIP=_lskip, LCONST=_lconst, _EXTRA=e
 
    COMMON ATTENTION
    
@@ -90,34 +104,43 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    ; scan AP for loop instructions __?
    TST = ExtraDiff(AP, '__TV', /SUBSTRING, /LEAVE) ; temporary 
    TSN = ExtraDiff(AP, '__TN', /SUBSTRING, /LEAVE)
-   loops = N_Tags(TST)
+   loopc = N_Tags(TST)
+
+
+
+   ; loops : an array containing the indices to be iterated over
+   IF Set(_LSKIP) THEN BEGIN            
+       IF ((N_Elements(_LSKIP) GT 1) AND (MIN(_LSKIP) LT 1)) THEN Console, 'LSKIP: inverse syntax with multiple arguments ??', /FATAL
+       IF (_LSKIP(0) LT 0) THEN BEGIN
+           LSKIP=Indgen(loopc)+1
+           LSKIP=Diffset(LSKIP, -_LSKIP)
+       END ELSE LSKIP = _LSKIP
+   END ELSE lskip=!NONE
+   
+   IF Set(_LCONST) THEN BEGIN            
+       IF ((N_Elements(_LCONST) GT 1) AND (MIN(_LCONST) LT 1)) THEN Console, 'LCONST: inverse syntax with multiple arguments ??', /FATAL
+       IF (_LCONST(0) LT 0) THEN BEGIN
+           LCONST=Indgen(loopc)+1
+           LCONST=Diffset(LCONST, -_LCONST)
+       END ELSE LCONST = _LCONST
+   END ELSE lconst=!NONE
    
 
-   Default, _ISKIP, 0
-   IF _ISKIP LT 0 THEN ISKIP = loops+_iskip ELSE ISKIP = _iskip
-   IF (ISKIP GT loops) THEN Console, 'skipping more inner loops ('+STR(ISKIP)+') than currently availible ('+STR(loops)+')', /FATAL
-   IF ISKIP GT 0 THEN Console, 'skipping '+STR(ISKIP)+' inner loop hierarchy/ies'
-
-   Default, _OSKIP, 0
-   IF _OSKIP LT 0 THEN OSKIP = loops+_oskip ELSE OSKIP = _oskip
-   IF (OSKIP GT loops) THEN Console, 'skipping more outer loops ('+STR(OSKIP)+') than currently availible ('+STR(loops)+')', /FATAL
-   IF OSKIP GT 0 THEN Console, 'skipping '+STR(OSKIP)+' outer loop hierarchy/ies'
-
-   IF ISKIP+OSKIP GT loops THEN Console, 'skipping more than available', /WARN
-
-   ; cut that __TV stuff away
-   ; set skipped loops to their current values
    TS = {____XXX : 0}
-   FOR i=0,OSKIP-1 DO BEGIN
-       ; get current value for the loop to be ignored
-       GetHTag, P, TSN.(i), val
-       ; a set a loop containing only this value for correct filenames...
-       command = "SetTag, TS, '"+StrMid((Tag_Names(TST))(i),4)+"', "+STR(val)
-       IF NOT Execute(command) THEN Console, "Execute failed: "+command, /FATAL
+   FOR i = 0, loopc-1 DO BEGIN
+       IF Inset(loopc-i, lconst) THEN BEGIN
+           ; get current value for the loop to be set constant
+           GetHTag, P, TSN.(i), val
+           ; a set the loop containing only this value (for correct filenames...)
+           command = "SetTag, TS, '"+StrMid((Tag_Names(TST))(i),4)+"', "+STR(val)
+           IF NOT Execute(command) THEN Console, "Execute failed: "+command, /FATAL
+       END ELSE BEGIN
+           ; set normal loop if not in lskip
+           IF NOT Inset(loopc-i, lskip) THEN SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)  
+       END
    END
-   FOR i=OSKIP, N_TAGS(TST)-1-ISKIP DO SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)
    DelTag, TS, "____XXX"
-
+       
 
    ; if the users sets loopvalues on the commandline (or elsewhere)
    uset = ExtraDiff(e, '__', /SUBSTRING)  ; and also removes these keywords!
@@ -196,7 +219,6 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
       IF NOT Keyword_Set(FAKE) THEN BEGIN
          P = AP
          P.file = Str(AP.FILE+'_')
-         P.pfile = Str(AP.pFILE+'_')
          
          CASE N_Params() OF
             1: CALL_PROCEDURE, procedure,_EXTRA=e
