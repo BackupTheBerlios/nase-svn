@@ -181,7 +181,7 @@ PRO TvSclLegend, _xnorm, _ynorm $
    
 
    IF Keyword_Set(NOSCALE) THEN BEGIN
-      Scl, colorarray, [mi, ma]
+      Scl, colorarray, range
    ENDif
 
    legend_dims = FltArr(4)
