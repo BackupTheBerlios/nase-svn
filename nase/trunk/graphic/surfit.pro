@@ -124,7 +124,7 @@ Pro SurfIt_Event, Event
         info.pixwin = !D.Window
 
         wset, info.drawwin ; und dann machen wir doch noch ein Paint
-        If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MIN_VALUE=!NONE+1, _EXTRA=info._extra else $
+        If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MAX_VALUE=999998, _EXTRA=info._extra else $
          call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
         xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
      End      
@@ -146,7 +146,7 @@ Pro SurfIt_Event, Event
                  info.delta = info.delta*360
                  info.delta(1) = -info.delta(1)
                  wset, info.pixwin
-                 If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MIN_VALUE=!NONE+1, _EXTRA=info._extra else $
+                 If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MAX_VALUE=999998, _EXTRA=info._extra else $
                   call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
                  xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
                  wset, info.drawwin
@@ -188,7 +188,7 @@ PRO SurfIt, _data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
             TITLE=title, PLOT_TITLE=plot_title, $
             NASE=nase, GRID=grid, SHADES=_shades, _EXTRA=_extra
 
-   data = _data                 ;Do not change Contents!
+   data = reform(_data)         ;Do not change Contents!
    Default, shades, _shades     ;Do not change Contents!
    Default, xpos, 500
    Default, ypos, 100
@@ -212,6 +212,8 @@ PRO SurfIt, _data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
    ;;------------------> NASE-Array:
    If Keyword_Set(NASE) then begin
       data = rotate(data, 3)
+      nones = where(data eq !NONE, count)
+      If count ne 0 then data(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
       If Keyword_Set(Shades) then shades = rotate(shades, 3)
    endif
    ;;--------------------------------
@@ -297,7 +299,7 @@ PRO SurfIt, _data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
    WIDGET_CONTROL, SurfWidget, SET_UVALUE=info, /NO_COPY
    
    wset, drawwin
-   If Keyword_Set(NASE) then call_Procedure, plotproc, data, Title=plot_title, MIN_VALUE=!NONE+1, _EXTRA=_extra else $
+   If Keyword_Set(NASE) then call_Procedure, plotproc, data, Title=plot_title, MAX_VALUE=999998, _EXTRA=_extra else $
     call_Procedure, plotproc, data, Title=plot_title, _EXTRA=_extra
    xyouts, /device, 10, 10, "AX="+string(30.0)+"      AZ="+string(30.0)
 
