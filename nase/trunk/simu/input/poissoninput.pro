@@ -53,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/08/23 12:47:33  saam
+;           now works with oversampling
+;
 ;     Revision 2.3  1998/08/03 10:55:15  saam
 ;           header update
 ;
@@ -93,6 +96,8 @@ FUNCTION PoissonInput, PIS, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rate,
          jitter = 1
          gj = 0
       END
+      jitter = jitter/(SAMPLEPERIOD*1000.)
+
 
       IF Keyword_Set(KLAYER) THEN BEGIN
          w = KLayer.w
