@@ -25,6 +25,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  2005/03/22 16:48:09  kupper
+;     bugfix: opening error state was not tested for 0, but for "true",
+;     Since error codes obviously have changed, this broke.
+;     fixed.
+;
 ;     Revision 2.9  2001/04/25 13:28:57  gabriel
 ;           BugFix: RealFileName is a silly thing. Given filename is checked for existence and opened before changing
 ;                   filename via realfilename ...
@@ -120,8 +125,11 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
        lun = 2 ; reserved for stdin/stdout/stderr
        REPEAT BEGIN
            lun = lun + 1
+           ;;           print, "testing lun "+str(lun)
            OpenR, lun, rfile, Err=err, _EXTRA=e 
-       END UNTIL ((lun GT 2+MaxFiles) OR (NOT err))
+       END UNTIL ((lun GT 2+MaxFiles) OR (err eq 0))
+       ;;       print, "using lun "+str(lun)
+       ;;       print, "err="+str(err)
        IF (lun GT 2+MaxFiles) THEN Console, 'unable to aquire a lun: '+!ERR_STRING, /FATAL
 
        
