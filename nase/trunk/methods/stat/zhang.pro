@@ -79,7 +79,7 @@
 ;           with the <*>/DIMENSIONS</*> option of <A>Spassmacher()</A> and
 ;           <A>SSpassmacher()</A> set. Supplying sparse inputs may save some
 ;           memory, since the input has not to be kept in a nearly
-;           empty array.
+;           empty array. Default: <*>SPASS=0</*>.
 ;  /OPTIMAL:: As the final estimate, <C>Zhang()</C> may either use the
 ;             maximum (MAP method) or
 ;             the average of the <I>a posteriori</I> distribution (optimal
@@ -224,7 +224,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    Default, center, 0
    Default, optimal, 0
    Default, verbose, 0
-   Default, spass, 1
+   Default, spass, 0
 
    ssize = Size(s)
    sdur = ssize(1)
