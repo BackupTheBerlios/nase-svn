@@ -16,10 +16,10 @@
 ;  Graphic
 ;  
 ; CALLING SEQUENCE:
-;  MSPlot [,x] ,mean ,sd [,MCOLOR=mcolor] [,SDCOLOR=sdcolor]
+;*  MSPlot [,x] ,mean ,sd 
+;*         [,MCOLOR=...] 
+;*         [,SDCOLOR=...]
 ;
-;   All other keywords are passed to the underlying Plot-and
-;   Axis-procedures.
 ;  
 ; INPUTS:
 ;  mean:: onedimensional array containing data
@@ -27,8 +27,12 @@
 ;  
 ; OPTIONAL INPUTS:
 ;  x:: abscissa values corresponding to mean/sd (equidistant, 0..n-1)
+;
+; INPUT KEYWORDS:
 ;  mcolor:: colourindex used for plotting the data (default: white)
 ;  sdcolor:: colourindex used to draw error area (default: darkblue)  
+;  other input keywords:: passed to the underlying Plot-and
+;   Axis-procedures.
 ;  
 ; RESTRICTIONS:
 ;  X- and YTITLE can only be plotted at left and bottom margins.
@@ -40,12 +44,12 @@
 ;  + plot axes again to overwrite error area
 ;  
 ; EXAMPLE:
-;  x  = Indgen(30)/10.
-;  m  = 0.02*randomu(seed,30)+0.4
-;  sd = 0.005*randomn(seed,30)+0.05
-;  MSPlot, m, sd
-;  MSPlot, x, m, sd, YRANGE=[0,1],/XSTYLE $
-;   , MCOLOR=RGB(200,100,100), SDCOLOR=RGB(100,50,50)
+;*  x  = Indgen(30)/10.
+;*  m  = 0.02*randomu(seed,30)+0.4
+;*  sd = 0.005*randomn(seed,30)+0.05
+;*  MSPlot, m, sd
+;*  MSPlot, x, m, sd, YRANGE=[0,1],/XSTYLE $
+;*   , MCOLOR=RGB(200,100,100), SDCOLOR=RGB(100,50,50)
 ;  
 ; SEE ALSO:
 ;  Standard IDL routines: OPLOTERR, PLOT, PLOTERR
