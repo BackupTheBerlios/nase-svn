@@ -24,7 +24,7 @@
 ;
 ; OUTPUTS:
 ;   cs:: a linear array of the same type as the first argument;
-;        the elements are sorted in ascending order (due to the way IDL's<*>Uniq</*> works);
+;        the elements are sorted in ascending order (due to the way IDL's <*>Uniq</*> works);
 ;        if one of the arguments is an empty set (=!None, not undefined!)
 ;        the result will also be empty (=!None)
 ;
@@ -35,7 +35,7 @@
 ;*     Print, CutSet([1,7,5,4],[4,65,7,3,7,4])
 ;*     >  4  7
 ;*     Print, CutSet([1,2,5,9],[4,65,7,3,7,4])
-;*     >  -999999
+;*     >  -999999.
 ;  The second result represents !None.
 ;
 ; SEE ALSO:
@@ -44,8 +44,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/12/20 18:07:26  gail
+;     * fixed header bug (example code)
+;
 ;     Revision 1.3  2000/12/20 15:17:54  gail
-;     * completly revised
+;     * completely revised
 ;     * updated header
 ;
 ;     Revision 1.2  2000/09/25 09:12:54  saam
