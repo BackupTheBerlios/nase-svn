@@ -10,7 +10,7 @@
 ;                                         [,GET_LENGTH] [,GET_SIZE]
 ;                                         [,GET_TITLE] [,GET_SYSTEM] [,GET_STARRING]
 ;                                         [,GET_COMPANY] [,GET_PRODUCER] [,GET_YEAR] 
-;                                         [,/SHUTUP])
+;                                         [,/SHUTUP] [,ERROR=error])
 ; 
 ; INPUTS:  Title     : Filename und Videotitel. Dieser Parameter hat
 ;                      exakt die gleiche Funktion wie das
@@ -28,7 +28,10 @@
 ;                                  den Wert 0 zurück.
 ;                     SHUTUP: falls gesetzt, gibt es ueberhaupt keine
 ;                             Informationen aus
-;
+; 
+; OPTIONAL OUTPUT:
+;                     error: ist TRUE(=1), falls ein Fehler auftrat und
+;                            FALSE(=0) falls nicht
 ;
 ; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
 ;
@@ -43,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  1998/03/19 14:53:09  saam
+;             new keyword 'ERROR'
+;
 ;       Revision 2.8  1998/03/14 13:32:45  saam
 ;             now handles zipped and non-zipped videos
 ;
@@ -74,11 +80,12 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
                     GET_LENGTH=get_length, GET_SIZE=get_size, $
                     GET_TITLE=get_title ,GET_SYSTEM=get_system, GET_STARRING=get_starring, $
                     GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year, $
-                    EDIT=edit, SHUTUP=shutup
+                    EDIT=edit, SHUTUP=shutup, ERROR=error
    
    Default, __title, _Title
    Default, __title, "The Spiking Neuron"   
- 
+   Default, error  , 0
+
    filename = __title+".vid"
    infoname = __title+".vidinf"
    Parts = str_sep(__title, '/')
@@ -87,6 +94,11 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    c = ZipStat(filename, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
    IF nzf(0) NE '-1' OR bf(0) NE '-1' THEN zipped = 0 ELSE zipped = 1
    IF zipped THEN Unzip, filename
+
+   IF NOT fileExists(infoname) THEN BEGIN
+      error = 1
+      RETURN, -1
+   END
 
    Get_Lun, infounit
    openr, infounit, infoname
