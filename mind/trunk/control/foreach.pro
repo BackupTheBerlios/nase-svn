@@ -25,6 +25,7 @@
 ;                             outer loop hierarchies, this is
 ;                             espacially useful for metaroutines that
 ;                             evaluate data accross multiple iterations
+;                             negative values mean: skip all but  
 ;
 ; OUTPUTS:            iter  : the number of performed iterations 
 ;
@@ -37,6 +38,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/04/04 13:35:44  saam
+;           + ISKIP and OSKIP now takes negative values
+;           + handle/struct story now works and is put to NASE
+;             routines [G|S]etHTag
+;           + pname keyword eliminated
+;
 ;     Revision 1.3  2000/04/03 12:50:57  saam
 ;           added ISKIP and OSKIP to skip loop hierarchies
 ;
@@ -48,8 +55,8 @@
 ;
 ;
 ;-
-FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet, setvalues=setvalues, pname=pname, $
-                  ISKIP=iskip, OSKIP=oskip, _EXTRA=e
+FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet, setvalues=setvalues ,$;, pname=pname, $
+                  ISKIP=_iskip, OSKIP=_oskip, _EXTRA=e
 
    COMMON ATTENTION
    
@@ -57,23 +64,31 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    ; scan AP for loop instructions __?
    TST = ExtraDiff(AP, '__TV', /SUBSTRING, /LEAVE) ; temporary 
    TSN = ExtraDiff(AP, '__TN', /SUBSTRING, /LEAVE)
+   loops = N_Tags(TST)
    
-   
-   Default, ISKIP, 0
-   IF (ISKIP GT N_Tags(TST)) THEN Console, 'skipping more inner loops ('+STR(ISKIP)+') than currently availible ('+STR(N_TAGS(TST))+')', /FATAL
+
+   Default, _ISKIP, 0
+   IF _ISKIP LT 0 THEN ISKIP = loops+_iskip ELSE ISKIP = _iskip
+   IF (ISKIP GT loops) THEN Console, 'skipping more inner loops ('+STR(ISKIP)+') than currently availible ('+STR(loops)+')', /FATAL
    IF ISKIP GT 0 THEN Console, 'skipping '+STR(ISKIP)+' inner loop hierarchy/ies'
 
-   Default, OSKIP, 0
-   IF (OSKIP GT N_Tags(TST)) THEN Console, 'skipping more outer loops ('+STR(OSKIP)+') than currently availible ('+STR(N_TAGS(TST))+')', /FATAL
+   Default, _OSKIP, 0
+   IF _OSKIP LT 0 THEN OSKIP = loops+_oskip ELSE OSKIP = _oskip
+   IF (OSKIP GT loops) THEN Console, 'skipping more outer loops ('+STR(OSKIP)+') than currently availible ('+STR(loops)+')', /FATAL
    IF OSKIP GT 0 THEN Console, 'skipping '+STR(OSKIP)+' outer loop hierarchy/ies'
 
-   IF ISKIP+OSKIP GT N_TAGS(TST) THEN Console, 'skipping more than available', /WARN
+   IF ISKIP+OSKIP GT loops THEN Console, 'skipping more than available', /WARN
 
    ; cut that __TV stuff away
    TS = {____XXX : 0}
-   FOR i=0+OSKIP, N_TAGS(TST)-1-ISKIP DO BEGIN
-       SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)
+   FOR i=0,OSKIP-1 DO BEGIN
+       ; get current value for the loop to be ignored
+       GetHTag, P, TSN.(i), val
+       ; a set a loop containing only this value for correct filenames...
+       command = "SetTag, TS, '"+StrMid((Tag_Names(TST))(i),4)+"', "+STR(val)
+       IF NOT Execute(command) THEN Console, "Execute failed: "+command, /FATAL
    END
+   FOR i=OSKIP, N_TAGS(TST)-1-ISKIP DO SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)
    DelTag, TS, "____XXX"
 
 
@@ -86,6 +101,7 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
       
       lt_c = LoopTags(LS, ltags)
       ltags = TagPos(P, (Tag_Names(TS))(ltags))
+
       IF Set(values) THEN BEGIN
          Message, 'keyword VALUES currently out of order'
       END
@@ -96,26 +112,11 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
             
             ;ATTENTION
             P = AP
-            P.file = StrCompress(AP.FILE+LoopName(LS, pname=pname), /REMOVE_ALL)
-            P.pfile = pname
+            P.file = StrCompress(AP.FILE+LoopName(LS), /REMOVE_ALL)  ; pname=pname
+            ;P.pfile = pname
             ;Set values
             FOR i=0, N_Tags(LV)-1 DO BEGIN
-               coms = Str_Sep(TSN.(i), '/')
-               IF N_Elements(coms) EQ 1 THEN BEGIN ;old syntax
-                  command = "P."+STRING(coms(0))+" = "+STRING(LV.(i))
-                  IF NOT Execute(command) THEN Message, 'Strange...execution (old) failed'
-               END ELSE IF N_Elements(coms) EQ 2 THEN BEGIN ;latest syntax                  
-                  ;use if handle
-                  command = "Handle_Value, P."+STRING(coms(1))+", xxx"
-                  IF NOT Execute(command) THEN Message, 'Strange...execution (new1) failed'
-                  command = "xxx."+STR(coms(0))+" = "+STRING(LV.(i))
-                  IF NOT Execute(command) THEN Message, 'Strange...execution (new2) failed'
-                  command = "Handle_Value, P."+STRING(coms(1))+", xxx, /SET"
-                  IF NOT Execute(command) THEN Message, 'Strange...execution (new3) failed'
-               END ELSE IF N_Elements(coms) EQ 3 THEN BEGIN
-                  command = "P."+STRING(coms(1))+"."+STRING(coms(0))+" = "+STRING(LV.(i))
-                  IF NOT Execute(command) THEN Message, 'Strange...execution (new4) failed'
-               END ELSE Message, 'syntax error in loop variable description'
+                SetHTag, P, TSN.(i), LV.(i)
             END
             
             
