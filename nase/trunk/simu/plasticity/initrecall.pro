@@ -9,12 +9,15 @@
 ;
 ; CATEGORY:           LEARNING
 ;
-; CALLING SEQUENCE:   LP = InitRecall( Struc { [,LINEAR='['Amplitude, Decrement']'] | [,EXPO='['Amplitude, Zeitkonstante']'] } 
+; CALLING SEQUENCE:   LP = InitRecall( {Struc | HEIGHT=Höhe, WIDTH=Breite} 
+;                                           { [,LINEAR='['Amplitude, Decrement']'] | [,EXPO='['Amplitude, Zeitkonstante']'] } 
 ;
 ; INPUTS:             UNverzoegerte Verbindungen:
 ;                               Struc: Layer            (mit Init_Layer? initialisiert)
 ;                     verzoegerte Verbindungen:
 ;                               Struc: Gewichtsstruktur (mit InitDW erzeugt)
+;                     ODER:  Hoehe und Breite explizit in HEIGHT,WIDTH 
+;                            (wobei eigentlich nur das Produkt entscheidend ist, also die Anzahl der Lernpotentiale)                                                                    
 ;
 ; KEYWORD PARAMETERS: 
 ;                     LINEAR: linearer Abfall des Lernpotentials mit Decrement, ein eintreffender Spike erhoeht das Potential um Amplitude
