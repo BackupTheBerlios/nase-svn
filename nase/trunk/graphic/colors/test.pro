@@ -12,11 +12,9 @@
 ;
 ;
 ; CATEGORY:
-;  Algebra
 ;  Animation
 ;  Array
 ;  Color
-;  CombinationTheory
 ;  Connections
 ;  DataStorage
 ;  DataStructures
@@ -35,12 +33,10 @@
 ;  Math
 ;  MIND
 ;  NASE
-;  NumberTheory
 ;  Objects
 ;  OS
 ;  Plasticity
 ;  Startup
-;  Statistics
 ;  Signals
 ;  Simulation
 ;  Strings
@@ -85,6 +81,6 @@
 ; SEE ALSO:
 ;
 ;-
-
+erkfjnerkjghe
 ;;; look in headerdoc.pro for explanations and syntax,
 ;;; or view the NASE Standards Document
