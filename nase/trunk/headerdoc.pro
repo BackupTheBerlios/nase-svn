@@ -4,7 +4,8 @@
 ;  FunctionName()
 ;
 ;  A name consisting of several words or keys has to be capitalized
-;  for each constituent, e.g PlotWithSpecialOptions.
+;  for each constituent, e.g PlotWithSpecialOptions. Please don't use
+;  any special characters (e.g. underscores).
 ;
 ; VERSION:
 ;  $Id$
@@ -18,13 +19,12 @@
 ;  be used even in <*>normal text</*>. It is also possible to format
 ;  your text with <B>bold</B>, <I>italics</I>, <SUP>superscripts</SUP>
 ;  and <SUB>supscripts</SUB> attributes.<BR> Line breaks may also
-;  be inserted anywhere.
+;  be inserted anywhere. References to IDL functions/procedures as
+;  well as references to the routine documented here should be formatted
+;  using <C>ProcedureName</C>. 
 ;
 ;
 ; CATEGORY:
-;  Put the following category (or categories, specified separate
-;  lines) here.
-;
 ;  Algebra
 ;  Animation
 ;  Array
@@ -64,12 +64,12 @@
 ; CALLING SEQUENCE:
 ;  Write the calling sequence here. For procedures, use the form
 ;
-;*    ProcedureName, in1, in2, out1 [,in3] [,out1] [,/IN4] [,IN5=...] [,OUT2=...]
+;*ProcedureName, in1, in2, out1 [,in3] [,out1] [,/IN4] [,IN5=...] [,OUT2=...]
 ;
 ;  Positional arguments are written in lower case,
 ;  while all keyword arguments are written in all caps. For functions, use the form
 ;
-;*    out0 = FunctionName(in1, in2, out1 [,in3] [,out2] [,/IN4] [,IN5=...] [,OUT3=...])
+;*out0 = FunctionName(in1, in2, out1 [,in3] [,out2] [,/IN4] [,IN5=...] [,OUT3=...])
 ;
 ;  In more complex routines, certain keyword dependencies may arise.
 ;  Use the following compound symbols to improve understanding
@@ -123,10 +123,10 @@
 ;  be mentioned. what is a side effect? look at
 ;  the following code snip
 ;
-;*     a=5
-;*     x=compute(a)
-;*     print, a
-;*     ; reveals that a is now 6, ouch!
+;*a=5
+;*x=compute(a)
+;*print, a
+;*; reveals that a is now 6, ouch!
 ;
 ;  Functions should not change their arguments.
 ;  Otherwise document this here! Also document all
@@ -149,16 +149,16 @@
 ;  Please provide a simple example here. Things
 ;  you specifiy on IDLs command line should be written
 ;  as
-;*  print, "foobar"
+;* print, "foobar"
 ;
 ;  IDLs output should be shown using
-;*  >foobar
+;* >foobar
 ;
 ; SEE ALSO:
 ;  Mention routines that are related to, depend on or
 ;  are used by your routine/implementation. Look at the
 ;  <A>DemoSim</A>. If you are bored, click
-; <A NREF=CVS>here</A>.
+;  <A NREF=CVS>here</A>.
 ;
 ;-
 
