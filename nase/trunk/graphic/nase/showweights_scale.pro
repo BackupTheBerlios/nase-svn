@@ -5,13 +5,17 @@
 ;      color tables.
 ;
 ; PURPOSE: Wurde aus ShowWeights ausgelagert.
-;          Ein Array wird so skaliert, daﬂ es mit TV ausgegeben werden 
+;          Ein Array wird so skaliert, daﬂ es mit <A>UTv</A> ausgegeben werden 
 ;          kann und dann aussieht wie bei ShowWeights.
+;          Alle Array-Eintr‰ge werden durch die entsprechenden
+;          Farbindizes ersetzt. (Ausnahme: Der Wert !NONE wird
+;          unver‰ndert durchgeschleift. !NONE wird von <A>UTv</A>
+;          durch den speziellen Farbindex ersetzt.)<BR>
 ;          Optional kann auch die Farbtabelle entsprechend gesetzt werden.
 ;
 ; CATEGORY: Graphic
 ;
-; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
+; CALLING SEQUENCE: UTv_Array =ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
 ;                                                       [,COLORMODE=mode]
 ;                                                       [,RANGE_IN=upper_boundary]
 ;                                                       [,GET_COLORMODE={+1|-1}]
@@ -129,6 +133,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.24  2003/08/18 13:43:27  kupper
+;        !NONEs are now passed untouched, are handled by UTv.
+;
 ;        Revision 2.23  2001/02/08 18:31:59  kupper
 ;        Packed NASE plotting related system variables into a struct names !NASEP.
 ;
@@ -295,11 +302,11 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
 
 
 
+   ;; NONEs wiederherstellen:
    If not keyword_set(PRINTSTYLE) then begin
-      If Keyword_Set(SETCOL) then $
-       noneindex = rgb("none") else $ ;;allocate a free index
-       noneindex = rgb("none", /Noalloc) ;;get the best match
-      IF count NE 0 THEN MatrixMatrix(no_connections) = noneindex
+
+      IF count NE 0 THEN MatrixMatrix(no_connections) = !NONE
+
    EndIf
 
    If (SETCOL lt 2) then Return, MatrixMatrix else Return, 0
