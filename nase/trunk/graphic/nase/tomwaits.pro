@@ -62,13 +62,13 @@ PRO TomWaits_Event, Event
                   col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
                   row = DWDim(data.DW, /SH)-1-Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
                   print,  row, col
-                  Surfit, TITLE="Projective Field of Source-Neuron ("+str(row)+","+str(col)+")", $
+                  Surfit, /NASE, TITLE="Projective Field of Source-Neuron ("+str(row)+","+str(col)+")", $
                    GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(row, col, *, *), /JUST_REG
                Endif
                If data.receptive then begin
                   col = Event.X/(DWDim(data.DW, /TW)*data.zoom+1)
                   row = DWDim(data.DW, /TH)-1-Event.Y/(DWDim(data.DW, /TH)*data.zoom+1)
-                  Surfit, TITLE="Receptive Field of Target-Neuron ("+str(row)+","+str(col)+")", $
+                  Surfit, /NASE, TITLE="Receptive Field of Target-Neuron ("+str(row)+","+str(col)+")", $
                    GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(*, *, row, col), /JUST_REG
                Endif
             Endif               ;Middle Button
