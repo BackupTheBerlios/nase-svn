@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.19  2000/02/21 17:16:22  kupper
+;       Added "object" directory.
+;
 ;       Revision 1.18  1999/09/02 13:22:07  kupper
 ;       Forgot graphic/widgets/faceit_demo...
 ;
@@ -66,12 +69,13 @@ PRO MkHTML
 
 Spawn, '/bin/pwd | sed "s/\/a\/ax1303//g"', MainDir
 SubDirs   = ['alien',$
-	     'control','control/counter','control/loops','control/output','control/time','control/video+tape',$
-	     'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support','graphic/widgets','graphic/widgets/faceit_demo',$
-	     'math',$
-             'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$
+             'control','control/counter','control/loops','control/output','control/time','control/video+tape',$
+             'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support','graphic/widgets','graphic/widgets/faceit_demo',$
+             'math',$
+             'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$ $
              'misc','misc/arrays','misc/files+dirs','misc/files+dirs/compress','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
-	     'simu','simu/input','simu/connections','simu/layers','simu/plasticity']
+             'object', $
+             'simu','simu/input','simu/connections','simu/layers','simu/plasticity']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
