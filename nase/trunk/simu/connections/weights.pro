@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1998/03/25 17:03:39  kupper
+;            OVERWRITE bei Reform eingefügt!
+;
 ;     Revision 2.9  1998/03/24 12:55:41  kupper
 ;            Völlig überflüssige Schleife im SDW-Teil ruasgeworfen.
 ;             Sollte jetzt schneller sein.
@@ -82,7 +85,7 @@ FUNCTION Weights, _DW, DIMENSIONS=dimensions
       Handle_Value, _DW, DW, /NO_COPY
       W = DW.Weights
       Handle_Value, _DW, DW, /NO_COPY, /SET
-      If Keyword_Set(DIMENSIONS) then W = Reform(W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
+      If Keyword_Set(DIMENSIONS) then W = Reform(/OVERWRITE, W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
       RETURN, W
    END
 
@@ -100,6 +103,6 @@ FUNCTION Weights, _DW, DIMENSIONS=dimensions
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
-   If Keyword_Set(DIMENSIONS) then W = Reform(W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
+   If Keyword_Set(DIMENSIONS) then W = Reform(/OVERWRITE, W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
    RETURN, W
 END

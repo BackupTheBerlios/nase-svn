@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/03/25 17:03:39  kupper
+;            OVERWRITE bei Reform eingefügt!
+;
 ;     Revision 2.6  1998/03/24 12:54:18  kupper
 ;            Völlig überflüssige Schleife im SDW-Teil rausgeworfen.
 ;             Sollte jetzt schneller sein.
@@ -68,7 +71,7 @@ FUNCTION Delays, _DW, DIMENSIONS=dimensions
       Handle_Value, _DW, DW, /NO_COPY
       D = DW.Delays
       Handle_Value, _DW, DW, /NO_COPY, /SET
-      If Keyword_Set(DIMENSIONS) then D = Reform(D, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
+      If Keyword_Set(DIMENSIONS) then D = Reform(/OVERWRITE, D, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
       RETURN, D
    END
 
@@ -86,6 +89,6 @@ FUNCTION Delays, _DW, DIMENSIONS=dimensions
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
-   If Keyword_Set(DIMENSIONS) then D = Reform(D, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
+   If Keyword_Set(DIMENSIONS) then D = Reform(/OVERWRITE, D, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
    RETURN, D
 END
