@@ -7,6 +7,7 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: Rewind, Video, {FrameNumber | /APPEND} [,/VERBOSE]
+;                   [,/SHUTUP]
 ; 
 ; INPUTS: Video: Eine mit LoadVideo iitialisierte Video-Struktur
 ;         FrameNumber: Neue Position des Framepointers
@@ -19,6 +20,8 @@
 ;                               Setzt den internen Framepointer so,
 ;                               daß mit folgenden CamCords an das
 ;                               Video Frames angehängt werden können.
+;                      SHUTUP: falls gesetzt, gibt es ueberhaupt keine
+;                              Informationen aus
 ;
 ; SIDE EFFECTS: Der interne FramePointer wird neu gesetzt.
 ;
@@ -37,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  1999/01/14 16:13:28  niederha
+;       Header geaendert
+;
 ;       Revision 2.7  1999/01/14 15:53:41  niederha
 ;       haelt jetzt auf Wunsch auch die Klappe
 ;
