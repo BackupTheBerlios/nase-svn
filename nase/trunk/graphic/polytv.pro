@@ -53,7 +53,7 @@
 ;            <*>ysize</*>, <*>xorpos</*> and <*>yorpos</*> are
 ;            interpreted as device coordinates. Default: <*>DEVICE=0</*>.
 ;  /ORDER:: If set, the image is drawn from the top down instead of
-;           the normal bottom up. See also ODL online help for <C>TV</C>.
+;           the normal bottom up. See also IDL online help for <C>TV</C>.
 ;
 ; OUTPUTS:
 ;  An array of colored rectangles covering the desired area.
