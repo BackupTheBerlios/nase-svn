@@ -48,6 +48,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1997/11/12 15:00:38  saam
+;           Keywords X_SIZE und Y_SIZE fktionierten fuer
+;           Fenster nicht richtig
+;
 ;     Revision 2.6  1997/11/07 16:10:48  saam
 ;          Doku ergaenzt
 ;
@@ -128,7 +132,7 @@ PRO UTvScl, _Image, XNorm, YNorm $
       END
 
    END ELSE BEGIN ; it is a WINDOW
-      IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) THEN Image = Congrid(Image, xsize*!D.X_PX_CM, ysize*!D.Y_PX_CM)
+      IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, xsize*!D.X_PX_CM, ysize*!D.Y_PX_CM)
       Device, BYPASS_TRANSLATION=0
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
          TVScl, Image, xnorm, /CENTIMETERS, _EXTRA=e
