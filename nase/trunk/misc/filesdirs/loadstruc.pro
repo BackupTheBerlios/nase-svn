@@ -10,10 +10,11 @@
 ;
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    LoadStruc, lun, Struc
+; CALLING SEQUENCE:    Struc = LoadStruc(lun)
 ;
 ; INPUTS:              lun  : ein gueltiger FilePointer
-;                      Struc: die zu ladende Struktur
+;
+; OUTPUTS:             Struc: die geladende Struktur
 ;
 ; RESTRICTIONS:
 ;                      Struc darf beim Speichern keine weitere Struktur oder Array von 
@@ -28,7 +29,7 @@
 ;                      savestruc,1,a
 ;                      close,1
 ;                      openr, 1,'testfile'
-;                      loadstruc,1,b
+;                      b=loadstruc(1)
 ;                      close, 1
 ;                      help, b, /STRUCTURES
 ;                      
@@ -47,12 +48,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/12/17 16:22:23  saam
+;           Umwandlung in Funktion
+;
 ;     Revision 2.1  1997/11/26 09:18:04  saam
 ;           Urversion
 ;
 ;
 ;-
-PRO LoadStruc, lun, ST
+FUNCTION LoadStruc, lun
 
    nTags = 0
    ReadF, lun, nTags
@@ -84,4 +88,5 @@ PRO LoadStruc, lun, ST
       END
    END
 
+   RETURN, ST
 END
