@@ -8,13 +8,13 @@
 ;   <A HREF="../../nase/graphic/#PLOTTVSCL">PlotTvScl</A>-Plot. Image data can be set and retrieved. Alternatively, the
 ;   image can be addressed through a pointer, allowing for online-monitoring of
 ;   array contents.
-;   Auto-painting is inherited from <A HREF="#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>.
+;   Auto-painting is inherited from <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>.
 ;
 ; CATEGORY: 
 ;   Graphic, Widgets
 ;
 ; SUPERCLASSES:
-;   <A HREF="#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>
+;   <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>
 ;
 ; CONSTRUCTION: 
 ;
@@ -22,7 +22,7 @@
 ;               IMAGE=img_or_imgptr
 ;               [,XPOS=x]
 ;               [,YPOS=y] 
-;               [-keywords inherited from <A HREF="#CLASS BASIC_DRAW_OBJECT">class basic_draw_object</A>-]
+;               [-keywords inherited from <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class basic_draw_object</A>-]
 ;               [-all additional keywords are passed to <A HREF="../../nase/graphic/#PLOTTVSCL">])
 ;
 ; DESTRUCTION:
@@ -79,7 +79,7 @@
 ;                                  together with an unintialized
 ;                                  {PLOTTVSCL_INFO} struct. (See there for details.)
 ;
-;  -plus those inherited from <A HREF="#CLASS BASIC_DRAW_OBJECT">class basic_draw_object</A> (see there for details)-
+;  -plus those inherited from <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class basic_draw_object</A> (see there for details)-
 ;   among which to note especially:
 ;
 ;   paint                        : update the display.
@@ -91,7 +91,7 @@
 ;
 ;
 ; PROCEDURE:
-;  Combine features of <A HREF="#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A> and <A HREF="../../nase/graphic/#PLOTTVSCL">
+;  Combine features of <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A> and <A HREF="../../nase/graphic/#PLOTTVSCL">
 ;  while providing a transparent user-interface. No magic.
 ;
 ; EXAMPLE:
@@ -138,11 +138,14 @@
 ;   SurfIt! and ExamineIt! support, as known from the TomWaits widget.
 ;
 ; SEE ALSO:
-;   <A HREF="../../nase/graphic/#PLOTTVSCL">, <A HREF="#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>
+;   <A HREF="../../nase/graphic/#PLOTTVSCL">, <A HREF="../widget_object/#CLASS BASIC_DRAW_OBJECT">class Basic_Draw_Object</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/03/16 13:23:26  kupper
+;        Corrected hyperlink.
+;
 ;        Revision 1.5  2000/03/15 14:29:16  kupper
 ;        Renamed member "image" to "contents" to allow for polymorphic inheritance from
 ;        class widget_image_container and class image_factory.
