@@ -1,7 +1,6 @@
 
 ;; ------------ Member access methods -----------------------
 Function image_factory::image
-   self->recompute
    return, (*self.image)
 End
 Function image_factory::imageptr
@@ -13,7 +12,7 @@ Function image_factory::width
 End
 Pro image_factory::width, value
    self.width = value
-   self.recompute = 1
+   self->recompute_
 End
 
 Function image_factory::height
@@ -21,7 +20,7 @@ Function image_factory::height
 End
 Pro image_factory::height, value
    self.height = value
-   self.recompute = 1
+   self->recompute_
 End
 
 Function image_factory::type
@@ -29,7 +28,7 @@ Function image_factory::type
 End
 Pro image_factory::type, string
    self.type = string
-   self.recompute = 1
+   self->recompute_
 End
 
 Function image_factory::size
@@ -37,7 +36,7 @@ Function image_factory::size
 End
 Pro image_factory::size, value
    self.size = value
-   self.recompute = 1
+   self->recompute_
 End
 
 Function image_factory::brightness
@@ -61,7 +60,7 @@ Function image_factory::init, HEIGHT=height, WIDTH=width
    self.type = "gauss"
 
    self.image = Ptr_New(/Allocate_Heap) ;let it point to an undefined variable
-   self.recompute = 1
+   self->recompute_
    return, 1                    ;TRUE
 End
 
@@ -71,9 +70,11 @@ Pro image_factory::cleanup, _dummy=_dummy
 End
 
 Pro image_factory::reset
+   self->prevent_recompute
    self->size, 1.0
    self->brightness, 1.0
-   self->type, "gauss"   
+   self->type, "gauss"
+   self->allow_recompute ;; The queued recompute request will now be executed.
 End
 
 
@@ -89,14 +90,19 @@ Function image_factory::types
    return, methods
 End
 
-Pro image_factory::recompute
-   If self.recompute then begin
-      Message, /INFO, "Creating image."
-      call_method, self.type+"_", self
-      *self.image = *self.image * self.brightness
-      self.recompute = 0
-   EndIf
+Pro image_factory::prevent_recompute
+   self.prevent_recompute_flag = 1
 End
+Pro image_factory::allow_recompute
+   self.prevent_recompute_flag = 0
+   ;; did any recompute requests arrive while recomputing was prohibited?
+   if self.delayed_recompute_request_flag then begin
+      self->recompute_
+      self.delayed_recompute_request_flag = 0
+   endif
+End
+
+
 ;; ------------ Private --------------------
 Function image_factory::mindim_
    return, min([self.height, self.width])
@@ -104,6 +110,16 @@ End
 
 Function image_factory::areawidth_
    return, self.size * self->mindim_()
+End
+
+Pro image_factory::recompute_
+   If self.prevent_recompute_flag then begin
+      self.delayed_recompute_request_flag = 1 ;store the request
+   endif else begin ;;recompute
+      Message, /INFO, "Creating image."
+      call_method, self.type+"_", self
+      *self.image = *self.image * self.brightness
+   Endelse
 End
 
 
@@ -123,7 +139,8 @@ Pro image_factory__DEFINE
             size: 0.0, $
             brightness: 0.0, $
             $
-            recompute: 0 $
+            prevent_recompute_flag: 0, $
+            delayed_recompute_request_flag: 0b $
            }
 End
 
