@@ -72,8 +72,8 @@
 Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher nicht viele...)
    Print
    Print, "=========== Mehr Spaß für N.A.S.E.n:"
-   Print, "============= Updating /usr/ax1303/neuroadm/nase ..."
-   CD, "/usr/ax1303/neuroadm", CURRENT=old_dir
+   Print, "============= Updating /vol/neuro/nase ..."
+   CD, "/vol/neuro", CURRENT=old_dir
    Spawn, "cvs update nase"
    Print, "============= Updating HTML-Help ..."
    CD, "nase"
