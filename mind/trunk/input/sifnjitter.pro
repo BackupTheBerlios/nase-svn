@@ -1,7 +1,7 @@
 ;+
 ; NAME:               SIFuJitter
 ;
-; PURPOSE:            Jitters the incoming spikes randomly in time by a uniform
+; PURPOSE:            Jitters the incoming spikes randomly in time by a gaussian
 ;                     distribution (so each spike has an individual jitter).
 ;                     Note that the average output is shifted by jitter/2 to
 ;                     later times. If two input spikes of one neuron are accidentally
@@ -12,18 +12,23 @@
 ; CATEGORY:           MIND INPUT 
 ;
 ; CALLING SEQUENCE:   
-;                     ignore_me  = SIFuJitter( MODE=0, 
+;                     ignore_me  = SIFnJitter( MODE=0, 
 ;                                              TEMP_VALS=temp_vals
 ;                                              [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
-;                                              [,JITTER=jitter]
+;                                              [,JITTER=jitter] [,CUT=cut]
 ;                                            )
 ;
-;                     newPattern = SIFuJitter( [MODE=1], PATTERN=pattern )
-;                     ignore_me  = SIFuitter( MODE=[2|3] )
+;                     newPattern = SIFnJitter( [MODE=1], PATTERN=pattern )
+;                     ignore_me  = SIFnJitter( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: DELTA_T   : passing time in ms between two sucessive calls of this filter function
+; KEYWORD PARAMETERS: CUT       : Since a gaussian extends from -infinity to +infinity the jitter has
+;                                 to be restricted. Cut defines the fraction of the gaussians area to
+;                                 be used. Values falling beyond this limit are restricted to the maximum
+;                                 or minimum possible value. Default is 0.99. 
+;                     DELTA_T   : passing time in ms between two sucessive calls of this filter function
 ;                     HEIGHT    : height of the input to be created
-;                     JITTER    : spikes are (uniformly distributed) jittered between 0..jitter-1 ms
+;                     JITTER    : Sigma of the gaussian or in other words the half-width-half-maximum in ms.
+;                                 Default is 2ms.
 ;                     MODE      : determines the performed action of the filter.
 ;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
 ;                     PATTERN   : filter input
@@ -43,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/26 16:18:08  saam
+;           doc header written
+;
 ;     Revision 1.2  2000/01/26 16:11:22  saam
 ;           got the bug, its working now
 ;
@@ -60,8 +68,8 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
 
    Default, mode  , 1          ; i.e. step
    Default, R     , !NONE
-   Default, jitter, 10
-   Default, cut   , .99
+   Default, jitter, 2
+   Default, cut   ,  .99
 
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      
