@@ -22,7 +22,8 @@
 ; CATEGORY: GRAPHIC
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
-;                               [,TITEL='Titel'][,GROESSE=ZOOM=Fenstergroesse] 
+;                               [,TITEL='Titel'][,GROESSE=ZOOM=Fenstergroesse]
+;                               [,MAXSIZE=(Xmax,ymax)]
 ;                               [,WINNR=FensterNr | ,/NOWIN] [,GET_WIN=FensterNr]
 ;                               [,/DELAYS]
 ;                               [,SLIDE={1,2} [,XVISIBLE=Fensterbreite] [,YVISIBLE=Fensterhöhe] [,GET_BASE=Base_ID] ]
@@ -33,6 +34,14 @@
 ; KEYWORD PARAMETERS: TITEL: Titel des Fensters, das die Darstellung
 ;                            enthalten soll 
 ;         ZOOM oder GROESSE: Faktor fuer die Vergroesserung der Darstellung
+;                   MAXSIZE: Ein zweielementiges Array, das die
+;                            maximalen Abmessungen enthält, die ein
+;                            von ShowWeights geöffnetes Fenster haben
+;                            sollte. (In der Regel sind das
+;                            Bildschirmbreite und -höhe). Wird die
+;                            Darstellung mit dem angegebenen
+;                            Zoomfaktor zu groß, so öffnet Showweights 
+;                            automaitisch ein Slide-Window.
 ;                     WINNR: Nr des Fensters, in dem die Darstellung
 ;                            erfolgen soll (muss natuerlich offen
 ;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
@@ -101,8 +110,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
-;       Revision 2.12  1998/02/04 16:31:13  kupper
-;              MAXSIZE-Keyword hinzugefügt.
+;       Revision 2.13  1998/02/04 17:23:48  kupper
+;              Showweights benutzt jetzt brav objektorientiert die Weights(), Delays() und DWDim()-Funktionen.
+;              Das MAXSIZE-Schlüsselwort wurde implementiert, weil ich mich immer geärgert habe, daß die Fenster
+;               nicht auf meinen Bildschirm passen...
 ;
 ;       Revision 2.11  1998/02/03 17:29:15  kupper
 ;              Statt GROESSE kann nun alternativ ZOOM verwendet werden.
@@ -186,7 +197,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
 
    Default, GROESSE, ZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
 
-   Handle_Value, __Matrix, _Matrix, /NO_COPY 
+;   Handle_Value, __Matrix, _Matrix, /NO_COPY 
 
    Default, FROMS, PROJECTIVE
    Default, TOS, RECEPTIVE
@@ -194,24 +205,44 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    IF Keyword_Set(NOWIN) THEN Winnr = !D.Window
    If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
+   ;;------------------> Hier basteln wir uns eine DW-Struktur der ganz, ganz alten Form!
+   ;;                     (das hat natürlich historische Gründe...) 
    if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
+      
+      IF info(__Matrix) EQ 'DW_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Transpose(Weights(__Matrix)), $
+                   source_w: DWDim(__Matrix, /TW), $
+                   source_h: DWDim(__Matrix, /TH), $
+                   target_w: DWDim(__Matrix, /SW), $
+                   target_h: DWDim(__Matrix, /SH)}
+      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Transpose(Weights(__Matrix)), $
+                   Delays : Transpose(Delays(__Matrix)),$
+                   source_w: DWDim(__Matrix, /TW), $
+                   source_h: DWDim(__Matrix, /TH), $
+                   target_w: DWDim(__Matrix, /SW), $
+                   target_h: DWDim(__Matrix, /SH)}
+      END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
 
-      IF _Matrix.info EQ 'DW_WEIGHT' THEN BEGIN
-         Matrix = {Weights : Transpose(_Matrix.Weights), $
-                   source_w: _Matrix.target_w, $
-                   source_h: _Matrix.target_h, $
-                   target_w: _Matrix.source_w, $
-                   target_h: _Matrix.source_h}
-      END ELSE IF _Matrix.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
-         Matrix = {Weights : Transpose(_Matrix.Weights), $
-                   Delays : Transpose(_Matrix.Delays),$
-                   source_w: _Matrix.target_w, $
-                   source_h: _Matrix.target_h, $
-                   target_w: _Matrix.source_w, $
-                   target_h: _Matrix.source_h}
-      END ELSE Message, 'keine gueltige DelayWeigh-Struktur uebergeben'
-   ENDIF ELSE Matrix = _Matrix
+   ENDIF ELSE begin             ; Source- und Targetlayer NICHT vertauschen:
+      
+      IF info(__Matrix) EQ 'DW_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Weights(__Matrix), $
+                   source_w: DWDim(__Matrix, /SW), $
+                   source_h: DWDim(__Matrix, /SH), $
+                   target_w: DWDim(__Matrix, /TW), $
+                   target_h: DWDim(__Matrix, /TH)}
+      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Weights(__Matrix), $
+                   Delays : Delays(__Matrix),$
+                   source_w: DWDim(__Matrix, /SW), $
+                   source_h: DWDim(__Matrix, /SH), $
+                   target_w: DWDim(__Matrix, /TW), $
+                   target_h: DWDim(__Matrix, /TH)}
+      END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
 
+   Endelse
+   ;;--------------------------------
 
 ;;;;;;;
 ;;;;;;; MIRKO -> 1D-Darstellung 
@@ -245,11 +276,11 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    If keyword_set(MAXSIZE) then begin ;Showweights soll ein geeignetes Fenster öffnen
       XS=(XGroesse*Matrix.target_w +1)*Matrix.source_w
       YS=(YGroesse*Matrix.target_h +1)*Matrix.source_h
-      If (XS gt MAXSIZE(0)-10) or (YS gt MAXSIZE(1)-55) then begin ;Fensterränder ca. 10, 55 Pixel...
+      If (XS+8 gt MAXSIZE(0)) or (YS+20 gt MAXSIZE(1)) then begin ;Fensterränder+Schieber ca. 20, 55 Pixel...
          ;;Window would not fit an Screen - so make it a SLIDE-Window
          SLIDE = 2
-         XVISIBLE = XS < MAXSIZE(0)
-         YVISIBLE = YS < MAXSIZE(1)
+         XVISIBLE = XS < (MAXSIZE(0)-40)
+         YVISIBLE = YS < (MAXSIZE(1)-58) ;Fensterränder ca 8, 20 Pixel
       Endif
    Endif
    ;;--------------------------------
@@ -344,7 +375,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    endif
 
 
-   Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
+;   Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
 
    ;;------------------> Fensternummer zurückliefern:
    If not keyword_set(SLIDE) then GET_WIN = !D.Window 
