@@ -11,7 +11,7 @@
 ; CATEGORY:           GRAPHIC
 ;
 ; CALLING SEQUENCE:   UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
-;                             [,X_SIZE=x_size | ,X_SIZE_NORM] [,Y_SIZE=y_size | ,Y_SIZE_NORM]
+;                             [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
 ;
@@ -34,7 +34,7 @@
 ;                                 angegeben, so wird der andere so gewaehlt, dass keine Verzerrungen
 ;                                 auftreten. Achtung, die Stretch-Keywords koennen die endgueltige
 ;                                 Groesse noch veraendern, daher besser nicht zusammen verwenden.
-;                 X/Y_SIZE_NORM : Wie X/Y_SIZE nur in Normalkoordinaten.
+;                 NORM_X/Y_SIZE : Wie X/Y_SIZE nur in Normalkoordinaten.
 ;                     STRETCH   : Vergroessert bzw. verkleinert das Originalbild um Faktor
 ;                     H_STRETCH ,
 ;                     V_STRETCH : Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
@@ -64,6 +64,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.19  1998/03/14 17:34:52  saam
+;           new Keywords [XY]_SIZE_NORM blocked the use of [XY]_SIZE
+;           because of ambiguous keyword abbreviation, therefore
+;           renamed it to NORM_[XY]_SIZE
+;
 ;     Revision 2.18  1998/03/12 19:44:08  kupper
 ;            X/Y_SIZE_NORM-Keywords hinzugefügt.
 ;
@@ -122,7 +127,7 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
             , CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
-            , X_SIZE_NORM=x_size_norm, Y_SIZE_NORM=y_size_norm $
+            , NORM_X_SIZE=norm_x_size, NORM_Y_SIZE=norm_y_size $
             , DIMENSIONS=dimensions $
             , NOSCALE=noscale $
             , DEVICE=device $
@@ -142,8 +147,8 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    Default, h_stretch, 1.0
    Default, centi    , 1   ; default is to TV with centimeters (disabled with DEVICE Keyword)
 
-   If Set(X_SIZE_NORM) then X_SIZE = (X_SIZE_NORM * !D.X_Size / !D.X_PX_CM)
-   If Set(Y_SIZE_NORM) then Y_SIZE = (Y_SIZE_NORM * !D.Y_Size / !D.Y_PX_CM)
+   If Set(NORM_X_SIZE) then X_SIZE = (NORM_X_SIZE * !D.X_Size / !D.X_PX_CM)
+   If Set(NORM_Y_SIZE) then Y_SIZE = (NORM_Y_SIZE * !D.Y_Size / !D.Y_PX_CM)
 
 
    ; don't modify the original image
