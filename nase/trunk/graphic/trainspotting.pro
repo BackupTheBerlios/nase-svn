@@ -3,23 +3,29 @@
 ;
 ; PURPOSE:                Stellt ein Spikeraster dar (Ordinate: Neuronen, Abszisse: Zeit)
 ;
-; CATEGORY:               GRAPHIC
+; CATEGORY:               GRAPHICS
 ;
-; CALLING SEQUENCE:       Trainspotting, nt [, TITLE=title] [, STRETCH=stretch] [, LEVEL=level] [, WIN=win] [, OFFSET=offset]
-;                                  [,/CLEAN] [, V_STRETCH=v_stretch]
+; CALLING SEQUENCE:       Trainspotting, nt 
+;                                        [, TITLE=title] [, STRETCH=stretch] [, LEVEL=level] 
+;                                        [, WIN=win] [, OFFSET=offset]
+;                                        [,/CLEAN] [, V_STRETCH=v_stretch]
 ;
-; INPUTS:                  
-;                         nt      : 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
+; INPUTS:                 nt      : 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
 ;
 ; KEYWORD PARAMETERS:
-;                        TITLE     : der Title des Plots
-;                        STRETCH   : Skalierungsfaktor fuer die Groesse der Symbole; wird automatisch angepasst und muss nur selten von
-;                                      Hand gesetzt werden
-;                        LEVEL     : gibt an wie gro"s ein Eintrag in nt sein muss, um dargestellt zu werden, Default 1.0 (-> 1 Spike)
+;                        TITLE     : der Titel des Plots
+;                        STRETCH   : Skalierungsfaktor fuer die Groesse der Symbole; 
+;                                     wird automatisch angepasst und muss nur selten von
+;                                     Hand gesetzt werden
+;                        LEVEL     : gibt an, wie gro"s ein Eintrag in nt sein muss, um 
+;                                     dargestellt zu werden, Default 1.0 (-> 1 Spike)
 ;                        WIN       : oeffnet und benutzt Fenster NR. Win zur Darstellung
-;                        OFFSET    : Zahlenwert, der zur x-Achsenbeschriftung addiert wird; sinnvoll, wenn man nur einen Teil der Zeitachse darstellen will und
-;                                      der Prozedur, z.B. nt(*,500:1000) uebergibt; dann kann man mit OFFSET=500 die Darstellung korrigieren
-;                        CLEAN     : unterdrueckt saemtliche Beschriftungen (fuer Weiterbearbeitungen mit anderen Programmen)
+;                        OFFSET    : Zahlenwert, der zur x-Achsenbeschriftung addiert wird; 
+;                                     sinnvoll, wenn man nur einen Teil der Zeitachse darstellen 
+;                                     will und der Prozedur, z.B. nt(*,500:1000) uebergibt; dann 
+;                                     kann man mit OFFSET=500 die Darstellung korrigieren
+;                        CLEAN     : unterdrueckt saemtliche Beschriftungen 
+;                                     (fuer Weiterbearbeitungen mit anderen Programmen)
 ;                        V_STRETCH : vertikaler Verzerrungsfaktor fuer die Groesse der Symbole; 1.0 (Default) -> Quadrat
 ;
 ; PROCEDURE:             Default
@@ -32,14 +38,20 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.4  1997/12/10 15:12:33  thiel
+;            Jetzt mit neuen Usersymbols (zentriert)
+;            und schoenerer Achsenbeschriftung (nicht negativ
+;            und keine Brueche).
+;
 ;     Revision 1.3  1997/11/26 09:26:56  saam
 ;           Keyword V_STRETCH hinzugefuegt
 ;
 ;                              
-;                        Urversion erstellt, Mirko, 13.8.97
-;                        TICKLEN minimal eingestellt, dass Achsenticks nicht mehr sichtbar sind, Mirko, 13.8.97
+;     Urversion erstellt, Mirko, 13.8.97
+;     TICKLEN minimal eingestellt, dass Achsenticks nicht mehr sichtbar sind, Mirko, 13.8.97
 ;
 ;-
+
 
 PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, V_STRETCH=v_stretch
 
@@ -74,16 +86,20 @@ PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSE
    END ELSE BEGIN
       Plot, nt, /NODATA, CHARSIZE=1.5 ,XRANGE=[offset,time+offset+FIX(stretch)], YRANGE=[-FIX(stretch),neurons+FIX(stretch)], XSTYLE=1, YSTYLE=1, $
        XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title, $
-       XTICKLEN=0.00001, YTICKLEN=0.00001
+       XTICKLEN=0.00001, YTICKLEN=0.00001, $
+       ytickformat='KeineNegativenUndGebrochenenTicks', $
+      Xtickformat='KeineNegativenUndGebrochenenTicks'
    END
 
 
 ;----------------> define filled square
    Default, v_stretch, 1.0
   
-   height = LONG(4*v_stretch)
+;   height = LONG(4*v_stretch)
+   height = LONG(2*v_stretch)
 
-   UserSym, [ 0, 0, 4, 4, 0], [ 0, height, height, 0, 0], /FILL
+;   UserSym, [ 0, 0, 4, 4, 0], [ 0, height, height, 0, 0], /FILL
+   UserSym, [ -2, 2, 2, -2, -2], [ -height, -height, height, height, -height], /FILL
       
 
 ;----------------> plot spikes
