@@ -70,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.29  1999/06/10 12:35:27  kupper
+;     Added Correction of Minimum/Maximum if CUBIC Interpolation was used (to prevent color-table-artefacts!)
+;
 ;     Revision 2.28  1999/06/07 14:40:44  kupper
 ;     Added CUBIC,INTERP,MINUS_ONE-Keywords for ConGrid.
 ;
@@ -370,7 +373,19 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    END ELSE BEGIN   ;; it is a WINDOW
       Device, BYPASS_TRANSLATION=0
       IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
-         IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)         
+         IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
+            im_max = max(Image)
+            im_min = min(Image)
+            Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
+                                ;If CUBIC was used, the maximum or
+                                ;minimum may have been changed by
+                                ;congrid. This may produce color
+                                ;artefacts. So rescale to have the
+                                ;same min and max as before:
+            Image = Image-min(Image)
+            Image = Image/float(max(Image))*(im_max-im_min)
+            Image = Image+im_min
+         EndIf
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
