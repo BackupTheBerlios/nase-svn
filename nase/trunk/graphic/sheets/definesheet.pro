@@ -3,7 +3,7 @@
 ;
 ; PURPOSE:            Definiert ein Window-,PS-Sheet oder Null-Sheet.
 ;                     Diese Routine und ihre Verwandten OpenSheet, CloseSheet, DestroySheet dienen als
-;                     Ersatz fuer Window-, Set_Plot- und Device-Aufrufe und sollen eine "aquivalente 
+;                     Ersatz fuer Window-, Set_Plot- und Device-Aufrufe und sollen eine äquivalente 
 ;                     Behandlungsweise von Window- und PS-Output ermoeglichen. DefineSheet definiert das
 ;                     Ausgabemedium (mit Optionen). Moechte man einen Bildschirm-Plot nun als PS in ein
 ;                     File schicken muss man nur diesen Aufruf aendern, alles andere bleibt gleich.
@@ -35,7 +35,7 @@
 ;                                  wird angelegt. Dies macht die Option INCREMENTAL; der Filename
 ;                                  wird dabei um einen laufenden Index erweitert.
 ;                     VERBOSE    : DefineSheet wird gespraechig...
-;                  PRIVATE_COLORS: Nur sinnvoll bei Window und auf 8-bit-Displays.
+;                  PRIVATE_COLORS: Nur sinnvoll bei Windows. Dient der 
 ;                                  Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
 ;                                  jedes Sheetchen, erhält eine private Colormap, die stets gesetzt
 ;                                  wird, wenn der Mauszeiger in das Widget weist. Das speichern der
@@ -75,6 +75,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.16  1999/10/29 11:48:27  kupper
+;     Nur Header angepasst.
+;
 ;     Revision 2.15  1999/06/15 17:36:39  kupper
 ;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
 ;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
