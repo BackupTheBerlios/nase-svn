@@ -3,6 +3,12 @@
 ;
 ; PURPOSE:            console for messages, warnings, fatal errors...
 ;                     provides an unified message-mechanism for ALL mind-routines
+;                     You can use console even without the init
+;                     routine. In this case a standard text console 
+;                     is used. It is initialized during nase startup
+;                     and saved in the system variable !CONSOLE. You
+;                     may change this variable to use your own console
+;                     for standard output.
 ;
 ; CATEGORY:           NASE CONTROL
 ;
@@ -33,6 +39,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.4  2000/03/28 12:55:07  saam
+;           docu updated, again
+;
 ;     Revision 2.3  2000/03/28 12:48:04  saam
 ;           + return on ERROR
 ;           + docu updated (out of date!)
