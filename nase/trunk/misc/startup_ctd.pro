@@ -115,9 +115,11 @@ Pro Startup_ctd
    ;; --------------------------------------------------------
 
 
-   setcolorindex, !D.TABLE_SIZE-1, 255, 255, 255 ; highest color index is white
-   setcolorindex, !D.TABLE_SIZE-2,   0,   0,   0 ; second highest color index is black
-   !P.BACKGROUND = !D.TABLE_SIZE-2
-   !P.COLOR      = !D.TABLE_SIZE-1
+   !P.COLOR      = !D.TABLE_SIZE-1 ; highest color index is reserved
+                                   ; for foreground
+   !P.BACKGROUND = !D.TABLE_SIZE-2 ; second highest color index is reserved
+                                   ; for background
+   Foreground, 255, 255, 255 ; default foreground is white
+   Background,   0,   0,   0 ; default background is black
 
 End
