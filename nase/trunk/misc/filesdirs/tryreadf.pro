@@ -29,8 +29,9 @@
 ;  fifo, or from a file that is open for writing by another
 ;  process.)<BR>
 ;  <BR> 
-;  <I>Note that a file needs to be opened with the <C>/STDIO</C> keyword to
-;  <C>OPEN[RWU]</C> for this routine to work!</I>;  
+;  <I>Note that a file needs to be opened with the <C>/STDIO</C> and
+;  <C>BUFSIZE=0</C> keywords to <C>OPEN[RWU]</C> for this routine to
+;  work!</I>
 ;
 ; CATEGORY:
 ;  Files
@@ -60,16 +61,17 @@
 ;           unchanged.
 ;
 ; RESTRICTIONS:
-;  A file needs to be opened with the <C>/STDIO</C> keyword to
-;  <C>OPEN[RWU</C>] for this routine to work.
+;  A file needs to be opened with the <C>/STDIO</C> and
+;  <C>BUFSIZE=0</C> keywords to <C>OPEN[RWU</C>] for this routine to
+;  work.
 ;
 ; PROCEDURE:
 ;  Call <A>Available</A>, if true, <C>READF</C>.
 ;
 ; EXAMPLE:
 ;*$mkfifo testfifo
-;*openw,23,"testfifo"
-;*openr,24,"testfifo",/Stdio
+;*openw,23,"testfifo",BufSize=0
+;*openr,24,"testfifo",BufSize=0,/Stdio
 ;*printf,23,"line1"
 ;*printf,23,"line2"
 ;*printf,23,"line3"
