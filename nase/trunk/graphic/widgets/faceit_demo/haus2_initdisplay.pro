@@ -53,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/09/15 15:00:16  kupper
+;        Added a TEMPORARY() here and there to conserve memory...
+;
 ;        Revision 1.2  1999/09/02 14:38:19  thiel
 ;            Improved documentation.
 ;
@@ -143,7 +146,7 @@ PRO haus2_INITDISPLAY, dataptr, displayptr, w_userbase
    ; later. You have to include only those widgets that generate events
    ; or that are used to plot into them later. Normally you dont have to 
    ; include all those base-widgets.
-   *displayptr = Create_Struct( *displayptr, $
+   *displayptr = Create_Struct( TEMPORARY(*displayptr), $
       'W_nparvs', W_nparvs, $
       'W_npartaus', W_npartaus, $
       'W_extinpampl', W_extinpampl, $
@@ -176,7 +179,7 @@ PRO haus2_INITDISPLAY, dataptr, displayptr, w_userbase
 
 
    ShowIt_Open, (*displayptr).spiketrain
-   *displayptr = Create_Struct( *displayptr, $
+   *displayptr = Create_Struct( TEMPORARY(*displayptr), $
       'tss', InitTrainspottingScope(NEURONS=(*dataptr).prew*(*dataptr).preh, $
                                     TIME=100, $
                                     TITLE='Spiketrains') $
@@ -185,7 +188,7 @@ PRO haus2_INITDISPLAY, dataptr, displayptr, w_userbase
 
    
    ShowIt_Open, (*displayptr).plotcillo
-   *displayptr = Create_Struct( *displayptr, $
+   *displayptr = Create_Struct( TEMPORARY(*displayptr), $
       'pcs', InitPlotcilloScope(RAYS=2, $
                                 TIME=100, $
                                 TITLE='Potential and threshold of center neuron') $

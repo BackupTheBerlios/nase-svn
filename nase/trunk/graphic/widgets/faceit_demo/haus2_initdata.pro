@@ -53,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/09/15 15:00:16  kupper
+;        Added a TEMPORARY() here and there to conserve memory...
+;
 ;        Revision 1.2  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;
@@ -71,7 +74,7 @@ PRO haus2_INITDATA, dataptr
 
 
    ; Fill the structure with variables that are to be used by all routines:
-   *dataptr = Create_Struct(*dataptr, $
+   *dataptr = Create_Struct(TEMPORARY(*dataptr), $
 
 ;--- CHANGE THE FOLLOWING PART TO BUILD YOUR OWN SIUMLATION: 
 
@@ -92,7 +95,7 @@ PRO haus2_INITDATA, dataptr
    ; Put NASE-objects inside the structure as well:
 
    ; parameters:
-   *dataptr = Create_Struct( *dataptr, $
+   *dataptr = Create_Struct( TEMPORARY(*dataptr), $
                        'prepara', InitPara_1(tauf=1., Vs=10., taus=5.) $
                      )
    ; a layer:
