@@ -181,7 +181,17 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        end else V_Matrix.Weights(t_index, maske) = Weight(maske) 
 
     end
- 
+
+                                ;Nur ein Hinweis: Die Implementierung
+                                ;des ALL-Schlüsselwortes hätte man
+                                ;rekursiv wesentlich eleganter machen
+                                ;können! (Einfach SetWeight wiederholt
+                                ;mit Shift(Weight) aufrufen.) Das hätte
+                                ;mir auch nicht so viel Kopfzerbrechen
+                                ;bereitet, wie das shiften dieser
+                                ;ominösen boolmaske. Naja, was solls?
+                                ;Rüdiger.
+
  
    if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
        if s(0) ne 2 then message, '2D-Array erwartet!'
