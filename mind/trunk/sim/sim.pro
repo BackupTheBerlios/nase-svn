@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.5  2000/01/26 10:04:07  alshaikh
+;            + changed InitLearn-call
+;
 ;      Revision 1.4  2000/01/24 15:31:31  alshaikh
 ;            new layer-initialization
 ;
@@ -248,8 +251,8 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
 
    ;--------------> INIT LEARNING
-   FOR i=0, LDWmax DO InitLearn, CON, P.LearnW(i), LDWmax+1, _EXTRA=e
-   
+   InitLearn,LDWmax+1, CON, P.LearnW,  _EXTRA=e
+
  
    ;--------------> INIT CONNECTION STRUCTURE 
    ADW = StrArr(DWmax+1) ; automatic DW
