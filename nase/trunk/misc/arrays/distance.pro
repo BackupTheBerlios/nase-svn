@@ -112,10 +112,10 @@
 ;        opposite direction.
 ;
 ;        "ground" specifies the center of shearing, i.e. the z-value
-;        of the plane that will not be displaced. The default is 0,
-;        meaning the tip of the cone. All planes with higher z-values
-;        will be displaced in the specified direction, all planes with
-;        lower z-values will be displaced in the opposite direction.
+;        of the plane that will not be displaced. 0 means the tip of
+;        the cone. All planes with higher z-values will be displaced
+;        in the specified direction, all planes with lower z-values
+;        will be displaced in the opposite direction.
 ;
 ;        Please see the examples for a demonstration of the WARP
 ;        keyword.
@@ -187,6 +187,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/08/10 16:44:22  kupper
+;        Corrected msitake in header.
+;
 ;        Revision 1.4  2000/08/10 15:58:18  kupper
 ;        Completed header and examples.
 ;
