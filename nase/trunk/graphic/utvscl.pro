@@ -11,7 +11,7 @@
 ; CATEGORY:           GRAPHIC
 ;
 ; CALLING SEQUENCE:   UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
-;                             [,X_SIZE=x_size] [,Y_SIZE=y_size]
+;                             [,X_SIZE=x_size | ,X_SIZE_NORM] [,Y_SIZE=y_size | ,Y_SIZE_NORM]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
 ;
@@ -34,6 +34,7 @@
 ;                                 angegeben, so wird der andere so gewaehlt, dass keine Verzerrungen
 ;                                 auftreten. Achtung, die Stretch-Keywords koennen die endgueltige
 ;                                 Groesse noch veraendern, daher besser nicht zusammen verwenden.
+;                 X/Y_SIZE_NORM : Wie X/Y_SIZE nur in Normalkoordinaten.
 ;                     STRETCH   : Vergroessert bzw. verkleinert das Originalbild um Faktor
 ;                     H_STRETCH ,
 ;                     V_STRETCH : Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
@@ -63,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.18  1998/03/12 19:44:08  kupper
+;            X/Y_SIZE_NORM-Keywords hinzugefügt.
+;
 ;     Revision 2.17  1998/02/27 13:28:51  saam
 ;           verbesserte Implementierung der DEVICE section
 ;
@@ -118,6 +122,7 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
             , CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
+            , X_SIZE_NORM=x_size_norm, Y_SIZE_NORM=y_size_norm $
             , DIMENSIONS=dimensions $
             , NOSCALE=noscale $
             , DEVICE=device $
@@ -136,6 +141,9 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    Default, v_stretch, 1.0
    Default, h_stretch, 1.0
    Default, centi    , 1   ; default is to TV with centimeters (disabled with DEVICE Keyword)
+
+   If Set(X_SIZE_NORM) then X_SIZE = (X_SIZE_NORM * !D.X_Size / !D.X_PX_CM)
+   If Set(Y_SIZE_NORM) then Y_SIZE = (Y_SIZE_NORM * !D.Y_Size / !D.Y_PX_CM)
 
 
    ; don't modify the original image
