@@ -21,12 +21,11 @@
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix {, /FROMS |, /TOS }
 ;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr]
+;                               [/SLIDE [,XVISIBLE] [,YVISIBLE] ]
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
 ;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
 ; 
-; OPTIONAL INPUTS: ---
-;
 ; KEYWORD PARAMETERS: TITEL: Titel des Fensters, das die Darstellung
 ;                            enthalten soll 
 ;                     GROESSE: Faktor fuer die Vergroesserung der Darstellung
@@ -41,18 +40,15 @@
 ;                     TOS  : Muß gesetzt werden, wenn man die
 ;                            Verbindungen ZU den Neuronen sehen will.
 ;                     DELAYS: Falls gesetzt, werden nicht die Gewichte, sondern die Delays visualisiert
+;                     SLIDE: Ist dieses Keword gesetzt, so wird die Matrix in einem SLIDE_WINDOW angezeigt
+;                            (nützlich, wenn sie nicht auf den Bildschirm paßt!)
+;                     XVISIBLE,YVISIBLE: Größe des sichtbaren Ausschnitts, wenn SLIDE gesetzt ist.
 ;
 ; OUTPUTS: Gewichtsmatrix, an die Fenstergroesse angepasst.
 ;
-; OPTIONAL OUTPUTS: separates Fenster, das die Darstellung der Gewichtmatrix enthaelt
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
-; RESTRICTIONS: ---
-; 
-; PROCEDURE: ---
+; OPTIONAL OUTPUTS: separates Fenster, das die Darstellung der Gewichtmatrix enthaelt.
+;                   Wird WinNr UND SLIDE angegeben, so wird die Matrix wie gewohnt im angegebenen Fenster dargestellt.
+;                       Ein Slide-WIndow wird außerdem geöffnet.
 ;
 ; EXAMPLE: weights = IntArr(4,12)
 ;          weights(2,5) = 1.0  ; connection from 5 --> 2
@@ -67,6 +63,11 @@
 ;          Matrix' dar.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       Thu Sep 4 17:12:07 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		SLIDE, XVISIBLE, YVISIBLE implementiert.
 ;
 ;       Mon Aug 18 19:59:18 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -101,93 +102,114 @@
 ;-
 
 
-PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, FROMS=froms,  TOS=tos, DELAYS=delays
+PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
+                 SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, $
+                 FROMS=froms,  TOS=tos, DELAYS=delays
 
-If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
+   If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
-if keyword_set(TOS) then begin                   ; Source- und Targetlayer vertauschen:
-   Matrix = {Weights: Transpose(_Matrix.Weights), $
-             Delays : Transpose(_Matrix.Delays),$
-             source_w: _Matrix.target_w, $
-             source_h: _Matrix.target_h, $
-             target_w: _Matrix.source_w, $
-             target_h: _Matrix.source_h}
-endif else Matrix = _Matrix
+   if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
+      Matrix = {Weights: Transpose(_Matrix.Weights), $
+                Delays : Transpose(_Matrix.Delays),$
+                source_w: _Matrix.target_w, $
+                source_h: _Matrix.target_h, $
+                target_w: _Matrix.source_w, $
+                target_h: _Matrix.source_h}
+   endif else Matrix = _Matrix
 
 
 ;no_connections = WHERE(Matrix.Weights EQ !NONE, count)
 ;IF count NE 0 THEN Matrix.Weights(no_connections) = 0.0
    
-If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
-If Not Set(GROESSE) Then Begin 
-    XGroesse = 1
-    YGroesse = 1 
-Endif Else Begin 
-    XGroesse = Groesse
-    YGroesse = Groesse
-    Endelse
+   If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
+   If Not Set(GROESSE) Then Begin 
+      XGroesse = 1
+      YGroesse = 1 
+   Endif Else Begin 
+      XGroesse = Groesse
+      YGroesse = Groesse
+   Endelse
 
-If Not Set(WINNR) Then Begin
-    Window, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
-         Endif Else Begin 
-                      WSet, WinNr
-                      XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
-                      YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
+   Default, xvisible, 256
+   Default, yvisible, 256
 
-                      IF XGroesse EQ 0 THEN BEGIN
-                         XGroesse = 1
-                         Print, 'ShowWeights: ACHTUNG, horizontale Darstellung unvollständig !!'
-                      END
-                      IF YGroesse EQ 0 THEN BEGIN
-                         YGroesse = 1
-                         Print, 'ShowWeights: ACHTUNG, vertikale Darstellung unvollständig !!'
-                      END
-                  EndElse    
+      If Not Set(WINNR) Then Begin
+         If keyword_set(SLIDE) then pix = 1 else pix = 0
+         Window, PIXMAP=pix, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
+      Endif Else Begin 
+         WSet, WinNr
+         XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
+         YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
 
-
-
-IF Keyword_Set(Delays) THEN BEGIN
-   MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-END ELSE BEGIN
-   MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-END
+         IF XGroesse EQ 0 THEN BEGIN
+            XGroesse = 1
+            Print, 'ShowWeights: ACHTUNG, horizontale Darstellung unvollständig !!'
+         END
+         IF YGroesse EQ 0 THEN BEGIN
+            YGroesse = 1
+            Print, 'ShowWeights: ACHTUNG, vertikale Darstellung unvollständig !!'
+         END
+      EndElse    
 
 
-no_connections = WHERE(MatrixMatrix EQ !NONE, count)
-IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
-
-min = min(MatrixMatrix)
-max = max(MatrixMatrix)
-ts = !D.Table_Size-1
-
-if min eq 0 and max eq 0 then max = 1; Falls Array nur Nullen enthält!
-
-if min ge 0 then begin
-   g = indgen(ts)/double(ts-1)*255
-   tvlct, g, g, g                    ;Grauwerte
-   MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
-endif else begin
-   g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
-   tvlct, rotate(g, 2), g, bytarr(ts)         ;Rot-Grün
-   MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-   MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
-endelse
-
-IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
-
-SetColorIndex, ts-2, 0, 0, 100     ;Blau sei die Farbe für nichtexistente Verbindungen
-erase, rgb(255,100,0, INDEX=ts-1)  ;Orange die für die Trennlinien
+   IF Keyword_Set(Delays) THEN BEGIN
+      MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+   END ELSE BEGIN
+      MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+   END
 
 
-for YY= 0, Matrix.source_h-1 do begin
-   for XX= 0, Matrix.source_w-1 do begin  
-      tv, rebin( /sample, $
-                 transpose(MatrixMatrix(*, *, YY, XX)), $
-                 xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
+   no_connections = WHERE(MatrixMatrix EQ !NONE, count)
+   IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
+
+   min = min(MatrixMatrix)
+   max = max(MatrixMatrix)
+   ts = !D.Table_Size-1
+
+   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
+
+   if min ge 0 then begin
+      g = indgen(ts)/double(ts-1)*255
+      tvlct, g, g, g            ;Grauwerte
+      MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
+   endif else begin
+      g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
+      tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+      MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
+      MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
+   endelse
+
+   IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
+
+   SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
+
+
+   erase, rgb(255,100,0, INDEX=ts-1) ;Orange die für die Trennlinien
+
+
+   for YY= 0, Matrix.source_h-1 do begin
+      for XX= 0, Matrix.source_w-1 do begin  
+         tv, rebin( /sample, $
+                    transpose(MatrixMatrix(*, *, YY, XX)), $
+                    xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
           /Order, $
           XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
+      end
    end
-end
+
+   If Keyword_Set(SLIDE) then begin
+      Image = TVRd()
+      If not set(WINNR) then wdelete 
+      Slide_Image, Image, /RETAIN, $
+                         XSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
+                         XVISIBLE=xvisible, YVISIBLE=yvisible, $
+                         Title=titel
+   endif
 
 END        
         
+
+
+
+
+
