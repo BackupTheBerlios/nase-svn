@@ -80,7 +80,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                    XDRAWSIZE=xdrawsize, YDRAWSIZE=ydrawsize, $
                    TITLE=title, $
                    PIXMAP=pixmap, $
-                   GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify, $
+                   GET_BASE=get_base, GROUP=group, $
                    _EXTRA=_extra
 
    Default,  xsize, 300
@@ -106,7 +106,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    Draw = Widget_Draw(Base, $
                       XSIZE=xdrawsize, YSIZE=ydrawsize, $
                       X_SCROLL_SIZE=xsize, Y_SCROLL_SIZE=ysize, $
-                      KILL_NOTIFY=kill_notify, _EXTRA=_extra)
+                      _EXTRA=_extra)
 
    Widget_Control, /REALIZE, Base
    Widget_Control, GET_VALUE=Window_ID, Draw
@@ -114,7 +114,8 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                                      Window_ID : Window_ID}
 
 ;   Leider funktioniert das Resize erst so richtig ab IDL 4.0:
-   If fix(!VERSION.Release) ge 4 then XMANAGER, 'ScrollIt', Base, /JUST_REG
+   If fix(!VERSION.Release) eq 4 then XMANAGER, 'ScrollIt', Base, /JUST_REG
+   If fix(!VERSION.Release) ge 5 then XMANAGER, 'ScrollIt', Base, /NO_BLOCK
 
    get_base = Base
    return, Window_ID
