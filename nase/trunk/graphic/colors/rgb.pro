@@ -112,6 +112,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.28  2000/10/05 16:23:08  saam
+;        last two color indices of palette are not
+;        overwritten to protect black & white
+;
 ;        Revision 1.27  2000/10/05 10:26:30  saam
 ;        *INDEX,NOALLOC removed
 ;        *allocates only colors GT !TOPCOLOR
@@ -259,7 +263,9 @@ if set(noalloc) THEN Console, "keyword NOALLOC is obsolete, please remove", /WAR
 ;   if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
 
 
-   ucc = (ucc + 1) MOD (!D.TABLE_SIZE - !TOPCOLOR - 1)
+   ucc = (ucc + 1) MOD (!D.TABLE_SIZE - !TOPCOLOR - 1 - 2) 
+                                ; -2 protects black and white from overwrite
+
    index_to_set = !TOPCOLOR + 1 + ucc
 
 
