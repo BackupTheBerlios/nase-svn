@@ -9,7 +9,11 @@
 ;
 ; CATEGORY:           MIND INTERNAL
 ;
-; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT] [,/MEMBRANE] [,/MUA] [,TIME=time] [,SELECT=select])
+; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT]
+;                                 [,/MEMBRANE] [,/MUA] [,/LFP] 
+;                                 [,TIME=time] [,SELECT=select] $
+;                                 [,INFO=info]
+;
 ;
 ; INPUTS:             file: path/file to be read (without suffices)
 ;
@@ -21,6 +25,8 @@
 ;                               as [start,end]
 ;                     SELECT  : an array of neuron indices to be read
 ;
+; OPTIONAL OUTPUTS:   INFO    : returns the VIDEO informations
+;
 ; OUTPUTS:            O: array (neuronindex,time) containing the data read
 ;
 ; EXAMPLE:            o = ReadSim('~/sim/local_assemblies/bar/gap/v1/_', $
@@ -31,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.5  2000/04/06 09:34:24  saam
+;            + added loading of LFP signals
+;            + new info keyword
+;
 ;      Revision 1.4  2000/01/05 13:55:14  saam
 ;            minus in doc was missing
 ;
@@ -46,7 +56,7 @@
 ;
 ;
 ;-
-FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, TIME=time, SELECT=select
+FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, TIME=time, INFO=info, SELECT=select
 
    On_Error, 2
 
@@ -78,14 +88,19 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, 
       filename = file+'.mua.sim'
       print, 'READSIM: loading MUA...'
    END
+   IF Keyword_Set(LFP) THEN BEGIN
+      filename = file+'.lfp'
+      print, 'READSIM: loading LFP...'
+   END
 
 
-   Video = LoadVideo( TITLE=filename, GET_SIZE=anz, GET_LENGTH=max_time, /SHUTUP, ERROR=error)
+   Video = LoadVideo( TITLE=filename, GET_SIZE=anz, GET_LENGTH=max_time, /SHUTUP, GET_STARRING=log1, GET_COMPANY=log2, ERROR=error)
    IF Error THEN BEGIN
       print, 'READSIM: data doesnt exist...'+filename
       print, 'READSIM: stopping'
       stop
    END
+   INFO = log1 + ', ' + log2
    IF Set(TIME) THEN BEGIN
       IF max_time-1 LT TIME(1) THEN BEGIN
          TIME(1) = max_time-1
@@ -103,7 +118,7 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, 
       END
       anz =  N_Elements(SELECT)
    END
-   IF Keyword_Set(MEMBRANE) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
+   IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
 
    print, ''
    TIME = LONG(TIME)
@@ -127,6 +142,7 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, 
    IF Keyword_Set(OUTPUT)   THEN print, 'READSIM: loading output spikes...done'
    IF Keyword_Set(MEMBRANE) THEN print, 'READSIM: loading membrane potentials...done'
    IF Keyword_Set(MUA)      THEN print, 'READSIM: loading MUA...done'
+   IF Keyword_Set(LFP)      THEN print, 'READSIM: loading LFP...done'
 
    RETURN, xt
 END
