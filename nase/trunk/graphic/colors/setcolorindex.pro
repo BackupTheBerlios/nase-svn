@@ -66,7 +66,7 @@
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		Urversion erstellt.
-;
+; 
 ;-
 
 Pro SetColorIndex, Nr, R, G, B
