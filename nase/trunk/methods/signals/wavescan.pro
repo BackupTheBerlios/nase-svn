@@ -136,6 +136,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  1998/07/14 17:31:55  gabriel
+;          Amplkriterium hat nicht richtig funktioniert
+;
 ;     Revision 1.6  1998/07/13 19:41:53  gabriel
 ;          Arrays widerspiegeln die Zeitentwicklung
 ;
@@ -401,21 +404,25 @@ FUNCTION wavescan, array,timearr,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,VELCR
          ENDIF
 
 
-         kksize = stepsize*2
+         kksize = stepsize
          tmpMEDAMPL = smooth(MEDAMPL,5) ;;bisschen Glaetten
-         regofinterest = sigvel*0+1 
-         astmpvel = selectvel*0.+1
+         regofinterest = sigvel*0
+         astmpvel = selectvel*0
          ;;nur Gebiete auswaehlen deren Wert 98% des lokalen Mittelwerts uebersteigt und
          ;;nur Gebiete auswaehlen deren Wert die mittlere Amplitude uebersteigt
          AMPL_CRIT_INDEX = -1
+       
+
          FOR KK=0 , N_ELEMENTS(tmpmedampl)- kksize DO BEGIN
-            IF tmpMEDAMPL(KK+kksize/2.) LT AMPLCRIT * TOTAL(tmpmedampl(kk:kk+kksize-1))/FLOAT(kksize) $
-             OR tmpMEDAMPL(KK+kksize/2.) LT Total(tmpmedampl)/FLOAT(N_ELEMENTS(tmpmedampl)) THEN BEGIN
-               sigvel(kk+kksize/2.) = -1
-               regofinterest(kk+kksize/2.) = 0
-               astmpvel(kk+kksize/2.,*) = 0
+            IF tmpMEDAMPL(KK+kksize/2.) GT AMPLCRIT * TOTAL(tmpmedampl(kk:kk+kksize-1))/FLOAT(kksize) $
+             AND tmpMEDAMPL(KK+kksize/2.) GT Total(tmpmedampl)/FLOAT(N_ELEMENTS(tmpmedampl)) THEN BEGIN
+              
+               regofinterest(kk+kksize/2.) = 1
+               astmpvel(kk+kksize/2.,*) = 1
                     
-            ENDIF
+            END ELSE BEGIN
+               sigvel(kk+kksize/2.) = -1
+            ENDELSE
          ENDFOR
          
          ;;Anzahl der Slid-Fenster die das Ampl-Kriterium erfuellen
