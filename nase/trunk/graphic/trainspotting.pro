@@ -129,10 +129,14 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
                    OverSampling=OverSampling, $
                    XTITLE=xtitle, SPASS=spass, $
                    XRANGE=xrange, YRANGE=yrange, $
+                   YTICKFORMAT = ytickformat, YMINOR = yminor, $
                    MUA=mua, MCOLOR=mcolor $
                    , _EXTRA=_extra
 
    On_Error, 2
+
+   Default, YTICKFORMAT, "KeineNegativenUndGebrochenenTicks"
+   Default, YMINOR, 1
 
    ;;---------------> check syntax
    IF (N_PARAMS() LT 1) THEN Console, /FATAL, 'Wrong number of arguments.'
@@ -219,7 +223,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
            Plot, nt, /NODATA, $
              XRANGE=xr+offset, YRANGE=yr, $
              XSTYLE=4, YSTYLE=5, YTICKFORMAT=noticks, XTICKFORMAT=noticks, $
-             YMINOR=1, $
+             YMINOR=YMINOR, $
              XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize, $
              _EXTRA=_extra
        END ELSE BEGIN
@@ -228,8 +232,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
              YRANGE=yr, $
              YSTYLE=1, $
              XTITLE=xtitle, YTITLE=ytitle, TITLE=title, $
-             YMINOR=1, $
-             YTICKFORMAT='KeineNegativenUndGebrochenenTicks', $
+             YMINOR=YMINOR, $
+             YTICKFORMAT=YTICKFORMAT, $
              _EXTRA=_extra
        ENDELSE 
    END
