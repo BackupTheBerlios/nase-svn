@@ -40,7 +40,7 @@
 ;                                 Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
 ;                                 gesetztem CENTER-Keyword)
 ;                     
-; RESTRICTIONS:
+; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
 ;                
 ; EXAMPLE:
 ;          bild = FIndgen(100,100)
@@ -50,9 +50,14 @@
 ;          UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
 ;          UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
+; SEE ALSO:           <A HREF="#TVSCL#">TvScl</A>
+; 
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  1997/12/17 14:38:22  saam
+;           Header geupdated
+;
 ;     Revision 2.10  1997/12/17 14:26:00  saam
 ;           Keyword NOSCALE hinzugefuegt
 ;
