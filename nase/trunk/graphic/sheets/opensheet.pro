@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/03/18 10:48:55  kupper
+;            Kleiner Bug: Opensheet hat das Plot_Device nicht auf PS gesetzt, wenn
+;             ein zuvor schonmal geöffnetes PS-heet wieder geöffnet wurde.
+;
 ;     Revision 2.6  1998/03/12 19:45:20  kupper
 ;            Color-Postscripts werden jetzt richtig behandelt -
 ;             die Verwendung von Sheets vorrausgesetzt.
@@ -77,6 +81,7 @@ PRO OpenSheet, sheet
       sheet.z = old
 
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN
+      Set_Plot, 'ps'
       IF NOT sheet.open THEN BEGIN
          sheet.open = 1
          Set_Plot, 'ps'
@@ -93,7 +98,7 @@ PRO OpenSheet, sheet
          END ELSE BEGIN
             Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color, _EXTRA=sheet.extra
          END
-      END ELSE Print, 'OpenSheet: Sheet already open!'
+      END ELSE Message, /INFORM, 'OpenSheet: PS-Sheet already open!'
       
       old = !P
       !P = sheet.p
