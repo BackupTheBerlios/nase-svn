@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  Read_PPM2()
+;  Read_PPM2
 ;
 ; VERSION:
 ;  $Id$
