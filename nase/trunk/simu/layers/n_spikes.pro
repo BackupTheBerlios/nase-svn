@@ -21,17 +21,24 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/03/24 12:41:48  thiel
+;               War noch nicht auf Layer=Handle umgestellt.
+;
 ;        Revision 2.1  1998/02/26 16:32:13  kupper
 ;               Schöpfung.
 ;
 ;-
 
-Function N_Spikes, Layer
+Function N_Spikes, _Layer
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    TestInfo, Layer, 'LAYER'
    
    Handle_Value, Layer.O, SSOut
-   
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
+  
    Return, SSOut(0)             ;SSpaß-Array enthält Anzahl der einsen im 0. Element
 
 End
