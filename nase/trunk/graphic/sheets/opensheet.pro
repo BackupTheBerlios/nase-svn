@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.23  2000/09/01 12:42:58  kupper
+;     oops! Forgot to rename one XorWin... Sorry.
+;
 ;     Revision 2.22  2000/08/30 22:35:29  kupper
 ;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
 ;
@@ -151,7 +154,7 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
    IF sheet.type EQ 'X' THEN BEGIN ;this means it is a window (X or WIN)
-      Set_Plot, XorWin()
+      Set_Plot, ScreenDevice()
 
       ; does window already exist?? then set it active
       exists = 0
