@@ -110,6 +110,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.25  2000/08/31 14:59:15  kupper
+;        Typo.
+;
 ;        Revision 1.24  2000/08/31 10:23:26  kupper
 ;        Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
 ;
@@ -240,7 +243,7 @@ Common common_RGB, My_freier_Farbindex
 
 
    ;; ---- Screen (X, MAC or WIN), and not pseudocolor: ---------------------------------------
-   IF ((!D.Name EQ ScreenDevice()) AND NOT Pseudocolor_Visual() THEN BEGIN
+   IF (!D.Name EQ ScreenDevice()) AND NOT Pseudocolor_Visual() THEN BEGIN
       SetColorIndex, SetIndex, R, G, B  
    ENDIF ELSE BEGIN
    ;; ---- all other devices: -------------------------------------------------   
