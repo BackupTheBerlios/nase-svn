@@ -1,4 +1,5 @@
-body { margin-top:10px; margin-bottom:10px; }
+body { margin-top:10px; margin-bottom:10px; background-color:#FFFFFF; text-color=#000000; }
+
 
 /* margin-top = Abstand zwischen Fensterrand und Inhalt oben */
 /* margin-bottom = Abstand zwischen Fensterrand und Inhalt unten */
