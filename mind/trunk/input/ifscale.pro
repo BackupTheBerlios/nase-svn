@@ -44,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/08/11 10:30:43  thiel
+;         Added FILE and WRAP keywords.
+;
 ;     Revision 1.2  2000/01/19 14:51:00  alshaikh
 ;           now EVERY parameter is stored in temp_vals
 ;
@@ -53,13 +56,18 @@
 ;
 ;-
 
-FUNCTION ifscale, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp_vals, DELTA_T=delta_t,$
-                  FACTOR=factor
+FUNCTION ifscale, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h $
+                  , TEMP_VALS=_temp_vals, DELTA_T=delta_t $
+                  , FACTOR=factor,  FILE=file,  WRAP=wrap
                   
 
-   Default, mode   , 1          ; i.e. step
+   COMMON attention
+
+   Default, mode, 1          ; i.e. step
    Default, pattern, !NONE
-   Default, FACTOR, 1.0
+   Default, factor, 1.0
+   Default, file, ''
+   Default, wrap, 0
    
    Handle_Value,_temp_vals,temp_vals,/no_copy
    
@@ -77,7 +85,7 @@ FUNCTION ifscale, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp
                        delta_t  : delta_t $
                       }
          
-         print,'INPUT:filter ''ifscale'' initialized'         
+         Console, P.con, ' initialized.'         
       END
       
 
@@ -97,11 +105,12 @@ FUNCTION ifscale, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp
 ;
       2:BEGIN
          
-         print,'INPUT:filter ''ifscale'' stopped'
+         Console, P.con, ' stopped.'
          
-      END 
+      END
+      
       ELSE: BEGIN
-         Message, 'unknown mode'
+         Console, P.con, ' unknown mode.', /FATAL
       END
       
    ENDCASE 
@@ -109,4 +118,6 @@ FUNCTION ifscale, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp
    Handle_Value,_temp_vals,temp_vals,/no_copy,/set
    
    RETURN, pattern 
-END 
+
+END
+ 

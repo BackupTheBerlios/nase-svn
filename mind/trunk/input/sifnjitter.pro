@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/08/11 10:30:43  thiel
+;         Added FILE and WRAP keywords.
+;
 ;     Revision 1.6  2000/01/31 09:19:17  saam
 ;           print, message -> console
 ;
@@ -70,7 +73,7 @@
 ;
 
 
-FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, JITTER=jitter, CUT=cut
+FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, JITTER=jitter, CUT=cut, FILE=file, WRAP=wrap
                      
    COMMON COMMON_random, seed
    COMMON ATTENTION
@@ -80,6 +83,8 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
    Default, R     , !NONE
    Default, jitter, 2
    Default, cut   ,  .99
+   Default, file, ''
+   Default, wrap, 0
 
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      

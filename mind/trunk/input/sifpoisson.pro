@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/08/11 10:30:43  thiel
+;         Added FILE and WRAP keywords.
+;
 ;     Revision 1.4  2000/01/31 09:19:18  saam
 ;           print, message -> console
 ;
@@ -59,16 +62,19 @@
 ;-
 
 
-FUNCTION SIFpoisson, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, LOGIC=op, RATE=rate
+FUNCTION SIFpoisson, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, LOGIC=op, RATE=rate, FILE=file,  WRAP=wrap
 
-
+   COMMON attention
    COMMON COMMON_random, seed
+
    ON_ERROR, 2
 
    Default, mode,  1          ; i.e. step
    Default, op  , 'OR'
    Default, R   , !NONE
    Default, rate, 40.0
+   Default, file, ''
+   Default, wrap, 0
    
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF
@@ -84,7 +90,7 @@ FUNCTION SIFpoisson, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
                delta_t  : delta_t                   ,$
                sim_time : .0d                        }
          
-         console, P.CON, STR(rate),' Hz'         
+         Console, P.CON, STR(rate)+' Hz'         
       END
       
       ; STEP

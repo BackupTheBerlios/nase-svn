@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/08/11 10:30:43  thiel
+;         Added FILE and WRAP keywords.
+;
 ;     Revision 1.3  2000/05/04 09:13:45  saam
 ;           forgot the ATTENTION block
 ;
@@ -54,7 +57,7 @@
 ;
 ;
 FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
-                  LOGIC=op, VALUE=value
+                  LOGIC=op, VALUE=value, FILE=file, WRAP=wrap
 
    COMMON ATTENTION
    ON_ERROR, 2
@@ -63,6 +66,8 @@ FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, 
    Default, R    , !NONE
    Default, op   , 'ADD'
    Default, value, 0.0
+   Default, file, ''
+   Default, wrap, 0
 
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      

@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/08/11 10:30:43  thiel
+;         Added FILE and WRAP keywords.
+;
 ;     Revision 1.3  2000/05/04 09:15:51  saam
 ;           various changes
 ;
@@ -58,7 +61,7 @@
 ;
 
 
-FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, LOGIC=op, RATE=rate, FRAC=frac
+FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, LOGIC=op, RATE=rate, FRAC=frac, FILE=file, WRAP=wrap
 
    COMMON COMMON_random, seed
    COMMON ATTENTION
@@ -69,6 +72,7 @@ FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
    Default, R   , !NONE
    Default, rate, 40.0
    Default, frac,  1.0
+   Default, wrap, 0
 
 
    Handle_Value, _TV, TV, /NO_COPY
