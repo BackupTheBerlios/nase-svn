@@ -1,24 +1,36 @@
 ;+
-; NAME:               SIM
+; NAME: 
+;  SIM
 ;
-; PURPOSE:            Simulates a defined network topology with variable input, connectionism, learning.
-;                     Displays relevant simulation variables and records the results.
+; AIM: Simulate network topology, display variables and record results. 
 ;
-; CATEGORY:           MIND SIM
+; PURPOSE: 
+;  Simulates a defined network topology with variable input,
+;  connectionism, learning. Displays relevant simulation variables and
+;  records the results.
 ;
-; CALLING SEQUENCE:   SIM [,/WSTOP]
+; CATEGORY:
+;  MIND / SIMULATION ROUTINES
+;
+; CALLING SEQUENCE: 
+;  SIM [,/WSTOP]
 ;
 ; KEYWORD PARAMETERS: 
-;                     WSTOP        : stop after weight initialization; DWs are in CON(i),  i=0..n-1
-;                     NOGRAPHIC    : dont show any graphics (is considerably faster!)
+;  WSTOP     : stop after weight initialization; DWs are in CON(i),  i=0..n-1
+;  NOGRAPHIC : dont show any graphics (is considerably faster!)
 ;
-; COMMON BLOCKS:      ATTENTION
+; COMMON BLOCKS: 
+;  ATTENTION
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INPUT>input</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITWEIGHTS>initweights</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>  
+; SEE ALSO: 
+;  <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INPUT>input</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITWEIGHTS>initweights</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>  
 ;
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.14  2000/08/08 11:53:59  thiel
+;          Plotcilloscope now adds th0 to threshold.
+;
 ;      Revision 1.13  2000/07/14 12:46:40  saam
 ;            performance improvement by replacing
 ;            a handle copy operation
@@ -354,8 +366,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          FOR i=0,NWmax DO BEGIN
             OpenSheet, CSIM_6, i
             NW = Handle_Val(P.NWATCH(i))
-            LayerData, L(NW.L), FEEDING=f, POTENTIAL=m, SCHWELLE=s
-            Plotcilloscope, PCWN(i), [F(NW.h,NW.w), M(NW.h, NW.w), S(NW.h, NW.w)]
+            LayerData, L(NW.L), FEEDING=f, POTENTIAL=m, SCHWELLE=s $
+             , PARAMETERS=layerdatap
+            Plotcilloscope, PCWN(i), [F(NW.h,NW.w), M(NW.h, NW.w) $
+                                      , S(NW.h, NW.w)+layerdatap.th0]
             CloseSheet, CSIM_6, i
          END
          
