@@ -9,7 +9,8 @@
 ;  Constructs array containing a two dimensional Gaussian.
 ;
 ; PURPOSE:
-;  Erzeugt ein Array mit einer zweidimensionalen Gaussverteilung mit Maximum 1.
+;  Generates an array that contains values corresponding to a two
+;  dimensional Gaussian function with maximum of 1.
 ;
 ; CATEGORY:
 ;  Array
@@ -167,18 +168,18 @@
 ;*  ;; central shearing plane at width sigma:
 ;*  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
 ;*  ;; see it better here:
-;*  for i=-0.99,0.99,0.01 do surface, exp(-0.5)<Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
+;*  for i=-0.99,0.99,0.01 do surface, exp(-0.5) < Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
 ;  
 ;*  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,1.0])
 ;*  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.01])
 ;*  ;; central shearing plane at height 0.5:
 ;*  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.5])
 ;*  ;; see it better here:
-;*  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, WARP=[i,0.6,0.5])
+;*  for i=0, 360 do surface, 0.5 < Gauss_2D(30, 30, WARP=[i,0.6,0.5])
 ;  
 ;*  ;; The difference of the two angles:
-;*  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[i,0.99,0.01]), zrange=[0,1] 
-;*  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[0,0.99,0.01], PHI=-i), zrange=[0,1] 
+;*  for i=0, 360 do surface, 0.5 < Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[i,0.99,0.01]), zrange=[0,1] 
+;*  for i=0, 360 do surface, 0.5 < Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[0,0.99,0.01], PHI=-i), zrange=[0,1] 
 ;
 ;-
 
