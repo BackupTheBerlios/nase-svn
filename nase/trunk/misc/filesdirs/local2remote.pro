@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1998/02/09 17:00:18  saam
+;           Loescht nun alle leeren Verzeichnisse
+;
 ;     Revision 1.3  1997/10/29 15:00:05  saam
 ;           das lokale Verzeichnis (nocht die Daten) wurde bisher
 ;           nicht geloescht
@@ -100,7 +103,10 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
          IF RemoteDir NE LocalDir THEN BEGIN
             ; the user seems to want a local copy
             spawn, 'cp -R '+RemoteDir+'/* '+LocalDir
-            IF NOT Keyword_Set(NODEL) THEN spawn, 'rm -f '+LocalDir
+            IF NOT Keyword_Set(NODEL) THEN BEGIN
+               spawn, 'rm -f '+LocalDir
+               spawn, 'rmdir -P '+LocalDir
+            END
          END
       END
    END
