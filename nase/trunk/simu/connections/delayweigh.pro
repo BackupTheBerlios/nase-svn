@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.26  1997/11/12 09:46:11  saam
+;             Inkompatibilitaet mit IDL5 korrigiert
+;
 ;       Revision 1.25  1997/09/20 09:52:43  thiel
 ;              Da war noch ein 'Norm2Spass'-Aufruf von ganz frueher
 ;              uebrig, am Ende des Delay-Teils.
@@ -207,7 +210,7 @@ Handle_Value, InHandle, In
          counter = 0
          acilo = acilo(2:acilo(0)+1)
          
-         FOR source = 0, snc-1 DO BEGIN
+         FOR source = 0l, snc-1 DO BEGIN
             cutoff = MAX(WHERE( acilo LT (source+1)*tnc))
             IF cutoff NE -1 THEN BEGIN
                tn = acilo(0:cutoff) MOD tnc
