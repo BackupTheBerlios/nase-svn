@@ -1,0 +1,13 @@
+1:  + Feeding-Synapse    : Leckintegrator 1. Ordnung
+    + Linking-Synapse    : Leckintegrator 1. Ordnung	
+    + Inhibition-Synapse : Leckintegrator 1. Ordnung
+    + Schwelle           : Leckintegrator 1. Ordnung
+2:  + Feeding-Synapse    : Leckintegrator 1. Ordnung
+    + Linking-Synapse    : Leckintegrator 1. Ordnung	
+    + Inhibition-Synapse : Leckintegrator 1. Ordnung
+    + Schwelle           : 2 additive Leckintegratoren 1. Ordnung
+3:  + Feeding-Synapse    : Leckintegrator 1. Ordnung
+    + Linking-Synapse    : Leckintegrator 1. Ordnung	
+    + Inhibition-Synapse : Leckintegrator 1. Ordnung
+    + Schwelle           : Leckintegrator 1. Ordnung
+    + Lernpotential      : Leckintegrator 1. Ordnung	
