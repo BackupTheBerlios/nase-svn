@@ -1,18 +1,21 @@
 ;+
-; NAME: InitDW()
+; NAME: 
+;  InitDW()
 ;
 ; AIM: Init and define a connection matrix (SDW struct).
 ;
-; PURPOSE: Create a connection matrix that will be used by the
-;          DelayWeigh() Function to propagate spikes from one layer to
-;          the next.
-;          Optionally, weights, delays, synaptic depression parameters
-;          and the combination method for conjunctive connections can
-;          be specified.
+; PURPOSE: 
+;  Create a connection matrix that will be used by the <A HREF="#DELAYWEIGH">DelayWeigh()</A>
+;  function to propagate spikes from one layer to the
+;  next. Optionally, weights, delays, synaptic depression parameters
+;  and the combination method for conjunctive connections can be
+;  specified.
 ;
-; CATEGORY: Simulation
+; CATEGORY: 
+;  SIMULATION / CONNECTIONS
 ;
-; CALLING SEQUENCE: My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
+; CALLING SEQUENCE: 
+;  My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
 ;                                   [,/SOURCE_TO_TARGET | /TARGET_TO_SOURCE]
 ;                                   [,DELAY  | ,D_INIT | ,D_RANDOM | ,D_NRANDOM | ,D_CONST | ,D_LINEAR | ,D_GAUSS] 
 ;                                   [,WEIGHT | ,W_INIT | ,W_RANDOM | ,W_NRANDOM | ,W_CONST | ,W_LINEAR | ,W_GAUSS, W_DOG]
@@ -24,7 +27,8 @@
 ;                                   [,/DEPRESS [, TAU_REC] [, U_SE] ,[REALSCALE] ]
 ;                                   [CONJUNCTION_METHOD={"SUM","MAX"} )
 ; 
-; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
+; INPUTS: 
+;  S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;                                                oder implizit int W_INIT/D_INIT
 ;
 ; OPTIONAL INPUTS: SOURCE_TO_TARGET     : Dies ist der Default: Die folgenden Verbindungs- und Delay-Schlüsselworte
@@ -165,6 +169,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.22  2000/08/08 13:59:24  thiel
+;           Now "SUM" is REALLY the default for the conjunction method.
+;
 ;       Revision 2.21  2000/07/18 16:52:08  kupper
 ;       Deletet empty line in header.
 ;
@@ -346,7 +353,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
    Default, U_se_const, 0.35
    default, depress, 0
    Default, realscale, 0
-   Default, conjunction_method, "MAX"
+   Default, conjunction_method, "SUM"
 
    Case strupcase(conjunction_method) of
       "SUM": cm = 1
