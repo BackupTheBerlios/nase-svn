@@ -15,8 +15,9 @@
 ; OPTIONAL INPUTS: DELAY, WEIGHT       : Konstanter Wert, mit dem die Gewichte/Delays initialisiert werden. Default f¸r WEIGHT ist 0.
 ;                  D_RANDOM, W_RANDOM  : Array [Min,Max]. Die Gewichte/Delays werden gleichverteilt zuf‰llig belegt im Bereich Min..Max.
 ;                  D_NRANDOM, W_NRANDOM: Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zuf‰llig belegt mit Mittelwert MW und Standardabweichung sigma.
-;                  D_LINEAR, W_LINEAR  : (noch nicht implementiert)
-;                  D_GAUSS, W_GAUSS    : (noch nicht implementiert. Einstweilen kann SetGaussWeight benutzt werden!)
+;                  D_LINEAR, W_LINEAR  : (noch nicht implementiert!)
+;                  D_GAUSS             : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gauﬂfˆrmig in den Targetlayer gesetzt, und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                            W_GAUSS   : (noch nicht implementiert!)
 ;                  D_NONSELF, W_NONSELF: Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.
 ;	
 ; KEYWORD PARAMETERS: s.o.
@@ -36,6 +37,11 @@
 ; EXAMPLE: My_DWS = InitDW (S_Layer=l1, T_Layer=l2, W_RANDOM=[0,1], /W_NONSELF)
 ;
 ; MODIFICATION HISTORY:
+;
+;       Mon Aug 4 01:31:42 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		W_GAUSS implementiert.
 ;
 ;       Sun Aug 3 20:51:50 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -96,6 +102,8 @@ if set (D_RANDOM) then DelMat.Delays  = d_random(0) + (d_random(1)-d_random(0)) 
 if set (W_NRANDOM) then DelMat.Weights = w_nrandom(0) + w_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
 if set (D_NRANDOM) then DelMat.Delays  = d_nrandom(0) + d_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
 
+if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=0, S_COL=0, T_HS_ROW=0, T_HS_COL=0, /ALL
+;if set (D_GAUSS) then
 
 
 
@@ -111,7 +119,7 @@ end
 
 
 
-if HasDelay then DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
+if HasDelay then if Where(DelMat.Weights) ne -1 then DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
 
 return, DelMat
 
