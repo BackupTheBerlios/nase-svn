@@ -79,6 +79,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.21  1998/03/13 15:59:48  thiel
+;            Bugfix: Beschriftung der Achsen funktioniert jetzt
+;            auch, wenn XRANGE=[A,B] und A > B ist.
+;
 ;     Revision 2.20  1998/02/19 13:31:34  thiel
 ;            Dritter Versuch.
 ;
@@ -200,10 +204,10 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    IF N_Elements(XRANGE) NE 2 THEN Message, 'wrong XRANGE argument'
    IF N_Elements(YRANGE) NE 2 THEN Message, 'wrong YRANGE argument'
    
-   XRANGE(0) = XRANGE(0)-1
-   XRANGE(1) = XRANGE(1)+1
-   YRANGE(0) = YRANGE(0)-1
-   YRANGE(1) = YRANGE(1)+1
+   XRANGE(0) = XRANGE(0)-1+2*(XRANGE(0) GT XRANGE(1))
+   XRANGE(1) = XRANGE(1)-1+2*(XRANGE(0) LE XRANGE(1))
+   YRANGE(0) = YRANGE(0)-1+2*(YRANGE(0) GT YRANGE(1))
+   YRANGE(1) = YRANGE(1)-1+2*(YRANGE(0) LE YRANGE(1))
    
    ;-----Behandlung der NASE und ORDER-Keywords:
    XBeschriftung = XRANGE
@@ -257,8 +261,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
 
    ;-----Plotten des Koodinatensystems:
-   IF XRANGE(0) LT 0 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
-   IF YRANGE(0) LT 0 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
+   IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
+   IF Min(YRANGE) LT -1 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
    IF NOT Set(FullSheet) THEN BEGIN 
       IF PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)+UpRightDevice(0) LT VisualWidth THEN BEGIN
          PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
