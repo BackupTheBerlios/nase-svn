@@ -107,6 +107,7 @@
 ;       <Mirko.Saam@physik.uni-marburg.de>
 ;       
 ;               Erweiterung um Lernpotentiale analog zu DelayWeigh, Schluesselworte LEARN_TAUP, LEARN_VP
+;               Erweiterung um konstante Gewichte/Delays mit Cutoff-Reichweite
 ;
 ;       Thu Aug 7 14:02:04 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
