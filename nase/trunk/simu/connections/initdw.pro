@@ -136,6 +136,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_NRANDOM=d_nrandom,         W_NRANDOM=w_nrandom, $
                  D_GAUSS=d_gauss,             W_GAUSS=w_gauss, $
                  W_DOG=w_dog, $
+                 D_CONST=d_const,             W_CONST=w_const, $
                  D_LINEAR=d_linear,           W_LINEAR=w_linear, $
                  D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
@@ -200,6 +201,9 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 
 if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
 if set (D_GAUSS) then SetGaussDelay,  DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+
+if set (W_CONST) then SetConstWeight, DelMat, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+if set (D_CONST) then SetConstDelay,  DelMat, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
 if set (W_LINEAR) then SetLinearWeight, DelMat, w_linear(0), w_linear(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
 if set (D_LINEAR) then SetLinearDelay,  DelMat, d_linear(1), min=d_linear(0), d_linear(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
