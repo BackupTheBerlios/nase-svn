@@ -50,6 +50,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/06/29 13:11:32  saam
+;           \n removed in string result
+;
 ;     Revision 1.4  1998/06/17 08:54:14  saam
 ;          new keyword PRINT
 ;
@@ -79,7 +82,7 @@ FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print
          tagSize = SIZE(LS.struct.(tag))
          IF tagSize(N_Elements(tagSize)-1) GT 1 THEN BEGIN
             IF Keyword_Set(PRINT) THEN BEGIN
-               Name = Name + STRCOMPRESS(STRING(tagNames(tag)))  + '  :  ' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL) + "\n"
+               Name = Name + STRCOMPRESS(STRING(tagNames(tag)))  + '  :  ' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
             END ELSE BEGIN
                IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
                Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
