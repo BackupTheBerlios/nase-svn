@@ -138,6 +138,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1999/08/24 10:03:36  thiel
+;            Corrected value computation for negative minima.
+;
 ;        Revision 2.4  1999/06/17 14:30:05  kupper
 ;        Extended Header.
 ;
@@ -273,12 +276,12 @@ Function CW_FSLIDER2, Parent $
 
    maxslider = (maximum-minimum)/stepwidth
    W_Slider = Widget_Slider(W_InnerBase, $
-                            VALUE=(value-minimum)/double(maximum)*maxslider, $
-                            /DRAG, $
-                            MAXIMUM=maxslider, $
-                            /SUPPRESS_VALUE, $
-                            VERTICAL=vertical, $
-                            XSIZE=xsize, YSIZE=ysize)
+      VALUE=(value-minimum)/double(maximum-minimum)*maxslider, $
+      /DRAG, $
+      MAXIMUM=maxslider, $
+      /SUPPRESS_VALUE, $
+      VERTICAL=vertical, $
+      XSIZE=xsize, YSIZE=ysize)
 
    ;if LABEL_BOTTOM or LABEL_RIGHT, create Label NOW:
    if Keyword_Set(LABEL_BOTTOM) or Keyword_Set(LABEL_RIGHT) then $
