@@ -1,5 +1,5 @@
 ;+
-; NAME:               InitPlotscilloscope
+; NAME:               InitPlotcilloscope
 ;
 ; AIM:
 ;  Initialize a structure for use with the Plotcilloscope routine.
@@ -61,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.16  2000/10/25 14:10:30  kupper
+;     Typo in NAME: entry!!
+;
 ;     Revision 2.15  2000/10/01 14:51:23  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
