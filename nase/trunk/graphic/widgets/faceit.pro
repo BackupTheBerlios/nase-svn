@@ -131,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.14  2000/03/22 16:55:46  kupper
+;        Fixed overflow-bug when computing averaged steptime.
+;
 ;        Revision 1.13  2000/03/20 17:43:17  kupper
 ;        Oho, forgoto to adjust Quit-Menu-code to new parameters of Faceit_Kill_Request.
 ;        Fixed.
@@ -342,8 +345,9 @@ PRO FaceIt_EVENT, Event
                EnQueue, *UV.SimStepTimeQ, LastDuration
                Widget_Control, UV.W_SimStepTime, SET_VALUE='Last : '+ $
                 str(LastDuration)
+               Q = Queue(*UV.SimStepTimeQ, /Valid)
                Widget_Control, UV.W_SimStepTimeInt, SET_VALUE='L.100: '+ $
-                str(fix(Total(Queue(*UV.SimStepTimeQ)))/100)
+                str(fix(Total(Q)/n_elements(Q)))
                UV.SimAbsTime = CurrentTime
 
                ; If display-flag is set call DISPLAY-Routine to show results:
