@@ -28,7 +28,7 @@
 ;                      savestruc,1,a
 ;                      close,1
 ;                      openr, 1,'testfile'
-;                      loadstruc,1,b
+;                      b=loadstruc(1)
 ;                      close, 1
 ;                      help, b, /STRUCTURES
 ;                      
@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/12/17 16:23:08  saam
+;           Beispiel an veraenderten Aufruf von LoadStruc angepasst
+;
 ;     Revision 2.1  1997/11/26 09:18:04  saam
 ;           Urversion
 ;
