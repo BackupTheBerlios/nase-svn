@@ -10,7 +10,8 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @hentry %pro %catl $dbh);
 use DBI;
 use Tie::DBI;
 
-use Env qw(HTTPS);
+
+
 
 use constant DATABASE => 'nase';
 use constant AUSER    => 'chiefnase';
@@ -25,9 +26,8 @@ require Exporter;
 @EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir KeyByNameHTML KeyByCountHTML KeyByName KeyByCount getDocURL @hentry myHeader myBody getCVS setCVS %pro %catl $dbh createTablesIfNotExist ); 
 $VERSION = '1.1';
 
-
 # Preloaded methods go here.
-my ($DOCURL, $hostname);
+my ($DOCURL ,$hostname);
 my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $CVSROOT); #, $lockmgr
 
 ## just default settings (START) ##
@@ -106,11 +106,9 @@ BEGIN {
    $CVSROOT="/vol/neuro/nase/IDLCVS"; 
    $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
 
-   if($HTTPS =~ /on/ ){
-     $DOCURL="https://neuro.physik.uni-marburg.de/nase/";
-   }else{
-     $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
-   }
+ 
+   $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+ 
    $INDEXDIR="$DOCDIR"; #should be unused
     
 #    $DOCDIR="/mhome/saam/sim"; 
@@ -119,11 +117,10 @@ BEGIN {
   }
   
 
-  if($HTTPS =~ /on/ ){
-    $BASEURL  = "https://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
-  }else{
-    $BASEURL  = "http://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
-  }
+  
+  #
+  $BASEURL  = "http://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
+  
     
   $SUBDIR   = "/";
   ## just default settings (END) ##
@@ -171,7 +168,16 @@ sub setCVS { $CVSROOT = shift @_; }
 sub getCVS { return $CVSROOT; }
 sub setDocDir { $DOCDIR = shift @_; }
 sub getDocDir { return $DOCDIR; }
-sub getDocURL { return $DOCURL; }
+sub getDocURL {
+  use Env qw( HTTPS );
+  if($HTTPS =~ /on/ ){
+     $DOCURL="https://neuro.physik.uni-marburg.de/nase/";
+   }else{
+     $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+   }
+
+   return $DOCURL;
+}
 sub setBaseURL { $BASEURL = shift @_; }
 sub getBaseURL { return $BASEURL; }
 sub setSubDir { $SUBDIR = shift @_; }
