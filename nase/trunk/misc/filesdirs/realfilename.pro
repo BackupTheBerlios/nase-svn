@@ -21,6 +21,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1999/03/11 14:06:10  saam
+;           + uses the much more flexible StrRepeat command
+;           + completely rewritten
+;           + works now!!
+;
 ;     Revision 2.1  1998/11/13 21:16:02  saam
 ;           created because of several problems with
 ;           automounted directories, a wrong PWD-resolutions
@@ -39,13 +44,15 @@ FUNCTION RealFileName, FilePath
    IF N_Params() NE 1 THEN Message, 'wrong calling syntax'
    
    Renorm = FilePath
-   IF Contains(FilePath, '/tmp_mnt/') THEN Renorm = StrMid(FilePath, 8, 500)
-   IF Contains(FilePath, '/a/') THEN BEGIN
-      slashpos = StrPos(FilePath, '/', 3)
-      IF slashpos LT 1 THEN Message, 'broke my neck, this shouldnt happen'
-      Renorm = StrMid(FilePath, slashpos, 500)
-   END
+   Renorm = StrReplace(Renorm, '/tmp_mnt/', '/')
+
+   slashified = Str_Sep(Renorm, '/')
+   IF ((slashified(0) EQ '') AND (slashified(1) EQ 'a')) THEN Renorm = StrReplace(Renorm, '/'+slashified(1)+'/'+slashified(2)+'/', '/')
+      
+   Renorm = StrReplace(Renorm, '/home/', '/usr/')
+   Renorm = StrReplace(Renorm, '/gonzo/', '/ax1317/')
+   Renorm = StrReplace(Renorm, '/./','/')
+   Renorm = RemoveDup(Renorm, '/')
 
    RETURN, Renorm
-
 END
