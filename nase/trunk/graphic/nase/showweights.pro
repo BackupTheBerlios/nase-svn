@@ -98,6 +98,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.10  1998/01/26 18:23:47  saam
+;             Fehler bei Null-Device korrigiert
+;
 ;       Revision 2.9  1997/12/10 15:57:55  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -168,10 +171,9 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin
 
-   Handle_Value, __Matrix, _Matrix, /NO_COPY 
-
-
    IF !D.Name EQ 'NULL' THEN RETURN
+
+   Handle_Value, __Matrix, _Matrix, /NO_COPY 
 
    Default, FROMS, PROJECTIVE
    Default, TOS, RECEPTIVE
