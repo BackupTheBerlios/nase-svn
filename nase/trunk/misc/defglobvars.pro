@@ -35,6 +35,15 @@
 ;  <A>Background</A> respect these
 ;  settings. <*>!TOPCOLOR <= !D.Table_Size-3</*> must apply, default
 ;  value is <*>!D.Table_Size-11</*> reserving 10 colors for NASE.<BR> 
+;  <*>!NASEWIDGETFONT</*> and <*>!NASEWIDGETFONTSMALL<*> are two
+;  device fonts that may be used to achieve a consistent appearance of
+;  the NASE widgets. At present, these fonts are set to Helvetica
+;  bold, but this may be changed as one pleases. Note that the string
+;  specifying the font is different depending on the operating system,
+;  see IDL's help on device fonts for further information. Note also
+;  that it is impossible to change the font used in a widget's
+;  menubar under the windows OS. It rather seems that Windows itself keeps
+;  control of this.<BR>
 ;  <*>!TRUE</*>,<*>!FALSE</*>:: defines the well known boolean values
 ;  for integer types. String (<*>!TRUEs</*>,<*>!FALSEs</*>), float
 ;  (<*>!TRUEf</*>,<*>!FALSEf</*>) and double
@@ -138,6 +147,27 @@ DefSysV, '!NASEP', {!NASEPLT, $ ; according to !P, !PLT of standard IDL
 
 ;; Path to the COIL object image database:
 DefSysV, '!COILPATH', "/vol/data/simu/coil-database"
+
+
+;; Two fonts for use in widgets
+;; Definition string depends on OS
+CASE Strupcase(!VERSION.OS_FAMILY) OF 
+   'WINDOWS' : BEGIN
+      DefSysV, '!NASEWIDGETFONT', 'HELVETICA*BOLD*14'
+      DefSysV, '!NASEWIDGETFONTSMALL', 'HELVETICA*BOLD*12'      
+   END
+   'UNIX' : BEGIN
+      DefSysV, '!NASEWIDGETFONT', '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
+      DefSysV, '!NASEWIDGETFONTSMALL', '-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1'
+   END
+   ELSE : BEGIN
+      Console, /WARN, 'Widget font not yet defined for this OS family.' 
+      DefSysV, '!NASEWIDGETFONT', ''
+      DefSysV, '!NASEWIDGETFONTSMALL', ''
+   END
+ENDCASE
+
+ 
 
 
 
