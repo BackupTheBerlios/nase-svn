@@ -84,7 +84,7 @@
 PRO LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    spaltenindex = where(Target_CL.O,count)
-   If count EQ 0 Then Return, Matrix
+   If count EQ 0 Then Return
 
    spaltenzahl = Layersize(Target_CL)
    zeilenzahl = Layersize(Source_CL)
