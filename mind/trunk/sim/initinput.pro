@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/14 10:26:57  alshaikh
+;           NEW: 'EXTERN' input
+;
 ;     Revision 1.2  1999/12/10 10:05:15  saam
 ;           * hyperlinks for freeinput added
 ;
@@ -111,9 +114,18 @@
 ; --------------
 ;                 vals: FltArr(w,h) containing the values
 ;     
+; TYPE='EXTERN':
+; --------------
+;             delta_t : refresh interval (delta_t=-1  => each SIM-step)
+;             period  : periodicity (period=-1   =>infinite period)
+;             filter  : array of filters
+;             start   : time within a period when filter is activated
+;             stop    :    "                "               stopped
+;             visible : 0|1 ... what do you think?
 ;
 
-FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e
+
+FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
 
    COMMON ATTENTION
    COMMON PlotInput, PC_Input
@@ -132,8 +144,8 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e
    IF NOT ExtraSet(IN, 'TYPE')    THEN Message, 'tag TYPE undefined!'
 
 
-   typelist = ['SPIKES', 'GWN', 'POISSON', 'PCC', 'BAR', 'FADEBAR', 'FADEIN', 'NONE', 'STATIC', 'BURST', 'AF']
-;                 0        1        2        3      4        5          6        7        8        9      10 
+   typelist = ['SPIKES', 'GWN', 'POISSON', 'PCC', 'BAR', 'FADEBAR', 'FADEIN', 'NONE', 'STATIC', 'BURST', 'AF','EXTERN']
+;                 0        1        2        3      4        5          6        7        8        9      10    11
 
    ;----->
    ;-----> GLOBAL DEFINES
@@ -318,17 +330,39 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e
 		curd  : d                ,$
                 maxd  : max(d)           }
       END
+
+
+
+      11: BEGIN; EXTERN
+       
+         number_filter = N_elements(IN.filters)
+         pattern =  fltarr(h,w)
+         tempo = lonarr(number_filter)
+         FOR i=0,number_filter-1 DO BEGIN
+            tempo(i) = Handle_Create(!MH, VALUE=0);, /NO_COPY)
+         ENDFOR
+         
+         R =  { type            : 11                     ,$ ; input type (11=extern) 
+                index           : IN.index               ,$ 
+                period          : IN.period              ,$ ; period time
+                number_filter   : N_elements(IN.filters) ,$ ; how many filters are used?
+                delta_t         : IN.time_step           ,$ ; time resolution
+                t               : 0l                     ,$ ; internal sim-time
+                filters         : IN.filters             ,$ ; filters
+                temps           : tempo                  ,$ ; for storing internal filter-data
+                visible         : IN.visible             ,$ ; visible (plottvscl)? yes(1) no(1)
+                pattern         : pattern }                 ; generated input-pattern
+      END 
+
       ELSE: Message, 'dont know that kind of input: '+STRING(IN.TYPE)
    ENDCASE
-
-
-
 
    ;----->
    ;-----> FADING SCHEME
    ;----->
+
    IF MYTYPE(0) EQ 8 THEN BEGIN
-      IF ExtraSet(IN, 'FADE') THEN BEGIN
+       IF ExtraSet(IN, 'FADE') THEN BEGIN
          tFade = REFORM(IN.FADE(0,*)/(1000*P.SIMULATION.SAMPLE)) ; time of fade-points in BIN 
          
          FADE = DblArr(P.SIMULATION.TIME/(1000*P.SIMULATION.SAMPLE))

@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/14 10:26:57  alshaikh
+;           NEW: 'EXTERN' input
+;
 ;     Revision 1.2  1999/12/10 10:05:15  saam
 ;           * hyperlinks for freeinput added
 ;
@@ -96,6 +99,16 @@
 ;                 vals: FltArr(w,h) containing the values
 ;     
 ;
+; TYPE='EXTERN':
+; --------------
+;             delta_t : refresh interval (delta_t=-1  => each SIM-step)
+;             period  : periodicity (period=-1   =>infinite period)
+;             filter  : array of filters
+;             start   : time within a period when the filter is activated
+;             stop    :    "                "                   stopped
+;             visible : yes(1), no(0)
+;
+
 FUNCTION Input, L, _IN
 
    COMMON ATTENTION
@@ -109,7 +122,7 @@ FUNCTION Input, L, _IN
    Handle_Value, _IN, IN, /NO_COPY
    Handle_Value, P.INPUT(IN.INDEX), INP
 
-   IF IN.TYPE LT 11 THEN BEGIN
+   IF IN.TYPE LT 12 THEN BEGIN
       curLayer = Handle_Val(P.LW(INP.LAYER))
       w  = curLayer.w
       h  = curLayer.h
@@ -223,6 +236,56 @@ FUNCTION Input, L, _IN
          IF dt LE IN.maxd THEN R = SpassMacher((RandomU(seed,w,h) LT IN.curp) AND (dt EQ IN.curd)) ELSE R = [0,w*h]
          IN.t = IN.t + 1
       END
+
+      
+      11 : BEGIN                ; EXTERN
+         
+         act_time =  OS*IN.t         ; timesteps -> ms
+         delta_t =   IN.delta_t      ; resolution in ms
+ 
+         number_filter =  IN.number_filter
+         IF (IN.period NE -1) THEN act_time = act_time MOD IN.period
+
+         IF ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0)) THEN BEGIN
+
+            pattern = fltarr(h,w)   ; initialize input-matrix
+
+            FOR i=0, number_filter-1 DO BEGIN
+
+               Handle_Value,IN.filters(i),act_filter 
+              
+               IF act_time EQ act_filter.start THEN BEGIN    ; initialize filter
+                  pattern = CALL_FUNCTION(act_filter.NAME,$
+                                          MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                          temp_vals=IN.temps(i),DELTA_T=delta_t) 
+                  print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
+                  print,''
+                  
+                  ; ELSE NextStep 
+               END ELSE IF ((act_time GT act_filter.start) AND (act_time LE act_filter.stop)) THEN $
+                pattern = CALL_FUNCTION(act_filter.NAME,$
+                                        PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                        temp_vals=IN.temps(i),DELTA_T=delta_t) 
+               
+            ENDFOR ; i  
+            R = pattern 
+            IN.pattern = R  ; store for future use
+
+            IF IN.visible NE 0 THEN BEGIN  ; show what you've done
+               OpenSheet, INPUT_1
+               PlotTvScl, IN.pattern
+               CloseSheet, INPUT_1
+               END 
+
+         END ELSE R = IN.pattern
+         R = Spassmacher(R)
+         IN.t = IN.t + 1
+      END 
+      
+
+
+
+
    ENDCASE
 
    
