@@ -132,7 +132,9 @@ PRO UWriteU, _lun, x, _EXTRA=e
   IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenW(_lun,_EXTRA=e) ELSE lun=_lun
 
   ; write version and ID
-  _UWriteU, lun, 'UWriteU/$Revision$'
+  version = 'UWriteU/$Revision$'
+  version = version + StrRepeat(" ", 40-StrLen(version))
+  WriteU, lun, version ; write a fixed length version string
 
   _UWriteU, lun, x, _EXTRA=e
   

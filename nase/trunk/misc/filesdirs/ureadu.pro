@@ -22,7 +22,7 @@
 ;  Structures
 ;
 ; CALLING SEQUENCE:
-;*r = UReadU(lun)
+;*r = UReadU(lun [,ERROR=...])
 ;
 ; INPUTS:
 ;  lun :: a valid, readable <B>LUN</B> (see <A>UOpenR</A>,<A>UOpenW</A> how to
@@ -36,6 +36,10 @@
 ;
 ; OUTPUTS:
 ;  r :: restored data structure
+;
+; OPTIONAL OUTPUTS:
+;  error:: will be set true, if data can't be read. In this case, the
+;          routine will of course not stop execution.
 ;
 ; SIDE EFFECTS:
 ;* modifies the position index of the <*>lun</*>
@@ -134,7 +138,7 @@ END
 
 
 
-FUNCTION UReadU, _lun, _EXTRA=e
+FUNCTION UReadU, _lun, ERROR=error, _EXTRA=e
 
   ON_ERROR, 2
 
@@ -150,13 +154,27 @@ FUNCTION UReadU, _lun, _EXTRA=e
 
   ;; if we have an old style, formatted version string
   ;; we can simply proceed
-  IF NOT (STRMID(version, 0, 22) EQ 'UWriteU/$Revision: 1.3') THEN BEGIN
-      ;; we seem to have a new version string, rewind and try again
+  IF (STRMID(version, 0, 8) EQ 'UWriteU/') THEN BEGIN
+      ; we know it was written with uwriteu
+
+      IF Float(StrMid(version, 19,3)) GT 1.3 THEN BEGIN
+          ; its the new binary format
+
+          ;; rewind and read again
+          Point_Lun, lun, pos
+          version = StrRepeat(" ",40)
+          ReadU, lun, version
+
+      END
+  END ELSE BEGIN
+      ;; we don't know this data
+      ;; rewind data and exit
       Point_Lun, lun, pos
-      version = _UReadU(lun)
-      ;; check if written with uwriteu
-      if not (STRMID(version, 0, 8) EQ 'UWriteU/') THEN Console, "data not written using UWriteU, can't restore", /FATAL
-  END 
+      IF Set(Error) THEN BEGIN
+          Error = 1
+          RETURN, !NONE
+      END ELSE Console, "data not written using UWriteU, can't restore", /FATAL
+  END
 
   x = _ureadu(lun)
 
