@@ -39,6 +39,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/08/04 14:37:12  kupper
+;     Removed absolute reference to /vol/lib/nase.so.
+;     Replaced by !NASE_LIB.
+;
 ;     Revision 1.1  1999/07/28 08:42:26  saam
 ;           hope it works
 ;
@@ -49,7 +53,7 @@ FUNCTION MTime, File, DATE=date
    IF TypeOf(FILE) NE 'STRING' THEN Message, 'string as first argument expected'
    
    date = ''
-   seconds = CALL_EXTERNAL('/vol/lib/nase/nasec.so', 'mtime', File, date)
+   seconds = CALL_EXTERNAL(!NASE_LIB, 'mtime', File, date)
    date = STRMID(date,0,24)
    
    RETURN, seconds
