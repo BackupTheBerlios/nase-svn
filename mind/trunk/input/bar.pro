@@ -32,12 +32,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.2  2000/01/05 13:49:10  saam
+;            doc-minus was missing
+;
 ;      Revision 1.1  1999/12/10 09:48:40  saam
 ;            + at the moment needed by initinput.pro
 ;            + imported from ~/sim/idl/input
 ;
-;
-;
+;-
 FUNCTION Bar, WIDTH=w, HEIGHT=h, GAP=GAP, LEFT=left, RIGHT=right, BARWIDTH=BARWIDTH, BARHEIGHT=BARHEIGHT, NASE=NASE, $
               RANDU=randu
             
