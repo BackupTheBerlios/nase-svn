@@ -111,6 +111,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/01 16:56:30  thiel
+;            Removed 'w_userbase' in call to *_KILL_REQUEST.
+;
 ;        Revision 1.1  1999/09/01 16:43:53  thiel
 ;            Moved from other directory.
 ;
@@ -271,7 +274,7 @@ PRO FaceIt_EVENT, Event
       uv.topmenu: BEGIN
          CASE event.value OF
             'File.Quit' : BEGIN 
-               IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr, UV.W_UserBase) THEN BEGIN
+               IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr) THEN BEGIN
                   Ptr_Free, UV.dataptr 
                   Ptr_Free, UV.displayptr
                   WIDGET_CONTROL, Event.Top, /DESTROY
