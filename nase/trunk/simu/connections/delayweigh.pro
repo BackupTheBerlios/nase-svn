@@ -62,6 +62,7 @@
 ;                         automatischer cast von INIT_WEIGHTS auf DOUBLE, Mirko Saam, 1.8.97
 ;                         Fehlermeldung, wenn delays zu gross, Mirko, 3.8.97
 ;                         jeder verzoegerten Verbindung kann ein Lernpotential zugeordnet werden, Mirko, 4.8.97
+;                         IDL-bug bei Array-Zuweisung umgangen, Mirko, 4.8.97
 ;
 ;-
 FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_delays,$
@@ -92,7 +93,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                    Delays  : [-1]          }
       END ELSE BEGIN         
          IF Max(init_delays) GE 15 THEN Message, 'sorry, delays are too big'
-         IF (Keyword_Set(taup) AND Keyword_Set(vp)) THEN BEGIN
+         IF (Keyword_Set(taup) AND Set(vp)) THEN BEGIN
             lp = FltArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) )
          END ELSE BEGIN
             lp = -1
@@ -106,7 +107,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                     Delays  : init_delays  ,$
                     Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) ),$
                     VP      : FLOAT(vp),$
-                    DP      : exp(-1./taup),$
+                    DP      : exp(-1.0/FLOAT(taup)),$
                     LP      : lp}
          DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
       END
@@ -118,6 +119,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
    IF (N_Elements(In) NE (Size(DelMat.Weights))(2))  AND ((Size(DelMat.Weights))(0) EQ 2) THEN Message, 'input incompatible with definition of matrix' 
    
    IF (DelMat.Delays(0) EQ -1) THEN BEGIN
+      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
       RETURN, DelMat.Weights # In 
    END ELSE BEGIN
       tmp = DelMat.Matrix AND Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
@@ -132,7 +134,8 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       
       ; update the learning potential if needed
       IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
-         DelMat.lp =  DelMat.lp*DelMat.dp + DelMat.vp*spikes
+         DelMat.lp =  (DelMat.lp*delmat.dp) + DelMat.vp*spikes
+         print, DelMat.lp(5,5)
       END
       RETURN, TOTAL(res, 2)
    END   
