@@ -1,123 +1,75 @@
 ;+
-; NAME: InitVideo()
+; NAME:
+;  InitVideo()
 ;
-; AIM: Initializes a video-structure.
+; AIM:
+;  initializes a video structure
 ;
-; PURPOSE: Initialisierung eines Array-Videos
+; PURPOSE:
+;  Initializes a video. There are severval routines concerning videos,
+;  as <A>InitVideo</A>, <A>CamCord</A>, <A>Eject</A>,
+;  <A>LoadVideo</A>, <A>Replay</A> and <A>Rewind</A>.<BR>
 ;
-;          Zur Video-Familie gehören: InitVideo()
-;                                     CamCord()
-;                                     Eject
-;                                     LoadVideo()
-;                                     Replay()
-;                                     Rewind
+;  The typical usage of the video routines is as follows:<BR>
+;     * <*>open a new video</*> using <A>InitVideo</A> <BR>
+;     * <*>record numerous frames</*> using <A>CamCord</A><BR>
+;     * <*>finish your record</*> using  <A>Eject</A><BR>
+;*
+;     * <*>open an existing video</*> using <A>LoadVideo</A><BR>
+;     * <*>fast forward to a specific frame</*> using <A>Rewind</A><BR>
+;     * <*>restore several frames</*> using <A>Replay</A><BR>
+;     * <*>finish playback</*> with <A>Eject</A>
 ;
-;          Das typische Vorgehen wäre folgendes:
+; CATEGORY:
+;  DataStorage
+;  DataStructures
+;  Files
+;  IO
+;  OS
 ;
-;                      - Besorge Dir ein leeres Video mit     InitVideo()
-;                      - Nehme beliebig viele Frames auf mit  CamCord()
-;                      - Beende die Aufnahme mit              Eject
-;                      - Tu was Du willst, bis Du das
-;                         Video brauchst, dann 
-;                      - Lege das Video ein mit               LoadVideo()    
-;                     (- Spule zu einer bestimmten Stelle mit Rewind() )
-;                      - Spiele beliebig viele Frames ab mit  Replay() 
-;                      - Beende die Wiedergabe mit            Eject
-;                     (- Erzeuge nachträglich ein Label mit   Label )
-;                          
-;
-; CATEGORY: Simulation
-;
-; CALLING SEQUENCE: MyVideo = InitVideo ( MusterFrame [,Title] [,TITLE] [,SYSTEM] [,STARRING]
-;                                                     [,COMPANY] [,PRODUCER] [,YEAR]
-;                                                     [,/VERBOSE] [,/SHUTUP] [,/ZIPPED])
+; CALLING SEQUENCE:
+;*  V = InitVideo ( sampleFrame [,title] [,TITLE=...] [,SYSTEM=...] [,STARRING=...]
+;*                              [,COMPANY=...] [,PRODUCER=...] [,YEAR=...]
+;*                              [,UDS=uds]
+;*                              [,{/VERBOSE | /SHUTUP}] [,/ZIPPED])
 ; 
-; INPUTS: MusterFrame: Ein Array des Typs und der Größe, die aufgezeichnet werden sollen.
-;                      Leider sind StringArrays nicht erlaubt.
-;                   Hinweis: Der Musterframe dient wirklich nur als Muster,
-;                            wird also NICHT aufgezeichnet!
+; INPUTS: 
+;  sampleFrame:: Sample array, defining the size and type of all
+;                following frames. No string arrays are allowed,
+;                sorry. The sampleFrame is just a template and will not
+;                be recorded.
 ;
-;          Title     : Filename und Videotitel. Dieser Parameter hat
-;                      exakt die gleiche Funktion wie das
-;                      TITLE-Keyword. Nur eines von beiden muß (und
-;                      sollte) angegeben werden! (Bzw. keines für den Defaulttitel.)
+;  title      :: filename and title of the video. This parameter is
+;                identical with the TITLE keyword. You should only set
+;                one of both.
 ;
-; OPTIONAL INPUTS: ---
-;	
-; KEYWORD PARAMETERS: TITLE,  SYSTEM, STARRING, COMPANY, PRODUCER, YEAR:
-;                             Für mehr Freude an der Simulation...
-;                             Alle diese Schlüsselworte können auf Strings gesetzt werden (max. 80 Zeichen)
-;                             Für alle sind auch Defaults definiert.
-;                             HABEN KEINE WEITERE FUNKTION, AUßER DER ERHEITERUNG UND MUßE!
-;                             Doch: TITLE legt auch den Filenamen fest!
-;                     SHUTUP: unterdrueckt jegliche Bildschirmausgabe
-;                     ZIPPED: erzeugt ein gezipptes Video
+; INPUT KEYWORDS: 
+;   TITLE,  SYSTEM, STARRING, COMPANY, PRODUCER, YEAR::
+;     information will be stored in the video and can be
+;     restored. Each keyword has to be a string (80 chars max).
+;     These keywords have no real function, except telling the user 
+;     what data will be restored
+;   VERBOSE:: talks about everything no one will want to hear about...
+;   SHUTUP:: supresses every informational messages
+;   ZIPPED:: the video will be gzipped on the hard disk.
+;   UDS   :: an arbitrary structure that will also be saved on
+;            disk. It can be used to preserve simulation or other
+;            relevant parameters.
 ;
-; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
+; OUTPUTS:
+;  V:: a valid video structure
 ;
-; SIDE EFFECTS:  Öffnet ein .vid- und .vidinf-File
+; SIDE EFFECTS:
+;  opens .vid and .vidinf files
 ;
-; PROCEDURE: Ein Infofile erzeugen (.vidinf)
-;            Ein DatenFile erzeugen (.vid), in das später geschrieben wird.
-;
-; EXAMPLE: 1. MusterFrame = intarr(3)
-;             MyVideo = InitVideo( MusterFrame )
-;          
-;          2. MusterFrame = dblarr(20,20)
-;             MyVideo = InitVideo (MusterFrame, TITLE='The quiet Neuron', /VERBOSE)
-;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 2.13  2000/09/28 13:23:27  alshaikh
-;             added AIM
-;
-;       Revision 2.12  2000/06/19 13:08:08  saam
-;             + replaced string processing by an IDL3.6 compatible version
-;
-;       Revision 2.11  2000/04/03 12:02:56  saam
-;             Changed Default Values:
-;       	SYSTEM -> name of the calling routine
-;               YEAR   -> includes now hour:minutes:seconds
-;
-;       Revision 2.10  1998/11/08 14:51:37  saam
-;             + video-structure made a handle
-;             + ZIP-handling replaced by UOpen[RW]
-;
-;       Revision 2.9  1998/03/14 13:32:45  saam
-;             now handles zipped and non-zipped videos
-;
-;
-;       Tue Sep 9 21:36:58 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Der übergebene Titel wird jetzt nicht mehr verändert.
-;
-;       Tue Sep 9 13:00:34 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Title-Parameter zugefügt.
-;
-;       Sun Sep 7 17:17:13 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Nimmt jetzt auch Skalare richtig auf.
-;
-;       Fri Aug 29 15:04:41 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Der YEAR-Tag enthält jetzt defaultmäßig auch den Tag
-;		und Monat der Aufzeichnung.
-;
-;       Thu Aug 28 15:54:26 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		TITEL-Keyword verarbeitet jetzt Pfade richtig.
-;
-;       Wed Aug 27 17:20:58 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Urversion
+; EXAMPLE:
+;* sampleFrame = dblarr(20,20)
+;* V = InitVideo (sampleFrame, TITLE='The quiet Neuron', /VERBOSE)
 ;
 ;-
-
 Function InitVideo, Frame, _Title, TITLE=__title, $
                     SYSTEM=system, STARRING=starring, COMPANY=company, PRODUCER=producer, YEAR=year, $
-                    VERBOSE=verbose, SHUTUP=shutup, ZIPPED=zipped
+                    VERBOSE=verbose, SHUTUP=shutup, ZIPPED=zipped, UDS=uds
 
    On_Error, 2
 
@@ -181,6 +133,12 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
            infounit    : infounit, $
            FrameSize   : size([Frame]), $
            FramePointer: 0l}
+
+   ;; UDS part
+   IF Set(UDS) THEN BEGIN
+       IF TypeOf(UDS) NE "STRUCT" THEN Console, "UDS must be a structure", /FATAL
+       SetTag, tmp, "UDS", UDS       
+   END
            
    RETURN, Handle_Create(!MH, VALUE=tmp, /NO_COPY)
 End
