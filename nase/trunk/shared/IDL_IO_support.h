@@ -1,4 +1,3 @@
-//-*-Mode: C++;-*-
 #ifndef IDL_IO_SUPPORT
 #define IDL_IO_SUPPORT
 
@@ -122,6 +121,15 @@
 ===============================================================================================================
 
         $Log$
+        Revision 1.6  2003/01/15 16:48:58  kupper
+        Das C++-File IDL_IO_support.cc wurde in ein Standard-C-File
+        umgewandelt, da das Compilieren und Linken mit IDL bei C++-Files immer
+        wieder Schwierigkeiten machte. Im wesentlichen enthielt das File
+        ohnehin nur C-Code.
+
+        Revision 1.1.1.2  2001/08/24 13:48:42  synod
+        include newest widget objects, consoles, etc.
+
         Revision 1.5  2001/08/22 16:16:25  kupper
         added set_nonblocking and set_blocking calls.
         non_block_readable does not work any more with IDL5.4 (buffering problems???)
@@ -147,25 +155,22 @@
 
 */
 
-extern "C" 
-{
-  IDL_LONG   get_fd             (int argc, void* argv[]);
-  IDL_LONG   wait_for_data      (int argc, void* argv[]);
-  IDLBool_t  non_block_readable (int argc, void* argv[]);
-  IDL_LONG   set_nonblocking    (int argc, void* argv[]);
-  IDL_LONG   set_blocking       (int argc, void* argv[]);
-  char*      tmp_nam            (int argc, void* argv[]);
-}
+IDL_LONG   get_fd             (int argc, void* argv[]);
+IDL_LONG   wait_for_data      (int argc, void* argv[]);
+IDLBool_t  non_block_readable (int argc, void* argv[]);
+IDL_LONG   set_nonblocking    (int argc, void* argv[]);
+IDL_LONG   set_blocking       (int argc, void* argv[]);
+char*      tmp_nam            (int argc, void* argv[]);
 
 
 
 
 
-// ****************************************************************
-// *     Internal Routines:                                       *
-// ****************************************************************
+/****************************************************************
+ *     Internal Routines:                                       *
+ ****************************************************************/
 
-int get_fd (IDL_LONG lun); // returns filedescriptor for IDL-LUN
-int get_fd_array (IDL_LONG *lun_array, int *fd_array); //fills fd_array, returns max(fd_array)
+int get_fd_intern (IDL_LONG lun); // returns filedescriptor for IDL-LUN
+int get_fd_array (IDL_LONG *lun_array, int n_elements, int *fd_array); //fills fd_array, returns max(fd_array)
 
 #endif

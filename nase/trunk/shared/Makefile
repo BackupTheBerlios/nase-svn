@@ -16,19 +16,16 @@ all :
 	@case `uname` in \
 	   "OSF1" )  make libs \
 			"CC=cc" \
-			"CXX=c++" \
 			"C_LD=ld" \
 			"CFLAGS=-DOSF1 -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-S -shared" ;; \
 	   "Linux" ) make libs \
 			"CC=cc" \
-			"CXX=c++" \
 			"C_LD=ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-shared" ;; \
 	   "SunOS" ) make libs \
 			"CC=/opt2/Forte7/SUNWspro/bin/cc" \
-			"CXX=/opt2/Forte7/SUNWspro/bin/CC -instances=static"\
 			"C_LD=/usr/ccs/bin/ld"\
 			"CFLAGS=-xarch=generic64 -Kpic -G -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-G -Bdynamic" ;; \
