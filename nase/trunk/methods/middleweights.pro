@@ -1,17 +1,17 @@
 ;+
-; NAME: MiddleWeights
+; NAME:               MiddleWeights
 ;
 ;
-; PURPOSE: Mittelung ueber eine Gewichtsmatrix
+; PURPOSE:            Mittelung ueber eine Gewichtsmatrix
 ;
-; CATEGORY: STATISTICS
+; CATEGORY:           STATISTICS WEIGHTS DELAYS 
 ;
-; CALLING SEQUENCE: Gemittelt = MiddleWeights ( Matrix [,sd] 
-;                                               {,/FROMS | ,/TOS |, PROJECTIVE |, /RECEPTIVE }
-;                                               [,/WRAP]
-;                                               [,/ROWS] [,/COLS] )
+; CALLING SEQUENCE:   Gemittelt = MiddleWeights ( Matrix [,sd] 
+;                                                 {,/FROMS | ,/TOS |, PROJECTIVE |, /RECEPTIVE }
+;                                                 [,/WRAP] [,/ROWS] [,/COLS] 
+;                                                 [,/DEBUG] [,/DELAYS])
 ;
-; INPUTS: Matrix: Eine DW-Struktur
+; INPUTS:             Matrix: Eine DW-Struktur
 ;
 ; KEYWORD PARAMETERS: PROJECTIVE(FROMS) / RECEPTIVE(TOS) :
 ;                                   Gibt an, ob ueber einlaufende oder
@@ -26,41 +26,51 @@
 ;                           DW-Struktur mit nur noch einer Reihe.)
 ;                    (COLS: Entsprechend für Spalten.
 ;                           *** NOCH NICHT IMPLEMENTIERT! ***)
-;                     
-; OUTPUTS: Gemittelt: eine zweidimensionale Matrix (Source_H x
-;                     Source_W bzw. Target_H x Target_W, je nachdem, ob TOS oder FROMS
-;                     angegeben wurden).
-;                     Wenn /ROWS oder /COLS angegeben wird, ist das
-;                     Ergebnis eine vierdimensionale Matrix.
-;                     (s. Beschreibung von ROWS)
+;                    DELAYS: mittelt ueber Delays statt ueber Gewichte 
+;                    DEBUG : da diese Routine sehr kompliziert ist, ist es SEHR SINNVOLL
+;                            das richtige funktionieren zu ueberpruefen. Mit Debug wird
+;                            jeder einzelne Summand dargestellt...die RFs muessen exakt
+;                            uebereinander liegen
 ;
-; OPTIONAL OUTPUTS: sd : gibt die Matrix der zugehoerigen Standardabweichungen zurueck. Falls Keyword
-;                        WRAP nicht gesetzt, wird nur ueber tatsaechlich vorhandene Matrixelemente
-;                        standardabgeweicht, da die Zahl der eingehenden Messwerte zum Rand hin abfaellt.
-;                        Das Ganze funktioniert (bisher) NICHT fuer Keywords COLS/ROWS.
-;                        
+; OUTPUTS:            Gemittelt: eine zweidimensionale Matrix (Source_H x
+;                                Source_W bzw. Target_H x Target_W, je nachdem, ob TOS oder FROMS
+;                                angegeben wurden).
+;                                Wenn /ROWS oder /COLS angegeben wird, ist das
+;                                Ergebnis eine vierdimensionale Matrix.
+;                                (s. Beschreibung von ROWS)
+;
+; OPTIONAL OUTPUTS:   sd : gibt die Matrix der zugehoerigen Standardabweichungen zurueck. Falls Keyword
+;                          WRAP nicht gesetzt, wird nur ueber tatsaechlich vorhandene Matrixelemente
+;                          standardabgeweicht, da die Zahl der eingehenden Messwerte zum Rand hin abfaellt.
+;                          Das Ganze funktioniert (bisher) NICHT fuer Keywords COLS/ROWS.
+;                          
 ;
 ; RESTRICTIONS: 
 ;               - Bisher kann nur ueber die gesamte Gewichtsmatrix gemittelt werden.
 ;               - Mittelung nur ueber gleichdimensionierte Target- und Source-Cluster
 ;
-; PROCEDURE: Set() mal wieder
+; PROCEDURE:    Set() mal wieder
 ;
-; EXAMPLE: BeispielMatrix = InitDW(t_width=10, t_height=10, s_width=7, s_height=5, W_Linear=[1,5])
-;          showweights, Beispielmatrix, /tos, groesse=7 
-;          window, /free
-;          shade_surf, middleweights(BeispielMatrix,/ tos, /wrap), ax=16.62, az=67.06
-;          window, /free
-;          shade_surf, middleweights(BeispielMatrix, /tos), ax=16.62, az=67.06
+; EXAMPLE:      BeispielMatrix = InitDW(t_width=10, t_height=10, s_width=7, s_height=5, W_Linear=[1,5])
+;               showweights, Beispielmatrix, /tos, groesse=7 
+;               window, /free
+;               shade_surf, middleweights(BeispielMatrix,/ tos, /wrap), ax=16.62, az=67.06
+;               window, /free
+;               shade_surf, middleweights(BeispielMatrix, /tos), ax=16.62, az=67.06
 ;
-;          Das Beispielprogramm erzeugt eine DW-Struktur und stellt
-;          diese zunaechst zur Kontrolle mit ShowWeights dar.
-;          Ueber die Gewichte in der DW-Struktur wird dann gemittelt,
-;          einmal mit zyklischen Randbedingungen, einmal ohne.
+;               Das Beispielprogramm erzeugt eine DW-Struktur und stellt
+;               diese zunaechst zur Kontrolle mit ShowWeights dar.
+;               Ueber die Gewichte in der DW-Struktur wird dann gemittelt,
+;               einmal mit zyklischen Randbedingungen, einmal ohne.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  1998/12/15 13:01:14  saam
+;             + new keywords DELAYS, DEBUG
+;             + averaging across different target- and source-layer dimensions
+;               implemented but it has to be tested a little bit more
+;
 ;       Revision 1.10  1998/07/06 21:39:53  saam
 ;             + restricted to target and source clusters of same dimension
 ;             + new optional output for standard deviation
@@ -95,29 +105,35 @@
 
 FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
                         PROJECTIVE=projective, RECEPTIVE=receptive, $
-                        ROWS=rows, COLS=cols
+                        ROWS=rows, COLS=cols, DEBUG=debug, STOP=stop, DELAYS=DELAYS
 
+   
+   IF Keyword_Set(FROMS) THEN Message, /INFO, 'keyword FROMS wurde durch PROJECTIVE ersetzt, bitte aendern!'
+   IF Keyword_Set(TOS) THEN Message, /INFO, 'keyword TOS wurde durch RECEPTIVE ersetzt, bitte aendern!'
 
-   Default, FROMS, PROJECTIVE
-   Default, TOS, RECEPTIVE
+   Default, PROJECTIVE, FROMS
+   Default, RECEPTIVE, TOS
    
-   IF NOT keyword_set(FROMS) AND NOT keyword_set(TOS) THEN message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
-   
-   IF keyword_set(TOS) THEN BEGIN ; Source- und Targetlayer vertauschen:
-      Matrix = {Weights: Transpose(Weights(DW)), $
+
+   IF NOT keyword_set(PROJECTIVE) AND NOT keyword_set(RECEPTIVE) THEN message, 'Eins der Schlüsselwörter PROJECTIVE oder RECEPTIVE muß gesetzt sein!'
+
+   IF Keyword_Set(Delays) THEN W = Delays(DW) ELSE W = Weights(DW)
+
+   IF keyword_set(RECEPTIVE) THEN BEGIN ; Source- und Targetlayer vertauschen:
+      Matrix = {Weights: TRANSPOSE(W)          , $
                 sw     : DWDim(DW, /TW)        , $
                 sh     : DWDim(DW, /TH)        , $
                 tw     : DWDim(DW, /SW)        , $
                 th     : DWDim(DW, /SH)        }
    ENDIF ELSE BEGIN
-      Matrix = {Weights: Weights(DW)           , $
+      Matrix = {Weights: W                     , $
                 sw     : DWDim(DW, /SW)        , $
                 sh     : DWDim(DW, /SH)        , $
                 tw     : DWDim(DW, /TW)        , $
                 th     : DWDim(DW, /TH)        }
    END
    
-   IF (Matrix.sw NE Matrix.tw) OR (Matrix.sh NE Matrix.th) THEN Message, 'if you are sure the median makes sense in the case of different target & source layer dimensions THEN comment out this message or ask Mirko'
+;   IF (Matrix.sw NE Matrix.tw) OR (Matrix.sh NE Matrix.th) THEN Message, 'if you are sure the median makes sense in the case of different target & source layer dimensions THEN comment out this message or ask Mirko'
    
    
    no_connections = WHERE(Matrix.Weights EQ !NONE, count)
@@ -125,9 +141,13 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
    
    MatrixMatrix= reform(Matrix.Weights, Matrix.th, Matrix.tw, Matrix.sh, Matrix.sw)
    
-   zentrumx = Matrix.sw / 2
-   zentrumy = Matrix.sh / 2
+   zentrumx = (Matrix.tw / 2)
+   zentrumy = (Matrix.th / 2)
    
+   IF Keyword_Set(DEBUG) THEN BEGIN
+      Window, /FREE
+      wid = !D.WINDOW
+   END
 
    
    ;;------------------> Über Reihen mitteln:
@@ -152,7 +172,7 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
       EndElse
       
       middle = middle/double(sum)
-      If Keyword_Set(TOS) then begin ;Matrix wurde oben vertauscht, das wird nun rückgängig gemacht:
+      If Keyword_Set(RECEPTIVE) then begin ;Matrix wurde oben vertauscht, das wird nun rückgängig gemacht:
          middle = reform(/OVERWRITE, middle, Matrix.th*Matrix.tw, Matrix.sw)
          middle = transpose(middle)
          middle = reform(/OverWrite, middle, 1, Matrix.sw, Matrix.th, Matrix.tw)
@@ -170,6 +190,23 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
    ;;--------------------------------
 
    ;;------------------> Über alle Source-Neuronen mitteln:
+   th = Matrix.th
+   sh = Matrix.sh
+   tw = Matrix.tw
+   sw = Matrix.sw
+   IF sh GT th THEN Message, 'it only works for target- >= sourceheight'
+   IF sw GT tw THEN Message, 'it only works for target- >= sourcewidth'
+
+   stepw = tw/(sw-1)
+   steph = th/(sh-1)
+
+;   stop
+
+;   zentrumx = zentrumx-(tw MOD sw)
+;   zentrumy = zentrumy-(th MOD sh)
+
+;   stop
+
    middle = fltarr(Matrix.th,Matrix.tw)
    If Not Keyword_Set(WRAP) Then Begin
       sum = fltarr(Matrix.th,Matrix.tw)
@@ -182,11 +219,20 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
          end
       end
    Endif Else Begin
-      sum = Matrix.sh*Matrix.sw
-      for YY= 0, Matrix.sh-1 do begin
-         for XX= 0, Matrix.sw-1 do begin  
+      IF Keyword_Set(DEBUG) THEN print, ''
+      sum = sh*sw
+      for YY= 0, sh-1 do begin
+         for XX= 0, sw-1 do begin  
             untermatrix = MatrixMatrix(*, *, YY, XX)
-            geshiftet = shift(untermatrix,zentrumy-YY,zentrumx-XX)
+            geshiftet = shift(untermatrix,zentrumy-YY*steph,zentrumx-XX*stepw)
+            IF Keyword_Set(DEBUG) THEN BEGIN
+               UWSet, wid
+               !P.Multi = [0,0,1]
+               PlotTvScl, geshiftet, /LEGEND
+               print, !KEY.UP, !KEY.UP, 'Matrix: ', XX, YY, '   Shift:', zentrumx-XX*stepw, zentrumy-YY*steph
+               print, 'Total: ', XX+zentrumx-XX*stepw, YY+zentrumy-YY*steph
+               IF Keyword_Set(Stop) THEN stop ELSE dummy = get_kbrd(1)
+            END
             middle = middle + geshiftet
          end
       end
@@ -208,7 +254,7 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
       for YY= 0, Matrix.sh-1 do begin
          for XX= 0, Matrix.sw-1 do begin  
             untermatrix = MatrixMatrix(*, *, YY, XX)
-            geshiftet = shift(untermatrix,zentrumy-YY,zentrumx-XX)
+            geshiftet = shift(untermatrix,zentrumy-YY*steph,zentrumx-XX*stepw)
             var = var + (geshiftet - m)^2
          end
       end
@@ -217,7 +263,7 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
    sd = sqrt(var)
 
 
-   
+   IF Keyword_Set(DEBUG) THEN WDelete, wid
    
    RETURN, m
    ;;--------------------------------
