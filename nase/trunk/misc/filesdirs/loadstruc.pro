@@ -67,17 +67,12 @@
 ;-
 FUNCTION LoadStruc, lun
 
-
-   ; implement a small lookahead
-   Point_Lun, -lun, pos
-   formatted = ''
-   ReadF, lun, formatted
-   Point_Lun, lun, pos
-   if STRMID(formatted, 0, 8) EQ 'UWriteU/' THEN BEGIN
-
-       RETURN, UReadU(lun)
-
-   END ELSE BEGIN
+   ;; read or at least try to read new uwriteu format
+   err = 0
+   ST = UReadU(lun, ERROR=err)
+   
+   IF err THEN BEGIN
+       
        ;; this part is kept for compatibility for old versions of
        ;; savestruc or new versions using the FORMATTED option
 
@@ -111,8 +106,7 @@ FUNCTION LoadStruc, lun
            END
        END
        
-       RETURN, ST
-
    END
+   RETURN, ST
 
 END
