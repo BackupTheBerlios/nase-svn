@@ -17,6 +17,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/04/06 09:41:53  saam
+;           now outputs synapse type where input
+;           is apllied to
+;
 ;     Revision 1.8  2000/01/28 15:16:45  saam
 ;           changend console call by putting the console
 ;           data from the common block into the ap structure
@@ -276,6 +280,8 @@ FUNCTION Input, L, _IN
                IF ((act_time GE act_filter.start) AND (act_time LE act_filter.stop)) THEN BEGIN 
                   
                   IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
+                      console,P.CON, curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
+
                      IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
                         temp = CALL_FUNCTION(act_filter.NAME,$
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$

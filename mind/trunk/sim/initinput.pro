@@ -16,6 +16,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/04/06 09:41:53  saam
+;           now outputs synapse type where input
+;           is apllied to
+;
 ;     Revision 1.9  2000/01/28 15:16:44  saam
 ;           changend console call by putting the console
 ;           data from the common block into the ap structure
@@ -363,6 +367,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          IF (IN.time_step EQ -1) THEN dt = P.SIMULATION.SAMPLE*1000. ELSE dt =  IN.time_step
          
          R =  { type            : 11                     ,$ ; input type (11=extern) 
+                synapse         : IN.synapse             ,$ ; just for logging messages
                 index           : IN.index               ,$ 
                 period          : IN.period              ,$ ; period time
                 number_filter   : N_elements(IN.filters) ,$ ; how many filters are used?
