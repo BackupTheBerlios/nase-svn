@@ -40,12 +40,6 @@
 ;                 bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
 ;                 wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
 ;                                    von XNorm nebeneinander positioniert, siehe Docu von TV
-; OPTIONAL OUTPUTS:
-;   Dimension:: die Darstellungsparameter werden in Normal-Koordinaten zurueckgegeben: 
-;               (xpos, ypos, xsize, ysize)
-;               Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
-;               gesetztem CENTER-Keyword)
-;                         
 ;
 ; INPUT KEYWORDS: 
 ;              [X|Y]CENTER:: image will be
@@ -62,15 +56,11 @@
 ;              H_STRETCH,V_STRETCH:: Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
 ;                                    Parameter koennen gleichzeitig angegeben werden
 ;              NOSCALE::             Das Bild wird analog zu TV nicht skaliert
-;              DIMENSIONS::          wird dem Keyword Dimensions eine definierte Variable uebergeben
-;                                    (egal welchen Typs), werden die Darstellungsparameter in Normal-
-;                                    Koordinaten zurueckgegeben: (xpos, ypos, xsize, ysize)
-;                                    Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
-;                                    gesetztem CENTER-Keyword)
-;                     DEVICE::       falls gesetzt werden [XY]Norm als Device-Koordinaten ausgewertet. Eigentlich
-;                                    sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
-;                                    die Deviceunabhaegigkeit ist.
-; POLYGON:: Instead of composing the final image of a large number of pixels
+; DEVICE:: If set, <*>[XY]Norm</*> are evaluated as device
+;          coordinates. In fact, this option should not be needed,
+;          because it is the purpose of <C>UTVScl</C> to offer device
+;          independent display properties.
+; /POLYGON:: Instead of composing the final image of a large number of pixels
 ;           depending on the desired size, this option uses colored
 ;           rectangles that are sufficiently large. This is
 ;           recommended for Postscript output. This option invokes the
@@ -79,19 +69,30 @@
 ;       coloring. See also IDL online help for <C>TVScl</C>.
 ; CUBIC, /INTERP, /MINUS_ONE:: These keywords are used to interpolate
 ;                            the final image. They are passed to the
-;                            <C>Congrid</C> routine that is used to
-;                            accomplish this. See also IDL online help
+;                            <C>Congrid</C> routine that accomplishes
+;                            the interpolation. See also IDL online help
 ;                            for <C>Congrid</C>. Note that
-;                            intepolation of an array containing
+;                            interpolation of an array containing
 ;                            <*>!NONE</*> elements is not recommended,
 ;                            as <*>!NONE</*>s tend to disappear due to
-;                            the interpolation process.
+;                            the interpolation process. Note also that
+;                            interpolation with <*>POLYGON</*> set
+;                            results in very large Postscript output
+;                            files.
 ;
-; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
-;
-;                     Man beachte, daﬂ die Interpolation (Keyw. CUBIC oder INTERP) eines Arrays,
-;                     das !NONE-Elemente enth‰lt,
-;                     nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
+; OPTIONAL OUTPUTS:
+; DIMENSIONS:: This keyword can be used to return the display
+;              parameters. These are <*>[xpos, ypos, xsize, ysize]</*>
+;              in normal coordinates. <*>xypos</*> always return the
+;              coordinates of the lower left corner, even with
+;              <*>CENTER</*> set.
+; 
+; RESTRICTIONS:
+;  Does not work completely correct with a shared 8bit color
+;  table.<BR>
+;  Note that interpolation of an array containing <*>!NONE</*>
+;  elements is not recommended, as <*>!NONE</*>s tend to disappear
+;  due to the interpolation process.
 ;                
 ; EXAMPLE:
 ;* bild = FIndgen(100,100)
