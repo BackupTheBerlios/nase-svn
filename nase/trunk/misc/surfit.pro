@@ -67,6 +67,12 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Aug 19 17:00:55 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Hier und da ein NO_COPY eingefügt. Geht jetzt
+;		vielleicht schneller.
+;
 ;       Mon Aug 18 04:46:24 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -75,8 +81,8 @@
 ;-
 Pro SurfIt_Event, Event
  
- WIDGET_CONTROL, Event.Top, GET_UVALUE=info
- WIDGET_CONTROL, Event.Id, GET_UVALUE=Ev
+ WIDGET_CONTROL, Event.Top, GET_UVALUE=info, /NO_COPY
+ If Event.Top eq Event.Id then Ev = info else WIDGET_CONTROL, Event.Id, GET_UVALUE=Ev
   CASE Ev.Widget OF 
      "Main": Begin ;Unser Main-Widget wird resized
         info.xsize = Event.X
@@ -123,7 +129,7 @@ Pro SurfIt_Event, Event
            Endcase          
      End
   Endcase
-  WIDGET_CONTROL, Event.Top, SET_UVALUE=info
+  WIDGET_CONTROL, Event.Top, SET_UVALUE=info, /NO_COPY
 End
 
 PRO SurfIt, data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, GROUP=group, JUST_REG=Just_Reg
@@ -176,10 +182,10 @@ window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
 
   WIDGET_CONTROL, SurfWidget, /REALIZE
 
-  WIDGET_CONTROL, SurfWidget, GET_UVALUE=info
+  WIDGET_CONTROL, SurfWidget, GET_UVALUE=info, /NO_COPY
   WIDGET_CONTROL, Draw, GET_VALUE=drawwin        ;Die Fensternummer des Draw-Widgets
   info.drawwin = drawwin
-  WIDGET_CONTROL, SurfWidget, SET_UVALUE=info
+  WIDGET_CONTROL, SurfWidget, SET_UVALUE=info, /NO_COPY
   
   wset, drawwin
   shade_surf, data
