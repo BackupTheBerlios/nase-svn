@@ -166,6 +166,12 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.27  1998/05/26 13:15:43  kupper
+;              1. Die Routinen benutzen die neuen NASE-Colortables
+;              2. Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
+;                 Änderungen an der Postcript-Sheet-Verarbeitung.
+;                 Hoffentlich funktioniert alles (war recht kompliziert, wie immer.)
+;
 ;       Revision 2.26  1998/04/16 16:51:23  kupper
 ;              Keyword PRINTSTYLE implementiert für TomWaits-Print-Output.
 ;
@@ -423,10 +429,10 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
       black = !P.Background
       GET_MAXCOL = white
       If Keyword_Set(PRINTSTYLE) then begin
-         orange = black
-         fore = black
-         back = !D.Table_Size-1
-         !TOPCOLOR = back
+         orange = 0         ;black
+         fore = 0           ;black
+         back = white/2         ;!D.Table_Size-1
+         !TOPCOLOR = !D.Table_Size-1
       endif else orange = RGB('orange',/NOALLOC)
       GET_COLORS = [black, back, fore, white, !TOPCOLOR]
       !TOPCOLOR = old_TOPCOLOR

@@ -64,6 +64,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.10  1998/05/26 13:15:43  kupper
+;               1. Die Routinen benutzen die neuen NASE-Colortables
+;               2. Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
+;                  Änderungen an der Postcript-Sheet-Verarbeitung.
+;                  Hoffentlich funktioniert alles (war recht kompliziert, wie immer.)
+;
 ;        Revision 2.9  1998/05/21 17:57:37  kupper
 ;               ...noch immer...
 ;
@@ -126,31 +132,41 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    if COLORMODE eq 1 then begin       ;positives Array
       GET_COLORMODE = 1
       If Keyword_Set(SETCOL) then begin
-         g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
+;         g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          If !D.NAME eq "PS" then begin
-            If not Keyword_Set(PRINTSTYLE) then begin
-              utvlct, GET_MAXCOL-g, GET_MAXCOL-g, GET_MAXCOL-g
-               !REVERTPSCOLORS = 1
+;            If not Keyword_Set(PRINTSTYLE) then begin
+;             ; utvlct, GET_MAXCOL-g, GET_MAXCOL-g, GET_MAXCOL-g
+;               uloadct, FILE=GetEnv("NASEPATH")+"/graphic/NaseColors.tbl", 3, NCOLORS=GET_MAXCOL+1
+;               !REVERTPSCOLORS = 1 ;0
+;            endif else begin
+             ;  utvlct, g, g, g
+            If !PSGREY then begin
+               !REVERTPSCOLORS = 1 
+               !P.Background = !D.n_colors-1 ;weiss
             endif else begin
-               utvlct, g, g, g
-               !REVERTPSCOLORS = 1
+                                ;umgedrehte Graupalette laden:
+               uloadct, FILE=GetEnv("NASEPATH")+"/graphic/NaseColors.tbl", !NASETABLE.PAPER_POS,NCOLORS=GET_MAXCOL+1
+               !REVERTPSCOLORS = 0
+               !P.BACKGROUND = 0 ;weiss
             endelse
-         endif else utvlct, g, g, g ;Grauwerte
-         IF !D.N_COLORS LE 256 THEN !P.BACKGROUND = 0      ;Index für Schwarz
+;            endelse
+         endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/NaseColors.tbl", !NASETABLE.POS,NCOLORS=GET_MAXCOL+1;utvlct, g, g, g ;Grauwerte
+         IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = 0 ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
       MatrixMatrix = MatrixMatrix/double(max)*GET_MAXCOL
    endif else begin             ;pos/neg Array
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
-         g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
+;         g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
          If !D.Name eq "PS" then begin ;helle Farbpalette
-            utvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/NaseColors.tbl", !NASETABLE.PAPER_NEGPOS,NCOLORS=GET_MAXCOL+1 ;utvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
             !REVERTPSCOLORS = 0
+            !P.BACKGROUND = GET_MAXCOL/2 ;weiss
          endif else begin       ;dunkle Farbpalette
-            utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/NaseColors.tbl", !NASETABLE.NEGPOS,NCOLORS=GET_MAXCOL+1;utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
          endelse
-         IF !D.N_COLORS LE 256 THEN !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz bzw weiss
+         IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
       MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
