@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/06/07 14:23:15  kupper
+;               Bug bei Arrays mit Nullelement am Anfang behoben.
+;
 ;        Revision 2.2  1998/05/27 13:01:03  kupper
 ;               Beherrscht jetzt auch !NONES in der NASE-Darstellung.
 ;
@@ -184,6 +187,7 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
    ;;------------------> Symbole plotten
    If !D.Name eq "X" and keyword_set(COLORS) then device, BYPASS_TRANSLATION=0
 
+   Sym = 0                      ;Nur damits definiert ist!
    For y=1, height do $
     For x=1, width do begin
       If Keyword_Set(NASE) and TOTAL(((y-1)*width+x-1) eq nones) gt 0 then begin
