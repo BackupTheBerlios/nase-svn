@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.19  2003/08/13 13:35:46  kupper
+%       added new bug to utvscl.
+%
 %       Revision 1.18  2003/08/13 12:59:07  thiel
 %          Small changes for test purpose.
 %
@@ -149,6 +152,10 @@ Version: \$Id$ $\$
 \begin{itemize}
   \item Handling of 1-dim arrays is broken.
   \item Handling of arrays with trailing dimensions of 1 is broken.
+  \item When /POLY is set, and only one positioning-argument is given,
+    it is interpreted as the x-coordinate, and y defaults to zero.
+    This is wrong, positions in the window should be counted in this
+    case, see documentation of IDL's TV or POLY=0-behaviour.
 \end{itemize}
 \end{itemize}
 
