@@ -2,7 +2,7 @@
 
 PRO	GAUSS__FUNCT,X,A,F,PDER
 ; NAME:
-;	GAUSS_FUNCT
+;	GAUSS__FUNCT
 ;
 ; PURPOSE:
 ;	EVALUATE THE SUM OF A GAUSSIAN AND A 2ND ORDER POLYNOMIAL
@@ -76,7 +76,7 @@ END
 Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est
 ;+
 ; NAME:
-;	GAUSSFIT
+;	GAUSS_FIT
 ;
 ; PURPOSE:
 ; 	Fit the equation y=f(x) where:
@@ -95,13 +95,12 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est
 ;	?? - fitting
 ;
 ; CALLING SEQUENCE:
-;	Result = GAUSSFIT(X, Y [, A])
+;	Result = GAUSS_FIT(X, Y [, A])
 ;
 ; INPUTS:
 ;	X:	The independent variable.  X must be a vector.
 ;	Y:	The dependent variable.  Y must have the same number of points
 ;		as X.
-; KEYWORD INPUTS:
 ; KEYWORD INPUTS:
 ;	ESTIMATES = optional starting estimates for the parameters of the 
 ;		equation.  Should contain NTERMS (6 if NTERMS is not

@@ -1,7 +1,7 @@
 ; $Id$
 PRO	GAUSS2__FUNCT, X, A, F, PDER
 ; NAME:
-;	GAUSS2_FUNCT
+;	GAUSS2__FUNCT
 ; PURPOSE:
 ;	Evaluate function for gauss2fit.
 ; CALLING SEQUENCE:
@@ -72,7 +72,7 @@ END
 Function Gauss2d_fit, z, a, x, y, NEGATIVE = neg, TILT=tilt
 ;+
 ; NAME:
-;	GAUSS2DFIT
+;	GAUSS2d_FIT
 ;
 ; PURPOSE:
 ; 	Fit a 2 dimensional elliptical gaussian equation to rectilinearly
@@ -109,7 +109,7 @@ Function Gauss2d_fit, z, a, x, y, NEGATIVE = neg, TILT=tilt
 ;	curve / data fitting
 ;
 ; CALLING SEQUENCE:
-;	Result = GAUSS2DFIT(z, a [,x,y])
+;	Result = GAUSS2D_FIT(z, a [,x,y])
 ;
 ; INPUTS:
 ;	Z = dependent variable in a 2D array dimensioned (Nx, Ny).  Gridding
@@ -168,11 +168,18 @@ Function Gauss2d_fit, z, a, x, y, NEGATIVE = neg, TILT=tilt
 ;	u = ((x-a(4))/a(2))^2 + ((y-a(5))/a(3))^2  ;Create ellipse
 ;	z = a(0) + a(1) * exp(-u/2)		;to gaussian
 ;	z = z + randomn(seed, nx, ny)		;Add random noise, SD = 1
-;	yfit = gauss2dfit(z,b)			;Fit the function, no rotation
+;	yfit = gauss2d_fit(z,b)			;Fit the function, no rotation
 ;	print,'Should be:',string(a,format='(6f10.4)')  ;Report results..
 ;	print,'Is:      :',string(b(0:5),format='(6f10.4)')
 ;
 ; MODIFICATION HISTORY:
+;
+;       Thu Aug 21 11:10:49 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Im wesentlichen Uebernahme der Funktion Gauss2dFit von IDL 5, da die 4.0-Version nicht funktionierte
+;
+;
 ;	DMS, RSI, June, 1995.
 ;-
 ;
