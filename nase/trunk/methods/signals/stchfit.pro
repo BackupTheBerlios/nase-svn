@@ -1,14 +1,16 @@
 ;+
-; NAME: STCHFIT
+; NAME:
+;  STCHFIT()
 ;
 ; VERSION:
 ;  $Id$
 ;
-; AIM:   Fitting routine for <A>STCH</A>
+; AIM:  Fitting routine for <A>STCH</A>
 ;  
 ;
 ; PURPOSE:
-;   Fitting routine for <A>STCH</A>
+;      Fitting routine for <A>STCH</A>
+;  
 ;  
 ;
 ; CATEGORY:
@@ -27,17 +29,17 @@
 ; INPUT KEYWORDS:
 ;    COSF:: uses a cosinus as fitting function (default)
 ;    GAUSSF:: uses a gaussian as fitting function (alpha status: not recommended)
-;    FREQLIMIT:: frequency range of cosinus fit (e.g. [30,70]) (unit: [Hz])
-;    SIGMALIMIT:: sigma range of gaussian fit (e.g. [5,10]) (unit: [s])
-;    VELLIMIT:: rec. velocity range of fit (unit: [ms/mm] !!!) (e.g. [-10.0,10.0])
+;    FREQLIMIT:: frequency range of cosinus fit (e.g. [30,70]) (unit [Hz])
+;    SIGMALIMIT:: sigma range of gaussian fit (e.g. [5,10]) (unit [s])
+;    VELLIMIT:: rec. velocity range of fit (unit [ms/mm]) (e.g. [-10.0,10.0])
 ;    PLOT:: control plot of fit
-;    
+;
 ; OUTPUTS:
-;      STATUS:: time course of fit status (s. <A>mpfit2dfun</A>)
+;  STATUS:: time course of fit status (s. <A>mpfit2dfun</A>)
 ;
 ; OPTIONAL OUTPUTS:
 ;      RV:: reciprocal velocity of fit, 
-;           rv(*,0) time course of RV,
+;           rv(*,0) time course of RV ([ms/mm]),
 ;           rv(*,1) time course of rv's fit error (s. <A>mpfit2dfun</A>)
 ;      CS:: correlation strength,
 ;           cs(*,0) time course of correlation strength,
@@ -46,13 +48,15 @@
 ;      SF:: frequency/sigma of fit,
 ;          sf(*,0) time course of frequency/sigma,
 ;          sf(*,1) time course of sf's fit error
-;          (s. <A>mpfit2dfun</A>)
+;          (s. <A>mpfit2dfun</A>) 
+;
+; COMMON BLOCKS:
+;          stchfit_sheets
 ;
 ; SIDE EFFECTS:
-;     If frequency/sigma or velocity limits are reached by the fit, CS
+;      If frequency/sigma or velocity limits are reached by the fit, CS
 ;     is set to zero. Don't use corresponding CS and SF values!
 ;
-; 
 ; RESTRICTIONS:
 ;  
 ;
@@ -60,7 +64,6 @@
 ;  
 ;
 ; EXAMPLE:
-;
 ;*maxn = 10
 ;*wset, 0
 ;*!P.MULTI = 0
@@ -81,7 +84,7 @@
 ;*   FOR  i = 0, ntrial-1  DO  begin 
 ;*      stc = spatiotempcorr(x(*,*, i),distance_ax,delay_ax,time_ax,ssize=26, xsample=0.001,SAMPLEPERIOD=0.002)
 ;*      status = stchfit(stc, distance_ax,delay_ax, cs = cs)
-      
+;*      
 ;*       cs_arr = concat(cs_arr, cs, /extend)
 ;*       print, "step: "+str(i)
 ;*  endfor
@@ -89,6 +92,8 @@
 ;*   
 ;*   oplot,[n], [cs_mean(0)], psym=2
 ;*endfor
+;*
+;*
 ;
 ; SEE ALSO:
 ;  <A>STCH</A>
@@ -97,21 +102,22 @@
 ;;; look in headerdoc.pro for explanations and syntax,
 ;;; or view the NASE Standards Document
 
+
 function __cos_stch_index, x, y, p
    return, where((cos((x-y*p(1))*2.D*!PI*p(2)))(*) GE 0.98)
 end
 
-function __fermi, x, T, x0
+function  __fermi, x, T, x0
    default, T, 1.0
    default, x0, 0
    return, (1.-fermi((x-x0)*5, T))
 end
 
-function __cos_stch, x, y, p
+function  __cos_stch, x, y, p
    return, ( p(0)*cos((x-y*p(1))*2.D*!PI*p(2)) )
 end
 
-function __gauss_stch, x, y, p
+function  __gauss_stch, x, y, p
    return, ( p(0)*exp(-(x-y*p(1))^2/(2*p(2)^2)))
 end
 
