@@ -27,16 +27,16 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
-;
+;* NormalizeWeights, _DW, LP, SPASSTARGET=SpassTarget, SSPASSTARGET=SSpassTarget, WEIGHTSUM=WeightSum, NOLOWSUM=NOLOWSUM, ALL=all
 ; INPUTS:
-;  
+;  _DW:: Handle to Weight structure (initialized with InitDW)
 ;
 ; OPTIONAL INPUTS:
-;  
+;  LP:: LearnPotential, Input is not used yet (maybe needet for trace
+;  learning rule)
 ;
 ; INPUT KEYWORDS:
+;  ALL:: normalize all Weights of _DW
 ;  
 ;
 ; OUTPUTS:
@@ -69,7 +69,7 @@
 ;;; or view the NASE Standards Document
 
 
-PRO NormalizeWeights, _DW, LP, SPASSTARGET=SpassTarget, SSPASSTARGET=SSpassTarget, WEIGHTSUM=WeightSum, NOLOWSUM=NOLOWSUM
+PRO NormalizeWeights, _DW, LP, SPASSTARGET=SpassTarget, SSPASSTARGET=SSpassTarget, WEIGHTSUM=WeightSum, NOLOWSUM=NOLOWSUM, ALL=all
 ;Target: 
 
 ;SPASSTARGET: Sparse Array of active neurons 
@@ -98,28 +98,33 @@ endif
 
 Handle_Value, _DW, DW, /NO_COPY
 
+if keyword_set(all) then begin
+    NConnections = n_elements(DW.T2C)
+    target = [NConnections, indgen(NConnections)]
+endif
+
 ;IF DW.info EQ 'SDW_WEIGHT' THEN BEGIN
 
-    if keyword_set(NoLowSum) then begin
-        FOR ti=1,target(0) DO BEGIN
-            tn = target(ti) 
-            IF DW.T2C(tn) NE -1 THEN BEGIN
-                Handle_Value, DW.T2C(tn), wi
-                wi = reform(wi)
-                DW.W[wi] = (WeightSum/total(DW.W[wi]))*DW.W[wi]
-            endif
-        endfor
-    endif else begin
-        FOR ti=1,target(0) DO BEGIN 
-            tn = target(ti)
-            IF DW.T2C(tn) NE -1 THEN BEGIN
-                Handle_Value, DW.T2C(tn), wi
-                wi = reform(wi)
-                CurSum = total(DW.W[wi])
-                if CurSum gt WeightSum then DW.W[wi] = (WeightSum/CurSum)*DW.W[wi]
-            endif
-        endfor
-    endelse
+if keyword_set(NoLowSum) then begin
+    FOR ti=1,target(0) DO BEGIN
+        tn = target(ti) 
+        IF DW.T2C(tn) NE -1 THEN BEGIN
+            Handle_Value, DW.T2C(tn), wi
+            wi = reform(wi)
+            DW.W[wi] = (WeightSum/total(DW.W[wi]))*DW.W[wi]
+        endif
+    endfor
+endif else begin
+    FOR ti=1,target(0) DO BEGIN 
+        tn = target(ti)
+        IF DW.T2C(tn) NE -1 THEN BEGIN
+            Handle_Value, DW.T2C(tn), wi
+            wi = reform(wi)
+            CurSum = total(DW.W[wi])
+            if CurSum gt WeightSum then DW.W[wi] = (WeightSum/CurSum)*DW.W[wi]
+        endif
+    endfor
+endelse
 
 ;ENDIF  ELSE BEGIN 
 ;    IF DW.Info EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
@@ -128,6 +133,8 @@ Handle_Value, _DW, DW, /NO_COPY
 ;ENDELSE
 
 Handle_Value, _DW, DW, /NO_COPY, /SET
+
+
 
 END
 
