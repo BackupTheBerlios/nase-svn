@@ -95,6 +95,8 @@ PRO DSim
                                 REC_M: [0l,0l], $
                                  ;; save MUA
                                 REC_MUA: 1, $
+                                 ;; dont save LFP
+                                REC_LFP: 0, $
                                 ANALYZE: 0, $
                                  ;; display spiketrains
                                 SPIKERASTER: 1}})
@@ -123,6 +125,7 @@ PRO DSim
                                       REC_O: [0l, SIMULATION.TIME], $
                                       REC_M: [0l,0l], $
                                       REC_MUA: 1, $
+                                      REC_LFP: 0, $
                                       ANALYZE: 0, $
                                       SPIKERASTER: 1}})
 
