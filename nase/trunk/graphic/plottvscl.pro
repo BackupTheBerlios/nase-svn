@@ -61,6 +61,7 @@
 ;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
+;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
@@ -88,6 +89,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.39  1999/03/17 16:37:16  saam
+;           TOP keyword implemented
+;
 ;     Revision 2.38  1999/02/12 15:26:04  saam
 ;           tests for an unset argument
 ;
@@ -231,6 +235,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                NEUTRAL=neutral,$
                POLYGON=POLYGON,$
                LEGMARGIN=LEGMARGIN,$
+               TOP=top,$
                _EXTRA=_extra
 
 
@@ -264,6 +269,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, LEGEND, 0
    Default,legmargin,0.25
    Default,Polygon,0
+   DEFAULT, top, !D.TABLE_SIZE
 
    W = _W
    IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
@@ -438,7 +444,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
           OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, $
           X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, $
-          ORDER=UpSideDown, NOSCALE=NoScale, POLYGON=POLYGON
+          ORDER=UpSideDown, NOSCALE=NoScale, POLYGON=POLYGON, TOP=top
       END
    END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
