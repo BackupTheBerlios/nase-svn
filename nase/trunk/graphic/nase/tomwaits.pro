@@ -63,6 +63,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  1998/04/16 16:53:22  kupper
+;               Der Print-Knopf geht jetzt.
+;        	Erzeugt zwar nur ein Standard-File mit Namen "TomWaits_Printed_Output" aber immerhin...
+;
 ;        Revision 1.9  1998/04/08 16:30:17  kupper
 ;               Beta 2
 ;        	Sorry, hatte bisher keinen Header...
@@ -113,7 +117,23 @@ PRO TomWaits_Event, Event
                data.colors = get_colors
                data.my_TopColor = get_colors(4)
             end
-            'TOMWAITS_PRINT': message, /INFO, "Print-Event not yet implemented!"
+            'TOMWAITS_PRINT': begin
+               ;message, /INFO, "Print-Event not yet implemented!"
+               oldtopcolor = !TOPCOLOR
+               If data.colormode eq -1 then color = 1 else color = 0
+               If color then !TOPCOLOR = !D.Table_Size-1 ;use full color range!
+               s1 = DefineSheet(/PS, COLOR=color, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
+               OpenSheet, s1
+               ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
+               CloseSheet, s1
+               s2 = DefineSheet(/PS, /ENCAPS, COLOR=color, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
+               OpenSheet, s2
+               ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
+               CloseSheet, s2
+               !TOPCOLOR = oldtopcolor
+               print, "--->   Output saved to File 'TomWaits_printed_Output'."
+               ;DestroySheet, s
+            end
             'TOMWAITS_DONE': begin
                Widget_Control, Event.Top, /DESTROY
                return
@@ -172,29 +192,42 @@ PRO TomWaits_Event, Event
                If data.delay then begin ;Delays
                   title="Projective Delay-Field of Source-Neuron ("+str(row)+","+str(col)+")"
                   w = (Delays(data.dw, /DIMENSIONS))(*, *, row, col)
-                  If data.colorscaling eq 0 then $ ;global ColorScaling
-                   tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+                  w = reform(/OverWrite, w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
+                  If data.colorscaling eq 0 then begin ;global ColorScaling
+                     tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+                     tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
+                  endif
                endif else begin ;Weights
                   title="Projective Weight-Field of Source-Neuron ("+str(row)+","+str(col)+")"
                   w = (Weights(data.dw, /DIMENSIONS))(*, *, row, col)
-                  If data.colorscaling eq 0 then $ ;global ColorScaling
-                   tv_w = (ShowWeights_Scale(Weights(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+                  w = reform(/OverWrite, w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
+                  If data.colorscaling eq 0 then begin ;global ColorScaling
+                     tv_w = (ShowWeights_Scale(Weights(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+                     tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
+                  endif
                endelse
             endif else begin    ;Receptive
                If data.delay then begin ;Delays
                   title="Receptive Delay-Field of Target-Neuron ("+str(row)+","+str(col)+")"
                   w = (Delays(data.dw, /DIMENSIONS))(row, col, *, *)
-                  If data.colorscaling eq 0 then $ ;global ColorScaling
+                  w = reform(/OverWrite, w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
+                  If data.colorscaling eq 0 then begin ;global ColorScaling
                    tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
+                   tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
+                endif
                endif else begin ;Weights
                   title="Receptive Weight-Field of Target-Neuron ("+str(row)+","+str(col)+")"
                   w = (Weights(data.dw, /DIMENSIONS))(row, col, *, *)
-                  If data.colorscaling eq 0 then $ ;global ColorScaling
+                  w = reform(/OverWrite, w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
+                  If data.colorscaling eq 0 then begin ;global ColorScaling
                    tv_w = (ShowWeights_Scale(Weights(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
+                   tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
+                endif
                endelse
             endelse
             If data.colorscaling eq 1 then $ ;individual Colorscaling
              tv_w = ShowWeights_Scale(w, COLORMODE=data.colormode)
+             tv_w = reform(/OverWrite, tv_w, (size(w))(1), (size(w))(2))
            ;;--------------------------------
 
             If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
@@ -212,7 +245,9 @@ PRO TomWaits_Event, Event
                      data.magwin = !D.WINDOW
                   endelse
 ;               nasetv, tv_w, ZOOM=data.magnify
-               PrepareNASEPlot, (size(reform(w, /OVERWRITE)))(1), (size(reform(w, /OVERWRITE)))(2), /OFFSET, GET_OLD=oldplot
+                  uheight = (size(w))(1)
+                  uwidth = (size(w))(2)
+               PrepareNASEPlot, uheight, uwidth, /OFFSET, GET_OLD=oldplot
                plot, indgen(10), /NODATA, COLOR=data.colors(2), XTHICK=2, YTHICK=2, POSITION=[0.1, 0.1, 0.9, 0.9]
                nxpixelgr = (convert_coord(data.magnify, 0, 0, /DEVICE, /TO_NORMAL))(0)
                nypixelgr = (convert_coord(0, data.magnify, 0, /DEVICE, /TO_NORMAL))(1)
@@ -281,7 +316,7 @@ PRO TomWaits, GROUP=Group, $
   y_scroll_size = ysize-27
 
   x_else = 42+2*7+2*10          ;pixel, die nicht vom draw-Widget eingenommen werden: 42 Fensterrand,2*7 Rahmen, 2*10 XPAD
-  y_else = 42+4*10+3*53+55         ;42 Fensterrand,2*7 Rahmen, 4*10 XPAD und SPACE,3*53 Knopfhöhe,55 Textwidget
+  y_else = 42+4*10+3*53+47         ;42 Fensterrand,2*7 Rahmen, 4*10 XPAD und SPACE,3*53 Knopfhöhe,47 Labelwidget
 
   yscroll = 0;Merken, ob Ausschnitt in y-Richtung voll sichtbar (nur für Positionsbestimmung später...)
   If ((xsize+x_else) gt maxsize(0)) and ((ysize+y_else) gt maxsize(1)) then begin
@@ -319,8 +354,8 @@ else $;höhere IDL-Versionen kennen BASE_ALIGN:
                     TITLE=title, $
                     MBAR=MenuBar) ;UVALUE wird unten gesetzt!
 
-  Text = Widget_Text(Base, FONT='-adobe-helvetica-bold-r-normal--14-140-75-75-p-77-iso8859-1', $
-                     XSIZE=55, $
+  Text = Widget_Label(Base, FONT='-adobe-helvetica-bold-r-normal--14-140-75-75-p-77-iso8859-1', $
+                     FRAME=2, $;XSIZE=55, $
                      VALUE="Left Button: Magnify    Middle Button: SurfIt!    Right Button: ExamineIt!")
 
   DrawBase = WIDGET_BASE(Base, Frame=0)
@@ -385,7 +420,7 @@ endelse
       If not contains(info(DW), "DELAY") then Widget_Control, Button_Delays, SENSITIVE=0
       If Keyword_Set(DELAY) then Widget_Control, Button_Delays, SET_BUTTON=1 else Widget_Control, Button_Weights, SET_BUTTON=1
       If Keyword_Set(PROJECTIVE) then Widget_Control, Button_Projective, SET_BUTTON=1 else Widget_Control, Button_Receptive, SET_BUTTON=1
-      Widget_Control, Button_Print, SENSITIVE=0
+
 
       ;;------------------> Define Menubar:
 ;      Mode = CW_PDMENU(/MBAR, MenuBar, FONT='-adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1', $
