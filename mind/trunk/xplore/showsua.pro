@@ -15,7 +15,7 @@
 ;                             as a video (you probably want to use VCR's
 ;                             ZOOM=x option, to scale the video)
 ;                     STOP  : stop after displaying
-;                     EXTRA : all Keywords are passed to VCR/TrainSpotting
+;                     EXTRA : all Keywords are passed to VCR/TrainSpotting/ReadSimu
 ;                             selectively
 ;
 ; COMMON BLOCKS:      ATTENTION
@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/11 14:17:29  saam
+;           minor change in doc header
+;
 ;     Revision 1.2  2000/01/04 11:06:46  saam
 ;           + DOC-header updated
 ;           + file- and layer-titles are displayed
