@@ -47,15 +47,17 @@
 ;		Statt des Strukturnamens enthält die Struktur jetzt
 ;		ein Stringfeld mit der Neuronentypnummer ('1').
 ;
-
+;                       info-Tag zugefügt, Rüdiger, 4.9.1997
 ;-
+
 FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
 
    IF (NOT Keyword_Set(width))  THEN Message, 'Keyword WIDTH expected'
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   Layer = { Type   : '1'                  ,$
+   Layer = { info   : 'LAYER', $
+             Type   : '1'                  ,$
              w      : width                ,$
              h      : height               ,$
              para   : type                 ,$
