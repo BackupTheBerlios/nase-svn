@@ -39,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/11/02 13:42:06  gabriel
+;          set_plot replaced with uset_plot
+;
 ;     Revision 2.4  2000/10/01 14:50:42  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -88,7 +91,7 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    ;-----> PLOT IN Z-BUFFER
    ;-----> 
    current_device = !D.Name
-   SET_PLOT, 'Z'
+   uSET_PLOT, 'Z'
 
    SCALE3, XRANGE=[minx,maxx], YRANGE=[miny,maxy], ZRANGE=[0,1], AX=ax, AZ=az
    T3D, /YZEXCH
@@ -119,7 +122,7 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    ;-----> OUTPUT RESULT
    ;----->    
    b=TVRD()	        ; Read image.
-   SET_PLOT, current_device	; Select previous output device.
+   uSET_PLOT, current_device	; Select previous output device.
    UTV, b	        ; Output the image.
 END
 
