@@ -34,13 +34,15 @@
 ;           index: neuron- or trialnumber.
 ;
 ; INPUT KEYWORDS:
-;  SAMPLEPERIOD:: Length of a BIN in seconds, default: 0.001s
+;  SAMPLEPERIOD:: Length of a BIN in seconds, needed to correctly
+;                 compute firing rates in Hz, default: 0.001s
 ;  /GAUSS:: Calculates firing rate by convolving the spiketrain with a
 ;         Gaussian filter, resembling a probabilistic
 ;         interpretation. Otherwise, a rectangular mask is used for
 ;         convolution, corresponding to simply counting the spikes in
 ;         a given time window.
-;         Using a gaussian gives a smoother result. Note
+;         Using a gaussian gives a smoother result, but takes longer
+;         to compute. Note
 ;         that <*>SSIZE</*> may have to be adjusted depending on
 ;         whether <*>GAUSS</*> is set or not. 
 ;  SSIZE:: Width of window used to calculate the firing rate. If
@@ -104,20 +106,16 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
    tvalues = tindices*1000.*sampleperiod
 
    IF Keyword_Set(GAUSS) THEN BEGIN
-
-      ;; generate gaussian for convolution
+      ;; generate gaussian and convolve
       gausslength = 8*__ssize
       gaussx = FIndGen(gausslength)-gausslength/2
       mask = Exp(-gaussx^2/2./__ssize^2)/__ssize/sqrt(2*!PI)
-
+      rates = Convol(Float(nt), mask, /EDGE_TRUNC)/sampleperiod
    ENDIF ELSE BEGIN
-
-      ;; rectangular array for convolution
-      mask = Make_Array(__ssize, /FLOAT, VALUE=1./__ssize)
-
+      ;; Smooth() works faster and is equivalent to convolution with
+      ;; rectangular array
+      rates = Smooth(Float(nt), [__ssize, 1], /EDGE_TRUNC)/sampleperiod
    ENDELSE ;; Keyword_Set(GAUSS)
-
-   rates = Convol(Float(nt), mask, /EDGE_TRUNC)/sampleperiod
 
    rates = (Temporary(rates))[tindices, *]
 
