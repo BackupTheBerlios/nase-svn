@@ -6,23 +6,29 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
+;                                   [,/SOURCE_TO_TARGET | /TARGET_TO_SOURCE]
 ;                                   [,DELAY  | ,D_RANDOM | ,D_NRANDOM | ,D_CONST | ,D_LINEAR | ,D_GAUSS] 
 ;                                   [,WEIGHT | ,W_RANDOM | ,W_NRANDOM | ,W_CONST | ,W_LINEAR | ,W_GAUSS, W_DOG]
-;                                   [,D_NONSELF] [,W_NONSELF] 
-;                                   [,W_TRUNCATE [,W_TRUNC_VALUE]]
-;                                   [,D_TRUNCATE [,D_TRUNC_VALUE]]
+;                                   [,/D_NONSELF] [,/W_NONSELF] 
+;                                   [,/W_TRUNCATE [,W_TRUNC_VALUE]]
+;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
 ;                                   [,W_NOCON] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaﬂe in S/T_Width/Height
 ;
-; OPTIONAL INPUTS: DELAY,     WEIGHT    : Konstanter Wert, mit dem die Gewichte/Delays initialisiert werden. Default f¸r WEIGHT ist 0.
+; OPTIONAL INPUTS: SOURCE_TO_TARGET     : Dies ist der Default: Die folgenden Verbindungs- und Delay-Schl¸sselworte
+;                                         definieren Verbindungen vom Source- in den Targetlayer.
+;                  TARGET_TO_SOURCE     : Die folgenden Verbindungs- und Delay-Schl¸sselworte definieren Verbindungen
+;                                         vom Target- in den Source-Layer. 
+;
+;                  DELAY,     WEIGHT    : Konstanter Wert, mit dem die Gewichte/Delays initialisiert werden. Default f¸r WEIGHT ist 0.
 ;                  D_RANDOM,  W_RANDOM  : Array [Min,Max]. Die Gewichte/Delays werden gleichverteilt zuf‰llig belegt im Bereich Min..Max. Diese Belegung wirkt additiv, wenn zus‰tzlich zu diesem Schl¸sselwort noch ein anderes angegeben wird.
 ;                  D_NRANDOM, W_NRANDOM : Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zuf‰llig belegt mit Mittelwert MW und Standardabweichung sigma. Diese Belegung wirkt additiv, wenn zus‰tzlich zu diesem Schl¸sselwort noch ein anderes angegeben wird.
 ;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_CONST              : Array [Value,Range]. Die Delays werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_IDENT   :  
 ;                  D_CONST              : 
-;                             W_LINEAR   : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                             W_LINEAR  : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_LINEAR             : Array [min,max,Range]. Die Delays werden von jedem Soure-Neuron umgekehrt kegelfˆrmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_GAUSS   : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gauﬂfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_GAUSS              : Array [Min,Max,sigma]. Die Delays werden von jedem Source-Neuron umgekehrt gauﬂfˆrmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
@@ -107,8 +113,10 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
-;       Mon Sep 1 00:29:58 1997, Andreas Thiel
-;		W_NONSELF-Schluesselwort setzt Verbindungen jetzt auf !NONE.
+;       Tue Sep 2 02:07:23 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		kann jetzt auch Target->Source-Verbindungen setzen.
 ;
 ;       Thu Aug 28 21:51:10 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -183,7 +191,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
                  LEARN_TAUP=learn_taup,       LEARN_VP=learn_vp, $
-                 NOCON=nocon, W_NOCON=w_nocon
+                 NOCON=nocon, W_NOCON=w_nocon, $
+                 SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source
 
    Default, w_nocon, nocon
    if keyword_set(nocon) then message, /INFORM, "Das NOCON-Schl¸sselwort ist ¸brigens seit Version 1.19 in W_NOCON umbenannt. Bitte den Aufruf entsprechend ‰ndern. R¸diger."
@@ -232,7 +241,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  VP      : FLOAT(learn_vp),$
                  DP      : exp(-1.0/FLOAT(learn_taup)),$
                  LP      : lp $
-      }
+               }
    END ELSE BEGIN         
       DelMat = {source_w: s_width,$
                 source_h: s_height,$
@@ -245,77 +254,103 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
    
 
 
-if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-if set (D_GAUSS) then SetGaussDelay,  DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-if set (W_IDENT) then BEGIN
-   if t_width*t_height ne s_width*s_height then message, "Schluesselwort W_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-   SetConstWeight, DelMat, w_ident, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-END
-if set (D_IDENT) then BEGIN
-   if t_width*t_height ne s_width*s_height then message, "Schluesselwort D_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-   SetConstDelay,  DelMat, d_ident, 1, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
-END
+; ================================ Initialisierung von Delays und Weights ===========================================================
 
-if set (W_CONST) then SetConstWeight, DelMat, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-if set (D_CONST) then SetConstDelay,  DelMat, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message, 'Bitte nur eins der Schluesselworte SOURCE_TO_TARGET und TARGET_TO_SOURCE angeben!'
 
-if set (W_LINEAR) then SetLinearWeight, DelMat, w_linear(0), w_linear(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-if set (D_LINEAR) then SetLinearDelay,  DelMat, d_linear(1), min=d_linear(0), d_linear(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+; --------------------- Gauss, Linear, Const, DOG: -----------------------------------------------
+   If keyword_set(TARGET_TO_SOURCE) then begin ;------------Target -> Source: 
+      if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_GAUSS) then SetGaussDelay,  DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      
+      if set (W_CONST) then SetConstWeight, DelMat, w_const(0), w_const(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_CONST) then SetConstDelay,  DelMat, d_const(1), min=d_const(0), d_const(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-if set (W_DOG) then SetDOGWeight, DelMat, w_dog(0), w_dog(1), w_dog(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
- 
-; Die Random-Initialisierungen sollen additiv sein:
-if set (W_RANDOM) then DelMat.Weights = DelMat.Weights + w_random(0) + (w_random(1)-w_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
-if set (D_RANDOM) then DelMat.Delays  = DelMat.Delays  + d_random(0) + (d_random(1)-d_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
+      if set (W_LINEAR) then SetLinearWeight, DelMat, w_linear(0), w_linear(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_LINEAR) then SetLinearDelay,  DelMat, d_linear(1), min=d_linear(0), d_linear(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-if set (W_NRANDOM) then DelMat.Weights = DelMat.Weights + w_nrandom(0) + w_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
-if set (D_NRANDOM) then DelMat.Delays  = DelMat.Delays  + d_nrandom(0) + d_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
+      if set (W_DOG) then SetDOGWeight, DelMat, w_dog(0), w_dog(1), w_dog(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      
+   endif else begin             ;------------------------------Source -> Target:
+      if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_GAUSS) then SetGaussDelay,  DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      
+      if set (W_CONST) then SetConstWeight, DelMat, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_CONST) then SetConstDelay,  DelMat, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
+      if set (W_LINEAR) then SetLinearWeight, DelMat, w_linear(0), w_linear(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_LINEAR) then SetLinearDelay,  DelMat, d_linear(1), min=d_linear(0), d_linear(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-if keyword_set(W_NONSELF) then begin
-   if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-   DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = !NONE
-end
+      if set (W_DOG) then SetDOGWeight, DelMat, w_dog(0), w_dog(1), w_dog(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+   endelse
+; ----------------------------------------------------------------------------------------------------------------------
+      
 
-if keyword_set(D_NONSELF) then begin
-   if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-   DelMat.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = 0
-end
+; ---------------Die Random-Initialisierungen sollen additiv sein: -----------------------------------------------------
+      if set (W_RANDOM) then DelMat.Weights = DelMat.Weights + w_random(0) + (w_random(1)-w_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
+      if set (D_RANDOM) then DelMat.Delays  = DelMat.Delays  + d_random(0) + (d_random(1)-d_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
 
-
-
-
-IF keyword_set(W_NOCON) THEN BEGIN
-   SetConstWeight, DelMat, !NONE, w_nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
-END
+      if set (W_NRANDOM) then DelMat.Weights = DelMat.Weights + w_nrandom(0) + w_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
+      if set (D_NRANDOM) then DelMat.Delays  = DelMat.Delays  + d_nrandom(0) + d_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
+; ----------------------------------------------------------------------------------------------------------------------
 
 
+; ---------------NONSELF und IDENT: -----------------------------------------------------
+      if keyword_set(W_NONSELF) then begin
+         if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
+         DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = !NONE
+      end
+
+      if keyword_set(D_NONSELF) then begin
+         if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
+         DelMat.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = 0
+      end
+
+      if set (W_IDENT) then BEGIN
+         if t_width*t_height ne s_width*s_height then message, "Schluesselwort W_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
+;         SetConstWeight, DelMat, w_ident, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+         DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = w_ident
+      END
+      if set (D_IDENT) then BEGIN
+         if t_width*t_height ne s_width*s_height then message, "Schluesselwort D_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
+;         SetConstDelay,  DelMat, d_ident, 1, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+         DelMat.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = d_ident
+      END
+; ----------------------------------------------------------------------------------------------------------------------
+
+
+; ------------------------- NOCON: ----------------------------------------------------------------
+      IF keyword_set(W_NOCON) THEN BEGIN
+         SetConstWeight, DelMat, !NONE, w_nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+      END
+; ----------------------------------------------------------------------------------------------------------------------
+
+; ================================ Ende der Initialisierungen ====================================================================================================================
 
 
 
+      IF HasDelay THEN BEGIN
+
+         RETURN, {  source_w: DelMat.source_w,$
+                    source_h: DelMat.source_h,$
+                    target_w: DelMat.target_w,$
+                    target_h: DelMat.target_h,$
+                    Weights : DelMat.Weights,$
+                    Matrix  : DelMat.Matrix,$
+                    Delays  : DelMat.Delays,$
+                    Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
+                    VP      : DelMat.VP,$
+                    DP      : DelMat.DP,$
+                    LP      : DelMat.LP }
+      END ELSE BEGIN
+         RETURN, DelMat
+      END
 
 
-
-IF HasDelay THEN BEGIN
-
-   RETURN, {  source_w: DelMat.source_w,$
-              source_h: DelMat.source_h,$
-              target_w: DelMat.target_w,$
-              target_h: DelMat.target_h,$
-              Weights : DelMat.Weights,$
-              Matrix  : DelMat.Matrix,$
-              Delays  : DelMat.Delays,$
-              Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
-              VP      : DelMat.VP,$
-              DP      : DelMat.DP,$
-              LP      : DelMat.LP }
-END ELSE BEGIN
-   RETURN, DelMat
-END
+   end
 
 
-end
 
 
 
