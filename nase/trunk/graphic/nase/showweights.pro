@@ -128,6 +128,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.21  1998/03/19 15:37:15  saam
+;             mysteriously a bug occurred: variable containing
+;               delays-keyword had the same name as function delays
+;               -> renamed
+;
 ;       Revision 2.20  1998/02/27 13:16:29  saam
 ;             benutzt nun die U-Routinen
 ;
@@ -228,7 +233,7 @@
 
 PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
-                 FROMS=froms,  TOS=tos, DELAYS=delays, $
+                 FROMS=froms,  TOS=tos, DELAYS=delay, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin, GET_WIN=get_win, $
 ;                 MAXSIZE=maxsize, $
@@ -357,7 +362,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
       EndElse    
 
 
-   IF Keyword_Set(Delays) THEN BEGIN
+   IF Keyword_Set(Delay) THEN BEGIN
       MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
    END ELSE BEGIN
       MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
