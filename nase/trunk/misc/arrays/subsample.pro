@@ -13,18 +13,20 @@
 ;   crucial.
 ;
 ; CATEGORY:
-;   ARRAY, GRAPHICS, SIGNALPROCESSING
+;   Array,
+;   Graphic,
+;   Signals
 ;
 ; CALLING SEQUENCE:
-;   result = subsample (A, fraction [,/EDGE_WRAP|,/EDGE_TRUNCATE])
+;*   result = subsample (A, fraction [,/EDGE_WRAP|,/EDGE_TRUNCATE])
 ;
 ; INPUTS:
-;   A       : The array to subsample. This must be two-dimensional, squareness
+;  A       :: The array to subsample. This must be two-dimensional, squareness
 ;             is not required.
-;   fraction: The distance of sampling points (= the factor by which to reduce
+;  fraction:: The distance of sampling points (= the factor by which to reduce
 ;             the array size). This is not required to be an integer value.
-;             The dimenions of A are not required to be integer multiples of fraction.
-;
+;             The dimenions of A are not required to be integer multiples of fraction.<BR> 
+;<BR> 
 ;             Note, that if faction is not an integer value, the next higher
 ;             integer is used for computing the low-pass-filter. This is due to
 ;             a quantization problem: After low-pass-filtering, the image will
@@ -34,11 +36,11 @@
 ;             avoid vialoation of the sampling theorem, the lower value
 ;             CEIL(fraction) will be used for computing the filter mask.
 ;
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;   EDGE_WRAP,
-;   EDGE_TRUNCATE: Keywords are passed to CONVOL() for convolution (see IDL reference).
+;   EDGE_TRUNCATE:: Keywords are passed to CONVOL() for convolution (see IDL reference).
 ;
-; OUTPUTS: result: The resampled array. The supplied array A stays unchanged.
+; OUTPUTS: result:: The resampled array. The supplied array A stays unchanged.
 ;
 ; RESTRICTIONS: A has to be two-dimensional.
 ;               fraction is the same for x and y dimensions. (Feel free to
@@ -56,25 +58,7 @@
 ;          TV, subsample(alison,2), 2
 ;          TV, subsample(alison,3), 13
 ;
-; SEE ALSO: REBIN(), CONGRID(), <A HREF="#GAUSS_2D">Gauss_2d()</A>, CONVOL()
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.4  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.3  2000/03/16 14:28:57  kupper
-;        Now using Congrid, allowing for fractional "fraction".
-;
-;        Revision 1.2  2000/03/04 17:14:48  kupper
-;        Forgot /Center in GetSubArray() call. Fixed.
-;
-;        Revision 1.1  2000/02/29 18:46:57  kupper
-;        New and easy.
-;
+; SEE ALSO: <C>REBIN()</C>, <C>CONGRID()</C>, <A>Gauss_2d()</A>, <C>CONVOL()</C>
 ;-
 
 Function Subsample, A, frac, Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate
