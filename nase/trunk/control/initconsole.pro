@@ -1,27 +1,43 @@
 ;+
-; NAME:                   InitConsole.pro
+; NAME:
+;   InitConsole()
 ;
-; AIM : Initializes a new <A>console</A>-structure
-;
-; PURPOSE:                Initializes Console-structure 
-;
-; CATEGORY:               MIND GRAPHIC
-;
-; CALLING SEQUENCE:       MyCons = InitConsole([\WIN] [,MODE=mode]
-;                                    [,TITLE=title] [,LENGTH=length]
-;                                    [,THRESHOLD=threshold] 
-;                                    [TOLERANCE=tolerance])
+; VERSION:
+;   $Id$
 ; 
-; KEYWORD PARAMETERS:     MODE     :  specifies display :
-;                                     MODE = 'nowin'  ... console=print  (Default)
-;                                     MODE = 'win'    ... opens text-widget 
-;                         LENGTH   :  Length of remembered lines       (Default=200)  
-;                         THRESHOLD: Messages with priority lt THRESHOLD are supressed
-;                         TITLE    : window title if Console runs in
-;                                    window mode
-;                         TOLERANCE: Messages with priority ge TOLERANCE cause STOP  
-;                         WIN      : Console runs in a dedicated window
-;                                     (same as MODE='win')                         
+; AIM :
+;   Initializes a new <A>console</A>-structure. 
+;
+; PURPOSE:
+;   Initializes Console-structure. Note that most of the
+;   console properties can be changed anytime using <A>ConsoleConf</A>.
+;
+; CATEGORY:
+;   ExecutionControl
+;   Help
+;   IO
+;   MIND
+;   NASE 
+;   Widgets
+;
+; CALLING SEQUENCE:       
+;*  MyCons = InitConsole([\WIN] [,MODE=...] [,TITLE=...] [,LENGTH=...]
+;*                       [,FILENAME=...]
+;*                       [,THRESHOLD=...] [,TOLERANCE=...])
+; 
+; INPUT KEYWORDS:
+;   FILENAME :: Enables additional logging into
+;               a file called FILENAME. 
+;   MODE     :: specifies display :
+;               MODE = 'nowin'  ... console=print  (Default)
+;               MODE = 'win'    ... opens text-widget 
+;   LENGTH   :: Length of remembered lines       (Default=200)  
+;               THRESHOLD:: Messages with priority lt THRESHOLD are supressed
+;   TITLE    :: window title if Console runs in
+;               window mode
+;   TOLERANCE:: Messages with priority ge TOLERANCE cause STOP  
+;   WIN      :: Console runs in a dedicated window
+;               (same as MODE='win')                         
 ;
 ; OUTPUTS:                MyCons: Console-structure
 ;
@@ -30,42 +46,20 @@
 ;                         ConsoleTime,MyCons,30,30.0
 ;                         Freeconsole, MyCons
 ;
+; SEE ALSO:
+;   <A>Console</A>, <A>ConsoleConf</A>, <A>ConsoleTime</A>
+;  
 ;-
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 2.6  2000/10/10 15:03:09  kupper
-;     Now using Fixed String Queue for storing the messages. Much simpler
-;     now. Should behave exactly the same.
-;
-;     Revision 2.5  2000/09/28 13:23:55  alshaikh
-;           added AIM
-;
-;     Revision 2.4  2000/04/03 12:13:34  saam
-;           + removed side effect in console
-;           + freeconsole now really closes the window
-;
-;     Revision 2.3  2000/03/28 12:36:27  saam
-;           + added WIN keyword just for comfort
-;           + added TITLE keyword
-;
-;     Revision 2.2  2000/01/27 15:38:09  alshaikh
-;           keywords LEVEL,THRESHOLD,TOLERANCE
-;
-;     Revision 2.1  2000/01/26 17:03:35  alshaikh
-;           initial version
-;
-;
 
 
-FUNCTION initconsole,MODE=_mode,LENGTH=length,THRESHOLD=threshold,TOLERANCE=tolerance,TITLE=title,WIN=win
+FUNCTION initconsole,MODE=_mode,LENGTH=length,THRESHOLD=threshold,TOLERANCE=tolerance,TITLE=title,WIN=win, FILENAME=filename
 
 Default, _mode, 'nowin'
 Default, length, 200
 Default, tolerance,30
 Default, threshold,0
 Default, title, 'Console'
+Default, file, filename
 
 IF _mode EQ 'nowin' THEN mode = 0
 IF _mode EQ 'win' THEN mode = 1
@@ -84,6 +78,13 @@ END ELSE BEGIN
    timewid = 0
 END 
 
+; check syntax of FILE keyword
+IF NOT Set(FILE) THEN File = 'console.log' ELSE BEGIN
+    IF TypeOF(File) NE 'STRING' THEN Message, 'FILE has to be a valid string'
+END
+
+
+
 h = { $
       base: base ,$
       cons : cons ,$
@@ -94,9 +95,14 @@ h = { $
       length : length, $
       threshold: threshold ,$
       tolerance: tolerance, $
+      filename: file,$
+      logfile: !NONE,$ ; this will contain the LUN
       viz   : viz $
     }
  result = Handle_Create(VALUE=h,/no_copy)
+
+ ; turn on file logging if wanted
+ IF Set(FILENAME) THEN ConsoleConf, result, /FILEON
 
 return, result
 end

@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  Sets the <A>CONSOLE</A>-Threshold
+;  Sets the <A>CONSOLE</A>-Threshold (OBSOLETE!!!)
 ;  
 ; PURPOSE:
 ;  This Routine defines a new <A>CONSOLE</A>-Threshold, i.e. the LEVEL-value
@@ -58,19 +58,5 @@ PRO ConsoleThreshold,  __console, THRESHOLD=threshold
    
    ON_ERROR, 2
    
-   Default, threshold, 5
-   
-   CASE N_Params() OF
-      0: _console = !CONSOLE
-      1: _console = __console
-      
-      ELSE: CONSOLE, 'Wrong arguments', /FATAL
-   END 
-   
-   Handle_Value,_console,status,/no_copy
-   status.threshold = threshold
-   Handle_Value,_console,status,/no_copy, /SET
-   
-   CONSOLE, 'Setting threshold to '+str(threshold), /MSG
-   
+   Console, 'Warning: this routine is superseded by ConsoleConf', /FATAL
 END
