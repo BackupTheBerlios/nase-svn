@@ -19,6 +19,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.9  2000/02/01 18:06:49  saam
+;            analayer -> mind
+;            closeanalayer -> freeanalayer
+;
 ;      Revision 1.8  2000/01/28 15:16:45  saam
 ;            changend console call by putting the console
 ;            data from the common block into the ap structure
@@ -397,7 +401,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    FOR i=0, INmax DO FreeInput, IN(i)
    IF graphic THEN BEGIN
       FOR i=0, NWmax DO FreePlotcilloscope, PCWN(i)
-      FOR i=0, ANALmax DO CloseAnaLayer, AnaCL(ANAL(i))
+      FOR i=0, ANALmax DO FreeAnaLayer, AnaCL(ANAL(i))
       FOR i=0, Lmax DO FreePlotcilloscope, PCMUA(i)
       FOR i=0, TSSCloutmax DO FreeTrainspottingScope, TSSClout(i)
    END
