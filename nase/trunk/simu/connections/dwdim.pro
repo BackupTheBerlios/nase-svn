@@ -38,16 +38,32 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/01/05 16:55:42  saam
+;           verbessertes Fehlerhandling; benutzt nun info
+;
 ;     Revision 2.1  1998/01/05 14:39:57  saam
 ;           ein Stern erblickt das Licht der Welt
 ;
 ;
 ;-
-FUNCTION DWDim, _DW, SW=sw, SH=sh, TW=tw, TH=th
+FUNCTION DWDim, _DW, SW=sw, SH=sh, TW=tw, TH=th, ALL=all
+
+   On_Error, 2
+
+   IF N_Params() NE 1 THEN Message, 'incorrect number of arguments'
+   IF Keyword_Set(ALL) THEN BEGIN
+      sw = 1
+      sh = 1
+      tw = 1
+      th = 1
+   END
+   IF NOT (Keyword_Set(SW) OR Keyword_Set(SH) OR Keyword_Set(TW) OR Keyword_Set(TH)) THEN Message, 'at least one keyword expected'
+   IF Set(_DW) THEN BEGIN
+      infoTag = Info(_DW) ;check if _DW is valid nase-structure
+      IF NOT Contains(infoTag, 'weight', /IGNORECASE) THEN Message,'no DW-Structure but a '+infoTag+' passed!'
+   END ELSE Message, 'argument undefined'
 
    Handle_Value, _DW, DW, /NO_COPY
-
-   IF NOT (Keyword_Set(SW) OR Keyword_Set(SH) OR Keyword_Set(TW) OR Keyword_Set(TH)) THEN Message, 'at least one keyword expected'
 
    IF Keyword_Set(SW) THEN dim = DW.source_w
    IF Keyword_Set(SH) THEN IF NOT Set(dim) THEN dim = DW.source_h ELSE dim = [dim, DW.source_h]
