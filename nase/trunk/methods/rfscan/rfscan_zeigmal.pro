@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1998/02/16 14:59:48  kupper
+;               VISUALIZE ist jetzt implementiert. WRAP auch.
+;
 ;        Revision 1.2  1998/01/30 17:02:53  kupper
 ;               Header geschrieben und kosmetische Veränderungen.
 ;                 VISULAIZE ist noch immer nicht implementiert.
@@ -42,6 +45,14 @@
 ;
 ;-
 
+Function ReturnPic, RFS
+   If Keyword_Set(RFS.VISUALIZE) then begin
+      WSet, RFS.WinIn
+      NASETV, ShowWeights_Scale(RFS.Picture, COLORMODE=RFS.ColorMode), ZOOM=RFS.VISUALIZE(0)
+   EndIf
+   Return, RFS.Picture
+End
+
 Function RFScan_Zeigmal, RFS, Picture
    common common_random, seed
 
@@ -52,7 +63,7 @@ Function RFScan_Zeigmal, RFS, Picture
       If not set(Picture) then message, "Please specify Picture to present!"
       RFS.Picture = Picture
       RFS.count = RFS.count+1
-      Return, Picture
+      Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
    
@@ -63,7 +74,7 @@ Function RFScan_Zeigmal, RFS, Picture
       randoms = randomu(seed, RFS.HEIGHT, RFS.WIDTH)
       wo = where(randoms lt RFS.auto_randomdots, count)
       If count ne 0 then RFS.Picture(wo) = 1.0
-      return, RFS.Picture
+      Return, ReturnPic(RFS)
    Endif
    ;;--------------------------------
 
@@ -79,7 +90,7 @@ Function RFScan_Zeigmal, RFS, Picture
       RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
       RFS.Picture(0:pos, *) = 1.0
       If RFS.auto_horizontaledge eq 2 then RFS.Picture = 1.0-RFS.Picture
-      Return, RFS.Picture
+      Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
 
@@ -95,7 +106,7 @@ Function RFScan_Zeigmal, RFS, Picture
       RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
       RFS.Picture(*, 0:pos) = 1.0
       If RFS.auto_verticaledge eq 2 then RFS.Picture = 1.0-RFS.Picture
-      Return, RFS.Picture
+      Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
 
@@ -109,7 +120,7 @@ Function RFScan_Zeigmal, RFS, Picture
       RFS.count = (RFS.count+1) mod RFS.height ;Index of next Position
       pos = RFS.shiftpositions(RFS.count) ;Next Position
       RFS.Picture = Shift(RFS.Original, pos, 0)
-      Return, RFS.Picture
+      Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
 
@@ -123,7 +134,7 @@ Function RFScan_Zeigmal, RFS, Picture
       RFS.count = (RFS.count+1) mod RFS.width ;Index of next Position
       pos = RFS.shiftpositions(RFS.count) ;Next Position
       RFS.Picture = Shift(RFS.Original, 0, pos)
-      Return, RFS.Picture
+      Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
 
@@ -138,7 +149,7 @@ Function RFScan_Zeigmal, RFS, Picture
       pos = RFS.shiftpositions(RFS.count) ;Next Position (onedimensional index)
       pos = Subscript(RFS.Picture, pos) ;Next Position (twodimensional index)
       RFS.Picture = Shift(RFS.Original, pos(0), pos(1))
-      Return, RFS.Picture
+      Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
 

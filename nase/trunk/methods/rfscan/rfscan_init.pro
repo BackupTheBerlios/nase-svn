@@ -45,7 +45,7 @@
 ;                                             |,AUTO_VERTICALEDGE={1|2} | ,AUTO_HORIZONTALEDGE={1|2}
 ;                                            ]
 ;                                            [,/OBSERVE_SPIKES | ,/OBSERVE_POTENTIALS ]
-;                                            [,/VISUALIZE ] )                                       
+;                                            [,VISUALIZE=Array(InZoom,OutZoom,DWZoom,Period) [,/WRAP] ] )
 ;
 ; INPUTS: INDW | WIDTH, HEIGHT:
 ;                   Die DW-Struktur, als deren Input ein Bild generiert werden
@@ -60,9 +60,24 @@
 ;
 ; OPTIONAL INPUTS & KEYWORD PARAMETERS:
 ;
-;         VISUALIZE: Ist dieses Schlüsselwort gesetzt, wird der
+;         VISUALIZE: Ist dieses Schlüsselwort benutzt, wird der
 ;                    Scanvorgang in einem Fenster dargestellt.
-;                    (Noch nicht implementiert)
+;                    In VISUALIZE muß dazu ein vierelementiges
+;                    IntegerArray übergeben werden (s. CALLING
+;                    SEQUENCE), dessen Elemente folgende Bedutung
+;                    haben:
+;                    InZoom:  Zoomfaktor für die Darstellung des Inputs
+;                    OutZoom:      "      "   "        "      "  Outputs
+;                    DWZoom:       "      "   "        "      der DW-Matrix mit ShowWeights
+;                    Period:  Intervalle, in denen die Bildschirmdarstellung aufgefrischt wird
+;                             (d.h.: alle soundsoviel Aufrufe von RFScan_Schaumal wird die DW-Matrix neu dargestellt.)
+;
+;              WRAP: Hat nur in Verbindung mit VISUALIZE Bedeutung. Es
+;                    wird direkt an die MiddleWieghts-Routine
+;                    übergeben, der es mitteilt, ob zyklische
+;                    Randbedingungen bei der DW-Matrix angenommen
+;                    werden sollen, oder nicht.
+;
 ;         OBSERVE_SPIKES | OBSERVE_POTENTIALS:
 ;                    Das Setzen eines dieser Schlüsselworte
 ;                    entscheidet darüber, welche Information des
@@ -177,9 +192,19 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1998/02/16 14:59:47  kupper
+;               VISUALIZE ist jetzt implementiert. WRAP auch.
+;
+;        Revision 1.4  1998/02/10 14:21:58  kupper
+;               kleiner Übergangs-Commit...
+;
+;        Revision 1.3  1998/02/09 18:18:09  kupper
+;               Noch dabei, VISUALIZE zu implementieren.
+;                Mußte schonmal einchecken, wegen NASE-Umzug auf Neuro...
+;
 ;        Revision 1.2  1998/01/30 17:02:48  kupper
 ;               Header geschrieben und kosmetische Veränderungen.
-;                 VISULAIZE ist noch immer nicht implementiert.
+;                 VISUALIZE ist noch immer nicht implementiert.
 ;
 ;        Revision 1.1  1998/01/29 14:45:05  kupper
 ;               Erste Beta-Version.
@@ -197,7 +222,10 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
                AUTO_HORIZONTALLINE=auto_horizontalline, $
                SHIFT_VERTICAL=shift_vertical, SHIFT_HORIZONTAL=shift_horizontal, $
                OBSERVE_SPIKES=observe_spikes, OBSERVE_POTENTIALS=observe_potentials, $
-               VISUALIZE=visualize
+               VISUALIZE=visualize, WRAP=wrap
+
+   If keyword_set(VISUALIZE) and n_elements(VISUALIZE) ne 4 then $
+    message, "Keyword VISUALIZE is expected to be set to a four-elementary Array!"
 
    If keyword_set(InDW) then begin
       WIDTH = DWDim(InDW, /SW)
@@ -245,6 +273,24 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
       OBSERVE_SPIKES = 1
       OBSERVE_POTENTIALS = 0
    endif
+   If Keyword_Set(OBSERVE_POTENTIALS) then OBSERVE_SPIKES = 0
+   ;;--------------------------------
+
+   ;;------------------> DW-Structure for estimated RFs:
+   RFs = SDW2DW(InitDW(S_WIDTH = WIDTH, S_HEIGHT=HEIGHT, T_LAYER=OUTLAYER))
+   ;;using old style DW-Struct (not SDW) for faster Operation...
+   ;;--------------------------------
+
+      ;;------------------> VISUALIZE?
+   If keyword_set(VISUALIZE) then begin
+      window, /free, xpos=0, ypos=30, Title="RFScan - Presented Picture", xsize=WIDTH*VISUALIZE(0), ysize=HEIGHT*VISUALIZE(0)
+      WinIn = !D.Window
+      window, /free, xpos=WIDTH*VISUALIZE(0)+10, ypos=30, Title="RFScan - Observed Output", xsize=LayerWidth(OutLayer)*VISUALIZE(1), ysize=LayerHeight(OutLayer)*VISUALIZE(1)
+      WinOut = !D.Window
+      ShowWeights, RFs, /RECEPTIVE, Titel="RFScan - Estimated Receptive Fields", ZOOM=VISUALIZE(2), GET_WIN=WinRFs, GET_MAXCOL=MaxCol, GET_COLORMODE=ColorMode
+      window, /free, Title="RFScan - Mean Estimated RF", xsize=300, ysize=300
+      WinMean = !D.Window
+   End
    ;;--------------------------------
 
    ;;------------------> I want them all to be defined...
@@ -259,12 +305,20 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
    Default, shiftpositions, -1
    Default, OBSERVE_SPIKES, 1
    Default, OBSERVE_POTENTIALS, 0
+   Default, WinIn, -1
+   Default, WinOut, -1
+   Default, WinRFs, -1
+   Default, WinMean, -1
+   Default, MaxCol, -1
+   Default, ColorMode, 0
+   Default, WRAP, 0
    ;;--------------------------------
-   
+
+
    Return, {info:                "RFSCAN", $
             width:               WIDTH, $
             height:              HEIGHT, $
-            RFs:                 InitDW(S_WIDTH = WIDTH, S_HEIGHT=HEIGHT, T_LAYER=OUTLAYER), $
+            RFs:                 RFs, $
             original:            Picture, $
             picture:             fltarr(HEIGHT, WIDTH), $
             manual:              MANUAL, $
@@ -279,7 +333,14 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
             divide:              0l, $ ;This will count the number of observed Outputs
             shiftpositions:      shiftpositions, $
             observe_spikes:      OBSERVE_SPIKES, $
-            observe_potentials:  OBSERVE_POTENTIALS}
+            observe_potentials:  OBSERVE_POTENTIALS, $
+            winin:               WinIn, $
+            winout:              WinOut, $
+            winRFs:              WinRFs, $
+            winmean:             WinMean, $
+            maxcol:              MaxCol, $
+            colormode:           ColorMode, $
+            wrap:                WRAP}
    
    
 End

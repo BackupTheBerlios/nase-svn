@@ -12,11 +12,23 @@
 ; OUTPUTS: Scanned_RFs: Eine DW-Struktur, die die gesch‰tzten RFs
 ;                       enth‰lt. ACHTUNG! Dies ist eine dynamische
 ;                       Datenstruktur, die nach Gebrauch vom BENUTZER
-;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A> freigegeben werden muﬂ!
+;                       mit <A
+;                       HREF="../simu/connections/#FREEDW">FreeDW</A>
+;                       freigegeben werden muﬂ!
+;                       Die Gewichte sind auf die Anzahl der
+;                       beobachteten Outputs normiert. (D.h. im Falle
+;                       von /OBSERVE_SPIKES liegen alle Gewichte
+;                       zwischen Null und Eins.)
 ;
 ; RESTRICTIONS:ACHTUNG! Der Output  ist eine dynamische
 ;                       Datenstruktur, die nach Gebrauch vom BENUTZER
-;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A> freigegeben werden muﬂ!
+;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A>
+;                       freigegeben werden muﬂ!
+;                       
+;                       Mit dem Aufruf von RFScan_Return() ist der
+;                       Scanvorgang abgeschlossen! Ein weiterer Aufruf 
+;                       von RFScan_Schaumal f¸hrt zwar zu keinem
+;                       Fehler, liefert aber ung¸ltige Ergebnisse!
 ;
 ; EXAMPLE: ShowWeights, RFScan_Return( My_RFScan ), /RECEPTIVE
 ;
@@ -25,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1998/02/16 14:59:48  kupper
+;               VISUALIZE ist jetzt implementiert. WRAP auch.
+;
 ;        Revision 1.2  1998/01/30 17:02:50  kupper
 ;               Header geschrieben und kosmetische Ver‰nderungen.
 ;                 VISULAIZE ist noch immer nicht implementiert.
@@ -43,6 +58,15 @@ Function RFScan_Return, RFS
    If RFS.divide ne 0 then begin
       BoostWeight, RFS.RFs, 1.0/float(RFS.divide)
       RFS.divide = 0
+      ;;------------------> VIUALIZE?
+      If Keyword_Set(RFS.VISUALIZE) then begin
+         ;;Draw Estimated RFs
+         ShowWeights, RFS.RFs, WIN=RFS.WinRFs, /RECEPTIVE, ZOOM=RFS.VISUALIZE(2), GET_COLORMODE=ColorMode
+         RFS.ColorMode = colormode
+         WSet, RFS.WinMean      ;Draw Mean RF
+         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap)        
+      EndIf
+      ;;--------------------------------
    EndIf
 
    return, RFS.RFs
