@@ -255,8 +255,10 @@ print header;
 #print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
 print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE>\n";
 print '<style type="text/css">', "\n";
-print "<!-- blockquote { margin-left:15px; }\n";
-print "//-->\n</style>\n</HEAD>";
+#print "<!-- blockquote { margin-left:15px; }\n";
+#print "//-->\n</style>\n</HEAD>";
+print "blockquote { margin-left:-25px; }\n";
+print "</style>\n</HEAD>";
 
 $lastmod = checkRoutineIdx();
 if ($P::mode){
@@ -264,7 +266,8 @@ if ($P::mode){
  TRUNK: {
     /update/i && do { updatedoc();
 		      last TRUNK;};
-    /list/i   && do { print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
+    /list/i   && do { print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>";
+		      print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
 		      print hr,
 		      a({href=>"$URL/".getROUTINES, target=>"text"}, "routine index"), ", ",
@@ -277,7 +280,8 @@ if ($P::mode){
 		      font({size=>"-2"}, 
 			   '$Id$ ');
 		      last TRUNK;};
-    /text/i   && do { if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); };
+    /text/i   && do { print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>";
+		      if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
 				  } else {
@@ -290,7 +294,7 @@ if ($P::mode){
 		     print frame({src=>"$fullurl?mode=list", name=>"list"});
 		     print frame({src=>"$fullurl?mode=text&show=aim", name=>"text"});
 		     print '</frameset>';
-		     print "<BODY>i cant handle frames!!";
+		     print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>i cant handle frames!!";
 		     last TRUNK;
 		   }
   }
@@ -299,7 +303,7 @@ if ($P::mode){
   print frame({src=>"$fullurl?mode=list", name=>"list"});
   print frame({src=>"$fullurl?mode=text", name=>"text"});
   print '</frameset>';
-  print "<BODY>i cant handle frames!!";
+  print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>i cant handle frames!!";
 };
 
 
