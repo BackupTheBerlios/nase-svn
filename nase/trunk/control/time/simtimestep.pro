@@ -1,18 +1,27 @@
 ;+
-; NAME:                  SimTimeStep
+; NAME:
+;  SimTimeStep
 ;
-; AIM: see <A>simtimeinit</A>
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:               Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
+; AIM:
+;     see <A>simtimeinit</A>
+;
+; PURPOSE:
+;                        Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
 ;                        zu protokollieren und nach der Gesamtsimulation eine Statistik/Graphik aus-
 ;                        zugeben.
+; CATEGORY:
 ;
-; CATEGORY:              ORGANISATION
+;  ExecutionControl
 ;
-; CALLING SEQUENCE:      SimTimeStep
-;             
+; CALLING SEQUENCE:
+;*      SimTimeStep
 ;
-; COMMON BLOCKS:         SimTime
+;
+; COMMON BLOCKS:
+;                   SimTime
 ;
 ; EXAMPLE:
 ;*                        SimTimeInit, GRAPHIC=5, /PRINT
@@ -21,36 +30,11 @@
 ;*                           SimTimeStep
 ;*                        END
 ;*                        SimTimeStop
-;-             
-; MODIFICATION HISTORY:
 ;
-;     $Log$
-;     Revision 1.8  2001/02/01 10:41:24  gabriel
-;           FLUSH for STDOUT inserted
-;
-;     Revision 1.7  2000/09/28 13:25:36  alshaikh
-;           added AIM
-;
-;     Revision 1.6  1998/06/29 13:10:38  gabriel
-;          CALLING SEQUENCE korrigiert
-;
-;     Revision 1.5  1998/06/19 09:22:08  gabriel
-;          Ausfuehrliche Ausgabe, CLEAR Keyword
-;
-;     Revision 1.4  1998/06/16 17:44:03  gabriel
-;          Ein paar neue Ausgaben
-;
-;     Revision 1.3  1998/06/09 16:38:18  gabriel
-;          Schreibfehler
-;
-;     Revision 1.2  1998/06/09 16:22:53  gabriel
-;          Jetzt mit Schaetzung der Simulationszeit bis zum Ende
-;
-;     Revision 1.1  1997/10/26 18:41:58  saam
-;           vom Himmel gefallen
-;
-;
+; SEE ALSO:   <A>simtimeinit</A>
+;  
 ;-
+
 PRO SimTimeStep
    
    COMMON SimTime, stat
