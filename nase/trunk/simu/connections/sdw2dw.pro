@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/04/06 15:35:54  thiel
+;            Tippfehler korrigiert.
+;
 ;     Revision 2.2  1998/04/05 13:51:53  saam
 ;           now conversion is less memory intensive
 ;
@@ -38,9 +41,11 @@
 
 FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
 
+
    IF (Info(_SDW) NE 'SDW_DELAY_WEIGHT') AND (Info(_SDW) NE 'SDW_WEIGHT') THEN Message, 'SDW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_SDW))+' !'
 
    dims = DWDim(_SDW, /ALL)
+   print, info(_sdw)
 
    IF Info(_SDW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN            
       DW = {  info    : 'DW_DELAY_WEIGHT',$
@@ -50,7 +55,7 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
               target_h: dims(3) ,$
               Weights : Weights(_SDW),$
               Delays  : Delays(_SDW)  }
-   END ELSE IF Info(SDW) EQ 'SDW_WEIGHT' THEN BEGIN
+   END ELSE IF Info(_SDW) EQ 'SDW_WEIGHT' THEN BEGIN
       DW = {  info    : 'DW_WEIGHT'  ,$
               source_w: dims(0) ,$
               source_h: dims(1) ,$
