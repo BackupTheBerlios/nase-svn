@@ -27,10 +27,13 @@
 ;  All the "U..." graphic routines.
 ;  
 ;-
-;
+; 
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/08/31 09:58:58  kupper
+;        Added space to turn watch on.
+;
 ;        Revision 1.3  2000/08/31 09:58:00  kupper
 ;        Renamed from XorWIN to ScreenDevice as MAC is now also supported.
 ;
