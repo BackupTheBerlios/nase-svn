@@ -62,7 +62,10 @@
 ;-------------> INIT CLUSTERS
    Console, democonsole, 'Initializing simulation...', /MSG
 
-   ; width and height of cluster 
+ 
+   duration = 5000 ; simulation lasts for 5000 BIN
+
+  ; width and height of cluster 
    w = 10
    h = 10
 
@@ -126,8 +129,8 @@
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
    Console, democonsole, 'Starting main simulation loop...', /MSG
-   SimTimeInit      
-   FOR t=0l,4999l DO BEGIN
+   SimTimeInit, MAXSTEPS=duration/100, /PRINT, CONSOLE=democonsole
+   FOR t=0l,duration-1 DO BEGIN
 
 ;-------------> CREATE INPUT
       ; generate two static squares
@@ -150,7 +153,7 @@
  
       IF (t MOD 1000) EQ 0 THEN BEGIN
          ShowNoMercy, CON_L1_L1, LESSTHAN=0.001
-         Console, democonsole, ' Pruning. New number of connections: '+ $
+         Console, democonsole, 'Pruning. New number of connections: '+ $
           Str(Weightcount(CON_L1_L1)), /MSG
       ENDIF
 
@@ -182,18 +185,16 @@
 
       IF (t MOD 500 EQ 0 AND t GT 1) THEN BEGIN
          ShowWeights, CON_L1_L1, /TOS, WINNR=1
-         Console, democonsole, ' Max weight: '+Str(MaxWeight(CON_L1_L1))+ $
+         Console, democonsole, 'Max weight: '+Str(MaxWeight(CON_L1_L1))+ $
           '     Min weight: '+Str(MinWeight(CON_L1_L1)), /MSG
       END
-      IF (t MOD 100 EQ 0) THEN BEGIN
-         ConsoleTime, democonsole,  MS=Float(t), BIN=t
-      ENDIF
+
+      IF (t MOD 100 EQ 0) THEN SimTimeStep
 
    END
-   SimTimeStep
    SimTimeStop
 
-   Console, democonsole, 'Main Simulation Loop done.', /MSG
+   Console, democonsole, 'Main simulation loop done.', /MSG
 
    FreeDw, CON_L1_L1
    FreeDw, CON_L1_L2
