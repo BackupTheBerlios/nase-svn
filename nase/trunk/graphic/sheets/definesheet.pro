@@ -9,91 +9,105 @@
 ;  Define a structure for device independent graphics output.
 ;
 ; PURPOSE:
-;  Definiert ein Window-,PS-Sheet oder Null-Sheet.
-;  Diese Routine und ihre Verwandten OpenSheet, CloseSheet, DestroySheet dienen als
-;  Ersatz fuer Window-, Set_Plot- und Device-Aufrufe und sollen eine äquivalente 
-;  Behandlungsweise von Window- und PS-Output ermoeglichen. DefineSheet definiert das
-;  Ausgabemedium (mit Optionen). Moechte man einen Bildschirm-Plot nun als PS in ein
-;  File schicken muss man nur diesen Aufruf aendern, alles andere bleibt gleich.
-;  Benutzt man dann noch die U-Routinen (UTvScl, ULoadCt,...) dann ist man voellig
-;  device-unabhaengig.
-;  Ein Sheet speichert außerdem wichtige Plotparameter (wie !X, !Y, !P, ...)
-;  intern ab, so daß diese beim späteren Öffnen eines Sheets wieder restauriert werden.
-;  Ab Revision 2.13 speichern die Sheets zusätzlich zu den Plotparametern auch
-;  die verwendetet Farbtabelle ab.
-;  Ab Revision 2.15 koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
+;  This routine is used to define a structure for device independent
+;  graphics output, a so called sheet. Sheets come in three differet
+;  types: windows-, postscript- and null-sheets. The idea behind this
+;  is that if the user wants his output to be written in a postscript
+;  file instead of a window on the screen, only the definition of the
+;  sheet type has to be modified while all other graphics output
+;  routines are left unchanged. In case that graphics output has to be
+;  totally suppressed, the null sheet can be used.
+;  Thus, sheets are a substitution for IDL's own Window-, Set_Plot-
+;  and Device-calls.<BR>
+;  Sheets remember their individual important plotting parameters by
+;  saving the system variables !X, !Y, and !P to enable their
+;  restauration on reopening. Furthermore, the current colortable is
+;  saved as well.<BR>
+;  Since version 2.15, sheets may also be used as child-widgets in
+;  widget applications.
 ;
 ; CATEGORY:
 ;  Graphic
 ;  Windows
 ;
 ; CALLING SEQUENCE:   
-;*Sheet = DefineSheet( [ Parent ]
-;*                     [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
+;* sheet = DefineSheet( [ parent ]
+;*                     [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=...]
 ;*                     [,/INCREMENTAL] [,/VERBOSE]
 ;*                     [,/PRIVATE_COLORS]
 ;*                     (,OPTIONS)* )
 ;
 ; OPTIONAL INPUTS: 
-;  Parent:: Eine Widget-ID des Widgets, dessen Kind das 
-;           neue Sheet-Widget werden soll.
+;  parent:: An ID of the widget that is intended to become the parent
+;           widget of the sheet to be created.
 ;
 ; INPUT KEYWORDS: 
-;  WINDOW::     Das Sheet wird auf dem Bildschirm dargestellt
-;  PS::         Das Sheet wird als PS in ein File gespeichert.
-;  NULL::       Das Sheet unterdrueckt jegliche Ausgabe
-;  MULTI::      Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
-;               Beschreibung des MULTI-Parameters s. <A HREF="../#SCROLLIT">ScrollIt()</A>.
-;               Wenn angegeben, ist das Ergebnis von DefineSheet ein MultiSheet (Array von Sheets).
-;  INCREMENTAL:: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
-;                File geschlossen. Malt man nun mehrmals in ein Sheet gibt es 
-;                zwei Moeglichkeit auf PS damit umzugehen. Entweder wird das
-;                alte File immer wieder ueberschrieben, oder ein neues File
-;                wird angelegt. Dies macht die Option INCREMENTAL; der Filename
-;                wird dabei um einen laufenden Index erweitert.
-;  VERBOSE::    DefineSheet wird gespraechig...
-;  PRIVATE_COLORS:: Nur sinnvoll bei Windows. 
-;                   Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
-;                   jedes Sheetchen, verarbeitet dann Tracking-Events, dh, die Farbtabelle
-;                   wird richtig gesetzt, wenn der Mauszeiger in das Widget weist.
-;                   Das speichern der
-;                   privaten Colormap wird von closesheet erledigt.
-;                   Dieses Schlüsselwort wird auf nicht-Pseudocolor-Displays (TrueColor,
-;                   DirectColor) ignoriert.
-;  OPTIONS::    Alle Optionen die das jeweilige Device versteht sind erlaubt.
-;  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
-;            [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
-;            [XY]DrawSize
-;  PS::          siehe Hilfe von Device, z.B.
-;          /ENCAPSULATED, BITS_PER_PIXEL, /COLOR, FILENAME
+;  WINDOW:: The graphics will be shown in a window on the screen.
+;  PS:: The graphics will be saved as a file in postscript format.
+;  NULL:: No graphics will be shwon at all.
+;  MULTI:: This is the equivalent to IDL's !P.MULTI. Several small
+;          sheets can be shown inside the same window frame. This
+;          option only makes sense when used with window-type
+;          sheets. For detaisl on the multi-parameter see
+;          <A>ScrollIt()</A>. If MULTI is set, the output of
+;          <C>DefineSheet()</C> is an array of sheet handles.
+;  INCREMENTAL:: This option works in PS-type sheets. If the same
+;                sheet is reopened and graphics output it repeatedly
+;                sent to this sheet, INCREMENTAL actually results in
+;                opening new files with an index added to the
+;                filename. Otherwise, new graphics overwrite the old output.
+;  VERBOSE:: <C>DefineSheet()</C> starts to babble.
+;  PRIVATE_COLORS:: Set this option to obtain an individual colormap
+;                   for each sheet. This does only make sense for
+;                   window-sheets. The option is passed to
+;                   <A>ScrollIt()</A> and causes the sheet to compute
+;                   tracking events, i.e. the colormap is set
+;                   correctly each time the mouse pointer enters the
+;                   sheet window. Saving the private colormap is
+;                   actually done by <A>CloseSheet</A>. On non-pseudocolor
+;                   displays (TrueColor, DirectColor), this option is ignored.
+;  OPTIONS:: Options that are understood by the respective device can
+;            be specified here.
+;  X-windows: see IDL online help on <C>Window</C> or <A>ScrollIt()</A>, e.g.
+;            <*>[XY]Title</*>, <*>[XY]Pos</*>, <*>[XY]Size</*>,
+;            <*>RETAIN</*>, <*>TITLE</*>, <*>COLOR</*>,
+;            <*>[XY]DrawSize</*>.<BR>
+;  PS: see IDL online help on <C>Device</C>, e.g.
+;          <*>/ENCAPSULATED</*>, <*>BITS_PER_PIXEL</*>, <*>/COLOR</*>,
+;          <*>FILENAME</*>.
 ;
-; OUTPUTS:            Sheet:: eine Struktur, die alle Sheet-Informationen enthaelt und an OpenSheet,
-;                            CloseSheet und DestroySheet uebergeben wird.
+; OUTPUTS: 
+;  sheet:: Handle on a structure that contains all necessary
+;          information. This handle has to be passed to <A>OpenSheet</A>,
+;          <A>CloseSheet</A> und <A>DestroySheet</A> later.
 ;
-; RESTRICTIONS: Man beachte, dass das
-;               Hinzufuegen eines Sheets/ScrollIts zu einer
-;               bereits realisierten Widget-Hierarchie in der
-;               aktuellen IDL-Version (5.0.2) unter KDE zu einem
-;               astreinen IDL-Absturz fuehrt!
-;
+; RESTRICTIONS:
+;  Note that the addition of a sheet or scrollit-widget to an existing
+;  widget hierarchy causes IDL (version 5.0.2) to crash.
 ;
 ; EXAMPLE:
-;*window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
-;*ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
-;*ps_sheet2    = DefineSheet( /PS, /VERBOSE, /INCREMENTAL, FILENAME='test2')
+;* window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
+;* ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
+;* ps_sheet2    = DefineSheet( /PS, /VERBOSE, /INCREMENTAL, FILENAME='test2')
 ;*
-;*sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;*OpenSheet, sheety
-;*Plot, Indgen(200)
-;*CloseSheet, sheety
-;*dummy = Get_Kbrd(1)
-;*DestroySheet, sheety
+;* sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;* OpenSheet, sheety
+;* Plot, Indgen(200)
+;* CloseSheet, sheety
+;* dummy = Get_Kbrd(1)
+;* DestroySheet, sheety
 ;
 ; SEE ALSO: <A>ScrollIt</A>, <A>OpenSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>
 ;
 ;-
-FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
-                      ,VERBOSE=verbose, MULTI=multi, PRIVATE_COLORS=private_colors, _EXTRA=e
+
+
+
+FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
+                      , FILENAME=filename, INCREMENTAL=incremental $
+                      , ENCAPSULATED=encapsulated, COLOR=color $
+                      ,VERBOSE=verbose, MULTI=multi $
+                      , PRIVATE_COLORS=private_colors, _EXTRA=e
 
    COMMON Random_Seed, seed
    COMMON ___SHEET_KILLS, sk
@@ -111,7 +125,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
 
    IF Keyword_Set(WINDOW) THEN BEGIN
       
-      IF Keyword_Set(VERBOSE) THEN Print, 'Defining a new Window.'
+      IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Defining a new window.'
       
       sheet = { type  : 'X'   ,$;;meaning it is a window (X or WIN Device)
                 $               ;no longer in here, since scrollits may
@@ -138,11 +152,11 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
       IF NOT Keyword_Set(FILENAME) THEN filename = 'sheet_'+STRING([BYTE(97+25*RANDOMU(seed,10))])
       
       IF Keyword_Set(VERBOSE) THEN BEGIN
-         Print, 'Defining a new Postscript:'
+         Console, /MSG, 'Defining a new postscript:'
          IF encapsulated THEN ty = 'eps' ELSE ty = 'ps'
          IF incremental  THEN tz = ', incremental' ELSE tz = ''
-         Print, '   Type:     ', ty, tz
-         Print, '   Filename: ', filename+'.'+ty
+         Console, /MSG, '   Type:     '+Str(ty)+Str(tz)
+         Console, /MSG, '   Filename: '+filename+'.'+Str(ty)
       END
 
       IF TypeOf(E) EQ "STRUCT" THEN BEGIN
@@ -179,7 +193,8 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
    
    ;;Child-Window-Sheets must be opened once to become part of the Parent widget!
    If Keyword_set(WINDOW) and (Parent ne -1) then begin
-      If Keyword_set(VERBOSE) then print, "Adding Sheet to Parent Widget."
+      If Keyword_set(VERBOSE) then $
+        Console, /MSG, "Adding sheet to parent widget."
       If keyword_set(MULTI) then begin
          opensheet, sheethandle, 0
          closesheet, sheethandle, 0
