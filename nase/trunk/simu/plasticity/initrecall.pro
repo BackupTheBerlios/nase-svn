@@ -50,7 +50,7 @@ FUNCTION InitRecall, DelMat, LINEAR=linear, EXPO=expo
       IF expo(0) LE 0.0        THEN Message, 'amplification <= 0 senseless'
       IF expo(1) LE 0.0        THEN Message, 'time-constant <= 0 senseless'
 
-      LP = { type   : 'e'     ,$
+      LP = { info   : 'e'     ,$
              v      : expo(0) ,$
              dec    : exp(-1./expo(1)) ,$
              values : FltArr( DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h )  }
@@ -64,7 +64,7 @@ FUNCTION InitRecall, DelMat, LINEAR=linear, EXPO=expo
       IF linear(0) LE 0.0        THEN Message, 'amplification <= 0 senseless'
       IF linear(1) GT linear(0)  THEN Message, 'decrement > amplification senseless'
       
-      LP = { type   : 'l'     ,$
+      LP = { info   : 'l'     ,$
              v      : linear(0) ,$
              dec    : linear(1) ,$
              values : FltArr( DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h )  }

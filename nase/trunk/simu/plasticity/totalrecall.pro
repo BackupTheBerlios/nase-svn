@@ -57,7 +57,8 @@
 ;
 ;-
 PRO TotalRecall, LP, In
-   IF LP.type EQ 'e' THEN BEGIN
+
+   IF LP.info EQ 'e' THEN BEGIN
       active = WHERE(LP.values GT !NoMercyForPot, count)
       IF count NE 0 THEN BEGIN
          LP.values(active) = LP.values(active) * LP.dec
@@ -70,7 +71,7 @@ PRO TotalRecall, LP, In
       IF count NE 0 THEN LP.values(active) = LP.values(active) + LP.v
    END
 
-   IF LP.type EQ 'l' THEN BEGIN
+   IF LP.info EQ 'l' THEN BEGIN
       active = WHERE(LP.values GE LP.dec, count)
       IF count NE 0 THEN BEGIN
          LP.values(active) = LP.values(active) - LP.dec
