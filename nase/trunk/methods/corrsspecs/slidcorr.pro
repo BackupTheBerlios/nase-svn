@@ -105,6 +105,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  1998/06/03 11:28:04  gabriel
+;          PLOT Titel geaendert
+;
 ;     Revision 1.6  1998/06/02 11:37:05  saam
 ;           Keyword Noperiod eliminated, its default now
 ;
@@ -348,7 +351,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
                                          (plotdim/FLOOR(ergsize(2)))*ergsize(2)*2)
          
          PlotTvScl,tmparr,XRANGE=[MIN(taxis),MAX(taxis)],YRANGE=[0,MAX(fdata)],CHARSIZE=1.0,/LEGEND,$
-         YTITLE="Frequency [Hz]", TITLE="Formant-Plot" ,/FULLSHEET, GET_POSITION=PlotPosition
+         YTITLE="Frequency [Hz]", TITLE="SlidPowSpec-Plot" ,/FULLSHEET, GET_POSITION=PlotPosition
          fw = PlotPosition(2)-PlotPosition(0)
          fh = PlotPosition(3)-PlotPosition(1)
          fytick = fh/(N_ELEMENTS(fdata)/2)                       ;stop
