@@ -1,38 +1,66 @@
 ;+
-; NAME:                SLICES
+; NAME:
+;  SLICES
 ;
-; PURPOSE:             Bildet fuer ein Array ein Sliding Array.
-;                      Das Array wird in ueberlappende Teilarrays zerlegt.
-;                      Dies ist fuer gleitende Spektren, Korrelation,...
-;                      notwendig. Datenpunkte, die nicht mehr in ein 
-;                      vollstaendiges Fenster passen, werden ignoriert.
-;                       
-; CATEGORY:            STAT
+; PURPOSE:
+;  Divides an array into parts of a fixed length and with fixed
+;  distance and returns these parts in another array so that they can
+;  be processed separately. Parts may overlap depending on the chosen
+;  size and distance. The result can then be used for sliding spectra
+;  correlation or firing rate analysis etc. In those cases, the last
+;  index of the original array is considered to be the "time
+;  index". Data at the beginning and the end of the original array not
+;  fitting into the first/last part are not returned.
 ;
-; CALLING SEQUENCE:    s = SLICES(A [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] $
-;                                 [,TVALUES=tvalues] [,TINDICES=tindices] )
+; CATEGORY:
+;  METHODS
 ;
-; INPUTS:              A : das zu zerschneidende Array. Ist das Array mehrdimensional, so
-;                          wird der letzte Index als Zeit betrachtet!
+; CALLING SEQUENCE: 
+;  s = Slices (a [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] $
+;                [,TVALUES=tvalues] [,TINDICES=tindices] )
+; 
+; INPUTS: 
+;  a : The array to be divided. If multidimensional, the array is
+;      divided according to the last index (the time index).
 ;
-; KEYWORD PARAMETERS:  SSIZE       : die Groesse eines Zeitfensters (Default: 128ms)
-;                      SSHIFT      : der Versatz des Fensters (Default: SSIZE/2)
-;                      SAMPLEPERIOD: die Abtastung des Signals in Sekunden (Default: 0.001s)
+; OPTIONAL INPUTS:
+;  ssize        : Size of resulting parts. (Default: 128ms)
+;  sshift       : Distance between parts. (Default: ssize/2)
+;  sampleperiod : Duration of the sampling period (Default: 0.001s)
 ;
-; OPTIONAL OUTPUTS:    TVALUES     : gibt die Anfangszeiten der einzelnen Slices zurueck
-;                      TINDICES    : gibt die Arrayindizes der Anfangszeiten der einzelnen Slices zurueck
+; OUTPUTS: 
+;  s: Array containing the parts of array a arranged like (slice_nr,
+;     data)
 ;
-; OUTPUTS:             s: ein Array das Form (slice_nr, data), das die Zeitschnitte enthaelt
+; OPTIONAL OUTPUTS: 
+;  tvalues  : Returns the times at which parts start.
+;  tindices : Returns starting time array indices of the parts.
 ;
-; EXAMPLE:             
-;                      a = Indgen(1000)
-;                      b = SLICES(a, SSIZE=100)
-;                      help, b
-;                         B               INT       = Array(100, 19)     
+; PROCEDURE:
+;  - Calculate number of parts needed for given ssize and sshift.
+;  - Determine size of array to be returned.
+;  - Compute starting indices of parts.
+;  - Store parts inside return array.
+;
+; EXAMPLE: 
+;  a=RandomU(s,3,500) LT 0.1
+;  ; generate 3 spiketrains each 500ms long
+;  b=Slices(a, SSIZE=100)
+;  ; divide them, parts are 100ms and begin each 50ms (default for SSHIFT)
+;  help, b
+;  B               BYTE      = Array[9, 3, 100]
+;  b contains 9 slices of 3 spiketrains 100ms long
+;  Trainspotting, Reform(b(3,*,*))
+;  ; show slice no. 3          
+;
+; SEE ALSO: <A HREF="./signals/#INSTANTRATE">Instantrate</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/02/23 12:30:47  thiel
+;         Optimized. LEXTRAC is no longer used. Header translated.
+;
 ;     Revision 1.6  1998/07/28 12:54:19  gabriel
 ;          SSIZE SSHIFT jetzt lokale Variablen
 ;
@@ -52,9 +80,11 @@
 ;     Revision 1.1  1998/06/08 09:33:28  saam
 ;           hope it works
 ;
-;
 ;-
-FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALUES=tvalues, TINDICES=tindices
+
+
+FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
+                 , TVALUES=tvalues, TINDICES=tindices
 
    On_Error, 2
 
@@ -65,33 +95,37 @@ FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALU
    __SSIZE = LONG(ssize*os)
    __SSHIFT = LONG(sshift*os)
 
-   S = SIZE(A)   
-  
+   S = SIZE(a)   
+ 
+   IF __SSIZE GT s(s(0)) THEN Message, 'SSIZE too large.'
+ 
    steps = (S(S(0))-__ssize)/__sshift
-   tvalues = FLTARR(steps+1)
-   tindices = LONARR(steps+1)
 
    Sn = N_Elements(S)
    SB = [steps+1]
    IF S(0) GT 1 THEN SB = [SB, S(1:S(0)-1)] 
    SB = [SB, __SSIZE]
    SB = [S(0)+1, SB, S(S(0)+1), PRODUCT(SB)]
-   B =  Make_Array(SIZE=SB)
+   b =  Make_Array(SIZE=SB)
+   
+   tvalues = FIndGen(steps+1)*__SSHIFT/OS
+   tindices = LIndGen(steps+1)*__SSHIFT
 
    FOR slice=0,steps DO BEGIN
-      tvalues(slice) = slice*__SSHIFT/OS
-      tindices(slice) = slice*__SSHIFT
+      start = slice*__SSHIFT
       CASE s(0) OF
-	      1: B(slice,*)           = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
-	      2: B(slice,*,*)         = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
-	      3: B(slice,*,*,*)       = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
-	      4: B(slice,*,*,*,*)     = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
-	      5: B(slice,*,*,*,*,*)   = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
-	      6: B(slice,*,*,*,*,*,*) = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
-           ELSE: Message, 'array has tooo much dimensions'
-        END
-;      print, slice*__SSHIFT, ':', slice*__SSHIFT+__SSIZE-1
+         1: b(slice,*)           = a(start:start+__SSIZE-1)
+         2: b(slice,*,*)         = a(*,start:start+__SSIZE-1)
+         3: b(slice,*,*,*)       = a(*,*,start:start+__SSIZE-1)
+         4: b(slice,*,*,*,*)     = a(*,*,*,start:start+__SSIZE-1)
+         5: b(slice,*,*,*,*,*)   = a(*,*,*,*,start:start+__SSIZE-1)
+         6: b(slice,*,*,*,*,*,*) = a(*,*,*,*,*,start:start+__SSIZE-1)
+
+         ELSE: Message, 'array has tooo much dimensions'
+      END
    END
 
-   RETURN, B
+   RETURN, b
+
+
 END
