@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1998/06/23 12:28:15  saam
+;             bugfix
+;
 ;       Revision 1.1  1998/06/01 14:42:48  saam
 ;             extended and documented for NASE
 ;
@@ -93,7 +96,7 @@ FUNCTION OscFreq, _sig, PLOT=plot, WAIT=WAIT, CRIT=crit, OS=os, CL=cl, _EXTRA=e
    ; peak maxima
    UPeakPicker, ac, t, ym, tm, mn, DELTA=10, RELATIVCRIT=crit, _EXTRA=e
 
-   IF mn LE 0 THEN BEGIN
+   IF mn LE 1 THEN BEGIN
       Print, "OSCFREQ: data isn't rhythmic"
       RETURN, -1
    END
