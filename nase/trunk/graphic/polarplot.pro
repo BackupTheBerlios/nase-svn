@@ -43,8 +43,8 @@
 ;                  MCOLOR  : Farbindex fuer den Mittelwert         (Default: weiss)
 ;                  SDCOLOR : Farbindex fuer die Standardabweichung (Default: dunkelblau) 
 ;                  ORIGPT:   Original Stuetzstellen werden als Kreise
-;                            mit dem Radius ORIGPT * max(radius)*1.2/20. eingezeichnet
-;                            (default: 1) 
+;                            mit dem Radius ORIGPT  eingezeichnet
+;                            (default: 0) 
 ;
 ; OUTPUTS: Polardarstellung der Daten auf dem aktuellen Plot-Device.
 ;
@@ -60,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.15  2000/07/05 16:20:20  gabriel
+;             BUGFIX Origpt
+;
 ;        Revision 2.14  2000/07/05 13:36:36  gabriel
 ;             Keyword ORIGPT new
 ;
@@ -227,8 +230,13 @@ ENDIF
 
 oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
 if ORIGPT GT 0 then begin
+ 
+ 
+   r = ORIGPT
+   PHI=findgen(40+1)*2*!PI/40. 
+   y=r*sin(PHI) & x=r*cos(PHI) 
+   usersym,x,y,/fill
 
-   r = ORIGPT*max(radiusarray)*1.2/20. & PHI=findgen(40+1)*2*!PI/40. & y=r*sin(PHI) & x=r*cos(PHI) &  usersym,x,y,/fill
    oplot,radiusarray, winkelarray,/polar,PSYM=8
 
 endif
