@@ -31,15 +31,22 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
-; $Log$
-; Revision 1.6  1997/10/27 11:16:51  thiel
-;        Dokumentations-Header wurde ergaenzt,
-;        enthaelt jetzt auch die Tags.
+;       $Log$
+;       Revision 1.7  1998/01/14 20:21:42  saam
+;             Die Potentiale koennen nun zufaellig
+;             vorbelegt werden
+;
+;       Revision 1.6  1997/10/27 11:16:51  thiel
+;             Dokumentations-Header wurde ergaenzt,
+;             enthaelt jetzt auch die Tags.
 ;
 ;
 ;-
 
 FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
+
+   COMMON Common_Random, seed
+
 
    IF (NOT Keyword_Set(width))  THEN Message, 'Keyword WIDTH expected'
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
@@ -56,9 +63,9 @@ FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
              h      : height               ,$
              para   : type                 ,$
              decr   : 1                    ,$ ;decides if potentials are to be decremented or not
-             F      : DblArr(width*height) ,$
-             L      : DblArr(width*height) ,$
-             I      : DblArr(width*height) ,$
+             F      : type.ns*Double(RandomU(seed,width*height)) ,$
+             L      : type.ns*Double(RandomU(seed,width*height)) ,$
+             I      : type.ns*Double(RandomU(seed,width*height)) ,$
              M      : DblArr(width*height) ,$
              S      : DblArr(width*height) ,$
              O      : handle}
