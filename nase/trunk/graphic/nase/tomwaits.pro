@@ -2,10 +2,11 @@ PRO TomWaits_Event, Event
 
    EventType = Tag_Names(Event, /STRUCTURE_NAME)
 
+   Widget_Control, Event.Id, GET_UVALUE=uval
+   Widget_Control, Event.Top, GET_UVALUE=data
+   
    Case EventType of
       'WIDGET_BUTTON': begin
-         Widget_Control, Event.Id, GET_UVALUE=uval
-         Widget_Control, Event.Top, GET_UVALUE=data
          Case uval.info of
             'TOMWAITS_WEIGHTS': begin
                data.delay = 0
@@ -18,7 +19,7 @@ PRO TomWaits_Event, Event
                data.colormode = get_colormode
             end
             'TOMWAITS_PROJECTIVE': begin
-               Widget_Control, uval.id_other, SET_BUTTON=0
+               Widget_Control, uval.id_other, SET_BUTTON=0 ;explizit machen, da sie nicht in der gleichen Base sind!
                data.projective = 1
                data.receptive  = 0
                ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /PROJECTIVE
@@ -38,9 +39,58 @@ PRO TomWaits_Event, Event
          endcase
          Widget_Control, Event.Top, SET_UVALUE=data
       end
+      
+      'WIDGET_DRAW': begin
+         If Event.Type eq 0 then begin ;Mouse Button Press
+;            If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
+;               print, event.clicks
+;               If data.projective then begin
+;                  col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
+;                  row = Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
+;                  mag = Widget_Draw(Event.Top, $
+;                                    XOFFSET=col*DWDim(data.DW, /SW), $
+;                                    YOFFSET=row*DWDim(data.DW, /SH))
+;                  W = ShowWeights_Scale(Weights(data.DW, /DIMENSIONS))
+;                  nasetv, W(row, col, *, *), ZOOM=data.magnify
+;               Endif 
+;                                ;Cursor, dummy, dummy, 4 ;Wait for Button up
+;               Widget_Control, mag, /DESTROY
+;            Endif               ;Left Button
+            
+            If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
+               If data.projective then begin
+                  col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
+                  row = DWDim(data.DW, /SH)-1-Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
+                  print,  row, col
+                  Surfit, TITLE="Projective Field of Source-Neuron ("+str(row)+","+str(col)+")", $
+                   GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(row, col, *, *), /JUST_REG
+               Endif
+               If data.receptive then begin
+                  col = Event.X/(DWDim(data.DW, /TW)*data.zoom+1)
+                  row = DWDim(data.DW, /TH)-1-Event.Y/(DWDim(data.DW, /TH)*data.zoom+1)
+                  Surfit, TITLE="Receptive Field of Target-Neuron ("+str(row)+","+str(col)+")", $
+                   GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(*, *, row, col), /JUST_REG
+               Endif
+            Endif               ;Middle Button
+
+            If (Event.Press and 4) eq 4 then begin ;Right Mouse Button
+               If data.projective then begin
+                  col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
+                  row = DWDim(data.DW, /SH)-1-Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
+                  ExamineIt, GROUP=Event.Top, reform(/OVERWRITE, (Weights(data.dw, /DIMENSIONS))(row, col, *, *)), ZOOM=data.magnify, /JUST_REG
+               Endif
+               If data.receptive then begin
+                  col = Event.X/(DWDim(data.DW, /TW)*data.zoom+1)
+                  row = DWDim(data.DW, /TH)-1-Event.Y/(DWDim(data.DW, /TH)*data.zoom+1)
+                  ExamineIt, GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(*, *, row, col), ZOOM=data.magnify, /JUST_REG
+               Endif
+            Endif               ;Middle Button
+
+         endif                  ;Button Press
+      end                       ;WIDGET_DRAW event
       else: message, /INFO, "I don't know this Event!"
    endcase
-END
+END 
 
 
 PRO TomWaits, GROUP=Group, $
@@ -48,7 +98,8 @@ PRO TomWaits, GROUP=Group, $
               GET_BASE=get_base, $
               FROMS=froms,  TOS=tos, DELAYS=delay, $
               PROJECTIVE=projective, RECEPTIVE=receptive, $
-              GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode              
+              GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
+              JUST_REG=just_reg
 
   Default, GROUP, 0
   Default, TITLE, TITEL
@@ -63,6 +114,8 @@ PRO TomWaits, GROUP=Group, $
   Default, Delay, 0
   Default, GET_MAXCOL, -99
   Default, GET_COLORMODE, -99
+
+  Default, MAGNIFY, 10
 
   ;;------------------> Größe des Draw-Widgets:
   xsize = DWDim(DW, /SW)*DWDim(DW, /TW)*zoom
@@ -94,12 +147,20 @@ PRO TomWaits, GROUP=Group, $
   ;;--------------------------------
 
 
-  Base = WIDGET_BASE(GROUP_LEADER=Group, $
-                     /COLUMN, /BASE_ALIGN_CENTER, $
-                     XPAD=10, $
-                     YPAD=10, $
-                     MAP=1, $
-                     TITLE=title) ;UVALUE wird unten gesetzt!
+If fix(!VERSION.Release) lt 4 then $ ;IDL 3.6-Version:
+ Base = WIDGET_BASE(GROUP_LEADER=Group, $
+                    /COLUMN, $
+                    XPAD=10, $
+                    YPAD=10, $
+                    MAP=1, $
+                    TITLE=title) $ ;UVALUE wird unten gesetzt!
+else $;höhere IDL-Versionen kennen BASE_ALIGN:
+ Base = WIDGET_BASE(GROUP_LEADER=Group, $
+                    /COLUMN, /BASE_ALIGN_CENTER, $
+                    XPAD=10, $
+                    YPAD=10, $
+                    MAP=1, $
+                    TITLE=title) ;UVALUE wird unten gesetzt!
 
   Draw = WIDGET_DRAW( Base, $
                       BUTTON_EVENTS=1, $
@@ -110,8 +171,13 @@ PRO TomWaits, GROUP=Group, $
                       X_SCROLL_SIZE=x_scroll_size, $;sichtbare größe
                       Y_SCROLL_SIZE=y_scroll_size)
 
-  Base_Buttons = WIDGET_BASE(Base, /COLUMN, /BASE_ALIGN_CENTER, SPACE=10)
-  Base_Buttons_Mode = WIDGET_BASE(FRAME=4, Base_Buttons, /ROW, /BASE_ALIGN_CENTER, SPACE=10)
+If fix(!VERSION.Release) lt 4 then begin ;IDL 3.6-Version:
+   Base_Buttons = WIDGET_BASE(Base, /COLUMN, SPACE=10)
+   Base_Buttons_Mode = WIDGET_BASE(FRAME=4, Base_Buttons, /ROW, SPACE=10)
+Endif else begin                ;höhere IDL-Versionen kennen BASE_ALIGN:
+   Base_Buttons = WIDGET_BASE(Base, /COLUMN, /BASE_ALIGN_CENTER, SPACE=10)
+   Base_Buttons_Mode = WIDGET_BASE(FRAME=4, Base_Buttons, /ROW, /BASE_ALIGN_CENTER, SPACE=10)
+endelse
   Base_Buttons_Do   = WIDGET_BASE(Base_Buttons, /ROW, SPACE=50)
   Base_Buttons_Left  = WIDGET_BASE(Base_Buttons_Mode, /COLUMN, /EXCLUSIVE)
   Base_Buttons_Mid   = WIDGET_BASE(Base_Buttons_Mode, /COLUMN, /EXCLUSIVE)
@@ -175,8 +241,9 @@ PRO TomWaits, GROUP=Group, $
                                     projective: projective, $
                                     receptive: receptive, $
                                     delay: delay, $
-                                    colormode: get_colormode}
+                                    colormode: get_colormode, $
+                                    magnify: magnify}
 
-  If fix(!VERSION.Release) ge 5 then XMANAGER, 'TomWaits', Base, /NO_BLOCK $
-  else XMANAGER, 'TomWaits', Base
+  If fix(!VERSION.Release) ge 5 then XMANAGER, 'TomWaits', Base, /NO_BLOCK, JUST_REG=just_reg $
+  else XMANAGER, 'TomWaits', Base, JUST_REG=just_reg
 END
