@@ -31,15 +31,21 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/08/31 09:53:25  kupper
+;        Now returns correct value for all operating systems.
+;
 ;        Revision 1.1  2000/08/30 22:35:20  kupper
 ;        Changed Set_Plot, 'X' to Set_Plot, XorWIN().
 ;
 ;
 Function XorWIN
 
-   if strupcase(!Version.OS_Family) eq "WINDOWS" then $
-    return, "WIN" $
-   else $
-    return, "X"
+   cas strupcase(!Version.OS_Family) of
+   "MACOS": return, "MAC"
+   "VMS": return, "X"
+   "WINDOWS": return, "WIN"
+   "UNIX": return, "X"
+   else: Message, "Connot determine windows device - unrecognized " + $
+    "operating system."
 
 End
