@@ -84,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/07/04 15:13:31  gabriel
+;          FIX for slow velocities
+;
 ;     Revision 1.5  1999/03/21 13:33:43  gabriel
 ;          Phase Null Korrektur
 ;
@@ -151,7 +154,7 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       tmparray = a(*,*,i)
    END ELSE BEGIN 
       tmparray = congrid(a(*,*,i),N_ELEMENTS(distance_ax),N_ELEMENTS(delay_ax),cubic=-0.5,/minus)
-      ;spezial correktur interpolation verschmiert das Maximum der Autokorrelation 
+      ;spezial correktur, interpolation verschmiert das Maximum der Autokorrelation 
       maxofarr = max(tmparray)
       tmparray = tmparray/maxofarr
       tmparray(N_ELEMENTS(distance_ax)/2,N_ELEMENTS(delay_ax)/2) = maxofarr
@@ -175,18 +178,23 @@ FOR i=0 ,sa(3)-1 DO BEGIN
    findex = lindgen(N_ELEMENTS(x_indtmp))
    CHISQ = 200
    max_sdev = 1.
+   steig = (last(delay_ax)-delay_ax(0))/(distance_ax(last(findex))-distance_ax(findex(0)))
    ;;max_moment = umoment(tmpmax(findex),SDEV=MAX_SDEV)
    IF verbose EQ 1 THEN print,"-------------------------------------------------------------"
 
    WHILE (MAX_SDEV GT CORRSTRENGTH_CRIT) OR (CHISQ GT CHISQ_CRIT) DO BEGIN
       ;;Verteilung der Maxima ohne autocorr
-      tmpfindex = (shift(findex,-N_ELEMENTS(findex)/2))(1:*) 
+      tmpfindex = (shift(findex,-N_ELEMENTS(findex)/2))(1*interpol:*) 
       ;stop
-      max_moment = umoment(tmpmax(tmpfindex),SDEV=MAX_SDEV)
-      TMP_MAX_SDEV=MAX_SDEV
+      ;tmp_max_moment = umoment(FZT(tmpmax(tmpfindex),-1))
+      ;max_moment = FZT(tmp_max_moment,1)
+      ;MAX_SDEV = FZT(sqrt(tmp_max_moment(1)),1)
+      max_moment = umoment(tmpmax(tmpfindex),SDEV=MAX_SDEV )
+      TMP_MAX_SDEV=MAX_SDEV 
       ;;linearer Fit
       regtmp = linfit(x_indtmp(findex),t_indtmp(findex),CHISQ=CHISQ)  
       CHISQ = CHISQ/FLOAT(N_ELEMENTS(findex))
+      steig = (last(delay_ax)-delay_ax(0))/(distance_ax(last(findex))-distance_ax(findex(0)))
       IF verbose EQ 1 THEN print,"CHISQ:",CHISQ,'  MEDIAN:',max_moment(0),'  MAX_SDEV:',MAX_SDEV ,'  SUPPORTP:',N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
       IF (MAX_SDEV GT CORRSTRENGTH_CRIT)  OR  (CHISQ GT CHISQ_CRIT) THEN findex = findex(1:N_ELEMENTS(findex)-2)
       
@@ -197,7 +205,12 @@ FOR i=0 ,sa(3)-1 DO BEGIN
          IF verbose EQ 1 THEN print,'--------> TO THE TRUSH'
          ENDIF
    ENDWHILE
-
+   ;;steigungkriterium
+   IF N_ELEMENTS(findex)+1 LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) LT abs(steig) THEN BEGIN
+      CHISQ = -1
+      MAX_SDEV = 0
+      IF verbose EQ 1 THEN print,'Steigung --------> TO THE TRUSH'
+   ENDIf
    IF PLOT EQ 1 THEN BEGIN
       oplot,X_indtmp(findex),t_indtmp(findex),PSYM=1
       IF CHISQ NE -1 THEN oplot,distance_ax,regtmp(0)+regtmp(1)*distance_ax
@@ -221,6 +234,9 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       device,copy=[0,0,XSIZE,.5*XSIZE-1,0,0,getwinid(pix_2)]
       closesheet,sheet_1
    ENDIF
+;;   IF N_ELEMENTS(findex)+(1*interpol) LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) GE abs(steig) AND CHISQ NE -1 THEN BEGIN
+;;      stop
+ ;;  ENDIF
    vel(i) = regtmp(1)
    iCHISQ(i) = CHISQ
    iMED_CORRSTRENGTH(i) = max_moment(0)
