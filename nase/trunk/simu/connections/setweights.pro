@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/08/31 13:02:20  thiel
+;         Messages disabled.
+;
 ;     Revision 2.5  1999/08/17 14:15:07  thiel
 ;         Bugfix in Old_DW_Part of SetWeights.
 ;         Setweight now uses new version of SetWeights.
@@ -63,7 +66,7 @@ PRO SetWeights, _DW, W, NO_INIT=no_init, DIMENSIONS=dimensions
    Default, dimensions, 0
 
    IF Keyword_Set(NO_INIT) THEN BEGIN ; execute new version
-      Message, /INFO, 'NEW version of SetWeights executed.'
+;      Message, /INFO, 'NEW version of SetWeights executed.'
 
 
       CASE 1 OF 
@@ -101,7 +104,7 @@ PRO SetWeights, _DW, W, NO_INIT=no_init, DIMENSIONS=dimensions
 
 
    ENDIF ELSE BEGIN             ; execute old version:
-      Message, /INFO, 'Old version of SetWeights executed.'
+;      Message, /INFO, 'Old version of SetWeights executed.'
       IStr = Info(_DW) 
       IF (IStr EQ 'SDW_WEIGHT') OR (IStr EQ 'SDW_DELAY_WEIGHT') THEN sdw = 1 ELSE sdw = 0
       IF NOT sdw AND (IStr NE 'DW_WEIGHT') AND (IStr NE 'DW_DELAY_WEIGHT') THEN Message,'DW structure expected, but got '+iStr+' !'
