@@ -6,7 +6,7 @@
 ;
 ; CATEGORY:            FILES+DIRS ZIP
 ;
-; CALLING SEQUENCE:    lun = UOpenR(file [,/VERBOSE] [,/ZIP])
+; CALLING SEQUENCE:    lun = UOpenR(file [,/VERBOSE])
 ;
 ; INPUTS:              file: die zu oeffnende Datei (ohne ZIP-Endung)
 ;
@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/10/28 14:58:55  saam
+;           bug in docheader
+;
 ;     Revision 2.3  1998/10/26 13:54:35  saam
 ;           returns if an error occurs
 ;
