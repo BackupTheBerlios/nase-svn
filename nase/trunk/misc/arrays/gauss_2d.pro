@@ -49,7 +49,14 @@
 ;
 ;
 ;
-; RESTRICTIONS: Man beachte, dass die Arraydimensionen ungerade sein müssen, wenn der Berg symmetrisch im Array liegen soll!
+; RESTRICTIONS: Man beachte, dass die Arraydimensionen ungerade sein müssen,
+;               wenn der Berg symmetrisch im Array liegen soll!
+;
+;               Für XHWB != YHWB liefert die Funktion das Produkt zweier
+;               eindimensionaler Gaussfunktionen. Dies ist nicht wirklich
+;               äquivalent zu einer elliptischen Gaussfunktion. (?)
+;               Abhilfe: Eine noch zu implementierende elliptische
+;                        DIST()-Funktion als Grundlage verwenden!
 ;
 ;
 ;
@@ -65,6 +72,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  2000/02/29 15:03:05  kupper
+;        Added comment on case XHWB != YHWB.
+;
 ;        Revision 1.9  2000/02/29 14:56:10  kupper
 ;        Added a "Temporary" here and there.
 ;
