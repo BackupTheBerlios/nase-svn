@@ -9,8 +9,8 @@
 ;  
 ;
 ; PURPOSE:
-;  (When referencing this very routine in the text, please use
-;  <C>RoutineName</C>.)
+;  (When referencing this very routine in the text as well as all IDL
+;  routines, please use <C>RoutineName</C>.)
 ;
 ; CATEGORY:
 ;  Algebra
