@@ -92,6 +92,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/03/17 15:16:14  kupper
+;     Shiftsize-warning-message now is informational!
+;
 ;     Revision 1.4  1998/02/02 19:28:51  gabriel
 ;          nochmal Log
 ;
@@ -106,7 +109,7 @@
 function create_index , S ,DIM
          if S GT (DIM ) then begin
              S = (DIM)
-             Message,"Warning: Shiftsize greater than dimension of array"
+             Message, /Informational, "Warning: Shiftsize greater than dimension of array"
          endif
          FROM =  ( ( DIM -1 + S + 1  ) MOD ( DIM  ) ) * ( S LT 0 ) 
          TO   = ( S LT 0 ) * (DIM-1) + ( (S - 1 ) MOD ( DIM  ) ) * ( S GT 0 ) 
