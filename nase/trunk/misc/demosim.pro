@@ -6,8 +6,8 @@
 ;          verdeutlichen. Im einzelnen sind dies Routinen
 ;          
 ;          -zur Behandlung von Neuronenschichten: 
-;            <A HREF="../simu/layers/#INITPARA_1">InitPara_1</A>, <A HREF="../simu/layers/#INITLAYER_1">InitLayer_1</A>, <A HREF="../simu/layers/#INPUTLAYER_1">InputLayer_1</A>, <A HREF="../simu/layers/#PROCEEDLAYER_1">ProceedLayer_1</A>,
-;            <A HREF="../simu/layers/#FREELAYER_1">FreeLayer_1</A>
+;            <A HREF="../simu/layers/#INITPARA_1">InitPara_1</A>, <A HREF="../simu/layers/#INITLAYER">InitLayer</A>, <A HREF="../simu/layers/#INPUTLAYER">InputLayer</A>, <A HREF="../simu/layers/#PROCEEDLAYER">ProceedLayer</A>,
+;            <A HREF="../simu/layers/#FREELAYER">FreeLayer</A>
 ;
 ;          -zur Behandlung von Verbindungen zwischen Neuronenschichten:
 ;            <A HREF="../simu/connections/#INITDW">InitDW</A>, <A HREF="../simu/connections/#DELAYWEIGH">DelayWeigh</A>, <A HREF="../simu/connections/#FREEDW">FreeDW</A>
@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.14  1998/11/06 13:59:45  thiel
+;              Jetzt wieder auf dem aktuellen Stand.
+;
 ;       Revision 1.13  1998/02/19 13:36:06  thiel
 ;              Hoffentlich stimmen die Hyperlinks jetzt.
 ;
@@ -103,12 +106,12 @@ Window, 2, XSIZE=800, YSIZE=400
    ; initialize parameters for a cluster of type 1 neurons (first order leaky integrators for feeding, linking, inhibition and threshold, noise amplitude sigma=0.5)
    Layer1 = InitPara_1( TAUF=10.0, TAUL=5.0, TAUI=15.0, VS=30.0, TAUS=10.0, TH0=1.0, SIGMA=0.5)
    ; initialize two dimensional layer (w*h neurons) with parameters defined above
-   L1 = InitLayer_1(WIDTH=w, HEIGHT=h, TYPE=Layer1)    
+   L1 = InitLayer(WIDTH=w, HEIGHT=h, TYPE=Layer1)    
 
    ; initialize parameters for a cluster of type 1 neurons (first order leaky integrators for feeding, linking, inhibition and threshold, no noise(default) )
    Layer2 = InitPara_1( TAUF=10.0, TAUL=5.0, TAUI=10.0, VS=1.0, TAUS= 5.0, TH0=1.0, SIGMA=0.0)
    ; initialize layer consististing of 1 interneuron
-   L2 = InitLayer_1(WIDTH=1, HEIGHT=1, TYPE=Layer2)
+   L2 = InitLayer(WIDTH=1, HEIGHT=1, TYPE=Layer2)
 
 
    ; will contain cluster outputs
@@ -178,11 +181,11 @@ Window, 2, XSIZE=800, YSIZE=400
 
 ;-------------> PROCEED NEURONS
       ; Input -> Layer -> Output
-      InputLayer_1, L1, FEEDING=I_L1_F, LINKING=I_L1_L, INHIBITION=I_L1_I
-      ProceedLayer_1, L1
+      InputLayer, L1, FEEDING=I_L1_F, LINKING=I_L1_L, INHIBITION=I_L1_I
+      ProceedLayer, L1
 
-      InputLayer_1, L2, FEEDING=I_L2_F
-      ProceedLayer_1, L2
+      InputLayer, L2, FEEDING=I_L2_F
+      ProceedLayer, L2
 
       O_L1(*,t MOD 500) = Out2Vector(L1.O)
       O_L2(*,t MOD 500) = Out2Vector(L2.O)
@@ -210,8 +213,8 @@ Window, 2, XSIZE=800, YSIZE=400
    FreeDw, CON_L1_L2
    FreeDw, CON_L2_L1
 
-   FreeLayer_1, L1
-   FreeLayer_1, L2
+   FreeLayer, L1
+   FreeLayer, L2
 
    FreeRecall, LP_L1_l1
 
