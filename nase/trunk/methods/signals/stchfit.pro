@@ -118,17 +118,21 @@ function  __cos_stch, x, y, p
 end
 
 function  __gauss_stch, x, y, p
-   return, ( p(0)*exp(-(x-y*p(1))^2/(2*p(2)^2)))
+   return, ( p(0)*(exp(-(x-y*p(1))^2/(2*p(2)^2))-0.5)*2.0) 
+   ;return, ( p(0)*(exp(-abs(x-y*p(1))/(2*p(2)))-0.5)*2.0) 
+   ;return, ( p(0)*exp(-(x-y*p(1))^2/(2*p(2)^2)))
 end
 
-function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, gaussf=gaussf, plot=plot, freqlimit=freqlimit, sigmalimit=sigmalimit,vellimit=rvlimit,limitidx=limitidx, verbose=verbose
+function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, gaussf=gaussf, plot=plot, freqlimit=freqlimit, sigmalimit=sigmalimit,vellimit=rvlimit,limitidx=limitidx, verbose=verbose, interpol=interpol, correction=correction
    common stchfit_sheets, sheet_1
 
-   on_Error, 2
+   ;on_Error, 2
    default, verbose, 0
    default, plot, 0
    default, cosf, 1
    default, gaussf, 0
+   default, interpol, 1
+   default,correction,1
 
    if gaussf eq 1 then cosf = 0
 
@@ -144,7 +148,7 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
       end
       gaussf EQ 1: begin
          myfunc = '__gauss_stch'
-         default, sigmalimit, [0.1D,3.0D]*double(abs(delay_ax(0)-last(delay_ax))/4)/1000.
+         default, sigmalimit, [0.01D,3.0D]*double(abs(delay_ax(0)-last(delay_ax))/4)/1000.
         
        break
       end
@@ -167,15 +171,33 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
 
 
    s_stc = size(stc)
-   tdim = s_stc(s_stc(0))
-   ;Y = double(rebin(distance_ax, s_stc(1), s_stc(2), /sample)/1000.)
-   ;X = double(utranspose(rebin(delay_ax, s_stc(2), s_stc(1), /sample))/1000.)
 
-   X = transpose((delay_ax # (distance_ax*0.0d + 1.0d))/1000.)
-   Y = transpose(((delay_ax*0.0d + 1.0d) # distance_ax)/1000.)
+   if interpol GT 1 then  begin 
+      interpoldim = [(s_stc(1)/2*interpol*2)+1,(s_stc(2)/2*interpol*2)+1]
+      __distance_ax = (lindgen(interpoldim(0))/FLOAT(interpoldim(0)-1)-0.5)*last(distance_ax)*2
+      __delay_ax =(lindgen(interpoldim(1))/FLOAT(interpoldim(1)-1)-0.5)*last(delay_ax)*2
+      
+
+   end else begin
+      interpoldim = [(s_stc(1)/2*interpol*2)+1,(s_stc(2)/2*interpol*2)+1]
+      __distance_ax = distance_ax
+      __delay_ax = delay_ax
+
+   endelse
+   
+   
+
+   tdim = s_stc(s_stc(0))
+
+   X = transpose((__delay_ax # (__distance_ax*0.0d + 1.0d))/1000.)
+   Y = transpose(((__delay_ax*0.0d + 1.0d) # __distance_ax)/1000.)
    
    ;;rv limits
-   default, rvlimit, [-3.0, 3.0]*(last(delay_ax)-delay_ax(0))/(last(distance_ax)-distance_ax(0))
+    default, rvlimit, [-1.0, 1.0]*last(delay_ax)/distance_ax(N_ELEMENTS(distance_ax)/2+1)
+
+   ;rvlimit = [ last(__delay_ax)/__distance_ax(interpoldim(1)/2+1:*),last(__distance_ax)*__delay_ax(1:n_elements(__delay_ax)-2), reverse(last(__delay_ax)/__distance_ax(interpoldim(1)/2+1:*)) ]
+
+
    if verbose eq 1 then begin
       dmsg, "Fitting rec. vel. interval: "+fltstr(rvlimit(0), 2)+"-"+fltstr(rvlimit(1), 2)+" [ms]"
    endif
@@ -183,6 +205,9 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
    ;;params for rv initial guess (pre fit)
    steps = 20l
    vel_ax = rvlimit(0)+findgen(steps+1)/float(steps)*(rvlimit(1)-rvlimit(0))
+
+   vel_ax = rvlimit(0)+findgen(steps+1)/float(steps)*(rvlimit(1)-rvlimit(0))
+
    vel_guess = fltarr(steps+1)
   
    rv = fltarr(tdim, 2)
@@ -225,19 +250,30 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
   endcase
    
   for i_t=0l, tdim-1 do begin
+     if interpol gt 1 then  begin
+        stc_tmp = congrid( stc(*,*,i_t),interpoldim(0),interpoldim(1),cubic=-0.5,/minus)
+     end else stc_tmp = stc(*, *, i_t)
 
-     stc_tmp = stc(*, *, i_t)
-     stc_tmp(s_stc(1)/2, s_stc(2)/2) = (mean(((stc_tmp(s_stc(1)/2-1:s_stc(1)/2+1, *))(*,s_stc(2)/2-1:s_stc(2)/2+1))(*)))(0)
+     s_stc_tmp = size(stc_tmp)
+
+     stc_tmp(s_stc_tmp(1)/2, s_stc_tmp(2)/2) = (mean(((stc_tmp(s_stc_tmp(1)/2-1:s_stc_tmp(1)/2+1, *))(*,s_stc_tmp(2)/2-1:s_stc_tmp(2)/2+1))(*)))(0)
+
      
-     if gaussf eq 1 then stc_tmp = (stc_tmp+1.0)/2.0
+  
+     ;;if gaussf eq 1 then stc_tmp = (stc_tmp+1.0)/2.0
 
      ;;initial rv guess;;;;;;;;
      ;;SD of stc
      SDB = sqrt(total(stc_tmp*stc_tmp))
      for vel_i=0l, N_ELEMENTS(vel_ax)-1 do begin
-        velp = [1.0D, vel_ax(vel_i) , frequency ]
-        if cosf eq 1 then A = __cos_stch( x, y, velp) $
-         else A = __gauss_stch( x, y, velp)
+       
+        if cosf eq 1 then begin
+           velp = [1.0D, vel_ax(vel_i) , frequency ]
+           A = __cos_stch( x, y, velp)
+        end else begin 
+           velp = [1.0D, vel_ax(vel_i) , mean(sflimit) ]
+           A = __gauss_stch( x, y, velp)
+        end
         ;;SD of fit
         SDA = sqrt(total(A*A))
         ;;correlation between stc and fit
@@ -251,7 +287,7 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
      max_vel = max(vel_guess, max_idx)
      
      ;;initalize the rv guess
-     if max_idx GT 0 AND max_idx LT steps then begin 
+     if max_idx GT 0 AND max_idx LT (steps+1) then begin 
         parinfo(1).value = vel_ax(max_idx)
         parinfo(1).limits = [ vel_ax(max_idx)-1.0 , vel_ax(max_idx)+1.0]
         if verbose eq 1 then dmsg, "Fitting rec. velocity interval: "+ fltstr(parinfo(1).limits(0), 2)+$
@@ -278,13 +314,22 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
      ;;fit's reciprocal velocity
      rv(i_t, *) = [p(1), perror(1)]
      
-     ;;extra fitting check (cosinus)
-     if cosf eq 1 then begin
-        fac =  __fermi(sqrt((umoment(stc_tmp(__cos_stch_index( X, Y, p))))(1)),0.02,0.2)
-        
-        cs(i_t, 0) =cs(i_t, 0)* fac 
-     end else fac = 1.0
+ 
+     fac = 1.0
+     ;;test+correct the goodness of fit
+     if correction EQ 1 then begin
+        ;fac=FLOAT(1-correlate(stc_tmp(*),yfit(*)) LT 0.2)
 
+        if(cs(i_t, 0) GE 0.0001) then fac=__fermi(FLOAT(1.0-correlate(stc_tmp(*),yfit(*))),0.02,0.2)
+
+     end else begin
+        if cosf eq 1 then begin
+           fac =  __fermi(sqrt((umoment(stc_tmp(__cos_stch_index( X, Y, p))))(1)),0.02,0.2)
+        end 
+     end
+     
+     cs(i_t, 0) =cs(i_t, 0)* fac
+   
      ;;some plots for inquiring people
      if  plot eq 1 then begin
         if sf(i_t, 0) EQ sflimit(0) OR sf(i_t, 0) EQ sflimit(1) OR $
@@ -298,6 +343,7 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
         end else begin
            ptvs, yfit*fac, ZRANGE=[-1d, 1d], title=fltstr(cs(i_t, 0), 2), yrange=delay_ax, xrange=distance_ax
         end
+        
         wait, 0.1
         closesheet, sheet_1
      end
