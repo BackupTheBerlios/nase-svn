@@ -1,25 +1,31 @@
 ;+
-; NAME:  USET_PLOT
+; NAME:
+;  USet_Plot
 ;
 ; VERSION:
 ;  $Id$
 ;
-; AIM:      sets the output device used by the IDL graphics procedures (nase color restriction)
+; AIM:
+;  NASE compliant way to set the plot device (use instead of IDLs <C>SET_PLOT</C>)  
 ;
-;
-; PURPOSE:       see IDL's manual for SET_PLOT
-;
-; RESTRICTIONS:  reverts !P.BACKGROUND and !P.COLOR index for PS devices
+; PURPOSE:
+;  This is a simple wrapper for IDLs internal <C>SET_PLOT</C> routine, that
+;  ensures NASE color management guidelines. Calling conventions are
+;  identical to <C>SET_PLOT</C>
 ;
 ; CATEGORY:
-;
 ;  Color
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*                  SET_PLOT, Device [, /COPY] [, /INTERPOLATE]
+;*USet_Plot, Device [, /COPY] [, /INTERPOLATE]
 ;
+; SIDE EFFECTS:
+;  Since it internally calls <A>ResetCM</A>, background and foreground
+;  colors for postscript devices may be swapped (feature!).
 ;
+; SEE ALSO:
+;  <A>ResetCM</A>
 ;
 ;-
 
@@ -53,8 +59,8 @@ pro uset_plot, Device, _EXTRA=extra
          return
       end
       !D.Name EQ 'PS': begin 
-         ResetCM
-         return
+          ResetCM
+          return
       end
       !D.Name EQ 'Z': begin 
          ResetCM

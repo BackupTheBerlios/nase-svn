@@ -1,151 +1,43 @@
 ;+
-; NAME:              OpenSheet
+; NAME:
+;  OpenSheet()
 ;
+; VERSION:
+;  $Id$
+; 
 ; AIM:
-;  Open a sheet for device-independent graphics output.
+;  opens a sheet for device-independent graphics output
 ;
-; PURPOSE:           Öffnet ein mit DefineSheet definiertes Sheet. Das bedeutet,
-;                    dass das Fenster aktiviert oder geoeffnet bzw das PS-File
-;                    geoeffnet wird.
+; PURPOSE:
+;  Opens a sheet that was previously defined by
+;  <A>DefineSheet</A>. The corresponding window will be activated or
+;  openend, if generating postscript output the file will be opened.
 ;
-; CATEGORY:          GRAPHIC
+; CATEGORY:
+;  Graphic
+;  Windows
 ;
 ; CALLING SEQUENCE:  
-;*                    OpenSheet, Sheet [,Multi-Index]
+;*OpenSheet, sheet [,multindex]
 ;
-; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
+; INPUTS:
+;  sheet :: defined sheet structure created using <A>DefineSheet</A>
 ;
 ; OPTIONAL INPUTS:   
-;                   Multi-Index:: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
-;                                 der Index des "Sheetchens", das geöffnet werden soll. Befindet sich das MultiSheet
-;                                 noch nicht auf dem Bildschirm, so wird es dargestellt.
+;  multindex :: The index referring to a specific window in a multi
+;               part sheet (see MULTI option of <A>DefineSheet</A>).
 ;
 ; EXAMPLE:
-;*                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;*                    OpenSheet, sheety
-;*                    Plot, Indgen(200)
-;*                    CloseSheet, sheety
-;*                    dummy = Get_Kbrd(1)
-;*                    DestroySheet, sheety
+;*sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;*OpenSheet, sheety
+;*Plot, Indgen(200)
+;*CloseSheet, sheety
+;*dummy = Get_Kbrd(1)
+;*DestroySheet, sheety
 ;
 ; SEE ALSO: <A>ScrollIt</A>,
 ;           <A>DefineSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>.
 ;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.27  2001/01/22 19:28:54  kupper
-;     Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
-;     shall not be used any longer (according to colormanagement guidelines
-;     formed during first NASE workshop, fall 2000).
-;
-;     Revision 2.26  2000/11/02 09:42:45  gabriel
-;          doc header modified
-;
-;     Revision 2.25  2000/11/02 09:31:37  gabriel
-;          uset_plot instead of set_plot
-;
-;     Revision 2.24  2000/10/01 14:51:35  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.23  2000/09/01 12:42:58  kupper
-;     oops! Forgot to rename one XorWin... Sorry.
-;
-;     Revision 2.22  2000/08/30 22:35:29  kupper
-;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
-;
-;     Revision 2.21  2000/07/07 13:38:49  gabriel
-;          !REVERTPSCOLORS=0 for color postscript
-;
-;     Revision 2.20  1999/10/29 11:49:16  kupper
-;     Setting Colortables using UTVSCL is VERY SLOW over the net, when
-;     a TRUE_COLOR-Display is used.
-;     Reason? (The DEVICE, BYPASS_TRANLATION-Commands???)
-;
-;     Revision 2.19  1999/10/28 16:16:03  kupper
-;     Color-Management with sheets was not correct on a
-;     true-color-display.
-;     (Table was not set when the sheet was opened).
-;     We now do different things for pseudocolor and
-;     truecolor-displays, to make them "feel" alike... (hopefully).
-;
-;     Revision 2.18  1999/08/16 16:47:08  thiel
-;         Change to activate File-Watching.
-;
-;     Revision 2.17  1999/07/28 08:14:07  saam
-;          return on error
-;
-;     Revision 2.16  1999/06/15 17:36:39  kupper
-;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
-;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
-;     eingebaut werden. Die Modifikationen machten es notwendig, den
-;     WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
-;     Realisierung der Widget-Hierarchie bestimmt werden kann.
-;     Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
-;     WIDGET_CONTROL ab.
-;     Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
-;     ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
-;     Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
-;     entsprechend angepasst.
-;     Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
-;     nicht voellig auszuschliessen.
-;
-;     Revision 2.15  1999/06/01 13:41:29  kupper
-;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
-;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
-;     privater Colormaps.
-;
-;     Revision 2.14  1999/02/12 15:22:52  saam
-;           sheets are mutated to handles
-;
-;     Revision 2.13  1998/06/18 14:56:14  kupper
-;            nur Hyperlink nach Umstellung der Verzeichnisstruktur angepasst.
-;
-;     Revision 2.12  1998/06/03 10:30:55  saam
-;           now ps works with multi
-;
-;     Revision 2.11  1998/05/18 18:25:11  kupper
-;            Multi-Sheets implementiert!
-;
-;     Revision 2.10  1998/03/20 16:45:22  thiel
-;            Weitere 3.6/4-Inkompatibilitaet beim
-;            GET_BASE-Aufruf behoben.
-;
-;     Revision 2.9  1998/03/19 14:50:30  saam
-;           common block like in define-sheet
-;
-;     Revision 2.8  1998/03/19 10:45:57  saam
-;           now uses ScrollIt and remembers destroyed windows
-;           resize events have no effect
-;
-;     Revision 2.7  1998/03/18 10:48:55  kupper
-;            Kleiner Bug: Opensheet hat das Plot_Device nicht auf PS gesetzt, wenn
-;             ein zuvor schonmal geöffnetes PS-heet wieder geöffnet wurde.
-;
-;     Revision 2.6  1998/03/12 19:45:20  kupper
-;            Color-Postscripts werden jetzt richtig behandelt -
-;             die Verwendung von Sheets vorrausgesetzt.
-;
-;     Revision 2.5  1998/01/29 15:52:04  saam
-;           PlotS died with NULL-device if plot wasn't used before
-;          !P.Multi also...
-;
-;     Revision 2.4  1998/01/21 21:57:26  saam
-;           es werden nun ALLE (!!!) Window-Parameter
-;           gesichert.
-;
-;     Revision 2.3  1997/12/02 10:08:08  saam
-;           Sheets merken sich nun ihren persoenlichen
-;           !P.Multi-Zustand; zusaetzlicher Tag: multi
-;
-;     Revision 2.2  1997/11/26 09:28:48  saam
-;           Weiss leider nicht mehr, was veraendert wurde
-;
-;     Revision 2.1  1997/11/13 13:03:30  saam
-;           Creation
-;
-;
-;
 
 ;PRO _sheetkilled, id            ;This is only called for Top-Level-Sheets,
 ;                                ;not for Sheets that belong to a Parent Widget.
@@ -271,6 +163,17 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
          END ELSE BEGIN
             Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color, _EXTRA=sheet.extra
          END
+
+         IF ((NOT !REVERTPSCOLORS) AND (TOTAL(CIndex2RGB(GetBackground()) NE [255,255,255]) NE .0)) THEN BEGIN
+                                ; the user wants all colors as on the
+                                ; screen in the postscript file. since
+                                ; postscript always has a white
+                                ; background, we plot a rectangle with
+                                ; the background color by hand
+             Polyfill, [0,0,1,1,0], [0,1,1,0,0], /NORMAL, COLOR=GetBackground()
+             !P.MULTI = (!P.MULTI)(1)*(!P.Multi)(2) ; prevent clearing of screen
+         END
+         
       END ELSE Message, /INFORM, 'OpenSheet: PS-Sheet already open!'
       
       old = !P
@@ -286,11 +189,6 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
       !Z = sheet.z
       sheet.z = old
       
-;      !PSGREY = NOT(sheet.color)
-
-;      ; color tables shouldn't be reverted
-;      !REVERTPSCOLORS = NOT(sheet.color)
-
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       uSet_Plot, 'NULL'
       Plot, Indgen(10) ; to establish a coordinate system, that PlotS will work
