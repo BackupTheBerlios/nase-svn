@@ -22,6 +22,7 @@
 ;                             [, GET_XTICKS=XTicks]
 ;                             [, GET_YTICKS=YTicks]
 ;                             [, GET_PIXELSIZE=Pixelgroesse]
+;                             [, /NEUTRAL]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
 ;
 ; INPUTS: Array : klar!
@@ -40,28 +41,30 @@
 ; KEYWORD PARAMETERS: FULLSHEET: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
 ;                                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
 ;                                der Regel nicht quadratisch.
-;                     NOSCALE: Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
-;                              mit dem Aufruf von <A HREF="#PLOTTV">PlotTV</A>
-;                              Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
-;                              TVSCL und TV.
-;                     LEGEND: Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
-;                             an. 
-;                     ORDER: der gleiche Effekt wie bei Original-TVScl
-;                     NASE: Bewirkt die richtig gedrehte Darstellung von Layerdaten 
-;                           (Inputs, Outputs, Potentiale, Gewichte...).
-;                           D.h. z.B. werden Gewichtsmatrizen in der gleichen
-;                           Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
+;                     NOSCALE:   Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
+;                                mit dem Aufruf von <A HREF="#PLOTTV">PlotTV</A>
+;                                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
+;                                TVSCL und TV.
+;                     LEGEND:    Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
+;                                an. 
+;                     ORDER:     der gleiche Effekt wie bei Original-TVScl
+;                     NASE:      Bewirkt die richtig gedrehte Darstellung von Layerdaten 
+;                                (Inputs, Outputs, Potentiale, Gewichte...).
+;                                D.h. z.B. werden Gewichtsmatrizen in der gleichen
+;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
 ;                     [XY]RANGE: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
 ;                                das erste Element gibt das Minimum, das zweite das Maximum der Achse an                      
 ;                     leg_(max|min): alternative Beschriftung der Legende 
+;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
+;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
-;                                  und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
-;                                  zurueckgibt.
-;                   Farbe: Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
-;                   [XY]Ticks: Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
-;                              ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
-;                              beschriftet worden waere. 
+;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
+;                                 zurueckgibt.
+;                   Farbe       : Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
+;                   [XY]Ticks   : Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
+;                                 ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
+;                                 beschriftet worden waere. 
 ;                   Pixelgroesse: Ein zweielementiges Array [XSize, YSize], das die Groesse der
 ;                                 TV-Pixel in Normalkoordinaten zurueckliefert.
 ;
@@ -81,6 +84,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.28  1998/07/11 20:21:25  saam
+;           added NEUTRAL keyword
+;
 ;     Revision 2.27  1998/07/09 12:42:52  saam
 ;           the axis labelling for keyword nase was swapped (X/Y)
 ;
@@ -188,6 +194,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                GET_PIXELSIZE=Get_PixelSize, $
                LEG_MAX=leg_MAX,$
                LEG_MIN=leg_MIN,$
+               NEUTRAL=neutral,$
                _EXTRA=_extra
 
 
@@ -219,7 +226,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, LEGEND, 0
    
    W = _W
-   IF (Keyword_Set(NASE)) THEN BEGIN
+   IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
       maxW = Max(W)
       minW = Min(NoNone(W))
    END
@@ -334,7 +341,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       If Keyword_Set(NOSCALE) then UTV, Transpose(W), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown $
        else UTV, ShowWeights_Scale(Transpose(W),/SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
    END ELSE BEGIN
-      UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
+      IF Keyword_Set(NEUTRAL) THEN BEGIN
+         UTV, ShowWeights_Scale(W, /SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
+      END ELSE BEGIN
+         UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
+      END
    END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
@@ -377,7 +388,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       END ELSE BEGIN
          Default, LEG_MAX, MAX(w)
          Default, LEG_MIN, MIN(w)
-   
+         IF Keyword_Set(NEUTRAL) THEN BEGIN
+            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+               LEG_MAX = MAX([ABS(MaxW),ABS(MinW)])
+               LEG_MIN = -LEG_MAX
+            END ELSE LEG_MIN = 0
+         END
+         
          TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
           H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
           V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
