@@ -26,7 +26,12 @@
 ;
 ;          Ab Revision 1.9 auch als Kind-Widget in einer Widget-Applikation. 
 ;
-; CATEGORY: Darstellung, Miscellaneous
+; CATEGORY:
+;  Animation
+;  Array
+;  Graphic
+;  NASE
+;  Widgets
 ;
 ; CALLING SEQUENCE: SurfIt, Data_Array [, Parent ]
 ;                                      [,XPOS=xpos] [,YPOS=ypos] [,XSIZE=xsize] [,YSIZE=ysize]
@@ -187,7 +192,7 @@ Pro SurfIt_Event, Event
            endelse
 ;          end
          ;  If no data is available, do nothing!
-           Widget_Control, Event.Handler, TIMER=0.001 ;Request new timer event
+           Widget_Control, Event.Handler, TIMER=0.1 ;Request new timer event
         endif; If eof(lun), request NO further timer events!
      End
      "WIDGET_BASE": Begin ;Unser Main-Widget wird resized
