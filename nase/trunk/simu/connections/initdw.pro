@@ -34,7 +34,8 @@
 ;
 ; PROCEDURE: Default, Set
 ;
-; EXAMPLE: My_DWS = InitDW (S_Layer=l1, T_Layer=l2, W_RANDOM=[0,1], /W_NONSELF)
+; EXAMPLE: 1. My_DWS = InitDW (S_Layer=l1, T_Layer=l2, W_RANDOM=[0,1])
+;          2. My_DWS = InitDW (S_Layer=My_Layer, T_Layer=My_Layer, W_GAUSS=[1,4], /W_NONSELF)
 ;
 ; MODIFICATION HISTORY:
 ;
