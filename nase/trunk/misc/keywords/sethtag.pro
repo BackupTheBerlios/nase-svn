@@ -68,7 +68,7 @@ command = "_s."+STR(deref(0))+" = val"
 IF NOT Execute(command) THEN Console, 'Excution failed: '+command, /FATAL
 
 IF (ntag GT 1) THEN Handle_Value, _h, _s,  /SET ELSE BEGIN
-    IF (Handle_Info(struc)) THEN Handle_Value, struc, _s, /SET ELSE struc=_s 
+    IF (TypeOf(Struc) EQ "STRUCT") THEN struc=_s ELSE Handle_Value, struc, _s, /SET  
 END
     
 END
