@@ -322,14 +322,21 @@ Pro widget_image_container::examineit, xpos=xpos, ypos=ypos, _EXTRA=_extra
    default, xpos, g.XOFFSET + g.SCR_XSIZE + (2* g.MARGIN)
    default, ypos, g.YOFFSET; + g.SCR_YSIZE + (2* g.MARGIN)
 
-   ;; we want examineit to inherit our widgets private color table, so
-   ;; we open the showit berforehand.
+   ;; we want examineit to inherit our widget's private color table, so
+   ;; we open the showit beforehand:
    showit_open, self->showit()
+   ;; The color table shall not be modified, so we pass SETCOL=0.
+   ;; In addition, no rescaling of the array contents shall be done at
+   ;; all, but examineit shall inherit "our" RANGE values. So we pass
+   ;; the range in the RANGE_IN parameter.
    examineit, self->image(), $
               GROUP=self->widget(), $
               XPOS=xpos, YPOS=ypos, $
               NASE=(*self.update_info).nase, $
+              SETCOL=0, $
+              RANGE_IN=(*self.update_info).range_in, $
               _EXTRA=_extra
+stop
    showit_close, self->showit()
 End
 
