@@ -433,7 +433,7 @@ PRO SurfIt, _data, Parent, $
                        COLORS=256, $
                        /MOTION_EVENTS, $
                        /BUTTON_EVENTS, $
-                       RETAIN=1, $
+;;                       RETAIN=1, $
                        UVALUE={Widget: "Draw"}, $
                        XSIZE=xsize, $
                        YSIZE=ysize, $
