@@ -5,9 +5,11 @@
 ;                     called by input.pro (MIND), but you can also you them by hand.
 ;                     This template realizes a filter for the genertion of a vertical bar.
 ;                     You can use the file as prototype for new filter functions. These
-;                     should be located in $MINDDIR/input and should have the prefix 'IF'.
+;                     should be located in $MINDDIR/input and should have the prefix 'IF'
+;                     if the filter returns continous values and 'SIF' if it returns spike
+;                     (binary) output.
 ;                     The Keywords already provided MUST NOT BE CHANGED, but you could 
-;                     add various new ones the specify your filter options.
+;                     add various new ones to specify your filter options.
 ;
 ; CATEGORY:           MIND INPUT TEMPLATES 
 ;
@@ -20,7 +22,7 @@
 ;                     newPattern = IFTemplate( [MODE=1], PATTERN=pattern )
 ;                     ignore_me  = IFTemplate( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: DELTA_T   : passing time between two sucessive calls of this filter function
+; KEYWORD PARAMETERS: DELTA_T   : passing time in ms between two sucessive calls of this filter function
 ;                     HEIGHT    : height of the input to be created
 ;                     MODE      : determines the performed action of the filter. 
 ;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
@@ -40,6 +42,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/19 09:10:38  saam
+;           + returns on error now
+;           + removed redundant references to keywords during step (MODE=1)
+;           + removed side effect of keyword PATTERN
+;
 ;     Revision 1.4  2000/01/18 14:00:20  saam
 ;           + supports plot as MODE=3
 ;           + doc header updated and bugfixed
@@ -58,50 +65,49 @@
 ;-
 
 
-FUNCTION iftemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp_vals, DELTA_T=delta_t
+FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t
 
-   Default, mode   , 1          ; i.e. step
-   Default, pattern, !NONE
+   ON_ERROR, 2
+
+   Default, mode, 1          ; i.e. step
+   Default, R   , !NONE
    
-   Handle_Value, _temp_vals, temp_vals, /NO_COPY
-   
-   
-   CASE mode OF
-      
-; INITIALIZE
+   Handle_Value, _TV, TV, /NO_COPY
+   CASE mode OF      
+      ; INITIALIZE
       0: BEGIN                  
-         temp_vals =  { $
-                       sim_time : 0l $
-                      }
+         TV =  {                    $
+                delta_t  : delta_t ,$
+                sim_time : .0d      $
+               }
          print,'IFTEMPLATE: initialized'         
       END
       
-; STEP
+      ; STEP
       1: BEGIN                             
-         FOR x=0,h-1 DO BEGIN   ; e.g. draw a vertical bar
-            FOR y=w/2-3,w/2+3 DO BEGIN 
-               pattern(y,x) = 1.0
+         R = pattern
+         FOR x=0,TV.h-1 DO BEGIN   ; e.g. draw a vertical bar
+            FOR y=TV.w/2-3,TV.w/2+3 DO BEGIN 
+               R(y,x) = 1.0
             ENDFOR
          endfor 
-         temp_vals.sim_time =  temp_vals.sim_time + delta_t
+         TV.sim_time =  TV.sim_time + TV.delta_t
       END
       
-; FREE
+      ; FREE
       2: BEGIN
          print,'IFTEMPLATE: done'
       END 
 
-; PLOT
+      ; PLOT
       3: BEGIN
          print, 'IFTEMPLATE: display mode not implemented, yet'
       END
       ELSE: BEGIN
          Message, 'IFTEMPLATE: unknown mode'
       END
-
    ENDCASE 
+   Handle_Value, _TV, TV, /NO_COPY, /SET
 
-   Handle_Value, _temp_vals, temp_vals, /NO_COPY, /SET
-
-   RETURN, pattern
+   RETURN, R
 END
