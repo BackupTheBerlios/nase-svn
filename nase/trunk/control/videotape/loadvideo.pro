@@ -1,29 +1,33 @@
 ;+
 ; NAME: LoadVideo()
 ;
-; PURPOSE: Öffnen eines zuvor aufgezeichneten Array-Videos
+; PURPOSE: Öffnen eines zuvor aufgezeichneten Array-Videos, die Routine erkennt
+;          dabei automatisch, ob das Video gezippt ist oder nicht.
 ;
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO]
 ;                                         [,GET_LENGTH] [,GET_SIZE]
 ;                                         [,GET_TITLE] [,GET_SYSTEM] [,GET_STARRING]
-;                                         [,GET_COMPANY] [,GET_PRODUCER] [,GET_YEAR] )
+;                                         [,GET_COMPANY] [,GET_PRODUCER] [,GET_YEAR] 
+;                                         [,/SHUTUP])
 ; 
 ; INPUTS:  Title     : Filename und Videotitel. Dieser Parameter hat
 ;                      exakt die gleiche Funktion wie das
 ;                      TITLE-Keyword. Nur eines von beiden muß (und
 ;                      sollte) angegeben werden! (Bzw. keines für den Defaulttitel.)
 ;
-; KEYWORD PARAMETERS: TITLE: Filename, der auch der Videotitel ist.
-;                            Bei nichtangabe wird der Defaulttitel
-;                            benutzt.
-;                     INFO : Wird dieses Keyword gesetzt, so wird eine
-;                            Information über das Format und den
-;                            Inhalt des Videos ausgegeben.
+; KEYWORD PARAMETERS: TITLE:  Filename, der auch der Videotitel ist.
+;                             Bei nichtangabe wird der Defaulttitel
+;                             benutzt.
+;                     INFO :  Wird dieses Keyword gesetzt, so wird eine
+;                             Information über das Format und den
+;                             Inhalt des Videos ausgegeben.
 ;                         Hinweis: In diesem Fall wird das Video NICHT
 ;                                  geöffnet, und die Funktion liefert
 ;                                  den Wert 0 zurück.
+;                     SHUTUP: falls gesetzt, gibt es ueberhaupt keine
+;                             Informationen aus
 ;
 ;
 ; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
@@ -38,30 +42,30 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.8  1998/03/14 13:32:45  saam
+;             now handles zipped and non-zipped videos
+;
+;
 ;       Tue Sep 9 21:37:38 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Der übergebene Titel wird jetzt nicht mehr verändert.
 ;
 ;       Tue Sep 9 13:02:45 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Title-Parameter zugefügt.
 ;
 ;       Tue Sep 2 19:05:51 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Free_Luns zugefügt, die ich sträflicherweise vergaß...
 ;
 ;       Thu Aug 28 15:55:11 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		TITEL-Keyword verarbeitet jetzt Pfade richtig.
 ;                   INFO-Keyword zugefügt.
 ;
 ;       Wed Aug 27 17:49:54 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Urversion
 ;
 ;-
@@ -70,7 +74,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
                     GET_LENGTH=get_length, GET_SIZE=get_size, $
                     GET_TITLE=get_title ,GET_SYSTEM=get_system, GET_STARRING=get_starring, $
                     GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year, $
-                    EDIT=edit
+                    EDIT=edit, SHUTUP=shutup
    
    Default, __title, _Title
    Default, __title, "The Spiking Neuron"   
@@ -79,6 +83,10 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    infoname = __title+".vidinf"
    Parts = str_sep(__title, '/')
    title = Parts(n_elements(Parts)-1)
+
+   c = ZipStat(filename, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
+   IF nzf(0) NE '-1' OR bf(0) NE '-1' THEN zipped = 0 ELSE zipped = 1
+   IF zipped THEN Unzip, filename
 
    Get_Lun, infounit
    openr, infounit, infoname
@@ -173,19 +181,21 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
       print
       print, "    Starring: "+starring
       print, "-------------------------------------------------------------"
-   endif else begin
+   endif else IF NOT keyword_set(shutup) THEN begin
       print, 'Opening Video "'+title+'".'
    end
 
 
    return, {VideoMode   : VideoMode, $
+            filename    : filename,$
             title       : title, $
             year        : year, $
             company     : company, $
             unit        : unit, $
             FrameSize   : FrameSize, $
             Length      : Length, $
-            FramePointer: 0l}
+            FramePointer: 0l,$
+            zipped      : zipped}
    
 End
 

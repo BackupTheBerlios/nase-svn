@@ -1,52 +1,45 @@
 ;+
-; NAME: Eject
+; NAME:               EJECT
 ;
-; PURPOSE: Schließen eines mit InitVideo oder LoadVideo geöffneten Array-Videos und
-;          Anfügen eines informativen Labeltextes an das Videoinfo-File.
+; PURPOSE:            Schließen eines mit InitVideo oder LoadVideo geöffneten Array-Videos und
+;                     Anfügen eines informativen Labeltextes an das Videoinfo-File.
 ;
-; CATEGORY: Simulation
+; CATEGORY:           SIMULATION 
 ;
-; CALLING SEQUENCE: Eject, Video [,/VERBOSE] [,/NOLABEL]
+; CALLING SEQUENCE:   Eject, Video [,/VERBOSE] [,/NOLABEL] [,/SHUTUP]
 ; 
-; INPUTS: Video: eine mit InitVideo oder LoadVideo initialisierte Videostruktur
+; INPUTS:             Video: eine mit InitVideo oder LoadVideo initialisierte Videostruktur
 ;
-; OPTIONAL INPUTS: ---
-;	
 ; KEYWORD PARAMETERS: VERBOSE: Für mehr Freude an der Simulation...
 ;                     NOLABEL: Unterdrückt die interaktive Abfrage
 ;                              eines Labeltextes.
+;                     SHUTUP:  Unterdrueckt jegliche Ausgabe
 ;
-; OUTPUTS: ---
+; SIDE EFFECTS:       Schliesst das .vid- und ev. das .vidinf-File
 ;
-; OPTIONAL OUTPUTS: ---
+; PROCEDURE:          War das Video zur Aufnahme geöffnet, so wird an das .vidinf-File noch die FrameAnzahl angehängt.
+;                     .vid und .vidinf werden geschlossen.
 ;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: Schliesst das .vid- und ev. das .vidinf-File
-;
-; RESTRICTIONS: ---
-;
-; PROCEDURE: War das Video zur Aufnahme geöffnet, so wird an das .vidinf-File noch die FrameAnzahl angehängt.
-;            .vid und .vidinf werden geschlossen.
-;
-; EXAMPLE: 1. Eject, MyVideo, /VERBOSE
-;          2. Eject, MyVideo, /NOLABEL
+; EXAMPLE:            1. Eject, MyVideo, /VERBOSE
+;                     2. Eject, MyVideo, /NOLABEL
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.5  1998/03/14 13:32:45  saam
+;             now handles zipped and non-zipped videos
+;
+;
 ;       Fri Aug 29 18:14:59 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Free_Luns zugefügt, die ich sträflicherweise vergaß...
 ;
 ;       Wed Aug 27 17:09:55 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Urversion
 ;
 ;-
-
-Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
+Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
 
    If Video.VideoMode eq 'RECORD' then begin
       writeu, Video.infounit, Video.FramePointer
@@ -54,7 +47,7 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
       if keyword_set(VERBOSE) then begin
          print
          print, 'KLAPPE! Die Dreharbeiten zu "'+Video.Title+'" sind nach '+strtrim(string(Video.FramePointer),1)+' Einstellungen beendet.'
-      endif else begin
+      endif else IF NOT Keyword_Set(SHUTUP) THEN  BEGIN 
          print, 'Closing Video "'+Video.title+'". Recorded Frames: '+strtrim(string(Video.FramePointer),1)
       end
       
@@ -73,7 +66,8 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
       close, Video.infounit
       Free_Lun, Video.unit
       Free_Lun, Video.infounit
-
+      
+      IF video.zipped THEN Zip, Video.filename
    endif else begin             ; VideoMode="PLAY"
       
       if keyword_set(VERBOSE) then begin
@@ -81,12 +75,14 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
          print, '                      E N D E'
          print
          print, '                 (c)'+Video.company+' '+Video.year
-      endif else begin
+      endif ELSE IF NOT Keyword_Set(SHUTUP) THEN  BEGIN
          print, 'Closing Video "'+Video.title+'".'
-      endelse
+      end
       
       close, Video.unit
       Free_Lun, Video.unit
+
+      IF Video.zipped THEN ZipFix, Video.filename
          
    endelse
 

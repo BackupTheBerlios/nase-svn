@@ -28,7 +28,7 @@
 ;
 ; CALLING SEQUENCE: MyVideo = InitVideo ( MusterFrame [,Title] [,TITLE] [,SYSTEM] [,STARRING]
 ;                                                     [,COMPANY] [,PRODUCER] [,YEAR]
-;                                                     [,/VERBOSE] )
+;                                                     [,/VERBOSE] [,/SHUTUP] [,/ZIPPED])
 ; 
 ; INPUTS: MusterFrame: Ein Array des Typs und der Größe, die aufgezeichnet werden sollen.
 ;                      Leider sind StringArrays nicht erlaubt.
@@ -42,23 +42,18 @@
 ;
 ; OPTIONAL INPUTS: ---
 ;	
-; KEYWORD PARAMETERS: TITLE, SYSTEM, STARRING, COMPANY, PRODUCER, YEAR:
-;                            Für mehr Freude an der Simulation...
-;                            Alle diese Schlüsselworte können auf Strings gesetzt werden (max. 80 Zeichen)
-;                            Für alle sind auch Defaults definiert.
-;                            HABEN KEINE WEITERE FUNKTION, AUßER DER ERHEITERUNG UND MUßE!
-;
-;                     Doch: TITLE legt auch den Filenamen fest!
+; KEYWORD PARAMETERS: TITLE,  SYSTEM, STARRING, COMPANY, PRODUCER, YEAR:
+;                             Für mehr Freude an der Simulation...
+;                             Alle diese Schlüsselworte können auf Strings gesetzt werden (max. 80 Zeichen)
+;                             Für alle sind auch Defaults definiert.
+;                             HABEN KEINE WEITERE FUNKTION, AUßER DER ERHEITERUNG UND MUßE!
+;                             Doch: TITLE legt auch den Filenamen fest!
+;                     SHUTUP: unterdrueckt jegliche Bildschirmausgabe
+;                     ZIPPED: erzeugt ein gezipptes Video
 ;
 ; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
 ;
-; OPTIONAL OUTPUTS:
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS:  Öffnet ein .vid- und .vidinf-File
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Ein Infofile erzeugen (.vidinf)
 ;            Ein DatenFile erzeugen (.vid), in das später geschrieben wird.
@@ -71,45 +66,45 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.9  1998/03/14 13:32:45  saam
+;             now handles zipped and non-zipped videos
+;
+;
 ;       Tue Sep 9 21:36:58 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Der übergebene Titel wird jetzt nicht mehr verändert.
 ;
 ;       Tue Sep 9 13:00:34 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Title-Parameter zugefügt.
 ;
 ;       Sun Sep 7 17:17:13 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Nimmt jetzt auch Skalare richtig auf.
 ;
 ;       Fri Aug 29 15:04:41 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Der YEAR-Tag enthält jetzt defaultmäßig auch den Tag
 ;		und Monat der Aufzeichnung.
 ;
 ;       Thu Aug 28 15:54:26 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		TITEL-Keyword verarbeitet jetzt Pfade richtig.
 ;
 ;       Wed Aug 27 17:20:58 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
 ;		Urversion
 ;
 ;-
 
 Function InitVideo, Frame, _Title, TITLE=__title, $
                     SYSTEM=system, STARRING=starring, COMPANY=company, PRODUCER=producer, YEAR=year, $
-                    VERBOSE=verbose
+                    VERBOSE=verbose, SHUTUP=shutup, ZIPPED=zipped
 
    If not(set(Frame)) then message, 'Bitte Musterframe angeben!'
 
+   Default, zipped, 0
    Default, __title, _title
    Default, __title, "The Spiking Neuron"   
    Default, system, "CVS"
@@ -127,9 +122,9 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
       print
       print, "Welcome to the recording of """+title+"""!"
       print, "This is a "+producer+" film on "+system+"."
-   endif else begin
+   endif ELSE IF NOT Keyword_Set(SHUTUP) THEN  BEGIN
       print, "Initializing Video """+title+"""."
-   endelse
+   ENDIF
    
    leer80 = "                                                                                "
    ltitle = leer80 & strput, ltitle, title
@@ -152,10 +147,12 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
 
   
    return, {VideoMode   : 'RECORD', $
+            filename    : filename, $
             title       : title, $
             unit        : unit, $
             infounit    : infounit, $
             FrameSize   : size([Frame]), $
+            zipped      : zipped,$
             FramePointer: 0l}
             
 End
