@@ -141,7 +141,7 @@ PRO PTvS, data, XPos, YPos, $
           NOSCALE=NoScale, TOP=top, $
           ORDER=Order, $
           Color=color, CHARSIZE=_Charsize, $
-          XRANGE=__xrange, YRANGE=__yrange, ZRANGE=_zrange, $
+          XRANGE=__xrange, YRANGE=__yrange, ZRANGE=zrange, $
           LEGEND=Legend, LEGMARGIN=LEGMARGIN, $
           POLYGON=POLYGON, $
           CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth, $
@@ -210,15 +210,6 @@ PRO PTvS, data, XPos, YPos, $
 
 
 
-   ; _XYRANGE contain the original scaling of the axes
-   Default, __XRANGE, [0, wdata-1]
-   IF N_Elements(__XRANGE) LT 2 THEN Console, /FATAL, 'you have to specify at least 2 elements for XRANGE'
-   _XRANGE = [__XRANGE(0), last(__XRANGE)]
-   Default, __YRANGE, [0, hdata-1]
-   IF N_Elements(__YRANGE) LT 2 THEN Console, /FATAL, 'you have to specify at least 2 elements for YRANGE'
-   _YRANGE = [__YRANGE(0), last(__YRANGE)]
-
-
    Default, COLOR, GetForeground()
 
                                 ; reverse space for the legend, either
@@ -227,6 +218,25 @@ PRO PTvS, data, XPos, YPos, $
    IF Keyword_Set(LEGEND) THEN Default, LEGMARGIN, 0.15 ELSE Default, LEGMARGIN, 0.0
 
    DEFAULT, top, !TOPCOLOR
+
+
+   ; _XYRANGE contain the original scaling of the axes
+   Default, __XRANGE, [0, wdata-1]
+   IF N_Elements(__XRANGE) LT 2 THEN Console, /FATAL, 'you have to specify at least 2 elements for XRANGE'
+   _XRANGE = [__XRANGE(0), last(__XRANGE)]
+   Default, __YRANGE, [0, hdata-1]
+   IF N_Elements(__YRANGE) LT 2 THEN Console, /FATAL, 'you have to specify at least 2 elements for YRANGE'
+   _YRANGE = [__YRANGE(0), last(__YRANGE)]
+   
+   IF Keyword_Set(NOSCALE) THEN BEGIN
+       IF Set(ZRANGE) THEN Console, "can't accept ZRANGE in NOSCALE mode", /FATAL
+       Default, ZRANGE, [0,top]
+       IF (NOT Set(TRUE)) AND ((MAX(data) GT top) OR (Min(data) LT 0)) THEN $
+         Console, 'data exeeds [0,'+STR(top)+'], expect graphical nonsense', /WARN
+   END ELSE Default, ZRANGE, [min(data),max(data)]
+
+
+
 
    ;; defaults passed UTV(SCL)
    Default, ORDER, 0
@@ -424,79 +434,34 @@ PRO PTvS, data, XPos, YPos, $
          ORDER=UpSideDown, POLYGON=POLYGON ,$
          CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
    END ELSE BEGIN
-       IF Set(_ZRANGE) THEN BEGIN
-                                ; the user wants the data to use a
-                                ; subrange of the available color
-                                ; space therefore we can't use the
-                                ; scaled version   
+       _data = ScaleTv(data, ZRANGE=zrange, TOP=top, CUTLO=cutlo, CUTHI=cuthi)
 
-
-
-           ;;;
-           ;;; clip data if required 
-           ;;;
-                                ; if the zrange is smaller than the actual data,
-                                ; we clip the data not fitting into the range and 
-                                ; generate a warning. i do not support
-                                ; a keyword to supress this warning,
-                                ; because i think the user should
-                                ; always be remembered that (s)he
-                                ; doesn't see the actual data
-
-           warnstr = ''
-
-           _data = data
-           ZRANGE=DOUBLE(_zrange)
-                                ; this is needed because if ZRANGE has
-                                ; a lower precision than data, the
-                                ; comparison  
-                                ; MAX(data) GT ZRANGE(1) fails (or at
-                                ; least failed for my demo [MS] 
-                                
-
-           ch=0
-           cl=0
-           IF (LONG(_zrange(1)) NE !NONEl) THEN BEGIN
-               cuthi=WHERE(_data GT _zrange(1),ch)
-               IF ch GT 0 THEN _data(cuthi)=_zrange(1)
-           END ELSE ZRANGE(1) = MAX(data)
-           IF (LONG(_zrange(0)) NE !NONEl) THEN BEGIN
-               cutlo=WHERE(_data LT _zrange(0),cl)
-               IF cl GT 0 THEN _data(cutlo)=_zrange(0)
-           END ELSE ZRANGE(0) = MIN(data)
-                    ; clipped positions are stored .... 
-           
-
-           IF MAX(data) GT ZRANGE(1) THEN warnstr = warnstr + 'maxima'
-           IF MIN(data) LT ZRANGE(0) THEN BEGIN
-               IF (MAX(data) GT ZRANGE(1)) THEN warnstr = warnstr + ' and '
-               warnstr = warnstr + 'minima'
-           END
-
-           ;;;
-           ;;; plot the clipped data 
-           ;;;
-           UTV, Scl(_data, [0, top], ZRANGE), posbitmap_norm(0), posbitmap_norm(1), $
-             X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
-             ORDER=UpSideDown, POLYGON=POLYGON, $
-             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
-
-           IF ch GT 0 THEN Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cuthi MOD wdata)/(wdata-1) , $
-                                  _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cuthi  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
-           IF cl GT 0 THEN Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cutlo MOD wdata)/(wdata-1) , $
-                                  _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cutlo  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
+       ;;
+       ;; plot the (possibly) clipped data 
+       ;;
+       UTV, _data, posbitmap_norm(0), posbitmap_norm(1), $
+         X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
+         ORDER=UpSideDown, POLYGON=POLYGON, $
+         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
+       
+       
+       warnstr = ''
+       IF cuthi(0) NE -1 THEN BEGIN
+           Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cuthi MOD wdata)/(wdata-1) , $
+             _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cuthi  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
+           warnstr = warnstr + 'maxima'
+       END
+       IF cutlo(0) NE -1 THEN BEGIN
+           Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cutlo MOD wdata)/(wdata-1) , $
+             _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cutlo  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
                                 ; clipped positions are marked by a
                                 ; small x, symsize is just
                                 ; empirical...not to prominent
-           
-           IF (warnstr NE "") THEN Inscription, 'WARNING: '+warnstr+' clipped', /MIDDLE, /RIGHT, /OUTSIDE, COLOR=color
-           
-       END ELSE BEGIN
-           UTVSCL, data, posbitmap_norm(0), posbitmap_norm(1), $
-             X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
-             ORDER=UpSideDown, POLYGON=POLYGON, $
-             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top, TRUE=true
+           IF (cuthi(0) NE -1) THEN warnstr = warnstr + ' and '
+           warnstr = warnstr + 'minima'
        END
+       IF (warnstr NE "") THEN Inscription, 'WARNING: '+warnstr+' clipped', /MIDDLE, /RIGHT, /OUTSIDE, COLOR=color
+       
    END
    ;; These lines are needed because there are still no axes when
    ;; using the /FITPLOT option. I simply copied the above section
@@ -521,9 +486,8 @@ PRO PTvS, data, XPos, YPos, $
    ;; plot a legend if requested
    ;;
    IF Keyword_Set(LEGEND) THEN BEGIN
-       Default, _ZRANGE, [min(data), max(data)]
-       IF (LONG(_ZRANGE(1)) NE !NONEl) THEN Default, LEGMAX, _ZRANGE(1) ELSE Default, LEGMAX, MAX(data)
-       IF (LONG(_ZRANGE(0)) NE !NONEl) THEN Default, LEGMIN, _ZRANGE(0) ELSE Default, LEGMIN, MIN(data)
+       IF (LONG(ZRANGE(1)) NE !NONEl) THEN Default, LEGMAX, ZRANGE(1) ELSE Default, LEGMAX, MAX(data)
+       IF (LONG(ZRANGE(0)) NE !NONEl) THEN Default, LEGMIN, ZRANGE(0) ELSE Default, LEGMIN, MIN(data)
                                 ; if user specifies ZRANGE as !NONE he
                                 ; wants it to be scaled to MIN/MAX of
                                 ; the data
