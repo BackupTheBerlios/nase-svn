@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1998/07/19 18:19:24  saam
+;             error message for 'kurtosis not defined' removed
+;
 ;       Revision 1.2  1998/06/01 14:34:03  saam
 ;             now returns !NONE for skew & kurt if undefined
 ;
@@ -80,7 +83,7 @@ function umoment, x, mdev = mdev, sdev = sdev
     skew = total(resid^3) / (nx * sdev ^ 3)
     kurt = total(resid^4) / (nx * sdev ^ 4) - 3.0
   endif else begin
-     print, 'UMOMENT: Skewness and Kurtosis not defined for a sample variance of zero.'
+;     print, 'UMOMENT: Skewness and Kurtosis not defined for a sample variance of zero.'
      skew = !NONE
      kurt = !NONE
   end
