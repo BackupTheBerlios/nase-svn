@@ -100,6 +100,8 @@ FUNCTION   FZT, X, Direction,   overwrite = overwrite, clipind = clipind
                             ELSE  One = 0.9999999
             ; Checking whether values lie outside the interval (-1,1), and determining their subscripts:
             MaxX = Max(X, min = MinX)
+            NClipNeg = 0
+            NClipPos = 0
             IF  (MinX LT -One) OR (MaxX GT One)  THEN  Console, '   Range of x beyond (-1,1). Clipping values.', /warning
             IF   MinX LT -One  THEN  iClipNeg = Where(X GT One, NClipNeg)  $
                                ELSE  iClipNeg = -1
