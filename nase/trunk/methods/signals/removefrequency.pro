@@ -18,7 +18,7 @@
 ;  line artifacts from a (physiological) signal. If you have several signal epochs of equal length to be processed,
 ;  it is advisable to pass all of them in one array instead of using a <C>FOR</C> loop in your program, so that the
 ;  queries at the beginning of this routine are run through only once.<BR>
-;  This routine renders <*>FormCorrFilter<*> obsolete and is somewhat faster when the sample frequency is a "good"
+;  This routine renders <*>FormCorrFilter</*> obsolete and is somewhat faster when the sample frequency is a "good"
 ;  multiple of <*>FreqRemove</*> ("good" means that the sample frequency divided by <*>FreqRemove</*> is an integer
 ;  number with a small sum of prime factors).<BR>
 ;  The amplitude and phase values of the sinusoidal component contained in each epoch are determined via cross-correlation
