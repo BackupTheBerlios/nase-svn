@@ -31,6 +31,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1999/03/12 14:43:01  gabriel
+;          Error bei index EQ 1 entfernt
+;
 ;     Revision 1.1  1998/08/11 12:32:08  gabriel
 ;           Neue praktische Array Routine
 ;
@@ -40,7 +43,9 @@
 FUNCTION last , A , index
    default,index , 1
    S = size(A)
+  
    IF index GT S(0) THEN Message, 'index too large for array'
+   IF S(0) EQ 1 THEN return, A(S(index)-1)
    CASE 1 EQ 1 OF
       index EQ 1 : return, A(S(index)-1,*,*,*,*,*,*)
       index EQ 2 : return, A(*,S(index)-1,*,*,*,*,*)
