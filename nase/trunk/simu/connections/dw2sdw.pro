@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  1999/10/12 14:36:49  alshaikh
+;           neues keyword '/depress'... synapsen mit kurzzeitdepression
+;
 ;     Revision 2.10  1999/07/27 16:23:43  thiel
 ;         DW.queuehdl: A handle to a spikequeue.
 ;
@@ -104,41 +107,80 @@ PRO DW2SDW, _DW
       c2t = -1
    END
 
-   
+; depression:
+; Kompatibilitaet mit alten DW-strukturen. Pruefen, ob 'depress' existiert   
+IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
+
+   IF depress EQ 1 THEN BEGIN
+      tau_rec =  DW.tau_rec
+      U_se    =  DW.U_se
+      exp_array = exp(-indgen(4*tau_rec+1)/tau_rec) 
+   END ELSE depress = 0
+
+
    ; create delay list if needed
    IF eWc NE 0 THEN W = DW.Weights(eW) ELSE W = Make_Array(1,1, /FLOAT, VALUE=!NONE)
 
-   IF Contains(Info(DW), 'DELAY') THEN BEGIN            
-      IF eWc NE 0 THEN D = DW.Delays(eW) ELSE D = Make_Array(1,1, /FLOAT, VALUE=0)
-      
-      DW = 0 ; limit memory hunger
-      DW = {  info    : 'SDW_DELAY_WEIGHT',$
-              source_w: dims(0)           ,$
-              source_h: dims(1)           ,$
-              target_w: dims(2)           ,$
-              target_h: dims(3)           ,$
-              s2c     : s2c               ,$
-              c2s     : c2s               ,$
-              t2c     : t2c               ,$
-              c2t     : c2t               ,$              
-              W       : [W]               ,$
-              D       : [D]               ,$
-              queuehdl: Handle_Create(VALUE=InitSpikeQueue( INIT_DELAYS=D )),$
-              Learn   : -1l         }
-   END ELSE BEGIN
-      DW = 0 ; limit memory hunger
-      DW = {  info    : 'SDW_WEIGHT',$
-              source_w: dims(0)     ,$
-              source_h: dims(1)     ,$
-              target_w: dims(2)     ,$
-              target_h: dims(3)     ,$
-              s2c     : s2c         ,$
-              c2s     : c2s         ,$
-              t2c     : t2c         ,$
-              c2t     : c2t         ,$              
-              W       : [W]         ,$
-              Learn   : -1l         }
+
+   IF depress EQ 1 THEN BEGIN 
+   ; relative amount of transmitters for each connection (initial : transm = 1)  
+      TRANSM = W * 0 + 1  ; i.e. transm=[1,1,1....]
+   ; for each connection : time since last activity   
+      LAST_AP = w * 0     ; i.e. last_ap=[0,0,0,0...]    
    END
+
+
+
+   IF Contains(Info(DW), 'DELAY') THEN BEGIN            
+         IF eWc NE 0 THEN D = DW.Delays(eW) ELSE D = Make_Array(1,1, /FLOAT, VALUE=0)
+         
+         
+         
+         DW = 0                 ; limit memory hunger
+         DW = {  info    : 'SDW_DELAY_WEIGHT',$
+                 source_w: dims(0)           ,$
+                 source_h: dims(1)           ,$
+                 target_w: dims(2)           ,$
+                 target_h: dims(3)           ,$
+                 s2c     : s2c               ,$
+                 c2s     : c2s               ,$
+                 t2c     : t2c               ,$
+                 c2t     : c2t               ,$              
+                 W       : [W]               ,$
+                 D       : [D]               ,$
+                 depress : depress           ,$
+                
+
+                 queuehdl: Handle_Create(VALUE=InitSpikeQueue( INIT_DELAYS=D )),$
+                 Learn   : -1l         }
+         
+         
+      END ELSE BEGIN
+         DW = 0                 ; limit memory hunger
+         DW = {  info    : 'SDW_WEIGHT',$
+                 source_w: dims(0)     ,$
+                 source_h: dims(1)     ,$
+                 target_w: dims(2)     ,$
+                 target_h: dims(3)     ,$
+                 s2c     : s2c         ,$
+                 c2s     : c2s         ,$
+                 t2c     : t2c         ,$
+                 c2t     : c2t         ,$              
+                 W       : [W]         ,$
+                 depress : depress     ,$
+               
+                 Learn   : -1l         }
+      END
+      
+      IF depress EQ 1 THEN BEGIN
+         settag,dw, 'U_se',U_se
+         settag,dw, 'tau_rec', tau_rec
+         settag,dw, 'transm',[transm]
+         settag,dw, 'last_ap',[last_ap]
+         settag,dw, 'exp_array', [exp_array]
+    
+ end
+
    Handle_Value, _DW, DW, /NO_COPY, /SET
 
 

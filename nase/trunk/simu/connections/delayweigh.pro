@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.39  1999/10/12 14:36:48  alshaikh
+;             neues keyword '/depress'... synapsen mit kurzzeitdepression
+;
 ;       Revision 1.38  1999/07/27 16:23:43  thiel
 ;           DW.queuehdl: A handle to a spikequeue.
 ;
@@ -174,7 +177,14 @@ FUNCTION DelayWeigh, _DW, InHandle
    Handle_Value, _DW, DW, /NO_COPY 
    Handle_Value, InHandle, In
  
+
+; Nur bei Depression:  
+; in last_ap stehen fuer jede Verbindung die Anzahl der Zeitschritte seit der letzten Aktivitaet
+   IF DW.depress EQ 1 THEN  DW.LAST_AP = DW.LAST_AP + 1
+     
+
 ;----- Der Teil ohne Delays:   
+
    IF (DW.Info EQ 'SDW_WEIGHT') THEN BEGIN
 
 
@@ -196,6 +206,8 @@ FUNCTION DelayWeigh, _DW, InHandle
       ; wi  : weight indices
       vector = FltArr(DW.target_w*DW.target_h)
       
+
+
       FOR asi=2l,In(0)+1 DO BEGIN
          asn = In(asi)
          IF DW.S2C(asn) NE -1 THEN BEGIN
@@ -204,14 +216,30 @@ FUNCTION DelayWeigh, _DW, InHandle
             ; because there is only one connection between
             ; source and target; therefore next assignment is ok
             tN = DW.C2T(wi) 
-            vector(tN) = vector(tn) + DW.W(wi)
+
+
+            ; nur bei depression :
+            IF DW.depress EQ 1 THEN begin
+            ; regeneration der relativen transmitterzahl 
+               DW.TRANSM(wi) = (1 - (1 - DW.TRANSM(wi)) * DW.exp_array(DW.last_ap(wi) < (4*DW.tau_rec)))
+               DW.LAST_AP(wi) = 0
+               
+            ; normierung :
+            ; gleiches verhalten wie non-depressive synapsen bei transm=1
+               vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) ; eigentlich noch * DW.U_se (normierung)
+                                                                  
+               DW.TRANSM(wi) =  (1- DW.U_se)*DW.TRANSM(wi)
+
+            ; nichtdepressiver fall :   
+            END ELSE vector(tN) = vector(tn) + DW.W(wi)
+           
             Handle_Value, DW.S2C(asn), wi, /NO_COPY, /SET
          END
       END
-
-      Handle_Value, _DW, DW, /NO_COPY, /SET 
-      RETURN, Spassmacher(vector)
       
+handle_Value, _DW, DW, /NO_COPY, /SET 
+RETURN, Spassmacher(vector)
+
       
       
       
@@ -268,10 +296,19 @@ FUNCTION DelayWeigh, _DW, InHandle
             wi = acilo(i)
             ; get corresponding target index
             tN = DW.C2T(wi)
-            vector(tN) = vector(tN) + DW.W(wi)
+     
+            ; wie im teil ohne delays :
+            IF DW.depress EQ 1 THEN begin
+               DW.TRANSM(wi) = (1 - ((1 - DW.TRANSM(wi)) * DW.exp_array(DW.last_ap(wi) < (4*DW.tau_rec))))
+               DW.LAST_AP(wi) = 0
+               vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi)
+               DW.TRANSM(wi) =  (1 - DW.U_se)*DW.TRANSM(wi)
+              
+               
+            END ELSE vector(tN) = vector(tn) + DW.W(wi)
+            
          END
-
-
+         
          Handle_Value, _DW, DW, /NO_COPY, /SET 
          RETURN, Spassmacher(vector)
       END ELSE BEGIN

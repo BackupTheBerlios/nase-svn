@@ -13,7 +13,8 @@
 ;                                   [,/W_TRUNCATE [,W_TRUNC_VALUE]]
 ;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
 ;                                   [,NOCON]
-;                                   [,/OLDSTYLE] )
+;                                   [,/OLDSTYLE]
+;                                   [,/DEPRESS [, TAU_REC] [, U_SE] ] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;                                                oder implizit int W_INIT/D_INIT
@@ -61,6 +62,25 @@
 ;                               Die beiden Typen können mittels
 ;                               <A HREF="#SDW2DW">SDW2DW</A> und <A HREF="#DW2SDW">DW2SDW</A>
 ;                               (weitgehend) ineinander umgewandelt werden.
+;                     DEPRESS:  Aktivierung der synaptischen Kurzzeitdepression. Als Parameter
+;                               koennen die Zeitkonstante tau_rec, sowie die 'Synaptische Effizienz'
+;                               U_se uebergeben werden.
+;                               Jede Synapse wird durch ihre (relative) Zahl an freisetzbaren
+;                               Transmitterquanten transm(0<=transm<=1) charakterisiert. 
+;                               Bei Ausloesung eines APs wird der Bruchteil 'transm'
+;                               ausgeschuettet, und 'transm' erniedrigt sich um den Betrag
+;                               U_se*transm. Die Zahl der freisetzbaren Transmitter regeneriert sich
+;                               mit der Zeitkonstanten tau_rec exponentiell bis zur Saettigung (=1).
+;                               Default : tau_rec=200ms, u_se=0.35
+;                               ACHTUNG : Laufzeitvergleich mit/ohne Depression :
+;                               1) 100 Neuronen, 1:1 Verbindung :
+;                                   10 Hz : Laufzeiten in etwa gleich
+;                                  100 Hz : Depression ca. 6% langsamer  
+;                               2) 100 Neuronen, vollst. Verknuepfung:
+;                                   10 Hz : Depression ca. 30% langsamer
+;                                  100 Hz : Depression ca. 30% langsamer       
+
+
 ;
 ; OUTPUTS: Eine Initialisiert Delay-Weight-Struktur. Wird keines der Delay-Schlüsselwörter angegeben, so enthält die Struktur keine Delays.
 ;
@@ -116,6 +136,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.17  1999/10/12 14:36:50  alshaikh
+;             neues keyword '/depress'... synapsen mit kurzzeitdepression
+;
 ;       Revision 2.16  1999/07/28 08:23:09  saam
 ;             some memory optimizations in the delay-part
 ;
@@ -267,9 +290,18 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
                  W_NOCON=w_nocon, NOCON=nocon, $
                  SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source, $
-                 OLDSTYLE=oldstyle
+                 OLDSTYLE=oldstyle, depress=depress, tau_rec= tau_rec, U_se= U_se 
 
    Default, nocon, w_nocon
+   Default, tau_rec, 200.0
+   Default, U_se, 0.35
+   default, depress, 0
+
+   IF keyword_set(depress) THEN depress = 1
+
+   IF ((U_se LT 0) OR (U_se GT 1)) THEN message, "Ungueltiger Wert fuer U_se!"
+   IF tau_rec LT 1 THEN message,"Ungueltiger Wert fuer tau_rec!"
+
    if keyword_set(w_nocon) then message, /INFORM, "Das W_NOCON-Schlüsselwort ist übrigens seit Version 2.7 wieder in NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
 
 
@@ -305,37 +337,55 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
    HasDelay = set(DELAY) or set(D_INIT) or set(D_RANDOM) or set(D_NRANDOM) or set(D_GAUSS) or set(D_LINEAR) OR set(D_CONST) OR set(D_IDENT)
 
 
-;konstante Belegungen:
-   if HasDelay then begin
-      
-      Default, delay, 0
-
-      Default, w_init, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
-      Default, d_init, Replicate( FLOAT(delay),  t_width*t_height, s_width*s_height )
-
-      w_init = reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE)
-      d_init = reform(d_init, t_height*t_width, s_height*s_width, /OVERWRITE)
-
-      tmp = { info    : 'DW_DELAY_WEIGHT',$
-              source_w: s_width,$
-              source_h: s_height,$
-              target_w: t_width,$
-              target_h: t_height,$
-              Weights : temporary(w_init) ,$
-              Delays  : temporary(d_init) }
-
-      _DW = Handle_Create(!MH, VALUE=tmp, /NO_COPY)
-   END ELSE BEGIN         
-      Default, W_INIT, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
-      
-      _DW = Handle_Create(!MH, VALUE={info    : 'DW_WEIGHT', $
-                                      source_w: s_width,$
-                                      source_h: s_height,$
-                                      target_w: t_width,$
-                                      target_h: t_height,$
-                                      Weights : reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE) }, /NO_COPY)
-   END
+   ;konstante Belegungen:
    
+         if HasDelay then begin
+         
+         Default, delay, 0
+         
+         Default, w_init, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
+         Default, d_init, Replicate( FLOAT(delay),  t_width*t_height, s_width*s_height )
+         
+         w_init = reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE)
+         d_init = reform(d_init, t_height*t_width, s_height*s_width, /OVERWRITE)
+         
+         tmp = { info    : 'DW_DELAY_WEIGHT',$
+                 source_w: s_width,$
+                 source_h: s_height,$
+                 target_w: t_width,$
+                 target_h: t_height,$
+                 Weights : temporary(w_init) ,$
+                 depress : depress, $
+                 Delays  : temporary(d_init) }
+
+         IF depress EQ 1 THEN BEGIN
+            settag,tmp, 'tau_rec', tau_rec
+            settag,tmp, 'U_se', U_se
+         END
+   
+         _DW = Handle_Create(!MH, VALUE=tmp, /NO_COPY)
+      END ELSE BEGIN         
+         Default, W_INIT, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
+         
+         tmp = {info    : 'DW_WEIGHT', $
+                source_w: s_width,$
+                source_h: s_height,$
+                target_w: t_width,$
+                target_h: t_height,$
+                Weights : reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE), $
+                depress : depress }
+ 
+IF depress EQ 1 THEN BEGIN
+
+            settag,tmp, 'tau_rec', tau_rec
+            settag,tmp, 'U_se', U_se
+         END
+         
+         _DW = Handle_Create(!MH, VALUE=tmp, /NO_COPY)
+      END
+      
+      
+
 
 
 
