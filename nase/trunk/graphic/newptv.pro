@@ -30,7 +30,9 @@
 ;  image:: One- or two dimensional array of color indices.
 ;
 ; OPTIONAL INPUTS:
-;  x, y:: x and y values corresponding to the array indices.
+;  x, y:: One-dimensional arrays of x and y values corresponding to
+;         the array indices. This can be used to adjust the axis tick
+;         values. 
 ;
 ; INPUT KEYWORDS:
 ;  /FITPLOT:: The standard behavior of this routine is to plot the
@@ -95,7 +97,6 @@
 ;  - quadratic pixels <BR>
 ;  - where should extra go? <BR>
 ;  - true color support <BR>
-;  - scale counterpart: newPTVS <BR>
 ;  - ZRANGE, without clipping but stretching instead , makes only
 ;  sense in PTVScale?<BR>
 ;
@@ -106,7 +107,7 @@
 ;* NewPTV, Scl(IndGen(20,5),[0,!topcolor]), FIndGen(20)*0.02, /LEGEND, XRANGE=[0.1,0.3]
 ;
 ; SEE ALSO:
-;  <A>PTVS</A>, <A>PTV</A>, <A>PlotTV</A>, IDL's <C>TV</C> and <C>Congrid</C>.
+;  <A>newPTVS</A>, <A>PTV</A>, <A>PlotTV</A>, IDL's <C>TV</C> and <C>Congrid</C>.
 ;-
 
 
@@ -427,6 +428,11 @@ PRO newPTV, first, second, third $
    ENDIF ELSE BEGIN
       ;; major ticks as desired by IDL
       xtinter = xtg[1]-xtg[0]
+      ;; difference of values corresponding to array elements
+      xrangeinter = (xrange[1]-xrange[0])/(nx-1)
+      entriespertick = Fix(xtinter/xrangeinter)
+      ;; tick marks may only be integer multiples of array element values
+      xtinter = entriespertick*xrangeinter
       ;; no more than 5 minors 
       Default, xminor, (nx/N_Elements(xtg)) < 5
    ENDELSE
@@ -443,6 +449,9 @@ PRO newPTV, first, second, third $
       Default, yminor, -1
    ENDIF ELSE BEGIN
       ytinter = Abs(ytg[1]-ytg[0])
+      yrangeinter = Abs(yrange[1]-yrange[0])/(ny-1)
+      entriespertick = Fix(ytinter/yrangeinter)
+      ytinter = entriespertick*yrangeinter
       Default, yminor, (ny/N_Elements(ytg)) < 5
    ENDELSE
 
