@@ -16,7 +16,7 @@
 ; INPUTS: Entweder Rot, Grün, Blau: Werte im Bereich 0..255, die die
 ;                                   gewünschte Farbe definieren,
 ;         oder            Farbname: Ein String mit einem bekannten
-;                                   Farbnamen (s. <A HREF="#../../alien/COLOR">Color</A>.) 
+;                                   Farbnamen (s. <A HREF="../../alien/#COLOR">Color</A>.) 
 ;
 ; KEYWORD PARAMETERS:
 ;
@@ -42,7 +42,7 @@
 ;                 
 ; OUTPUTS: 
 ;          Auf einem Psudoclor-Display (d.h. einem Display mit einer einzigen
-;          Farbtabelle für alle Fenster/Outputs, vgl. <A HREF="../../misc#PSEUDOCOLOR_VISUAL()">Pseudocolor_Visual()</A>):
+;          Farbtabelle für alle Fenster/Outputs, vgl. <A HREF="../../misc/#PSEUDOCOLOR_VISUAL()">Pseudocolor_Visual()</A>):
 ;                 Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
 ;                 der Farbindex einer moeglichst aehnlichen Farbe bei
 ;                 Keyword NOALLOC
@@ -123,6 +123,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.21  2000/03/07 14:39:09  kupper
+;        corrected hyperlink.
+;
 ;        Revision 1.20  2000/03/07 14:35:31  kupper
 ;        Pseudocolor_Visual() was called even on non X/WIN-devices (for example, on PS
 ;        Color devices). Fixed.
