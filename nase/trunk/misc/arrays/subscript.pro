@@ -1,56 +1,53 @@
 ;+
-; NAME:               Subscript
+; NAME:
+;   Subscript()
 ;
-; AIM:                converts one dimensional arrays into the corresponding multi dimensional ones
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:            returns the corresponding multi-dimensional indices
-;                     for a list of one-dimensional array indices.
+; AIM:
+;   converts one dimensional arrays into the corresponding multi dimensional ones
 ;
-; CATEGORY:           MISC ARRAY
+; PURPOSE:
+;   returns the corresponding multi-dimensional indices
+;   for a list of one-dimensional array indices.
 ;
-; CALLING SEQUENCE:   mil = Subscript (A, oil)
-;                     mil = Subscript (oil, SIZE=sA)
+; CATEGORY:
+;   Array
 ;
-; INPUTS:               A: the array, where the indices point to (D dimensions)
-;                     oil: single index or a list of indices (one
-;                          dimensional) 
-; KEYWORD PARAMETERS:  sA: the size (as returned by IDLs SIZE function)
-;                          of the underlying array. This options saves
-;                          memory in contrast to passing the whole array A.
+; CALLING SEQUENCE:
+;   mil = Subscript (A, oil)
+;   mil = Subscript (oil, SIZE=sA)
 ;
-; OUTPUTS:            mil: array containing the resulting multidimensional
-;                          array indices. If OIL is scalar, the array
-;                          contains D elements (equal to the number of
-;                          dimensions of A). If OIL is in array, MIL has
-;                          D+1 dimensions, where the leading one adresses
-;                          the index count.
+; INPUTS:
+;   A  :: the array, where the indices point to (D dimensions)
+;   oil:: single index or a list of indices (one dimensional) 
 ;
-; PROCEDURE:         DIVs and MODs
+; INPUT KEYWORDS:
+;   sA :: the size (as returned by IDLs SIZE function)
+;         of the underlying array. This options saves
+;         memory in contrast to passing the whole array A.
 ;
-; EXAMPLE:           Arr = IndGen(23,17,5)
-;                    print, Subscript(Arr, 999)
-;                                      => output: 10    9    2
-;                    print, Arr(10,9,2)
-;                                      => output: 999
+; OUTPUTS:
+;   mil :: array containing the resulting multidimensional
+;          array indices. If OIL is scalar, the array
+;          contains D elements (equal to the number of
+;          dimensions of A). If OIL is in array, MIL has
+;          2 dimensions, where the leading one adresses
+;          the index count.
 ;
-; MODIFICATION HISTORY:
+; PROCEDURE:
+;   DIVs and MODs
 ;
-;        $Log$
-;        Revision 1.3  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
+; EXAMPLE:
 ;
-;        Revision 1.2  2000/05/22 09:43:18  saam
-;              + expanded to process multiple indices at once
-;              + enhanced error processing
-;              + new keyword SIZE to save memory
-;
-;        Revision 1.1  1997/10/29 15:59:57  kupper
-;        Schöpfung!
+;*  Arr = IndGen(23,17,5)
+;*  print, Subscript(Arr, 999)
+;*  > 10    9    2
+;*  print, Arr(10,9,2)
+;*  > 999
 ;
 ;-
-
 Function Subscript, _A1, _A2, SIZE=_size
  
   ; check dimensions & syntax
