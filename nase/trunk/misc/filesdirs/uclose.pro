@@ -20,8 +20,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/11/08 15:01:27  saam
+;           returns if an error occurs
+;
 ;     Revision 2.1  1998/10/18 16:47:26  saam
-;     initial version
+;           initial version
 ;
 ;
 ;-
@@ -29,7 +32,7 @@ PRO UClose, lun, VERBOSE=verbose, ALL=all, _EXTRA=e
 
    COMMON UOPENR, llun
 
-;   On_Error, 2
+   On_Error, 2
 
    IF NOT Set(llun) THEN Message, 'this routine should only be used in conjenction with UOPENR !!!'
 
