@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/02/19 16:15:58  kupper
+;               Fehlerchen...
+;
 ;        Revision 2.2  1998/02/19 16:09:21  kupper
 ;               Fehlerchen...
 ;
@@ -51,7 +54,7 @@ Pro New_Color_Convert, I0, I1, I2, O0, O1, O2, $
    YIC2RGB = Invert (RGB2YIC)
 
    If Keyword_Set(RGB_YIC) then begin
-      YIC = [I0, I1, I2] # RGB2YIC
+      YIC = [[I0], [I1], [I2]] # RGB2YIC
       O0  = YIC(*, 0)
       O1  = YIC(*, 1)
       O2  = YIC(*, 2)
@@ -59,7 +62,7 @@ Pro New_Color_Convert, I0, I1, I2, O0, O1, O2, $
    endif
       
    If Keyword_Set(YIC_RGB) then begin
-      MyRGB = [I0, I1, I2] # YIC2RGB
+      MyRGB = [[I0], [I1], [I2]] # YIC2RGB
       O0  = MyRGB(*, 0)
       O1  = MyRGB(*, 1)
       O2  = MyRGB(*, 2)
