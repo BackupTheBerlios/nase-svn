@@ -1,7 +1,7 @@
 ;+
 ; NAME: InitList()
 ;
-;             s.a. insert, retrieve(), kill, FreeList
+;             s.a. <A HREF="#INSERT">insert</A>, <A HREF="#ReTrIeVe">retrieve()</A>, kill, FreeList
 ;
 ; PURPOSE: Initialisierung einer Listenstruktur.
 ;
@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1997/11/14 16:36:58  kupper
+;               VERSUCH, in den Header Hyperlinks einzubauen.
+;
 ;        Revision 1.1  1997/11/12 17:11:06  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!
