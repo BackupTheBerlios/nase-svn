@@ -7,15 +7,7 @@
 ;
 ; CATEGORY: GRAPHICS / GENERAL
 ;
-; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo,
-;                             [, /NOSCALE]
-;                             [, /ORDER]
-;                             [, /NASE]
-;                             [, /NEUTRAL]
-;                             [, /POLYGON]
-;                             [, TOP=Farbindex]
-;                             [, CUBIC=cubic] [, /INTERP] [, /MINUS_ONE]
-;                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
+; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT]
 ;
 ; INPUTS: Array   : Der neue Inhalt der Graphik. Muß
 ;                   selbstverständlich die gleichen Ausmaße wie
@@ -26,37 +18,20 @@
 ;                   zurückgelieferte Struct.
 ;
 ; KEYWORD PARAMETERS: 
-;                     NOSCALE:   Schaltet die Intensitaetsskalierung ab.
-;                                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
-;                                TVSCL und TV.
-;                     ORDER:     der gleiche Effekt wie bei Original-TVScl
-;                     NASE:      Bewirkt die richtig gedrehte Darstellung von Layerdaten 
-;                                (Inputs, Outputs, Potentiale, Gewichte...).
-;                                D.h. z.B. werden Gewichtsmatrizen in der gleichen
-;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
-;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
-;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
-;                     POLYGON   : Statt Pixel werden Polygone
-;                                 gezeichnet (gut fuer Postscript)
-;                                 /POLYGON setzt /CUBIC, /INTERP
-;                                 und /MINUS_ONE außer Kraft.
-;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
-;                     CUBIC,
-;                     INTERP,
-;                     MINUS_ONE : werden an ConGrid weitergereicht (s. IDL-Hilfe)
-;                     COLORMODE : Wird an Showweights_scale
-;                                 weitergereicht. Mit diesem Schlüsselwort kann unabhängig 
-;                                 von den Werten im Array die
-;                                 schwarz/weiss-Darstellung (COLORMODE=+1) 
-;                                 oder die rot/grün-Darstellung
-;                                 (COLORMODE=-1) erzwungen werden.
-;                     SETCOL    : Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
-;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
 ;
+;         INIT: Wenn gesetzt, wird eine neue Farbskalierung
+;               durchgeführt, so, als ob <A HREF="#PLOTTVSCL">PlotTvScl</A> aufgerufen
+;               worden wäre. Alle Schlüsselworte, die <A HREF="#PLOTTVSCL">PlotTvScl</A>
+;               ursprünglich übergeben wurden (NASE, SETCOL,
+;               COLORMODE,...) werden, soweit sie sich auf die
+;               Farbskalierung beziehen, unverändert übernommen.
 ;
 ; PROCEDURE: Ausgelagert aus PlotTvScl. Es werden keine neuen
 ;            Positionsberechnungen durchgeführt. Alle nötigen
-;            Positionsdaten werden dem PLOTTVSCL_INFO-Struct entnommen.
+;            Positionsdaten werden dem PLOTTVSCL_INFO-Struct
+;            entnommen.
+;            Die Farben werden entsprechend der dort
+;            gespeicherten Informationen skaliert.
 ;
 ; EXAMPLE: width = 25
 ;          height = 50
@@ -73,6 +48,12 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.5  1999/09/23 14:12:39  kupper
+;     Corrected Legend colorscaling (now uses TOP).
+;     Updating should work now, behaviour of plottvscl should even be
+;     faster.
+;     Case /NOSCALE, NASE=0 was broken(!). Fixed.
+;
 ;     Revision 2.4  1999/09/23 14:01:22  kupper
 ;     Huh, covered all cases now, hopefully...
 ;
@@ -89,13 +70,8 @@
 ;
 ;-
 
-PRO PlotTvscl_update, W, Info, $
-             ORDER=Order, NASE=Nase, NEUTRAL=neutral, NOSCALE=NoScale, $
-             POLYGON=POLYGON,$
-             TOP=top,$
-             CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-             COLORMODE=colormode, SETCOL=setcol, $
-             INIT=init
+PRO PlotTvscl_update, W, Info, INIT=init
+
 ;print, "PlotTvScl_update"
    On_Error, 2
    IF NOT Set(W) THEN Message, 'Argument undefined'

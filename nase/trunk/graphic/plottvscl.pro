@@ -29,6 +29,7 @@
 ;                             [, CUBIC=cubic] [, /INTERP] [, /MINUS_ONE]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
 ;                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
+;                             [, TOP=Farbindex]
 ;
 ; INPUTS: Array : klar!
 ;
@@ -64,7 +65,14 @@
 ;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
-;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
+;                                 /POLYGON setzt /CUBIC, /INTERP
+;                                 und /MINUS_ONE außer Kraft.
+;                     TOP       : Benutzt nur die Farbeintraege
+;                                 von 0..TOP (siehe IDL5-Hilfe von TvSCL)
+;                                 Dieses Schlüsselwort hat nur
+;                                 Bedeutung, wenn nicht eines
+;                                 der Schlüsselworte NASE,
+;                                 NEUTRAL oder NOSCALE gesetzt ist.
 ;                     CUBIC,
 ;                     INTERP,
 ;                     MINUS_ONE : werden an ConGrid weitergereicht (s. IDL-Hilfe)
@@ -126,6 +134,12 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.54  1999/09/23 14:12:39  kupper
+;     Corrected Legend colorscaling (now uses TOP).
+;     Updating should work now, behaviour of plottvscl should even be
+;     faster.
+;     Case /NOSCALE, NASE=0 was broken(!). Fixed.
+;
 ;     Revision 2.53  1999/09/22 09:08:31  kupper
 ;     Added NEUTRAL Keyword in PlotTvScl_update (forgotten).
 ;     Corrected minor bug in legend scaling.
@@ -525,7 +539,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
    PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
 
-   ;---- Optionale Outputs:
+   ;;------------------> Optional Outputs
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
    GET_INFO = {PLOTTVSCL_INFO, $
@@ -562,12 +576,16 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                interp  : INTERP, $
               minus_one: MINUS_ONE, $
               colormode: COLORMODE, $
-               setcol  : SETCOL}
+               setcol  : SETCOL, $
+;
+; Scaling Information to be stored by PlotTvScl_update:
+               range_in: [-1.0d, -1.0d]}
 
    Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
+   ;;-------------------------------- End Optional Outputs
 
    ;-----Plotten der UTVScl-Graphik:
-   PlotTvScl_update, _W, GET_INFO
+   PlotTvScl_update, /INIT, _W, GET_INFO
 
    
    ;-----Legende, falls erwuenscht:
@@ -611,7 +629,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
           V_Stretch=TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
           Max=LEG_MAX, Min=LEG_MIN, $
           CHARSIZE=Charsize, $
-          /Vertical, /Center, COLOR=sc 
+          /Vertical, /Center, COLOR=sc, TOP=top
       END
    END
 
