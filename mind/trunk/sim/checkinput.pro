@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/20 16:28:07  alshaikh
+;          SOME bugfixes
+;
 ;     Revision 1.5  2000/01/20 10:59:43  alshaikh
 ;           problems with trainspottingscope solved
 ;
@@ -156,10 +159,10 @@ Default, NUMBER, 0
    
    FOR time=0l, (p.simulation.time/(1000.0*P.SIMULATION.SAMPLE))-1 DO BEGIN 
       
-      act_time =  round(time*1000*1000*P.SIMULATION.SAMPLE MOD round(period*1000))    ; time in microsec ;-)
-
-      IF (round(act_time*1000) MOD round(delta_t*1000) EQ 0) THEN BEGIN
-
+      act_time =  round(time*1000*1000*P.SIMULATION.SAMPLE) MOD round(period*1000) ; time in microsec ;-)
+      
+      IF ((act_time) MOD round(delta_t*1000) EQ 0) THEN BEGIN
+         
          pattern = fltarr(h,w)  ; initialize input-matrix
          
          filter_list = ''
@@ -167,55 +170,60 @@ Default, NUMBER, 0
             Handle_Value,INn.filters(i),act_filter 
             IF i NE 0 THEN filter_list =  filter_list +'*'
             filter_list = filter_list + act_filter.NAME
-            IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
-               IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
-                  pattern = CALL_FUNCTION(act_filter.NAME,$
-                                          MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                          temp_vals=INn.temps(i),DELTA_T=delta_t) 
-               END ELSE BEGIN
-                  pattern = CALL_FUNCTION(act_filter.NAME,$
-                                          MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
-                                          temp_vals=INn.temps(i),DELTA_T=delta_t) 
+            
+            IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN BEGIN 
+               IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
+                  IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                     temp = CALL_FUNCTION(act_filter.NAME,$
+                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                  END ELSE BEGIN
+                     temp = CALL_FUNCTION(act_filter.NAME,$
+                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                  ENDELSE  
+               ENDIF  
+                                ; ELSE NextStep 
+               IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
+                pattern = CALL_FUNCTION(act_filter.NAME,$
+                                        PATTERN=pattern, temp_vals=INn.temps(i)) 
+               
+               IF act_time/1000.0 eq act_filter.stop THEN print,'INPUT:filter '''+act_filter.NAME+''' inactive'
+               
+               INn.pattern = pattern ; store for future use
+               
+       
+               IF viz_mode[i] EQ 3 THEN BEGIN 
+                  opensheet,sheet,i
+                  trainspottingscope,ts(i),INN.pattern
+                  closesheet,sheet,i
+               END ELSE BEGIN 
+
+                  IF i NE 0 THEN title = filter_list $
+                  ELSE $
+                   title = filter_list+string((act_time/1000.0))
+                  wset,0
+                  IF viz_mode[i] EQ 1 THEN $
+                   PlotTvScl, INn.pattern,TITLE=title
+                  IF viz_mode[i] EQ 2 THEN $
+                   surface, INn.pattern,TITLE=title
+                  
+                  opensheet, sheet,i               
+                  Device,Copy=[0,0,256,256,0,0,0]
+                  closesheet,sheet,i
                END
                
-                                ; ELSE NextStep 
-            END ELSE $ 
-             IF ((act_time/1000.0 GT act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
-             pattern = CALL_FUNCTION(act_filter.NAME,$
-                                     PATTERN=pattern, temp_vals=INn.temps(i)) 
-
-            IF act_time/1000.0 eq act_filter.stop THEN print,'INPUT:filter '''+act_filter.NAME+''' inactive'
-            
-            INn.pattern = pattern ; store for future use
-            
-            
-            IF viz_mode[i] EQ 3 THEN BEGIN 
-               opensheet,sheet,i
-               trainspottingscope,ts(i),INN.pattern
-               closesheet,sheet,i
-            END ELSE BEGIN 
-               IF i NE 0 THEN title = filter_list $
-               ELSE $
-                title = filter_list+string((act_time/1000.0))
-               wset,0
-               IF viz_mode[i] EQ 1 THEN $
-                PlotTvScl, INn.pattern,TITLE=title
-               IF viz_mode[i] EQ 2 THEN $
-                surface, INn.pattern,TITLE=title
-               
-               opensheet, sheet,i               
-               Device,Copy=[0,0,256,256,0,0,0]
-               closesheet,sheet,i
-            END 
+            ENDIF  
          ENDFOR 
-      END        
+      ENDIF 
+      
       
  
       handle_value,in(number),inn,/set
       ;INn.t = INn.t + 1
    
 
-    ENDFOR  
+   ENDFOR  
     
     IF ExtraSet(e,'WAIT') THEN BEGIN
        print, "--> I'm waiting for you <--"

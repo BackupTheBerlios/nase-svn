@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/20 16:28:07  alshaikh
+;          SOME bugfixes
+;
 ;     Revision 1.4  2000/01/19 17:18:23  saam
 ;           + commented out poissoninput (!!!) all poisson inputs
 ;             with the old input system temporarily don't work
@@ -254,42 +257,46 @@ FUNCTION Input, L, _IN
 
          IF ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0)) THEN BEGIN
 
-            pattern = fltarr(h,w)   ; initialize input-matrix
+            pattern = fltarr(h,w) ; initialize input-matrix
 
             FOR i=0, number_filter-1 DO BEGIN
-
+               
                Handle_Value,IN.filters(i),act_filter 
-              
-               IF act_time EQ act_filter.start THEN BEGIN    ; initialize filter
-                  IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
-                     pattern = CALL_FUNCTION(act_filter.NAME,$
+               
+               IF ((act_time GE act_filter.start) AND (act_time LE act_filter.stop)) THEN BEGIN 
+                  
+                  IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
+                     IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                        temp = CALL_FUNCTION(act_filter.NAME,$
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
                                              temp_vals=IN.temps(i),DELTA_T=delta_t) 
-                  END ELSE BEGIN
-                     pattern = CALL_FUNCTION(act_filter.NAME,$
+                     END ELSE BEGIN
+                        temp = CALL_FUNCTION(act_filter.NAME,$
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
                                              temp_vals=IN.temps(i),DELTA_T=delta_t) 
-                  END
-                  print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
-                  print,''
+                     END
+                     print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
+                     print,''
+                  END 
                   
-                  ; ELSE NextStep 
-               END ELSE IF ((act_time GT act_filter.start) AND (act_time LE act_filter.stop)) THEN $
-                pattern = CALL_FUNCTION(act_filter.NAME,$
-                                        PATTERN=pattern, temp_vals=IN.temps(i)) 
+                  pattern = CALL_FUNCTION(act_filter.NAME,$
+                                          PATTERN=pattern, temp_vals=IN.temps(i)) 
+               END 
                
-            ENDFOR ; i  
-            R = pattern 
-            IN.pattern = R  ; store for future use
+            ENDFOR              ; i  
+            
+            IN.pattern = pattern ; store for future use
+            print, total(IN.pattern)
 
-            IF IN.visible NE 0 THEN BEGIN  ; show what you've done
+            IF IN.visible NE 0 THEN BEGIN ; show what you've done
                OpenSheet, INPUT_1
                PlotTvScl, IN.pattern
                CloseSheet, INPUT_1
-               END 
-
-         END ELSE R = IN.pattern
-         R = Spassmacher(R)
+            END 
+            
+         END 
+         
+         R = Spassmacher(IN.pattern)
          IN.t = IN.t + 1
       END 
       
