@@ -69,6 +69,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/11/19 15:17:47  saam
+;     some handler stuff changed
+;
 ;     Revision 1.2  2000/09/29 08:10:35  saam
 ;     added the AIM tag
 ;
@@ -82,7 +85,7 @@
 FUNCTION IFrandPos, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, LOGIC=op, WRAP=wrap, $
                     STIM=stim, POS=pos, FILE=file, SAVE=save, _EXTRA=e
 
-   ON_ERROR, 2
+;   ON_ERROR, 2
 
    Default, mode, 1          ; i.e. step
    Default, R   , !NONE
@@ -147,6 +150,7 @@ FUNCTION IFrandPos, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV
       ; FREE
       2: BEGIN
           IF TV.V NE !NONE THEN Eject, TV.V, /NOLABEL, /SHUTUP
+          Handle_Value, _TV, TV, /NO_COPY, /SET
           Handle_Free, _TV
           console, 'done'
           RETURN, R
