@@ -92,7 +92,11 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                    Delays  : [-1]          }
       END ELSE BEGIN         
          IF Max(init_delays) GE 15 THEN Message, 'sorry, delays are too big'
-         IF Keyword_Set(taup) AND Keyword_Set(vp) THEN lp = FltArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ELSE lp = -1
+         IF (Keyword_Set(taup) AND Keyword_Set(vp)) THEN BEGIN
+            lp = FltArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) )
+         END ELSE BEGIN
+            lp = -1
+         END
          DelMat = { source_w: source_w,$
                     source_h: source_h,$
                     target_w: target_w,$
@@ -100,7 +104,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                     Weights : DOUBLE(init_weights) ,$
                     Matrix  : BytArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ,$
                     Delays  : init_delays  ,$
-                    Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) )$
+                    Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) ),$
                     VP      : FLOAT(vp),$
                     DP      : exp(-1./taup),$
                     LP      : lp}
@@ -127,8 +131,8 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       DelMat.Queue = tmpQu
       
       ; update the learning potential if needed
-      IF SIZE(lp) NE 0 THEN BEGIN
-         lp =  lp*dp + vp*spikes
+      IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
+         DelMat.lp =  DelMat.lp*DelMat.dp + DelMat.vp*spikes
       END
       RETURN, TOTAL(res, 2)
    END   
