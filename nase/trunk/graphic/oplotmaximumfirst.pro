@@ -73,36 +73,6 @@
 ;  LINESTYLE and PSYM.
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.8  2001/01/16 18:20:17  thiel
-;            Found XRANGE bug: now max and min are determined only inside xrange.
-;
-;        Revision 1.7  2000/11/20 13:51:23  thiel
-;            Checked for correct XRANGE use, found no bug.
-;            Updated header instead.
-;
-;        Revision 1.6  2000/10/01 14:50:42  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 1.5  2000/08/01 12:10:28  thiel
-;            Now also handles multiple colored oplots.
-;            Header translated.
-;
-;        Revision 1.4  1999/05/24 15:24:04  thiel
-;            THICK-Keyword wird jetzt auch an OPlot weitergegeben.
-;
-;        Revision 1.3  1999/04/29 13:17:18  thiel
-;            Und noch besser: kann jetzt auch PlotSymbols.
-;
-;        Revision 1.2  1999/04/29 09:49:48  thiel
-;            Jetzt wird auch das Minimum beachtet.
-;
-;        Revision 1.1  1999/04/28 12:52:37  thiel
-;            Neu!
-;
 
 PRO OPlotMaximumFirst, z, zz $
                        , LINESTYLE=linestyle, PSYM=psym, THICK=thick $
@@ -111,7 +81,7 @@ PRO OPlotMaximumFirst, z, zz $
 
    Default, LINESTYLE, 0
    Default, PSYM, -1
-   Default, COLOR, [-1]
+   Default, COLOR, [GetForeground()]
 
    IF linestyle EQ -1 THEN maxlinestyle = 1 $
    ELSE maxlinestyle = 6
