@@ -9,7 +9,6 @@
 ;  Disable non-blocking I/O on a file.
 ;
 ; PURPOSE:
-
 ;  By default, IDL always opens a file in blocking I/O mode. I.e., if
 ;  the user tries to read from the file, and no data is
 ;  available<SUP>*)</SUP>, IDL sleeps until data becomes
@@ -72,7 +71,7 @@
 ;  Caution: IDL will not return!
 ;
 ; SEE ALSO:
-;  <A>SetNonblocking</A>, <A>TryReadF</A>, <A>Available</A>,
+;  <A>SetNonblocking</A>, <A>TryReadF()</A>, <A>Available()</A>,
 ;  <C>ON_IOERROR</C>.
 ;-
 
