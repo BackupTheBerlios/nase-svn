@@ -123,7 +123,7 @@ function  __gauss_stch, x, y, p
    ;return, ( p(0)*exp(-(x-y*p(1))^2/(2*p(2)^2)))
 end
 
-function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, gaussf=gaussf, plot=plot, freqlimit=freqlimit, sigmalimit=sigmalimit,vellimit=rvlimit,limitidx=limitidx, verbose=verbose, interpol=interpol, correction=correction
+function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, gaussf=gaussf, plot=plot, freqlimit=freqlimit, sigmalimit=sigmalimit,vellimit=rvlimit,limitidx=limitidx, verbose=verbose, interpol=interpol, correction=correction, thf=thf, grf=grf
    common stchfit_sheets, sheet_1
 
    ;on_Error, 2
@@ -133,6 +133,9 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
    default, gaussf, 0
    default, interpol, 1
    default,correction,1
+
+   default, thf, 0.2 ;;fermi threshould
+   default, grf, 0.02 ;; fermi gradient
 
    if gaussf eq 1 then cosf = 0
 
@@ -320,11 +323,11 @@ function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, ga
      if correction EQ 1 then begin
         ;fac=FLOAT(1-correlate(stc_tmp(*),yfit(*)) LT 0.2)
 
-        if(cs(i_t, 0) GE 0.0001) then fac=__fermi(FLOAT(1.0-correlate(stc_tmp(*),yfit(*))),0.02,0.2)
+        if(cs(i_t, 0) GE 0.0001) then fac=__fermi(FLOAT(1.0-correlate(stc_tmp(*),yfit(*))),grf,thf)
 
      end else begin
         if cosf eq 1 then begin
-           fac =  __fermi(sqrt((umoment(stc_tmp(__cos_stch_index( X, Y, p))))(1)),0.02,0.2)
+           fac =  __fermi(sqrt((umoment(stc_tmp(__cos_stch_index( X, Y, p))))(1)),grf,thf)
         end 
      end
      
