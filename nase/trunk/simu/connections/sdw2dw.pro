@@ -31,6 +31,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  2000/08/04 09:43:38  thiel
+;         Changed position of Handle_Value, _SDW, SDW, /NO_COPY to enable
+;         correct work of DWDim.
+;
 ;     Revision 2.8  2000/07/18 16:38:46  kupper
 ;     Implemented Poggio&Riesenhuber-like MAX conjuction operation.
 ;
@@ -69,13 +73,6 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
 
    IF (Info(_SDW) NE 'SDW_DELAY_WEIGHT') AND (Info(_SDW) NE 'SDW_WEIGHT') THEN Message, 'SDW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_SDW))+' !'
 
-
-   ;; We need this again, because there are no(t yet) functions for
-   ;; accessing the depression-parameters and conjunction-method from
-   ;; a SDW-handle (like for Weights and Delays!):
-   Handle_Value, _SDW, SDW, /NO_COPY
-
-
    dims = DWDim(_SDW, /ALL)
 
    IF Info(_SDW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN            
@@ -95,6 +92,13 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
               Weights : Weights(_SDW) }
       
    END ELSE Message, 'this must not happen!!'
+
+
+   ;; We need this again, because there are no(t yet) functions for
+   ;; accessing the depression-parameters and conjunction-method from
+   ;; a SDW-handle (like for Weights and Delays!):
+   Handle_Value, _SDW, SDW, /NO_COPY
+
 
 ; kompatibilitaetsabfrage zu alten sdw-strukturen
    IF NOT ExtraSet(SDW,'depress') THEN depress = 0 else depress =  SDW.depress
