@@ -43,6 +43,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1999/07/23 13:13:45  thiel
+;           Corrected two bugs: Dimension of 'wi' and
+;                               reset of learned connections.
+;
 ;       Revision 1.1  1999/07/21 15:03:42  saam
 ;             + no docu yet
 ;
@@ -115,6 +119,7 @@ PRO TotalPrecall, _PC, _DW, postL
          atn = PostAP(ati)
          IF DW.T2C(atn) NE -1 THEN BEGIN
             Handle_Value, DW.T2C(atn), wi
+            wi = Transpose(wi)
             IF Set(postCON) THEN postCON = [postCON, wi] ELSE postCON = wi ;postCON : list of active postsynaptic weight indidices
          END
       END
@@ -159,7 +164,7 @@ PRO TotalPrecall, _PC, _DW, postL
    
    ; reset learned connections
    IF Set(learnPre)    THEN PC.Pre(learnPre)     = !NONEl
-   IF Set(learnPost)   THEN PC.Pre(learnPost)    = !NONEl
+   IF Set(learnPost)   THEN PC.Post(learnPost)    = !NONEl
 
 
    ; reset neuron's last spike if its too old
