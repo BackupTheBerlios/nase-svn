@@ -13,9 +13,11 @@
 ;  distance and returns these parts in another array so that they can
 ;  be processed separately. Parts may overlap depending on the chosen
 ;  size and distance. The result can then be used for sliding spectra
-;  correlation or firing rate analysis etc. In those cases, the last
-;  index of the original array is considered to be the "time
-;  index". Data at the beginning and the end of the original array not
+;  correlation or firing rate analysis etc. 
+;  <B>You should always specify the /TFIRST option</B>, which assumes
+;  time to be in the first index of your signal array and on the other
+;  hand returns time in the first index of the slice array.
+;  Data at the beginning and the end of the original array not
 ;  fitting into the first/last part are not returned.
 ;
 ; CATEGORY:
@@ -24,7 +26,12 @@
 ;
 ; CALLING SEQUENCE: 
 ;*  s = Slices (a [,SSIZE=...] [,SSHIFT=...] [,SAMPLEPERIOD=...] 
-;*                [,TVALUES=...] [,TINDICES=...] [,/TFIRST] )
+;*                [,TVALUES=...] [,TINDICES=...] [,/TFIRST] 
+;*                [,SNR=...] [,SMAX=...] )
+;
+;*  smax = Slices (a [,SSIZE=...] [,SSHIFT=...] [,SAMPLEPERIOD=...] 
+;*                 [,TVALUES=...] [,TINDICES=...] [,/TFIRST] 
+;*                 /GETMAX )
 ; 
 ; INPUTS: 
 ;  a :: The array to be divided. If multidimensional, the array is
@@ -32,9 +39,17 @@
 ;      if <*>/TFIRST</*> is set, last index else).
 ;
 ; INPUT KEYWORDS:
+;  GETMAX       :: <*>Slices</*> will just return the maximal number
+;                  of possible slices.
+;  SAMPLEPERIOD :: Duration of the sampling period / s (Default: 0.001s)
+;  SNR          :: Specify the slice indices you actually want to calculate
+;                  (single number or array). This option allows to
+;                  generate the slices as they are needed. You can
+;                  sequentially retrieve individual slices. This can
+;                  be necessary if the complete slice array would bomb
+;                  your memory.
 ;  SSIZE        :: Size of resulting parts / ms. (Default: 128ms)
 ;  SSHIFT       :: Distance between parts / ms. (Default: ssize/2)
-;  SAMPLEPERIOD :: Duration of the sampling period / s (Default: 0.001s)
 ;  TFIRST       :: Normally the last index of <*>a</*> is assumed to
 ;                  be the time index. Setting <*>TFIRST</*> enforces
 ;                  <C>Slices</C> to use the first array index as time.
@@ -46,6 +61,9 @@
 ; OPTIONAL OUTPUTS: 
 ;  tvalues  :: Returns the times/ms at which parts start.
 ;  tindices :: Returns starting time array indices of the parts.
+;  SMAX     :: Returns the maximal number of slices that can be or are
+;              generated. This information is 
+;              especially useful, when working with the <*>SNR<*> option.  
 ;
 ; PROCEDURE:
 ;*  - Calculate number of parts needed for given ssize and sshift.
@@ -54,21 +72,27 @@
 ;*  - Store parts inside return array.
 ;
 ; EXAMPLE: 
-;* a=RandomU(s,3,500) LT 0.1
-;* ; generate 3 spiketrains each 500ms long
-;* b=Slices(a, SSIZE=100)
-;* ; divide them, parts are 100ms and begin each 50ms (default for SSHIFT)
-;* help, b
-;* >B               BYTE      = Array[9, 3, 100]
-;* ; b contains 9 slices of 3 spiketrains 100ms long
-;* Trainspotting, Reform(b(3,*,*))
-;* ; show slice no. 3          
+; generate 3 spiketrains each 500ms long
+;*a=RandomU(s,500,3) LT 0.1
+;
+; divide them, parts are 100ms and begin each 50ms (default for SSHIFT)
+;*b=Slices(a, SSIZE=100, /TFIRST)
+;*help, b
+;*;B               BYTE      = Array[100, 9, 3]
+;b contains 9 slices of 3 spiketrains 100ms long
+;*
+; get maximal count of possible slices
+;*print, Slices(a, SSIZE=100, /TFIRST, /GETMAX) 
+;*; 9
+;extract slices number 3 and 5
+;*C=Slices(a, SSIZE=100, /TFIRST, SNR=[3,5])
+;*; C    BYTE      = Array[100, 2, 3]
 ;
 ; SEE ALSO: <A>INSTANTRATE</A>.
 ;
 ;-
 FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
-                 , TVALUES=tvalues, TINDICES=tindices, TFIRST=tfirst
+                 , TVALUES=tvalues, TINDICES=tindices, TFIRST=tfirst, SNR=_snr, SMAX=steps, GETMAX=getmax
 
    On_Error, 2
 
@@ -84,37 +108,52 @@ FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
    IF Keyword_Set(TFIRST) THEN BEGIN
        IF __SSIZE GT S(1) THEN Console, 'SSIZE too large.', /FATAL
        
-       steps = (S(1)-__ssize)/__sshift + 1
-       
+       smax = (S(1)-__ssize)/__sshift + 1
+       IF Keyword_Set(GETMAX) THEN return, smax
+       IF Set(_SNR) THEN BEGIN
+           IF NOT Ordinal(_SNR) THEN Console, 'slice numbers have to be ordinal', /FATAL
+           IF MIN(_SNR) LT 0    THEN Console, 'slice number is less than zero', /FATAL
+           IF Max(_SNR) GE smax THEN Console, 'slice number in SNR too large', /FATAL
+           snr=[_snr]
+           steps = N_Elements(snr)
+       END ELSE BEGIN
+           steps = smax
+           snr = LIndgen(steps)
+       END
+
        SB = [__SSIZE, steps]
        IF S(0) GT 1 THEN SB = [SB, S(2:S(0))] 
        
-       tvalues = FIndGen(steps)*__SSHIFT/OS
-       tindices = LIndGen(steps)*__SSHIFT
-       
-       t = (LIndGen(__SSIZE*steps) MOD __SSIZE) + __SSHIFT*(LIndGen(__SSIZE*steps) / __SSIZE)
+       tvalues = Float(snr)*__SSHIFT/OS
+       tindices = snr*__SSHIFT
+
+;       t = (LIndGen(__SSIZE*steps) MOD __SSIZE) + __SSHIFT*(LIndGen(__SSIZE*steps) / __SSIZE)
+       t = (LIndGen(__SSIZE*steps) MOD __SSIZE) + __SSHIFT*REBIN(snr, steps*__SSIZE, /SAMPLE) 
        
        RETURN,  REFORM(a(t,*,*,*,*,*,*), SB, /OVERWRITE)
 
    END ELSE BEGIN
 
        DMsg, "assuming time in last index"
-       Console, "would you mind assuming time as the first array index?"
+       Console, "would you mind assuming time as the first array index?", /WARN
+       IF Set(_SNR) THEN Console, 'keyword SNR is only supported for /TFIRST',/FATAL
        IF __SSIZE GT s(s(0)) THEN Message, 'SSIZE too large.'
  
-       steps = (S(S(0))-__ssize)/__sshift
-       
+       smax = (S(S(0))-__ssize)/__sshift + 1
+       IF Keyword_Set(GETMAX) THEN return, smax
+       steps = smax
+
        Sn = N_Elements(S)
-       SB = [steps+1]
+       SB = [steps]
        IF S(0) GT 1 THEN SB = [SB, S(1:S(0)-1)] 
        SB = [SB, __SSIZE]
        SB = [S(0)+1, SB, S(S(0)+1), PRODUCT(SB)]
        b =  Make_Array(SIZE=SB)
        
-       tvalues = FIndGen(steps+1)*__SSHIFT/OS
-       tindices = LIndGen(steps+1)*__SSHIFT
+       tvalues = FIndGen(steps)*__SSHIFT/OS
+       tindices = LIndGen(steps)*__SSHIFT
        
-       FOR slice=0,steps DO BEGIN
+       FOR slice=0,steps-1 DO BEGIN
            start = slice*__SSHIFT
            CASE s(0) OF
                1: b(slice,*)           = a(start:start+__SSIZE-1)
@@ -127,7 +166,6 @@ FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
                ELSE: Message, 'array has tooo much dimensions'
            END
        END
-       
        RETURN, b
    END
 
