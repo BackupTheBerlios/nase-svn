@@ -1,128 +1,98 @@
 ;+
-; NAME:               SlidPowerSpec
+; NAME:
+;  SlidPowerSpec()
 ;
-; AIM:                calculates the timeresolved power spectrum of a given signal 
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            Diese Routine fuehrt ein gleitendes Powerspectrum durch.
-;                     Dadurch kann man auf Kosten der Frequenzaufloesung die
-;                     zeitliche Entwicklung eines Spektrums untersuchen.
+; AIM:
+;  time resolved power spectrum for one or several signals 
 ;
-; CATEGORY:           STAT ,CORRS+SPECS
+; PURPOSE:
+;  This routine performs a sliding power spectrum. Using
+;  <*>SlidPowerSpec</*> instead of <A>PowerSpec</A> allows to analyze
+;  the temporal development of a spectrum at the cost of decreased
+;  frequency resolution.
 ;
-; CALLING SEQUENCE:   SlidSpec = SlidPowerSpec(series, slicesize, f [,PHASE=phase] [,TRUNC_PHASE=trunc_phase], [SAMPLEPERIOD=sampleperiod])
+; CATEGORY:
+;  Statistics
+;  Signals
 ;
-; INPUTS:             series   : die zu analysierende Zeitreihe als 1-d Float-Array
-;                     slicesize: die Groesse eines Stuecks der Zeitreihe
+; CALLING SEQUENCE:
+;* sps = SlidPowerSpec(series [,slicesize [,f]] [,PHASE=phase]
+;*                     [,TRUNC_PHASE=trunc_phase],
+;*                     [,SAMPLEPERIOD=sampleperiod]
+;*                     [,SLICESIZE=...] [,F=f]
+;*                     [,/AVERAGE]
 ;
-; KEYWORD PARAMETERS: TRUNC_PHASE: Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(ps))
-;                                     auf Null gesetzt.
-;                     SAMPLEPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
+; INPUTS:
+;  series:: a single time series or multiple
+;           time series (time, other-dimensions), all other
+;           dimensions are iterated
+;  slicesize:: the size of the sliding window in ms (default: 256). Specify either
+;              the positional or the keyword parameter.
 ;
+; INPUT KEYWORDS:
+;  TRUNC_PHASE::  phase contribution for values <*>LE (TRUNC_PHASE (in Prozent) * MAX(ps))</*>
+;                 will be set to zero
+;  SAMPLEPERIOD:: sample period of <*>series</*> in seconds (default: 0.001)
+;  SLICESIZE:: the size of the sliding window in ms (default: 256). Specify either
+;              the positional or the keyword parameter.
+;  AVERAGE:: computes time resolved spectra and then averages across
+;            all slices of the same time series. This is not the same
+;            as using <A>PowerSpec</A>!
 ;
-; OUTPUTS:            SlidSpec : das 2d-Array von Powerspektren, der erste Index
-;                                steht fuer das i-te Spektrum
+; OUTPUTS:
+;  sps:: resulting time-resolved powerspectra (frequency, slice,
+;        other-dimensions) or averaged time-resolved powerspectra
+;        (frequency, other-dimensions), if <*>/AVERAGE</*> is set.
 ;
-; OPTIONAL OUTPUTS:   f        : die zugehoerige Frequenzachse wird optional 
-;                                zurueckgegeben    
-;                     phase   : gibt die zu ps entsprechende Phasenwinkel zu den Frequenzwerten zuruek
+; OPTIONAL OUTPUTS:
+;  F:: the frequency axis corresponding to the first index of
+;      <*>sps</*> will be returned on request. Please specify either
+;      the positional or the keyword parameter!
+;  phase:: returns the phase angles corresponding to the frequency values
+;  tvalues:: Returns the times/ms at which parts start.
+;  tindices:: Returns starting time array indices of the parts.
 ;
-;                     tvalues  : Returns the times/ms at which parts start.
-;                     tindices : Returns starting time array indices of the parts.
+; SIDE EFFECTS:
+;  <*>f</*> will be redefined, if passed
 ;
-; SIDE EFFECTS:       falls f uebergeben wird, wird es neu definiert
-;
-; PROCEDURE:          PowerSpec
+; PROCEDURE:
+;  uses <A>PowerSpec</A> and <A>Slices</A>
 ;
 ; EXAMPLE:
-;                     schwierig!! series sei die Zeitreihe aus 10000 BINS
-;                      SlidSpec = SlidPowerSpec(series, 1000, t)
-;                      plot, t, SlidSpec(0,*) 
-;                      FOR i=1, (SIZE(SlidSpec))(1) DO oplot, t, SlidSpec(i,*)
-;-                 
-; MODIFICATION HISTORY:
+;* series = RandomU(seed, 4000, 20)
+;* SlidSpec = SlidPowerSpec(series, SLICESIZE=256, F=f)
 ;
-;     $Log$
-;     Revision 1.5  2000/09/28 13:37:48  gabriel
-;          AIM tag added, console <> message, now uses slices
-;
-;     Revision 1.4  1998/08/23 12:50:47  saam
-;           the old integer->long--bug
-;
-;     Revision 1.3  1998/06/22 09:56:52  saam
-;           inadvertently inserted line removed
-;
-;     Revision 1.2  1998/01/27 11:35:29  gabriel
-;          an powerspec angepasst
-;
-;     Revision 1.1  1997/11/03 15:54:57  saam
-;           Im archiv gefunden, dokumentiert
-;
-;
-;
-FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE, SAMPLEPERIOD=sampleperiod, TVALUES=TVALUES, TINDICES=TINDICES
+;-
+
+FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE, SAMPLEPERIOD=sampleperiod, TVALUES=TVALUES, TINDICES=TINDICES, AVERAGE=average, SLICESIZE=slicesize, F=f
 
    default,double,0
    
    
-   
-   IF (N_PARAMS() NE 3 )     THEN console, /fatal , 'wrong number of arguments'
-   IF (Size(series))(0) NE 1 THEN console, /fatal , 'wrong format for signal'
+   IF (N_PARAMS() LT 1 )     THEN console, /fatal , 'wrong number of arguments'
+   Default, slicesize, 256
+
    IF set(TRUNC_PHASE) AND NOT set(PHASE)   THEN console, /fatal, 'Keyword TRUNC_PHASE must be set with Keyword PPHASE'
    
    N = N_Elements(series)
    IF (N LT slicesize) THEN Console, /fatal, 'number of elements less than slicesize!!'
    
-   signal_slice = slices(series, SSIZE=slicesize, SAMPLEPERIOD=SAMPLEPERIOD, TVALUES=TVALUES, TINDICES=TINDICES)
-   
+   signal_slice = slices(series, SSIZE=slicesize, SAMPLEPERIOD=SAMPLEPERIOD, TVALUES=TVALUES, TINDICES=TINDICES, /TFIRST)
    s_s = size(signal_slice)
    
    
-   for sl_i=0l, s_s(1)-1 do begin
-      IF SET(Phase) THEN BEGIN
-         sliceSpec = PowerSpec(reform(signal_slice( sl_i, *)), x, /DOUBLE,$
-                               /HAMMING,PPHASE=slidephase,  SAMPLEPERIOD=sampleperiod)
-      END ELSE BEGIN 
-         sliceSpec = PowerSpec(reform(signal_slice( sl_i, *)), x, /DOUBLE,$
-                               /HAMMING, SAMPLEPERIOD=sampleperiod)
-      ENDELSE
-      if sl_i EQ 0 then $
-       IF double THEN BEGIN
-         PSpec = FltArr(s_s(1), N_Elements(slicespec)) 
-         IF set(PHASE) THEN  PHASE =  FltArr(s_s(1), N_Elements(slicespec)) 
-       END ELSE BEGIN 
-         PSpec = DBLArr(s_s(1), N_Elements(slicespec))
-         IF set(PHASE) THEN  PHASE =  DblArr(s_s(1), N_Elements(slicespec)) 
-       END
-      
-      PSpec(sl_i,*) = slicespec
-      IF set(PHASE) THEN PHASE(sl_i,*) = slidephase
-      
-   endfor ;;sl_i
+   IF SET(Phase) THEN BEGIN
+       PSpec = PowerSpec(signal_slice, x, /DOUBLE,$
+                         /HAMMING,PPHASE=slidephase,  SAMPLEPERIOD=sampleperiod)
+   END ELSE BEGIN 
+       PSpec = PowerSpec(signal_slice, x, /DOUBLE,$
+                         /HAMMING, SAMPLEPERIOD=sampleperiod)
+   ENDELSE
+   PSpec = TEMPORARY(PSpec) / FLOAT(N/(2*slicesize))
 
- ;  i = 0l
-;   FOR slicestart= 0l, N - slicesize, slicesize / 2 DO BEGIN
-;      IF SET(Phase) THEN BEGIN
-;         sliceSpec = PowerSpec(series(slicestart : slicestart+slicesize-1), x, /DOUBLE, /HAMMING,PPHASE=slidephase,  SAMPLEPERIOD=sampleperiod)
-;      END ELSE BEGIN 
-;         sliceSpec = PowerSpec(series(slicestart : slicestart+slicesize-1), x, /DOUBLE, /HAMMING, SAMPLEPERIOD=sampleperiod)
-;      ENDELSE
-       
-;      IF (slicestart EQ 0) THEN BEGIN
-;         IF double THEN BEGIN
-;            PSpec = FltArr(N/slicesize*2, N_Elements(slicespec)) 
-;            IF set(PHASE) THEN  PHASE =  FltArr(N/slicesize*2, N_Elements(slicespec)) 
-;         END ELSE BEGIN 
-;            PSpec = DBLArr(N/slicesize*2, N_Elements(slicespec))
-;            IF set(PHASE) THEN  PHASE =  DblArr(N/slicesize*2, N_Elements(slicespec)) 
-;         END
-         
-;      END ELSE BEGIN
-;         PSpec(i,*) = slicespec
-;         IF set(PHASE) THEN PHASE(i,*) = slidephase
-;      END
-;      i = i + 1
-;   END
-   PSpec = PSpec / FLOAT(N/(2*slicesize))
-   
-   RETURN, PSpec
+   IF Keyword_Set(AVERAGE) THEN RETURN, TOTAL(PSpec, 2) $
+                           ELSE RETURN, PSpec
 END
