@@ -10,7 +10,8 @@
 ;                                   [,WEIGHT | ,W_RANDOM | ,W_NRANDOM | ,W_CONST | ,W_LINEAR | ,W_GAUSS, W_DOG]
 ;                                   [,D_NONSELF] [,W_NONSELF] 
 ;                                   [,W_TRUNCATE [,W_TRUNC_VALUE]]
-;                                   [,D_TRUNCATE [,D_TRUNC_VALUE]] )
+;                                   [,D_TRUNCATE [,D_TRUNC_VALUE]]
+;                                   [,NOCON] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaﬂe in S/T_Width/Height
 ;
@@ -29,7 +30,8 @@
 ;                  D_NONSELF, W_NONSELF : Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
 ;                  LEARN_TAUP, LEARN_VP : Zeitkonstante und Verstaerkung f"ur das Lernpotential (Leckintegrator 1. Ordnung) 
 ;                                            LEARN_TAUP muss zur Initialisierung gesetzt werden, LEARN_VP hat Default 1.0 
-;                  NOCON                : Alle Verbindungen groesser NOCON werden auf nicht-vorhanden gesetzt
+;                  NOCON                : Neuronen, deren Abstand groesser als NOCON ist, werden nicht verbunden;
+;                                         zwischen diesen Neuronen koennen auch keine Gewichte gelernt werden
 ;               
 ;
 ;                  Man beachte, daﬂ die Angabe mehrerer W_-
