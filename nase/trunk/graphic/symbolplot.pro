@@ -112,6 +112,18 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  1999/11/04 17:31:40  kupper
+;        Kicked out all the Device, BYPASS_TRANSLATION commands. They
+;        -extremely- slow down performance on True-Color-Displays when
+;        connecting over a network!
+;        Furthermore, it seems to me, the only thing they do is to work
+;        around a bug in IDL 5.0 that wasn't there in IDL 4 and isn't
+;        there any more in IDL 5.2.
+;        I do now handle this special bug by loading the translation table
+;        with a linear ramp. This is much faster.
+;        However, slight changes in behaviour on a True-Color-Display may
+;        be encountered.
+;
 ;        Revision 2.5  1998/06/30 20:42:49  thiel
 ;               Neue Keywords X/YTICKNAMESHIFT koennen an PrepareNasePlot
 ;               durchgereicht werden.
@@ -196,8 +208,6 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
    ;;--------------------------------
 
    ;;------------------> Symbole plotten
-   If !D.Name eq "X" and keyword_set(COLORS) then device, BYPASS_TRANSLATION=0
-
    Sym = 0                      ;Nur damits definiert ist!
    For y=1, height do $
     For x=1, width do begin
@@ -231,8 +241,6 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
       ;;--------------------------------
       If a(x-1, y-1) ne 0 then PlotS, x, y, PSym=sym, Color=col, SYMSIZE=symsize*abs(a(x-1, y-1)), THICK=thick
    EndFor
-
-   If !D.Name eq "X" and keyword_set(COLORS) then device, /BYPASS_TRANSLATION
    ;;--------------------------------
   
    ;;------------------> !X und !Y restaurieren

@@ -77,6 +77,18 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.34  1999/11/04 17:31:40  kupper
+;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
+;     -extremely- slow down performance on True-Color-Displays when
+;     connecting over a network!
+;     Furthermore, it seems to me, the only thing they do is to work
+;     around a bug in IDL 5.0 that wasn't there in IDL 4 and isn't
+;     there any more in IDL 5.2.
+;     I do now handle this special bug by loading the translation table
+;     with a linear ramp. This is much faster.
+;     However, slight changes in behaviour on a True-Color-Display may
+;     be encountered.
+;
 ;     Revision 2.33  1999/09/23 14:10:31  kupper
 ;     No changes.
 ;
@@ -417,7 +429,6 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          END 
       ENDELSE
    END ELSE BEGIN   ;; it is a WINDOW
-      Device, BYPASS_TRANSLATION=0
       IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
          IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
             im_max = max(Image)
@@ -463,7 +474,6 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          END 
          
       ENDELSE
-      Device, /BYPASS_TRANSLATION
    END
 
    IF Set(Dimensions) THEN dimensions = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $

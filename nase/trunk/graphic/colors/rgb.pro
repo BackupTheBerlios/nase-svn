@@ -114,6 +114,18 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.14  1999/11/04 17:31:41  kupper
+;        Kicked out all the Device, BYPASS_TRANSLATION commands. They
+;        -extremely- slow down performance on True-Color-Displays when
+;        connecting over a network!
+;        Furthermore, it seems to me, the only thing they do is to work
+;        around a bug in IDL 5.0 that wasn't there in IDL 4 and isn't
+;        there any more in IDL 5.2.
+;        I do now handle this special bug by loading the translation table
+;        with a linear ramp. This is much faster.
+;        However, slight changes in behaviour on a True-Color-Display may
+;        be encountered.
+;
 ;        Revision 1.13  1998/03/12 19:45:20  kupper
 ;               Color-Postscripts werden jetzt richtig behandelt -
 ;                die Verwendung von Sheets vorrausgesetzt.
@@ -161,8 +173,8 @@ Common common_RGB, My_freier_Farbindex
    END
 
 
-   if !D.N_Colors LE 256 then begin  ; 256-Farb-Display mit Color-Map   
-      IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefienieren, sondern aehnlichste zurueckgeben
+   if PseudoColor_Visual() then begin  ; 256-Farb-Display mit Color-Map   
+      IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
          myCM = bytarr(!D.Table_Size,3) 
          TvLCT, myCM, /GET
 	 New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
@@ -192,7 +204,18 @@ Common common_RGB, My_freier_Farbindex
        end
        return,  SetIndex
 
-    endif else Return, RGB_berechnen(R,G,B) ; True-Color-Display   
+    endif else begin
+       v = IDLVersion(/FULL) ; True-Color- od Direct-Color-Visual.
+       If ( v(0) eq 5 and v(1) eq 0 ) then begin ;workaround for versions IDL 5.1 
+                                ;which does pass the normal
+                                ;Plot-colors through the
+                                ;translation table on
+                                ;TrueColor-displays!  
+
+          loadct, 0             ;load linear ramp into translation table
+          message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
+       Return, RGB_berechnen(R,G,B)
+    endelse
 END      
 
 

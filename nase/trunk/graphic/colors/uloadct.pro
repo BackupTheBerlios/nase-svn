@@ -19,6 +19,18 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1999/11/04 17:31:41  kupper
+;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
+;     -extremely- slow down performance on True-Color-Displays when
+;     connecting over a network!
+;     Furthermore, it seems to me, the only thing they do is to work
+;     around a bug in IDL 5.0 that wasn't there in IDL 4 and isn't
+;     there any more in IDL 5.2.
+;     I do now handle this special bug by loading the translation table
+;     with a linear ramp. This is much faster.
+;     However, slight changes in behaviour on a True-Color-Display may
+;     be encountered.
+;
 ;     Revision 2.3  1998/05/23 17:58:58  kupper
 ;            Also, bei Postscripts einfach gar nicht zu tun, das war aber kein gutes Benehmen...
 ;
@@ -33,9 +45,9 @@
 PRO ULoadCt, nr, _Extra=e
 
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
-      IF !D.Name EQ 'X' THEN Device, BYPASS_TRANSLATION=0
+
       Loadct, nr, _Extra=e
-      IF !D.Name EQ 'X' THEN Device, /BYPASS_TRANSLATION
+
    END
 
 END
