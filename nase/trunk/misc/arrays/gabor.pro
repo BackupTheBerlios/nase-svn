@@ -132,6 +132,7 @@
 ;-
 
 Pro Gabor_rotate_array, result, orientation
+   COMPILE_OPT HIDDEN
    ;;we use "rotate" where possible, as it works cleaner
    case orientation of 
       90 : result = rotate(temporary(result), 1)
