@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.3  2000/08/25 10:09:22  saam
+%            compatability added
+%
 %       Revision 1.2  2000/08/24 16:46:12  saam
 %             extended the messaging section
 %
@@ -97,7 +100,7 @@
 
 \begin{document}
 
-{\Huge\textbf{N.A.S.E. Standards}}
+{\Huge\textbf{N.A.S.E. / M.I.N.D. Standards}}
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -111,6 +114,13 @@
 %%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%
 \subsection{Naming}
+\subsection{Compatibility between IDL versions}
+Different types of compatilibity problems are known between IDL versions. First (the harmless one), higher version include routines, which formerly had to be implemented by hand. Furthermore, already existing routines are extended in their functionality, making several hand-written wrappers obsolete. Last, but most problematic are undocumented (silent) changes in the behaviour of routines, i.e. color management, handling of the \texttt{\_EXTRA} keyword, passing of undefined arguments. The following guidelines are a compromise between functionality and compatability:
+\begin{itemize}
+\item If a new IDL routines makes a NASE routine obsolete, disable the NASE routine, generate a message about the fact, remove the routine after 2 months from the repository.
+\item For changes in IDL's behaviour: all routines must work with (and only with) the current IDL version. The only exception is the NASE/MIND simulation kernel.
+\end{itemize}
+
 \subsection{Error Handling and Messaging}
 \begin{itemize}
 %
