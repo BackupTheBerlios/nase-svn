@@ -9,7 +9,7 @@
 ;                       aufgerufen und braucht eigentlich nicht von Hand
 ;                       benutzt zu werden.
 ;
-; CATEGORY:             MISC 
+; CATEGORY:             Startup 
 ;
 ; CALLING SEQUENCE:     DefGlobvars
 ;
@@ -22,6 +22,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.18  2001/01/22 19:32:04  kupper
+;     Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
+;     shall not be used any longer (according to colormanagement guidelines
+;     formed during first NASE workshop, fall 2000).
+;
 ;     Revision 1.17  2000/10/12 14:53:11  saam
 ;     there was a strange character in the windows checkout
 ;
@@ -97,7 +102,7 @@ DefSysV, '!NONE' , -999999.0, 1
 DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
 DefSysV, '!REVERTPSCOLORS', 1
-DefSysV, '!PSGREY', 1
+
 DefSysV, '!MH', Handle_Create()
 
 DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27

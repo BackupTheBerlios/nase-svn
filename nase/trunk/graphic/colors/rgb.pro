@@ -116,6 +116,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.36  2001/01/22 19:28:36  kupper
+;        Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
+;        shall not be used any longer (according to colormanagement guidelines
+;        formed during first NASE workshop, fall 2000).
+;
 ;        Revision 1.35  2000/11/30 10:42:17  thiel
 ;            Skips TVLCT on NULL devices now.
 ;
@@ -257,11 +262,11 @@ if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
    ;; order of following cases matters:
 
    ;; ---- PS, and !PSGREY set: -------------------------------------------------
-   IF (!D.Name EQ 'PS') and !PSGREY THEN BEGIN
-      ; korrekte Behandlung nur fuer Grauwertpostscripts 
-      New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
-      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)
-   END
+;   IF (!D.Name EQ 'PS') and !PSGREY THEN BEGIN
+;      ; korrekte Behandlung nur fuer Grauwertpostscripts 
+;      New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
+;      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)
+;   END
    ;; ---------------------------------------------------------------------------
 
 

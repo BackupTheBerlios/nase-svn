@@ -5,7 +5,7 @@
 ;
 ; PURPOSE: Interaktive Darstellung einer NASE-DW-Matrix.
 ;
-; CATEGORY: Graphic, Darstellung, Auswertung
+; CATEGORY: Graphic, NASE, Widgets
 ;
 ; CALLING SEQUENCE: TomWaits, DW [,/DELAYS] [,/EFFICACY] 
 ;                             [,(/FROMS|/PROJECTIVE) | ,(/TOS|/RECEPTIVE)]
@@ -67,6 +67,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.17  2001/01/22 19:31:51  kupper
+;        Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
+;        shall not be used any longer (according to colormanagement guidelines
+;        formed during first NASE workshop, fall 2000).
+;
 ;        Revision 1.16  2000/10/01 14:51:09  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -114,7 +119,7 @@ PRO TomWaits_Event, Event
                data.colormode = get_colormode
                data.tvinfo = get_info
                data.colors = get_colors
-               data.my_TopColor = get_colors(4)
+;               data.my_TopColor = get_colors(4)
             end
 
             'TOMWAITS_USES': begin
@@ -124,7 +129,7 @@ PRO TomWaits_Event, Event
                data.colormode = get_colormode
                data.tvinfo = get_info
                data.colors = get_colors
-               data.my_TopColor = get_colors(4)
+;               data.my_TopColor = get_colors(4)
             end
 
 
@@ -135,7 +140,7 @@ PRO TomWaits_Event, Event
                data.colormode = get_colormode
                data.tvinfo = get_info
                data.colors = get_colors
-               data.my_TopColor = get_colors(4)
+;               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_PROJECTIVE': begin
                Widget_Control, uval.id_other, SET_BUTTON=0 ;explizit machen, da sie nicht in der gleichen Base sind!
@@ -144,7 +149,7 @@ PRO TomWaits_Event, Event
                ShowWeights, data.DW, DELAYS=data.delay, EFFICACY=data.uses,ZOOM=data.zoom, WINNR=data.win, /PROJECTIVE, GET_INFO=get_info, GET_COLORS=get_colors
                data.tvinfo = get_info
                data.colors = get_colors
-               data.my_TopColor = get_colors(4)
+;               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_RECEPTIVE': begin
                Widget_Control, uval.id_other, SET_BUTTON=0
@@ -153,13 +158,13 @@ PRO TomWaits_Event, Event
                ShowWeights, data.DW, DELAYS=data.delay, EFFICACY=data.uses, ZOOM=data.zoom, WINNR=data.win, /RECEPTIVE, GET_INFO=get_info, GET_COLORS=get_colors
                data.tvinfo = get_info
                data.colors = get_colors
-               data.my_TopColor = get_colors(4)
+;               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_PRINT': begin
                ;message, /INFO, "Print-Event not yet implemented!"
-               oldtopcolor = !TOPCOLOR
+;               oldtopcolor = !TOPCOLOR
                If data.colormode eq -1 then color = 1 else color = 0
-               If color then !TOPCOLOR = !D.Table_Size-1 ;use full color range!
+;               If color then !TOPCOLOR = !D.Table_Size-1 ;use full color range!
                s1 = DefineSheet(/PS, COLOR=color, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
                OpenSheet, s1
                ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
@@ -168,7 +173,7 @@ PRO TomWaits_Event, Event
                OpenSheet, s2
                ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
                CloseSheet, s2
-               !TOPCOLOR = oldtopcolor
+;               !TOPCOLOR = oldtopcolor
                print, "--->   Output saved to File 'TomWaits_printed_Output'."
                ;DestroySheet, s
             end
@@ -181,7 +186,7 @@ PRO TomWaits_Event, Event
       end
       
       'WIDGET_DRAW': begin   
-         !TopColor = data.my_TopColor
+;         !TopColor = data.my_TopColor
          If Event.Type eq 1 then begin ;Mouse Button Release
             If (Event.Release and 1) eq 1 then begin ;Left Button
                If not data.maginwin then begin ;IDL 4 oder höher
@@ -325,7 +330,7 @@ PRO TomWaits_Event, Event
             Endif               ;Middle Button
 
          endif                  ;Button Press
-         !TOPCOLOR = data.old_TopColor
+;         !TOPCOLOR = data.old_TopColor
       end                       ;WIDGET_DRAW event
       else: message, /INFO, "I don't know this Event!"
    endcase
@@ -542,8 +547,8 @@ Handle_Value, DW, TEMP, /NO_COPY,/SET
                                     magnify: magnify, $
                                     tvinfo: tvinfo, $
                                     colors:get_colors, $
-                                    old_TopColor:old_TopColor, $
-                                    my_TopColor: get_colors(4), $ ;preserve ShowWeights-Colors
+;                                    old_TopColor:old_TopColor, $
+;                                    my_TopColor: get_colors(4), $ ;preserve ShowWeights-Colors
                                     colorscaling: colorscaling, $
                                     magwin:-99, $
                                     maginwin: maginwin} ;für das blöde IDL 3...

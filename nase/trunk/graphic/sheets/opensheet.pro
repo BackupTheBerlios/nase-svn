@@ -34,6 +34,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.27  2001/01/22 19:28:54  kupper
+;     Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
+;     shall not be used any longer (according to colormanagement guidelines
+;     formed during first NASE workshop, fall 2000).
+;
 ;     Revision 2.26  2000/11/02 09:42:45  gabriel
 ;          doc header modified
 ;
@@ -281,10 +286,10 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
       !Z = sheet.z
       sheet.z = old
       
-      !PSGREY = NOT(sheet.color)
+;      !PSGREY = NOT(sheet.color)
 
-      ; color tables shouldn't be reverted
-      !REVERTPSCOLORS = NOT(sheet.color)
+;      ; color tables shouldn't be reverted
+;      !REVERTPSCOLORS = NOT(sheet.color)
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       uSet_Plot, 'NULL'

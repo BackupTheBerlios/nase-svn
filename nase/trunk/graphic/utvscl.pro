@@ -287,12 +287,12 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    EndIf
    IF !D.Name EQ 'PS' THEN BEGIN ; a Postscript-Device
       ; flip array-values if wanted because B/W-Postcript doesn't use colortables
-      IF !REVERTPSCOLORS THEN BEGIN
-;         MinPix = MIN(Image)
-;         MaxPix = MAX(Image)
-;         Image = MaxPix - Image 
-         Image = !D.Table_Size-1-Image
-      END
+;      IF !REVERTPSCOLORS THEN BEGIN
+;;         MinPix = MIN(Image)
+;;         MaxPix = MAX(Image)
+;;         Image = MaxPix - Image 
+;         Image = !D.Table_Size-1-Image
+;      END
       IF NOT Keyword_Set(POLYGON) THEN BEGIN 
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN

@@ -250,25 +250,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       oldYMinor   = !Y.Minor
       
 
-      ;; -----Wir bitten ShowWeights_Scale vorab schonmal, die
-      ;;     Farben richtig zu setzen, damit auch !P.Background
-      ;;     stimmt
-;      If (SETCOL ne 0) and (Keyword_Set(NASE) or Keyword_Set(NEUTRAL)) then $
-;       forgetit = ShowWeights_Scale(_W, SETCOL=2, COLORMODE=colormode)
-
-
-;      If set(PLOTCOL) then sc = plotcol else begin
-;         ;;-----Optimale Farbe fuer die Achsen ermitteln:
-;         bg = CIndex2RGB(GetBackground())
-;         ;; if device is !PSGREY and !REVERTPS is on 
-;         If !PSGREY then begin
-;            save_rpsc = !REVERTPSCOLORS
-;            !REVERTPSCOLORS = 0
-;         EndIf
-;         sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2))
-;         If !PSGREY then !REVERTPSCOLORS = save_rpsc
-;      EndElse
-;      Get_Color = sc
       Get_Color = !P.COLOR ;;kept for compatibility
       
       Default, SETCOL, 1
