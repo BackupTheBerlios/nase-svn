@@ -8,7 +8,7 @@ Pro image_factory::a_
     charsize=0.2*winsize, $
     charthick=0.1*winsize, COLOR=1
 
-   image = Rebin( float(TvRd()), awidth, $
+   image = Rebin( float(TvRd(/ORDER)), awidth, $
                     awidth )
    WDelete
    WSet, current_win
@@ -16,7 +16,7 @@ Pro image_factory::a_
    self.image = PTR_NEW( $
                         inssubarray( fltarr(self.height, $
                                             self.width), $ 
-                                     temporary(image), /Center )$
+                                     Transpose(temporary(image)), /Center )$
                        )   
    
 End
