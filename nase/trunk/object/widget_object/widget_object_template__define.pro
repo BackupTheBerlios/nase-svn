@@ -1,3 +1,94 @@
+;; Welcome to the NASE definition template for widget objects.
+;; These are objects derived from the superclass "basic_widget_object".
+;; Please use your editor's replace option to replace all occurrences of
+;; "widget_MyClass" by your desired classname. You might also want to replace all
+;; occurrences of "MyOtherSuperClass" by the name of your
+;; classes superclass. Then change header and object definition to suit your
+;; object. All methods described in this header are examples.
+;; Do not forget to delete this text.
+;; Have fun! (And always remember: Don't drink and derive ;-) )
+
+;+
+; NAME:
+;   class widget_MyClass
+;
+; PURPOSE: 
+;
+; CATEGORY: 
+;
+; SUPERCLASSES:
+;   <A>class basic_widget_object</A>
+;   <A>class MyOtherSuperClass</A>
+;
+; CONSTRUCTION: 
+;*  o = Obj_New("widget_MyClass"
+;*              [,KEYWORD=value]
+;*              [-keywords inherited from <A>class basic_widget_object</A>-]
+;*              [-keywords inherited from <A>class MyOtherSuperClass</A>-])
+;
+; DESTRUCTION:
+;*  Obj_Destroy, o
+;*              [,KEYWORD=value]
+;*              [-keywords inherited from <A>class basic_widget_object</A>-]
+;*              [-keywords inherited from <A>class MyOtherSuperClass</A>-]
+;                                               
+; INPUTS:
+;  *please remove any sections that do not apply*
+;
+; OPTIONAL INPUTS:
+;  *please remove any sections that do not apply*
+;
+; INPUT KEYWORDS:
+;  *please remove any sections that do not apply*
+;
+; SIDE EFFECTS: 
+;  *please remove any sections that do not apply*
+;
+; METHODS:
+;  public: Public methods may be called from everywhere.
+;   
+;   foo(parameter)       : computes the meaning of life.
+;   bar, parameter       : crashes the system. Delay: parameter.
+;
+;  protected: Protected methods may only be called from within a derived class's
+;             methods.
+;   *please remove any sections that do not apply*
+;
+;  private: Private methods are not intended to be called by the user and are
+;           not decribed in this header. Refer to the source code for information.
+;   *please remove any sections that do not apply*
+;
+;  -plus those inherited from <A>class basic_widget_object</A> (see there for details)-
+;  -plus those inherited from <A>class MyOtherSuperClass</A> (see there for details)-
+;
+; ABSTRACT METHODS:
+;  Abstract methods are used to indicate that a class is designed to have a
+;  respective method, but that functionality needs to be defined
+;  in a derived class. Abstract methods must be overriden in derived classes.
+;  Classes containing abstract methods (so-called abstract classes) are designed
+;  for derivation only. Instantiation of abstract classes is an error.
+;
+;  public:
+;   *please remove any sections that do not apply*
+;
+;  protected:
+;   *please remove any sections that do not apply*
+;
+;  private:
+;   override_me_ : insert abstract-to-paper filter here.
+;
+; RESTRICTIONS: 
+;  *please remove any sections that do not apply*
+;
+; PROCEDURE: 
+;
+; EXAMPLE: 
+;
+; SEE ALSO:
+; <A>class basic_widget_object</A>, <A>class MyOtherSuperClass</A>
+;-
+
+
 ;; ------------ Widget support routines ---------------------
 Pro MyWidget_Notify_Realize, id
    Widget_Control, id, Get_Uvalue=object
@@ -78,7 +169,7 @@ End
 
 Pro widget_MyClass::cleanup, _REF_EXTRA = _ref_extra
    DMsg, "I'm dying!"
-   Cleanup_Superclasses, self, "widget_template", _EXTRA=_ref_extra
+   Cleanup_Superclasses, self, "widget_MyClass", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
    ;; Now do what is needed to cleanup a MyClass object:
@@ -96,8 +187,44 @@ Pro widget_MyClass::reset
 End
 
 ;; ------------ Public --------------------
+;;
+;; Member access methods
+;;  (for any data members that should be open to the public)
+Pro widget_MyClass::example, value
+   ;;
+   ;; insert code here
+   ;;
+   ;; EXAMPLE:
+   ;; self.example = value
+End
+Function widget_MyClass::example
+   ;;
+   ;; insert code here
+   ;;
+   ;; EXAMPLE:
+   ;; return, self.example
+End
+;;
+;; Other public methods:
+Function widget_MyClass::foo, parameter
+End
+
+Pro widget_MyClass::bar, parameter
+End
+
+
+;; ------------ Protected ------------------
+
 
 ;; ------------ Private --------------------
+Pro widget_MyClass::override_me_; -ABSTRACT-
+   ;; use this template for all abstract methods.
+   On_error, 2
+   Console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
+End
+
+
+
 
 ;; ------------ Object definition ---------------------------
 Pro widget_MyClass__DEFINE
