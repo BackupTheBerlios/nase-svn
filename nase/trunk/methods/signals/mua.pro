@@ -1,5 +1,5 @@
 ;+
-; NAME:                MUA - derives unfiltered MUA signal from spike trains  
+; NAME:                MUA - derives unfiltered MUA signals from spike trains  
 ;
 ; PURPOSE:             Derives MUA signals (multiple unit activity)
 ;                      from a time course of spiketrains in a layer.
@@ -13,7 +13,9 @@
 ;
 ; CATEGORY:            NASE SIGNALS
 ;
-; CALLING SEQUENCE:    MUAS = MUA( nt [,recSites] [,HMW_EXP=hmw_exp | ,HMW_GAUSS=hmw_gauss] [,ROI=roi] [,/NASE])
+; CALLING SEQUENCE:    MUAS = MUA( nt [,recSites] [,HMW_EXP=hmw_exp |
+;                                  ,HMW_GAUSS=hmw_gauss] [,ROI=roi]
+;                                  [,/NASE] [,/WRAP])
 ;
 ; INPUTS:              nt      : 3d-array, containing the temporal
 ;                                development of the layer's output
@@ -35,6 +37,8 @@
 ;                                 half mean half width of the kernel,
 ;                                 the centre amplitude is set to 1 
 ;                      NASE  :    correct handling of nase layers
+;                      WRAP :     MUA is generated using toroidal
+;                                 boundary conditions 
 ;                       
 ; OUTPUTS:             MUAS  :    Array containg the mua signals for
 ;                                 the different recording positions
@@ -53,6 +57,10 @@
 ; MODIFICATION HISTORY:
 ; 
 ;     $Log$
+;     Revision 1.5  2000/06/06 14:57:38  saam
+;           + completed the new doc header
+;           + returns on error
+;
 ;     Revision 1.4  2000/06/06 13:50:04  saam
 ;             + nearly completely rewritten
 ;             + can compute full MUA signal via CONVOL now
@@ -72,6 +80,7 @@
 ;-
 FUNCTION MUA, mt, list, HMW_GAUSS=hmw_gauss, HMW_EXP=hmw_exp, ROI=roi, NASE=nase, WRAP=wrap, LOG=log
 
+   ON_ERROR, 2
 
    ; check syntax
    CASE Set(HMW_GAUSS)+Set(HMW_EXP) OF 
