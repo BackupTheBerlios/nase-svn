@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.11  2000/06/08 10:11:34  gabriel
+;               BGCOLOR BUG fixed
+;
 ;        Revision 2.10  2000/05/23 08:21:36  gabriel
 ;             COLOR problem fixed
 ;
@@ -103,7 +106,8 @@ _radiusarray = radiusarray
 _winkelarray = winkelarray
 
 IF set(SDEV) THEN _sdev = sdev
-
+BGCOLOR = GetBgColor()
+BGCOLOR = RGB(BGCOLOR(0), BGCOLOR(1), BGCOLOR(2),/NOALLOC)
 Default, MCOLOR , !P.COLOR
 Default, SDCOLOR, RGB(150,150,200,/NOALLOC)
 IF set(DELTA) THEN DEFAULT,CLOSE ,1
@@ -154,11 +158,10 @@ ENDELSE
 
 
 
-
 plot,_radiusarray , _winkelarray,/POLAR, /NODATA, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
- TITLE=title,COLOR=!P.BACKGROUND,_EXTRA=e
+ TITLE=title,COLOR=BGCOLOR,_EXTRA=e
 
 PTMP = !P.MULTI
 !P.MULTI(0) = 1
