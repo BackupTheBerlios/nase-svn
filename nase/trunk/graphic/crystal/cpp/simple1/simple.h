@@ -32,6 +32,7 @@ private:
   void SetupFrame ();
   void FinishFrame ();
   csRemoteControl* remote; 
+  bool ConnectNow;
   int port; 
  
 public:

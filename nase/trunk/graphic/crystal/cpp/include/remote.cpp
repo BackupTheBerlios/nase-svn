@@ -109,22 +109,23 @@ bool csRemoteControl::ConnectToLocalHost()
 
       if ((client == NULL)|| (!client->IsConnected())) 
         {
-          printf("Verbinde mit Client\n");
+          //          printf("Verbinde mit Client\n");
+          server->SetSocketBlock(true);
           client = server->Accept();
-          if (server->LastError() != CS_NET_SOCKET_NOERROR) printf("cannot accept\n");
+         if (server->LastError() != CS_NET_SOCKET_NOERROR) 
+{
+  printf("cannot accept\n");
+  return false;
+}
           client->SetSocketReuse(true);
           client->SetSocketBlock(false);
-          printf("client ist ");
-          if (!client->IsConnected()) printf("NICHT ");
-          printf("connected\n");
+//           printf("client ist ");
+//           if (!client->IsConnected()) printf("NICHT ");
+//           printf("connected\n");
           char *RName;
           RName=client->RemoteName();
           char *LocalHost="127.0.0.1";
-          //           cout << "RemoteName[0]=" << RName[7] << RName[8] << (int)RName[9] << endl;
-          //           cout << "Length of localVarLocalHost:" << strlen(LocalHost) << endl;
-          //           cout << "Length of client->RemoteName()" << strlen(RName) << endl;
-          //           for (int i=0; i<strlen(RName); i++) cout <<i<<": "<<RName[i]<<" "<<LocalHost[i]<<endl;
-          //           cout << endl;
+ 
           unsigned int StrIsEquel;
           StrIsEquel = strncmp(RName, LocalHost, 8);
           //          cout << "strncmp(RName, LocalHost, 8) = " << StrIsEquel;
@@ -162,7 +163,7 @@ csRemoteControlMessage csRemoteControl::TalkToRemote()
 //           if (!client->IsConnected()) cout << "NICHT ";
 //           cout << "connected" << endl;
 //           cout << "RemoteName: " << client->RemoteName() << endl;
-
+ 
           if (client->IsConnected())
             {
               //              cout << "RemoteName: " << client->RemoteName() << endl;
@@ -202,7 +203,7 @@ csRemoteControlMessage csRemoteControl::TalkToRemote()
 
 void csRemoteControl::BlockSend(char* memory, long int memsize)
 {
-  printf("Block-Send ...");
+  // printf("Block-Send ...");
   long int MaxBlockSize = 30000;
   long int RestSize = memsize;
   char* MemPointer = memory;
@@ -230,23 +231,23 @@ void csRemoteControl::BlockSend(char* memory, long int memsize)
           RestSize = RestSize - SendSize;
         }      
     }
-  printf("\n done \n");
+  //  printf("\n done \n");
 }
 
 
 void csRemoteControl::SendScreenShot()
 {
-  printf("ScreenShot requested\n");
+  //  printf("ScreenShot requested\n");
   bild=g2d->ScreenShot();
-  cout << "Bildformat:" << bild->GetFormat() << endl;
-  cout << "g2dFormat:" << g2d->GetPixelFormat()->PixelBytes << endl;
-  cout << "BildSize:" << bild->GetSize() << endl;
+//   cout << "Bildformat:" << bild->GetFormat() << endl;
+//   cout << "g2dFormat:" << g2d->GetPixelFormat()->PixelBytes << endl;
+//   cout << "BildSize:" << bild->GetSize() << endl;
   int bwidth;
   bwidth = bild->GetWidth();
-  cout << "BildWidth:" << bwidth << endl;
+//   cout << "BildWidth:" << bwidth << endl;
   int bheight;
   bheight = bild->GetHeight();
-  cout << "BildHight:" << bheight << endl;
+//   cout << "BildHight:" << bheight << endl;
   csRGBpixel *dst;
   csRGBpixel *IData; 
   IData = (csRGBpixel*)bild->GetImageData();
@@ -256,9 +257,9 @@ void csRemoteControl::SendScreenShot()
   long int memsize = bwidth*bheight;
   PictureMemory = new char[memsize];
   char*  MemPointer = PictureMemory;
-  printf("MemorySize=%d  long=%d",bwidth*bheight, memsize);
+//   printf("MemorySize=%d  long=%d",bwidth*bheight, memsize);
 
-  cout << "ENDE" << endl;
+//   cout << "ENDE" << endl;
   
   client->Send("ScreenShotStart\n",16);
   void* IntPointer=&bwidth;
@@ -268,7 +269,7 @@ void csRemoteControl::SendScreenShot()
   void* PixelPointer;
 
 
-  printf("Sende ScreenShot ...\n");
+//   printf("Sende ScreenShot ...\n");
  for (int h=0; h<bheight; h++) for (int b=0; b<bwidth; b++) 
     {
       pixel=dst->red;

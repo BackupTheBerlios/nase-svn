@@ -64,8 +64,8 @@ default, path, "$NASEPATH/graphic/crystal/cpp/simple1/"
 default, exec, "simple"
 default, port, 1234
 
-para = " -port="+str(port)
-Call = path + exec + para + "&"
+para = " -port="+str(port) + " -connectnow"
+Call = path + exec + para + " &"
 
 spawn, Call
 

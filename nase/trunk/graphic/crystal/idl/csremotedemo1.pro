@@ -87,18 +87,12 @@ repeat begin
             if keyword_set(verbose) then print, sendCount, " sende LINKS"
             csTurnLeft, MyEngine
         end
-        2 : begin
-            print, "hier passiert nix"
-        end
-        3: tvscl, indgen(300,200)
         4 : begin
             sendCount= sendCount+1
             if keyword_set(verbose) then print, sendCount, "sende RECHTS"
             csTurnRight, MyEngine
         end
-        5: tvscl, indgen(20,20)
-        6: tvscl, indgen(100,20)
-        7: exit=1
+        5: exit=1
         else: a=0
     endcase
     if keyword_set(verbose) then begin

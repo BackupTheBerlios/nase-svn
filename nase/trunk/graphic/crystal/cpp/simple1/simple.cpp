@@ -44,6 +44,7 @@ Simple::Simple (iObjectRegistry* object_reg)
 {
   Simple::object_reg = object_reg;
    remote = new  csRemoteControl(object_reg);
+   ConnectNow = false;
 }
 
 Simple::~Simple ()
@@ -95,6 +96,14 @@ bool Simple::Initialize ()
 	"Can't initialize plugins!");
     return false;
   }
+
+//   if (!csInitializer::SetupConfigManager (object_reg, "/nase/config/simple.cfg"))
+//     {
+//       csReport (object_reg, CS_REPORTER_SEVERITY_ERROR, 
+//                 "crystalspace.application.simple",
+//                 "Error initializing SetupConfigManager!");
+//       return false;
+//     }
 
   if (!csInitializer::SetupEventHandler(
     object_reg, SimpleEventHandler))
@@ -282,6 +291,12 @@ bool Simple::Initialize ()
     {
       port=1234; // der else-Zweig ist eigentlich nicht erforderlich, da mit AddOption schon ein default-Wert gesetzt ist
     }
+  if (cmdline->GetBoolOption("connectnow"))
+    {
+      printf("ConnectNow gesetzt");
+      ConnectNow = true;      
+    }
+
 
   if (!remote->Initialize(g2d, port)) 
     {
@@ -305,7 +320,7 @@ void Simple::SetupFrame ()
   iCamera* c = view->GetCamera();
 
   float speed = 0.01;
-  if (!remote->isConnected()) remote->ConnectToLocalHost();
+  if (ConnectNow && !remote->isConnected()) remote->ConnectToLocalHost();
 
   csRemoteControlMessage RemoteMessage = CS_REMOTE_NOMESSAGE;
   RemoteMessage = remote->TalkToRemote();
@@ -313,26 +328,28 @@ void Simple::SetupFrame ()
   if (RemoteMessage == CS_REMOTE_KBD_LEFT)
     {
       c->GetTransform ().RotateThis (CS_VEC_ROT_LEFT, speed);
-      printf("got a Keybord_left from Remote, speed= %f\n", speed);
+      // printf("got a Keybord_left from Remote, speed= %f\n", speed);
     }
 
   if (RemoteMessage == CS_REMOTE_KBD_RIGHT)
     {
       c->GetTransform ().RotateThis (CS_VEC_ROT_RIGHT, speed);
-      printf("got a Keybord_RIGHT, speed=%f\n", speed);
+      // printf("got a Keybord_RIGHT, speed=%f\n", speed);
     }
 
   if (RemoteMessage == CS_REMOTE_SCREENSHOT_REQUEST)
     {
-      printf("ScreenShot requested\n");
+      //      printf("ScreenShot requested\n");
       remote->SendScreenShot();
     }
 
-//   if (kbd->GetKeyState (CSKEY_SPACE))
-//     {
-//       remote->ConnectToLocalHost();
-//     }
-
+  if (!ConnectNow)
+    {
+      if (kbd->GetKeyState (CSKEY_SPACE))
+        {
+          remote->ConnectToLocalHost();
+        }
+    }
 
   if (kbd->GetKeyState (CSKEY_RIGHT))
     c->GetTransform ().RotateThis (CS_VEC_ROT_RIGHT, speed);
@@ -380,6 +397,15 @@ int main (int argc, char* argv[])
   if (!object_reg) return -1;
 
   simple = new Simple (object_reg);
+
+  if (!csInitializer::SetupConfigManager (object_reg, "/nase/config/simple.cfg"))
+    {
+      printf("kann Config-Datei nicht öffnen\n");
+      printf("bitte $CRYSTAL/vfs.cfg anpassen!\n");
+      printf("folgende Zeile eintragen:\n");
+      printf("VFS.Mount.nase/config = $(NASEPATH)$/graphic$/crystal$/config$/\n");
+      return -1;
+    }
 
   if (simple->Initialize ())
     simple->Start ();
