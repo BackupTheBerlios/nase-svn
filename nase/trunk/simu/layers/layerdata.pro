@@ -188,16 +188,17 @@ PRO LayerData, _Layer, $
        threshold = REFORM(layer.S+layer.para.th0, Layer.H, Layer.W) $
       ELSE threshold = layer.S+layer.para.th0
    ENDCASE
-
-   schwelle = threshold ; use new english keywords but be compatible
+   schwelle = threshold         ; use new english keywords but be compatible
+      
 
 
    ; handle SPECIAL TAGS
    IF (Layer.Type EQ '2') OR (Layer.Type EQ '6') THEN BEGIN
-      IF n GT 1 THEN sthreshold = Reform(Layer.R, Layer.H, Layer.W) ELSE sthreshold = Layer.R
+      IF n GT 1 THEN $
+       sthreshold = Reform(Layer.R, Layer.H, Layer.W) $
+      ELSE sthreshold = Layer.R
+      lschwelle = sthreshold    ; use new english keywords but be compatible 
    END
-
-   lschwelle = sthreshold ; use new english keywords but be compatible
 
 ;--- Type 3 (learning potential neuron) was obsolete has been removed 
 ;   IF Layer.Type EQ '3' THEN BEGIN
