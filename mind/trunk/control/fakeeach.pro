@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/11/19 14:41:58  saam
+;     added defualt SKEL as _
+;
 ;     Revision 1.4  2000/09/29 08:10:28  saam
 ;     added the AIM tag
 ;
@@ -41,7 +44,8 @@
 PRO FakeEach, SKEL=skel
    
    COMMON ATTENTION
-
+   
+   Default, SKEL, "_"
    IF ExtraSet(AP.SIMULATION, 'SKEL') THEN Default, skel, AP.SIMULATION.skel ELSE Default, skel, '_'
    Spawn, 'pwd', WorkDir
    WorkDir = WorkDir(0)
