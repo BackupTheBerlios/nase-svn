@@ -1,6 +1,8 @@
 ;+
 ; NAME: PSWeights
 ;
+; VERSION: $Id$
+;
 ; AIM: Plot a DW matrix to a Postscript file, using reversed colors
 ;      (black on white).
 ;
@@ -10,20 +12,23 @@
 ;
 ; CATEGORY: GRAPHIC
 ;
-; CALLING SEQUENCE: PSWeights, Matrix 
-;                               {, /FROMS |, /TOS |, PROJECTIVE |, /RECEPTIVE } 
-;                               [, /DELAYS]
-;                               [, WIDTH=Breite] [, HEIGHT=Hoehe]
-;                               [, XTITLE=XText][,YTITLE=YText]
-;                               [, PSFILE='Filename']
-;                               [, /EPS] [,BPP=bitsperpixel]
-;                               [, /COLOR]
+; CALLING SEQUENCE: 
+;*                      PSWeights, Matrix 
+;*                               {, /FROMS |, /TOS |, PROJECTIVE |, /RECEPTIVE } 
+;*                               [, /DELAYS]
+;*                               [, WIDTH=Breite] [, HEIGHT=Hoehe]
+;*                               [, XTITLE=XText][,YTITLE=YText]
+;*                               [, PSFILE='Filename']
+;*                               [, /EPS] [,BPP=bitsperpixel]
+;*                               [, /COLOR]
 ;
-; INPUTS: Matrix : eine DW-Struktur
+; INPUTS: 
+;                  Matrix:: eine DW-Struktur
 ;      
-; OPTIONAL INPUTS: Breite: die Breite des resultierenden Bildes in cm,
+; OPTIONAL INPUTS: 
+;                  Breite:: die Breite des resultierenden Bildes in cm,
 ;                          Default: 15 cm
-;                  Hoehe: die Hoehe des resultierenden Bildes in cm,
+;                  Hoehe:: die Hoehe des resultierenden Bildes in cm,
 ;                          Default: 15 cm 
 ;                  Wird weder Breite noch Hoehe angegeben, so ist das
 ;                  Bild 15x15 cm gross, ungefaehr die Breite eines
@@ -31,18 +36,19 @@
 ;                  angegeben, so ist das Bild quadratisch mit der
 ;                  gewuenschten Groesse. 
 ;
-;                  XText, YText: Achsenbeschriftung
-;                  Filename:     der Name des PostScript-Files, das
+;                  XText, YText:: Achsenbeschriftung
+;                  Filename::     der Name des PostScript-Files, das
 ;                                erzeugt wird. Die Endung .ps bzw .eps wird
 ;                                automatisch angefuegt.
-;                  bitsperpixel: bestimmt die Anzahl der fuer das Bild
+;                  bitsperpixel:: bestimmt die Anzahl der fuer das Bild
 ;                                verwendeten Grauwerte. Zahl der
 ;                                Grauwerte = 2^bitsperpixel
 ;	
-; KEYWORD PARAMETERS: PROJECTIVE(FROMS) / RECEPTIVE(TOS) : siehe ShowWeights
-;                     DELAYS      : siehe ShowWeights
-;                     EPS         : erzeugt eine Encapsulated PostScript-Datei
-;                     COLOR       : das PostScript-Bild ist farbig,
+; KEYWORD PARAMETERS: 
+;                     PROJECTIVE(FROMS) / RECEPTIVE(TOS) :: siehe ShowWeights
+;                     DELAYS:: siehe ShowWeights
+;                     EPS:: erzeugt eine Encapsulated PostScript-Datei
+;                     COLOR:: das PostScript-Bild ist farbig,
 ;                                   aehnlich der <A HREF="#SHOWWEIGHTS">ShowWeights()</A>-Darstellung
 ;                                   (!none=blau, postiv=gruen)   
 ;
@@ -57,27 +63,31 @@
 ;
 ; PROCEDURE: Set()
 ;
-; EXAMPLE: TestMatrix=InitDw(S_width=5, S_height=3, t_width=3, t_height=5, W_Random=[0,1])
-;          PSWeights, TestMatrix, PSFILE='beispiel', /TOS, width=10, YTITLE='uebsilon-akse'
-;
-;          Hier wird eine Gewichtsmatrix initialisiert und
-;          anschliessend in einem PostScript-File namens 'beispiel'
-;          ausgegeben. Das resultierende Bild schwarzweiss, 10 cm breit und
-;          quadratisch.
-;
-;          Oder in bunt:
-;
-;          TestMatrix=InitDw(S_width=10,S_height=12,t_width=11,t_height=13,W_DOG=[1,2,4],W_NOCON=7,/W_TRUNCATE)
-;          w=GetWeight(TestMatrix,S_ROW=6,S_COL=5)
-;          w(where(w ne !NONE))=-w(where(w ne !NONE))
-;          SetWeight, TestMatrix ,w ,S_ROW=6, S_COL=5
-;	   PSWeights, TestMatrix, PSFILE='buntesbeispiel', /froms, /COLOR
+; EXAMPLE: 
+;*          TestMatrix=InitDw(S_width=5, S_height=3, t_width=3, t_height=5, W_Random=[0,1])
+;*          PSWeights, TestMatrix, PSFILE='beispiel', /TOS, width=10, YTITLE='uebsilon-akse'
+;*
+;*          Hier wird eine Gewichtsmatrix initialisiert und
+;*          anschliessend in einem PostScript-File namens 'beispiel'
+;*          ausgegeben. Das resultierende Bild schwarzweiss, 10 cm breit und
+;*          quadratisch.
+;*
+;*          Oder in bunt:
+;*
+;*          TestMatrix=InitDw(S_width=10,S_height=12,t_width=11,t_height=13,W_DOG=[1,2,4],W_NOCON=7,/W_TRUNCATE)
+;*          w=GetWeight(TestMatrix,S_ROW=6,S_COL=5)
+;*          w(where(w ne !NONE))=-w(where(w ne !NONE))
+;*          SetWeight, TestMatrix ,w ,S_ROW=6, S_COL=5
+;*	   PSWeights, TestMatrix, PSFILE='buntesbeispiel', /froms, /COLOR
 ;
 ; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights()</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  2000/11/02 13:47:09  gabriel
+;            doc header; set_plot replaced with uset_plot
+;
 ;       Revision 2.9  2000/10/01 14:51:09  kupper
 ;       Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -109,7 +119,7 @@
 ;       Tue Aug 26 11:40:11 1997, Andreas Thiel
 ;		Erste Version kreiert.
 ;
-;-
+;
 
 
 
@@ -200,7 +210,7 @@ IF Set(XTITLE) THEN YRand = Height/15.0 ELSE YRand = 0.0
 
 
 current_device = !D.Name
-SET_PLOT, 'PS'
+uSET_PLOT, 'PS'
 
 If Not Set(EPS) Then Begin
     DEVICE, Filename = PSFile+'.ps'
@@ -293,7 +303,7 @@ IF Set(XTITLE) THEN XYOuts, 1000.0*(Width/2.0), 1000.0*(Height+YRand/2.0), XTITL
 IF Set(YTITLE) THEN XYOuts, 1000.0*(Width+XRand/2.0), 1000.0*(Height/2.0), YTITLE, ALIGNMENT=0.5, /DEVICE, ORIENTATION=270, Size=1.0
 
 DEVICE, /Close
-SET_PLOT, current_device        ;restore previous device.
+uSET_PLOT, current_device        ;restore previous device.
 
 Print, 'PS-File erzeugt.'
 
