@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1999/04/16 14:21:23  saam
+;           + ugly bug in IDLs histogram routine bypassed
+;
 ;     Revision 1.3  1998/12/15 13:09:49  saam
 ;           performance improvements
 ;
@@ -70,7 +73,8 @@ FUNCTION MYISI, trial, histo
       RETURN, -2
    ENDIF
 
-   histo = HISTOGRAM((Shift(times,-1)-times)(0:c-2))
+   histo = HISTOGRAM([(Shift(times,-1)-times)(0:c-2),0])
+   histo(0) = histo(0)-1
    RETURN, 0
 END
 
