@@ -1,5 +1,6 @@
-#!/usr/ax1301/apps/bash
+#!/bin/ksh
 DIR=$1
+rm -f  $DIR/aindex.html     
 echo > /tmp/alphrout.html
 echo ' <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"> 
 <HTML> 
