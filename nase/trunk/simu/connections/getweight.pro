@@ -18,7 +18,7 @@
 ;                                           | ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                         }
-;                                       )
+;                                       [, NONE=value])
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: s.u.
 ;
@@ -30,7 +30,7 @@
 ;	
 ; KEYWORD PARAMETERS: S_ROW, S_COL: Zeile und Spalte des SourceNourons. Alternativ kann der eindimensionale Index in S_INDEX angegeben werden.
 ;                     T_ROW, T_COL: Zeile und Spalte des SourceNourons. Alternativ kann der eindimensionale Index in T_INDEX angegeben werden.
-;
+;                     NONE        : Nichtexistierende Verbindungen werden auf den Wert value gesetzt
 ;                     
 ;
 ;
@@ -69,6 +69,13 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;
+;       $Log$
+;       Revision 1.3  1997/11/11 10:24:06  gabriel
+;             Keyword NONE hinzugefuegt. Dient zum Ersetzen der "Nicht-Verbindungen"
+;             mit einem anderen Wert als !NONE
+; 
+;
 ;       Tue Jul 29 18:22:18 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -81,31 +88,46 @@
 ;-
 
 Function GetWeight, V_Matrix, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
-                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
+                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, NONE=none
     
-    if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
-
-       if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
-       return, reform( V_Matrix.Weights(t_index, *), V_Matrix.source_h, V_Matrix.source_w )
-
-    end
-
- 
-   if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
-
-       if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
-       return, reform( V_Matrix.Weights(*, s_index),  V_Matrix.target_h, V_Matrix.target_w )
+   if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
+      
+      if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
+      ERG = reform( V_Matrix.Weights(t_index, *), V_Matrix.source_h, V_Matrix.source_w )
+  
+      If set(NONE) THEN BEGIN
+       
+          n_index = where(ERG EQ !NONE,n_count)
+          IF n_count GT 0 THEN ERG(n_index) = none
+       ENDIF
+      return, ERG      
+   end
    
- end
-
+   
+   if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
+      
+      if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
+      ERG = reform( V_Matrix.Weights(*, s_index),  V_Matrix.target_h, V_Matrix.target_w )
+     
+      If set(NONE) THEN BEGIN
+         n_index = where(ERG EQ !NONE,n_count)
+         IF n_count GT 0 THEN ERG(n_index) = none
+      ENDIF
+      return, ERG  
+      
+   end
+   
 ; Nur einzelne Verbindung zurückliefern:
-
- if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
- if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
-
- return, V_Matrix.Weights(t_index, s_index)
-
-
+   
+   if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
+   if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
+   ERG =  V_Matrix.Weights(t_index, s_index)
+   If set(NONE) THEN BEGIN
+      IF ERG EQ !NONE THEN ERG = none
+   ENDIF
+   return, ERG
+   
+   
 end   
 
 
