@@ -38,7 +38,8 @@
 ;      time. The stimulus may have multiple dimensions or features, in
 ;      this case, the first dimension of the array <*>s</*> represents
 ;      time, the second dimension contains the stimulus features.
-;  r:: Response, i.e. spike trains as a function of time.
+;  r:: Response, i.e. spike trains as a function of time. The format
+;      is <*>r[time,neuron no.]</*>.
 ;
 ; INPUT KEYWORDS:
 ;  extprior:: In case of evaluating multiple response arrays that
@@ -65,7 +66,8 @@
 ;        intervals if activity is low. You should trade off <*>tau</*>
 ;        against firing rate, as choosing <*>tau</*> too large
 ;        smoothes the response too much. Thus, <*>tau</*> has to be
-;        adapted to the timescale of stimulus changes. Furthermore,
+;        adapted to the timescale of stimulus changes <I>and</I> the
+;        firing rate. Furthermore,
 ;        extra large <*>tau</*> may result in mathematical overflows
 ;        because of the computation of <*>rate^(no. of spikes)</*>.
 ;  smeartuning:: Floating point value.
@@ -82,7 +84,16 @@
 ;             towards lower values. MAP does not have this problem. If
 ;             e.g. velocity and direction of motion is estimated, this
 ;             effect becomes profound. Default: <*>OPTIMAL=0</*>
-;  /CENTER::           
+;  /CENTER:: If rate is interpreted as firing during some short <I>past</I>
+;            time interval, shift the rate array because smooth
+;            returns rates centered within the tau
+;            interval. <*>CENTER=0</*> corresponds to measuring the
+;            rates by counting the spikes in the interval <*>[t-tau,t]</*>,
+;            <*>CENTER=1</*> corresponds to Zhangs original algorithm,
+;            counting spikes in the interval <*>[t-tau/2,t+tau/2]</*>,
+;            but maybe less realistic when exact timing is
+;            relevant. The setting of <*>CENTER</*> is passed to
+;            <A>InstantRate()</A>. Default: <*>CENTER=0</*>
 ;  /VERBOSE:: Print information about the routines progress into the
 ;             <A NREF=INITCONSOLE>console</A>. Default: <*>VERBOSE=0</*>.
 ;
@@ -90,14 +101,34 @@
 ;  estimate::
 ;
 ; OPTIONAL OUTPUTS:
-;  get_mean::
-;  get_prior::
+;  get_mean:: Double array giving the mean firing rates of each neuron
+;             as a function of the stimulus. The first <*>n</*> dimensions
+;             indicate the stimulus dimensions, the last index is used
+;             for the neurons.  
+;  get_prior:: Structure containing information about the <I>a priori</I>
+;              distribution of stimuli. In particular, the following
+;              tags are contained:<BR>
+;              <*>get_prior.pr</*>: prior distribution, i.e. the relative
+;                            frequency of stimuli. The dimensions are
+;                            corresponding to the setting of
+;                            <*>snbins</*>.<BR>
+;              <*>get_prior.bv</*>: Data values corresponding to the
+;                            histogram bins.<BR>
+;              <*>get_prior.ri</*>: List of reverse indices, see
+;                            documentation of IDL's
+;                            <C>Histogram()</C>.<BR>
+;              <*>get_prior.th</*>: Total number of prior histogram
+;                                   entries. This may be used to
+;                                   recompute the number of entries in
+;                                   each stimulus histogram bin, to
+;                                   check how often each stimulus
+;                                   actually occurred. 
 ;
 ; RESTRICTIONS:
 ;  Stimulus dimension GT 2 tested only marginally.
 ;
 ; PROCEDURE:
-;  Magic?
+;  Essentially counting.
 ;  
 ; EXAMPLE:
 ;* duration = 1000
@@ -207,6 +238,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
       prior = extprior.pr
       sbinval = extprior.bv
       srevidx = extprior.ri
+      totshist = extprior.th
    ENDIF ELSE BEGIN
       IF Keyword_Set(VERBOSE) THEN  BEGIN
          Console, /MSG, '.'
@@ -214,7 +246,8 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
       ENDIF
       shist = HistMD(s, NBINS=snbins, GET_BINVALUES=sbinval $
                      , REVERSE_INDICES=srevidx)
-      prior = shist/Total(shist)
+      totshist = Total(shist)
+      prior = shist/totshist
       UnDef, shist
    ENDELSE
 
@@ -243,10 +276,6 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
     Console, /WARN, 'Width of window in rate computing is actually ' $
      +Str(realtau)
 
-   ;; If rate is interpreted as firing during some short PAST time
-   ;; interval, shift the rate array because smooth returns rates centered
-   ;; within the tau interval. CENTER=1 corresponds to Zhangs original
-   ;; algorithm, but maybe less realistic when exact timing is relevant.
    rate = InstantRate(r, SSHIFT=1, SSIZE=tau/2, /MEMORYSAVE, CENTER=center)
     
    ;; compute spike numbers from rates, consider SMOOTH can only
@@ -381,7 +410,8 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    get_mean = f
    get_prior = {pr: prior $
                 , bv: sbinval $
-                , ri: srevidx}
+                , ri: srevidx $
+                , th: totshist}
 
    Return, estimate
 
