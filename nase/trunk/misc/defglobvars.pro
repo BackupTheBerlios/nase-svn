@@ -14,6 +14,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/03/27 13:48:54  saam
+;           TOPCOLOR is now !D.Table_Size-2 which is
+;           much better (at least for TRUE COLOR Displays)
+;           cause the standard color remains white
+;           when calling rgb and friends
+;
 ;     Revision 1.6  1999/03/09 14:41:27  kupper
 ;     !NASE_LIB ist jetzt schreibbar, für Leute, die auf anderen Verzeichnisstrukturen arbeiten.
 ;
@@ -72,7 +78,7 @@ DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
 			ESC	: string(27b), $
 			BEL	: string(7b)}, 1
 
-DefSysV, '!TOPCOLOR', !D.Table_Size-1
+DefSysV, '!TOPCOLOR', !D.Table_Size-2
 DefSysV, '!NASETABLE', {POS         : 0, $
 			NEGPOS      : 1, $
 			PAPER_POS   : 2, $
