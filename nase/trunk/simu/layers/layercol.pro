@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.5  1998/02/19 15:32:26  kupper
+;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
+;
 ;       Revision 1.4  1997/11/08 14:35:14  kupper
 ;              Die layer...-Routinen können nun auch auf
 ;               DW-Strukturen angewandt werden.
@@ -49,17 +52,21 @@
 
 Function LayerCol, Layer, _Index, INDEX=index, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=target
 
-        Default,  index,  _Index
-	if Index ge LayerSize(Layer, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=target) then message, 'Layerindex ist zu groß!'
-	
-        if set(HEIGHT) then return,  fix(Index) / fix(height)
+   Default,  index,  _Index
+   if Index ge LayerSize(Layer, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=target) then message, 'Layerindex ist zu groß!'
+   
+   if set(HEIGHT) then return,  fix(Index) / fix(height)
 
-        if contains(Layer.info, 'LAYER', /IGNORECASE) then return, fix(Index) / fix(Layer.h)
+;   if contains(Layer.info, 'LAYER', /IGNORECASE) then return, fix(Index) / fix(Layer.h)
 
-	if contains(Layer.info, 'DW', /IGNORECASE) then begin
-            if Keyword_set(SOURCE) then return, fix(Index) / fix(Layer.Source_h)
-            if Keyword_set(TARGET) then return, fix(Index) / fix(Layer.Target_h)
-            message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
-        endif
-    
+;   if contains(Layer.info, 'DW', /IGNORECASE) then begin
+;      if Keyword_set(SOURCE) then return, fix(Index) / fix(Layer.Source_h)
+;      if Keyword_set(TARGET) then return, fix(Index) / fix(Layer.Target_h)
+;      message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
+;   endif
+
+;Das sollte mit dem richtig funktionierenden LayerHeight hoffentlich
+;so gehen:
+   return,  fix(Index) / fix(LayerHeight(Layer, SOURCE=SOURCE, TARGET=TARGET))
+
 end

@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY: erstellt am 24.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.4  1998/02/19 15:32:26  kupper
+;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
+;
 ;       Revision 1.3  1997/11/08 14:35:16  kupper
 ;              Die layer...-Routinen können nun auch auf
 ;               DW-Strukturen angewandt werden.
@@ -39,11 +42,11 @@ Function LayerSize, Layer, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=tar
 
         if not set(Layer) then return, width * height
 
-        If contains(Layer.info, 'LAYER', /IGNORECASE) then return, Layer.w * Layer.h
+        If contains(info(Layer), 'LAYER', /IGNORECASE) then return, LayerWidth(Layer) * LayerHeight(Layer)
 
-	If contains(Layer.info, 'DW', /IGNORECASE) then begin
-           if Keyword_set(SOURCE) then return, Layer.Source_w * Layer.Source_h
-           if Keyword_set(TARGET) then return, Layer.Target_w * Layer.Target_h
+	If contains(info(Layer), 'DW', /IGNORECASE) then begin
+           if Keyword_set(SOURCE) then return, DWDim(Layer, /SW) * DWDim(Layer, /SH)
+           if Keyword_set(TARGET) then return, DWDim(Layer, /TW) * DWDim(Layer, /TH)
            message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
         endif
 

@@ -25,6 +25,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.2  1998/02/19 15:32:26  kupper
+;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
+;
 ;       Revision 2.1  1998/01/28 16:19:08  kupper
 ;              Warjanuwohlschonlangeüberfällig...
 ;
@@ -32,11 +35,11 @@
 
 Function LayerWidth, Layer, SOURCE=source, TARGET=target
 
-        If contains(Layer.info, 'LAYER', /IGNORECASE) then return, Layer.w
+        If contains(info(Layer), 'LAYER', /IGNORECASE) then return, Layer.w
 
-	If contains(Layer.info, 'DW', /IGNORECASE) then begin
-           if Keyword_set(SOURCE) then return, Layer.Source_w
-           if Keyword_set(TARGET) then return, Layer.Target_w
+	If contains(info(Layer), 'DW', /IGNORECASE) then begin
+           if Keyword_set(SOURCE) then return, DWDim(Layer, /SW)
+           if Keyword_set(TARGET) then return, DWDim(Layer, /TW)
            message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
         endif
 

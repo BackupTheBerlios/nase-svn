@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.4  1998/02/19 15:32:26  kupper
+;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
+;
 ;       Revision 1.3  1997/11/08 14:35:16  kupper
 ;              Die layer...-Routinen können nun auch auf
 ;               DW-Strukturen angewandt werden.
@@ -56,12 +59,16 @@ Function LayerRow, Layer, _Index, INDEX=index, WIDTH=width, HEIGHT=height, SOURC
 	
         if set(HEIGHT) then return, Index mod height
 	
-        if contains(Layer.info, 'LAYER', /IGNORECASE) then return, Index mod Layer.h
+;        if contains(Layer.info, 'LAYER', /IGNORECASE) then return, Index mod Layer.h
 
-	if contains(Layer.info, 'DW', /IGNORECASE) then begin
-            if Keyword_set(SOURCE) then return, Index mod Layer.Source_h
-            if Keyword_set(TARGET) then return, Index mod Layer.Target_h
-            message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
-        endif
+;	if contains(Layer.info, 'DW', /IGNORECASE) then begin
+;            if Keyword_set(SOURCE) then return, Index mod Layer.Source_h
+;            if Keyword_set(TARGET) then return, Index mod Layer.Target_h
+;            message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
+;        endif
+
+;Das sollte mit dem richtig funktionierenden LayerHeight hoffentlich
+;so gehen:
+   return,  Index mod LayerHeight(Layer, SOURCE=SOURCE, TARGET=TARGET)
 	
 end
