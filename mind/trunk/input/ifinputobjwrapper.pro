@@ -8,9 +8,7 @@
 ; in Mind  
 ;
 ; PURPOSE: A Wrapper for using an Input-Generator-Object as Input-Filter
-; in Mind. It creates an set of input objects (see
-; <A>seqobjinput__define</A> and <A>seqobject__define</A>). Each input object consists of a grid of
-; sequence elements (see <A>seqelement__define</A>).
+; in Mind (e.g. <A>seqobjinput__define</A>).
 ;
 ; CATEGORY:
 ;  Input
@@ -70,7 +68,7 @@
 ;*
 ;
 ; SEE ALSO:
-;  <A>seqobjinput__define</A>, <A>seqobject__define</A>, <A>seqelement__define</A>
+;  <A>seqobjinput__define</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
