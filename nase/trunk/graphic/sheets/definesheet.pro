@@ -196,7 +196,8 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN
      
-      sheet = { type : 'NULL' }
+      sheet = { type : 'NULL' , $
+                     producer: producer       }
       
    END
 
