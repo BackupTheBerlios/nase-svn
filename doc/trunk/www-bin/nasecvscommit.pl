@@ -13,7 +13,7 @@ my $fdir = "/vol/neuro/nase/www-nase-copy/$dir";
 my $file;
 foreach $file (@files){
   # just work on IDL source files
-  if ($file =~ /\.pro$/){
+  if (($file =~ /\.pro$/) && !($dir =~ /neuro/)){
     if (-r "$fdir/$file"){
       scanFile(repdir=>$dir, filepath=>"$fdir/$file");
       print STDERR "$file: updated/inserted using $dir/$file\n";
