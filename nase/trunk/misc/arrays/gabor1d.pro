@@ -26,7 +26,7 @@
 ; CALLING SEQUENCE:
 ;*result = Gabor1d( size
 ;*                  [,HMW=...] [,PHASE=...] [,WAVELENGTH=...]
-;*                  [,/NORM] [,/MAXONE] )
+;*                  [,/NORM] [,/POWERNORM] [,/MAXONE] )
 ;
 ; INPUTS:
 ;  size:: Size of the array to be returned.
