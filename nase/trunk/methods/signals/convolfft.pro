@@ -83,14 +83,15 @@ FUNCTION  ConvolFFT, X, K
    IF  (TypeK GE 7) AND (TypeK LE 11) AND (TypeK NE 9)  THEN  Console, '  X is of wrong type.', /fatal
    IF  SizeK(0) GT 1   THEN  Console, '  K must be one-dimensional.', /fatal
    IF  NX       LT 2   THEN  Console, '  X epoch must have more than one element.', /fatal
-   IF  NK       GE NX  THEN  Console, '  K must have less elements than X.', /fatal
+   IF  NK       GT NX  THEN  Console, '  K must have less elements than X.', /fatal
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Computing the convolution product in a FOR loop:
    ;----------------------------------------------------------------------------------------------------------------------
 
    ; The spectrum of the convolution kernel (zero-padded), which stays constant in the loop:
-   SpectrumK = Conj(FFT( [K , Replicate(0,NX-NK)] ))
+   IF  NK LT NX  THEN  SpectrumK = Conj(FFT( [K , Replicate(0,NX-NK)] ))  $
+                 ELSE  SpectrumK = Conj(FFT(  K ))
 
    ; All epochs are merged in one dimension, for easier handling of the arrays:
    X = Reform(X                                , NX, NEpochs, /overwrite)
