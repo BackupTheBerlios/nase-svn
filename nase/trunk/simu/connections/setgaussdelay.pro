@@ -2,7 +2,7 @@
 ; NAME: SetGaussDelay
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
-;          Delays gaussförmig. (Eine umgedrehte Gaussglocke mit min=0 im Zentrum!)
+;          Delays gaussförmig. (Eine umgedrehte Gaussglocke mit Minimum im Zentrum!)
 ;
 ; CATEGORY: Simulation
 ;
