@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1999/01/14 14:18:19  saam
+;           + loop variables are long now
+;
 ;     Revision 1.4  1998/08/11 15:16:58  saam
 ;           new keyword ONED implemented
 ;
@@ -82,7 +85,7 @@ FUNCTION IMax, A, i, indices, ONED=oned
    res = Make_Array(TYPE=s(s(0)+1), s(i+1))
 
    indices = LonArr(s(i+1))
-   FOR x=0, s(i+1)-1 DO BEGIN
+   FOR x=0l, s(i+1)-1 DO BEGIN
       CASE i OF  
          0: res(x) = MAX( A(x,*), tmp ) 
          1: res(x) = MAX( A(*,x,*), tmp ) 
@@ -102,7 +105,7 @@ FUNCTION IMax, A, i, indices, ONED=oned
 
       oned    = LonArr(s(i+1))                ; array containing 1dimensional indices for A of maxima in A
 
-      FOR x=0, s(i+1)-1 DO BEGIN
+      FOR x=0l, s(i+1)-1 DO BEGIN
          CASE i OF  
             0: oned(x) = B(x,indices(x))
             1: oned(x) = B(indices(x),x)
