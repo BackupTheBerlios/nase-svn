@@ -1,7 +1,7 @@
 ;+
 ; NAME: InitList()
 ;
-;             s.a. <A HREF="#INSERT">insert</A>, <A HREF="#ReTrIeVe">retrieve()</A>, kill, FreeList
+;             s.a. <A HREF="#INSERT">Insert</A>, <A HREF="#RETRIEVE">Retrieve()</A>, <A HREF="#KILL">Kill</A>, <A HREF="#FREELIST">FreeList()</A>
 ;
 ; PURPOSE: Initialisierung einer Listenstruktur.
 ;
@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1997/11/14 18:08:07  kupper
+;               Noch mehr Hyperlinks.
+;
 ;        Revision 1.2  1997/11/14 16:36:58  kupper
 ;               VERSUCH, in den Header Hyperlinks einzubauen.
 ;
