@@ -52,6 +52,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/10/10 14:13:06  kupper
+;        re-implemented handling of VALID Keyword, to allow for partially
+;        filled queues not starting at first element (which allows
+;        implementation of DeQueue for Fixed Queues.)
+;
 ;        Revision 1.4  2000/09/25 09:13:14  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -76,7 +81,11 @@ Function Queue, Queue, VALID=valid
    If not contains(Queue.info, 'QUEUE', /IGNORECASE) then message, 'Not a Queue!'
 
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
-      If Keyword_Set(VALID) and (Queue.valid lt Queue.length) then return, Queue.Q(0:((Queue.valid-1)>0))
+      If Keyword_Set(VALID) and (Queue.valid lt Queue.length) then begin
+         assert, Queue.valid gt 0, "Fixed queue does not contain any " + $
+          "valid elements."
+         return, (Queue(Queue))(Queue.length-Queue.valid:*);;achtung, Rekursion!
+      endif
       return, shift([Queue.Q], -Queue.Pointer-1)
    EndIf
 
