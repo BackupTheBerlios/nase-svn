@@ -10,7 +10,7 @@
 ; CALLING SEQUENCE:   TvSclLegend, xnorm, ynorm 
 ;                                  [, CHARSIZE=Schriftgroesse]
 ;                                  [,/HORIZONTAL] [,/VERTICAL] 
-;                                  [,/LEFT] [,/RIGHT] [,/TOP] [,/BOTTOM]
+;                                  [,/LEFT] [,/RIGHT] [,/CEILING] [,/BOTTOM]
 ;                                  [,MAX=max] [,MID=mid] [,MIN=min]
 ;                                  [,/NOSCALE]
 ;
@@ -29,7 +29,7 @@
 ;                                  (Def.: HORIZONTAL)
 ;                     LEFT/RIGHT : bei vertikaler Legende kann Beschriftung links oder
 ;                                  rechts erfolgen (Def.: RIGHT)
-;                     TOP/BOTTOM : bei horizontaler Legende kann Beschriftung oben oder
+;                     CEILING/BOTTOM : bei horizontaler Legende kann Beschriftung oben oder
 ;                                  unten erfolgen (Def.: BOTTOM)
 ;                     MAX/MID/MIN: Beschriftung des maximalen, mittleren und minimalen
 ;                                  Legendenwertes als String oder Zahl 
@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1998/03/16 14:40:43  kupper
+;            Schlüsselwort TOP ersetzt durch CEILING für Kompatibilität mit TVScl
+;
 ;     Revision 2.7  1997/12/17 15:31:43  saam
 ;           Keyword NOSCALE ergaenzt
 ;
@@ -75,7 +78,7 @@
 PRO TvSclLegend, xnorm, ynorm $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
                  ,MAX=max, MID=mid, MIN=min $
-                 ,LEFT=left, RIGHT=right, TOP=top, BOTTOM=bottom $
+                 ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom $
                  ,CHARSIZE=Charsize $
                  ,NOSCALE=NOSCALE, _EXTRA = e
    
@@ -149,7 +152,7 @@ PRO TvSclLegend, xnorm, ynorm $
          XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, CHARSIZE=Charsize
       END         
    END ELSE BEGIN
-      IF Keyword_Set(TOP) THEN BEGIN
+      IF Keyword_Set(CEILING) THEN BEGIN
          XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
          XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
          XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
