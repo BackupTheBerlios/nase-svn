@@ -19,7 +19,9 @@
 ;                                    fixed    :    "
 ;                                    random   : offset 
 ;                      DIV         : mode random : 2PI is divided up into div pieces  
-;
+;                      LOGIC       : logical operation ->
+;                                    NEW_INPUT = OLDINPUT #LOGIC# GENERATED_INPUT
+;                      MYSEED      : Initial value for SEED  (Default is taken from common-block) 
 ;
 ;
 ;
@@ -46,6 +48,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/27 13:20:41  alshaikh
+;           KEYWORD : myseed
+;
 ;     Revision 1.3  2000/01/19 14:51:00  alshaikh
 ;           now EVERY parameter is stored in temp_vals
 ;
@@ -66,9 +71,12 @@ FUNCTION ifrotgrid,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_va
                    LAMBDA= lambda,$
                    DELTA_ALPHA=delta_alpha,$
                    ALPHA =  alpha, $
-                   DIV = div
+                   DIV = div, $
+                   LOGIC= logic,$
+                   MYSEED=myseed
                     
-
+ COMMON COMMON_random, seed
+ COMMON terminal,output
 
 Default, mode, 1      ; i.e. step
 Default, div , 0.0
@@ -76,7 +84,8 @@ Default, fixed,0.0
 Default, random,0.0
 Default, alpha,0.0
 Default, duration,1.0
-
+Default, logic, 'ADD'
+Default, myseed, seed
 Handle_Value,_temp_vals,temp_vals,/no_copy
 
 
@@ -85,7 +94,15 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 ;
 ; INITIALIZE
 ;
-      0: BEGIN    
+      0: BEGIN 
+
+if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
+
+         logiclist = ['AND','OR','ADD']
+         mylogic = WHERE(STRUPCASE(logic) EQ logiclist,c)
+
+
+         temp_pattern =  pattern
          background = fltarr(2*h+1,2*w+1)
 
          offset =  lambda/(2*3.14159)*(4*1)+1-h
@@ -93,7 +110,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 
          FOR x=0,2*h DO BEGIN
             FOR y=0,2*w DO BEGIN 
-               background(x,y) = (1+sin(2*3.14159/lambda*(x+offset)))
+               background(x,y) = 0.5*(1+sin(2*3.14159/lambda*(x+offset)))
             ENDFOR 
          ENDFOR 
 
@@ -112,11 +129,15 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
                        h             : h ,$
                        w             : w,  $
                        delta_t       : delta_t, $
-                       delta_alpha   : delta_alpha $
+                       random        : random  ,$
+                       delta_alpha   : delta_alpha, $
+                       myseed        : myseed, $
+                       mylogic       : mylogic(0) $ 
                       }
          
 
-         print,'INPUT:filter ''ifrotgrid'' initialized'         
+         console,output,'filter ''ifrotgrid'' initialized, mode :'+logic, 'firotgrid',/MSG
+         
       END
 
 
@@ -124,32 +145,51 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 ; STEP
 ;
       1: BEGIN 
-         
-        
+
+   
+            temp_pattern =  pattern
             temp_vals.dur_counter = 0
             xoff =  temp_vals.xoff
             yoff =  temp_vals.yoff
             background = temp_vals.background
+            _seed = temp_vals.myseed
+                        
             
-            
-            IF random NE 0 THEN angle = round((randomu(seed)*100) MOD div)*2*3.14159/div+alpha $
-            ELSE angle =  temp_vals.alpha
-            
-            
+            IF temp_vals.random NE 0 THEN $
+             angle = round((randomu(_seed)*100) MOD (temp_vals.div))*2*3.14159/(temp_vals.div) $
+                           +temp_vals.delta_alpha $
+                           ELSE angle =  temp_vals.alpha
+
+console,output,'angle: '+str(angle),'ifrotgrid',/msg
+
+
             FOR x=-(temp_vals.h/2),temp_vals.h/2 DO BEGIN
                FOR y=-(temp_vals.w/2),(temp_vals.w/2) DO BEGIN
-                  pattern(temp_vals.h/2+x,temp_vals.w/2+y) = background(xoff+x*cos(angle)-y*sin(angle),yoff+x*sin(angle)+y*cos(angle))
+                  temp_pattern(temp_vals.h/2+x,temp_vals.w/2+y) = background(xoff+x*cos(angle)-y*sin(angle),yoff+x*sin(angle)+y*cos(angle))
                ENDFOR
             ENDFOR       
             
             IF fixed EQ 0 THEN angle =  angle + temp_vals.delta_alpha
             temp_vals.alpha =  angle
-            
          
          temp_vals.sim_time =  temp_vals.sim_time + temp_vals.delta_t
-         temp_vals.pattern = pattern
-         
-      END
+         temp_vals.pattern = temp_pattern
+
+         CASE temp_vals.mylogic OF
+
+            0 : BEGIN   ; AND
+               temp_pattern = pattern AND temp_pattern
+            END
+
+            1 : BEGIN   ; OR
+               temp_pattern = pattern OR temp_pattern
+            END
+
+            2 : BEGIN   ; ADD
+               temp_pattern = pattern + temp_pattern
+            END
+         ENDCASE
+      END                       ; STEP
 
 
 ;
@@ -157,8 +197,8 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 ;
       2:BEGIN
          
-         pattern = 0.0
-         print,'INPUT:filter ''ifrotgrid'' stopped'
+         temp_pattern = 0.0
+         console,output,'filter ''ifrotgrid'' stopped','ifrotgrid',/msg
 
       END
 
@@ -167,5 +207,5 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 
  Handle_Value,_temp_vals,temp_vals,/no_copy,/set
 
-return, pattern 
+return, temp_pattern 
 END 
