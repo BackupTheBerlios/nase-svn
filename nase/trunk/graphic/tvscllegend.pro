@@ -12,6 +12,7 @@
 ;                                  [,/HORIZONTAL] [,/VERTICAL] 
 ;                                  [,/LEFT] [,/RIGHT] [,/TOP] [,/BOTTOM]
 ;                                  [,MAX=max] [,MID=mid] [,MIN=min]
+;                                  [,/NOSCALE]
 ;
 ;                     alle Argumente von UTvScl werden ebenfalls akzeptiert, i.w.
 ;                                  [,/CENTER]
@@ -32,7 +33,10 @@
 ;                                  unten erfolgen (Def.: BOTTOM)
 ;                     MAX/MID/MIN: Beschriftung des maximalen, mittleren und minimalen
 ;                                  Legendenwertes als String oder Zahl 
-;                                  (Def.: MAX=1, MID='', MIN=0)
+;                                  (Def.: MAX=255, MID='', MIN=0)
+;                     NOSCALE    : die Legende wird analog zu Tv nicht skaliert; fuer
+;                                  eine korrekte Darstellung MUESSEN(!!!!) die Keywords
+;                                  MIN und MAX uebergeben werden.
 ;
 ; EXAMPLE:
 ;           TvSclLegend, 0.5, 0.5, /CENTER
@@ -42,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1997/12/17 15:31:43  saam
+;           Keyword NOSCALE ergaenzt
+;
 ;     Revision 2.6  1997/11/27 13:28:05  thiel
 ;            Option CHARSIZE hinzugefuegt.
 ;
@@ -70,29 +77,20 @@ PRO TvSclLegend, xnorm, ynorm $
                  ,MAX=max, MID=mid, MIN=min $
                  ,LEFT=left, RIGHT=right, TOP=top, BOTTOM=bottom $
                  ,CHARSIZE=Charsize $
-                 ,_EXTRA = e
+                 ,NOSCALE=NOSCALE, _EXTRA = e
    
    
    IF !D.NAME EQ 'NULL' THEN RETURN
    
    Default, xnorm, 0.5
    Default, ynorm, 0.5
-   Default,   max, 1.0
+   Default,   max, 255
    Default,   mid, ''
    Default,   min, 0.0
    Default, Charsize, 1.0
 
-   type = Size(max)
-   IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(max, FORMAT='(G0.0)'), /REMOVE_ALL)
-   type = Size(mid)
-   IF type(type(0)+1) NE 7 THEN mid = STRCOMPRESS(STRING(mid, FORMAT='(G0.0)'), /REMOVE_ALL)
-   type = Size(min)
-   IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(min, FORMAT='(G0.0)'), /REMOVE_ALL)
-   
-   
    
    bg = GetBGColor()
-
    ; if device is PS and REVERTPS is on 
    save_rpsc = !REVERTPSCOLORS
    !REVERTPSCOLORS = 0
@@ -112,9 +110,22 @@ PRO TvSclLegend, xnorm, ynorm $
    END      
    
 
+   IF Keyword_Set(NOSCALE) THEN BEGIN
+      colorarray = (colorarray / MAX(colorarray))*(max-min)+min
+      UTv, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
+   END ELSE BEGIN
+      UTvScl, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
+   END
    
-   legend_dims = 0              ; needed for UTvScl-call
-   UTvScl, colorarray, xnorm, ynorm, DIMENSIONS=legend_dims, _EXTRA=e
+
+
+   type = Size(max)
+   IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(max, FORMAT='(G0.0)'), /REMOVE_ALL)
+   type = Size(mid)
+   IF type(type(0)+1) NE 7 THEN mid = STRCOMPRESS(STRING(mid, FORMAT='(G0.0)'), /REMOVE_ALL)
+   type = Size(min)
+   IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(min, FORMAT='(G0.0)'), /REMOVE_ALL)
+   
    
    xpos  = legend_dims(0)
    ypos  = legend_dims(1)
