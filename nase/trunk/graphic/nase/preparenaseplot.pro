@@ -6,13 +6,21 @@
 ; CATEGORY: Graphik, Darstellung
 ;
 ; CALLING SEQUENCE: PrepareNASEPlot, { (Height, Width [,/CENTER] [,/OFFSET] [,/NONASE]
-;                                             [,/X_ONLY | ,/Y_ONLY] [,GET_OLD=alteParameter])
+;                                             [,/X_ONLY | ,/Y_ONLY] 
+;                                       [, XTICKNAMESHIFT=xshift] [,YTICKNAMESHIFT=yshift]       
+;                                             [,GET_OLD=alteParameter])
 ;                                     | (RESTORE_OLD=alteParameter) }
 ;
 ; INPUTS: Height,Width: Ausmaﬂe des Arrays (beachte Reihenfolge!)
 ;
 ; OPTIONAL INPUTS: alteParameter in RESTORE_OLD: Die beim vorangegengenen Aufruf mit
 ;                                                GET_OLD geretteten Plot-Parameter.
+;                  xshift, yshift: hilft, wenn man nicht will, dass die
+;                                  Beschriftung von 0 bis Breite/Hoehe des Arrays
+;                                  geht. Gibt man x/yshift an, so wird die
+;                                  Beschriftung um den angegebenen Wert verschoben.
+;                                  Soll zB die Null in der Mitte der X-Achse stehen,
+;                                  wuerde XTICKNAMESHIFT = -width/2 den Job tun.
 ;
 ; KEYWORD PARAMETERS: /CENTER: Wenn gesetzt, werden die Tickmarks so
 ;                              verschoben, daﬂ sie in die Mitte der
@@ -57,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.7  1998/06/30 20:38:14  thiel
+;               Neue Keywords X/YTICKNAMESHIFT eingebaut.
+;
 ;        Revision 2.6  1998/04/17 15:24:02  kupper
 ;               fix statt round...
 ;
@@ -79,7 +90,8 @@
 
 Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
                  X_ONLY=x_only, Y_ONLY=y_only, $
-                 CENTER=center, OFFSET=offset, NONASE=nonase
+                 CENTER=center, OFFSET=offset, NONASE=nonase, $
+                 XTICKNAMESHIFT = xticknameshift, YTICKNAMESHIFT = yticknameshift
 
    If Keyword_Set(RESTORE_OLD) then begin
       !X = restore_old.old_X
@@ -90,6 +102,8 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
    get_old = {old_X : !X, $
               old_Y : !Y}
 
+   Default, xticknameshift, 0
+   Default, yticknameshift, 0
 
 ;   If Keyword_Set(OFFSET) then begin
 ;      Height = Height+2
@@ -110,7 +124,7 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       endif else !X.RANGE = [0, Width-1]
 ;      If Keyword_Set(OFFSET) then !X.TICKNAME = [' ', str(!X.MINOR-1+indgen(!X.TICKS-1)*!X.MINOR), ' '] $
 ;       else !X.TICKNAME = str(indgen(!X.TICKS+1)*!X.MINOR)
-      !X.TICKNAME = str(indgen(!X.TICKS+1)*!X.MINOR)
+      !X.TICKNAME = str((indgen(!X.TICKS+1))*!X.MINOR+xticknameshift)
    endif
    If not Keyword_Set(x_only) then begin
       !Y.MINOR = (Height-1) / 30 +1
@@ -127,11 +141,11 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       If Keyword_Set(NONASE) then begin
 ;         If Keyword_Set(OFFSET) then  !Y.TICKNAME = [' ', str(indgen(!Y.TICKS-1)*!Y.MINOR), ' '] $
 ;         else !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR)
-         !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR)
+         !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR+yticknameshift)
       endif else begin
 ;         If Keyword_Set(OFFSET) then !Y.TICKNAME = [' ', str( Height-3-indgen(!Y.TICKS-1)*!Y.MINOR ), ' '] $
 ;         else !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
-         !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
+         !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR+yticknameshift)
       endelse
    endif
 end
