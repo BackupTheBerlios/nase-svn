@@ -1,28 +1,42 @@
 ;+
-; NAME:                Operator
+; NAME:
+;  Operator
 ;
-; PURPOSE:             This function applies an operator to some arguments. Its main
-;                      purpose is the simplify the writing of input filters.          
+; PURPOSE:
+;  This function applies an operator to some arguments. Its main
+;  purpose is the simplify the writing of input filters.          
 ;
-; CATEGORY:            MIND SIM
+; CATEGORY:
+;  MIND / SIMULATION ROUTINES
 ;
-; CALLING SEQUENCE:    result = Operator(A,B,op)
+; CALLING SEQUENCE:
+;  result = Operator(op,A,B)
 ;
-; INPUTS:              A ,
-;                      B : the two arguments to be applied to the operator
-;                      op: numeric id of the operator to be used. This number
-;                          is received by <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#OPID>opID</A>.ü
+; INPUTS:
+;  op: numeric id of the operator to be used. This number is received
+;      by <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#OPID>opID</A>.
+;  A, B: the two arguments to be applied to the operator
 ;
-; RESTRICTIONS:        This function doesn't do any kind of syntax checking for performance reasons.
+; RESTRICTIONS:
+;  This function doesn't do any kind of syntax checking for
+;  performance reasons.
+;  To allow XOR-Operation on non-INTEGER arguments, A and B are
+;  converted to INTEGE type and back to the original type after the
+;  operation.
 ;
-; EXAMPLE:             id = opID('and')
-;                      print, operator(id, [0,0,1,1], [0,1,0,1])
+; EXAMPLE:
+;  id = opID('and')
+;  print, operator(id, [0,0,1,1], [0,1,0,1])
 ;
-; SEE ALSO:    <A HREF=http://neuro.physik.uni-marburg.de/nase/#xx>xx</A>
+; SEE ALSO:
+;  <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#OPID>opID</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/08/11 09:56:44  thiel
+;         Added XOR support.
+;
 ;     Revision 1.2  2000/05/17 08:22:01  saam
 ;           added new operators "*" and "/"
 ;
@@ -41,7 +55,13 @@ FUNCTION Operator, op, A, B
       2   : RETURN, A + B
       3   : RETURN, A * B
       4   : RETURN, A / B
-      ELSE: Message, 'unknown operator'
+      5   : BEGIN
+         type = Size(A, /TNAME)
+         IF type EQ 'INT' THEN Return, A XOR B
+         resultfix = Fix(A) XOR Fix(B)
+         Return, Call_FUNCTION(type, resultfix)
+      END
+      ELSE: Message, ' unknown operator.'
    ENDCASE
 
 END
