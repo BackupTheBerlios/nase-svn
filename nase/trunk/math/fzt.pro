@@ -25,7 +25,7 @@
 ;  Statistics
 ;
 ; CALLING SEQUENCE:
-;* y = FZT(x [, direction] [, /OVERWRITE] [, CLIPIND = ...)
+;* y = FZT(x [, direction] [, /OVERWRITE] [, INFIND = ...)
 ;
 ; INPUTS:
 ;  x::  Any integer or float scalar or array containing the value(s) to be transformed.
@@ -45,16 +45,16 @@
 ;       values resulting from the specified transform.
 ;
 ; OPTIONAL OUTPUTS:
-;  CLIPIND::  Set this keyword to a named variable which on return will be a one-dimensional array containing the
-;             (one-dimensional) subscript indices (as they would be obtained with IDL's <*>Where</*> function) into those
-;             elements of <*>x</*> which are outside the (open) interval (-1,1) and which have therefore been mapped
-;             onto -inf or inf, respectively. If <*>x</*> does not contain such irregular elements, a scalar -1 is
-;             returned in <*>CLIPIND</*>. Note that the indices are <I>not</I> sorted, because this can take quite
-;             a lot of time and is mostly not necessary. They are rather arranged in two sorted blocks, the first one
-;             containing the indices into elements <=-1 (if there are any) and the second containing the indices into
-;             elements >=+1 (if there are any). Remember that you sort the indices by yourself if you would like to have
-;             them sorted.<BR>
-;             This keyword has no effect when the inverse transform is specified (<*>direction</*>=1).
+;  INFIND::  Set this keyword to a named variable which on return will be a one-dimensional array containing the
+;            (one-dimensional) subscript indices (as they would be obtained with IDL's <*>Where</*> function) into those
+;            elements of <*>x</*> which are outside the (open) interval (-1,1) and which have therefore been mapped
+;            onto -inf or inf, respectively. If <*>x</*> does not contain such irregular elements, a scalar -1 is
+;            returned in <*>INFIND</*>. Note that the indices are <I>not</I> sorted, because this can take quite
+;            a lot of time and is mostly not necessary. They are rather arranged in two sorted blocks, the first one
+;            containing the indices into elements <=-1 (if there are any) and the second containing the indices into
+;            elements >=+1 (if there are any). Remember that you sort the indices by yourself if you would like to have
+;            them sorted.<BR>
+;            This keyword has no effect when the inverse transform is specified (<*>direction</*>=1).
 ;
 ;
 ; RESTRICTIONS:
@@ -77,7 +77,7 @@
 
 
 
-FUNCTION   FZT, X, Direction,   overwrite = overwrite, clipind = clipind
+FUNCTION   FZT, X, Direction,   overwrite = overwrite, infind = infind
 
 
    ;----------------------------------------------------------------------------------------------------------------------
@@ -108,16 +108,16 @@ FUNCTION   FZT, X, Direction,   overwrite = overwrite, clipind = clipind
             ; Checking whether values lie outside the interval (-1,1), and determining their subscripts (separately
             ; for values <= -1 and >= +1, respectively):
             MaxX = Max(X, min = MinX)
-            NClipNeg = 0
-            NClipPos = 0
-            IF  MinX LE -1  THEN  iClipNeg = Where(X LE -1, NClipNeg)
-            IF  MaxX GE  1  THEN  iClipPos = Where(X GE  1, NClipPos)
-            NClip = NClipNeg + NClipPos
+            NInfNeg = 0
+            NInfPos = 0
+            IF  MinX LE -1  THEN  iInfNeg = Where(X LE -1, NInfNeg)
+            IF  MaxX GE  1  THEN  iInfPos = Where(X GE  1, NInfPos)
+            NInf = NInfNeg + NInfPos
             CASE  1  OF
-              NClipNeg GE 1  AND  NClipPos GE 1:  ClipInd = [ iClipNeg , iClipPos ]
-              NClipNeg GE 1  AND  NClipPos EQ 0:  ClipInd =   iClipNeg
-              NClipNeg EQ 0  AND  NClipPos GE 1:  ClipInd =   iClipPos
-              ELSE:  ClipInd = -1L
+              NInfNeg GE 1  AND  NInfPos GE 1:  InfInd = [ iInfNeg , iInfPos ]
+              NInfNeg GE 1  AND  NInfPos EQ 0:  InfInd =   iInfNeg
+              NInfNeg EQ 0  AND  NInfPos GE 1:  InfInd =   iInfPos
+              ELSE:  InfInd = -1L
             ENDCASE
             ; If values outside the interval [-1,1] exist, an extra warning message is given:
             IF  (MinX LT -1) OR (MaxX GT 1)  THEN  Console, '   Range of x beyond [-1,1]. Clipping values.', /warning
@@ -130,10 +130,10 @@ FUNCTION   FZT, X, Direction,   overwrite = overwrite, clipind = clipind
             ; set to +/-inf:
             IF  TypeX EQ 5  THEN  Infinity = !Values.D_Infinity  $
                             ELSE  Infinity = !Values.F_Infinity
-            IF  NClip    GE 1  THEN  X_[ClipInd]  = 0
+            IF  NInf    GE 1  THEN  X_[InfInd]  = 0
             X_ = 0.5 * alog(2.0/(1.0-Temporary(X_)) - 1.0)
-            IF  NClipNeg GE 1  THEN  X_[iClipNeg] = -Infinity
-            IF  NClipPos GE 1  THEN  X_[iClipPos] =  Infinity
+            IF  NInfNeg GE 1  THEN  X_[iInfNeg] = -Infinity
+            IF  NInfPos GE 1  THEN  X_[iInfPos] =  Infinity
             Return, X_
           END
 
