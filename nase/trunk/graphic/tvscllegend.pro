@@ -23,7 +23,7 @@
 ;*  [,CHARSIZE=...]
 ;*  [,MAX=...] [,MID=...] [,MIN=...]
 ;*  [,COLOR=...]
-;*  [,TITLE=...]
+;*  [,TITLE=...] [,/SAMESIDE]
 ;*  [,RANGE=...]
 ;*  [,/HORIZONTAL] [,/VERTICAL] 
 ;*  [,/LEFT] [,/RIGHT] 
@@ -51,6 +51,9 @@
 ;                         horizontal).
 ;  LEFT, RIGHT:: Vertical legends may be labeled on left or right side
 ;                (default: right).
+;  SAMESIDE :: usually the title of the legend is placed opposite the
+;              legend labels; with this option the title is placed at
+;              the same side  
 ;  CEILING, BOTTOM:: Horizontal legends may be labeled on top or
 ;                    bottom (default: bottom).
 ;  NOSCALE:: Legend will not be scaled analogous to diplaying data
@@ -75,7 +78,7 @@ PRO TvSclLegend, _xnorm, _ynorm $
                  ,TITLE=title $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
                  ,MAX=max, MID=mid, MIN=min $
-                 ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom $
+                 ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom, SAMESIDE=sameside $
                  ,CHARSIZE=_Charsize, COLOR=color $
                  ,RANGE=Range $
                  ,NOSCALE=NOSCALE $
@@ -92,6 +95,7 @@ PRO TvSclLegend, _xnorm, _ynorm $
    Default, _Charsize, !P.CHARSIZE
    CHARSIZE = _CHARSIZE*sqrt(1./MAX([1.,(!P.MULTI(1)), (!P.MULTI(2))])) 
    Default, COLOR, GetForeground()
+   Default, SAMESIDE, 0
    
 
    ; average character size in normal coordinated
@@ -164,12 +168,12 @@ PRO TvSclLegend, _xnorm, _ynorm $
          XYOuts, xpos-X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
-         IF Set(TITLE) THEN XYOuts, xpos+xsize+1.2*Y_CH_SIZE/4., ypos+ysize/2, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize, ORIENTATION=-90
+         IF Set(TITLE) THEN XYOuts, xpos+xsize+(-2*sameside+1)*1.2*Y_CH_SIZE/4., ypos+ysize/2, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize, ORIENTATION=-90
       END ELSE BEGIN
          XYOuts, xpos+xsize+X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
          XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
          XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
-         IF Set(TITLE) THEN XYOuts, xpos-1.2*Y_CH_SIZE*3/4, ypos+ysize/2, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize, ORIENTATION=-90
+         IF Set(TITLE) THEN XYOuts, xpos-(-2*sameside+1)*1.2*Y_CH_SIZE*3/4, ypos+ysize/2, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize, ORIENTATION=-90
       END         
       
    END ELSE BEGIN
