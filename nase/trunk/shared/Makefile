@@ -2,6 +2,9 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.6  2000/08/31 08:56:29  saam
+#               OSF needs c++ and not cc as c++ compiler
+#
 #         Revision 1.5  2000/08/04 15:13:02  kupper
 #         Added system variable !NASEDIR.
 #
@@ -44,11 +47,13 @@ all :
 	@case `uname` in \
 	   "OSF1" )  make libs \
 			"CC=cc" \
+			"CXX=c++" \
 			"C_LD=ld" \
 			"CFLAGS=-DOSF1" \
 			"C_LD_FLAGS=-S -shared" ;; \
 	   "Linux" ) make libs \
 			"CC=cc" \
+			"CXX=cc" \
 			"C_LD=ld" \
 			"CFLAGS=-fPIC -shared" \
 			"C_LD_FLAGS=-shared" ;; \
@@ -91,4 +96,4 @@ clean :
 	$(CC) $(CFLAGS) -c $*.c
 
 .cc.o :
-	$(CC) $(CFLAGS) -c $*.cc
+	$(CXX) $(CFLAGS) -c $*.cc
