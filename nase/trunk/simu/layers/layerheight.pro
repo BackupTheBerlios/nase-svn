@@ -25,6 +25,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.5  1998/11/09 13:44:22  saam
+;            never worked with a delayweigh-structure!
+;
 ;       Revision 2.4  1998/11/08 17:34:01  saam
 ;             adapted to new layer type
 ;
@@ -37,21 +40,21 @@
 ;
 ;-
 
-FUNCTION LayerHeight, _L, SOURCE=source, TARGET=target
+FUNCTION LayerHeight, L, SOURCE=source, TARGET=target
 
    ON_ERROR, 2
 
-   Handle_Value, _L, L, /NO_COPY
+   IF Contains(info(L), 'LAYER') THEN BEGIN
+      Handle_Value, L, Ltmp, /NO_COPY
+      h = Ltmp.h
+      Handle_Value, L, Ltmp, /NO_COPY, /SET
+   END
 
-   IF Contains(info(L), 'LAYER', /IGNORECASE) THEN h = L.h
-   
-   IF Contains(info(L), 'DW', /IGNORECASE) THEN BEGIN
+   IF Contains(info(L), 'DW') THEN BEGIN
       IF KEYWORD_SET(SOURCE) THEN h = DWDim(L, /SH)
       IF KEYWORD_SET(TARGET) THEN h = DWDim(L, /TH)
-      MESSAGE, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
+      IF NOT SET(h) THEN MESSAGE, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
    ENDIF
 
-   Handle_Value, _L, L, /NO_COPY, /SET
    RETURN, h
-
 END
