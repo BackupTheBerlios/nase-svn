@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/14 10:34:40  saam
+;           bug in print corrected
+;
 ;     Revision 1.3  2000/01/14 10:26:57  alshaikh
 ;           NEW: 'EXTERN' input
 ;
@@ -204,7 +207,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
             IF h NE w THEN Message, 'INTINPUT: PCC with DECAY and non-quadratic layers is not defined...'
             sigma = sqrt(-IN.r^2/2./alog(0.1)) ; okay, amplitude is at 0.1 at the circle border
             mask = Gauss_2D(h,w,sigma)
-            Print, 'INPUT: PCC, R='+Str(IN.r)+' => sigma='+sigma
+            Print, 'INPUT: PCC, R='+Str(IN.r)+' => sigma='+Str(sigma)
          END ELSE BEGIN
             mask = CutTorus(Make_Array(h,w,/BYTE, VALUE=1),IN.r,-1)
          END
