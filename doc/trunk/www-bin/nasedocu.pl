@@ -133,7 +133,7 @@ if ($P::mode){
 			     img({src=>"$DOCURL/doc/www-doc/snasedoc.gif",alt=>"[LOGO]",border=>"0"}),
 			  "</TD></TR></TABLE>\n",
 			"</TD></TR><TR><TD>\n",
-			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center><TR><TD>',
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center>',
 			  '<TR CLASS="title"><TD CLASS="title">Directories</TD></TR>',
 			    '<TR><TD CLASS="left">';
 		      showdir("/",$sub, 0);
