@@ -60,7 +60,15 @@
 ;
 ; RESTRICTIONS:
 ;  The values of <*>x</*> must lie within the interval [-1,1]. Otherwise they are set to -1 or 1, respectively, and a
-;  corresponding warning message is given.
+;  corresponding warning message is given.<BR>
+;  <B>Caution</B>: Even the values +/-1 are critical in this routine, because their Fisher-Z-transform is +/-<*>Inf</*>.
+;  Thus, for a set of values that are to be averaged, the result will always be =1 if at least one of the values is =1,
+;  and it will always be =-1 if at least one of the values is =-1, and it will be <*>-NaN</*> if the set contains both
+;  +1 and -1. Standard deviations will always be <*>-NaN</*> if at least one of the values is +1 <I>or</I> -1. Note also
+;  that computation time increases significantly if <*>x</*> contains values equal to +/-1, because calculations with
+;  +/-<*>Inf</*> take quite a long time. <B>Thus, if you do not care about mathematical exactness, clip the values of
+;  <*>x</*> to the interval [-0.9999999,0.9999999] for float values or to [-0.9999999999999999D,0.9999999999999999D] for
+;  double values, respectively, before passing it to <*>FZTMean</*>!</B>
 ;
 ; PROCEDURE:
 ;  The routine performs Fisher's Z transform (via <A>FZT</A>) on <*>x</*>, calls <A>IMean</A>, constructs the SD
@@ -115,10 +123,10 @@ FUNCTION  FZTMean,   X, SDInt, SDMInt,  $
    ; Computation of the mean(s) and SD interval(s):
    ;----------------------------------------------------------------------------------------------------------------------
 
-   Y = FZT(X)
+   Z = FZT(X)
 
    IF  N_Params() GE 2  THEN  BEGIN   ; SD intervals desired
-     M = IMean(Y, SD, SDM, dimension = dimension)
+     M = IMean(Temporary(Z), SD, SDM, dimension = dimension)
      DimsM  = Size(M, /dim)
      SDInt  = Make_Array(dimension = [2,DimsM], type = 4, /nozero)   ; array for the SD  intervals
      SDMInt = Make_Array(dimension = [2,DimsM], type = 4, /nozero)   ; array for the SDM intervals
@@ -126,13 +134,13 @@ FUNCTION  FZTMean,   X, SDInt, SDMInt,  $
      SDInt( 1,*,*,*,*,*,*,*) = M + SDIntWidth * SD    ; upper border of the SD  interval(s)
      SDMInt(0,*,*,*,*,*,*,*) = M - SDIntWidth * SDM   ; lower border of the SDM interval(s)
      SDMInt(1,*,*,*,*,*,*,*) = M + SDIntWidth * SDM   ; upper border of the SDM interval(s)
-     M      = FZT(M     ,1)
-     SDInt  = FZT(SDInt ,1)
-     SDMInt = FZT(SDMInt,1)
+     M      = FZT(M     ,1, /overwrite)
+     SDInt  = FZT(SDInt ,1, /overwrite)
+     SDMInt = FZT(SDMInt,1, /overwrite)
      Return, M
    ENDIF  ELSE  BEGIN   ; only the mean(s) desired
-     M = IMean(Y, dimension = dimension)
-     M = FZT(M,1)
+     M = IMean(Temporary(Z), dimension = dimension)
+     M = FZT(M,1, /overwrite)
      Return, M
    ENDELSE
 
