@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  1997/11/20 19:55:03  gabriel
+;            da war noch ein Bug in Spawn ' .....'
+;
 ;       Revision 1.7  1997/11/20 19:48:15  gabriel
 ;            Jettzt werden alphabetische Listen fuer Routinen erzeugt
 ;
@@ -50,7 +53,7 @@ END
 
 cd, MainDir(0)
 
-Spawn, 'mkaindex.sh'+ MainDir(0)
+Spawn, 'mkaindex.sh '+ MainDir(0)
 
 
 END
