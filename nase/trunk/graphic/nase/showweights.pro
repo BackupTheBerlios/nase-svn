@@ -139,7 +139,7 @@
 ;                             positive Werte), und -1, falls der
 ;                             rot/grün-Modus benutzt wurde (DW-Matrix
 ;                             enthielt negative Werte).
-;              ( GET_COLORS:  Array [black, back, fore, white,used_!TOPCOLOR]
+;              ( GET_COLORS:  Array [black, back, fore, white, !TOPCOLOR]
 ;                             für internen Gebrauch gedacht (TomWaits) )
 ;              ( GET_INFO:    { x0:xoffset, y0:yoffset, x1:flaechex-xoffset, y1:flaechey-yoffset, $
 ;                               tvxsize: flaechex, tvysize: flaechey, subxsize:bildxsize, subysize:bildysize}
@@ -175,6 +175,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.33  2001/01/24 14:00:48  kupper
+;       Color selection for PRINTSTYLE output was still wrong.
+;
 ;       Revision 2.32  2001/01/22 14:04:26  kupper
 ;       Changed color management to meet guidelines formed during the first
 ;       NASE workshop, fall 2000.
@@ -490,9 +493,9 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
       black = !P.Background
       GET_MAXCOL = white
       If Keyword_Set(PRINTSTYLE) then begin
-         orange = 0             ;black
-         fore = 0               ;black
-         back = white/2         ;!D.Table_Size-1
+         orange = rgb("black")   ;black
+         fore = rgb("black")     ;black
+         back = rgb("grey")      ;!D.Table_Size-1
 ;         !TOPCOLOR = !D.Table_Size-1
       endif else orange = RGB('orange')
       GET_COLORS = [black, back, fore, white, !TOPCOLOR]
