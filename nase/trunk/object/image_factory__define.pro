@@ -68,10 +68,9 @@ Pro image_factory::cleanup, _dummy=_dummy
 End
 
 Pro image_factory::reset
-   self.size = 1.0
-   self.brightness = 1.0
-   self.type = "gauss"
-   self.recompute = 1   
+   self->size, 1.0
+   self->brightness, 1.0
+   self->type, "gauss"   
 End
 
 
