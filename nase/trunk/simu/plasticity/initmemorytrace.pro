@@ -30,6 +30,8 @@
 ;  DELAY: the effect of a postsynaptic spike on the learning potential
 ;  is delayed by DELAY time-steps
 ;  DELEARN: Weights are reduced by DELEARN every time-step
+;  MAXWEIGHT: weights (connection weights, not memory-trace
+;  potentials!!!) are always smaller/equal than MAXWEIGHT
 ;
 ; OUTPUTS:
 ;  myLearningStruct: An initialized learning structure  
@@ -38,17 +40,18 @@
 
 ;*
 ;*> myLearningStruct = InitMemoryTrace(MyLayer, EXPO=[0.1,100.0],
-;*                                     DELAY=5, DELEARN=0.0002
+;*                                     DELAY=5, DELEARN=0.0002,MAXWEIGHT=0.2)
 ;
 ; SEE ALSO:
 ;  <A>update_lp</A>, <A>learn_lp</A>
 ;-
 
 
-FUNCTION InitMemoryTrace, T,EXPO=expo,DELAY=delay,DELEARN=delearn
+FUNCTION InitMemoryTrace, T,EXPO=expo,DELAY=delay,DELEARN=delearn,MAXWEIGHT=maxweight
 
 Default,DELAY,0
 Default,DELEARN,0.
+Default,maxweight, 50.0
 
 deltat = 0.001*1000.
 
@@ -67,6 +70,7 @@ if delay ne 0 then begin
            trace    : trace, $
            delay    : delay , $
            delearn  : delearn, $
+           maxweight : maxweight, $
            last     : -1l }
 end else begin
     LP = { v        : expo(0) ,$
@@ -74,6 +78,7 @@ end else begin
            values   : FltArr( size ) ,$
            delay    : delay , $
            delearn  : delearn, $
+           maxweight : maxweight, $
            last     : -1l }
 end
 
