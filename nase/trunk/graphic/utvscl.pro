@@ -49,6 +49,7 @@
 ;                                 sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
 ;                                 die Deviceunabhaegigkeit ist.
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
+;                     TOP       : es werden nur die Farbindices von 0..TOP-1 belegt (siehe IDL5 Hilfe von TvSCL)
 ;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
 ;                
@@ -65,6 +66,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.27  1999/03/17 16:29:58  saam
+;           TOP keyword implemented
+;
 ;     Revision 2.26  1998/08/10 08:37:15  gabriel
 ;           ORDER Keyword fuer Polygon-Plot neu
 ;
@@ -146,7 +150,44 @@
 ;
 ;-
 
-;; POLYGONE STATT PIXEL PLOTTEN
+
+
+; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top-1 falls top gesetzt)
+; skalierte Version eines Arrays A zurueck
+FUNCTION __ScaleArray, A, TOP=top
+
+   DEFAULT, top, !D.TABLE_SIZE
+   _TOP = ROUND(TOP)
+   _TOP = _TOP < 255.
+
+   FAC = (_TOP/FLOAT(!D.TABLE_SIZE))
+   _A = BYTE(FLOAT(A(*,*)-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(_TOP-1))
+   IF FAC GT 1. THEN BEGIN
+      index = where(_A GT MAX(1./FAC *_A),count)
+      IF count GT 0 THEN  _A(index) = MAX(1./FAC *_A)
+   ENDIF
+
+   RETURN, _A
+END
+
+
+; TvSCL-Version die das TOP-Keyword richtig behandelt
+PRO __HelpTvScl, A, p1, p2, _EXTRA=e
+
+   IF ExtraSet(e, 'TOP') THEN _A = __ScaleArray(A, TOP=e.top) ELSE _A = __ScaleArray(A)
+   DelTag, e, 'TOP'
+
+   CASE N_Params() OF
+      1: TV, _A, _EXTRA=e
+      2: TV, _A, p1, _EXTRA = e
+      3: TV, _A, p1, p2, _EXTRA=e
+      ELSE: Message, 'something wrong in UTVSCL'
+   END
+
+END
+
+
+;; plottet polygone statt pixel
 PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCALE ,DEVICE=DEVICE $
                      ,CENTIMETERS=centimeters , TOP=TOP ,ORDER=ORDER
    ON_ERROR, 2
@@ -160,23 +201,12 @@ PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCA
    default,noscale,0
    default,device,1
    default,centimeters,0 ;;dummy
-   default,top,!D.TABLE_SIZE
    default,order,0
    IF  (NOSCALE EQ 1) THEN BEGIN
       ARRAY = A
    END ELSE BEGIN
-      
-      _TOP = ROUND(TOP)
- 
-      _TOP = _TOP < 255.
-      FAC = (_TOP/FLOAT(!D.TABLE_SIZE))
-      ARRAY = BYTE(FLOAT(A(*,*)-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(_TOP-1))
-      IF FAC GT 1. THEN BEGIN
-         index = where(ARRAY GT MAX(1./FAC *ARRAY),count)
-         IF count GT 0 THEN  ARRAY(index) = MAX(1./FAC *ARRAY)
-      ENDIF
-      TVLCT,R,G,B,/GET
-   
+      ARRAY = __ScaleArray(A, TOP=top)
+      TVLCT,R,G,B,/GET   
    ENDELSE
 
    xpix = FLOAT(X_size)/FLOAT(xsize)
@@ -228,6 +258,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , DEVICE=device $
             , POLYGON=POLYGON $
             , _EXTRA=e
+
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
    _Image = __Image
@@ -247,7 +278,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    Default, v_stretch, 1.0
    Default, h_stretch, 1.0
    Default, centi    , 1   ; default is to TV with centimeters (disabled with DEVICE Keyword)
-   DEFAULT,POLYGON,0
+   DEFAULT, POLYGON  , 0
 
    If Set(NORM_X_SIZE) then X_SIZE = (NORM_X_SIZE * !D.X_Size / !D.X_PX_CM)
    If Set(NORM_Y_SIZE) then Y_SIZE = (NORM_Y_SIZE * !D.Y_Size / !D.Y_PX_CM)
@@ -304,13 +335,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e 
             END ELSE BEGIN
-               TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
             END ELSE BEGIN
-               TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygone statt pixel
@@ -336,13 +367,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
             END ELSE BEGIN
-               TVScl, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
             END ELSE BEGIN
-               TVScl, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
+               __HelpTVScl, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygone statt pixel
