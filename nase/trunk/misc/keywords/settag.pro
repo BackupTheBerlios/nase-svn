@@ -1,73 +1,54 @@
 ;+
-; NAME:               SetTag
+; NAME:
+;   SetTag
 ;
-; AIM:                changes or creates tag in a structure
+; VERSION:
+;   $Id$
+; 
+; AIM:
+;   changes or creates tag in a structure
 ;
-; PURPOSE:            Setzt einen Tag in einer Struktur auf einen Wert. Existiert
-;                     der Tag noch nicht, so wird er angelegt. Ein bestehender Tag
-;                     wird ueberschrieben.
+; PURPOSE:
+;   Sets a certain structure tag to a new value. If the tag doesn't
+;   exist, it will create it.
 ;
-; CATEGORY:           MISC STRUCTURES
+; CATEGORY:
+;  Structures
 ;
-; CALLING SEQUENCE:   SetTag, S, TN, TV
+; CALLING SEQUENCE:
+;*   SetTag, S, TN, TV
 ;
-; INPUTS:             S  : eine beliebige Struktur aus der ein Tag geloescht werden soll
-;                     TN : ein String, der den zu setzenden/definierenden Tag bezeichnet
-;                     TV : der Wert, den S.TN annehmen soll
+; INPUTS:
+;   S :: an arbitrary structure
+;  TN :: string specifying the tag name, of the tag to be modified/set
+;  TV :: value, that S.TN is set to
 ;
-; SIDE EFFECTS:       S wird veraendert!
+; SIDE EFFECTS:
+;   S will be changed
 ;
-; PROCEDURE:          benutzt DelTag und Create_Struct
+; PROCEDURE:
+;   uses <A>DelTag</A> and <*>Create_Struct</*>
 ;
-; EXAMPLE:            a={a:1,c:3}
-;                     SetTag, a, 'b', 2
-;                     help, a, /str
-;                       ** Structure <401bf5c8>, 3 tags, length=6, refs=1:
-;                       A               INT              1
-;                       C               INT              3
-;                       B               INT              2
-;                     SetTag, a, 'b', 'bloedi'
-;                     help, a, /str
-;                       ** Structure <401bf5c4>, 3 tags, length=6, refs=1:
-;                       A               INT              1
-;                       C               INT              3
-;                       B               STRING    'bloedi'
+; EXAMPLE:
+;*   a={a:1,c:3}
+;*   SetTag, a, 'b', 2
+;*   help, a, /str
+;*   >** Structure <401bf5c8>, 3 tags, length=6, refs=1:
+;*   >   A               INT              1
+;*   >   C               INT              3
+;*   >   B               INT              2
+;* 
+;*   SetTag, a, 'b', 'bloedi'
+;*   help, a, /str
+;*   >** Structure <401bf5c4>, 3 tags, length=6, refs=1:
+;*   >A               INT              1
+;*   >C               INT              3
+;*   >B               STRING    'bloedi'
 ;
-; SEE ALSO:           <A>DelTag</A>
+; SEE ALSO:
+;   <A>DelTag</A>
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.7  2000/10/06 12:55:24  saam
-;     now accepts undefined structures, and defines them
-;     with the given tag
-;
-;     Revision 1.6  2000/09/25 09:13:08  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.5  2000/04/04 14:25:40  saam
-;           one implemented condition could never be fulfilled
-;           -> erased
-;
-;     Revision 1.4  2000/04/04 14:22:34  saam
-;           changed implementation to not change the
-;           order of existing tags
-;
-;     Revision 1.3  2000/04/04 13:59:24  saam
-;           bug if structure contained only one tag corrected
-;
-;     Revision 1.2  2000/01/17 14:29:52  kupper
-;     Typo!
-;     Must have been AGES ODL!
-;
-;     Revision 1.1  1999/07/28 08:46:41  saam
-;           there has to be a settag if there is a deltag!
-;
-
 PRO SetTag, S, TN, TV
 
    ON_Error, 2
