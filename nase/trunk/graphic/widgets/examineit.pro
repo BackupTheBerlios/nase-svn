@@ -45,6 +45,8 @@
 ;                             stehenden Platz besser ausnutzt, aber
 ;                             beim "Durchfahren" des Arrays etwas
 ;                             irritierend wirken kann.
+;                             The BOUND mode can also be toggled
+;                             "online" via a widget menu entry.
 ;                      NASE:  Wenn gesetzt, wird das Array als NASE-Array in richtiger Orientierung und
 ;                             mit richtigen Farben dargestellt (Es braucht kein TV-Array angegeben zu werden.)
 ;                     GROUP:  Eine Widget-ID des Widgets, das als
@@ -88,6 +90,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/04 16:50:36  kupper
+;       Bound mode can now be toggled from a menu entry.
+;       Added hourglass cursor during plottvscl.
+;       re-structured some calls to sub-routines.
+;
 ;       Revision 1.1  1999/09/01 16:43:53  thiel
 ;           Moved from other directory.
 ;
@@ -126,6 +133,33 @@
 ;
 ;-
 
+
+Pro examineit_bound_on_handler, event
+   ;here arrive button events of the menu buttons.
+   uval = Uvalue(event.id)
+
+   info = Uvalue(uval.tv, /no_copy)
+   info.bound = 1
+   examineit_refresh_plots, info
+   Uvalue, uval.tv, info, /no_copy
+
+   ;; make meself desensitive and "other" menu entry sensitive:
+   widget_control, event.id, sensitive=0
+   widget_control, uval.other, sensitive=1
+End
+Pro examineit_bound_off_handler, event
+   ;here arrive button events of the menu buttons.
+   uval = Uvalue(event.id)
+
+   info = Uvalue(uval.tv, /no_copy)
+   info.bound = 0
+   examineit_refresh_plots, info
+   Uvalue, uval.tv, info, /no_copy
+
+   ;; make meself desensitive and "other" menu entry sensitive:
+   widget_control, event.id, sensitive=0
+   widget_control, uval.other, sensitive=1
+End
 
 pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
                  NOSCALE=noscale, GET_POSITION=get_position, GET_MINOR=get_minor, $
@@ -170,37 +204,17 @@ pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
 
 end
 
-Pro ExamineIt_Event, Event
+Pro examineit_refresh_plots, info, x_arr, y_arr
+   default, x_arr, info.last_x_arr
+   default, y_arr, info.last_y_arr
    
-;   Widget_Control, Event.ID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
-   
-   case TAG_NAMES(Event, /STRUCTURE_NAME) of       
+   info.last_x_arr = x_arr
+   info.last_y_arr = y_arr
 
-      "WIDGET_DRAW"   : begin   ;Das tv-Widget
-                                ;       case TAG_NAMES(Event, /STRUCTURE_NAME) of
-                                ;          "WIDGET_TRACKING" : if Event.Enter eq 1 then Widget_Control, Event.ID, /DRAW_MOTION_EVENTS else Widget_Control, Event.ID, DRAW_MOTION_EVENTS=0
-                                ;          "WIDGET_DRAW"    : begin
          ActWin = !D.Window
          ActCol = !P.Color
-         Widget_Control, Event.Top, GET_UVALUE=topuval
-         tvid = topuval.tv_id
-         Widget_Control, tvID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
-         if Event.Type eq 0 then Widget_Control, tvID, /DRAW_MOTION_EVENTS ;Button Press
-         if Event.Type eq 1 then Widget_Control, tvID, DRAW_MOTION_EVENTS=0 ;Button Release
-         
-         ;;------------------> Das ist nötig, damit überlieferte
-         ;;Events richtig ausgewertet werden:
-         ev_n = Convert_Coord(Event.X, Event.Y, /DEVICE, /TO_NORMAL);Umrechnung basiert auf Ausmaßen des Widgets, von dem das Event kommt
-         X = info.xsize*ev_n(0);Umrechnung basiert auf Ausmaßen "unseres" Widgets
-         Y = info.ysize*ev_n(1)
-         ;;--------------------------------
-         
          !P.Color = info.color
-         x_arr =  ( X-info.position(0)-info.zoom/2 ) / info.zoom
-         y_arr =  ( Y-info.position(1)-info.zoom/2 ) / info.zoom
-         x_arr = fix(x_arr) > 0 < (info.width-1)
-         y_arr = fix(y_arr) > 0 < (info.height-1)
-
+         
          minrow = min(info.w(*, y_arr))
          maxrow = max(info.w(*, y_arr))
          mincol = min(info.w(x_arr, *))
@@ -300,7 +314,35 @@ Pro ExamineIt_Event, Event
          wset, Actwin
          !P.Color = ActCol
                                 ;end
-                                ;       endcase
+End
+
+Pro ExamineIt_Event, Event
+   
+;   Widget_Control, Event.ID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
+   
+   case TAG_NAMES(Event, /STRUCTURE_NAME) of       
+
+      "WIDGET_DRAW"   : begin  ;Das tv-Widget
+         Widget_Control, Event.Top, GET_UVALUE=topuval
+         tvid = topuval.tv_id
+         Widget_Control, tvID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
+         if Event.Type eq 0 then Widget_Control, tvID, /DRAW_MOTION_EVENTS ;Button Press
+         if Event.Type eq 1 then Widget_Control, tvID, DRAW_MOTION_EVENTS=0 ;Button Release
+
+         ;;------------------> Das ist nötig, damit überlieferte
+         ;;Events richtig ausgewertet werden:
+         ev_n = Convert_Coord(Event.X, Event.Y, /DEVICE, /TO_NORMAL);Umrechnung basiert auf Ausmaßen des Widgets, von dem das Event kommt
+         X = info.xsize*ev_n(0);Umrechnung basiert auf Ausmaßen "unseres" Widgets
+         Y = info.ysize*ev_n(1)
+         ;;--------------------------------
+         
+         x_arr =  ( X-info.position(0)-info.zoom/2 ) / info.zoom
+         y_arr =  ( Y-info.position(1)-info.zoom/2 ) / info.zoom
+         x_arr = fix(x_arr) > 0 < (info.width-1)
+         y_arr = fix(y_arr) > 0 < (info.height-1)
+
+         examineit_refresh_plots, info, x_arr, y_arr
+
          ;;-----------Deliver Events to other Widgets?-------------------------
          deliver_events = info.deliver_events
          if deliver_events(0) ne -1 then begin
@@ -321,7 +363,11 @@ Pro ExamineIt_Event, Event
          endif
          ;;-----------End: Deliver Events to other Widgets?-------------------------
          Widget_Control, tvID, SET_UVALUE=info, /NO_COPY
-      end                       ;tv
+      end
+                                ;       case TAG_NAMES(Event, /STRUCTURE_NAME) of
+                                ;          "WIDGET_TRACKING" : if Event.Enter eq 1 then Widget_Control, Event.ID, /DRAW_MOTION_EVENTS else Widget_Control, Event.ID, DRAW_MOTION_EVENTS=0
+                                ;          "WIDGET_DRAW"    : begin
+                                ;       endcase
       
    endcase                      ;info.name
 
@@ -390,13 +436,16 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                        MODAL=modal, $
                        SPACE=1, $
                        XOFFSET=xpos, YOFFSET=ypos, $
+                       MBAR=menu, $
                        UVALUE={name:"base"}) $
    else base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
                            SPACE=1, $
                            XOFFSET=xpos, YOFFSET=ypos, $
+                           MBAR=menu, $
                            UVALUE={name:"base"})
 
    GET_BASE = base
+      
    
    upper_base = WIDGET_BASE(base, /ROW, $
                             SPACE=7, $
@@ -423,6 +472,18 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                           XSIZE=15*zoom, $ ;win_width/2, $
                           YSIZE=win_height, $
                           UVALUE={name:"plot_col"})
+
+   ;; the menu:
+   menu_buttons = cw_pdmenu(menu, /Mbar, $
+                            ['1\Mode', $
+                             '0\bound on\examineit_bound_on_handler',$
+                             '2\bound off\examineit_bound_off_handler'], $
+                            IDs=ids)
+   Uvalue, ids[1], {tv: tv, other: ids[2]}
+   Uvalue, ids[2], {tv: tv, other: ids[1]}
+   widget_control, ids[2-BOUND], Sensitive=0
+   
+
    WINDOW, /pixmap, /free, $
     XSIZE=win_height, $
     YSIZE=15*zoom
@@ -434,35 +495,43 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    WIDGET_CONTROL, plot_col, GET_VALUE=col_win
    WIDGET_CONTROL, text, GET_VALUE=text_win
 
+
+   ;; This might take a while, so set hourglass:
+   Widget_Control, base, /hourglass
+
    wset, tv_win
    plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, COLOR=color, GET_POSITION=gp, GET_MINOR=gm
    WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
-   WIDGET_CONTROL, tv, SET_UVALUE={name    : "tv", $
-                                   width   : w_width, $
-                                   height  : w_height, $
-                                  win_width: win_width, $
-                                 win_height: win_height, $
-                                   zoom    : zoom, $
-                                   position: gp, $
-                                  ; minor   : gm, $
-                                   tv_win  : tv_win, $
-                                   row_win : row_win, $
-                                   col_win : col_win, $
-                                 pixcol_win: pixcol_win, $
-                                   text_win: text_win, $
-                                   w       : w, $
-                                   wmax    : max(w), $
-                                   wmin    : min(w), $
-                                   bound   : bound, $
-                                   range   : range, $
-                                   deliver_events:deliver_events, $
-                                   xsize   : win_width, $
-                                   ysize   : win_height, $
-                                   nase    : nase, $
-                                   color   : color}
+   
+   info={name    : "tv", $
+         width   : w_width, $
+         height  : w_height, $
+         win_width: win_width, $
+         win_height: win_height, $
+         zoom    : zoom, $
+         position: gp, $
+         $ ;; minor   : gm, $
+         tv_win  : tv_win, $
+         row_win : row_win, $
+         col_win : col_win, $
+         pixcol_win: pixcol_win, $
+         text_win: text_win, $
+         w       : w, $
+         wmax    : max(w), $
+         wmin    : min(w), $
+         bound   : bound, $
+         range   : range, $
+         deliver_events:deliver_events, $
+         xsize   : win_width, $
+         ysize   : win_height, $
+         nase    : nase, $
+         color   : color, $
+         last_x_arr: w_height/2, $
+         last_y_arr: w_width/2}
 
-;   wset, row_win
-;   plot, w(*, w_height/2), xrange=[0, w_width-1], /XSTYLE, POSITION=gp, XMINOR=gm(0)
+   WIDGET_CONTROL, tv, SET_UVALUE=info
+
+   examineit_refresh_plots, info
 
    If fix(!VERSION.Release) ge 5 then XMANAGER, 'ExamineIt', Base,NO_BLOCK=no_block, JUST_REG=just_reg $
     else XMANAGER, "ExamineIt", base, JUST_REG=JUST_REG, MODAL=modal
