@@ -16,17 +16,11 @@
 ;
 ; CALLING SEQUENCE: widgetid = Widget_ShowIt(Parent 
 ;                                            [, /PRIVATE_COLORS]
-;                                            [, _EXTRA=_extra])
+;                                            [any keywords])
 ;
 ; INPUTS: Parent: Das Eltern-Widget. (Wie Draw-Widgets auch können ShowIt-
 ;                  Widgets keine Top-Level-Widgets sein. Man muß also immer ein
 ;                  Eltern-Widget angeben.)
-;
-; OPTIONAL INPUTS: _extra: Alle Inputs und Schlüsselworte werden an das
-;                           Draw-Widget weitergereicht. Siehe IDL-Online-
-;                           Hilfe über 'Widget_Draw'
-;                          Ausnahme: NOTIFY_REALIZE wird an das Base-Widget
-;                           weitergeleitet.
 ;
 ; KEYWORD PARAMETERS: /PRIVATE_COLORS: Ist dieses Schlüsselwort gesetzt, so
 ;                                      wird die private
@@ -36,6 +30,34 @@
 ;                                      Bereich des Widgets befindet. Zum
 ;                                      Speichern der gewünschten Farbtabelle
 ;                                      siehe <A HREF="#SHOWIT_CLOSE">ShowIt_Close</A>.
+;
+;                    Folgende weiteren Schlüsselworte werden mittels _EXTRA an die
+;                    dafür zuständigen Widgets weitergereicht:
+;                     NOTIFY_REALIZE
+;                     KILL_NOTIFY
+;                     FRAME
+;                     NO_COPY
+;                     UNAME
+;                     UNITS
+;                     UVALUE
+;                     XOFFSET
+;                     YOFFSET                             
+;                     COLOR_MODEL
+;                     COLORS
+;                     GRAPHICS_LEVEL
+;                     RENDERER
+;                     RESOURCE_NAME
+;                     RETAIN
+;                     SCR_XSIZE
+;                     SCR_YSIZE
+;                     SCROLL
+;                     SENSITIVE
+;                     TRACKING_EVENTS
+;                     UNITS
+;                     VIEWPORT_EVENTS
+;                     XSIZE
+;                     YSIZE
+;                    Vgl. IDL-Hilfe zu 'Widget_Draw' und 'Widget_Base'
 ;
 ; OUTPUTS: widgetid: Die Identifikationsnummer des generierten Widgets.
 ;
@@ -57,6 +79,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/02/22 16:21:12  kupper
+;        So. Now all Keywords are passed to the proper widgets.
+;
 ;        Revision 1.4  2000/02/22 15:52:07  kupper
 ;        Keyword NOTIFY_REALIZE is now passed correctly to the base-widget, not the draw
 ;        widget!
@@ -128,7 +153,6 @@ END
 FUNCTION Widget_ShowIt, Parent, $
                         PRIVATE_COLORS=private_colors, $
                         TRACKING_EVENTS=tracking_events, $
-                        NOTIFY_REALIZE=Notify_Realize, $
                         _EXTRA=_extra
 
    Default, private_colors, 0
@@ -154,14 +178,35 @@ FUNCTION Widget_ShowIt, Parent, $
                 }
 
    ; create outer base to have free uservalue:
-   b = Widget_Base(Parent, Notify_Realize=Notify_Realize)
-
+   b = Widget_Base(Parent, _EXTRA=["notify_realize", $
+                                   "kill_notify", $
+                                   "frame", $
+                                   "no_copy", $
+                                   "uname", $
+                                   "units", $
+                                   "uvalue", $
+                                   "xoffset", $
+                                   "yoffset"])
    
    ; put draw-widget inside base and store xtra-values in its UVALUE:
    d = Widget_Draw(b, $
                    TRACKING_EVENTS=(private_colors OR tracking_events), $
                    UVALUE=xtrastruct, /NO_COPY, $
-                   _EXTRA=_extra)
+                   _EXTRA=["color_model", $
+                           "colors", $
+                           "graphics_level", $
+                           "renderer", $
+                           "resource_name", $
+                           "retain", $
+                           "scr_xsize", $
+                           "scr_ysize", $
+                           "scroll", $
+                           "sensitive", $
+                           "tracking_events", $
+                           "units", $
+                           "viewport_events", $
+                           "xsize", $
+                           "ysize"])
 
    Widget_Control, b, EVENT_FUNC='Widget_ShowIt_Event'
       
