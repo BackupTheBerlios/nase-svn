@@ -161,6 +161,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.25  1998/04/02 13:21:45  kupper
+;              Tippfehler
+;
 ;       Revision 2.24  1998/04/02 11:40:52  kupper
 ;              Umfangreiche Änderungen an der Darstellung (Achsen, Verwendung von
 ;       	NASETv, Surface-Plots)
@@ -293,7 +296,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                  NOWIN = nowin, GET_WIN=get_win, $
                  GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, COLORMODE=colormode, $
                  SURF=surf, GRID=grid, SUPERIMPOSE=superimpose, $
-                 GET_INFO=get_info, GET_COLORS=get_colors$
+                 GET_INFO=get_info, GET_COLORS=get_colors, $
                  _EXTRA=_extra
 
    IF !D.Name EQ 'NULL' THEN RETURN
