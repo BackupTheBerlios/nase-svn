@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.31  2000/02/11 15:02:08  kupper
+;       Changed startup not to connect to X-Server in a nohup session!
+;
 ;       Revision 1.30  2000/02/09 18:05:18  kupper
 ;       now requesting TRUE_COLOR device, to stop IDL from running on a DIRECT_COLOR, which does not seem to work (???)
 ;
@@ -148,20 +151,29 @@ SetEnv, "NASEDIRS="+NASEDIRS    ;for compatibility reasons
 ;------------------------------------------------------------------
 
 
-;; ----------- Show Logo on startup? ----------------------
-WillShowLogo = (GetEnv("NASELOGO") eq "TRUE")
-stdout_fstat = fstat(-1)		
-if fix(!version.release) lt 4 then WillShowLogo = (WillShowLogo or stdout_fstat.isatty) else WillShowLogo = (WillShowLogo or stdout_fstat.interactive)
-if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
-;; --------------------------------------------------------
-
-
 defglobvars ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt 
 
 @precompile ;Compile some modules that cannot be compiled automatically
 
-DEVICE, TRUE_COLOR=24; try to get it, if available, but no DIRECT_COLOR!
-DEVICE, DECOMPOSED=0
 
+;; ----------- Are we running an interactive session? -----
+stdout_fstat = fstat(-1)		
+if fix(!version.release) lt 4 then $
+        IsInteractiveSession = stdout_fstat.isatty $
+        else $  
+        IsInteractiveSession = stdout_fstat.interactive
+;; --------------------------------------------------------
+
+;; --- in a nohup-session, don't connect to X-Server ------
+if IsInteractiveSession then $
+        DEVICE, TRUE_COLOR=24; try to get it, if available, but no DIRECT_COLOR!
+if IsInteractiveSession then $
+        DEVICE, DECOMPOSED=0
+;; --------------------------------------------------------
+
+;; ----------- Show Logo on startup? ----------------------
+WillShowLogo = (GetEnv("NASELOGO") eq "TRUE")
+WillShowLogo = (WillShowLogo or IsInteractiveSession)
+if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
 If WillShowLogo then ShowLogo, SECS=3
-
+;; --------------------------------------------------------
