@@ -135,7 +135,7 @@
 ;
 ; SEE ALSO:
 ;  The two steps of first generating a frequency-domain transfer function and then filtering a signal using the FFT
-;  are combined in the routine <A>FilterSignal</A>, which also allows to pass multi-dimensional signal arrays.
+;  are combined in the routine <A>FilteringFFT</A>, which also allows to pass multi-dimensional signal arrays.
 ;-
 
 
