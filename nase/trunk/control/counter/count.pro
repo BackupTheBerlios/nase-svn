@@ -6,11 +6,9 @@
 ;
 ; CATEGORY:          MISC
 ;
-; CALLING SEQUENCE:  latestCount = Count(CS [,overflow])
+; CALLING SEQUENCE:  Count(CS [,overflow])
 ;
 ; INPUTS:            CS: eine mit InitCounter initialisiertes Zaehlwerk
-;
-; OUTPUTS:           latestCount: der aktuelle Zaehlerstand
 ;
 ; OPTIONAL OUTPUTS:  overflow: Trat ein Ueberlauf auf, dh. ist Zaehlwerk
 ;                              wieder auf 0 ... 0 ??
@@ -18,15 +16,20 @@
 ; EXAMPLE:
 ;                    ThreeBits = InitCounter( [2,2,2] )
 ;                    FOR i=0,20 DO BEGIN
-;                       print, Count(ThreeBits,overflow)
+;                       print, CountValue(ThreeBits)
+;                       Count, ThreeBits, overflow
 ;                       IF Overflow THEN Print,'Ueberlauf'
 ;                    END
 ;
-; SEE ALSO:          </A HREF=#INITCOUNTER>InitCounter</A>
+; SEE ALSO:          </A HREF=#INITCOUNTER>InitCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>, </A HREF=#COUNTVALUE>ResetCounter</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/11/25 09:11:06  saam
+;           In eine Procedure verwandelt, aktueller Zaehlerstand
+;           wird nun mit CountValue ausgelesen
+;
 ;     Revision 2.1  1997/11/24 16:23:39  saam
 ;           erstellt fuer Looping
 ;
@@ -47,9 +50,8 @@ END
 
 
 
-FUNCTION Count, CS, overflow
+PRO Count, CS, overflow
    IF CS.info EQ 'Counter' THEN BEGIN
       overflow = CountIt(CS, CS.n-1)
-      RETURN, CS.counter
    END ELSE MESSAGE, 'argument is no valid count structure'
 END
