@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.14  2000/09/01 12:57:39  kupper
+;        Added hourglass cursor during SHowweights call.
+;
 ;        Revision 1.13  1999/11/26 14:08:59  alshaikh
 ;              bugfix
 ;
@@ -506,6 +509,8 @@ Handle_Value, DW, TEMP, /NO_COPY,/SET
   get_colormode = 0
   get_maxcol = 0
 
+  ;; This showweights call  might take a long time (esp. with SDWs):
+  Widget_Control, /Hourglass
   ShowWeights, DW, ZOOM=zoom, WINNR=DrawId, PROJECTIVE=projective, RECEPTIVE=receptive, EFFICACY=uses, DELAYS=delay, GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
    GET_INFO=tvinfo, GET_COLORS=get_colors
 
