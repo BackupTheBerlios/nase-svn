@@ -178,13 +178,13 @@ FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  DIAG=diag, $
    EY = Make_Array(dimension = [NfY,DimsX], type = 4, /nozero)   ; array for the Y envelopes (frequency bands in 1st dimension)
    ; Determination of the envelopes:
    FOR  ifX = 0, NfX-1  DO  $
-     IF fX[ifX] EQ !NONE THEN EX[ifX,*,*,*,*,*,*,*] = Float(X) ELSE $ 
+     IF fX[ifX] EQ !NONE THEN EX[ifX,*,*,*,*,*,*,*] = Float(X) ELSE $
         EX[ifX,*,*,*,*,*,*,*] = Envelope(Float(X), fS, flow = fX[ifX]-BandWidth/2, fhigh = fX[ifX]+BandWidth/2,  $
-                                                       wlow = FlankWidth, whigh = FlankWidth, /hertz)
+                                                       wlow = FlankWidth, whigh = FlankWidth, /absolutewidths)
    FOR  ifY = 0, NfY-1  DO  $
-     IF fY[ifY] EQ !NONE THEN EY[ifY,*,*,*,*,*,*,*] = Float(Y) ELSE $ 
+     IF fY[ifY] EQ !NONE THEN EY[ifY,*,*,*,*,*,*,*] = Float(Y) ELSE $
         EY[ifY,*,*,*,*,*,*,*] = Envelope(Float(Y), fS, flow = fY[ifY]-BandWidth/2, fhigh = fY[ifY]+BandWidth/2,  $
-                                                       wlow = FlankWidth, whigh = FlankWidth, /hertz)
+                                                       wlow = FlankWidth, whigh = FlankWidth, /absolutewidths)
    ; The dimension coding the different frequency bands is now shifted to the last position, because time is needed
    ; in the first dimension:
    Permutation = [IndGen(SizeX[0])+1 , 0]
@@ -206,7 +206,7 @@ FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  DIAG=diag, $
        ; The correlation values are computed:
        FOR  ifX = 0, NfX-1  DO  AECxy[ifX,*,*,*,*,*,*] =  $
          Correlation(Reform(EXSlices[ifX,*,*,*,*,*,*,*], /over), Reform(EYSlices[ifX,*,*,*,*,*,*,*], /over), 1, /energynorm)
-       
+
        IF  Keyword_Set(squared)  THEN  Return, AECxy^2 * Signum(AECxy)  $
                                  ELSE  Return, AECxy
    END ELSE BEGIN
@@ -216,7 +216,7 @@ FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  DIAG=diag, $
        ; The correlation values are computed:
        FOR  ifX = 0, NfX-1  DO  FOR  ifY = 0, NfY-1  DO  AECxy[ifX,ifY,*,*,*,*,*,*] =  $
          Correlation(Reform(EXSlices[ifX,*,*,*,*,*,*,*], /over), Reform(EYSlices[ifY,*,*,*,*,*,*,*], /over), 1, /energynorm)
-       
+
        IF  Keyword_Set(squared)  THEN  Return, AECxy^2 * Signum(AECxy)  $
                                  ELSE  Return, AECxy
    END
