@@ -5,9 +5,9 @@
 ;          Aktivitaeten in Source- und Targetcluster
 ;          genauer gesagt:
 ;
-;                     +1,  falls Aktivitaet(prae)=1 UND Membranpotential(post)>=ThetaPlus     
-; deltaW(post,prae)=  -1,  falls Aktivitaet(prae)=1 UND ThetaMinus=<Membranpotentail(post)<ThetaPlus
-;                      0,  falls Aktivitaet(prae)=0 ODER falls Aktivitaet(prae)=1 UND Membranpotential(post)<ThetaMinus
+;                     +1,  falls Aktivitaet(prae)=1 UND Membranpotential(post) >= ThetaPlus     
+; deltaW(post,prae)=  -1,  falls Aktivitaet(prae)=1 UND ThetaMinus =< Membranpotentail(post) < ThetaPlus
+;                      0,  falls Aktivitaet(prae)=0 ODER falls Aktivitaet(prae)=1 UND Membranpotential(post) < ThetaMinus
 ;
 ;   neuW(post,prae)= altW + Rate*deltaW   
 ;
@@ -37,7 +37,7 @@
 ;                                   die die prae- bzw postsynaptischen Neuronen enthalten
 ;         Rate                   : die Lernrate
 ;         Alpha                  : der Grenzwert, ueber den hinaus die Gewichte nicht
-;                                   erhoeht werden; Gewichte>Alpha werden bei Alpha
+;                                   erhoeht werden; Gewichte > Alpha werden bei Alpha
 ;                                   abgeschnitten
 ;         ThetaMinus, ThetaPlus  : Amplituden des postsyn. Membranpotentials, die
 ;                                   Entlernen bzw Lernen bestimmen (siehe oben)
@@ -74,6 +74,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.2  1997/11/14 16:44:55  thiel
+;        Pseudo-HTML-Tags aus dem Header entfernt.
+;
 ; Revision 2.1  1997/11/04 15:32:48  thiel
 ;        Ab heute fuer alle: eine einfache ABS-Lernregel.
 ;
