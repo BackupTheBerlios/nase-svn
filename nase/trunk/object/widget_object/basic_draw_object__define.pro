@@ -80,10 +80,7 @@
 ;                          the display (see IDL's <C>LoadCT</C> for an
 ;                          overview of available color tables). <BR>
 ;                          The color table is initialized to <*>0</*>
-;                          (liear grey ramp) upon construction of the object.<BR> 
-;                          Please note that the color table will be
-;                          overwritten, if <C>/NASE</C> is set (unless
-;                          also <C>SETCOL=0</C> is passed).<BR>
+;                          (linear grey ramp) upon construction of the object.<BR> 
 ;   ct()                 : return the current color table.<BR>
 ;                          The color table is initialized to <*>0</*>
 ;                          (liear grey ramp) upon construction of the object.<BR>                      

@@ -7,8 +7,22 @@
 ;   array. The image is stored inside the object and displayed in a
 ;   <A>PlotTvScl</A>-Plot. Image data can be set and retrieved. Alternatively, the
 ;   image can be addressed through a pointer, allowing for online-monitoring of
-;   array contents.
+;   array contents.<BR>
 ;   Auto-painting is inherited from <A>class Basic_Draw_Object</A>.
+;<BR>
+;   Upon mouse clicks, the following actions are
+;   performed to further investigate the contents:<BR>
+;<BR>
+;    o left-click-and-hold: magnify<BR>
+;    o middle-click       : <A>SurfIt</A><BR> 
+;    o right-click        : <A>ExamineIt</A><BR>  
+;<BR>
+;   Setting of the color table via the <*>ct,n</*> and <*>ct()</*>
+;   methods is inherited from <A>class basic_draw_object</A>.
+;   The color table is initialized to <*>0</*> (linear grey ramp) upon
+;   creation of the object.<BR>
+;   <I>Please note that the color table will be overwritten, if
+;   <C>/NASE</C> is set (unless also <C>SETCOL=0</C> is passed).</I><BR>
 ;
 ; CATEGORY: 
 ;   Graphic, Widgets
@@ -18,12 +32,12 @@
 ;
 ; CONSTRUCTION: 
 ;
-;   o = Obj_New("widget_image_container",
-;               IMAGE=img_or_imgptr [,/NO_COPY]
-;               [,XPOS=x]
-;               [,YPOS=y] 
-;               [-keywords inherited from <A>class basic_draw_object</A>-]
-;               [-all additional keywords are passed to <A>PlotTvScl</A>])
+;*   o = Obj_New("widget_image_container",
+;*               IMAGE=img_or_imgptr [,/NO_COPY]
+;*               [,XPOS=x]
+;*               [,YPOS=y] 
+;*               [-keywords inherited from <A>class basic_draw_object</A>, except /BUTTON_EVENTS-]
+;*               [-all additional keywords are passed to <A>PlotTvScl</A>])
 ;
 ; DESTRUCTION:
 ;
@@ -54,8 +68,7 @@
 ;               specified in normal coordinates.<BR>
 ;<BR>
 ;   XPOS and YPOS, as well as all additional keywords, will be passed
-;   to <A>PlotTvScl</A>. /SETCOL will always be passed,
-;   whether it was specified or not.
+;   to <A>PlotTvScl</A>.
 ;
 ; SIDE EFFECTS: 
 ;  A widget is created.
@@ -165,12 +178,58 @@
 ;     Obj_Destroy, o
 ;     print, Ptr_Valid(aptr); note that the pointer -was- freed!
 ;
-; FUTURE EXTENSIONS:
-;   SurfIt! and ExamineIt! support, as known from the TomWaits widget.
-;
 ; SEE ALSO:
 ;   <A>PlotTvScl</A>, <A>class Basic_Draw_Object</A>
 ;-
+
+
+;; event handler
+Pro widget_image_container_event, event
+   COMPILE_OPT HIDDEN
+   
+   ;; the widget of the basic_draw_object is event.HANDLER.
+   ;; Its value is the object reference:
+   Widget_Control, event.HANDLER, GET_VALUE=o
+   
+   EventType = Tag_Names(Event, /STRUCTURE_NAME)
+   
+   ;; only mousepress events from the draw widget may arrive here:
+   assert, (EventType EQ  "WIDGET_DRAW"), "Only mousepress events from the draw widget may arriver here."
+   
+   If Event.Type eq 1 then begin ;Mouse Button Release
+      If (Event.Release and 1) eq 1 then begin ;Left Button
+;         mag = Widget_Info(Event.ID, /SIBLING)
+;         If mag ne 0 then Widget_Control, mag, /DESTROY 
+         print, "not yet"
+      endif
+   Endif                        ;Mouse Button Release
+   
+   If Event.Type eq 0 then begin ;Mouse Button Press
+      ;;This might take a while, so display hourglass:
+      ;;Widget_Control, /Hourglass
+      
+      ;; get position of base:
+      Widget_Control, Event.Top, TLB_GET_OFFSET=BaseOffset ;von OBEN links
+      
+      If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
+         print, "not yet"
+      endif                     ;Left Mouse Button
+      
+      If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
+         o->Surfit, xpos=BaseOffset[0], ypos=BaseOffset[1], $
+                    xsize=300, ysize=300, $
+                   /JUST_REG
+      Endif                     ;Middle Button
+      
+      If (Event.Press and 4) eq 4 then begin ;Right Mouse Button
+         o->ExamineIt, xpos=BaseOffset[0], ypos=BaseOffset[1], $
+                    xsize=300, ysize=300, $
+                   /JUST_REG
+         
+      Endif                     ;Middle Button
+      
+   EndIf
+End
 
 
 
@@ -181,7 +240,10 @@ Function widget_image_container::init, IMAGE=image, XPOS=xpos, YPOS=ypos, $
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, "widget_image_container", _EXTRA=_extra) then return, 0
+   If not Init_Superclasses(self, "widget_image_container", $
+                            /BUTTON_EVENTS, $
+                            EVENT_PRO="widget_image_container_event", $
+                            _EXTRA=_extra) then return, 0
 
    ;; Try whatever initialization is needed for a widget_image_container object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -282,7 +344,7 @@ End
 Pro widget_image_container::paint_hook_
    PlotTvScl, *self.contents, self.xpos, self.ypos, $
     Update_Info=*self.update_info, INIT=self.renew_scaling_flag, $
-    /SETCOL, _EXTRA=(*(self.extra))
+   _EXTRA=(*(self.extra))
    self.renew_scaling_flag = 0
 End
 
