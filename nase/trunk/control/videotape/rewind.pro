@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.5  1998/05/13 12:52:08  kupper
+;              Schreibfehler.
+;
 ;       Revision 2.4  1998/05/13 12:38:21  kupper
 ;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
 ;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
@@ -60,7 +63,7 @@
 Pro Rewind, Video, FrameNumber, VERBOSE=verbose, APPEND=append
 
    If Keyword_Set(APPEND) then begin
-      If Video.VideoMode ne "EDIT" then mesage, "Das Video ist nicht zum Editieren geöffnet - kein Anhängen möglich!"
+      If Video.VideoMode ne "EDIT" then message, "Das Video ist nicht zum Editieren geöffnet - kein Anhängen möglich!"
       Video.FramePointer = Video.Length
    Endif else begin
       If Video.VideoMode ne 'PLAY' then message, 'Das Video ist nicht zur Wiedergabe geöffnet!'
