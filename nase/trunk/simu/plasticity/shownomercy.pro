@@ -49,7 +49,7 @@ If Not Set(LESSTHAN) Then Return, Matrix
 
 die = where((Matrix.weights LT LessThan) AND (Matrix.weights NE !NONE), count)
 
-If count NE 0 Then Matrix.weights(die) = !none Else Print,'Keins!'
+If count NE 0 Then Matrix.weights(die) = !none
 
 
 RETURN, Matrix
