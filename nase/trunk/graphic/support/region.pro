@@ -66,6 +66,9 @@ FUNCTION Region, NORMAL=normal, DEVICE=device
    mm[1] = Max([1,mm[1]])
    mm[2] = Max([1,mm[2]])
 
+   mm[4] = (mm[4] NE 0) ;; ensure that mm[4] is either 0 or 1
+   ;;DMsg, 'mm[4]: '+Str(mm[4])
+
    ps = RegionSize(NORMAL=normal, DEVICE=device)     
    ;; ps (x,y) is the size of the plot area
 
@@ -74,14 +77,25 @@ FUNCTION Region, NORMAL=normal, DEVICE=device
    ;; position rpp where the next plot will
    ;; go: [0,0] lower left corner, counted in number of plots
 
-   ; the future value of !P.MULTI(0)
+   ; the future value of !P.MULTI[0]
    pidx = (mm[0]+mm[1]*mm[2]-1) MOD (mm[1]*mm[2])
 
-   rpp = [mm[1]-1 - (pidx MOD mm[1]), (pidx  /  mm[1])  ]
+   ;; define a SIZE array to easily convert 1 to 2 dim coords later 
+   si = [2, mm[1], mm[2], 3, mm[1]*mm[2]] 
+
+   ;; Generate an index array and rotate it such that it contains the
+   ;; 1dim indices of the plot coords in the right order (right
+   ;; rotates were found by trial and error).
+   ;;IF mm[4] THEN i = Rotate(LIndgen(mm[1],mm[2]),3) $
+   ;; ELSE i = Rotate(LIndgen(mm[1],mm[2]),5)
+   ;; The same as the two lines above in one statement:
+   i = Rotate(LIndgen(mm[1],mm[2]),5-mm[4]*2)
+   
+   rpp = Subscript(i[pidx], SIZE=si)
 
    ;; Take into account possible OMARGINS.
    ;; They are in units of character size, so a coord conversion is
-   ;; needed when normal ccords are desired. Normal coords of charsize
+   ;; needed when normal coords are desired. Normal coords of charsize
    ;; are computed directly, to avoid error message of Convert_Coord()
    ;; when no window is yet open. 
    ;; Region() takes care of the size so we need correct only the
