@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.14  2001/03/08 17:05:11  saam
+%       moved several long fulfilled wishes and bugs to DONE list
+%
 %       Revision 1.13  2001/03/08 16:32:33  thiel
 %          SimTime uses Console when you want it to.
 %
@@ -146,14 +149,9 @@ Version: \$Id$ $\$
 \section{Help System \& Documentation Header} 
 
 \begin{itemize}
-\item Category: Kombination aus kurzen Keywords (feste Liste) zum Suchen, Syntax-Check?
 \item standards Makefile broken for non-saam environment
 \item move Traps and Bugs into the standards document
-\item directories unsorted in HyperHelp
-\item insert some interesting IDL links on NASE home page
 \item \texttt{WhoUses} doesn't work and its wrapper calls routine with wrong path.
-\item remove headerdoc.pro and create link on mainpage to doc/header.pro
-\item title for doc/header.pro is distorted
 \item Parser confuses occasional \texttt{NAME::}--keywords with name
   of the routine given by the \texttt{NAME:} statement in the header.
 \item The To Do--list displayed on the WWW page is too old.
@@ -163,7 +161,6 @@ Version: \$Id$ $\$
 
 \section{Control}
 \begin{itemize}
-\item allow \texttt{console} to log into a file, simultaneously
 \item \texttt{console} fails, if xwindow id closed and a console command occurs
 \item \texttt{console} should not be the son of !MH
 \item \texttt{Video}: extension to save and restore arbitrary parameter structures
@@ -172,8 +169,7 @@ Version: \$Id$ $\$
 
 \section{Graphic}
 \begin{itemize}
-\item \texttt{PlotTvScl}: PS and NASE option broken
-\item \texttt{PlotTvScl}: legend only approximately identical with actual coordinate system
+\item Nothing to do here at the moment.
 \end{itemize}
 
 
@@ -241,6 +237,13 @@ Version: \$Id$ $\$
 \item Help System: header view also with currently edited [MS]
 \item \texttt{FakeEach}: omit the skel keyword, or delete from documentation [done, AT]
 \item let user parse arbitrary headers before checkin [done, MS]
+\item Category: Kombination aus kurzen Keywords (feste Liste) zum Suchen, Syntax-Check? [done, MS]
+\item directories unsorted in HyperHelp [done, MS]
+\item remove headerdoc.pro and create link on mainpage to doc/header.pro [done, MS]
+\item title for doc/header.pro is distorted [done, MS] 
+\item allow \texttt{console} to log into a file, simultaneously [done, MS]
+\item \texttt{PlotTvScl}: PS and NASE option broken [i think ruediger fixed this, MS] 
+\item \texttt{PlotTvScl}: legend only approximately identical with actual coordinate system [see new routine PTVS, done, MS]
 \item \texttt{SimTime}: make it work together with console [done, AT] 
 \end{itemize}
 
