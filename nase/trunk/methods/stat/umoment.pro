@@ -70,6 +70,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  2004/02/06 15:13:22  kupper
+;       when array contained only !NONEs and /NONE was set, the return value
+;       for mean was (accidentally correctly) !NONE, but the return value vor
+;       variance was actually computet and 0.0 was returned.
+;       As variance for an empty array is not defined, now !NONE is returned.
+;
 ;       Revision 1.9  2002/09/19 14:13:25  thiel
 ;          Introduced keyword /NONE corresponding to /NAN in IDL's
 ;          Moment-routine.
@@ -137,9 +143,15 @@ FUNCTION UMoment, X,ORDER=ORDER, Double = Double $
    ;; If NONE set, remove NONEs and recurse:
    IF Keyword_Set(NONE) THEN BEGIN
       whereNotNone = Where( x NE !NONE, noneCount)
-      IF noneCount GT 0 THEN $
-       Return, UMoment( X[whereNotNone], ORDER=order, DOUBLE=double $
-                        , MDEV=mdev, SDEV=sdev) ;, Maxmoment = Maxmoment )
+      IF noneCount GT 0 THEN begin
+         ;; SOME or no entry is !NONE
+         Return, UMoment( X[whereNotNone], ORDER=order, DOUBLE=double $
+                          , MDEV=mdev, SDEV=sdev)
+      endif else begin
+         ;; ALL entries are !NONE
+         return, replicate(!NONE, order+1)
+      endelse
+         
    ENDIF ;; Keyword_Set(NONE)
 
    TypeX = SIZE(X)
