@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/11/10 14:50:02  saam
+;           changed plotting details
+;
 ;     Revision 2.1  1998/07/07 13:17:39  saam
 ;           + first version
 ;           + may be a bit buggy, especially the hidden lines
@@ -82,9 +85,10 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
 
 
    polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,0)), miny, miny], /T3D, Z=z(0)+0.0001, COLOR=0 ; a black surface for hidden lines slightly behind ...
-   plot, x, data(*,0), ZVALUE=z(0), /T3D, YRANGE=[MIN(data),MAX(data)], XSTYLE=5, YSTYLE=4                                            ; ... the normal plot  
+   plot, x, data(*,0), ZVALUE=z(0), /T3D, YRANGE=[MIN(data),MAX(data)], XSTYLE=5, YSTYLE=4, color=0; ... the normal plot  
    FOR i=1,nz-1 DO BEGIN
-      polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,i)), miny, miny], /T3D, Z=z(i)+0.0001, COLOR=0
+      polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,i)), miny, miny], /T3D, Z=z(i)+0.0001, COLOR=RGB(255,255,255,/NOALLOC)
+;      polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,i)), miny, miny], /T3D, Z=z(i)+0.0001, COLOR=30+FIX((i/FLOAT(nz))*180)
       oplot, x, data(*,i), /T3D, ZVALUE=z(i)
    END
 
