@@ -23,5 +23,9 @@ cd $CVSWORK/doc/standards
 ln -s $CVSWORK/doc/header.pro $CVSWORK/doc/header.pro.tex
 $CVSWORK/doc/www-bin/makedoc standards
 
+cd $CVSWORK/doc/workshop
+$CVSWORK/doc/www-bin/makedoc workshop
+$CVSWORK/doc/www-bin/makedoc todo
+
 
 exit 0
