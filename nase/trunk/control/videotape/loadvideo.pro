@@ -5,12 +5,13 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: MyVideo = LoadVideo ( [TITLE] [,/VERBOSE] [,/INFO] )
+; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO] )
 ; 
-; INPUTS: ---
+; INPUTS:  Title     : Filename und Videotitel. Dieser Parameter hat
+;                      exakt die gleiche Funktion wie das
+;                      TITLE-Keyword. Nur eines von beiden muß (und
+;                      sollte) angegeben werden! (Bzw. keines für den Defaulttitel.)
 ;
-; OPTIONAL INPUTS: ---
-;	
 ; KEYWORD PARAMETERS: TITLE: Filename, der auch der Videotitel ist.
 ;                            Bei nichtangabe wird der Defaulttitel
 ;                            benutzt.
@@ -24,13 +25,7 @@
 ;
 ; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
 ;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Öffnet .vid und .vidinf Files zum Lesen
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Aus dem .vidinf-File die Arrayinformationen lesen und in
 ;               die Struktur schreiben.
@@ -39,6 +34,11 @@
 ;          2. Dummy   = LoadVideo (TITLE = 'The unforgettable Firing', /INFO)
 ;
 ; MODIFICATION HISTORY:
+;
+;       Tue Sep 9 13:02:45 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Title-Parameter zugefügt.
 ;
 ;       Tue Sep 2 19:05:51 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -58,8 +58,9 @@
 ;
 ;-
 
-Function LoadVideo, TITLE=title, VERBOSE=verbose, INFO=info
+Function LoadVideo, _Title, TITLE=title, VERBOSE=verbose, INFO=info
    
+   Default, title, _Title
    Default, title, "The Spiking Neuron"   
  
    filename = title+".vid"

@@ -25,7 +25,7 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: MyVideo = InitVideo ( MusterFrame [,TITLE] [,SYSTEM] [,STARRING]
+; CALLING SEQUENCE: MyVideo = InitVideo ( MusterFrame [,Title] [,TITLE] [,SYSTEM] [,STARRING]
 ;                                                     [,COMPANY] [,PRODUCER] [,YEAR]
 ;                                                     [,/VERBOSE] )
 ; 
@@ -33,6 +33,11 @@
 ;                      Leider sind StringArrays nicht erlaubt.
 ;                   Hinweis: Der Musterframe dient wirklich nur als Muster,
 ;                            wird also NICHT aufgezeichnet!
+;
+;          Title     : Filename und Videotitel. Dieser Parameter hat
+;                      exakt die gleiche Funktion wie das
+;                      TITLE-Keyword. Nur eines von beiden muß (und
+;                      sollte) angegeben werden! (Bzw. keines für den Defaulttitel.)
 ;
 ; OPTIONAL INPUTS: ---
 ;	
@@ -65,6 +70,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Sep 9 13:00:34 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Title-Parameter zugefügt.
+;
 ;       Sun Sep 7 17:17:13 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -88,12 +98,13 @@
 ;
 ;-
 
-Function InitVideo, Frame, TITLE=title, $
+Function InitVideo, Frame, _Title, TITLE=title, $
                     SYSTEM=system, STARRING=starring, COMPANY=company, PRODUCER=producer, YEAR=year, $
                     VERBOSE=verbose
 
    If not(set(Frame)) then message, 'Bitte Musterframe angeben!'
 
+   Default, title, _title
    Default, title, "The Spiking Neuron"   
    Default, system, "CVS"
    Default, starring, "Nerd ""die NASE"" Neuron"
