@@ -1,0 +1,41 @@
+;+
+;
+;       This is MINDs startup routine. It automatically starts up NASE.
+;
+;
+; MODIFICATION HISTROY:
+;
+;       $Log$
+;       Revision 1.1  1999/12/08 14:37:49  saam
+;             adapted from NASE startup
+;
+;
+;-
+
+MINDPATH = GetEnv("MINDPATH")
+IF MINDPATH eq "" THEN BEGIN $
+	MESSAGE, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" & $
+	MESSAGE, "%%%% MIND Error: Environment variable 'MINDPATH' not set! %%%%%" & $
+	MESSAGE, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" & $
+END
+     
+IF !version.OS_FAMILY EQ "unix"    THEN separator=":"
+IF !version.OS_FAMILY EQ "Windows" THEN separator=";"
+IF !version.OS_FAMILY EQ "vms"     THEN separator=","
+IF !version.OS_FAMILY EQ "MacOS"   THEN separator=","
+
+MINDDIRS = FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["control"]) + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["demo"])    + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["graphic"]) + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["input"])   + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["sim"])     + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["xplore"])
+
+!PATH = !PATH+":"+MINDDIRS
+
+
+print, "========================="
+print, "     Welcome to MIND. "
+print, "========================="
+
+@$NASEPATH/misc/startup
