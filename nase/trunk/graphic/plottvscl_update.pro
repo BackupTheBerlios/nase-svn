@@ -48,6 +48,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.7  1999/11/22 14:05:54  kupper
+;     Modified a detail in Range_In-Handling, to correctly interpret a
+;     Info.Range_In-value possibly modified directly by the user.
+;
 ;     Revision 2.6  1999/09/23 17:52:44  kupper
 ;     Oops! Forgot to pass SETCOL-Keyword, sorry...
 ;
@@ -96,7 +100,7 @@ PRO PlotTvscl_update, W, Info, INIT=init
    Default, TOP, !D.Table_Size-1
 
    If not Keyword_Set(INIT) then begin ;Just plot in new image with same scaling
-      Range_In = Info.Range_In(1)  ;use given scaling, let not choose showweights_scale
+      Range_In = max(abs(Info.Range_In))  ;use given scaling, let not choose showweights_scale
       SETCOL    = 0             ;We never want to have the colortable set at an update.
    EndIf
 ;Note that the above does not cover the non-NASE, non-NEUTRAL,
