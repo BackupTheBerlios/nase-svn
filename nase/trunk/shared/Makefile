@@ -2,6 +2,11 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.4  1999/03/04 16:36:21  kupper
+#
+#         Erster Commit.
+#         Wrapper-Routinen in IDL folgen demnächst...
+#
 #         Revision 1.3  1999/02/25 20:50:06  saam
 #               + nasec.c now split up in several .o files
 #               + only mtime at the moment
@@ -18,10 +23,10 @@ SHELL=/bin/sh
 CFLAGS=
 FFLAGS=
 
-OBJECTS=mtime.o
+OBJECTS=mtime.o IDL_IO_support.o
 
 SHL_EXT=so
-SHL_LIBS=nasec.$(SHL_EXT) 
+SHL_LIBS=nasec.$(SHL_EXT)
 LIB_VER=0.0.1
 INSTALL_DIR=/vol/lib/nase
 
@@ -49,8 +54,7 @@ libs : $(SHL_LIBS)
 
 
 nasec.$(SHL_EXT) : $(OBJECTS)
-	$(C_LD) $(C_LD_FLAGS) -o nasec.$(SHL_EXT) $(OBJECTS) \
-		$(C_LD_POST)
+	$(C_LD) $(C_LD_FLAGS) -o nasec.$(SHL_EXT) $(OBJECTS) $(C_LD_POST)
 
 
 install: nasec.$(SHL_EXT)
@@ -74,8 +78,10 @@ clean :
 
 #  Rules for building the object files.
 
-.SUFFIXES: .c .o
+.SUFFIXES: .c .o .cc
 
 .c.o :
 	$(CC) $(CFLAGS) -c $*.c
 
+.cc.o :
+	$(CC) $(CFLAGS) -c $*.cc
