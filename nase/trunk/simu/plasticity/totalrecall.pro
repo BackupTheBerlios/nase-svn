@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  1998/08/23 12:54:06  saam
+;             now time-amplitude functionality: second-order-leaky-integrator
+;
 ;       Revision 2.9  1998/04/30 12:30:16  thiel
 ;              Neues Schluesselwort SUSTAIN.
 ;
@@ -79,8 +82,8 @@ PRO TotalRecall, _LP, _DW
 
    IF LP.sust AND NOT Handle_Info(LP.last) THEN LP.Last = Handle_Create(!MH, VALUE=[0,0])
 
-   nottoosmall = WHERE(LP.values GT !NoMercyForPot, count)
-
+   IF LP.info EQ 'a' THEN nottoosmall = WHERE(LP.leak2 GT !NoMercyForPot, count) ELSE nottoosmall = WHERE(LP.values GT !NoMercyForPot, count)
+   
    IF count NE 0 THEN BEGIN
       IF Handle_Info(LP.last) THEN Handle_Value, LP.last, lastspikes ELSE lastspikes = [0]
       IF lastspikes(0) NE 0 THEN BEGIN 
@@ -90,21 +93,39 @@ PRO TotalRecall, _LP, _DW
          IF count EQ 0 THEN i = -1 ELSE i = i(w)
       ENDIF ELSE i = nottoosmall
       IF i(0) NE -1 THEN BEGIN
-         IF LP.info EQ 'e' THEN LP.values(i) = LP.values(i) * LP.dec ELSE LP.values(i) = LP.values(i) - LP.dec
+         IF LP.info EQ 'e' THEN LP.values(i) = LP.values(i) * LP.dec 
+         IF LP.info EQ 'l' THEN LP.values(i) = LP.values(i) - LP.dec
+         IF LP.info EQ 'a' THEN BEGIN
+            LP.leak1(i) = LP.leak1(i) * LP.dec1
+            LP.leak2(i) = LP.leak2(i) * LP.dec2
+            LP.values(i) = (LP.leak2(i)-LP.leak1(i))
+         END
       ENDIF
-            
+      
       toosmall = WHERE(LP.values(nottoosmall) LT !NoMercyForPot, count)
       IF count NE 0 THEN LP.values(nottoosmall(toosmall)) = 0.0
    END
-      
+   
    IF N_Params() GT 1 THEN BEGIN
       In = LearnAP(_DW)
-      IF In(0) NE 0 THEN $
-       IF LP.noacc THEN LP.values(In(2:In(0)+1)) = LP.v $
-      ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+      IF In(0) NE 0 THEN BEGIN
+         IF LP.noacc THEN BEGIN
+            IF LP.info EQ 'a' THEN BEGIN
+               LP.leak1(In(2:In(0)+1))  = LP.v
+               LP.leak2(In(2:In(0)+1))  = LP.v
+               LP.values(In(2:In(0)+1)) = ( LP.leak2(In(2:In(0)+1))-LP.leak1(In(2:In(0)+1)) )
+            END ELSE LP.values(In(2:In(0)+1)) = LP.v
+         END ELSE BEGIN
+            IF LP.info EQ 'a' THEN BEGIN
+               LP.leak1(In(2:In(0)+1))  = LP.leak1(In(2:In(0)+1)) + LP.v
+               LP.leak2(In(2:In(0)+1))  = LP.leak2(In(2:In(0)+1)) + LP.v
+               LP.values(In(2:In(0)+1)) = ( LP.leak2(In(2:In(0)+1))-LP.leak1(In(2:In(0)+1)) )
+            END ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+         END   
+      END
       IF Handle_Info(LP.last) THEN Handle_Value, LP.last, In, /SET
    END
-
+   
    Handle_Value, _LP, LP, /NO_COPY, /SET
 
 END

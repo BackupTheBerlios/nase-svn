@@ -16,7 +16,8 @@
 ;
 ; CALLING SEQUENCE:   LP = InitRecall( {Struc | HEIGHT=Höhe, WIDTH=Breite} 
 ;                                       { [,LINEAR='['Amplitude, Decrement']'] | 
-;                                         [,EXPO='['Amplitude, Zeitkonstante']'] } 
+;                                         [,EXPO='['Amplitude, Zeitkonstante']'] |
+;                                         [,ALPHA='[Amplitude, Zeitkonstante1, Zeitkonstante2]'] } 
 ;                                      [/NOACCUMULATION]
 ;                                      [/SUSTAIN]
 ;
@@ -29,22 +30,25 @@
 ;                            die Anzahl der Lernpotentiale)
 ;
 ; KEYWORD PARAMETERS: 
-;                     LINEAR: linearer Abfall des Lernpotentials mit Decrement, ein 
-;                             eintreffender Spike erhoeht das Potential um Amplitude
-;                     EXPO: exponentieller Abfall des Lernpotentials mit der 
-;                           Zeitkonstante, ein eintreffender Spike erhoeht das
-;                           Potential um Amplitude
+;                     LINEAR:         linearer Abfall des Lernpotentials mit Decrement, ein 
+;                                       eintreffender Spike erhoeht das Potential um Amplitude
+;                     EXPO:           exponentieller Abfall des Lernpotentials mit der 
+;                                       Zeitkonstante, ein eintreffender Spike erhoeht das
+;                                       Potential um Amplitude
+;                     ALPHA:          Tiefpass 2ter Ordnung als Lernpotential mit der 
+;                                       , ein eintreffender Spike erhoeht das Potential um Amplitude
 ;                     NOACCUMULATION: Das Potential wird bei Eintreffen eines Spikes
-;                                     nicht um Amplitude erhoeht, sondern nur
-;                                     auf Amplitude gesetzt. Dadurch wird ein 
-;                                     Aufsummieren des Lernpotentials bei starker
-;                                     praesynaptischer Aktivitaet verhindert. Trotzdem
-;                                     'merkt' scih das Lernpotential, wie lange
-;                                     der letzte praesynaptische Spike zurueckliegt.
-;                     SUSTAIN: Beginnt das Abklingen des Lernpotentials um einen
-;                              Zeitschritt verzoegert, um absolut gleichzeitiges
-;                              Lernen und um einen Zeitschritt verzoegertes (kausales)
-;                              Lernen gleich zu gewichten.
+;                                       nicht um Amplitude erhoeht, sondern nur
+;                                       auf Amplitude gesetzt. Dadurch wird ein 
+;                                       Aufsummieren des Lernpotentials bei starker
+;                                       praesynaptischer Aktivitaet verhindert. Trotzdem
+;                                       'merkt' scih das Lernpotential, wie lange
+;                                       der letzte praesynaptische Spike zurueckliegt.
+;                     SUSTAIN:        Beginnt das Abklingen des Lernpotentials um einen
+;                                       Zeitschritt verzoegert, um absolut gleichzeitiges
+;                                       Lernen und um einen Zeitschritt verzoegertes (kausales)
+;                                       Lernen gleich zu gewichten.
+;                     SAMPLEPERIOD:   die Dauer eines Simulationszeitschritts, Default: 0.001s
 ;
 ; OUTPUTS:            LP: die initialisierte Lernpotential-Struktur zur weiteren Behandlung mit TotalRecall
 ;
@@ -78,13 +82,16 @@
 ;
 ;-
 
-FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
-                     NOACCUMULATION=noaccumulation, SUSTAIN=sustain
+FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, ALPHA=alpha, $
+                     NOACCUMULATION=noaccumulation, SUSTAIN=sustain, SAMPLEPERIOD=sampleperiod
 
+   Default, SAMPLEPERIOD, 0.001
    Default, NOACCUMULATION, 0
    Default, SUSTAIN, 0
 
-   IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
+   deltat = SAMPLEPERIOD*1000.
+
+   IF KeyWord_Set(Linear) + Keyword_Set(expo) + Keyword_Set(alpha) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
    If N_Params() eq 1 then begin ;S wurde angegeben
       IF Info(S) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
@@ -108,12 +115,31 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
 
       LP = { info     : 'e'     ,$
              v        : expo(0) ,$
-             dec      : exp(-1./expo(1)) ,$
+             dec      : exp(-deltat/expo(1)) ,$
              values   : FltArr( size ) ,$
              noacc    : NOACCUMULATION ,$
              last     : -1l, $
              sust     : SUSTAIN }
       
+      RETURN, Handle_Create(VALUE=LP, /NO_COPY)
+   END
+
+   IF Keyword_Set(alpha) THEN BEGIN
+      IF N_Elements(alpha) NE 3 THEN Message, 'amplification and 2 time-constants expected with keyword alpha'
+      IF alpha(0) LE 0.0         THEN Message, 'amplification <= 0 senseless'
+      IF alpha(1) LE 0.0         THEN Message, 'time-constant <= 0 senseless'
+      IF alpha(2) LE 0.0         THEN Message, 'time-constant <= 0 senseless'
+
+      LP = { info     : 'a'     ,$
+             v        : alpha(0)/(exp(-alog(alpha(2)/alpha(1))*alpha(1)/(alpha(2)-alpha(1)))-exp(-alog(alpha(2)/alpha(1))*alpha(2)/(alpha(2)-alpha(1)))),$
+             dec1     : exp(-deltat/alpha(1)) ,$
+             dec2     : exp(-deltat/alpha(2)) ,$
+             leak1    : FltArr( size ) ,$
+             leak2    : FltArr( size ) ,$
+             values   : FltArr( size ) ,$
+             noacc    : NOACCUMULATION ,$
+             last     : -1l, $
+             sust     : SUSTAIN }
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
@@ -125,7 +151,7 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
       
       LP = { info   : 'l'     ,$
              v      : linear(0) ,$
-             dec    : linear(1) ,$
+             dec    : deltat*linear(1) ,$
              values : FltArr( size ), $
              noacc  : NOACCUMULATION ,$
              last   : -1l ,$
