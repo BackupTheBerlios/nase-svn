@@ -25,7 +25,7 @@
 ;*                   [,GET_BASE=BaseID]
 ;*                   [,DELIVER_EVENTS=Array_of_Widget_IDs]
 ;  
-; INPUTS: Array: Das zu untersuchende Array (ein numerischer Typ!)
+; INPUTS: Array:: Das zu untersuchende Array (ein numerischer Typ!)
 ;
 ; OPTIONAL INPUTS: TV_Array:: Die Version des Arrays, die tatsächlich
 ;                            mit TV auf den Bildschirm gebracht
@@ -57,7 +57,7 @@
 ;                             stehenden Platz besser ausnutzt, aber
 ;                             beim "Durchfahren" des Arrays etwas
 ;                             irritierend wirken kann.
-;                             The BOUND mode can also be toggled
+;                             The <C>BOUND</C> mode can also be toggled
 ;                             "online" via a widget menu entry.
 ;      NOSCALE:: Do not perform any color scaling. Array contents will
 ;                be directly interpreted as color indices. (Cf.
@@ -71,9 +71,13 @@
 ;                         according to NASE conventions.</I>
 ;       NORDER:: Indicate that array ordering conforms to the NASE
 ;                convention: The indexing order is <*>[row,column]</*>, and
-;                the origin will be displayed on the upper left corner
+;                the origin will be displayed on the UPPER left corner
 ;                (unless <C>ORDER</C> is set, cf. IDL help on
-;                <C>TvScl</C>).
+;                <C>TvScl</C>).<BR>
+;                If this keyword is not set, the indexing order is
+;                <*>[column,row]</*>, and the origin will be displayed
+;                on the LOWER left corner (unless <C>ORDER</C> is
+;                set).
 ;       NSCALE:: Request that colorscaling shall be done according to
 ;                NASE conventions: Before display, the array contents
 ;                will be scaled for display with the NASE colortables
@@ -86,14 +90,16 @@
 ;                If this keyword is set, the <C>TV_Array</C> parameter
 ;                will be ignored.
 ;     RANGE_IN:: A two element array defining<BR>
+;<BR>
 ;                (1) the lower and upper bound of the plot-windows
 ;                    showing the cross-sections of the array, and<BR>
+;<BR>
 ;                (2) the control points for color scaling:<BR>
 ;                    <*>RANGE_IN[0]</*> will be scaled to color index
-;                    <*>0</*>, <*>RANGE_IN[1]</*> will be scaled to
+;                    <*>0</*>, and <*>RANGE_IN[1]</*> will be scaled to
 ;                    color index <*>!TOPCOLOR</*>.<BR>
-;                    <I>If <C>/NSCALE</C> (or <C>/NASE</C>) is
-;                    set</I>, the value <*>0</*> will always be scaled
+;                    If <C>/NSCALE</C> (or <C>/NASE</C>) is
+;                    set, the value <*>0</*> will always be scaled
 ;                    to the color index corresponding to black in the
 ;                    respective NASE color table. The value
 ;                    <*>max(abs(RANGE_IN))</*> will be scaled to
