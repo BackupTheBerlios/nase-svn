@@ -6,10 +6,48 @@
 ;
 ; CATEGORY: 
 ;
-; CALLING SEQUENCE: 
+; CONSTRUCTION: 
 ;
-; PUBLIC METHODS:
+;   o = Obj_New("basic_draw_object"
+;               [,PAINT_INTERVAL=secs]
+;               [,/PRIVATE_COLORS]
+;               [,/BUTTON_EVENTS]
+;               [,/EXPOSE_EVENTS] 
+;               [,/MOTION_EVENTS] 
+;               [,COLOR_MODEL=cm] 
+;               [,COLORS=c] 
+;               [,GRAPHICS_LEVEL=gl] 
+;               [,RENDERER=r] 
+;               [,RETAIN=rt] 
+;               [,SCR_XSIZE=scr_xsize] 
+;               [,SCR_YSIZE=scr_ysize] 
+;               [,/SCROLL] 
+;               [,/TRACKING_EVENTS] 
+;               [,/VIEWPORT_EVENTS] 
+;               [,XSIZE=xsize] 
+;               [,YSIZE=ysize] 
+;               [,X_SCROLL_SIZE=x_scroll_size]
+;               [,Y_SCROLL_SIZE=y_scroll_size]
+;               [-keywords inherited from class basic_widget_object-])
 ;
+; DESTRUCTION:
+;
+;   Obj_Destroy, o
+;                                               
+; INPUTS: -please remove any sections that do not apply-
+;
+; OPTIONAL INPUTS: -please remove any sections that do not apply-
+;
+; KEYWORD PARAMETERS: 
+;
+;   PAINT_INTERVAL   : enables auto-paint with interval secs.
+;
+;   All remaining keywords are passed to <A HREF="../../graphic/widgets/#WIDGET_SHOWIT">Widget_Showit()</A>.
+;
+; METHODS:
+;
+;  public: Public methods may be called from everywhere.
+;   
 ;   showit()             : returns widget id of the contained ShowIt widget.
 ;   paint                : calls the user-defined method paint_hook_ (see
 ;                          below), if painting is allowed.
@@ -31,9 +69,24 @@
 ;                          cases, e.g. when frequent updates happen, or when
 ;                          connecting to an X server accross a network.
 ;
+;   inherited from class basic_widget_object:
+;     widget()
+;
+;  protected: Protected methods may only be called from within a derived class's
+;             methods.
+;
+;  private: Private methods are not intended to be called by the user and are
+;           not decribed in this header. Refer to the source code for information.
+;
 ; ABSTRACT METHODS:
 ;
-;   The following methods -must- be overridden in derived classes:
+;  Abstract methods must be overridden in derived classes:
+;
+;  public:
+;
+;  protected:
+;
+;  private:
 ;
 ;   paint_hook_          : Here goes the code to update the ShowIt widget. The
 ;                          ShowIt widget is already opened when this method is
@@ -44,8 +97,6 @@
 ;                          called directly.
 ;                          Note the trailing underscore.
 ;
-;   The following methods -may- be overridden in derived classes.
-;
 ;   initial_paint_hook_  : Here goes the code to paint whatever is necessary
 ;                          when the widget is realized. The ShowIt widget is
 ;                          already opened when this method is called, and will
@@ -55,21 +106,10 @@
 ;                                self->paint_hook_ from within initial_paint_hook_
 ;                                when this comes handy.
 ;                          This method is intended to be private and is called
-;                          from the objects Notify_Realize. It should never be
-;                          called directly.
+;                          from the objects Notify_Realize routine. It should
+;                          never be called directly.
 ;                          Note the trailing underscore.
 ;
-; INPUTS: 
-;
-; OPTIONAL INPUTS: -please remove any sections that do not apply-
-;
-; KEYWORD PARAMETERS: 
-;
-; OUTPUTS: 
-;
-; OPTIONAL OUTPUTS: 
-;
-; COMMON BLOCKS: 
 ;
 ; SIDE EFFECTS: 
 ;
@@ -84,6 +124,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/03/13 14:04:25  kupper
+;        Polished header.
+;
 ;        Revision 1.7  2000/03/13 13:22:48  kupper
 ;        paint_hook_ is now not called upon realization any more.
 ;
