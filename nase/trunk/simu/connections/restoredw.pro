@@ -30,6 +30,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1997/12/17 11:00:38  saam
+;           Bug im verzoegerten Teil: SpikeQueue wurde nicht neu
+;           initialisiert
+;
 ;     Revision 2.3  1997/12/12 12:59:28  thiel
 ;            RestoreDW ist jetzt analog zu SaveDW eine Funktion.
 ;
@@ -52,6 +56,9 @@ FUNCTION RestoreDW, DW
 
    Init_SDW, DW
    DW.Learn = -1
-   Return, Handle_Create(VALUE=DW, /NO_COPY)
+
+   IF Contains(DW.info, 'DELAY') THEN DW.Queue = InitSpikeQueue( INIT_DELAYS=DW.Delays )
+
+   RETURN, Handle_Create(VALUE=DW, /NO_COPY)
 
 END
