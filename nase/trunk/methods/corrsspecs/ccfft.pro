@@ -111,8 +111,6 @@
 ;  boxcar (rectangular) window of equal length, which inludes a recursive call of <*>CCFFT</*>.
 ;
 ; EXAMPLE:
-;  Generate a random signal and smooth it by convolving it with a rectangular kernel:
-;
 ;* x = exp(-(FIndGen(100)/10-5)^2)
 ;* y = Shift(x, 20)
 ;* x = Shift(x,-20)
