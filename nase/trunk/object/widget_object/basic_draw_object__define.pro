@@ -422,7 +422,6 @@ End
 Pro basic_draw_object::xct_callback_hook_
    ;; the default implementation of this routine simply calls the
    ;; paint_hook_ method. Override as desired.
-   print, "basic_draw_object::xct_callback_hook_"
    self -> paint_hook_
 End
 

@@ -372,7 +372,6 @@ Pro widget_image_container::initial_paint_hook_
 End
 
 Pro widget_image_container::xct_callback_hook_
-   print, "widget_image_container::xct_callback_hook_"
    PlotTvScl, *self.contents, self.xpos, self.ypos, $
     Update_Info=*self.update_info, /INIT, $
    _EXTRA=(*(self.extra))
