@@ -6,6 +6,10 @@
 ; MODIFICATION HISTROY:
 ;
 ;       $Log$
+;       Revision 1.6  2001/02/09 11:17:17  thiel
+;           Now PUSHD/POPD and GETENV is used to change to nase dir for
+;           the nase-startup call. This is hopefully OS invariant.
+;
 ;       Revision 1.5  2000/01/27 10:55:41  saam
 ;             added learn dir
 ;
@@ -55,4 +59,8 @@ print, "========================="
 print, "     Welcome to MIND. "
 print, "========================="
 
-@$NASEPATH/misc/startup
+PushD, GetEnv("NASEPATH"); cd to nase
+@misc/startup
+PopD ;Return to old dir
+
+;@$NASEPATH/misc/startup
