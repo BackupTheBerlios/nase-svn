@@ -161,8 +161,17 @@ PRO TvSclLegend, _xnorm, _ynorm $
    
    
    ; draw a frame around the colors
-   PlotS, [xpos, xpos+xsize, xpos+xsize,xpos,xpos], [ypos,ypos,ypos+ysize,ypos+ysize,ypos], COLOR=color, /NORMAL
-   
+   PlotS, [xpos, xpos+xsize, xpos+xsize,xpos,xpos], $
+          [ypos,ypos,ypos+ysize,ypos+ysize,ypos], COLOR=color, $
+          /NORMAL, $
+          Linestyle=0, Thick=1.0
+
+   ;; for a reason no-one can know, XYOutS does not know the keyword
+   ;; linestyle, although it draws lines. So we have to do it by hand:
+   ;; save state of graphics device:
+   SaveGD, gd
+   !P.Linestyle = 0
+
    IF Keyword_Set(VERTICAL) THEN BEGIN
       IF Keyword_Set(LEFT) THEN BEGIN
          XYOuts, xpos-X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
@@ -188,7 +197,10 @@ PRO TvSclLegend, _xnorm, _ynorm $
          XYOuts, xpos+xsize  , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
          IF Set(TITLE) THEN XYOuts, xpos+xsize/2, ypos+ysize+1.2*Y_CH_SIZE/4, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize
       END
-   END
+   ENDELSE
+
+   ;; restore state of graphics device
+   RestoreGD, gd
 END
 
 
