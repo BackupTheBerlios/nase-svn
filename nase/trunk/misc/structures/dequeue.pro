@@ -11,17 +11,17 @@
 ;
 ; CALLING SEQUENCE: Datum = DeQueue ( MyQueue )
 ;
-; INPUTS: MyQueue: Eine mit InitQueue()
+; INPUTS: MyQueue: Eine mit InitQueue() oder InitFQueue()
 ;                  initialisierte Queue-Struktur.
 ;
 ; OUTPUTS: Datum  : Das ausgelesene Datum.
 ;
-; SIDE EFFECTS: Der belegte dynamische Speicher wird freigegeben.
+; SIDE EFFECTS: Bei dynamischen Queues wird der belegte dynamische
+;               Speicher wird freigegeben. Bei Fixed Queues wird der
+;               freiwerdende Platz mit dem bei der Initialisierung
+;               angegebenen Samplewert aufgefüllt.
 ;
-; RESTRICTIONS: DeQueue ist für Fixed Queues ( InitFQueue() ) nicht
-;               definiert, da diese ja eine feste Länge haben. (Head()
-;               benutzen!)
-;               Es wird kein Test gemacht, ob die Queue noch Daten
+; RESTRICTIONS: Es wird kein Test gemacht, ob die Queue noch Daten
 ;               enthält. Ein aufruf von DeQueue() mit einer leeren
 ;               Queue führt zu einer Fehlermeldung.
 ;
@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/10 14:27:13  kupper
+;        Jetzt auch für Fixed Queues!
+;
 ;        Revision 1.2  2000/09/25 09:13:13  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -64,7 +67,13 @@ Function DeQueue, Queue
    If not contains(Queue.info, 'QUEUE', /IGNORECASE) then message, 'Not a Queue!'
 
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
-      message, 'DeQueue not defined for Fixed Queues. Use "Head()" instead!'  
+      assert, Queue.valid ge 1, "Fixed queue does not contain any " + $
+       "valid values."
+      Wert = Queue.Q(Queue.Pointer)
+      Queue.Q(Queue.Pointer) = Queue.sample ;; erase value
+      Queue.Pointer = cyclic_value(Queue.Pointer-1, [0, Queue.Length])
+      Queue.valid = (Queue.valid-1)
+      return, Wert
    endif
 
    If contains(Queue.info, 'DYNAMIC_QUEUE', /IGNORECASE) then begin
