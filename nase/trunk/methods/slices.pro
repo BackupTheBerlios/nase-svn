@@ -24,16 +24,16 @@
 ;      divided according to the last index (the time index).
 ;
 ; OPTIONAL INPUTS:
-;  ssize        : Size of resulting parts. (Default: 128ms)
-;  sshift       : Distance between parts. (Default: ssize/2)
-;  sampleperiod : Duration of the sampling period (Default: 0.001s)
+;  ssize        : Size of resulting parts / ms. (Default: 128ms)
+;  sshift       : Distance between parts / ms. (Default: ssize/2)
+;  sampleperiod : Duration of the sampling period / s (Default: 0.001s)
 ;
 ; OUTPUTS: 
 ;  s: Array containing the parts of array a arranged like (slice_nr,
 ;     data)
 ;
 ; OPTIONAL OUTPUTS: 
-;  tvalues  : Returns the times at which parts start.
+;  tvalues  : Returns the times/ms at which parts start.
 ;  tindices : Returns starting time array indices of the parts.
 ;
 ; PROCEDURE:
@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/03/14 17:43:14  thiel
+;         Added timeunit description in header.
+;
 ;     Revision 1.7  2000/02/23 12:30:47  thiel
 ;         Optimized. LEXTRAC is no longer used. Header translated.
 ;
