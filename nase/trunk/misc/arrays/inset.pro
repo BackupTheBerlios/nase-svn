@@ -24,12 +24,17 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1999/02/05 19:14:10  saam
+;           + return if an error occurs
+;
 ;     Revision 1.1  1998/06/23 19:15:44  saam
 ;           scarcely worth to talk of
 ;
 ;
 ;-
 FUNCTION InSet, I, S
+
+   On_Error, 2
 
    IF N_Params() NE 2 THEN Message, 'you have to pass two arguments'
 
