@@ -6,6 +6,12 @@
 ;  Same as DIST(), but without cyclic edges.
 ;  Returns an array with every element set to the distance this element has to a 
 ;  given point in the array. Distance is measured -not- accross the edges.
+;  Optionally, the square distance can be returned.
+;    For those of us having a more visual view on things:
+;  Distance() returns a conic profile with a half opening angle of 45°, open to
+;  the top, and it's tip located at a given point.
+;  Optionally, a second order paraboloid can be returned, open to the top, and
+;  it's tip located at a given point.
 ;
 ; CATEGORY:
 ;  Arrays, image processing
@@ -20,9 +26,9 @@
 ;  w: Width (second dimension) of the array to return.
 ;     If w is not specified, a square array of dimensions h is returned.
 ;
-;  ch,cw: Center relative to which the distance values are computed. This should 
-;         be integer values (any fractional part is discarded).
-;         Default: ch=h/2, cw=w/2.
+;  ch,cw: Center relative to which the distance values are computed. These are
+;         not required to be integer values, nor to be lacated inside th array.
+;         Default: ch=(h-1)/2.0, cw=(w-1)/2.0, i.e. the center of the array.
 ;
 ; KEYWORD PARAMETERS:
 ;  QUADRATIC: If set, the values returned are quadratic distances.
@@ -49,6 +55,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/03/23 13:41:34  kupper
+;        cw,ch can now be fractional and located outside tha array.
+;        Added "visual" purpose description.
+;
 ;        Revision 1.2  2000/03/23 13:10:39  kupper
 ;        Implemented QUADRATIC keyword.
 ;
@@ -63,12 +73,12 @@ Function distance, h, w, ch, cw, QUADRATIC=quadratic
    case N_Params() of
       1: Begin ;;only h was given
             w = h
-            ch = h/2
-            cw = w/2         
+            ch = (h-1)/2.0
+            cw = (w-1)/2.0
          End
       2: Begin ;;ch and cw were not given
-            ch = h/2
-            cw = w/2                     
+            ch = (h-1)/2.0
+            cw = (w-1)/2.0                   
          End
       3: Begin ;;w was not given
             cw = ch
@@ -80,16 +90,9 @@ Function distance, h, w, ch, cw, QUADRATIC=quadratic
       else: message, "Please specify one to four parameters."
    endcase
 
-   ch = fix(ch)
-   cw = fix(cw)
-  
-   xa = make_array(/Nozero, w, /Long)
-   ya = make_array(/Nozero, h, /Long)
-   
-   xa[0:cw] = Rotate(LIndgen(cw+1), 2)
-   xa[cw:w-1] = LIndgen(w-cw)
-   ya[0:ch] = Rotate(LIndgen(ch+1), 2)
-   ya[ch:h-1] = LIndgen(h-ch)
+
+   xa = FIndgen(w)-cw
+   ya = FIndgen(h)-ch
 
    xa = REBIN( Transpose(Temporary(xa)^2), h, w)
    ya = REBIN(           Temporary(ya)^2 , h, w)
