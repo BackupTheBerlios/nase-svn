@@ -17,6 +17,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/06/20 13:14:09  saam
+;           + filter handling had some serious bugs
+;           + i hope it is working now
+;
 ;     Revision 1.9  2000/04/06 09:41:53  saam
 ;           now outputs synapse type where input
 ;           is apllied to
@@ -270,50 +274,44 @@ FUNCTION Input, L, _IN
          IF (IN.period NE -1) THEN act_time = act_time MOD IN.period
 
          IF ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0)) THEN BEGIN
-
-            pattern = fltarr(h,w) ; initialize input-matrix
-
-            FOR i=0, number_filter-1 DO BEGIN
-               
-               Handle_Value,IN.filters(i),act_filter 
-               
-               IF ((act_time GE act_filter.start) AND (act_time LE act_filter.stop)) THEN BEGIN 
-                  
-                  IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
-                      console,P.CON, curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
-
-                     IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
-                        temp = CALL_FUNCTION(act_filter.NAME,$
-                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                             temp_vals=IN.temps(i),DELTA_T=delta_t) 
-                     END ELSE BEGIN
-                        temp = CALL_FUNCTION(act_filter.NAME,$
-                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
-                                             temp_vals=IN.temps(i),DELTA_T=delta_t) 
+             pattern = fltarr(h,w) ; initialize input-matrix
+             FOR i=0, number_filter-1 DO BEGIN
+                 IF N_Elements(IN.temps) EQ 1 THEN _t = IN.temps ELSE _t = IN.temps(i) ;fix IDL3.6 problems!
+                 IF N_Elements(IN.filters) EQ 1 THEN Handle_Value,IN.filters,act_filter ELSE Handle_Value,IN.filters(i),act_filter ;fix IDL3.6 problems!
+                 IF ((act_time GE act_filter.start) AND (act_time LE act_filter.stop)) THEN BEGIN 
+                     IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
+                         console,P.CON, curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
+                         IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                             temp = CALL_FUNCTION(act_filter.NAME,$
+                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                                  temp_vals=_t,DELTA_T=delta_t) 
+                         END ELSE BEGIN
+                             temp = CALL_FUNCTION(act_filter.NAME,$
+                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                                  temp_vals=_t,DELTA_T=delta_t) 
+                         END
+                     END                      
+                     IF ((delta_t EQ -1) OR ((act_time MOD (delta_t)) EQ 0)) THEN BEGIN
+                         pattern = CALL_FUNCTION(act_filter.NAME,$
+                                                 PATTERN=pattern, temp_vals=_t) 
                      END
-                  END 
-                  
-                  pattern = CALL_FUNCTION(act_filter.NAME,$
-                                          PATTERN=pattern, temp_vals=IN.temps(i)) 
-               END 
-               
-            ENDFOR              ; i  
-            
-            IN.pattern = pattern ; store for future use
-            
-
-            IF IN.visible NE 0 THEN BEGIN ; show what you've done
-               OpenSheet, INPUT_1
-               PlotTvScl, IN.pattern
-               CloseSheet, INPUT_1
-            END 
-            
+                 END                  
+             ENDFOR             ; i  
+             
+             IN.pattern = pattern ; store for future use
+             
+             
+             IF IN.visible NE 0 THEN BEGIN ; show what you've done
+                 OpenSheet, INPUT_1
+                 PlotTvScl, IN.pattern
+                 CloseSheet, INPUT_1
+             END 
          END 
          
          R = Spassmacher(IN.pattern)
          IN.t = IN.t + 1
-      END 
-      
+     END 
+     
 
 
 
