@@ -12,6 +12,7 @@
 ;                            [,/NOSCALEYMAX]
 ;
 ; KEYWORD PARAMETERS:  TIME       : die Laenge der dargestellten Zeitachse (Def.:100)
+;                      RAYS       : die Anzahl der benutzten Strahlen
 ;                      YMIN/YMAX  : anfaengliche Skalierung der Ordinate (Def.:0.0/1.0)
 ;                      NOSCALEYMIN/
 ;                      NOSCALEYMAX/
@@ -39,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/01/08 16:59:05  saam
+;           mehere Strahlen sind nun moeglich
+;
 ;     Revision 2.2  1998/01/07 17:52:30  saam
 ;           na was?? n Bug in der Docu
 ;
@@ -48,11 +52,13 @@
 ;
 ;-
 FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
+                             RAYS=rays,$
                              NOSCALEALL=noscaleall, NOSCALEYMIN=yminnoscale, NOSCALEYMAX=ymaxnoscale
 
    Default, TIME, 100
    Default, YMIN, 0.0
    Default, YMAX, 1.0
+   Default, Rays, 1
    maxSc = 1
    minSc = 1
    
@@ -66,7 +72,8 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
    PS = { info : 'T_PLOT'      ,$
           minAx: ymin          ,$
           maxAx: ymax          ,$
-          y    : Make_Array(time, /FLOAT, VALUE=((ymax-ymin)/2.+ymin)),$
+          y    : Make_Array(rays, time, /FLOAT, VALUE=((ymax-ymin)/2.+ymin)),$
+          rays : rays          ,$
           t    : 0             ,$
           time : time          ,$
           maxSc: maxSc         ,$
