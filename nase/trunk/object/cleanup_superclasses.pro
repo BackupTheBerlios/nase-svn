@@ -6,9 +6,9 @@
 ;            When deriving a new class from one or more superclasses, the user
 ;          is responsible for explicitely calling the CLEANUP methods of all
 ;          superclasses in the new class' CLEANUP method.
-;            In contrast to the initialization cycle (see <A HREF="#INIT_SUPERCLASSES">Init_SuperClasses()</A>,
+;            In contrast to the initialization cycle (see <A HREF="#INIT_SUPERCLASSES()">Init_SuperClasses()</A>,
 ;          this is a straightforward process. Nevertheless,
-;          Cleanup_SuperClasses is supplied as the counterpart of <A HREF="#INIT_SUPERCLASSES">Init_SuperClasses()</A>
+;          Cleanup_SuperClasses is supplied as the counterpart of <A HREF="#INIT_SUPERCLASSES()">Init_SuperClasses()</A>
 ;          and for convenience.
 ;
 ;          Init_SuperClasses() calls the CLEANUP methods of an object's
@@ -49,11 +49,14 @@
 ;
 ;          End
 ;            
-; SEE ALSO: <A HREF="#CLEANUP_SUPERCLASSES">Cleanup_SuperClasses</A>
+; SEE ALSO: <A HREF="#INIT_SUPERCLASSES()">Init_SuperClasses()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/02/21 19:00:57  kupper
+;        Corrected hyperlings.
+;
 ;        Revision 1.1  2000/02/21 18:27:42  kupper
 ;        Why is the fucking IDL compiler not doing all this work???
 ;
