@@ -19,7 +19,7 @@
 ; CALLING SEQUENCE:
 ;* PlotLegend, xo, yo, texts
 ;*            [,LCOLORS=...][,TCOLORS=...]
-;*            [,LSTYLES=...][,LSPREAD=...][,LLENGTH=...]
+;*            [,LSTYLES=...][,LSPREAD=...][,LLENGTH=...][,LTHICK=...]
 ;*            [,SSTYLES=...]
 ;*            [,LTGAP=...][,TBASE=...]
 ;*            [,/BOX]
@@ -49,6 +49,8 @@
 ;            charsize. Default: 1.0.
 ;  LLENGTH:: Length of the sample lines in normal
 ;            coordinates. Default: 0.1.
+;  LTHICK:: Thickness of the sample lines
+;            Default: <C>!P.THICK</C>.
 ;  LTGAP:: Space between line ends and text beginning in multiples of
 ;          charsize. Default: 0.5
 ;  TBASE:: Offset between text baseline and sample lines in multiples
@@ -108,6 +110,7 @@ PRO PlotLegend, xo, yo, texts $
                 , SSTYLES=sstyles $
                 , LSPREAD=lspread $
                 , LLENGTH=llength $
+                , LTHICK=lthick $
                 , LTGAP=ltgap $
                 , TBASE=tbase $
                 , BOX=box $
@@ -152,6 +155,7 @@ PRO PlotLegend, xo, yo, texts $
        ; symbols, but no lines
 
        Default, llength, 0.01           ; space reserved for symbols, normal
+       Default, lthick, replicate(!P.THICK, number)        ; standard thickness
        Default, lstyles, Intarr(number) ; supress lines
        ;; Calculate symbol positions
        xpos = xo
@@ -162,6 +166,7 @@ PRO PlotLegend, xo, yo, texts $
        Default, lstyles, IndGen(number) MOD 6
        ;; symstyles default to NO_SYMBOL
        Default, llength, 0.1    ; length of lines, normal
+       Default, lthick, replicate(!P.THICK, number)       ; standard thickness
        ;; Calculate line positions
        xpos = [0.0, llength]+xo
        ypos = Rebin(lspread*ycsn*Indgen(number),number,2)+yo+ycsn*tbase
@@ -170,8 +175,10 @@ PRO PlotLegend, xo, yo, texts $
    ;; Plot lines and/or symbols
    FOR i=0, number-1 DO BEGIN
        ; this damn plots either plots symbols or lines ....
-       PlotS, xpos, ypos(i,*), /NORMAL, LINESTYLE=lstyles(i), COLOR=lcolors(i)
-       IF Set(sstyles) THEN PlotS, xpos, ypos(i,*), /NORMAL, PSYM=sstyles(i), COLOR=lcolors(i)
+      PlotS, xpos, ypos(i,*), /NORMAL, LINESTYLE=lstyles(i), $
+             COLOR=lcolors(i), THICK=lthick(i)
+      IF Set(sstyles) THEN PlotS, xpos, ypos(i,*), /NORMAL, $
+        PSYM=sstyles(i), COLOR=lcolors(i), THICK=lthick(i)
    ENDFOR
 
    ;; Calculate text positions
