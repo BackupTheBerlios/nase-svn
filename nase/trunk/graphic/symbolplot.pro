@@ -23,9 +23,13 @@
 ;                          Default: leeres Kästchen.
 ;                  NEGSYM: Das Symbol, das für positive Werte verwendet wird.
 ;                          Default: X.
+;                 NONESYM: Das Symbol, das bei Angabe von /NASE für
+;                          NONE-Werte verwendet wird.
+;                          Default: N.
 ;
 ;                  zusätzlich zu den normalen IDL-Symbolen kennt SymbolPlot noch
-;                  das Symbol Nr.9, ein ausgefülltes Kästchen.
+;                  die Symbole Nr.9 und Nr.11, ein ausgefülltes
+;                  Kästchen und ein 'N'.
 ;                  Es gibt also Folgende vordefinierte Symbole:
 ;                     1	Plus sign (+)	
 ;                     2	Asterisk (*)	
@@ -35,12 +39,16 @@
 ;                     6	Square	
 ;                     7	X	
 ;                     8	User-defined. See USERSYM procedure. (Standard-IDL)
-;                     9     Filled Square.
+;                     9     Filled Square
+;                    11     N.
 ;
 ;                POSCOLOR: Die Farbe, mit der positive Werte geplottet werden.
 ;                          Default: !P.COLOR.
 ;                NEGCOLOR: Die Farbe, mit der positive Werte geplottet werden.
 ;                          Default: RGB("red", /NOALLOC).
+;               NONECOLOR: Bei Angabe von /NASE die Farbe, mit der
+;                          NONES geplottet werden.
+;                          Default: RGB("pale blue", /NOALLOC).
 ;                  COLORS: Ein Array mit den gleichen Ausmaßen wie "Array", das für jedes Element
 ;                          den zu verwendenden Farbindex enthält.
 ;                          (Man beachte, daß hier -hoffentlich- auch auf TrueColor-Displays die Farbtabelle 
@@ -104,13 +112,16 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/05/27 13:01:03  kupper
+;               Beherrscht jetzt auch !NONES in der NASE-Darstellung.
+;
 ;        Revision 2.1  1998/05/26 14:42:25  kupper
 ;               Neu und wunderschön...
 ;
 ;-
 
-Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, $
-               POSCOLOR=poscolor, NEGCOLOR=negcolor, COLORS=_colors, NASCOL=nascol, $
+Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, $
+               POSCOLOR=poscolor, NEGCOLOR=negcolor, NONECOLOR=nonecolor, COLORS=_colors, NASCOL=nascol, $
                POSORIENT=posorient, NEGORIENT=negorient, ORIENTATIONS=_orientations, RAD=rad, DIRECTION=direction, $
                NASE=nase, noscale=noscale, $
                THICK=thick, FILL=fill, $
@@ -120,8 +131,10 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, $
    Default, nase, 0
    Default, possym, 6
    Default, negsym, 7
+   Default, nonesym, 11
    Default, POSCOLOR, !P.COLOR
    Default, NEGCOLOR, RGB("red", /NOALLOC)
+   Default, NONECOLOR, RGB("pale blue", /NOALLOC)
 
    If Keyword_Set(NASCOL) then begin
       If not Keyword_Set(NASE) then message, /INFORM, "/NASCOL-Schlüsselwort gesetzt, aber nicht /NASE - sicher?"
@@ -130,32 +143,23 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, $
 
    If Keyword_Set(NASE) then begin 
       a = rotate(_a, 3)
+      NoNone, a, NONES=nones
       If Set(_colors) then colors = rotate(_colors, 3)
       If Set(_orientations) then orientations = rotate(_orientations, 3)
    Endif else begin
       If Set(_colors) then colors = _colors
       If Set(_orientations) then orientations = _orientations
       a = _a
+      nones = -1
    Endelse
 
    If not Keyword_Set(NOSCALE) then a = a/float(max([max(a), -min(a)]))
    
+   If Keyword_Set(NASE) and (nones(0) ne -1) then a(nones) = 0.75 ;Größe eines NONE-Symbols
+
    s = size(a)
    width = s(1)
    height = s(2)
-
-
-   ;;------------------> Ev. Plotting-Symbol als ausgef. Kästchen oder 
-   ;;                    Richtungsbalken definieren
-   If possym eq 9 then begin
-      usersym, [-1, 1, 1, -1], [-1, -1, 1, 1], /fill
-      possym = 8                ;use user Symbol
-   EndIf
-   If negsym eq 9 then begin
-      usersym, [-1, 1, 1, -1], [-1, -1, 1, 1], /fill
-      negsym = 8                ;use user Symbol
-   Endif
-   ;;--------------------------------
 
 
    ;;------------------> !X und !Y geeignet setzen
@@ -182,19 +186,35 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, $
 
    For y=1, height do $
     For x=1, width do begin
-      If a(x-1, y-1) gt 0 then begin
-         If set(COLORS) then col = COLORS(x-1, y-1) else col = poscolor
-         If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
-         else If set(POSORIENT) then sym = OrientSym(posorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
-         else sym = possym
-      endif
-      If a(x-1, y-1) lt 0 then begin
-         If set(COLORS) then col = COLORS(x-1, y-1) else col = negcolor
-         If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
-         else If set(NEGORIENT) then sym = OrientSym(negorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
-         else sym = negsym
-      endif
-      If a(x-1, y-1) ne 0 then PlotS, x, y, PSym=-sym, Color=col, SYMSIZE=symsize*abs(a(x-1, y-1)), THICK=thick
+      If Keyword_Set(NASE) and TOTAL(((y-1)*width+x-1) eq nones) gt 0 then begin
+         If set(COLORS) then col = COLORS(x-1, y-1) else col = nonecolor
+         sym = nonesym
+      Endif else begin          ;kein None
+         If a(x-1, y-1) gt 0 then begin
+            If set(COLORS) then col = COLORS(x-1, y-1) else col = poscolor
+            If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+            else If set(POSORIENT) then sym = OrientSym(posorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+            else sym = possym
+         endif
+         If a(x-1, y-1) lt 0 then begin
+            If set(COLORS) then col = COLORS(x-1, y-1) else col = negcolor
+            If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+            else If set(NEGORIENT) then sym = OrientSym(negorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+            else sym = negsym
+         endif
+      Endelse                   ;kein None
+      ;;------------------> Ev. Plotting-Symbol als ausgef. Kästchen
+      ;;                    oder N definieren
+      If sym eq 9 then begin
+         usersym, [-1, 1, 1, -1], [-1, -1, 1, 1], /fill
+         sym = 8                ;use user Symbol
+      EndIf      
+      If sym eq 11 then begin
+         usersym, [-0.75, -0.75, 0.75, 0.75], [-1, 1, -1, 1], thick=thick
+         sym = 8                ;use user Symbol
+      EndIf      
+      ;;--------------------------------
+      If a(x-1, y-1) ne 0 then PlotS, x, y, PSym=sym, Color=col, SYMSIZE=symsize*abs(a(x-1, y-1)), THICK=thick
    EndFor
 
    If !D.Name eq "X" and keyword_set(COLORS) then device, /BYPASS_TRANSLATION
