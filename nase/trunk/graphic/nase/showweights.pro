@@ -172,167 +172,6 @@
 ;           <A HREF="../simu/connections/index.html#SETDOGWEIGHT">SetDogWeight</A>,
 ;           <A HREF="../simu/connections/index.html#DELAYWEIGH">DelayWeigh()</A>
 ;
-; MODIFICATION HISTORY: 
-;
-;       $Log$
-;       Revision 2.34  2001/01/24 14:28:49  kupper
-;       Corrected handling of the SURF and SUPERIMPOSE keywords, which was
-;       broken.
-;
-;       Revision 2.33  2001/01/24 14:00:48  kupper
-;       Color selection for PRINTSTYLE output was still wrong.
-;
-;       Revision 2.32  2001/01/22 14:04:26  kupper
-;       Changed color management to meet guidelines formed during the first
-;       NASE workshop, fall 2000.
-;       Pre-Checkin due to technical reasons. Headers not yet englishified...
-;
-;       Revision 2.31  2000/10/01 14:51:09  kupper
-;       Added AIM: entries in document header. First NASE workshop rules!
-;
-;       Revision 2.30  1999/11/26 14:08:58  alshaikh
-;             bugfix
-;
-;       Revision 2.29  1999/11/16 15:15:51  alshaikh
-;             kann jetzt auch transmitterfreisetzungswahrscheinlichkeiten
-;             (U_se) darstellen...
-;
-;       Revision 2.28  1999/08/18 09:56:25  thiel
-;           New keyword: SETCOL to prevent color flickering in multi-sheet-
-;           applications.
-;
-;       Revision 2.27  1998/05/26 13:15:43  kupper
-;              1. Die Routinen benutzen die neuen NASE-Colortables
-;              2. Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
-;                 Änderungen an der Postcript-Sheet-Verarbeitung.
-;                 Hoffentlich funktioniert alles (war recht kompliziert, wie immer.)
-;
-;       Revision 2.26  1998/04/16 16:51:23  kupper
-;              Keyword PRINTSTYLE implementiert für TomWaits-Print-Output.
-;
-;       Revision 2.25  1998/04/02 13:21:45  kupper
-;              Tippfehler
-;
-;       Revision 2.24  1998/04/02 11:40:52  kupper
-;              Umfangreiche Änderungen an der Darstellung (Achsen, Verwendung von
-;       	NASETv, Surface-Plots)
-;       	SURF, GRID, SUPERIMPOSE, GET_COLORS, GET_INFO-Schlüselworte hinzugefügt.
-;       	Jetzt können gebrochene Zoomfaktoren angegeben werden, auch getrennt
-;       	für X und Y. Daher fügen sich Darstellungen nun auch ohne "Ränder" in bestehende
-;       	Fenster ein...
-;       	Hab hoffentlich nichts vergessen.
-;       	Achja: Der Output kann nun (mit /NOWIN) auch in ein aktives Postcript-Sheet
-;       		gemacht werden. Allerdings funktionieren hier die SURF-Darstellungen (noch) nicht.
-;
-;       Revision 2.23  1998/03/22 14:07:59  kupper
-;              ?size sind jetzt longs, daher auch sehr grosse fenster moeglich.
-;               Scheint aber das Retain nicht mehr zu funktionieren, dann..
-;
-;       Revision 2.22  1998/03/19 17:11:11  kupper
-;              Bet_Base liefert jetzt -1 zurück, falls ein gewöhnliches Fenster geöffnet
-;               wurde, so daß man bestimmen kann, wie man es wieder schließen muß
-;               (wdelete oder widget_control).
-;
-;       Revision 2.21  1998/03/19 15:37:15  saam
-;             mysteriously a bug occurred: variable containing
-;               delays-keyword had the same name as function delays
-;               -> renamed
-;
-;       Revision 2.20  1998/02/27 13:16:29  saam
-;             benutzt nun die U-Routinen
-;
-;       Revision 2.19  1998/02/26 15:45:56  kupper
-;              Get-ScreenSize() ersetzt durch Device-Befehl für Kompatibilität zu IDL 4
-;
-;       Revision 2.18  1998/02/26 14:13:50  saam
-;             kleine Aenderung fuer 32-Bit-Display
-;             Max-Size noch falsch behandelt
-;
-;       Revision 2.17  1998/02/26 13:58:49  kupper
-;              TV durch UTV ersetzt. Mal sehen...
-;
-;       Revision 2.16  1998/02/18 13:48:18  kupper
-;              Schlüsselworte COLORMODE,GET_COLORMODE,GET_MAXCOL zugefügt.
-;
-;       Revision 2.15  1998/02/05 14:13:17  saam
-;             bug in FROMS (noncritical) corrected
-;
-;       Revision 2.14  1998/02/05 13:22:39  saam
-;             Anpassung an neue DW-Struktur
-;
-;       Revision 2.13  1998/02/04 17:23:48  kupper
-;              Showweights benutzt jetzt brav objektorientiert die Weights(), Delays() und DWDim()-Funktionen.
-;              Das MAXSIZE-Schlüsselwort wurde implementiert, weil ich mich immer geärgert habe, daß die Fenster
-;               nicht auf meinen Bildschirm passen...
-;
-;       Revision 2.11  1998/02/03 17:29:15  kupper
-;              Statt GROESSE kann nun alternativ ZOOM verwendet werden.
-;              GET_WIN-Schlüsselwort zugefügt.
-;
-;       Revision 2.10  1998/01/26 18:23:47  saam
-;             Fehler bei Null-Device korrigiert
-;
-;       Revision 2.9  1997/12/10 15:57:55  saam
-;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
-;             nur noch Tags. Das hat den Vorteil, dass man mehrere
-;             DelayWeigh-Strukturen in einem Array speichern kann,
-;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
-;
-;       Revision 2.8  1997/12/08 12:48:02  kupper
-;       *** empty log message ***
-;
-;       Revision 2.7  1997/12/01 16:06:53  kupper
-;              Header überarbeitet, Hyperlinks eingefügt.
-;
-;       Revision 2.6  1997/12/01 15:32:28  kupper
-;              SLIDE-Keyword hat jetzt zwei mögliche Optionen.
-;              GET_BASE implementiert.
-;
-;       Revision 2.5  1997/11/13 13:24:14  saam
-;             Device Null wird uenterstuetzt
-;
-;       Revision 2.4  1997/10/30 13:00:53  kupper
-;              PROJECTIVE, RECEPTIVE als Alternative zu TOS, FROMS eingeführt.
-;
-;       Revision 2.3  1997/10/14 15:46:18  saam
-;              Delays konnten zwischenzeitlich nicht dargestellt
-;              werden...geht wieder
-;
-;       Thu Sep 4 17:12:07 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		SLIDE, XVISIBLE, YVISIBLE implementiert.
-;
-;       Mon Aug 18 19:59:18 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		Nichtexistierende Verbindungen werden jetzt blau dargestell.
-;
-;       Mon Aug 18 16:58:34 1997, Mirko Saam
-;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
-;		nicht vorhandene Verbindungen werden vorlaeufig mit Wert NULL dargestellt
-;
-;                       Erste Version vom 25. Juli '97, Andreas.
-;                       Diese Version (Verbesserte Parameterabfrage) vom 28. Juli '97, Andreas
-;                       Versucht, Keyword FROMS zuzufügen, Rüdiger,
-;                       30.7.1997
-;                       Es ist mir gelungen! Außerdem hat die Darstellung jetzt Gitterlinien!, Rüdiger, 31.7.1997
-;                       Ich hab die interne Verarbeitung von Source und Target vertauscht, da sie so unseren Arraystrukturen angemessener ist.
-;                           Ausserdem hab ich die Array-Operationen beim TV zusammengefasst.
-;                           Das alles sollte einen gewissen Geschwindigkeitsvorteil bringen.
-;                           Ausserdem normiert die Routine jetzt auf den maximal verfügbaren ColorTable-Index,
-;                           was auf Displays mit weniger als 256 freien Indizes (d.h. wenn IDL eine Public Colormap benutzt)
-;                           den maximalen Kontrast erreicht.
-;                           Rüdiger, 1.8.1997
-;                       Schluesselwort DELAYS hinzugefuegt, sodass nun auch alternativ auch die Verzoegerungen dargestellt werden koennen, Mirko, 3.8.97
-;                       Bug bei WSet korrigiert, wenn WinNR uebergeben wird, Mirko, 3.8.97
-;                       wird WINNR nicht gesetzt, so wird NEUES Fenster aufgemacht, Mirko, 3.8.97
-;                       Matrizen mit negativen Gewichten werden jetzt in rot/grün dargestellt. Rüdiger, 5.8.97
-;
-;                       gibt man WINNR an, und das Fenster ist zu klein fuer die Darstellung, bricht die Routine mit
-;                       unverstaendlichem Fehler ab. Das wird nun abgefangen, indem die Gewichte mit kleinster GROESSE (=1)
-;                       dargestellt werden (und somit zum Teil abgeschnitten); ausserdem wird ne Warnung ausgegeben, Mirko, 13.8.97
 ;-
 
 
@@ -347,6 +186,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                  SURF=surf, GRID=grid, SUPERIMPOSE=superimpose, $
                  GET_INFO=get_info, GET_COLORS=get_colors, $
                  PRINTSTYLE=printstyle, SETCOL=setcol, $
+                 POLYGON=polygon, $
                  _EXTRA=_extra
 
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -620,11 +460,24 @@ EndIf
 ;                        xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
 ;             /Order, /DEVICE, $
 ;             XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
+
+            
+            ;; Neuerdings arbeiten wir hier nicht mehr mit den
+            ;; Stretch-Keywords, sondern mit dem X_SIZE-Keyword, das
+            ;; die Größe in cm nimmt. Sonst funktioniert die
+            ;; Postscript-Ausgabe mit Poygonen nicht.
+
+            ;; bildxsize ist die Größe einer Untermatrix in Pixeln,
+            ;; inclusive dem einen Pixel für die Trennlinie.
+
             NaseTv, MatrixMatrix(*, *, YY, XX), $
-             h_stretch=xGroesse,  v_stretch=yGroesse, $
-             /DEVICE, XSIZE=bildxsize, YSIZE=bildysize, $
-             xoffset+XX*(1+Matrix.target_w*xGroesse), yoffset+(Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
-         end
+;                    $;h_stretch=xGroesse,  v_stretch=yGroesse, $
+            /DEVICE, $
+              X_SIZE=(bildxsize-1)/!D.X_PX_CM, Y_SIZE=(bildysize-1)/!D.Y_PX_CM, $
+              POLYGON=polygon, $
+              xoffset+XX*(1+Matrix.target_w*xGroesse), $
+              yoffset+(Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
+         endfor
       end
    endelse
    for XX= 0, Matrix.source_w do begin  
