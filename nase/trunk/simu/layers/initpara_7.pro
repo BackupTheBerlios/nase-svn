@@ -39,6 +39,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.5  2005/04/04 11:56:25  michler
+;
+;       Spelling correction in sampleperiod keyword
+;
 ;       Revision 2.4  2004/09/27 14:03:32  michler
 ;
 ;       Modified Files:
@@ -68,7 +72,7 @@
 ;       initial version, Mirko Saam, 22.7.97
 ;
 ;-
-FUNCTION InitPara_7, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=taui2, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAPLEPERIOD=sampleperiod
+FUNCTION InitPara_7, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=taui2, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAMPLEPERIOD=sampleperiod
 
    Default, SAMPLEPERIOD, 0.001
    deltat = SAMPLEPERIOD*1000.
