@@ -6,11 +6,11 @@
 ;  $Id$
 ;
 ; AIM:
-;  Plot error values as a coloured area around data.
+;  Plot error values as a colored area around data.
 ;  
 ; PURPOSE:
 ;  MSPLot plots onedimensional data and depicts supplied error values
-;  by drawing a coloured area around the data plot.
+;  by drawing a colored area around the data plot.
 ;  
 ; CATEGORY:
 ;  Graphic
@@ -106,9 +106,12 @@ PRO MSPLOT, z, zz, zzz $
 
    Axis, XRANGE=xrange, XAXIS=0, _EXTRA=e
    Axis, YRANGE=yr, YAXIS=0, _EXTRA=e
-   DelTag, e, 'xtitle'
+   IF set(e) THEN BEGIN
+      DelTag, e, 'xtitle'
+      DelTag, e, 'ytitle'
+   ENDIF
+
    Axis, XRANGE=xrange, XAXIS=1, XTICKN=emptytickn, _EXTRA=e
-   DelTag, e, 'ytitle'
    Axis, YRANGE=yr, YAXIS=1, YTICKN=emptytickn, _EXTRA=e
 
 END
