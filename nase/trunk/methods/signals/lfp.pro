@@ -9,19 +9,20 @@
 ;
 ; CATEGORY:            STAT SIGNAL
 ;
-; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] [,/NASE])
+; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] [,/NASE] [,SAMPLE_T=SAMPLE_T])
 ;
 ; INPUTS:              mt      : 3d-Array, das den Zeitverlauf der Membranpotentiale 
 ;                                enthaelt. Die Dimensionen sind (HOEHE, BREITE, ZEIT).
 ;                      recSites: ein Liste von Ableitorten der Form [[x1,y1],[x2,y2],..]
 ;
-; KEYWORD PARAMETERS:  CONST : konstante Gewichtung (=1) aller Membranpotentiale
-;                              mit maximaler Distanz const vom jeweiligen Ableitort.
-;                      HMW_X2: quadratisch abfallende Gewichtung der Potentiale
-;                              mit einer Halbwertsbreite von hmw_x2.
-;                      ROI   : nach Aufruf von LFP enthaelt ROI die verwendeten Masken
-;                              fuer die Gewichtung der LFP's. Dimension (SIGNAL_NR,HOEHE,BREITE)
-;                      NASE  : korrekte Behandlung von Nase-Layern
+; KEYWORD PARAMETERS:  CONST   : konstante Gewichtung (=1) aller Membranpotentiale
+;                                mit maximaler Distanz const vom jeweiligen Ableitort.
+;                      HMW_X2  : quadratisch abfallende Gewichtung der Potentiale
+;                                mit einer Halbwertsbreite von hmw_x2.
+;                      ROI     : nach Aufruf von LFP enthaelt ROI die verwendeten Masken
+;                                fuer die Gewichtung der LFP's. Dimension (SIGNAL_NR,HOEHE,BREITE)
+;                      NASE    : korrekte Behandlung von Nase-Layern
+;                      SAMPLE_T: Zeit zwischen zwei Abtastwerten in s (Default: 0.001)
 ;                       
 ; OUTPUTS:             LFPS  : Array das die LFP-Signale fuer die Ableitorte enthaelt.
 ;                              Dimension: (ABLEITINDEX, ZEIT)
@@ -35,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  1998/07/11 12:07:58  saam
+;           new keyword SAMPLE_T for correct handling
+;           of different smapled signals
+;
 ;     Revision 1.6  1998/05/28 12:33:05  saam
 ;           Keyword NASE added
 ;
@@ -57,11 +62,14 @@
 ;
 ;
 ;-
-FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi, NASE=nase
+FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, SAMPLE_T=sample_T, ROI=roi, NASE=nase
 
-   Default, radius, 5
+   On_Error, 2
 
+   Default, radius  , 5
+   Default, SAMPLE_T, 0.001
    IF N_Params() NE 2 THEN Message, 'wrong number of arguments'
+
 
    mtS    = SIZE(mt)
 
@@ -119,9 +127,11 @@ FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi, NASE=nase
    ENDFOR
       
 
-   ; -----> LOW PASS FILTERING WITH 100Hz CUTOFF-FREQUENCY (1/5*Nyquist)
+   ; -----> LOW PASS FILTERING WITH 100Hz CUTOFF-FREQUENCY 
+   ; 100Hz = hpf*Nyquist-Frequency ??
+   hpf = 100.*2*Sample_T
    LFPS = DblArr(maxROI, maxT)
-   filter =  Digital_Filter(0.0, 0.2, 50, 10)
+   filter =  Digital_Filter(0.0, hpf, 50, 10)
    FOR i=0, maxROI-1 DO LFPS(i,*) = Convol( REFORM(roiSigs(i,*)), filter, /EDGE_TRUNCATE )
    
    RETURN, LFPS
