@@ -1,70 +1,57 @@
 ;+
-; NAME:                CIndex2RGB
+; NAME:
+;  CIndex2RGB
 ;
-; VERSION:             $Id$
+; VERSION:
+;  $Id$
 ;
-; AIM: Compute 8 bit RGB values from a 24 bit Truecolor value.
+; AIM:
+;  returns RGB values for given color indices
 ;
-; PURPOSE:             Errechnet aus einem Color-Index den
-;                      zugehoerigen RGB-Wert. Die Translation-
-;                      Tables bei True-Color-Displays werden 
-;                      ignoriert. 
-;                      DEVICE, DECOMPOSED=xx  will be considered.                    
+; PURPOSE:
+;  Returns the red, green and blue values for given color table
+;  indices. 
 ;
-; CATEGORY:            GRAPHIC
+; CATEGORY:
+;  Color
+;  Graphic
 ;
 ; CALLING SEQUENCE:    
-;*                     rgb = CIndex2RGB(cindex)
+;*rgb = CIndex2RGB(cindex)
 ;
-; INPUTS:              cindex:: ein Color-Index
+; INPUTS:
+;  cindex:: index or array of indices to the color palette
 ;
-; OUTPUTS:             rgb::    ein drei-elementiges Array das
-;                              die Rot-, Gruen-, und Blau-
-;                              Anteile der zug. Farbe enthaelt
-;
-; RESTRICTIONS:        cindex liefert nur fuer sinnvolle Farb-
-;                      indizes einen sinnvollen Wert
+; OUTPUTS:
+;  rgb:: (3,n)-array containing the red, green and blue values
+;        for the respective color index/indices in the first dimension.
 ;
 ; EXAMPLE:
-;*           rgb = CIndex2RGB(2374632)
+;*print, CIndex2RGB(234)
 ;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.7  2000/10/31 19:02:18  gabriel
-;         decompose gibts bei PS nicht
-;
-;     Revision 2.6  2000/10/30 18:31:26  gabriel
-;          header bug
-;
-;     Revision 2.5  2000/10/30 10:40:34  gabriel
-;           DEVICE DECOMPOSED is now considered
-;
-;     Revision 2.4  2000/10/27 18:57:22  gabriel
-;          TrueColorMode only with colortables (nase restriction)
-;
-;     Revision 2.3  2000/10/01 14:50:57  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.2  2000/08/31 10:23:26  kupper
-;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
-;
-;     Revision 2.1  1997/11/05 09:54:02  saam
-;           der Klapperstorch hat's gebracht
-;
-;
-;
+
 FUNCTION CIndex2RGB, cindex
+   On_Error,2 
+
+   IF (MAX(cindex) GT !D.Table_Size-1) OR (MIN(cindex) LT 0) THEN Console, "color index out of range", /FATAL
+
    default, DECOMPOSED, 0
    IF !D.Name EQ ScreenDevice() then DEVICE, GET_DECOMPOSED=DECOMPOSED
    IF !D.Name EQ ScreenDevice() AND $ 
     !D.N_COLORS EQ 16777216 AND $
     DECOMPOSED EQ 1 THEN BEGIN
-      stop
       b = cindex / 65536 
       g = (cindex MOD 65536)/256
       r = cindex MOD 256
       RETURN, [r,g,b]
-   END ELSE RETURN, GetColorIndex(cindex) 
-
+   END ELSE BEGIN
+       ; this is copied and adapted from the former getcolorindex
+       cm = intarr(256,3) 
+       TvLCT, cm, /GET  
+       cm = TRANSPOSE(cm)
+   
+       snr = SIZE(cindex)
+       IF (snr(0) GT 0) THEN RETURN, REFORM(cm(*,cindex), [3, snr(1:snr(0))]) $
+                        ELSE RETURN, cm(*, cindex)
+   END
 END
