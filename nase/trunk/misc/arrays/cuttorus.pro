@@ -38,6 +38,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1999/01/01 14:00:09  saam
+;           + the distance is now rounded, which provides a smoooother torus
+;
 ;     Revision 1.2  1997/12/19 13:04:19  saam
 ;           Keywords [XY]_CENTER, TRUNCATE und CUT_VALUE hinzugefuegt
 ;
@@ -57,7 +60,7 @@ FUNCTION CutTorus, data, outer_radius, inner_radius, X_CENTER=x_center, Y_CENTER
    Default, cut_value, 0
    
 
-   distArr = SHIFT( DIST(dataDims(1), dataDims(2)), dataDims(1)/2, dataDims(2)/2 ) 
+   distArr = ROUND(SHIFT( DIST(dataDims(1), dataDims(2)), dataDims(1)/2, dataDims(2)/2 ))
    IF Keyword_Set(TRUNCATE) THEN BEGIN
       distArr = NOROT_SHIFT(distArr, x_center, y_center)
    END ELSE BEGIN
