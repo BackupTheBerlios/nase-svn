@@ -266,13 +266,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
       im_max = max(Image)
       im_min = min(Image)
-      IF !D.NAME EQ "PS" THEN begin
-         Image = Congrid(Image, (xsize*40.) > 1, (ysize*40.) > 1, $
-                         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
-      end else begin
+      IF !D.NAME NE "PS" THEN begin
          Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, $
                          CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
-      endelse
+      endif
 
      ;;If CUBIC was used, the maximum or
       ;;minimum may have been changed by
