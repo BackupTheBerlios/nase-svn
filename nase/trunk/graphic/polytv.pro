@@ -9,8 +9,20 @@
 ;  Display two dimensional array using colored rectangles. 
 ;
 ; PURPOSE:
-;  (When referencing this very routine in the text as well as all IDL
-;  routines, please use <C>RoutineName</C>.)
+;  <C>PolyTV</C> displays two dimensional data as an array of colored
+;  rectangles. Colors are chosen according to the array entries
+;  interpreted as the indices of the colortable currently active. The
+;  size of the rectangles is determined to result in an overall size
+;  of the array supplied by the user.<BR>
+;  <C>PolyTV</C> offers an alternative to the classic IDL procedure
+;  <C>TV</C>. For resizing a <C>TV</C> plot, the underlying array has
+;  to be resized which causes memory consumption and large Postscript
+;  files. This is not necessary when using <C>PolyTV</C>.<BR>
+;  <C>PolyTV</C> is not intended to offer comfortable positioning and
+;  color scaling possibilities. Rather, it has been outsourced from
+;  <A>UTVScl</A> for the sake of clarity. If comfortable options are
+;  needed, <A>UTVScl</A> should be used with the <*>/POLYGON</*>
+;  switch active, which invokes <C>PolyTV</C>.
 ;
 ; CATEGORY:
 ;  Array
@@ -25,26 +37,38 @@
 ;*       [, /ORDER]
 ;
 ; INPUTS:
-;  image:: array
-;
+;  image:: Two dimensional array whose entries are interpreted as the
+;          indices of the currently active colortable. See also
+;          <A>ULoadCT</A>.
+; 
 ; INPUT KEYWORDS:
-;  xsize, ysize:: Desired overall size of plot.
-;  xorpos, yorpos:: Origin.
-;  /DEVICE:: Convert coordinates to device.
-;  /ORDER:: Start in uper left.
+;  xsize, ysize:: Desired horizontal and vertical size of the plot,
+;                 given in normal or device coordinates. See switch
+;                 <*>DEVICE</*>. Default: 1.0, i.e. the plot covers
+;                 the whole area available.
+;  xorpos, yorpos:: Horizontal and vertical position of the plot
+;                   origin in normal or device coordinates. See switch
+;                   <*>DEVICE</*>. Default: 0.0.
+;  /DEVICE:: If this switch es set, coordinates <*>xsize</*>,
+;            <*>ysize</*>, <*>xorpos</*> and <*>yorpos</*> are
+;            interpreted as device coordinates. Default: <*>DEVICE=0</*>.
+;  /ORDER:: If set, the image is drawn from the top down instead of
+;           the normal bottom up. See also ODL online help for <C>TV</C>.
 ;
 ; OUTPUTS:
-;  TV  
+;  An array of colored rectangles covering the desired area.
 ;
 ; PROCEDURE:
-;  
+;  Compute the size of single rectangles from the number of array
+;  entries and overall size, then draw them using the colors specified
+;  as the array entries.
 ;
 ; EXAMPLE:
 ;* PolyTV, 245*(1-Gauss_2d(21,21)) $
 ;*       , XSIZE=0.5, YSIZE=0.5, XORPOS=0.25, YORPOS=0.25
 ;
 ; SEE ALSO:
-;  <A>UTVScl</A>.
+;  <A>UTVScl</A>, <A>ULoadCT</A>, IDL's <C>TV</C>.
 ;-
 
 
