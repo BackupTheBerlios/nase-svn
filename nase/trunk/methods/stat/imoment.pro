@@ -1,104 +1,79 @@
 ;+
-; NAME:               IMOMENT
+; NAME:
+;  IMoment()
 ;
-; AIM:                mean, variance, ... of an multidimensinal array (index supp.)
+; VERSION:
+;  $Id$
+;
+; AIM:
+;  Compute mean, variance, ... over given index in a multidimensional array.
+;
+; PURPOSE:
+;  <C>IMoment()</C> computes the first four moments of a given
+;  multidimensional distribution for one of the dimensions.<BR>
+;  A typical example is to determine the mean and variance of a
+;  function <*>y = y(x)</*> using several iterations. Let data be
+;  supplied in the format <*>y(x,iter)</*>. <*>IMoment(y,1)</*> now
+;  returns the desired values depending on <*>x</*>. Calling
+;  conventions are the same as in <A>UMoment()</A>.
+;
+; CATEGORY:
+;  Statistics
+;  Signals
+;
+; CALLING SEQUENCE:
+;* result=IMoment(x, i 
+;*                [,MDEV=...] [,SDEV=...] 
+;*                [,MIN=...] [,MAX=...] 
+;*                [,ORDER=...] [,ITER=...] )
+;
+; INPUTS:
+;  x:: An n-dimenional matrix of integer-, float-, or double type.
+;  i:: Index over which moments are computed (see also keyword <*>ITER</*>).
+;
+; INPUT KEYWORDS:
+;  MDEV, SDEV:: See <A>UMoment</A>.
+;  MIN, MAX:: Set lower and upper boundary to exclude lower and higher
+;             entries of <*>x</*> from being considered in the
+;             calculation. If, for example, <*>-1</*> is contained in
+;             <*>x</*>, but no reasonable value, exclude it by setting
+;             <*>MIN=0</*>.
+;  ORDER:: Maximum order of the moment to be calculated (default: 3).
+;  ITER:: If <*>ITER</*> is set, <*>i</*> is interpreted as the
+;         iteration index, <*>i</*> may also be an array of indces.
+;
+; OUTPUTS:
+;  result:: Moments of the distribution contained in
+;           <*>x</*>. Undefined values are returned as <*>!NONE</*>.
+;
+; EXAMPLE:
+; First example:
+;* x = [[1,2,3,4,5],[0.9,2.1,3.5,4.1,5.0],[1.05,1.99,3.0,4.02,5.1]]
+;* m = IMoment(x,1)
+;* Print, 'MEAN:', m(*,0)
+;* Print, 'VAR :', m(*,1)
+;*
+; Second example:
+;* x=RandomU(s,10,10,30) ; here: x means an array of type (xdim,ydim,iter)
+;* m=IMoment(x,3,/ITER)
+;* help,m
+;*> <Expression>    FLOAT     = Array(10, 10, 4)
+;* SurfIt,m(*,*,0) ; plots the mean of the 2-dimensional iterations
+;*
+;* m=IMoment(x,3,/ITER,order=1) ;calculate only the mean and the variance
+;* help,m
+;*> <Expression>   FLOAT     = Array[10, 10, 2]
+;*
+; Third example:
+;*  x=RandomU(s,10,10,30,20) ; here: x means an array of type (xdim,ydim,iter1,iter2)
+;*  m=IMoment(x,[3,4],/ITER)
+;*  help,m
+;*> FLOAT     = Array(10, 10, 4) 
 ; 
-; PURPOSE:            Diese Funktion berechnet die ersten 4 Momente einer
-;                     multidimensionalen Verteilung fuer eine bestimmte
-;                     Dimension.
-;                     Typisches Beispiel ist eine Abhaengigkeit y = y(x),
-;                     die ueber viele Iterationen ermittelt werden soll
-;                     und in der Form y(x,iter) vorliegt.
-;                     IMoment(y,1) liefert nun Mittelwert, Varianz, ...
-;                     in Abhaengigkeit von x. Die Uebergabekonventionen
-;                     entsprechenden denen von UMoment. Fuer nicht definierte
-;                     Werte wird !NONE zurueckgegeben.
+; SEE ALSO:
+;  <A>UMoment</A>.
 ;
-; CATEGORY:           STATISTICS
-;
-; CALLING SEQUENCE:   Result = IMoment(X, i [,ORDER=ORDER] [,ITER=iter] [,MDEV=mdev] [,SDEV=sdev] [,MIN=min] [,MAX=max])
-;
-; INPUTS:             X:  Eine n-dimensionale Matrix vom Typ integer, float or double.
-;                     I:  Index dessen Moment berechnet werden soll (s.a. keyword ITER)                    
-;
-; KEYWORD PARAMETERS: MDEV/SDEV: <A>UMoment</A>
-;                     MIN/MAX  : definiert eine untere und/oder eine obere Grenze fuer
-;                                Messwerte die in die Berechnung einbezogen werden sollen.
-;                                Ist in der Matrix X z.B. -1 als 'kein sinnvoller Wert'
-;                                definiert setzt man z.B. MIN=0
-;
-;                     ITER: I ist dann der Iterationsindex (default: 0) und
-;                           I kann alternativ auch ein Array von Indizes sein
-;
-;                     ORDER:  the maximal order of the moment to calculate
-;                             (default: 3)                       
-;
-;
-; EXAMPLE:            
-;*                     ;first example:
-;*                     x = [[1,2,3,4,5],[0.9,2.1,3.5,4.1,5.0],[1.05,1.99,3.0,4.02,5.1]]
-;*                     m = IMoment(x,1) 
-;*                     print, 'MEANS:', m(*,0)
-;*                     print, 'VAR  :', m(*,1)   
-;*
-;*                     ;second example:
-;*                     X=randomu(s,10,10,30) ; here: x means an array of type (xdim,ydim,iter)
-;*                     m=imoment(x,3,/ITER)
-;*                     
-;*                     help,m
-;*                     ;idl returns:
-;*                     ;<Expression>    FLOAT     = Array(10, 10, 4)
-;*                     surfit,m(*,*,0) ; plots the mean of the 2-dimensional iterations
-;*
-;*                     m=imoment(x,3,/ITER,order=1) ;calculate only the mean and the variance
-;*                     help,m
-;*                     ;idl returns:
-;*                     ;<Expression>   FLOAT     = Array[10, 10, 2] 
-;*
-;*
-;*                     ;third example:
-;*                     X=randomu(s,10,10,30,20) ; here: x means an array of type (xdim,ydim,iter1,iter2)
-;*                     m=imoment(x,[3,4],/ITER)
-;*                    
-;*                     help,m
-;*                     ;idl returns:   FLOAT     = Array(10, 10, 4) 
-;                     
-;
-;
-;
-; SEE ALSO:           <A>UMoment</A>
 ;-
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 1.8  2000/10/05 16:29:23  gabriel
-;            Keyword ORDER new
-;
-;       Revision 1.7  2000/09/28 09:52:31  gabriel
-;             AIM tag added , message <> console
-;
-;       Revision 1.6  2000/06/08 10:13:55  gabriel
-;               ITER  keword supports arrays of indices
-;
-;       Revision 1.5  1999/09/13 12:56:20  saam
-;             array called sdev conflicted with function sdev in
-;             the alien directory and was therefore renamed to
-;             sdeviation
-;
-;       Revision 1.4  1999/04/28 15:13:37  gabriel
-;            Keyword Iter new
-;
-;       Revision 1.3  1998/08/10 09:53:28  saam
-;              now jitter scales with samplling period
-;
-;       Revision 1.2  1998/06/17 08:57:16  saam
-;             largest index could not be used
-;
-;       Revision 1.1  1998/03/13 09:48:32  saam
-;             creation
-;
-;
-;
 
 FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
 
@@ -118,7 +93,7 @@ FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, m
       IF iter EQ 1 THEN BEGIN
          ;; wo ist denn der boese index
          ind = -1
-         FOR k=0, s(0)-1 DO BEGIN 
+         FOR k=0l, s(0)-1 DO BEGIN 
             index = where(k EQ i-1,count)
             IF count EQ 0   THEN ind = [ind,k]
          ENDFOR
@@ -150,7 +125,7 @@ FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, m
          
          s = size(Atmp)
          ;stop
-         FOR x=0, s(1)-1 DO BEGIN
+         FOR x=0l, s(1)-1 DO BEGIN
             Atmp2 = reform(Atmp(x,*,*,*,*,*,*))
             s1 = size(Atmp2)
             indtot = indgen(s1(0))
@@ -187,7 +162,7 @@ FUNCTION imoment, A, i, ORDER=order,  mdev = mdev, sdev = sdeviation, min=min, m
             m    = FltArr(s(i),order+1)
             mdev = FltArr(s(i))
             sdeviation = FltArr(s(i))
-            FOR x=0,s(i)-1 DO BEGIN
+            FOR x=0l,s(i)-1 DO BEGIN
                CASE i OF  
                   1: Atmp = A(x,*) 
                   2: Atmp = A(*,x,*) 
