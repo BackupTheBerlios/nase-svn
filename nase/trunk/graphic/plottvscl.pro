@@ -84,6 +84,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.31  1998/08/04 13:23:32  gabriel
+;          Jetzt mit !P.MULTI Funktionalitaet. (Convert_Coord korrigiert, kann
+;          bei hoeheren (>4.0)  IDL Versionen wieder falsch sein)
+;
 ;     Revision 2.30  1998/07/21 15:37:33  saam
 ;           modifications of last revision made changes in rev. 2.27
 ;           wrong and these lines are therfore kicked off again
@@ -246,9 +250,28 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ArrayWidth  = (size(w))(1)
    END
 
+   PTMP = !P.MULTI
+   xcoord = lindgen(ArrayWidth)
+   ycoord = lindgen(ArrayHeight)
+   PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize,_EXTRA=e
+   
+   
+
+   plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
+   ;; convert_coord macht bei !P.MULTI Fehler Y Koordinate muss korregiert werden
+   IF FLOAT(!P.MULTI(2)) GT 0 AND ArrayHeight GT ArrayWidth THEN $
+    plotregion_norm(1,1) = !Y.S(0)+ !Y.S(1)*ycoord(N_ELEMENTS(ycoord)-1)/FLOAT(2)
+   plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
+  
+   !P.MULTI = PTMP
+
    VisualWidth = !D.X_VSIZE
    VisualHeight = !D.Y_VSIZE
-   
+   IF !P.MULTI(1) GT 0 AND !P.MULTI(2) GT 0 THEN BEGIN
+      VisualWidth = !D.X_VSIZE/FLOAT(!P.MULTI(1))
+      VisualHeight = !D.Y_VSIZE/FLOAT(!P.MULTI(2))
+   ENDIF
+
    Default, XRANGE, [0, ArrayWidth-1]
    Default, YRANGE, [0, ArrayHeight-1]
 
@@ -293,11 +316,17 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;-----Raender und Koordinaten des Ursprungs:
    IF Keyword_Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
    
-   IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
-   ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
+
+   ;IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
+   ;ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
    
-   UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
+   IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([plotregion_norm(0,0)+XPos,plotregion_norm(1,0)+YPos], /Normal, /To_Device) $
+   ELSE OriginDevice = [plotregion_device(0,0),plotregion_device(1,0)]
    
+   ;;UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
+   UpRightDevice = [VISUALWIDTH -(plotregion_device(0,1)- plotregion_device(0,0)), VISUALHEIGHT-(plotregion_device(1,1)-plotregion_device(1,0))]+[LegendRandDevice,0]
+   
+   LegendRandNorm = Convert_Coord([LegendRandDevice,0], /Device, /To_Normal)
    OriginNormal = Convert_Coord(OriginDevice, /Device, /To_Normal)
    UpRightNormal = Convert_Coord(UpRightDevice, /Device, /To_Normal)
    
@@ -307,27 +336,34 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    PlotPositionDevice(0) = OriginDevice(0)
    PlotPositionDevice(1) = OriginDevice(1)
    
-   PixelSizeNormal = [(1.0-RandNormal(0))/float(ArrayWidth+1),(1.0-RandNormal(1))/float(ArrayHeight+1)]
+   ;PixelSizeNormal = [(plotregion_norm(0,1))/float(ArrayWidth+1),(plotregion_norm(1,1))/float(ArrayHeight+1)]
+   PixelSizeNormal = [(plotregion_norm(0,1)-plotregion_norm(0,0)-LegendRandNorm(0,0))/float(ArrayWidth+1),(plotregion_norm(1,1)-plotregion_norm(1,0))/float(ArrayHeight+1)]
+   ;print,PixelSizeNormal,plotregion_device
    PixelSizeDevice = convert_coord(PixelSizeNormal, /normal, /to_device)
-   
+  
 
    ;-----Plotten des Koodinatensystems:
    IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
    IF Min(YRANGE) LT -1 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
    IF NOT Keyword_Set(FullSheet) THEN BEGIN 
-      IF PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)+UpRightDevice(0) LT VisualWidth THEN BEGIN
+      IF PixelSizeDevice(1)*(ArrayWidth+1)+UpRightDevice(0) LT VisualWidth THEN BEGIN
          PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
-         PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
+         ;PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
+         PlotPositionDevice(3) = plotregion_device(1,1)
+         print, PlotPositionDevice,'hallo1'
       ENDIF ELSE BEGIN
          PlotPositionDevice(3) = PixelSizeDevice(0)*(ArrayHeight+1)+OriginDevice(1)
-         PlotPositionDevice(2) = VisualWidth - UpRightDevice(0)
+         ;PlotPositionDevice(2) = VisualWidth - UpRightDevice(0)
+         PlotPositionDevice(2) = plotregion_device(0,1) - LegendRandDevice
+         print,PlotPositionDevice,'hallo2'
       ENDELSE 
+
       Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
        xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
        XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
    ENDIF ELSE BEGIN
-      Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),0.95-(LEGEND*0.2*Charsize),0.95], $
+      Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-(LEGEND*0.2*Charsize),plotregion_norm(1,1)], $
        xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
        XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
