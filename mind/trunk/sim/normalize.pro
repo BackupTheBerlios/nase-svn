@@ -54,13 +54,13 @@
 ;
 ; EXAMPLE:
 ;*  in your LEARNW structure you insert for instance:
-;*                                    NORMALIZE: {INFO:'NORMALIZE',$
-;*                                                QUADRATIC:0,$
-;*                                               WeightSum:0.8,$
-;*                                               NoLowSum:1},$
+;*      NORMALIZE: {INFO:'NORMALIZE',$
+;*             QUADRATIC:0,$
+;*             WeightSum:0.8,$
+;*             NoLowSum:1},$
 ;
 ; SEE ALSO:
-;  <A>RoutineName</A>
+;  <A>Sim</A>, <A>NormalizeWeights</A>, <A>InitNormalize</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,

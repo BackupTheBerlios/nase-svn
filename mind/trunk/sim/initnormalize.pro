@@ -16,45 +16,13 @@
 ;
 ;
 ; CATEGORY:
-;  Algebra
-;  Animation
-;  Array
-;  Color
-;  CombinationTheory
 ;  Connections
-;  DataStorage
-;  DataStructures
-;  Demonstration
-;  Dirs
-;  ExecutionControl
-;  Files
-;  Fonts
-;  Graphic
-;  Help
-;  Image
-;  Input
 ;  Internal
-;  IO
-;  Layers
-;  Math
 ;  MIND
-;  NASE
-;  NumberTheory
-;  Objects
-;  OS
-;  Plasticity
-;  Startup
-;  Statistics
-;  Signals
 ;  Simulation
-;  Strings
-;  Structures
-;  Widgets
-;  Windows
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;* InitNormalize, MaxWin,_CON, _LS, _EXTRA=e
 ;
 ; INPUTS:
 ;  
@@ -88,7 +56,7 @@
 ;*>
 ;
 ; SEE ALSO:
-;  <A>RoutineName</A>
+;  <A>Normalize</A>, <A>Sim</A>, <A>NormalizeWeights</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
