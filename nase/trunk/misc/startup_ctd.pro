@@ -106,7 +106,6 @@ Pro Startup_ctd
    ;; --- in a nohup-session, don't connect to X-Server ------
    ;; --- but always connect to X-Server, if display of ------
    ;; --- the NASE logo was requested!                  ------
-   uset_plot, !D.NAME  
    ;;NASEMARK---- Show_Logo_on_startup? ----------------------
    WillShowLogo = (GetEnv("NASELOGO") eq "TRUE") 
    if IsInteractiveSession or  WillShowLogo then begin
@@ -114,6 +113,7 @@ Pro Startup_ctd
       if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24
       DEVICE, DECOMPOSED=0
    endif
+   uset_plot, !D.NAME  
    WillShowLogo = (WillShowLogo or IsInteractiveSession)
    ;; if it is explicitly not wished:
    if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
