@@ -71,6 +71,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.15  2000/07/18 13:32:02  kupper
+;        Changed /CUBIC to CUBIC=-0.5 in ROT() call.
+;
 ;        Revision 1.14  2000/06/19 13:25:15  saam
 ;              + new keyword PHI to rotate assymmetric distributions
 ;
@@ -151,8 +154,8 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
        xn = REBIN(shift(dist(xlen,1),x0_arr)       , xlen, ylen, /SAMPLE)
        yn = REBIN(shift(dist(1,ylen),x0_arr,y0_arr), xlen, ylen, /SAMPLE)
        IF PHI NE 0d THEN BEGIN
-           xn = ROT(xn,phi,1,xlen/2,ylen/2,/CUBIC,/PIVOT)
-           yn = ROT(yn,phi,1,xlen/2,ylen/2,/CUBIC,/PIVOT)
+           xn = ROT(xn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
+           yn = ROT(yn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
        END
        xerg = exp(-xn^2d / 2d /sigmax^2d)
        yerg = exp(-yn^2d / 2d /sigmay^2d)
