@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/05/20 18:10:58  kupper
+;            Kleiner Bug bei Multi-Sheets.
+;
 ;     Revision 2.4  1998/05/18 18:25:11  kupper
 ;            Multi-Sheets implementiert!
 ;
@@ -63,6 +66,6 @@ PRO DestroySheet, _sheet, multi_nr
       CloseSheet, sheet
    END
 
-   If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
+   If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet(0) = sheet
 
 END
