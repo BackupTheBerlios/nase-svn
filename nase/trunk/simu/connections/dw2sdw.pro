@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/02/05 14:29:51  saam
+;           another int <-> long problem
+;
 ;     Revision 2.2  1998/02/05 14:17:40  saam
 ;          loop variables now long
 ;
@@ -96,7 +99,7 @@ PRO DW2SDW, _DW
               W       : W          ,$
               D       : D          ,$
               Queue   : InitSpikeQueue( INIT_DELAYS=D ),$
-              Learn   : -1          }
+              Learn   : -1l         }
    END ELSE BEGIN
       DW = {  info    : 'SDW_WEIGHT',$
               source_w: DW.source_w,$
@@ -108,7 +111,7 @@ PRO DW2SDW, _DW
               t2c     : t2c        ,$
               c2t     : c2t        ,$              
               W       : W          ,$
-              Learn   : -1          }
+              Learn   : -1l         }
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
 
