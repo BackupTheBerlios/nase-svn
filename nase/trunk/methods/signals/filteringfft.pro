@@ -108,7 +108,7 @@
 
 FUNCTION  FilteringFFT,   Signal, fS,  $
                           filter = filter,  $
-                          flow = flow, fhigh = fhigh, wlow = wlow, whigh = whigh, absolutewidths = absolutwidths,  $
+                          flow = flow, fhigh = fhigh, wlow = wlow, whigh = whigh, absolutewidths = absolutewidths,  $
                           attenuation = attenuation
 
 
