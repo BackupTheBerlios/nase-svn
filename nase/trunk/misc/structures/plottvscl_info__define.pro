@@ -63,7 +63,10 @@ Pro PLOTTVSCL_INFO__Define
                        leg_hstretch: 0.0, $
                        leg_vstretch: 0.0, $
                        charsize: 0.0, $
-                       legend: 0 $
+                       legend: 0, $
+                       leg_min: 0.0, $
+                       leg_mid_str: '', $
+                       leg_max: 0.0 $
               }
 
 End

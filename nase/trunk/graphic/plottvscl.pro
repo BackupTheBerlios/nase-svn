@@ -39,7 +39,7 @@
 ;*           [, COLORMODE=+/-1] [, SETCOL=0]
 ;*           [, TOP=...]
 ;*           [, RANGE_IN=[a,b] ]
-;*           [, UPDATE_INFO=... [, /INIT ] ]
+;*           [, UPDATE_INFO=... [, /INIT ] [, /REDRAW_LEGEND] ]
 ;*
 ;*           - all other Keywords are passed to the PLOT -
 ;*           - command, using the _REF_EXTRA mechanism,  -
@@ -166,7 +166,7 @@
 ;                 passed by value in IDL. You need to use a
 ;                 temporary variable. (See IDL Reference Manual,
 ;                 chapter "Parameter Passing with Structures", sic!)
-;          INIT:: When passing a structure in UPDATE_INFO, array 
+;         /INIT:: When passing a structure in UPDATE_INFO, array 
 ;                 values are scaled according to the values
 ;                 contained in the PLOTTVSCL_INFO struct. /INIT
 ;                 forces the color scaling to be re-initialized, 
@@ -175,6 +175,14 @@
 ;                 to span all availabe color indices.
 ;                 The new scling is stored in the PLOTTVSCL_INFO 
 ;                 struct for subsequent calls.
+; /REDRAW_LEGEND::When passing a structure in UPDATE_INFO, only the
+;                 contents of the plot window are updated. In some
+;                 cases, it might also be required to redraw
+;                 the legend, (if plotting of a legend was originally
+;                 requested). A common reason is, that the palette has
+;                 been changed, so that the contents of the plot
+;                 window will change colors. Setting this keyword
+;                 initiates redrawing of the legend.
 ;  /ALLOWCOLORS:: Passed to <A>UTvScl</A>, see there.
 ;
 ; OPTIONAL OUTPUTS:
@@ -244,6 +252,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                RANGE_IN=range_in, $
                UPDATE_INFO=update_info, $
                INIT=init, $
+               REDRAW_LEGEND = redraw_legend, $
                ALLOWCOLORS=allowcolors, $
                _REF_EXTRA=_extra
 
@@ -261,6 +270,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;This is a normal PlotTvScl-Call
 
       INIT = 1                  ; we want the color scaling to be initialized
+      REDRAW_LEGEND = 1         ; we want the palette to be drawn, (if requested)
 
       ;;-----Sichern der urspruenglichen Device-Parameter
       oldRegion   = !P.Region
@@ -298,10 +308,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;; copying of _W is no longer necessary (it is done by
       ;; PlotTvScl_update), R Kupper, Sep 22 1999
       ;;   W = _W 
-      IF (Keyword_Set(NSCALE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
-         maxW = Max(_W)
-         minW = Min(NoNone_Func(_W))
-      END
 
       IF Keyword_Set(NORDER) THEN BEGIN
          ArrayHeight = (size(_w))(1)
@@ -448,7 +454,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       borderthick_norm = uConvert_Coord([1., 1.], /DEVICE, /to_normal)
 
 
-      ;;------------------> Optional Outputs
+
+     ;;------------------> Optional Outputs
       Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
       UPDATE_INFO = {PLOTTVSCL_INFO, $
@@ -498,8 +505,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                        leg_hstretch: TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
                        leg_vstretch: TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
                        charsize: CHARSIZE, $
-                       legend: LEGEND $
+                       legend: LEGEND, $
+                       leg_min: 0.0, $ ;will be set below, see there!
+                       leg_mid_str: '', $ ;will be set below, see there!
+                       leg_max: 0.0 $ ;will be set below, see there!
                        }
+
+      GET_INFO = UPDATE_INFO    ;Kept for compatibility
 
       Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
       ;;-------------------------------- End Optional Outputs
@@ -517,8 +529,57 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
 
 
-   ;;-----Legende, falls erwuenscht und nötig:
-   IF Keyword_Set(INIT) and Keyword_Set(UPDATE_INFO.legend) THEN BEGIN
+   ;;-----Plotten der UTVScl-Graphik:
+   PlotTvScl_update, INIT=init, _W, UPDATE_INFO, RANGE_IN=range_in
+
+
+   
+   ;;------------ Handling of legend: ----------------------------
+
+   ;; determine min, mid and max values for (an eventual) legend
+   ;; draw. This must only be done, when /INIT is set!
+   If keyword_set(INIT) then begin
+
+      IF (Keyword_Set(UPDATE_INFO.NSCALE) OR Keyword_Set(UPDATE_INFO.NEUTRAL)) THEN BEGIN
+         maxW = Max(_W)
+         minW = Min(NoNone_Func(_W))
+      END
+
+      IF Keyword_Set(UPDATE_INFO.NSCALE) THEN BEGIN
+         IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+            Default, LEG_MAX,  MAX([ABS(MaxW), ABS(MinW)])
+            Default, LEG_MIN, -MAX([ABS(MaxW), ABS(MinW)])
+            If LEG_MIN eq -LEG_MAX then leg_mid_str = '0' else $
+              leg_mid_str = ''
+         ENDIF ELSE BEGIN
+            Default, LEG_MAX, MaxW
+            Default, LEG_MIN, 0
+            If LEG_MIN eq -LEG_MAX then leg_mid_str = '0' else $
+              leg_mid_str = ''
+         ENDELSE
+      ENDIF  ELSE BEGIN;; No-NASE
+         Default, LEG_MAX, MAX(_w)
+         Default, LEG_MIN, MIN(_w)
+         
+         IF Keyword_Set(UPDATE_INFO.NEUTRAL) THEN BEGIN
+            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+               LEG_MAX = MAX([ABS(MaxW), ABS(MinW)])
+               LEG_MIN = -LEG_MAX
+            ENDIF ELSE LEG_MIN = 0
+         ENDIF
+         leg_mid_str = ''
+      ENDELSE
+
+      ;; store these values in the UPDATE_INFO struct:
+      UPDATE_INFO.leg_min = LEG_MIN
+      UPDATE_INFO.leg_max = LEG_MAX
+      UPDATE_INFO.leg_mid_str = leg_mid_str
+
+   EndIf
+
+
+   ;;-----Legende plotten, falls erwuenscht und nötig:
+   IF (Keyword_Set(INIT) or Keyword_Set(REDRAW_LEGEND)) and Keyword_Set(UPDATE_INFO.legend) THEN BEGIN
       
       ;; first opaque area for legend value plotting, in case this is an
       ;; update (all in normal):
@@ -531,60 +592,22 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                 /Normal, $
                 color=GetBackground()
       
-      IF Keyword_Set(NSCALE) THEN BEGIN
-         IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-            Default, LEG_MAX,  MAX([ABS(MaxW), ABS(MinW)])
-            Default, LEG_MIN, -MAX([ABS(MaxW), ABS(MinW)])
-            If LEG_MIN eq -LEG_MAX then Mid = '0'
-            TVSclLegend, UPDATE_INFO.leg_x, $
-                         UPDATE_INFO.leg_y, $
-                         H_Stretch=UPDATE_INFO.leg_hstretch, $
-                         V_Stretch=UPDATE_INFO.leg_vstretch, $
-                         Max=LEG_MAX, Min=LEG_MIN, Mid=Mid, $
-                         CHARSIZE=Charsize, $
-                         $;;NOSCALE=NoScale, $
-                         /Vertical, /Center
-         END ELSE BEGIN
-            Default, LEG_MAX, MaxW
-            Default, LEG_MIN, 0
-            If LEG_MIN eq -LEG_MAX then Mid = '0'
-            TVSclLegend, UPDATE_INFO.leg_x, $
-                         UPDATE_INFO.leg_y, $
-                         H_Stretch=UPDATE_INFO.leg_hstretch, $
-                         V_Stretch=UPDATE_INFO.leg_vstretch, $
-                         Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
-                         CHARSIZE=Charsize, $
-                         $;;NOSCALE=NoScale, $
-                         /Vertical, /Center
-         ENDELSE
-      ENDIF  ELSE BEGIN;; No-NASE
-         Default, LEG_MAX, MAX(_w)
-         Default, LEG_MIN, MIN(_w)
-         IF Keyword_Set(NEUTRAL) THEN BEGIN
-            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-               LEG_MAX = MAX([ABS(MaxW), ABS(MinW)])
-               LEG_MIN = -LEG_MAX
-            END ELSE LEG_MIN = 0
-         END
-         
-         
-         TVSclLegend, UPDATE_INFO.leg_x, $
-                      UPDATE_INFO.leg_y, $
-                      H_Stretch=UPDATE_INFO.leg_hstretch, $
-                      V_Stretch=UPDATE_INFO.leg_vstretch, $
-                      Max=LEG_MAX, Min=LEG_MIN, $
-                      CHARSIZE=Charsize, $
-                      /Vertical, /Center, TOP=top
-      ENDELSE
-   ENDIF
+      ;; now draw the legend:
+      TVSclLegend, UPDATE_INFO.leg_x, $
+                   UPDATE_INFO.leg_y, $
+                   H_Stretch=UPDATE_INFO.leg_hstretch, $
+                   V_Stretch=UPDATE_INFO.leg_vstretch, $
+                   Max=UPDATE_INFO.leg_max, $
+                   Min=UPDATE_INFO.leg_min, $
+                   Mid=UPDATE_INFO.leg_mid_str, $
+                   CHARSIZE=Charsize, $
+                   /Vertical, /Center, TOP=top
+      ENDIF
    
-   
+   ;;----- end handling of legend -------------------------
    
 
 
-   ;;-----Plotten der UTVScl-Graphik:
-   PlotTvScl_update, INIT=init, _W, UPDATE_INFO, RANGE_IN=range_in
-   GET_INFO = UPDATE_INFO       ;Kept for compatibility
 
 
 END
