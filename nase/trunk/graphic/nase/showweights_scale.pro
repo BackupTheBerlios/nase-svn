@@ -107,11 +107,9 @@
 ;                 <I>The keyword <C>GET_RANGE_OUT</C> is obsolete, but
 ;                 maintained for backwards compatibility.<BR>
 ;                 The value returned is always:<BR>
-;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*></I>
-;
+;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*></I><BR> 
 ;<BR>
 ;                 Zur Information: Es gilt die Beziehung<BR>
-;<BR>
 ;                 <*>GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,</*><BR>
 ;                 <*>              = [0, max(Array)]  sonst.</*><BR>
 ;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*>
