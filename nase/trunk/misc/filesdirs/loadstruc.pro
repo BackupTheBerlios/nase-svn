@@ -67,35 +67,52 @@
 ;-
 FUNCTION LoadStruc, lun
 
-   nTags = 0
-   ReadF, lun, nTags
 
-   FOR tag=0, nTags-1 DO BEGIN
-      tagName = ''
-      ReadF, lun, tagName
+   ; implement a small lookahead
+   Point_Lun, -lun, pos
+   formatted = ''
+   ReadF, lun, formatted
+   Point_Lun, lun, pos
+   if STRCMP(formatted, 'UWriteU/', 8) THEN BEGIN
 
-      tagSizeElements = 0
-      ReadF, lun, tagSizeElements
+       RETURN, UReadU(lun)
+
+   END ELSE BEGIN
+       ;; this part is kept for compatibility for old versions of
+       ;; savestruc or new versions using the FORMATTED option
+
+       nTags = 0
+       ReadF, lun, nTags
+       
+       FOR tag=0, nTags-1 DO BEGIN
+           tagName = ''
+           ReadF, lun, tagName
+           
+           tagSizeElements = 0
+           ReadF, lun, tagSizeElements
+           
+           tagSize = IntArr(tagSizeElements)
+           ReadF, lun, tagSize
       
-      tagSize = IntArr(tagSizeElements)
-      ReadF, lun, tagSize
-      
-      IF tagSizeElements LT 4 THEN BEGIN
-         ; we have found a scalar
-         tmpval = Make_Array(SIZE=[1,1,tagSize(1), tagSize(2)])
-         tagVal = tmpval(0)
-      END ELSE BEGIN
-         ; hurra, it's an array
-         tagVal = Make_Array(SIZE=tagSize)
-      END
-      ReadF, lun, tagVal
+           IF tagSizeElements LT 4 THEN BEGIN
+               ;; we have found a scalar
+               tmpval = Make_Array(SIZE=[1,1,tagSize(1), tagSize(2)])
+               tagVal = tmpval(0)
+           END ELSE BEGIN
+               ;; hurra, it's an array
+               tagVal = Make_Array(SIZE=tagSize)
+           END
+           ReadF, lun, tagVal
+           
+           IF tag EQ 0 THEN BEGIN
+               ST = Create_Struct(tagName, tagVal)
+           END ELSE BEGIN
+               ST = Create_Struct(ST, tagName, tagVal)
+           END
+       END
+       
+       RETURN, ST
 
-      IF tag EQ 0 THEN BEGIN
-         ST = Create_Struct(tagName, tagVal)
-      END ELSE BEGIN
-         ST = Create_Struct(ST, tagName, tagVal)
-      END
    END
 
-   RETURN, ST
 END
