@@ -205,8 +205,8 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
 ;      ENDFOR
 ;   ENDFOR
 
-   PolyTV, array, XSIZE=x_size* X_PX_CM, YSIZE=y_size* X_PX_CM $
-    , XORPOS=xnorm* X_PX_CM, YORPOS=ynorm* X_PX_CM $
+   PolyTV, array, XSIZE=x_size* X_PX_CM, YSIZE=y_size* Y_PX_CM $
+    , XORPOS=xnorm* X_PX_CM, YORPOS=ynorm* Y_PX_CM $
     , DEVICE=1, ORDER=order
 
 END
