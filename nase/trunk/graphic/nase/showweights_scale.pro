@@ -126,6 +126,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.17  1999/11/12 16:56:33  kupper
+;        Oops! Corrected some errors...
+;
 ;        Revision 2.16  1999/11/12 16:39:35  kupper
 ;        Updated Docu.
 ;        Added SETCOL=2 - Mode.
@@ -206,35 +209,35 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    endelse
 
 
-      ;;------------------> Make local copy and wipe out !NONEs
-      MatrixMatrix = NoNone_Func( Temporary(Matrix), NONES=no_connections, COUNT=count )
-      ;;Named MatrixMatrix for historical reasons...
-      ;;--------------------------------
-      
-      min = min(MatrixMatrix)
-      max = max(MatrixMatrix)
-
-      ;;------------------> The Range value will be scaled to white/green:
-      If Keyword_Set(Range_In) then Range = Range_In ;Range_In should not be changed.
+   ;;------------------> Make local copy and wipe out !NONEs
+   MatrixMatrix = NoNone_Func( Matrix, NONES=no_connections, COUNT=count )
+   ;;Named MatrixMatrix for historical reasons...
+   ;;--------------------------------
+   
+   min = min(MatrixMatrix)
+   max = max(MatrixMatrix)
+   
+   ;;------------------> The Range value will be scaled to white/green:
+   If Keyword_Set(Range_In) then Range = Range_In ;Range_In should not be changed.
                                 ;cannot use "Default", by the way,
                                 ;as Range_In=0 should be
                                 ;interpreted as not set (not as
                                 ;literal 0)
-      Default, Range, max([max, -min]) ; for positive Arrays this equals max.
-      If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
-         message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
-         Range = Range(1)
-      End
-      ;;--------------------------------
-
-      ;;------------------> Optional Outputs
-      GET_RANGE_IN  = [0, Range]
-      GET_RANGE_OUT = [0, GET_MAXCOL]
-      ;;--------------------------------
-
-      if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
-
-
+   Default, Range, max([max, -min]) ; for positive Arrays this equals max.
+   If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
+      message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
+      Range = Range(1)
+   End
+   ;;--------------------------------
+   
+   ;;------------------> Optional Outputs
+   GET_RANGE_IN  = [0, Range]
+   GET_RANGE_OUT = [0, GET_MAXCOL]
+   ;;--------------------------------
+   
+   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
+   
+   
 
 
 
@@ -271,7 +274,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       Endif
       
-      If (SETCOL eq 1) then MatrixMatrix = Temporary(MatrixMatrix)/double(Range)*GET_MAXCOL
+      If (SETCOL lt 2) then MatrixMatrix = Temporary(MatrixMatrix)/double(Range)*GET_MAXCOL
 
    endif else begin             ;pos/neg Array
 
@@ -289,7 +292,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
 
-      If (SETCOL eq 1) then begin
+      If (SETCOL lt 2) then begin
          MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(Range)
          MatrixMatrix = (Temporary(MatrixMatrix)+0.5)*GET_MAXCOL
       EndIf
