@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.5  2000/10/06 15:17:38  saam
+%       new todo :(
+%
 %       Revision 1.4  2000/10/06 12:07:31  saam
 %        new version including the, fri, wed
 %
@@ -138,7 +141,9 @@ Version: \$Id$ $\$
 \section{Control}
 \begin{itemize}
 \item allow \texttt{console} to log into a file, simultaneously
-\item console ignores level keyword and outputs filename instead of procedure/function name
+\item \texttt{console} ignores level keyword and outputs filename instead of procedure/function name
+\item \texttt{console} fails, if xwindow id closed and a console command occurs
+\item \texttt{console} should not be the son of !MH
 \item \texttt{SimTime}: make it work together with console
 \item \texttt{Video}: extension to save and restore arbitrary parameter structures
 \end{itemize}
@@ -176,6 +181,7 @@ Version: \$Id$ $\$
 \section{Misc}
 \begin{itemize}
 \item \texttt{StrJoin}: remove or maintain due to IDL 3.6?
+\item \texttt{Split}: bug when working with separator longer than 1 character
 \item How can marburg specific extensions be included?
 \item \texttt{RealFileName}: marburg specific actions brake other systems
 \item \texttt{XMatEdit}: obsolete 
@@ -187,21 +193,23 @@ Version: \$Id$ $\$
 \section{Simulation Kernel}
 
 \begin{itemize}
-\item improve \texttt{mSetSDW} with \texttt{temporary}
 \item \texttt{saveDW} and \texttt{restoreDW} should work with \texttt{SDW}
 \item initialize T2C on demand and in a separate function
 \item extend \texttt{initDW} to work \texttt{SLOW} and \texttt{FAST} version
 \item check the functionality of weight display routines, when T2C is missing
-\item \texttt{delayWeigh}: improvement in processing speed and memory consumption?
 \item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well
 \item commit neuron type file
-\item \texttt{N_Spikes} and \texttt{LayerMUA} are redundant. One has to be deleted!
+\item \texttt{N_Spikes} and \texttt{LayerMUA} are redundant. Current status: \texttt{N_Spikes} uses \texttt{LayerMU} and generated warning.
 \end{itemize}
 
 
 
 \section{Fulfilled ToDos}
-
+\begin{itemize}
+\item lExtrac: removed because obsolete [done, AT]
+\item \texttt{delayWeigh}: improvement in processing speed and memory consumption? NOPE [done]
+\item improve \texttt{mSetSDW} with \texttt{temporary}: no improvement [done, BAS]
+\end{itemize}
 
 
 \end{document}
