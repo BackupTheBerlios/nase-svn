@@ -53,9 +53,10 @@
 ;
 ;-
 
+FORWARD_FUNCTION _UReadU
+
 FUNCTION _UReadU, lun, _EXTRA=e
   ON_Error, 2
-
 
   ; read the size structure of the data to be read
   nsx=0l
@@ -137,6 +138,7 @@ END
 FUNCTION UReadU, _lun, _EXTRA=e
 
   ON_ERROR, 2
+
   IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenR(_lun,_EXTRA=e) ELSE lun=_lun
 
   ; read version and ID
