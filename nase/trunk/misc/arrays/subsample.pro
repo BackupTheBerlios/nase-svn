@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/04 17:14:48  kupper
+;        Forgot /Center in GetSubArray() call. Fixed.
+;
 ;        Revision 1.1  2000/02/29 18:46:57  kupper
 ;        New and easy.
 ;
@@ -66,7 +69,7 @@ Function Subsample, A, frac, Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate
    return, $
    Rebin( /Sample, $
           Convol( Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate, $
-                  GetSubArray(A, samples_per_row*frac, samples_per_col*frac), $
+                  GetSubArray(A, /Center, samples_per_row*frac, samples_per_col*frac), $
                   Gauss_2d(/Autosize, HWB=frac/2.0, /Norm) $
                 ), $
           samples_per_row, samples_per_col $
