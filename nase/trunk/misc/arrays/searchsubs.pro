@@ -90,9 +90,9 @@ FUNCTION searchsubs, array, subarray, only_first=only_first, all_positions=all_p
        IF not(keyword_set(all_positions)) THEN BEGIN
          sub_is_equal = (where(subarray-shift(subarray,1)))(0)   ; -1 means the subarray is equal !!!
          IF (sub_is_equal EQ -1) AND (n_elements(potpos) GT 2) THEN $
-           IF (where(potpos-shift(potpos,1) EQ 1))(0) NE -1 THEN BEGIN
-             potpos(where(potpos-shift(potpos,1) EQ 1)) = 0
-             potpos = potpos(where(potpos))
+           IF (where((potpos-shift(potpos,1)) EQ 1))(0) NE -1 THEN BEGIN
+             potpos(where((potpos-shift(potpos,1)) EQ 1)) = 0
+             potpos = potpos(where(potpos)>0)
          ENDIF
        ENDIF
 
