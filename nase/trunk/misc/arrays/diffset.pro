@@ -1,29 +1,58 @@
 ;+
-; NAME:               DiffSet
+; NAME:
+;   DiffSet()
 ;
-; AIM:                returns the difference of two sets (arrays)
+; AIM:
+;   returns the difference set of two sets (arrays)
 ;
-; PURPOSE:            Bildet die Differenzmenge aus zwei Mengen (Arrays).
+; PURPOSE:
+;   This function returns all distinct elements of the first argument (<*>SetA</*>) that are
+;   not in the second (<*>Sub</*>).<BR>
+;   Set <*>Sub</*> does not necessarily need to be a subset of <*>SetA</*>. For example,
+;   if the intersection of both sets is empty, then the result will be identical to <*>SetA</*>.
+;   Multiple instances of the same value in <*>SetA</*> (which are possible due to the array nature of the input)
+;   are only considered once. This default option can be turned off by setting the <*>ARRAY</*> keyword which also
+;   prevents the result from being sorted in ascending order and keeps the original order.
 ;
-; CATEGORY:           MISC ARRAY SET
+; CATEGORY:
+;   Array
+;   Math
 ;
-; CALLING SEQUENCE:   diff = DiffSet(A, sub)
+; CALLING SEQUENCE:
+;*   ds = DiffSet(SetA,Sub)
 ;
-; INPUTS:             A  : die Menge aus der Elemente geloescht werden
-;                     sub: die aus A zu entfernenden Elemente
+; INPUTS:
+;   SetA:: the set (array) that will be reduced (any type, any dimension)
+;   Sub :: the set containing those elements that should be removed from <*>SetA</*> (any type, any dimension);
+;          empty sets (=!None) may also be passed to the function
 ;
-; OUTPUTS:            diff : die Differenzmenge, falls leer wird !NONE
-;                            zurueckgegeben
+; OUTPUTS:
+;   ds:: an linear array of the same type as the first argument;
+;        if one of the arguments is an empty set (=!None, not undefined!)
+;        the result will be identical to <*>SetA</*>.
+;
+; INPUT KEYWORDS:
+;  ARRAY:: set this keyword to avoid sorting the result and removing multiple entries
+;
+; RESTRICTIONS:
+;  If one argument is of type string, then the other has to be as well.
 ;
 ; EXAMPLE:
-;                     print, DiffSet([1,2,3,4,5], [1,3,6,8])
-;                            2       4       5
-;                     IF DiffSet([1,2,3,4,5], [1,2,3,4,5,6,7,8,9]) EQ !NONE THEN print, 'Nix mehr drin'
-;                     Nix mehr drin       
+;*     Print, DiffSet([4,65,7,3,7,4],[1,3,5,4])
+;*     >  7  65
+;*     Print, DiffSet([4,65,7,3,7,4],[1,3,5,4], /array)
+;*     > 65   7   7
+;
+; SEE ALSO:
+;  <A>CutSet</A>, <A>UniSet</A>, <A>SubSet</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/12/20 18:08:55  gail
+;     * completely revised
+;     * updated header
+;
 ;     Revision 1.2  2000/09/25 09:12:54  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -34,19 +63,22 @@
 ;
 ;
 ;-
-FUNCTION DiffSet, A, sub
 
-   nA = N_Elements(A)
-   nS = N_Elements(sub)
+FUNCTION DiffSet, SetA, Sub, array=array
 
-   FOR i=0, nA-1 DO BEGIN
-      IF NOT InSet(A(i), sub) THEN BEGIN
-         ; ok, we've got one  Element in A that's not in sub 
-         IF Set(B) THEN B = [B, A(i)] ELSE B = A(i)
-      END
-   END
+  On_Error, 2
 
-   IF Set(B) THEN RETURN, B ELSE RETURN, !NONE
+  IF NOT (Set(SetA) AND Set(Sub)) THEN Console, 'invalid arguments', /FATAL
 
+  ; if called with an empty set then return SetA (because there's nothing to do)
+  IF (SetA(0) EQ !None) OR (Sub(0) EQ !None) THEN Return, SetA
+
+  ; evtl. reduce to a set for the case that SetA contains multiple instances of the same value (array!)
+  IF Keyword_Set(array) THEN ElmA = SetA  $
+                        ELSE ElmA = Elements(SetA)
+
+  ; mark all elements of ElmA that are not in Sub and return them
+  R = Where(NotEqual(ElmA,Sub))
+  IF R(0) NE -1 THEN  Return, ElmA(R)  ELSE Return, !None
 
 END
