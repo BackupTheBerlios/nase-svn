@@ -1,58 +1,118 @@
 ;+
-; NAME:                  SimTimeStop
+; NAME:
+;  SimTimeStop
 ;
-; VERSION:  $Id$
+; VERSION:
+;  $Id$
 ;
-; AIM: see <A>simtimeinit</A>
-;
-; PURPOSE:               Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
-;                        zu protokollieren und nach der Gesamtsimulation eine Statistik/Graphik aus-
-;                        zugeben.
+; AIM:
+;  Indicates completion of a simulation to the <C>SimTime</C> structure.
+;  
+; PURPOSE:
+;  The <C>SimTime</C> family of routines is intended to be used when
+;  one wants to keep track of the times needed by iterations in a
+;  simulation or by a number of
+;  simulations. During simulation, the number of iterations already
+;  executed as well as the progress and estimated time until
+;  completion can be printed. After completion, a small analysis may
+;  also be printed or plotted.<BR>
+;  <C>SimTimeStop</C> is used to indicate the completion of the
+;  simulation. The call of <C>SimTimeStop</C> also causes
+;  some temporal information about the executed simulation to be printed.
 ;
 ; CATEGORY:
-; 
-; ExecutionControl
+;  ExecutionControl
 ;
-; CALLING SEQUENCE:      SimTimeStop
+; CALLING SEQUENCE:
+;  SimTimeStop
 ;
-; COMMON BLOCKS:         SimTime
+; OUTPUTS:
+;  This information is either printed into the standard IDL window or
+;  into the <A>console</A>, depending on the initialization with
+;  <A>SimTimeInit</A>.
+;* Number of iterations
+;* Total Time
+;* Mean Time/Iteration
+;* Standard Deviation
+;  Setting the <C>GRAPHICS</C> keyword in <A>SimTimeInit</A> also
+;  causes the durations of the single iterations to be plotted.
+;
+; COMMON BLOCKS:
+;  SimTime
+;
+; PROCEDURE:
+;  A little calculation and some printing and/or plotting.
 ;
 ; EXAMPLE:
+;* SimTimeInit, MAXSTEPS=10, /GRAPHIC, /PRINT
+;* FOR a=1,10 DO BEGIN
+;*    Wait, 5.*RandomU(seed)
+;*    SimTimeStep
+;* END
+;* SimTimeStop
 ;
-;*SimTimeInit, GRAPHIC=5, /PRINT
-;*FOR a=1,10 DO BEGIN
-;* Wait, 5.*RandomU(seed)
-;* SimTimeStep
-;*END
-;*SimTimeStop
-;*
+; SEE ALSO:
+;  <A>SimTimeInit</A>,  <A>SimTimeStep</A>,  <A>Console</A>.
+;
 ;-
+
+
+
 PRO SimTimeStop
    
    COMMON SimTime, stat
 
    IF stat.step EQ 1 THEN BEGIN
+ 
       m  = TOTAL(stat.tpi(0:stat.step-1))/FLOAT(stat.step)
-      print, '-----------------------------------------------'
-      print, '  Iterations           : ', stat.step
-      print, '  Total Time           : ', Seconds2String(Total(stat.tpi))
-      print, '-----------------------------------------------'
-      FLUSH, -1
+      
+      IF stat.console EQ -1 THEN BEGIN
+         print, '-----------------------------------------------'
+         print, '  Iterations           : ', stat.step
+         print, '  Total Time           : ', Seconds2String(Total(stat.tpi))
+         print, '-----------------------------------------------'
+         FLUSH, -1
+      ENDIF ELSE BEGIN
+         Console, stat.console $
+          , '-----------------------------------------------', /MSG
+         Console, stat.console $
+          , '  Iterations           : '+Str(stat.step), /MSG
+         Console, stat.console $
+          , '  Total Time           : '+Seconds2String(Total(stat.tpi)), /MSG
+         Console, stat.console $
+          , '-----------------------------------------------', /MSG
+      ENDELSE
+
    END ELSE BEGIN
-      if stat.step GT stat.maxsteps then begin
-         CONSOLE, /warn, 'too many iterations...quitting'
-         return
-      end
+      IF stat.step GT stat.maxsteps THEN BEGIN 
+         Console, /warn, 'too many iterations...quitting'
+         Return
+      END 
       m  = TOTAL(stat.tpi(0:stat.step-1))/FLOAT(stat.step)
       sd = StDev(stat.tpi(0:stat.step-1)) 
       
-      print, '-----------------------------------------------'
-      print, '  Iterations           : ', stat.step
-      print, '  Total Time           : ', Seconds2String(Total(stat.tpi))
-      print, '  Mean Time/Iteration  : ', Seconds2String(m)
-      print, '  Standard Deviation   : ', Seconds2String(sd)
-      print, '-----------------------------------------------'
-      FLUSH, -1
+      IF stat.console EQ -1 THEN BEGIN
+         print, '-----------------------------------------------'
+         print, '  Iterations           : ', stat.step
+         print, '  Total Time           : ', Seconds2String(Total(stat.tpi))
+         print, '  Mean Time/Iteration  : ', Seconds2String(m)
+         print, '  Standard Deviation   : ', Seconds2String(sd)
+         print, '-----------------------------------------------'
+         FLUSH, -1
+      ENDIF ELSE BEGIN
+         Console, stat.console $
+          , '-----------------------------------------------', /MSG
+         Console, stat.console $
+          , '  Iterations           : '+Str(stat.step), /MSG
+         Console, stat.console $
+          , '  Total Time           : '+Seconds2String(Total(stat.tpi)), /MSG
+         Console, stat.console $
+          , '  Mean Time/Iteration  : '+Seconds2String(m), /MSG
+         Console, stat.console $
+          , '  Standard Deviation   : '+Seconds2String(sd)
+         Console, stat.console $
+          , '-----------------------------------------------', /MSG
+      ENDELSE
       
       IF !D.Name EQ 'NULL' THEN RETURN
 

@@ -1,36 +1,71 @@
 ;+
-; NAME:                  SimTimeInit
+; NAME:
+;  SimTimeInit
 ;
-; AIM: Initializes a structure for recording the time needed by simulations
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:               Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
-;                        zu protokollieren und nach der Gesamtsimulation eine Statistik/Graphik aus-
-;                        zugeben.
+; AIM:
+;  Initializes a structure for recording the time needed by simulations.
 ;
-; CATEGORY:              ORGANISATION
+; PURPOSE:
+;  The <C>SimTime</C> family of routines is intended to be used when
+;  one wants to keep track of the times needed by iterations in a
+;  simulation or by a number of
+;  simulations. During simulation, the number of iterations already
+;  executed as well as the progress and estimated time until
+;  completion can be printed. After completion, a small analysis may
+;  also be printed or plotted.<BR>
+;  <C>SimTimeInit</C> initializes the structure needed for recording
+;  the time and is used to specify the way in which outputs are
+;  displayed. 
 ;
-; CALLING SEQUENCE:      SimTimeInit [,/GRAPHIC] [,/PRINT], [MAXSTEPS=maxsteps],[/CLEAR]
+; CATEGORY:
+;  ExecutionControl
 ;
-; KEYWORD PARAMETERS:    graphic : falls angegeben, wird werden ins aktuelle Device die
-;                                  Zeiten inklusive Mittelwert und Standardabweichung angezeigt
-;                        print   : nach jeder Iteration werden benoetigte Zeit/Iteration und Gesamtzeit 
-;                                  ausgegeben (im Stunde/Minute/Sekunde-Format)
-;                        maxsteps: maximale Zahl der Iterationen (default 100)
-;                        Clear:    setzt vor jedem Print den Curser auf Pos1 und loescht die vorherige Ausgabe
+; CALLING SEQUENCE:
+;* SimTimeInit [,MAXSTEPS=...] [,CONSOLE=...] [,/GRAPHIC] [,/PRINT]],[/CLEAR]
 ;
-; COMMON BLOCKS:         SimTime
+; INPUT KEYWORDS:
+;  MAXSTEPS:: The total number of simulation steps to be
+;             executed. This is needed to calculate the
+;             progress. Default: 1000.
+;  CONSOLE:: A handle pointing to a <A>Console</A> structure that may be
+;            used to display the output. The bottom line of the
+;            console widget is used for printing ongoing information.
+;            <B>Attention:</B> This may interfere with the output of
+;            <A>ConsoleTime</A>. 
+;  GRAPHIC:: Plot statistics after completion.
+;  PRINT:: Print information after each iteration.
+;  CLEAR:: Delete previous output and print new information at the top
+;          of the IDL window at Pos1.
+;
+; COMMON BLOCKS:
+;  SimTime  
+;
+; PROCEDURE:
+;  Just define a structure. 
 ;
 ; EXAMPLE:
-;                        SimTimeInit, GRAPHIC=5, /PRINT
-;                        FOR a=1,10 DO BEGIN
-;                           Wait, 5.*RandomU(seed)
-;                           SimTimeStep
-;                        END
-;                        SimTimeStop
-;             
+;* SimTimeInit, MAXSTEPS=10, /GRAPHIC, /PRINT
+;* FOR a=1,10 DO BEGIN
+;*    Wait, 5.*RandomU(seed)
+;*    SimTimeStep
+;* END
+;* SimTimeStop
+;
+; SEE ALSO:
+;  <A>SimTimeStep</A>, <A>SimTimeStop</A>, <A>Console</A>. 
+; 
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2001/03/08 16:24:20  thiel
+;       SimTime supports Console now.
+;       New header.
+;
 ;     Revision 1.5  2000/09/28 13:25:35  alshaikh
 ;           added AIM
 ;
@@ -46,9 +81,11 @@
 ;     Revision 1.1  1997/10/26 18:41:57  saam
 ;           vom Himmel gefallen
 ;
-;
-;-
-PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps ,CLEAR=CLEAR
+
+
+
+PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps ,CLEAR=CLEAR $
+                 , CONSOLE=console
    
    COMMON SimTime, stat
    
@@ -57,6 +94,7 @@ PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps ,CLEAR=CLEAR
    Default, print   ,   0
    Default, graphic ,   0
    Default, clear, 0
+   Default, console, -1
   
    stat = { tpi     : DblArr(maxsteps+1),$ ; time per iteration i
             lst     : 0d                ,$ ; last system time (internal)
@@ -65,7 +103,8 @@ PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps ,CLEAR=CLEAR
             maxsteps: maxsteps          ,$ ; maximal number of iterations
             print   : print             ,$ ; print time after each step
             clear   : clear             ,$ ; clear term after each step
-            graphic : graphic            } ; plot diagram at the end
+            graphic : graphic, $; plot diagram at the end
+            console: console}                    
 
    stat.lst = SysTime(1)
 
