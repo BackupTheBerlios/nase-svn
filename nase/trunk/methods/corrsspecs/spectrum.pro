@@ -45,7 +45,7 @@
 ;
 ; CALLING SEQUENCE:
 ;* s = Spectrum(x, fS, f, phase,  [, /AMPLITUDE | /POWER] [, /NEGATIVEFREQUENCIES]
-;                                 [, PADDING=...] [, /CENTER] [, /WIDEWINDOW | /NOWINDOW]
+;*                                [, PADDING=...] [, /CENTER] [, /WIDEWINDOW | /NOWINDOW]
 ;
 ; INPUTS:
 ;  x::   An integer, float or complex array containing in the first dimension the signal epoch(s) of which the spectrum
