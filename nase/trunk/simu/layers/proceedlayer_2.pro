@@ -40,6 +40,7 @@
 ;
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotentials, Mirko Saam, 25.7.97
+;                       Schwelle wird jetzt erst im naechsten Zeitschritt erhoeht, Mirko Saam, 29.7.97
 ;
 ;- 
 FUNCTION ProceedLayer_2, Layer, FeedingIn, LinkingIn, InhibitionIn
@@ -54,14 +55,16 @@ FUNCTION ProceedLayer_2, Layer, FeedingIn, LinkingIn, InhibitionIn
    Layer.L = Layer.L + LinkingIn
    Layer.I = Layer.I + InhibitionIn
 
+   Layer.R = Layer.R + Layer.O*Layer.para.vr
+   Layer.S = Layer.S + Layer.O*Layer.para.vs
+
+
    Layer.M = Layer.F*(1.+Layer.L)-Layer.I + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
    Layer.O(*) = 0
 
    spike  = WHERE(Layer.M GE (Layer.R + Layer.S + Layer.Para.th0), count) 
    IF (count NE 0) THEN BEGIN
       Layer.O(spike) = 1
-      Layer.R(spike) = Layer.R(spike) + Layer.para.vr
-      Layer.S(spike) = Layer.S(spike) + Layer.para.vs
    END
    
    RETURN, Layer.O
