@@ -72,10 +72,9 @@ sub updatedoc {
 #  createRoutineIdx();
   print "...done\n";
   print "generating directory indices...";
-#  foreach (@projects){
-#   createAim("/$_");
-#  }
-  createAim("nase");
+  foreach (@projects){
+   createAim("$_");
+  }
 
   print "generating keyword lists...";
   keylista();
