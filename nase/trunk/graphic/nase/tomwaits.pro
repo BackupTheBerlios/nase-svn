@@ -49,15 +49,18 @@ PRO TomWaits_Event, Event
             end
             else: message, /INFO, "I don't know this Button!"
          endcase
-         Widget_Control, Event.Top, SET_UVALUE=data
       end
       
       'WIDGET_DRAW': begin   
          !TopColor = data.my_TopColor
          If Event.Type eq 1 then begin ;Mouse Button Release
             If (Event.Release and 1) eq 1 then begin ;Left Button
-               mag = Widget_Info(Event.ID, /SIBLING)
-               If mag ne 0 then Widget_Control, mag, /DESTROY 
+               If not data.maginwin then begin ;IDL 4 oder höher
+                  mag = Widget_Info(Event.ID, /SIBLING)
+                  If mag ne 0 then Widget_Control, mag, /DESTROY 
+               Endif else begin ;IDL 3
+                  If !D.Window eq data.magwin then Wdelete
+               endelse
             endif
          Endif                  ;Mouse Button Release
 
@@ -79,7 +82,7 @@ PRO TomWaits_Event, Event
             Widget_Control, Event.ID,  GET_DRAW_VIEW=ViewPos ;von UNTEN links
             If data.yscroll then ViewPos(1) = data.ysize-ViewPos(1)-data.y_scroll_size ;jetzt isses von OBEN links
            ;;------------------> Position für Surfit und Examineit:
-            xpos = BaseOffset(0)+10+data.tvinfo.x0+col*data.tvinfo.subxsize-ViewPos(0)
+            xpos = BaseOffset(0)+18+data.tvinfo.x0+col*data.tvinfo.subxsize-ViewPos(0)
             ypos = BaseOffset(1)+20+data.tvinfo.y00+row*data.tvinfo.subysize-ViewPos(1)
             ;;--------------------------------
             ;;------------------> Position und Größe für Magnify:
@@ -124,11 +127,19 @@ PRO TomWaits_Event, Event
            ;;--------------------------------
 
             If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
-               mag = Widget_Draw(data.drawbase, $
-                                 XOFFSET=xmpos, $
-                                 YOFFSET=ympos, $
-                                 XSIZE=xmsize, YSIZE=ymsize, $
-                                 FRAME=3)
+               If not data.maginwin then begin 
+                  mag = Widget_Draw(data.drawbase, $
+                                    XOFFSET=xmpos, $
+                                    YOFFSET=ympos, $
+                                    XSIZE=xmsize, YSIZE=ymsize, $
+                                    FRAME=3)
+                  Endif else begin
+                     DEVICE, GET_SCREEN_SIZE=ss
+                     winxpos = xpos-xmsize/2+data.tvinfo.subxsize/2
+                     winypos = ss(1)-ypos-ymsize/2+data.tvinfo.subysize/2
+                     Window, XPOS=winxpos, YPOS=winypos, /FREE, XSIZE=xmsize, YSIZE=ymsize, TITLE=title
+                     data.magwin = !D.WINDOW
+                  endelse
 ;               nasetv, tv_w, ZOOM=data.magnify
                PrepareNASEPlot, (size(reform(w, /OVERWRITE)))(1), (size(reform(w, /OVERWRITE)))(2), /OFFSET, GET_OLD=oldplot
                plot, indgen(10), /NODATA, POSITION=[0.1, 0.1, 0.9, 0.9]
@@ -153,6 +164,7 @@ PRO TomWaits_Event, Event
       end                       ;WIDGET_DRAW event
       else: message, /INFO, "I don't know this Event!"
    endcase
+   Widget_Control, Event.Top, SET_UVALUE=data
 END 
 
 
@@ -161,7 +173,7 @@ PRO TomWaits, GROUP=Group, $
               GET_BASE=get_base, $
               FROMS=froms,  TOS=tos, DELAYS=delay, $
               PROJECTIVE=projective, RECEPTIVE=receptive, $
-              COLORSCALING=colorscaling, $
+              COLORSCALING=colorscaling, MAGINWIN=maginwin, $
               GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
               JUST_REG=just_reg
 
@@ -181,6 +193,8 @@ PRO TomWaits, GROUP=Group, $
 
   Default, MAGNIFY, 15
   Default, COLORSCALING, 1;individual Colorscaling
+  If fix(!VERSION.Release) le 3 then maginwin = 1 else Default, maginwin, 0
+
 
   ;;------------------> Größe des Draw-Widgets:
   xsize = DWDim(DW, /SW)*DWDim(DW, /TW)*zoom
@@ -328,7 +342,9 @@ endelse
                                     colors:get_colors, $
                                     old_TopColor:old_TopColor, $
                                     my_TopColor: get_colors(4), $ ;preserve ShowWeights-Colors
-                                    colorscaling: colorscaling}
+                                    colorscaling: colorscaling, $
+                                    magwin:-99, $
+                                    maginwin: maginwin} ;für das blöde IDL 3...
 
   If fix(!VERSION.Release) ge 5 then XMANAGER, 'TomWaits', Base, /NO_BLOCK, JUST_REG=just_reg $
   else XMANAGER, 'TomWaits', Base, JUST_REG=just_reg
