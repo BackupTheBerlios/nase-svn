@@ -52,6 +52,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/12/02 10:12:57  saam
+;           Inkompatiblitaet von IDL3.6 zu 4,5 bei Klammersetzungen
+;           korrigiert.
+;
 ;     Revision 1.1  1997/11/26 09:19:53  saam
 ;           EntStanden aus Aufteilung von Looping
 ;
@@ -67,7 +71,7 @@ FUNCTION LoopValue, LS
       ; values for new structure
       latestLoop = CountValue(LS.counter)
 
-      newStruct =  Create_Struct(TagNames(0), LS.struct.(0)(latestLoop(0)))
+      newStruct =  Create_Struct(TagNames(0), (LS.struct.(0))(latestLoop(0)))
       FOR tag = 1, LS.n-1 DO BEGIN 
         newStruct = Create_Struct(newStruct, TagNames(tag),(LS.struct.(tag))(latestLoop(tag)) )
       END
