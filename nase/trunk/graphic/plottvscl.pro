@@ -26,7 +26,7 @@
 ;                             [, /NEUTRAL]
 ;                             [, /POLYGON]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
-;                             [, SETCOL=0] [, PLOTCOL=PlotColor]
+;                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
 ;
 ; INPUTS: Array : klar!
 ;
@@ -63,6 +63,12 @@
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
+;                      COLORMODE: Wid an Showweights_scale
+;                                 weitergereicht. Mit diesem Schlüsselwort kann unabhängig 
+;                                 von den Werten im Array die
+;                                 schwarz/weiss-Darstellung (COLORMODE=+1) 
+;                                 oder die rot/grün-Darstellung
+;                                 (COLORMODE=-1) erzwungen werden.
 ;                     SETCOL    : Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
 ;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
 ;                     PLOTCOL   : Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
@@ -94,6 +100,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.42  1999/06/07 14:03:09  kupper
+;     Added COLORMODE Keyword.
+;
 ;     Revision 2.41  1999/06/06 14:52:54  kupper
 ;     Added PLOTCOL-Keyword.
 ;
@@ -247,7 +256,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                POLYGON=POLYGON,$
                LEGMARGIN=LEGMARGIN,$
                TOP=top,$
-               SETCOL=setcol, $
+               COLORMODE=colormode, SETCOL=setcol, $
                PLOTCOL=plotcol, $
                _EXTRA=_extra
 
@@ -446,13 +455,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
           X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM,$
           ORDER=UpSideDown, POLYGON=POLYGON
       END ELSE BEGIN
-         UTV, ShowWeights_Scale(Transpose(W),SETCOL=setcol), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+         UTV, ShowWeights_Scale(Transpose(W),SETCOL=setcol, COLORMODE=colormode), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
           OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM,$
           Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
       ENDELSE
    END ELSE BEGIN
       IF Keyword_Set(NEUTRAL) THEN BEGIN
-         UTV, ShowWeights_Scale(W, SETCOL=setcol), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+         UTV, ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
           OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, $
           Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
       END ELSE BEGIN
