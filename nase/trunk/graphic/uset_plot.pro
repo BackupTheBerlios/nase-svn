@@ -55,6 +55,11 @@ pro uset_plot, Device, _EXTRA=extra
       !D.Name EQ ScreenDevice() AND !D.NAME NE 'NULL' : begin
          DEVICE, GET_DECOMPOSED=DECOMPOSED
          if !D.N_COLORS EQ 16777216 and DECOMPOSED EQ 1 THEN return
+         ;;DEVICE, /INSTALL_COLOR is a secret keword given from
+         ;;CREASO support
+         ;;necessary for 8 bit Displays under KDE 2.1.x
+         ;;without this keyword private color switching is disabled
+         if pseudocolor_visual() and  (ScreenDevice() eq 'X') then DEVICE, /INSTALL_COLOR
          ResetCM
          return
       end
