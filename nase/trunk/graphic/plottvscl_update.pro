@@ -14,25 +14,25 @@
 ;
 ; CALLING SEQUENCE: PlotTvScl_update, Array, PlotInfo [,/INIT] [,RANGE_IN=[a,b]]
 ;
-; INPUTS: Array   : Der neue Inhalt der Graphik. Muß
+; INPUTS: Array   :: Der neue Inhalt der Graphik. Muß
 ;                   selbstverständlich die gleichen Ausmaße wie
 ;                   das ursprüngliche Array haben.
 ;                   (Die Ausmaße werden von der Routine NICHT getestet.)
-;         PlotInfo: Der von <A HREF="#PLOTTVSCL">PlotTVScl</A> beim
+;         PlotInfo:: Der von <A>PlotTVScl</A> beim
 ;                   ursprünglichen Aufruf in GET_INFO
 ;                   zurückgelieferte Struct.
 ;
-; KEYWORD PARAMETERS: 
+; INPUT KEYWORDS: 
 ;
-;         INIT: Wenn gesetzt, wird eine neue Farbskalierung
-;               durchgeführt, so, als ob <A HREF="#PLOTTVSCL">PlotTvScl</A> (ohne 
+;         INIT:: Wenn gesetzt, wird eine neue Farbskalierung
+;               durchgeführt, so, als ob <A>PlotTvScl</A> (ohne 
 ;               das Schlüsselwort UPDATE_INFO) aufgerufen
-;               worden wäre. Alle Schlüsselworte, die <A HREF="#PLOTTVSCL">PlotTvScl</A>
+;               worden wäre. Alle Schlüsselworte, die <A>PlotTvScl</A>
 ;               ursprünglich übergeben wurden (NASE, SETCOL,
 ;               COLORMODE,...) werden, soweit sie sich auf die
 ;               Farbskalierung beziehen, unverändert übernommen.
 ;
-;     RANGE_IN: When passed, the two-element array is taken as the range to
+;     RANGE_IN:: When passed, the two-element array is taken as the range to
 ;               scale to the plotting colors. (I.e. the first element is scaled to
 ;               color index 0, the scond is scaled to the highest available
 ;               index (or to PlotInfo.Top in the no-NASE, no-NEUTRAL, no-NOSCALE 
@@ -58,64 +58,11 @@
 ;          W = gauss_2d(width, height)+0.05*randomn(seed,width, height)
 ;          PlotTvScl_update, W, i
 ;
-; SEE ALSO: <A HREF="#PLOTTVSCL">PlotTVScl</A>
-;      
-; MODIFICATION HISTORY:
-;     
-;     $Log$
-;     Revision 2.13  2001/02/28 14:37:08  kupper
-;     Undid a change made by gabriel in Rev. 2.11, which broke color scaling
-;     using the RANGE_IN keyword.
-;
-;     Revision 2.12  2001/01/22 14:02:36  kupper
-;     Changed color management to meet guidelines formed during the first
-;     NASE workshop, fall 2000.
-;     Pre-Checkin due to technical reasons. Headers not yet englishified...
-;
-;     Revision 2.11  2000/10/27 18:59:57  gabriel
-;          utvscl now takes care of topcolor
-;
-;     Revision 2.10  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.9  2000/03/06 15:56:59  kupper
-;     Added some comments in header.
-;
-;     Revision 2.8  2000/03/06 14:59:57  kupper
-;     Added RANGE_IN-Keyword.
-;
-;     Revision 2.7  1999/11/22 14:05:54  kupper
-;     Modified a detail in Range_In-Handling, to correctly interpret a
-;     Info.Range_In-value possibly modified directly by the user.
-;
-;     Revision 2.6  1999/09/23 17:52:44  kupper
-;     Oops! Forgot to pass SETCOL-Keyword, sorry...
-;
-;     Revision 2.5  1999/09/23 14:12:39  kupper
-;     Corrected Legend colorscaling (now uses TOP).
-;     Updating should work now, behaviour of plottvscl should even be
-;     faster.
-;     Case /NOSCALE, NASE=0 was broken(!). Fixed.
-;
-;     Revision 2.4  1999/09/23 14:01:22  kupper
-;     Huh, covered all cases now, hopefully...
-;
-;     Revision 2.3  1999/09/22 09:49:30  kupper
-;     Added Documentation.
-;
-;     Revision 2.2  1999/09/22 09:08:31  kupper
-;     Added NEUTRAL Keyword in PlotTvScl_update (forgotten).
-;     Corrected minor bug in legend scaling.
-;
-;     Revision 2.1  1999/09/22 08:44:57  kupper
-;     Ausgelagert aus PlotTvScl.
-;     Kann nun zum updaten von PlotTvScl-Graphiken benutzt werden.
-;
+; SEE ALSO: <A>PlotTVScl</A>
 ;-
 
 PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
-;print, "PlotTvScl_update"
    On_Error, 2
    IF NOT Set(W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -131,6 +78,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
    Default, NOSCALE, Info.noscale
    Default, COLORMODE, Info.colormode
    Default, SETCOL, Info.setcol
+   Default, ALLOWCOLORS, Info.allowcolors
 
    If Keyword_Set(RANGE_IN) then Showweights_Scale_Range_In = max(abs(RANGE_IN))
    ;;If RANGE_IN was specified, use that value for scaling, in both cases (INT
@@ -176,16 +124,21 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
       If Keyword_Set(NOSCALE) then BEGIN ;CASE: NASE, but do not scale
 ;         print, "NASE, NOSCALE"
-         UTV, Transpose(W), Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          Info.y00_norm,$
+         ;; setting NASE in UTv does transpose array, nothing else. 
+         UTV, /NASE, W, Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+          Info.y00_norm, ALLOWCOLORS=allowcolors, $
           X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM,$
           ORDER=UpSideDown, POLYGON=POLYGON
          If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]
 
       END ELSE BEGIN            ;CASE: NASE
 ;         print, "NASE"
-         UTV, $
-          ShowWeights_Scale(Transpose(W),SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
+         ;; setting NASE in UTv does transpose array, nothing else. 
+         ;; ALLOWCOLORS must be set to have the !NONE displayed
+         ;; correctly, as ShowWeights_Scale replaces it by the color
+         ;; index for the blue color.
+         UTV, /NASE, /ALLOWCOLORS, $
+          ShowWeights_Scale(W,SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM,$
@@ -201,7 +154,10 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
       IF Keyword_Set(NEUTRAL) THEN BEGIN ;CASE: NEUTRAL: just scale like NASE
 ;         print, "NEUTRAL"
-         UTV, $
+         ;; ALLOWCOLORS must be set to have the !NONE displayed
+         ;; correctly, as ShowWeights_Scale replaces it by the color
+         ;; index for the blue color.
+         UTV, /ALLOWCOLORS, $
           ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -216,7 +172,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
          
          If Keyword_Set(NOSCALE) then begin ;CASE: NoNase, Noscale
 ;            print, "simple NOSCALE"
-            UTV, W, $
+            UTV, W, ALLOWCOLORS=allowcolors, $
              Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
              Info.y00_norm, $
              X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
@@ -232,7 +188,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
             ;; If defined, RANGE_IN overrides the value stored in info:
             Default, Range_In, Info.Range_In
             ;;scale as stored in info 
-               UTV, Scl(W, [0, Info.Top], Range_In), $
+               UTV, Scl(W, [0, Info.Top], Range_In), ALLOWCOLORS=allowcolors, $
                 Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
                 Info.y00_norm, $
                 X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $

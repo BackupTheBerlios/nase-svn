@@ -160,6 +160,7 @@
 ;                                 to span all availabe color indices.
 ;                                 The new scling is stored in the PLOTTVSCL_INFO 
 ;                                 struct for subsequent calls.
+;                  /ALLOWCOLORS:: Passed to <A>UTvScl</A>, see there.
 ;
 ; OPTIONAL OUTPUTS:
 ;                 
@@ -223,6 +224,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                RANGE_IN=range_in, $
                UPDATE_INFO=update_info, $
                INIT=init, $
+               ALLOWCOLORS=allowcolors, $
                _REF_EXTRA=_extra
 
    On_Error, 2
@@ -268,6 +270,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       default, MINUS_ONE, 0
       default, COLORMODE, 0
       default, NEUTRAL, 0
+      default, ALLOWCOLORS, 0
 
       ;; copying of _W is no longer necessary (it is done by
       ;; PlotTvScl_update), R Kupper, Sep 22 1999
@@ -459,6 +462,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                      minus_one: MINUS_ONE, $
                      colormode: COLORMODE, $
                      setcol  : SETCOL, $
+                     allowcolors : ALLOWCOLORS, $
                      $;;
                      $;; Scaling Information to be stored by PlotTvScl_update:
                      range_in: [-1.0d, -1.0d]}
