@@ -1,63 +1,89 @@
 ;+
-; NAME: InstantRate
+; NAME: 
+;  InstantRate
 ;
-; PURPOSE: Berechnung der momentanen Feuerrate aus einem Spiketrain. Dazu wird
-;          ein Rechteckfenster einer vorgegebenen Breite über den Spiketrain 
-;          geschoben. Die Zahl der im Fenster enthaltenen Spikes geteilt durch
-;          die Fensterbreite liefert dann die Feuerrate an der Position des 
-;          Fensters Fnord.
+; PURPOSE: 
+;  Calculation of the momentary firing rate from a train of action
+;  potentials. Computation is done either by counting the spikes
+;  inside a given time window sliding over the train or by convolving
+;  the spike train with a Gaussian window of given width. Averaging
+;  over a number of spiketrains is also supported. Fnord.
 ;
-; CATEGORY: METHODS / SIGNALS
+; CATEGORY: 
+;  METHODS / SIGNALS
 ;
-; CALLING SEQUENCE: rate = Instantrate( spikes 
-;                                      [,SAMPLEPERIOD=sampleperiod]  
-;                                      [,SSIZE=ssize] [,SSHIFT=sshift]
-;                                      [,TVALUES=tvalues] [,AVARAGED=avaraged])
+; CALLING SEQUENCE: 
+;  rate = Instantrate( spikes [,SAMPLEPERIOD=sampleperiod]  
+;                             [,SSIZE=ssize] [,SSHIFT=sshift]
+;                             [,TVALUES=tvalues] [,TINDICES=tindices] 
+;                             [,AVARAGED=avaraged]
+;                             [,/GAUSS])
 ;
 ;
-; INPUTS: spikes: Ein zweidimensionales Array, erster Index: Neuronen- oder
-;                 Trialnummer. zweiter Index: Zeit
+; INPUTS: 
+;  spikes: A twodimensional array, first index: neuron- or
+;          trialnumber, second index: time.
 ;
-; OPTIONAL INPUTS: sampleperiod: Länge eines Bins in Sekunden, Default: 0.001s
-;                  ssize: Breite des Fensters, das zur Ermittlung der Feuerrate
-;                         benutzt wird. Default: 128 BIN
-;                  sshift: Versatz der Positionen, an denen die Feuerrate 
-;                          ermittelt werden soll. Default: ssize/2
-;                  Alle diese Parameter wurden von der Routine <A HREF="../#SLICES">Slices</A> übernommen.
+; OPTIONAL INPUTS: 
+;  sampleperiod: Length of a BIN in seconds, default: 0.001s
+;  ssize: Width of window used to calculating the firing rate. If
+;         keyword /GAUSS is set, ssize sets the standard deviation of
+;         the Gaussian filter. Default: GAUSS=0: 128ms, GAUSS=1: 20ms
+;  sshift: Shift of positions where firing rate is to be
+;          computed. Default: 1BIN with keyword /GAUSS set, else ssize/2 
 ;
-; OUTPUTS: rate: Ein zweidimensionales Array, das die ermittelten Feuerraten
-;                zu den gewünschten Zeitpunkten enthält. 1.Index: Neuronen- 
-;                oder Trialnummer. 2.Index: Zeit. Je nach gewähltem sshift
-;                ist das Resultat entsprechend kürzer als das Original.
+; KEYWORD PARAMETERS:
+;  GAUSS: Calculates firing rate by convolving the spiketrain with a
+;         Gaussian filter, resembling a probabilistic interpretation.
+;         Computation takes longer, but gives a smoother result. Note
+;         that defaults for ssize and sshift are different when
+;         setting this keyword. 
 ;
-; OPTIONAL OUTPUTS: tvalues: Ein Array, das die Anfangspositionen der zum 
-;                            Mitteln verwendeten Fenster enthält.
-;                            (Siehe auch <A HREF="../#SLICES">Slices</A>.)
-;                   avaraged: Ein Array, das die über alle Neuronen/Trials
-;                             gemittelte instantane Feurrate enthält.
+; OUTPUTS: 
+;  rate: Twodimensional array, containing the firing rates at the
+;        desired times. First index: neuron-/trialnumber, second
+;        index: time. The result may be shorter than the original
+;        depending on sshift.
 ;
-; PROCEDURE: Durch Verwendung der Routine Slices ist das alles ganz einfach.
-;            Man summiert mit Total über die Scheiben, und falls gewünscht
-;            gibt man noch den Mittelwert zurück.
+; OPTIONAL OUTPUTS: 
+;  tvalues: Array containing the starting positions of the windows
+;           used for rate calculation in ms. (See also <A HREF="../#SLICES">Slices</A>.)
+;  tindices: Array containing the starting indices of the windows
+;            used for rate calculation relative to the original
+;            array. (See also <A HREF="../#SLICES">Slices</A>.)
+;  avaraged: Array containing the firing rate avaraged over all 
+;            neurons/trials.
 ;
-; EXAMPLE: a=fltarr(10,1000)
-;          a(*,0:499)=Randomu(s,10,500) le 0.01    ; 10 Hz 
-;          a(*,500:999)=Randomu(s,10,500) le 0.05  ; 50 Hz
-;          r=instantrate(a, ssize=100, sshift=10, tvalues=axis, avaraged=av)
-;          !p.multi=[0,1,3,0,0] 
-;          trainspotting, a 
-;          plot, axis+50, r(0,*) ; axis enthält die Startzeiten der Fenster.
-;                                  Interpretiert man die ermittelten Werte als
-;                                  die Feuerraten zum Zeitpunkt in der Mitte
-;                                  des Fensters, dann korrigiert axis+ssize/2
-;                                  die Darstellung. 
-;          plot, axis+50, av
+; PROCEDURE: 
+;  1. Rectanglular window: using <A HREF="../#SLICES">Slices</A> to obtain parts of the
+;     spiketrains, then summing over those parts using Total.
+;  2. Gaussian window: Constructing Gaussian filter and convoling
+;     spiktrain with this.
+;
+; EXAMPLE: 
+;  a=fltarr(10,1000)
+;  a(*,0:499)=Randomu(s,10,500) le 0.01    ; 10 Hz 
+;  a(*,500:999)=Randomu(s,10,500) le 0.05  ; 50 Hz
+;  r=instantrate(a, ssize=100, sshift=10, tvalues=axis, avaraged=av)
+;  rg=instantrate(a, /GAUSS, ssize=20, tvalues=axisg, avaraged=avg)
+;  !p.multi=[0,1,4,0,0] 
+;  trainspotting, a 
+;  plot, axis+50, r(0,*) ; axis contains starting times of windows.
+;                          Interpreting results as firing rates at the
+;                          time in the middle of the window,
+;                          axis+ssize/2 corrects the display 
+;                          
+;  plot, axis+50, av
+;  plot, axisg, avg
 ;
 ; SEE ALSO: <A HREF="../#SLICES">Slices</A>, <A HREF="../#ISI">ISI</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/04/11 12:11:13  thiel
+;            Rates may also be computed by convolution with Gaussian.
+;
 ;        Revision 1.2  1999/12/06 16:27:02  thiel
 ;            Turn on watch?
 ;
@@ -66,23 +92,35 @@
 ;
 ;-
 
-FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod, $
-                      SSIZE=ssize, SSHIFT=sshift, $
-                      TVALUES=tvalues, TINDICES=tindices, $
-                      AVARAGED=avaraged
+FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
+                      , SSIZE=ssize, SSHIFT=sshift $
+                      , TVALUES=tvalues, TINDICES=tindices $
+                      , AVARAGED=avaraged, GAUSS=gauss
 
-
+   Default, gauss, 0
    Default, sampleperiod, 0.001
-   Default, ssize, 128*1000.*sampleperiod
-   Default, sshift, ssize/2
 
-   sli = Slices(nt, SSIZE=ssize, SSHIFT=sshift, TVALUES=tvalues, $
-                TINDICES=tindices)
-
-   result = Transpose(Float(Total(sli,3))/ssize/sampleperiod)
-
+   IF Keyword_Set(GAUSS) THEN BEGIN
+      Default, ssize, 20
+      __ssize = ssize*0.001/sampleperiod
+      IF Set(sshift) THEN __sshift = sshift*0.001/sampleperiod $
+       ELSE __sshift = 1
+      tindices = __sshift*LIndGen((Size(nt))(2)/__sshift)
+      tvalues = tindices*1000.*sampleperiod
+      gausslength = 8*__ssize
+      gaussx = FIndGen(gausslength)-gausslength/2
+      gaussarr= Exp(-gaussx^2/2/__ssize^2)/__ssize/sqrt(2*!PI)
+      result = Convol(Float(nt), Transpose(gaussarr), /EDGE_TRUNC) $
+       /sampleperiod
+      result = (Temporary(result))(*,tindices)
+   ENDIF ELSE BEGIN
+      sli = Slices(nt, SSIZE=ssize, SSHIFT=sshift, TVALUES=tvalues $
+                   , TINDICES=tindices, SAMPLEPERIOD=sampleperiod)
+      result = Transpose(Float(Total(sli,3))/ssize/sampleperiod)
+   ENDELSE
+   
    avaraged = Total(result,1)/(Size(result))(1)
-
+   
    Return, result
 
 
