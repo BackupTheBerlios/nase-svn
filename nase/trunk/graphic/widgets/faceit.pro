@@ -123,6 +123,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  1999/09/16 12:03:55  thiel
+;            Progress display now stays insensitive after display activation.
+;
 ;        Revision 1.6  1999/09/15 15:08:42  thiel
 ;            Some changes:
 ;            - RESET and KILL_REQUEST moved into separate routines.
@@ -306,7 +309,6 @@ PRO FaceIt_EVENT, Event
 
       UV.W_SimDisplay: BEGIN
          UV.display = Event.Select
-         Widget_Control, UV.simprogress, SENSITIVE=UV.display
          Widget_Control, UV.W_userbase, SENSITIVE=UV.display
          IF UV.display THEN BEGIN 
             UV.SimDelay = UV.oldsimdelay
