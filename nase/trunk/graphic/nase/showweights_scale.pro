@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1998/02/27 13:09:03  saam
+;              benutzt nun UTvLCT
+;
 ;        Revision 2.3  1998/02/26 17:28:54  kupper
 ;               Benutzt jetzt die neue !TOPCOLOR-Systemvariable.
 ;        	Außerdem setzt es die !P.BACKGROUND stets auf den Farbindex für schwarz
@@ -95,7 +98,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_COLORMODE = 1
       If Keyword_Set(SETCOL) then begin
          g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
-         tvlct, g, g, g         ;Grauwerte
+         utvlct, g, g, g         ;Grauwerte
          !P.BACKGROUND = 0      ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
@@ -104,7 +107,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
          g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
-         tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+         utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
          !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
