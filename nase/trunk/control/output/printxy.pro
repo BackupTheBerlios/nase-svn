@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/04/13 18:57:50  kupper
+;               X/Y-Vertauschung umgetauscht...
+;
 ;        Revision 2.1  1998/03/23 17:48:33  kupper
 ;               Aus der Hebe getauft!
 ;
@@ -47,6 +50,6 @@ Pro PrintXY, text, X, Y
       ypos = Y
    Endif
    
-   print, Up(100)+Down(xpos)+Right(ypos)+text
+   print, Up(100)+Down(ypos)+Right(xpos)+text
 
 End
