@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/usr/bin/ksh
 DIR=$1
 rm -f  $DIR/aindex.html     
 echo > /tmp/alphrout.html
