@@ -88,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  1998/04/14 18:06:12  kupper
+;              Bug bei 2-dim. Arrays mit führender 1-Dim.
+;
 ;       Revision 2.8  1998/04/08 16:05:53  kupper
 ;              kleiner Bug.
 ;
@@ -328,9 +331,12 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                BOUND=bound, RANGE=range, NASE=nase, $
                XPOS=xpos, YPOS=ypos, COLOR=color
    
-   w = reform(_w)               ;Do not change Contents!
+   If (Size(_w))(0) eq 2 then w = _w $ ;Do not change Contents!
+   else w = reform(_w) ;Try to get rid of leading 1-dims.
+              
    If Keyword_Set(_tv_w) then begin
-      tv_w = reform(_tv_w) 
+      If (Size(_tv_w))(0) eq 2 then tv_w = _tv_w $ ;Do not change Contents!
+      else tv_w = reform(_tv_w)       ;Try to get rid of leading 1-dims. 
       noscale = 1 
    endif else begin
       If Keyword_Set(nase) then begin
