@@ -38,12 +38,12 @@
 
 Function SwapDW, DW
 
-   return, {source_w = DW.target_w, $
-            source_h = DW.target_h, $
-            target_w = DW.source_w, $
-            target_h = DW.source_h, $
-            weights=TRANSPOSE(DW.weights), $
-            delays=TRANSPOSE(DW.delays)}
+   return, {source_w : DW.target_w, $
+            source_h : DW.target_h, $
+            target_w : DW.source_w, $
+            target_h : DW.source_h, $
+            weights  : TRANSPOSE(DW.weights), $
+            delays   : TRANSPOSE(DW.delays)}
 
 end
 
