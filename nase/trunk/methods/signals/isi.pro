@@ -1,6 +1,8 @@
 ;+
 ; NAME:                ISI
 ;
+; AIM:                 the inter spike intervall (ISI) of trials
+;
 ; PURPOSE:             berechnen der InterSpikeIntervalle eines oder mehrerer Trails,
 ;                      optional kann ein Histogramm berechnet werden
 ;
@@ -23,10 +25,13 @@
 ;                      tvscl, IStiI
 ;                      dummy = ISI(trials, HISTO=IStiIH)
 ;                      plot, IStiIH
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/28 11:36:50  gabriel
+;          AIM tag added , message <> console
+;
 ;     Revision 1.4  1999/04/16 14:21:23  saam
 ;           + ugly bug in IDLs histogram routine bypassed
 ;
@@ -40,7 +45,7 @@
 ;           im archiv gefunden und an Nase angepasst
 ;
 ;
-;-
+;
 
 
 
@@ -88,8 +93,8 @@ END
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 FUNCTION ISI, trial, histo=HISTO
 
-   IF (Size(trial))(0) LT 1 THEN Message, 'no array passed!'
-   IF (Size(trial))(0) GT 2 THEN Message, 'only one- or two-dimensional arrays will be processed!'
+   IF (Size(trial))(0) LT 1 THEN Console, /fatal , 'no array passed!'
+   IF (Size(trial))(0) GT 2 THEN Console, /fatal , 'only one- or two-dimensional arrays will be processed!'
    
 
 ; two dimensional trial
