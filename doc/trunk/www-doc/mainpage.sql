@@ -3,7 +3,7 @@
 <LINK REL="STYLESHEET" HREF="/nase/doc/www-doc/shtml.css">
 </HEAD>
 
-<BODY>
+<BODY bgcolor=#FFFFFF text=#000000>
 
 <IMG SRC="/nase/doc/www-doc/nasedoc.gif" HEIGHT=210 WIDTH=320 ALIGN=TEXTTOP>
 
