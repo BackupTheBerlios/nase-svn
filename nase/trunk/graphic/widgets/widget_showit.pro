@@ -20,13 +20,12 @@
 ; CATEGORY: Graphic Widgets
 ;
 ; CALLING SEQUENCE:
-;* widgetid = Widget_ShowIt(Parent 
+;* widgetid = Widget_ShowIt([Parent] 
 ;*                          [, /PRIVATE_COLORS]
 ;*                          [any keywords])
 ;
-; INPUTS: Parent:: Das Eltern-Widget. (Wie Draw-Widgets auch können ShowIt-
-;                  Widgets keine Top-Level-Widgets sein. Man muß also immer ein
-;                  Eltern-Widget angeben.)
+; OPTIONAL INPUTS: Parent:: Das Eltern-Widget. If omitted, the widget will ba a
+;                  top löevel widget.
 ;
 ; INPUT KEYWORDS: /PRIVATE_COLORS:: Ist dieses Schlüsselwort gesetzt, so
 ;                                   wird die private
@@ -181,24 +180,46 @@ FUNCTION Widget_ShowIt, Parent, $
                 }
 
    ; create outer base to have free uservalue:
-   b = Widget_Base(Parent, _EXTRA=["align_bottom", $
-                                   "align_left", $
-                                   "align_right", $
-                                   "align_top", $
-                                   "event_func", $
-                                   "event_pro", $
-                                   "group_leader", $
-                                   "notify_realize", $
-                                   "kill_notify", $
-                                   "frame", $
-                                   "map", $
-                                   "no_copy", $
-                                   "uname", $
-                                   "units", $
-                                   "uvalue", $
-                                   "xoffset", $
-                                   "yoffset"])
-   
+   ;; we need to check for Parent set explicitely, cause widget_base
+   ;; breaks on an unset argument:
+   If Set(Parent) then begin
+      b = Widget_Base(Parent, _EXTRA=["align_bottom", $
+                                      "align_left", $
+                                      "align_right", $
+                                      "align_top", $
+                                      "event_func", $
+                                      "event_pro", $
+                                      "group_leader", $
+                                      "notify_realize", $
+                                      "kill_notify", $
+                                      "frame", $
+                                      "map", $
+                                      "no_copy", $
+                                      "uname", $
+                                      "units", $
+                                      "uvalue", $
+                                      "xoffset", $
+                                      "yoffset"])
+   endif else begin
+      b = Widget_Base(_EXTRA=["align_bottom", $
+                              "align_left", $
+                              "align_right", $
+                              "align_top", $
+                              "event_func", $
+                              "event_pro", $
+                              "group_leader", $
+                              "notify_realize", $
+                              "kill_notify", $
+                              "frame", $
+                              "map", $
+                              "no_copy", $
+                              "uname", $
+                              "units", $
+                              "uvalue", $
+                              "xoffset", $
+                              "yoffset"])
+   endelse
+
    ; put draw-widget inside base and store xtra-values in its UVALUE:
    d = Widget_Draw(b, $
                    TRACKING_EVENTS=(private_colors OR tracking_events), $
