@@ -3,6 +3,9 @@
 ; NAME:
 ;    PCA
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM: Carry out a Principal Components Analysis (Karhunen-Loeve Transform)
 ;
 ;
@@ -27,11 +30,11 @@
 ;               dimensioned N_OBJ x N_ATTRIB.
 ;
 ; INPUT KEYWORDS:
-;     /COVARIANCE:: if this keyword is set, then the PCA will be carried out
+;     COVARIANCE:: if this keyword is set, then the PCA will be carried out
 ;              on the covariance matrix (rare), the default is to use the
 ;              correlation matrix
-;     /SILENT:: If this keyword is set, then no output is printed
-;     /SSQ:: if this keyword is set, then the PCA will be carried out on
+;     SILENT:: If this keyword is set, then no output is printed
+;     SSQ:: if this keyword is set, then the PCA will be carried out on
 ;               on the sums-of-squares & cross-products matrix (rare)
 ;
 ; OPTIONAL OUTPUTS:
