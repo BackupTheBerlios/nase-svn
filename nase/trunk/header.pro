@@ -86,7 +86,6 @@
 ;
 ; SEE ALSO:
 ;  <A>RoutineName</A>
- 
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
