@@ -95,14 +95,15 @@ Default,iwidth, w*10
 
           stim = (rot(lstim,STIMORIENT,1,mdy/2,mdx/2,/cubic,/pivot))
           odm=Orient_2d(detectsize, DEGREE=DETECTORIENT-90.)    
-          temp = a*((convol(stim, odm))^2)
+          temp = (a*((convol(stim, odm))^2))(detectsize:iheight+detectsize-1,detectsize:iwidth+detectsize-1)
 
+	
 	Default, pick, grid(size=size(temp),count=[h,w])	
 
 	  mem=temp(pick)
 	  mem=reform(mem,h,w)
 	
-         
+        	 
 
 
           TV =  {                             $
@@ -128,6 +129,8 @@ Default,iwidth, w*10
 
           outputstring =  'a='+STR(TV.a)+', grating: '+STR(TV.stimorient)+' dg, detector: '+STR(TV.detectorient)+' dg, spat freq: '+STR(TV.stimperiod)+', phase: '+STR(TV.stimphase)+' dg'
 
+	outputstring=outputstring+' input image: size: '+STR(TV.iheight)+'x'+STR(TV.iwidth)+' detectorsize : '+str(detectsize)+'... returned convoluted img with min='+STR(min(TV.mem))+' and max='+STR(max(TV.mem))+'. '
+
           IF stimshift NE 0 THEN outputstring = outputstring + 'right half shifted by : '+STR(TV.stimshift)+' dg'
 console, outputstring
 
@@ -152,7 +155,7 @@ console, outputstring
               
               stim = (rot(lstim,TV.STIMORIENT+TV.cangle,1,mdy/2,mdx/2,/cubic,/pivot))
               odm=Orient_2d(TV.detectsize, DEGREE=TV.DETECTORIENT-90.)    
-              temp = a*((convol(stim, odm))^2)
+              temp = a*((convol(stim, odm))^2)(detectsize:iheight+detectsize-1,detectsize:iwidth+detectsize-1)
 
                                 ; points to pick
               
@@ -161,8 +164,10 @@ console, outputstring
               TV.mem=temp(TV.pick)
 	      TV.mem=reform(TV.mem,h,w)
 
-              Console, 'a='+STR(TV.a)+', grating: '+STR(TV.stimorient+TV.cangle)+' dg, detector: '+STR(TV.detectorient)+' dg, spat freq: '+STR(TV.stimperiod)+', phase: '+STR(TV.stimphase)+' dg'
-          END
+              out= 'a='+STR(TV.a)+', grating: '+STR(TV.stimorient+TV.cangle)+' dg, detector: '+STR(TV.detectorient)+' dg, spat freq: '+STR(TV.stimperiod)+', phase: '+STR(TV.stimphase)+' dg'
+	out=out+' input image: size: '+STR(TV.iheight)+'x'+STR(TV.iwidth)+' detectorsize : '+str(detectsize)+'... returned convoluted img with min='+STR(min(TV.mem))+' and max='+STR(max(TV.mem))+'. '
+	console,out
+	END
           TV.sim_time =  TV.sim_time + TV.delta_t
           R = Operator(TV.myop, pattern, TV.mem)
       END
