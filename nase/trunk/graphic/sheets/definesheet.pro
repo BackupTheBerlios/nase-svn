@@ -9,6 +9,10 @@
 ;                     File schicken muss man nur diesen Aufruf aendern, alles andere bleibt gleich.
 ;                     Benutzt man dann noch die U-Routinen (UTvScl, ULoadCt,...) dann ist man voellig
 ;                     device-unabhaengig.
+;                     Ein Sheet speichert außerdem wichtige Plotparameter (wie !X, !Y, !P, ...)
+;                     intern ab, so daß diese beim späteren Öffnen eines Sheets wieder restauriert werden.
+;                     Ab Revision 2.13 speichern die Sheets zusätzlich zu den Plotparametern auch
+;                     die verwendetet Farbtabelle ab.
 ;                     Ab Revision 2.15 Koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
 ;
 ; CATEGORY:           GRAPHIC, WIDGETS, allgemein
@@ -35,11 +39,14 @@
 ;                                  wird angelegt. Dies macht die Option INCREMENTAL; der Filename
 ;                                  wird dabei um einen laufenden Index erweitert.
 ;                     VERBOSE    : DefineSheet wird gespraechig...
-;                  PRIVATE_COLORS: Nur sinnvoll bei Windows. Dient der 
+;                  PRIVATE_COLORS: Nur sinnvoll bei Windows. 
 ;                                  Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
-;                                  jedes Sheetchen, erhält eine private Colormap, die stets gesetzt
-;                                  wird, wenn der Mauszeiger in das Widget weist. Das speichern der
+;                                  jedes Sheetchen, verarbeitet dann Tracking-Events, dh, die Farbtabelle
+;                                  wird richtig gesetzt, wenn der Mauszeiger in das Widget weist.
+;                                  Das speichern der
 ;                                  privaten Colormap wird von closesheet erledigt.
+;                                  Dieses Schlüsselwort wird auf nicht-Pseudocolor-Displays (TrueColor,
+;                                  DirectColor) ignoriert.
 ;                     OPTIONS    : Alle Optionen die das jeweilige Device versteht sind erlaubt.
 ;                                  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
 ;                                              [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
@@ -75,6 +82,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.17  1999/11/16 16:47:51  kupper
+;     Updated and corrected header.
+;
 ;     Revision 2.16  1999/10/29 11:48:27  kupper
 ;     Nur Header angepasst.
 ;
