@@ -44,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2002/08/23 09:42:08  gabriel
+;           On_ERROR, 2
+;
 ;     Revision 1.4  2000/11/02 18:10:20  gabriel
 ;          relative position like N-1, N-2 etc. implemented
 ;
@@ -62,6 +65,8 @@
 ;-
 
 FUNCTION last , A , index, pos=pos
+   On_ERROR, 2
+
    default,index , 1
    default, pos, 0
  
