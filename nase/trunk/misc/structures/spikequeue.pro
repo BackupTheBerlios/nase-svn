@@ -1,9 +1,9 @@
 ;+
 ; NAME: 		SpikeQueue
 ;
-; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 15 Zeitschritten
+; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 30 Zeitschritten
 ;
-; CATEGORY:		Neuro-Simulation
+; CATEGORY:		MISC/STRUCTURES
 ;
 ; CALLING SEQUENCE:	Output = SpikeQueue ( My_Queue, Input)
 ;
@@ -12,28 +12,22 @@
 ;				  Die Dimension muss mit der Dimension von INIT_DELAYS bei der Initialisierung
 ;				  übereinstimmen. (Ansonsten wird ein Warnmeldung ausgegeben!)
 ;
-; OPTIONAL PARAMETERS: -
-;
-; KEYWORD PARAMETERS:  -
-;	
 ; OUTPUTS:		Output: Der Input von vor (Delay) Zeitschritten (=Aufrufen)
 ;			
-; OPTIONAL OUTPUTS: -
-;
-; COMMON BLOCKS: -
-;
-; SIDE EFFECTS: -
-;
 ; RESTRICTIONS: 	Input darf nur 0 oder 1 enthalten und muß gleiche Dimension wie INIT_DELAYS haben.
-;			INIT_DELAYS darf nur Integer im Bereich 0..15 enthalten!		
+;			INIT_DELAYS darf nur Integer im Bereich 0..30 enthalten!		
 ;
-; PROCEDURE: -
-;
-; EXAMPLE: Ruedigers_Qeueu   = InitSpikeQueue( INIT_DELAYS=[0,5,7] )  ; erzeugt eine Queue für drei Spiketrains mit den Delays 0, 5 und 7		
+; EXAMPLE: Ruedigers_Qeueu   = InitSpikeQueue( INIT_DELAYS=[0,5,7] )  ; erzeugt eine Queue für drei Spiketrains mit den Delays 0, 5 und 7
 ;          Ankommende_Spikes = SpikeQueue( Ruedigers_Queue, [1,0,1] ) ; Steckt in die erste und dritte Queue einen Spike,
 ;									und liest am anderen Ende je einen Spike aus.
+; SEE ALSO:             <A HREF="#INITSPIKEQUEUE">InitSpikeQueue</A>
 ;
 ; MODIFICATION HISTORY: 
+;
+;       $Log$
+;       Revision 1.4  1997/12/01 11:40:53  saam
+;             Behandelt nun auch Delays bis max. 30
+;
 ;
 ;       Mon Sep 8 12:17:01 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
