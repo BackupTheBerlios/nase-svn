@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/10/31 19:02:18  gabriel
+;         decompose gibts bei PS nicht
+;
 ;     Revision 2.6  2000/10/30 18:31:26  gabriel
 ;          header bug
 ;
@@ -52,10 +55,12 @@
 ;
 ;
 FUNCTION CIndex2RGB, cindex
-   DEVICE, GET_DECOMPOSED=DECOMPOSED
+   default, DECOMPOSED, 0
+   IF !D.Name EQ ScreenDevice() then DEVICE, GET_DECOMPOSED=DECOMPOSED
    IF !D.Name EQ ScreenDevice() AND $ 
     !D.N_COLORS EQ 16777216 AND $
     DECOMPOSED EQ 1 THEN BEGIN
+      stop
       b = cindex / 65536 
       g = (cindex MOD 65536)/256
       r = cindex MOD 256
