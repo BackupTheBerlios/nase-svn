@@ -63,6 +63,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.13  2001/02/28 14:37:08  kupper
+;     Undid a change made by gabriel in Rev. 2.11, which broke color scaling
+;     using the RANGE_IN keyword.
+;
 ;     Revision 2.12  2001/01/22 14:02:36  kupper
 ;     Changed color management to meet guidelines formed during the first
 ;     NASE workshop, fall 2000.
@@ -228,19 +232,12 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
             ;; If defined, RANGE_IN overrides the value stored in info:
             Default, Range_In, Info.Range_In
             ;;scale as stored in info 
-               ;UTV, Scl(W, [0, Info.Top], Range_In), $
-               ; Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-               ; Info.y00_norm, $
-               ; X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-               ; ORDER=UpSideDown, POLYGON=POLYGON
-            
-            ;;utvscl now takes care of topcolor
-            UTVSCL, W , $
-             Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-             Info.y00_norm, $
-             X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-             ORDER=UpSideDown, POLYGON=POLYGON
-               
+               UTV, Scl(W, [0, Info.Top], Range_In), $
+                Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+                Info.y00_norm, $
+                X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+                ORDER=UpSideDown, POLYGON=POLYGON
+                           
          EndElse
 
      END
