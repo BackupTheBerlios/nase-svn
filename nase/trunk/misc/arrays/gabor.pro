@@ -51,13 +51,21 @@
 ;                <*>size</*> parameter).
 ;
 ; INPUT KEYWORDS:
-;  NORM        :: Normalize the power of the whole gabor patch for
-;                 filtering or image processing purposes. If
-;                 <*>/NORM</*> is set, the gabor wavelet is scaled to
-;                 a total power of <*>1.0</*>. I.e.,
-;                 <*>Total(Sqr(Gabor(...)) eq 1.0</*>. This makes
+;  NORM        :: Normalize the gaussian mask that is used to build
+;                 the gabor patch, for image processing purposes. If
+;                 <*>/NORM</*> is set, the gaussian mask that is
+;                 multilpied to the cosine function is normalized to a
+;                 total volume of 1.0 (see also <*>/NORM</*> option of
+;                 the <A>Gauss_2d</A> function).  This makes
 ;                 convolution results for different wavelengths
-;                 comparable.
+;                 comparable, because the results will be independent
+;                 of the gabor patch size.
+;
+;  POWERNORM   :: Normalize the power of the whole gabor patch for
+;                 filtering purposes. If <*>/POWERNORM</*> is set, the
+;                 gabor wavelet is scaled to a total power of
+;                 <*>1.0</*>. I.e., <*>Total(Gabor(...)^2.0) eq
+;                 1.0</*>.
 ;
 ;  MAXONE      :: If <*>PHASE</*> is different from <*>0</*>, the
 ;                 maximum values of the cosine function and the gauss
@@ -138,7 +146,7 @@ End
 
 Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
                 WAVELENGTH=wavelength, $
-                HWB=hwb, HMW=hmw, NORM=norm, $
+                HWB=hwb, HMW=hmw, NORM=norm, POWERNORM=powernorm, $
                 MAXONE=maxone, NICEDETECTOR=nicedetector
 
    Default, WAVELENGTH, size
@@ -153,7 +161,7 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
    Endelse
 
    result  = cos(phase + temporary(result)*2*!PI/float(wavelength)) $
-     * gauss_2d(size, size, HWB=hwb)
+     * gauss_2d(size, size, HWB=hwb, NORM=norm)
    
 
 
@@ -186,7 +194,7 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
    endelse
 
 
-   if Keyword_Set(NORM) then begin
+   if Keyword_Set(POWERNORM) then begin
       ;; Normalize power to 1.0
       A = sqrt(Total(result^2.))
       result = Temporary(result)/A
