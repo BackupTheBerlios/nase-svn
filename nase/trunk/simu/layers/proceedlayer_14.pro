@@ -56,7 +56,7 @@ common common_random, seed
    END
    
  ;  Layer.M = (Layer.F1+Layer.F2-Layer.I1)*(1.+Layer.L)-Layer.I2
-  Layer.M = (Layer.F1+(1.+Layer.L)*(Layer.F2-Layer.I1)/(1+Layer.I2))
+  Layer.M = (Layer.F2+(1.+Layer.L)*(Layer.F1-Layer.I1)/(1+Layer.I2))
    
    IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
    
