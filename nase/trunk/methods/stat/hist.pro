@@ -31,7 +31,7 @@
 ;  MINH      :: sets min histogram value
 ;  MAXH      :: sets max histogram value
 ;  EXACT     :: means use <*>MINH</*> and <*>MAXH</*> exactly. Else
-;               adjusts so histogram goes to 0 at ends.
+;               adjusts x-axis with <A>nicenumber</A> 
 ;  BIN_START :: means return x as bin start values,
 ;               else x is returned as bin mid values.
 ;  MAXBINS   :: set max allowed number of bins to <*>MAXBINS</*>.
@@ -55,71 +55,61 @@
 ;-
  
  
-	function hist, arr, x, bin, maxbins=mxb, nbins=nb, $
-	  minh=minv, maxh=maxv, exact=exact, bin_start=bin_start, weight=wt ,$
-                       REVERSE_INDICES=R_I
- 
+function hist, arr, x, bin, maxbins=mxb, nbins=nb, $
+               minh=minv, maxh=maxv,exact=exact, bin_start=bin_start, weight=wt ,$
+               REVERSE_INDICES=R_I
+   
+   if set(nb) then nb_flag = 1
+   if set(nb) and set(bin) then $
+    Console,/fatal,"Conflicting keywords: BIN ,NBINS"
 
-	;------  If bin size not given pick one  --------
-        if n_params(0) lt 3 then BEGIN
-           bin = nicenumber((double(max(arr))-double(min(arr)))/30.)
-           IF bin EQ 0. THEN bin = 1./30.
-        ENDIF
-	if keyword_set(nb) then BEGIN
-           bin = nicenumber((double(max(arr))-double(min(arr)))/nb)
-           IF bin EQ 0. THEN bin = 1./nb
-        ENDIF
-        ;------  Get max number of bins allowed  --------
-	mxbins = 1000				; Def max # of histogram bins.
-	if keyword_set(mxb) then mxbins = mxb	; Over-ride max bins.
-	;------  Get histogram min and max values  ------
- 	mn = min(arr, max = mx)			; Min,max array value.
-	if n_elements(minv) ne 0 then mn = minv	; Set min.
-	if n_elements(maxv) ne 0 then mx = maxv	; Set max.
-	b2 = bin/2.0				; Bin half width.
-	xmn = bin*floor(mn/bin)			; First bin start X.
-	xmx = bin*(1+floor(mx/bin))		; Last bin end X.
-	n = (xmx - xmn)/bin			; Number of histogram bins.
-	;------  Test if too many bins  --------
-	if n gt mxbins then begin
-	  print,' Error in HIST: bin size too small, histogram requires '+$
-	    strtrim(n,2)+' bins.'
-	  print,' Def.max # of bins = 1000.  May over-ride with NBINS keyword.'
-	  return, -1
-	endif
- 
-         
-	  ;--------  Make histogram and bin X coordinates  ----------- 
-	  h = histogram((arr - xmn)/bin, min=0, max=n,REVERSE_INDICES=R_I)
-	  h = h(0:n-1)				; Trim upper end.
- 
-          x = xmn + bin*findgen(n_elements(h)) ; Bin starting x coordinates.
-	;--------  Weighted histogram?  ----------------------------
-          if n_elements(wt) ne 0 then begin
-             if n_elements(wt) ne n_elements(arr) then begin
-                print,' Error in hist: when weights are given there must be one'
-                print,'   for each input array element.'
-                return,-1
-             endif
-             h = float(h) ;;
-             for  i = 0L ,n_elements(h)-1 DO BEGIN 
-                
-                IF R_I(i) NE R_I(i+1) THEN BEGIN 
-                   h(i) = total(wt(R_I(R_I(i): R_I(i+1)-1))) 
-                ENDIF 
-                
-             ENDFOR 
-             
-          ENDIF
-          ;;-------  Adjust histogram ends  ---------
-	if not keyword_set(exact) then begin
-	  x = [min(x)-bin,x,max(x)+bin]		; Add a bin to each end so
-	  h = [0,h,0]				; histogram drops to 0 on ends.
-	endif
- 
-	;-------  Adjust bin values  ---------
-	if keyword_set(bin_start) then x = x + b2  ; default: mid bin x coordinates.
-        
+   default, exact, 0
+   default, nb_flag, 0
+   default, nb, 30
+   default, bin_start, 0
 
-	return, h
-	end
+   ;; histogram results always to length nb+1 (maxh has to be included)
+   __nb = nb-1l
+   
+   default, minv, min(double(arr)) ; Set max.
+   default, maxv, max(double(arr)) ; Set min.
+  
+   if not set(bin) then begin
+      if exact eq 1 then bin = ((double(maxv)-double(minv))/float(__nb)) $
+      else bin = nicenumber((double(maxv)-double(minv))/float(__nb))
+   end
+   if bin eq 0 then Console, /fatal, " Only equal values in data, keywords MINH and MAXH needed"
+    
+   ;;warn if nicenumber changes nbins
+   if bin ne  ((double(maxv)-double(minv))/float(__nb)) and nb_flag EQ 1 then begin
+      Console, /Warn, " BIN changed from "+ $
+       str((double(maxv)-double(minv))/float(__nb)) +" to "+str(bin)
+      Console, /warn, " resp. NBINS changed from "+str(nb)+" to "+str(round((double(maxv)-double(minv))/float(bin)+1))
+      Console, /warn, " Keyword EXACT recommended."
+   endif
+
+   ;;------  Get max number of bins allowed  --------
+   mxbins = 1000                ;; Def max # of histogram bins.
+   if set(mxb) then mxbins = mxb ; Over-ride max bins.
+   n = round((double(maxv)-double(minv))/float(bin)+1)
+   
+   ;;------  Test if too many bins  --------
+   if n gt mxbins then begin
+      Console, /Fatal,' Error in HIST: bin size too small, histogram requires '+$
+       strtrim(n,2)+' bins.'
+      Console, /Fatal,' Def.max # of bins = 1000.  May over-ride with NBINS keyword.'
+   endif
+   ;;make histogram
+   if set(wt) then h = fltarr(n) else h = lonarr(n)
+   
+   for i=0l, n-2 do begin
+      index = where( (arr-minv)  GE i*bin and (arr-minv) LT (i+1) * bin, count)
+      if set(wt) and count GT 0 then h(i) = total(wt(index)) $
+      else h(i) = count
+   endfor
+   ;;compute x-axis
+   x = minv+findgen(n_elements(h))*bin
+   if bin_start NE 1 then x = x + bin/2.
+
+   return, h
+end
