@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/19 17:20:21  saam
+;          removed all poissoninput calls (!!!!!!!!!)
+;
 ;     Revision 1.5  2000/01/19 09:08:55  saam
 ;           + wrong handling of delta_t fixed
 ;
@@ -198,13 +201,13 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          CloseSheet, INPUT_1
          R = { type:1, index: IN.index }
       END
-      2: BEGIN
-         R = {  type  : 2,$
-                data  : PoissonInput(WIDTH=w, HEIGHT=h, RATE=IN.f, V=IN.v, CORR=IN.cor, GAUSSIAN_JITTER=IN.sig, FRAC=IN.p, $
-                                     SAMPLEPERIOD=P.SIMULATION.SAMPLE) ,$
-                index : IN.index }
-         sampleframe = BytArr(w*h)
-      END
+;      2: BEGIN
+;         R = {  type  : 2,$
+;                data  : PoissonInput(WIDTH=w, HEIGHT=h, RATE=IN.f, V=IN.v, CORR=IN.cor, GAUSSIAN_JITTER=IN.sig, FRAC=IN.p,$
+;                                     SAMPLEPERIOD=P.SIMULATION.SAMPLE) ,$
+;                index : IN.index }
+;         sampleframe = BytArr(w*h)
+;      END
       3: BEGIN; PCC
          IF IN.decay THEN BEGIN
             IF h NE w THEN Message, 'INTINPUT: PCC with DECAY and non-quadratic layers is not defined...'
@@ -234,8 +237,8 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          ; without decay: mask is just ANDed with the poissoninput
          ; with decay: mask is the probability that the spike is actually emitted 
          R = {  type  : 3,$
-                data  : PoissonInput(WIDTH=w, HEIGHT=h, RATE=f_corr, V=IN.V, CORR=1.0, GAUSSIAN_JITTER=IN.sig, FRAC=IN.p, SAMPLEPERIOD=P.SIMULATION.SAMPLE, /NOSPASS) ,$
-                data2 : PoissonInput(WIDTH=w, HEIGHT=h, RATE=f_uncorr, V=IN.V, CORR=0.0, SAMPLEPERIOD=P.SIMULATION.SAMPLE, /NOSPASS) ,$
+;                data  : PoissonInput(WIDTH=w, HEIGHT=h, RATE=f_corr, V=IN.V, CORR=1.0, GAUSSIAN_JITTER=IN.sig, FRAC=IN.p, SAMPLEPERIOD=P.SIMULATION.SAMPLE, /NOSPASS) ,$
+;                data2 : PoissonInput(WIDTH=w, HEIGHT=h, RATE=f_uncorr, V=IN.V, CORR=0.0, SAMPLEPERIOD=P.SIMULATION.SAMPLE, /NOSPASS) ,$
                 mask  : mask ,$
                 dmask : mask ,$
                 dyn   : IN.dyn,$
