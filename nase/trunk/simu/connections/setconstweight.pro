@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  1998/11/09 10:40:44  saam
+;             NOCON (Range) cut radius+1
+;
 ;       Revision 1.10  1998/11/08 17:47:01  saam
 ;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
 ;             + problem with NOCON corrected
@@ -111,12 +114,12 @@ PRO SetConstWeight, DWS, Amp, Range, $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
       
       IF Keyword_Set(INVERSE) THEN BEGIN
-         SetWeight, DWS, (Amp*(Range LT ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col)))), $
+         SetWeight, DWS, (Amp*(Range LE ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col)))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
       ENDIF ELSE BEGIN
-         SetWeight, DWS, (Amp*(Range GE Round(Shift(Dist(th, tw), t_hs_row, t_hs_col)))), $
+         SetWeight, DWS, (Amp*(Range GT Round(Shift(Dist(th, tw), t_hs_row, t_hs_col)))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
@@ -130,12 +133,12 @@ PRO SetConstWeight, DWS, Amp, Range, $
       
       IF Keyword_Set(inverse) THEN BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
-          Amp*((Range LE Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
+          Amp*((Range LE ROUND(Shift(Dist(sh, sw), s_hs_row, s_hs_col)))), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
       END ELSE BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
-          Amp*(Range GT Shift(Dist(sh, sw), s_hs_row, s_hs_col)), $
+          Amp*(Range GT ROUND(Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
       ENDELSE 

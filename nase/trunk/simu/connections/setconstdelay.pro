@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1998/11/09 10:40:43  saam
+;             NOCON (Range) cut radius+1
+;
 ;       Revision 1.7  1998/11/08 17:47:00  saam
 ;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
 ;             + problem with NOCON corrected
@@ -104,12 +107,12 @@ Pro SetConstDelay, DWS, Amp, Range, $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
       
       IF Keyword_Set(inverse) THEN BEGIN
-         SetDelay, DWS, Amp*(Range LT ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col))),$
+         SetDelay, DWS, Amp*(Range LE ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col))),$
           S_ROW=s_row, S_COL=s_col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,$
           TRANSPARENT=transparent
       END ELSE BEGIN
-         SetDelay, DWS, Amp*(Range GE ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col))),$
+         SetDelay, DWS, Amp*(Range GT ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col))),$
           S_ROW=s_row, S_COL=s_col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,$
           TRANSPARENT=transparent
@@ -122,12 +125,12 @@ Pro SetConstDelay, DWS, Amp, Range, $
       
       IF Keyword_Set(inverse) THEN BEGIN
          SetDelay, DWS, T_ROW=t_row, T_COL=t_col, $
-          Amp*((Range LE Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
+          Amp*((Range LE ROUND(Shift(Dist(sh, sw), s_hs_row, s_hs_col)))), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
       END ELSE BEGIN
          SetDelay, DWS, T_ROW=t_row, T_COL=t_col, $
-          Amp*(Range GT Shift(Dist(sh, sw), s_hs_row, s_hs_col)), $
+          Amp*(Range GT ROUND(Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
       ENDELSE 
