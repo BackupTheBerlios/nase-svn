@@ -10,6 +10,19 @@
 ;                                     Replay()
 ;                                     Rewind
 ;
+;          Das typische Vorgehen wäre folgendes:
+;
+;                      - Besorge Dir ein leeres Video mit     InitVideo()
+;                      - Nehme beliebig viele Frames auf mit  CamCord()
+;                      - Beende die Aufnahme mit              Eject
+;                      - Tu was Du willst, bis Du das
+;                         Video brauchst, dann 
+;                      - Lege das Video ein mit               LoadVideo()    
+;                     (- Spule zu einer bestimmten Stelle mit Rewind() )
+;                      - Spiele beliebig viele Frames ab mit  Replay() 
+;                      - Beende die Wiedergabe mit            Eject
+;                          
+;
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: MyVideo = InitVideo ( MusterFrame [,TITLE] [,SYSTEM] [,STARRING]
@@ -18,6 +31,8 @@
 ; 
 ; INPUTS: MusterFrame: Ein Array des Typs und der Größe, die aufgezeichnet werden sollen.
 ;                      Leider sind StringArrays nicht erlaubt.
+;                   Hinweis: Der Musterframe dient wirklich nur als Muster,
+;                            wird also NICHT aufgezeichnet!
 ;
 ; OPTIONAL INPUTS: ---
 ;	
@@ -50,6 +65,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Thu Aug 28 15:54:26 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		TITEL-Keyword verarbeitet jetzt Pfade richtig.
+;
 ;       Wed Aug 27 17:20:58 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -65,10 +85,15 @@ Function InitVideo, Frame, TITLE=title, $
 
    Default, title, "The Spiking Neuron"   
    Default, system, "CVS"
-   Default, starring, "Joe ""NASE"" Neuron"
+   Default, starring, "Nerd ""die NASE"" Neuron"
    Default, company, "AG Neurophysik"
    Default, producer, GETENV("USER")
    Default, year, strmid(systime(), 20, 24)
+ 
+   filename = title+".vid"
+   infoname = title+".vidinf"
+   Parts = str_sep(title, '/')
+   title = Parts(n_elements(Parts)-1)
 
    If Keyword_set(VERBOSE) then begin
       print
@@ -86,9 +111,6 @@ Function InitVideo, Frame, TITLE=title, $
    lproducer = leer80 & strput, lproducer, producer
    lyear = leer80 & strput, lyear, year
 
-
-   filename = title+".vid"
-   infoname = title+".vidinf"
 
 
    openw, infounit, /GET_LUN, infoname
