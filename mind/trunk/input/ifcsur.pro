@@ -33,28 +33,15 @@
 ;
 ; OUTPUTS:  Input, filtered by CENTER-SURROUND-RFs
 ;
-;
-; OPTIONAL OUTPUTS:
-;
-;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-;
-; EXAMPLE:
-;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/28 15:24:09  saam
+;           console changes updates
+;
 ;     Revision 1.4  2000/01/27 17:44:24  alshaikh
 ;           new console-syntax
 ;
@@ -68,13 +55,13 @@
 ;           initial version
 ;
 ;
-;-
+
 
 
 FUNCTION ifcsur, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp_vals, DELTA_T=delta_t, $
                  S1=s1,S2=s2,K2=k2,K1=k1,OFF_RATE=off_rate,ONCENTER=oncenter
 
- COMMON terminal,output
+ COMMON ATTENTION
 
    Default, mode   , 1          ; i.e. step
    Default, pattern, !NONE
@@ -111,7 +98,7 @@ convol_range_h = h-1
                        delta_t  : delta_t $ 
                       }
          
-          console,output,'initialized',/msg         
+          console,P.CON,'initialized',/msg         
       END
       
 
@@ -147,11 +134,11 @@ convol_range_h = h-1
 ;
       2:BEGIN
          
-          console,output,'stopped',/msg
+          console,P.CON,'stopped',/msg
          
       END 
       ELSE: BEGIN
-          console,output, 'unknown mode',/fatal
+          console,P.CON, 'unknown mode',/fatal
       END
       
    ENDCASE 

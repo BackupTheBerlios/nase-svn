@@ -12,18 +12,15 @@
 ;
 ; KEYWORD PARAMETERS:    TIME : time for fade-in
 ;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-;
-; EXAMPLE:
-;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/28 15:24:09  saam
+;           console changes updates
+;
 ;     Revision 1.5  2000/01/27 17:44:25  alshaikh
 ;           new console-syntax
 ;
@@ -40,17 +37,14 @@
 ;           first filter ever made
 ;
 ;
-;-
-
-
 FUNCTION iffadein,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_vals,DELTA_t=delta_t,TIME=time
 
-   COMMON terminal, output
-
-DEFAULT, mode, 1      ; i.e. step
-DEFAULT, time,10.0
-
-Handle_Value,_temp_vals,temp_vals,/no_copy
+   COMMON ATTENTION
+   
+   DEFAULT, mode, 1             ; i.e. step
+   DEFAULT, time,10.0
+   
+   Handle_Value,_temp_vals,temp_vals,/no_copy
 
    CASE mode OF
 
@@ -65,7 +59,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
                        delta_t  : delta_t $
                       }
      
-          console,output,'initialized',/msg         
+          console,P.CON,'initialized',/msg         
       END 
 
       
@@ -84,7 +78,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 
       2: BEGIN
          pattern = 0.0  
-         console,output,'stopped',/msg
+         console,P.CON,'stopped',/msg
 
          END
 

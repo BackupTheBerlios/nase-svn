@@ -36,12 +36,15 @@
 ;
 ; SIDE EFFECTS:       TEMP_VALS is changed by the function call!
 ;
-;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/28 15:24:09  saam
+;           console changes updates
+;
 ;     Revision 1.3  2000/01/27 17:44:24  alshaikh
 ;           new console-syntax
 ;
@@ -52,7 +55,7 @@
 ;           initial version
 ;
 ;
-;-
+
 
 
 
@@ -63,7 +66,7 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
                 LOGIC=logic, $
                 X1=x1,Y1=y1,X2=x2,Y2=y2,INVERT=invert, VALUE=value
 
-   COMMON terminal,output
+   COMMON ATTENTION
 
    ON_ERROR, 2
 
@@ -106,7 +109,7 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
                 invert : invert    $
          }
          
-         console,output,'initialized',/msg         
+         console,P.CON,'initialized',/msg         
       END
       
       ; STEP
@@ -144,15 +147,15 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
       
       ; FREE
       2: BEGIN
-         console, output,'done',/msg
+         console, P.CON,'done',/msg
       END 
 
       ; PLOT
       3: BEGIN
-         console, output, 'display mode not implemented, yet',/warning
+         console, P.CON, 'display mode not implemented, yet',/warning
       END
       ELSE: BEGIN
-         console, output, 'unknown mode',/warning
+         console, P.CON, 'unknown mode',/warning
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET

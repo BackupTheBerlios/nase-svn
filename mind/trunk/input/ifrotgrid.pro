@@ -27,27 +27,15 @@
 ;
 ; OUTPUTS:          sine-grid
 ;
-;
-; OPTIONAL OUTPUTS:
-;
-;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-; EXAMPLE:
-;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/01/28 15:24:09  saam
+;           console changes updates
+;
 ;     Revision 1.6  2000/01/28 14:30:35  alshaikh
 ;           seems to be ok, now
 ;
@@ -66,8 +54,7 @@
 ;     Revision 1.1  2000/01/14 13:45:37  alshaikh
 ;           done
 ;
-;
-;-
+
 
 
 FUNCTION ifrotgrid,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_vals,DELTA_T=delta_t, $
@@ -82,18 +69,18 @@ FUNCTION ifrotgrid,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_va
                    MYSEED=myseed
                     
  COMMON COMMON_random, seed
- COMMON terminal,output
+ COMMON ATTENTION
 
-Default, mode, 1      ; i.e. step
-Default, div , 0.0
-Default, fixed,0.0
-Default, random,0.0
-Default, alpha,0.0
-Default, duration,1.0
-Default, logic, 'ADD'
-Default, myseed, seed
-Handle_Value,_temp_vals,temp_vals,/no_copy
-
+ Default, mode, 1               ; i.e. step
+ Default, div , 0.0
+ Default, fixed,0.0
+ Default, random,0.0
+ Default, alpha,0.0
+ Default, duration,1.0
+ Default, logic, 'ADD'
+ Default, myseed, seed
+ Handle_Value,_temp_vals,temp_vals,/no_copy
+ 
 
    CASE mode OF
 
@@ -142,7 +129,7 @@ if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
                       }
          
 
-         console,output,'filter ''ifrotgrid'' initialized, mode :'+logic 
+         console,P.CON,'filter ''ifrotgrid'' initialized, mode :'+logic 
          
       END
 
@@ -203,7 +190,7 @@ if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
       2:BEGIN
          
          temp_pattern = 0.0
-         console,output,'filter ''ifrotgrid'' stopped'
+         console,P.CON,'filter ''ifrotgrid'' stopped'
 
       END
 
