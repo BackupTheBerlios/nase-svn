@@ -36,13 +36,16 @@
 ;  print, Deg(Rad(23)) ; better use cyclic_value() for same effect!
 ;  
 ; SEE ALSO:
-;  Rad(), cyclic_value()
+;  Rad(), cyclic_value(), !RADEG
 ;  
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/08/10 16:19:05  kupper
+;        added seealso entry.
+;
 ;        Revision 2.1  2000/08/09 17:23:02  kupper
 ;        Some useful routines...
 ;
