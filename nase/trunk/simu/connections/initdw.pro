@@ -111,6 +111,11 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Thu Sep 4 14:39:19 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Strukturen haben jetzt den info-Tag.
+;
 ;       Wed Sep 3 11:46:43 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -223,7 +228,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
       
       Default, delay, 0
       
-      DelMat = { source_w: s_width,$
+      DelMat = { info    : 'DW_WEIGHT', $
+                 source_w: s_width,$
                  source_h: s_height,$
                  target_w: t_width,$
                  target_h: t_height,$
@@ -233,7 +239,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ) $
                }
    END ELSE BEGIN         
-      DelMat = {source_w: s_width,$
+      DelMat = {info    : 'DW_DELAY_WEIGHT', $
+                source_w: s_width,$
                 source_h: s_height,$
                 target_w: t_width,$
                 target_h: t_height,$
@@ -322,7 +329,8 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
       IF HasDelay THEN BEGIN
 
-         RETURN, {  source_w: DelMat.source_w,$
+         RETURN, {  info    : 'DW_DELAY_WEIGHT', $
+                    source_w: DelMat.source_w,$
                     source_h: DelMat.source_h,$
                     target_w: DelMat.target_w,$
                     target_h: DelMat.target_h,$
