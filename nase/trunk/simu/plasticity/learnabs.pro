@@ -74,6 +74,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.5  1998/03/11 11:59:24  thiel
+;        Bugfix: C2T allein war undefiniert, DW.C2T tuts,
+;        hoffentlich ists auch richtig.
+;
 ; Revision 2.4  1998/02/05 13:17:40  saam
 ;            + Gewichte und Delays als Listen
 ;            + keine direkten Zugriffe auf DW-Strukturen
@@ -114,19 +118,19 @@ PRO LearnABS, _DW, $
    ; sn : to si belonging source neuron
    ; wi : weight indices belonging to neuron
 
-   IF Info(DW) EQ 'SDW_WEIGHT' THEN BEGIN
+   IF DW.info EQ 'SDW_WEIGHT' THEN BEGIN
 
       FOR si=2,Prae(0)+1 DO BEGIN
          sn = Prae(si)
          IF DW.S2C(sn) NE -1 THEN BEGIN
             Handle_Value, DW.S2C(sn), wi
             DeltaW = DW.W(wi)-DW.W(wi)-1.0
-            Rauf = Where(Target_Cl.M(C2T(wi)) GE Lernamplitude, c1)
+            Rauf = Where(Target_Cl.M(DW.C2T(wi)) GE Lernamplitude, c1)
             IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
-            Gleich = Where(Target_Cl.M(C2T(wi)) LT Entlernamplitude, c2)
+            Gleich = Where(Target_Cl.M(DW.C2T(wi)) LT Entlernamplitude, c2)
             IF c2 NE 0 THEN DeltaW(Gleich) = 0.0
             IF Set(NONSELF) THEN BEGIN
-               self = WHERE(C2T(wi) EQ sn, count)
+               self = WHERE(DW.C2T(wi) EQ sn, count)
                IF count NE 0 THEN deltaw(self) = 0.0
             ENDIF
             DW.W(wi) = (DW.W(wi) + Rate*deltaw) > 0.0 < Alpha
@@ -134,19 +138,19 @@ PRO LearnABS, _DW, $
       ENDFOR
 
    END ELSE BEGIN 
-      IF Info(DW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
+      IF DW.info EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          
          FOR si=2,Prae(0)+1 DO BEGIN
             sn = Prae(si)
             IF DW.S2C(sn) NE -1 THEN BEGIN
                Handle_Value, DW.S2C(sn), wi
                DeltaW = DW.W(wi)-DW.W(wi)-1.0
-               Rauf = Where(Target_Cl.M(C2T(wi)) GE Lernamplitude, c1)
+               Rauf = Where(Target_Cl.M(DW.C2T(wi)) GE Lernamplitude, c1)
                IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
-               Gleich = Where(Target_Cl.M(C2T(wi)) LT Entlernamplitude, c2)
+               Gleich = Where(Target_Cl.M(DW.C2T(wi)) LT Entlernamplitude, c2)
                IF c2 NE 0 THEN DeltaW(Gleich) = 0.0
                IF Set(NONSELF) THEN BEGIN
-                  self = WHERE(C2T(wi) EQ tn, count)
+                  self = WHERE(DW.C2T(wi) EQ tn, count)
                   IF count NE 0 THEN deltaw(self) = 0.0
                ENDIF
                DW.W(wi) = DW.W(wi) + Rate*deltaw
