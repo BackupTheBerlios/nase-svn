@@ -11,7 +11,9 @@
 ; PURPOSE:
 ;  This routines provides a operating system independent way to delete a
 ;  file. It is unbelievable that IDL itself,
-;  doesn't provide such a functionality.
+;  didn't provide such a functionality up to IDL5.3. Since IDL5.4 file
+;  deleting is supported, and this routine simply passes the call on
+;  to IDL's FILE_DELETE procedure.
 ;
 ; CATEGORY:
 ;  Files
@@ -30,6 +32,11 @@
 ;
 ;-
 PRO FileDel, src
+
+   If IDLVersion(/float) ge 5.4 then begin
+      FILE_DELETE, src
+      return
+   endif
 
 ON_Error, 2
 
