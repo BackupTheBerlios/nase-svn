@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.21  1999/07/15 12:29:28  kupper
+;       Reihenfolge von defgolvars un ShowLogo geaendert.
+;
 ;       Revision 1.20  1999/04/06 14:30:04  kupper
 ;       So. Jetzt aber. Jetzt wird auch NASELOGO=FALSE tatsaechlich beachtet...
 ;
@@ -68,6 +71,7 @@ if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
 ;; --------------------------------------------------------
 
 
+defglobvars ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt    
+
 If WillShowLogo then ShowLogo, SECS=3
 
-defglobvars
