@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;  Fisher's Z transform is a transformation which is recommended to be performed on values that have been normalized to
-;  the interval (or the positive or negative part of the interval) (-1,1), like correlation or coherence values, before
+;  the interval (or the positive or negative part of the interval) [-1,1], like correlation or coherence values, before
 ;  performing any other operations on them (like averaging, subtracting, dividing, z-score evaluation, etc.). Ratios
 ;  between values are <I>not</I> correctly mapped by the normalized correlation or other normalization measures, i.e., an
 ;  increase, e.g., from 0.2 to 0.3 is not as significant as an increase from 0.8 to 0.9. Therefore, values close to 1
@@ -47,17 +47,27 @@
 ; OPTIONAL OUTPUTS:
 ;  CLIPIND::  Set this keyword to a named variable which on return will be a one-dimensional array containing the
 ;             (one-dimensional) subscript indices (as they would be obtained with IDL's <*>Where</*> function) into those
-;             elements of <*>x</*> which were outside the interval (-1,1) and which were therefore clipped. This keyword
-;             has no effect when the inverse transform is specified (<*>direction</*>=1). If <*>x</*> does not contain
-;             such irregular elements, a scalar -1 is returned in <*>CLIPIND</*>.
+;             elements of <*>x</*> which are outside the (open) interval (-1,1) and which have therefore been mapped
+;             onto -inf or inf, respectively. If <*>x</*> does not contain such irregular elements, a scalar -1 is
+;             returned in <*>CLIPIND</*>. Note that the indices are <I>not</I> sorted, because this can take quite
+;             a lot of time and is mostly not necessary. They are rather arranged in two sorted blocks, the first one
+;             containing the indices into elements <=-1 (if there are any) and the second containing the indices into
+;             elements >=+1 (if there are any). Remember that you sort the indices by yourself if you would like to have
+;             them sorted.<BR>
+;             This keyword has no effect when the inverse transform is specified (<*>direction</*>=1).
+;
 ;
 ; RESTRICTIONS:
-;  If <*>direction</*> is absent or -1, <*>x</*> values must lie between -1 and 1 (excluding -1 and 1). Otherwise, values
-;  are assumed to be meant to be "practically =1", and are replaced by the highest possible value <1, which depends on
-;  the precision of the data type (single or double). A corresponding console warning message is given.
+;  If <*>direction</*> is absent or -1, <*>x</*> values must lie between -1 and 1. Otherwise, values are clipped to +/-1;
+;  the result of the transform is +inf and -inf, respectively. A corresponding console warning message is given. (It is,
+;  however, not given for values which are =-1 or =+1, even though these values are mapped onto +/-inf, as well.)
 ;
 ; EXAMPLE:
-;  Print, FZT([0.2,0.3,0.8,0.9])
+;* Print, FZT([ -0.2 , 0.2 , 0.8 , 0.9 , 0.99 , 1.0 ])
+;
+;  IDL prints:
+;
+;*     -0.202733     0.202733      1.09861      1.47222      2.64665          Inf
 ;
 ; SEE ALSO:
 ;  A routine for averaging values in "Fisher's Z domain" and transforming back the resulting value(s) is available in the
@@ -95,26 +105,36 @@ FUNCTION   FZT, X, Direction,   overwrite = overwrite, clipind = clipind
           END
 
      -1:  BEGIN
-            ; The value (positive and negative) beyond which values are not accepted:
-            IF  TypeX EQ 5  THEN  One = 0.9999999999999999D  $
-                            ELSE  One = 0.9999999
-            ; Checking whether values lie outside the interval (-1,1), and determining their subscripts:
+            ; Checking whether values lie outside the interval (-1,1), and determining their subscripts (separately
+            ; for values <= -1 and >= +1, respectively):
             MaxX = Max(X, min = MinX)
             NClipNeg = 0
             NClipPos = 0
-            IF  (MinX LT -One) OR (MaxX GT One)  THEN  Console, '   Range of x beyond (-1,1). Clipping values.', /warning
-            IF   MinX LT -One  THEN  iClipNeg = Where(X GT One, NClipNeg)  $
-                               ELSE  iClipNeg = -1
-            IF   MaxX GT  One  THEN  iClipPos = Where(X GT One, NClipPos)  $
-                               ELSE  iClipPos = -1
-            iClip = Elements([iClipNeg,iClipPos])
-            ; A copy of X is made unless the OVERWRITE keyword is set:
+            IF  MinX LE -1  THEN  iClipNeg = Where(X LE -1, NClipNeg)
+            IF  MaxX GE  1  THEN  iClipPos = Where(X GE  1, NClipPos)
+            NClip = NClipNeg + NClipPos
+            CASE  1  OF
+              NClipNeg GE 1  AND  NClipPos GE 1:  ClipInd = [ iClipNeg , iClipPos ]
+              NClipNeg GE 1  AND  NClipPos EQ 0:  ClipInd =   iClipNeg
+              NClipNeg EQ 0  AND  NClipPos GE 1:  ClipInd =   iClipPos
+              ELSE:  ClipInd = -1L
+            ENDCASE
+            ; If values outside the interval [-1,1] exist, an extra warning message is given:
+            IF  (MinX LT -1) OR (MaxX GT 1)  THEN  Console, '   Range of x beyond [-1,1]. Clipping values.', /warning
+            ; A copy of X is made unless the OVERWRITE keyword is set, in which case X is simply renamed to X_:
             IF  Keyword_Set(overwrite)  THEN  X_ = Temporary(X)  $
                                         ELSE  X_ = X
-            ; Clipping the critical values and computing the forward Fisher's Z transform:
-            IF  NClipNeg GT 0  THEN  X_[iClipNeg] = -One
-            IF  NClipPos GT 0  THEN  X_[iClipPos] =  One
-            Return, 0.5 * alog(2.0/(1.0-Temporary(X_)) - 1.0)
+            ; Computing the forward Fisher's Z transform. The values outside the interval (-1,1) are not transformed,
+            ; since computations producing math errors take much more time; instead, X is set to 0 in the critical
+            ; positions (which does not produce math errors), and the result in the corresponding positions is explicitly
+            ; set to +/-inf:
+            IF  TypeX EQ 5  THEN  Infinity = !Values.D_Infinity  $
+                            ELSE  Infinity = !Values.F_Infinity
+            IF  NClip    GE 1  THEN  X_[ClipInd]  = 0
+            X_ = 0.5 * alog(2.0/(1.0-Temporary(X_)) - 1.0)
+            IF  NClipNeg GE 1  THEN  X_[iClipNeg] = -Infinity
+            IF  NClipPos GE 1  THEN  X_[iClipPos] =  Infinity
+            Return, X_
           END
 
      ELSE:  Console, '   Direction of transform must be -1 or 1.', /fatal
