@@ -17,9 +17,9 @@
 ;                      ZIPFILES  : enthaelt die gefunden, nur gezippten Files als StrArr, -1 falls
 ;                                   nix gefunden wurde
 ;                      NOZIPFILES: enthaelt die gefundenen, nur nicht gezippten Files, -1 falls
-;                                   nix gefunden wurde
+;                                   nix gefunden wurde (ohne .GZ-Endung)
 ;                      BOTHFILES : enthaelt alle Files, die sowohl gezippt als auch nicht gezippt vorliegen, -1 falls
-;                                   nix gefunden wurde
+;                                   nix gefunden wurde (ohne .GZ-Endung)
 ;
 ; OUTPUTS:             exists: FALSE, falls weder gezippte noch nicht gezippte
 ;                                     Files gefunden wurden, TRUE sonst
@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/03/13 14:46:11  saam
+;           more tolerant, now uses zipstat
+;
 ;     Revision 2.1  1998/03/13 13:37:39  saam
 ;           hard work
 ;
@@ -60,9 +63,12 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
       IF tnzc GT 0 THEN tnozipfiles = tnozipfiles(0:tnzc-1)
    END ELSE tnzc = 0
    
-   ; now try for zipped files only
+   ; now try for zipped files only and cut the suffix
    tzipfiles = FindFile(filepattern+suffix,COUNT=tzc)
-   
+   IF tzc NE 0 THEN BEGIN
+      FOR i=0,tzc-1 DO tzipfiles(i) = StrMid(tzipfiles(i),0,STRLEN(tzipfiles(i))-STRLEN(SUFFIX))
+   ENDIF
+
    IF tnzc EQ 0 AND tzc EQ 0 THEN RETURN, 0 ; no files exist
 
    zc = 0
@@ -78,7 +84,7 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
          j     = 0
          found = 0
          WHILE (j LT tzc) AND (NOT found) DO BEGIN
-            IF tnozipfiles(i) EQ StrMid(tzipfiles(j),0,STRLEN(tzipfiles(j))-STRLEN(SUFFIX)) THEN BEGIN
+            IF tnozipfiles(i) EQ tzipfiles(j) THEN BEGIN
             ; found a file in zipped and nonzipped version!
                found = 1
                bothfiles(bc) = tnozipfiles(i)
@@ -97,7 +103,7 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
          j     = 0
          found = 0
          WHILE j LT tnzc AND NOT found DO BEGIN
-            IF tnozipfiles(j) EQ StrMid(tzipfiles(i),0,STRLEN(tzipfiles(i))-STRLEN(SUFFIX)) THEN found = 1
+            IF tnozipfiles(j) EQ tzipfiles(i) THEN found = 1
             j = j+1
          END
          IF NOT found THEN BEGIN
@@ -118,9 +124,9 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
       print, 'ZIPSTAT: and '+STRCOMPRESS(bc,/REMOVE_ALL)+' with both for '+filepattern
    END
 
-   IF nzc EQ 0 THEN nozipfiles = -1
-   IF  zc EQ 0 THEN zipfiles = -1
-   IF  bc EQ 0 THEN bothfiles = -1
+   IF nzc EQ 0 THEN nozipfiles = '-1'
+   IF  zc EQ 0 THEN zipfiles = '-1'
+   IF  bc EQ 0 THEN bothfiles = '-1'
    
    RETURN, 1   
 END

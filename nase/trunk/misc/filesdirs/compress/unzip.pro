@@ -30,11 +30,14 @@
 ;                      Auswertung
 ;                      ZipFix, Data
 ;
-; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#ZIPFIX">ZipFix</A>
+; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#ZIPFIX">ZipFix</A>, <A HREF="#ZIPSTAT">ZipStat</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/03/13 14:46:11  saam
+;           more tolerant, now uses zipstat
+;
 ;     Revision 2.2  1998/03/10 13:34:23  saam
 ;           wildcards in filenames are now accepted
 ;
@@ -50,33 +53,27 @@ PRO UnZip, filepattern, NOKEEPORG=nokeeporg
    unzip = 'gunzip'
 
 
-   gzfiles = FindFile(filepattern+suffix,COUNT=c)
-   FOR i=0,c-1 DO BEGIN
-      IF FileExists(gzfiles(i), INFO=info) THEN BEGIN
-         
-         ; extract the unzipped filename
-         gzfile = gzfiles(i)
-         p = RSTRPOS(gzfile,suffix)
-         file = STRMID(gzfile, 0, p)
-
-         IF NOT Contains(info, 'gzip') THEN BEGIN 
-            Print, 'UNZIP: file not compressed...renaming to original name...'+file
-            Spawn, 'mv -f '+gzfile+' '+file
-         ENDIF ELSE BEGIN
-            IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
-               Spawn, unzip+' -c '+gzfile+' > '+file, r
+   IF ZipStat(filepattern, ZIPFILES=gzfiles) AND gzfiles(0) NE '-1' THEN BEGIN
+      FOR i=0,N_Elements(gzfiles)-1 DO BEGIN
+         IF FileExists(gzfiles(i)+suffix, INFO=info) THEN BEGIN
+            
+            IF NOT Contains(info, 'gzip') THEN BEGIN 
+               Print, 'UNZIP: file not compressed...renaming to original name...'+file
+               Spawn, 'mv -f '+gzfile+' '+file
             ENDIF ELSE BEGIN
-               Spawn, unzip+' -f '+gzfile, r
+               IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
+                  Spawn, unzip+' -c '+gzfiles(i)+suffix+' > '+gzfiles(i), r
+               ENDIF ELSE BEGIN
+                  Spawn, unzip+' -f '+gzfiles(i)+suffix, r
+               ENDELSE
+               IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
             ENDELSE
-            IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
-         ENDELSE
-         
-      ENDIF ELSE Message, 'this must not happen !!!'
-   ENDFOR
-      
-   IF c EQ 0 THEN BEGIN
-      Print,' UNZIP: there are no files matching '+filepattern+suffix
+            
+         ENDIF
+      ENDFOR
+   ENDIF ELSE BEGIN      
+      Print, 'UNZIP: there are no files matching '+filepattern+suffix
       Print, 'UNZIP: hoping that anybody else can handle that...'
-   ENDIF
+   ENDELSE
       
 END

@@ -31,11 +31,14 @@
 ;                      Auswertung
 ;                      ZipFix, Data
 ;
-; SEE ALSO:            <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPFIX">ZipFix</A>
+; SEE ALSO:            <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPFIX">ZipFix</A>, <A HREF="#ZIPSTAT">ZipStat</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/03/13 14:46:11  saam
+;           more tolerant, now uses zipstat
+;
 ;     Revision 2.2  1998/03/10 13:34:22  saam
 ;           wildcards in filenames are now accepted
 ;
@@ -52,10 +55,13 @@ PRO Zip, filepattern, KEEPORG=keeporg
    zip = 'gzip'
    
    
-   files = FindFile(filepattern,COUNT=c)
-   FOR i=0,c-1 DO BEGIN
-      IF RSTRPOS(files(i),suffix) EQ -1 THEN BEGIN
-         IF FileExists(files(i), INFO=info) THEN BEGIN
+   c = ZipStat(filepattern, NOZIPFILE=nzf, BOTHFILES=bf, /VERBOSE) 
+   files = ''
+   IF nzf(0) NE '-1' THEN files = [files, nzf]
+   IF bf(0)  NE '-1' THEN files = [files, bf]
+   IF N_Elements(files) NE 1 THEN BEGIN
+      FOR i=1,N_Elements(files)-1 DO BEGIN
+         IF FileExists(files(i), INFO=info) THEN BEGIN ;THE FILE MAY BE ERASED BY A ZIP-OPERATION
             IF Contains(info, 'gzip') THEN BEGIN 
                Print, 'ZIP: file already compressed...renaming it to the zipped version...'+files(i)+suffix
                Spawn, 'mv -f '+files(i)+' '+files(i)+suffix
@@ -67,13 +73,12 @@ PRO Zip, filepattern, KEEPORG=keeporg
                ENDELSE
                IF r(0) NE '' THEN print, 'GZIP: ',r(0)
             ENDELSE
-         ENDIF ELSE Message, 'this must not happen !!!'
-      END
-   ENDFOR
-
-   IF c EQ 0 THEN BEGIN
-      Print,' ZIP: there are no files matching '+file
+         ENDIF
+      ENDFOR
+   ENDIF ELSE BEGIN
+      Print,' ZIP: there are no files matching '+filepattern
       Print, 'ZIP: hoping that anybody else can handle that...'
-   END   
+   ENDELSE   
+   stop
 
 END

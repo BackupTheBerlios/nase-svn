@@ -27,11 +27,14 @@
 ;                      Auswertung
 ;                      ZipFix, Data
 ;
-; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#UNZIP">UnZip</A>
+; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPSTAT">ZipStat</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/03/13 14:46:11  saam
+;           more tolerant, now uses zipstat
+;
 ;     Revision 2.2  1998/03/10 13:34:23  saam
 ;           wildcards in filenames are now accepted
 ;
@@ -47,13 +50,13 @@ PRO ZipFix, filepattern
    IF suffix NE '' THEN suffix = '.'+suffix
    
    
-   files = FindFile(filepattern,COUNT=c)
-   FOR i=0,c-1 DO BEGIN
-      IF FileExists(files(i)) THEN BEGIN
-         
-         IF FileExists(files(i)+suffix) THEN spawn, 'rm -f '+files(i) ELSE Zip, files(i)
-         
-      ENDIF ELSE Message, 'this must not happen !!!'
-   ENDFOR
+   c = ZipStat(filepattern, NOZIPFILES=nzf, BOTHFILES=bf)
+   IF nzf(0) NE '-1' THEN BEGIN
+      FOR i=0,N_Elements(nzf)-1 DO Zip, nzf(i)
+   END
+   IF bf(0) NE '-1' THEN BEGIN
+      FOR i=0,N_Elements(bf)-1 DO spawn, 'rm -f '+bf(i)
+   END
+
    
 END
