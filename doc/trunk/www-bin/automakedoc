@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# * should be run as www-data
+# * checks out DOC
+# * generates HTML from LaTeX
+# 
+# Mirko Saam
+#
+CVSWORK=/vol/neuro/nase/www-nase-copy
+
+USERNAME=`id --name --user`
+if ! [ "$USERNAME" == "www-data" ] ; then
+  echo "User www-data should run $0"
+exit 1
+fi     
+
+
+CVSROOT=/vol/neuro/nase/IDLCVS
+cd $CVSWORK
+cvs -d $CVSROOT checkout doc
+
+cd $CVSWORK/doc/standards
+$CVSWORK/doc/www-bin/makedoc standards
+
+
+exit 0
