@@ -106,7 +106,7 @@ FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
    __SSHIFT = LONG(sshift*os)
    
    IF ABS(__SSHIFT - (sshift*os)) GT SAMPLEPERIOD THEN $
-     Console, "SSHIFT="+STR(SSHIFT)+"ms not compatible with SAMPLEPERIOD="+STR(1000*SAMPLEPERIOD)+"ms ...expect strange results", /WARN
+     Console, "SSHIFT="+STR(SSHIFT)+"ms not compatible with SAMPLEPERIOD="+STR(1000*SAMPLEPERIOD)+"ms, check your arguments", /FATAL
 
    S = SIZE(a)   
    
