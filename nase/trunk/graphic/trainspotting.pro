@@ -9,6 +9,7 @@
 ;                                  [, TITLE=title] [, WIN=win], [CHARSIZE=Schriftgroesse]
 ;                                  [, LEVEL=level] [, OFFSET=offset]
 ;                                  [, XSYMBOLSIZE=Symbolbreite] [YSYMBOLSIZE=Symbolhoehe]
+;                                  [, OVERSAMPLING=Oversampling]
 ;                                  [,/CLEAN]
 ; INPUTS: nt: 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
 ;
@@ -22,6 +23,8 @@
 ;                                  kann man mit OFFSET=500 die Darstellung korrigieren
 ;                                  dargestellt zu werden.
 ;                                  Default: 1.0 (-> 1 Spike)
+;                  Oversampling:   Gewaehrleistet eine korrekte Darstellung von Neuronen
+;                                  mit Oversampling, BIN <-> ms  
 ;                  Symbolbreite:   Die Breite der zur Darstellung der Spikes verwendeten
 ;                                  Symbole in Bruchteilen der verfuegbaren Plotbreite.
 ;                                  (Diese seltsame Einheit wurde gewaehlt, um eine einheit-
@@ -50,6 +53,10 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.7  1998/05/14 08:59:13  saam
+;          keyword oversamp renamed to oversampling
+;          and added to the header
+;
 ;     Revision 1.6  1998/02/05 13:31:28  saam
 ;           new keyword to handle other time resolutions
 ;           abszissa in ms and not in BIN
@@ -75,7 +82,7 @@
 
 PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, $
                    STRETCH=stretch, V_STRETCH=v_stretch, CHARSIZE=Charsize, $
-                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSamp=OverSamp
+                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSampling=OverSampling
 
 ;-----Keine alten Keywords mehr verwenden:
 IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_STRETCH werden ab sofort per Order di Mufti X- und YSYMBOLSIZE verwendet. Die momentane Darstellung erfolgt mit deren Default-Werten. Noch Fragen???'
@@ -88,9 +95,9 @@ IF ((Size(nt))(0) NE 2) THEN Message, 'first arg must be a 2-dim array'
 neurons = (SIZE(nt))(1)-1
 IF (neurons LT 0) THEN Message, 'keine Neuronen zum Darstellen'
 
-Default, OverSamp, 1.0
-Offset = Offset / FLOAT(OverSamp)
-time =  Float((SIZE(nt))(2)-1) / FLOAT(OverSamp)
+Default, OverSampling, 1.0
+Offset = Offset / FLOAT(OverSampling)
+time =  Float((SIZE(nt))(2)-1) / FLOAT(OverSampling)
 IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
    
    
@@ -153,7 +160,7 @@ UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, -xsizechar/2.0, -xsizech
 
 ;----------------> plot spikes
 spikes = where(nt GE level, count)
-IF (count NE 0) THEN PlotS, LONG((spikes / FLOAT(neurons+1))/OverSamp + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
+IF (count NE 0) THEN PlotS, LONG((spikes / FLOAT(neurons+1))/OverSampling + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
 
 
 
