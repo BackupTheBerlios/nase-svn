@@ -1,48 +1,52 @@
 ;+
-; NAME:               StrReplace
+; NAME:
+;   StrReplace()
 ;
-; AIM:                replaces a certain substring by another one
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:            Ersetzt einen Teilstring ORG in einem String STRING durch einen
-;                     anderen Teilstring NEW
+; AIM:
+;   replaces a certain substring by another one
 ;
-; CATEGORY:           MISC STRINGS
+; PURPOSE:
+;   Replaces substring ORG occurring in STRING by a new string
+;   NEW. By default, only the first occurence of ORG is replaced.
+;   This may be changed by the /G option. You can also replace 
+;   ORG case-insensitive with the /I option. Don't ask about the
+;   keyword naming; it's stolen from <A HREF="http://www.perl.com>Perl</A>.
+;   Be careful with the /G option. It may cause infinite loops!!
 ;
-; CALLING SEQUENCE:   rstr = StrReplace(string, org, new [,/G] [,/I])
+; CATEGORY:
+;  Strings
 ;
-; INPUTS:             string: der OriginalString, in dem die Ersetzung stattfinden soll
-;                     org   : der in string zu ersetzende Teilstring
-;                     new   : der String, der fuer org eingesetzt wird
+; CALLING SEQUENCE:
+;*   rstr = StrReplace(string, org, new [,/G] [,/I])
 ;
-; KEYWORD PARAMETERS: G     : ersetzt rekursiv ALLE org Teilstrings, ansonsten
-;                             wird nur das ERSTE Auftreten ersetzt. ACHTUNG:
-;                             es werden auch die org's ersetzt, die erst durch
-;                             die Ersetzung entstanden sind (moegliche unendliche
-;                             Rekursion!!!) Daher sollte ORG nie ein Teilstring
-;                             von NEW sein.
-;                     I     : die Ersetzung erfolgt Case-Insensitive
+; INPUTS:
+;   string :: string, where the replacement should take place 
+;   org    :: substring to replace
+;   new    :: substring that is inserted for org
 ;
-; OUTPUTS:            rstr: der Ergebnisstring
+; INPUT KEYWORDS: 
+;   G :: replaces recursively ALL occurences of org. By default, only
+;        the FIRST occureence is replaced. Occurences of org, that
+;        were created by a previous replacement, are also replaced.
+;        This may causes an inifinite recursion. Therefore ORG should
+;        never be a real substring of NEW. If ORG is identical to NEW,
+;        there are no problem with this. 
+;   I :: the replacement is case-insensitive
+;
+; OUTPUTS:
+;   rstr :: the result string
 ;
 ; EXAMPLE:
-;                     IDL> print, strreplace('gonzo/gonzo','gonzo','bozo')
-;                     bozo/gonzo
-;                     IDL> print, strreplace('gonzo/gonzo','gonzo','bozo',/g)
-;                     bozo/bozo
-;                     IDL> print, strreplace('gonzoggggggggg','Onzog','onzo',/g,/i)
-;                     gonzo
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.2  2000/09/25 09:13:11  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  1999/03/02 14:01:31  saam
-;           unbelievable it doesn't already exist
-;
+;*  print, strreplace('gonzo/gonzo','gonzo','bozo')
+;*  >bozo/gonzo
+;*  print, strreplace('gonzo/gonzo','gonzo','bozo',/g)
+;*  >bozo/bozo
+;*  print, strreplace('gonzoggggggggg','Onzog','onzo',/g,/i)
+;*  >gonzo
 ;
 ;-
 FUNCTION StrReplace, string, org, new, G=G, I=I
@@ -58,6 +62,8 @@ FUNCTION StrReplace, string, org, new, G=G, I=I
    IF TypeOf(org)    NE 'STRING' THEN Message, 'String as 2nd argument expected'
    IF TypeOf(new)    NE 'STRING' THEN Message, 'String as 3rd argument expected'
 
+   IF org EQ new THEN RETURN, string
+
    slen = StrLen(string)
    olen = StrLen(org)
 
@@ -69,5 +75,4 @@ FUNCTION StrReplace, string, org, new, G=G, I=I
    END UNTIL ((pos EQ -1) OR NOT Keyword_Set(G))
 
    RETURN, rep
-
 END
