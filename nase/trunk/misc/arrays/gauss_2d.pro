@@ -172,6 +172,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.22  2000/09/08 16:38:02  kupper
+;        Now ignoring floating underflows.
+;
 ;        Revision 1.21  2000/09/01 14:17:36  saam
 ;              replaced [] by () array indexing
 ;
@@ -324,18 +327,29 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
          i = TOTAL(ERG)
          ERG = temporary(ERG) / i
       Endif
+
+      ;; Ignore any floating underflows:
+      IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+      
       return, ERG
 
   ENDIF
 
 
   ;; 1-d result
-  if ylen eq 1 then return, $
-   Gauss_function_x_sigma_quad(Distance(/Quadratic, $
-                                        xlen,1,x0_arr,0.5, $
-                                        scale=sigma, $
-                                        WARP=WARP, ABSWARP=ABSWARP) $
-                              )
+  if ylen eq 1 then begin
+     ERG = $
+      Gauss_function_x_sigma_quad(Distance(/Quadratic, $
+                                           xlen,1,x0_arr,0.5, $
+                                           scale=sigma, $
+                                           WARP=WARP, ABSWARP=ABSWARP) $
+                                 )
+
+     ;; Ignore any floating underflows:
+     IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+     
+     return, ERG
+  endif
 
 
   ;; 2-d result, xsigma=ysigma
@@ -352,17 +366,20 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
   endif
 
   ;; now call Distance without rotation!
+
   ERG = Gauss_function_x_sigma_quad(Distance(/Quadratic, $
                                              xlen,ylen,x0_arr,y0_arr, $
                                              scale=sigma, $
                                              WARP=WARP, ABSWARP=ABSWARP) $
                                    )
   
-
   If Keyword_Set(NORM) then begin
      i = TOTAL(ERG)
      ERG = temporary(ERG) / i
   Endif
+
+  ;; Ignore any floating underflows:
+  IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
 
   return, ERG          
 end
