@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/01/29 15:52:04  saam
+;           PlotS died with NULL-device if plot wasn't used before
+;          !P.Multi also...
+;
 ;     Revision 2.4  1998/01/21 21:57:26  saam
 ;           es werden nun ALLE (!!!) Window-Parameter
 ;           gesichert.
@@ -102,6 +106,7 @@ PRO OpenSheet, sheet
       
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'NULL'
+      Plot, Indgen(10) ; to establish a coordinate system, that PlotS will work
    END ELSE Message, 'no initialized sheet???'
 
 
