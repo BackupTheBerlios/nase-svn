@@ -114,6 +114,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.20  1999/06/01 13:45:27  kupper
+;       (Kontroll-Messages auskommentiert)
+;
 ;       Revision 2.19  1999/06/01 13:41:28  kupper
 ;       Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
 ;       Definesheet, opensheet und closesheet unterstützen nun das abspeichern
@@ -182,11 +185,11 @@ Pro ScrollIt_Event, Event
          WIDGET_CONTROL, Event.ID, SET_UVALUE=draw_uval
          ;set private palette:
          UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
-         message, /INFO, "Setting private palette"
+         ;message, /INFO, "Setting private palette"
       Endif else begin ;It's an LEAVE-event
          ;reset old palette:
          UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B 
-         message, /INFO, "Resetting private palette"
+         ;message, /INFO, "Resetting private palette"
       EndElse
       ;;-----------End: Check if pointer entered widget and set color table-----
    EndIf Else begin; Tracking events shall not be delivered!
