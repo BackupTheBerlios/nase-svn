@@ -144,6 +144,9 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1998/03/10 17:05:24  saam
+;             dirty bug with CONVERGED
+;
 ;       Revision 1.4  1998/03/10 16:50:22  saam
 ;             new keyword CONVERGED
 ;             now uses ucurvefit
@@ -192,6 +195,6 @@ endelse
 
 !c=csave			;reset cursor for plotting
 return,ucurvefit(x,y,replicate(1.,n),a,sigmaa, $
-		function_name = "GAUSS__FUNCT", converged) ;call curvefit
+		function_name = "GAUSS__FUNCT", CONVERGED=converged) ;call curvefit
 
 end
