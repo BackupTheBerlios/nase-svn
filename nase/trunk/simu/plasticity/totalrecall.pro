@@ -1,13 +1,15 @@
 ;+
 ; NAME:               TotalRecall
 ;
-; PURPOSE:            Die Prozedur erhaelt als Input die (verzoegert oder nicht) praesynaptischen Aktionspotentiale 
-;                     und updated alle Lernpotentiale, die in einer mit InitRecall erzeugten
-;                     Struktur enthalten sind. Der Aufruf dieser Routine erfolgt eigentlich nur aus einer Lernregel.
+; PURPOSE:            Die Prozedur erhaelt als Input die (verzoegert oder nicht) praesynaptischen 
+;                     Aktionspotentiale und updated alle Lernpotentiale, die in einer mit InitRecall 
+;                     erzeugten Struktur enthalten sind. Der Aufruf dieser Routine erfolgt eigentlich 
+;                     nur aus einer Lernregel. Wird kein In-Handle uebergeben, so werden die Potentiale
+;                     nur abgeklungen.
 ;
 ; CATEGORY:           LEARNING
 ;
-; CALLING SEQUENCE:   TotalRecall, LP, In
+; CALLING SEQUENCE:   TotalRecall, LP [, In]
 ;
 ; INPUTS:             LP: Eine mit InitRecall erzeugte Struktur
 ;                     IN: Vektor, der die praesynaptischen (auch gewichteten) Aktionspotentiale enthaelt
@@ -49,30 +51,36 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.5  1997/09/18 14:25:43  saam
+;              Bug bei exponentiellem Abklingen beseitigt
+;              In-Handle nun optional
+;
+;       
 ;       Thu Sep 4 15:42:53 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
 ;		Header an veraenderte InitRecall-Routine angepasst
 ;
 ;       Thu Sep 4 11:38:25 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
 ;		Schoepfung
 ;
 ;-
 PRO TotalRecall, LP, InHandle
 
-   Handle_Value, InHandle, In
 
    IF LP.info EQ 'e' THEN BEGIN
       active = WHERE(LP.values GT !NoMercyForPot, count)
       IF count NE 0 THEN BEGIN
          LP.values(active) = LP.values(active) * LP.dec
-         toosmall = WHERE(LP.values LT !NoMercyForPot, count)
+         toosmall = WHERE(LP.values(active) LT !NoMercyForPot, count)
          IF count NE 0 THEN LP.values(active(toosmall)) = 0.0
       END
       
-      IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+      IF N_Params() GT 1 THEN BEGIN
+         Handle_Value, InHandle, In
+         IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+      END
    END
 
    IF LP.info EQ 'l' THEN BEGIN
@@ -83,7 +91,11 @@ PRO TotalRecall, LP, InHandle
          IF count NE 0 THEN LP.values(active(toosmall)) = 0.0
       END
 
-      IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+      IF N_Params() GT 1 THEN BEGIN
+         Handle_Value, InHandle, In
+         IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+      END
   END
+
 
 END
