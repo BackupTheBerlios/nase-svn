@@ -2,10 +2,10 @@
 ; NAME:
 ;  LRInitPrecall
 ;
-; AIM: MIND wrapper for <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#INITPRECALL>InitPrecall</A>.
+; AIM: MIND wrapper for <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A>.
 ;  
 ; PURPOSE:
-;  This is the MIND version of the routine <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#INITPRECALL>InitPrecall</A>.
+;  This is the MIND version of the routine <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A>.
 ;  It can be used as the 'INIT' part of an 'EXTERN'al learning rule
 ;  that needs to evaluate time differences between pre- and
 ;  postsynaptic spikes.  
@@ -23,7 +23,7 @@
 ;  learnfunc: Array containing the learning function with the
 ;             following structure:
 ;             learnfunc=[tmaxpre,tmaxpost,deltapre,deltanull,deltapost]
-;             See <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#INITPRECALL>InitPrecall</A> for details.
+;             See <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A> for details.
 ;
 ;  Note that dw and lw are provided by the MIND simulation, the only
 ;  real input the user has to care about is learnfunc.
@@ -59,14 +59,17 @@
 ;             NOMERCY :   0})
 ;  
 ; SEE ALSO:
-;  <A HREF="#LRTOTALPRECALL">LRTotalPrecall</A>, <A HREF="#LRDELAYS">LRDelays</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#TOTALPRECALL>TotalPrecall</A>, 
-;  <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#INITPRECALL>InitPrecall</A>.
+;  <A HREF="#LRTOTALPRECALL">LRTotalPrecall</A>, <A HREF="#LRDELAYS">LRDelays</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#TOTALPRECALL>TotalPrecall</A>, 
+;  <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A>.
 ;  
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/15 15:26:28  thiel
+;            Hyperlinks.
+;
 ;        Revision 1.1  2000/08/11 13:43:34  thiel
 ;            A new external learning rule.
 ;
