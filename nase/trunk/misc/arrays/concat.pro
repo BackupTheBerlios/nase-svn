@@ -54,7 +54,7 @@
 ;  
 ;
 ; EXAMPLE:
-;                     1.Example:  
+;                     1.Example
 ;                                a=indgen(10,20,30)
 ;                                b=indgen(10,40,30)
 ;                                ;concatenation of a and b over index 1
@@ -63,7 +63,7 @@
 ;                                ;idl results ----
 ;                                ;C  INT = Array[10, 60, 30]
 ;
-;                     2.Example:
+;                     2.Example
 ;                                a=indgen(10,20,30)
 ;                                b=indgen(10,20,30)
 ;                                ;concatenation of a and b over an
@@ -80,6 +80,9 @@
 ;-     
 ; MODIFICATION HISTORY:
 ;        $Log$
+;        Revision 1.3  2000/09/29 08:26:30  gabriel
+;             Some header bugs fixed
+;
 ;        Revision 1.2  2000/09/28 16:45:21  gabriel
 ;             local variables for keyword extend
 ;
