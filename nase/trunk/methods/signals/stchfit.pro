@@ -1,6 +1,5 @@
 ;+
-; NAME:
-;  STCHFIT
+; NAME: STCHFIT
 ;
 ; VERSION:
 ;  $Id$
@@ -16,12 +15,14 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;*  status=stchfit(stc, distance_ax, delay_ax[, rv=rv][, cs=cs][, sf=sf][, cosf=cosf][, gaussf=gaussf][, plot=plot][, freqlimit=freqlimit][, sigmalimit=sigmalimit][,VELLIMIT=VELLIMIT])
+;*  status=stchfit(stc, distance_ax, delay_ax[, rv=rv][,cs=cs][,sf=sf][,/cosf]
+;*                 [,/gaussf][, plot=plot][,freqlimit=freqlimit]
+;*                 [,sigmalimit=sigmalimit][,VELLIMIT=VELLIMIT])
 ;
 ; INPUTS:
-;     STC:: result of <A>spatiotempcorr</A>
-;     distance_ax:: s. <A>spatiotempcorr</A>
-;     delay_ax:: s. <A>spatiotempcorr</A>
+;     STC:: result of <A>STCH</A>
+;     distance_ax:: s. <A>STCH</A>
+;     delay_ax:: s. <A>STCH</A>
 ;
 ; INPUT KEYWORDS:
 ;    COSF:: uses a cosinus as fitting function (default)
