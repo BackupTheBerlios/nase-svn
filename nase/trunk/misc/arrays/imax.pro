@@ -1,9 +1,12 @@
 ;+
-; NAME:                 IMax
+; NAME:
+;  IMax()
 ;
-; AIM:                  computes maximum function for arbitrary array dimensions
+; AIM:
+;  computes maximum function for arbitrary array dimensions
 ;
-; PURPOSE:              Die MAX-Routine von IDL bildet das Maximum
+; PURPOSE:
+;                       Die MAX-Routine von IDL bildet das Maximum
 ;                       von der gesamten uebergebenen Matrix. IMax
 ;                       bildet das Maximum ueber einen laufenden
 ;                       Index.
@@ -13,75 +16,53 @@
 ;                       Der Rueckgabewert ist ein Array von der
 ;                       Dimension des Indices.
 ;                       Etwas formaler:
-;                          A = A(a1 x a2 x a3 x a4 x a5 x a6 x a7)
-;   
-;                          (IMax(A,i))(j) = MAX(A(*,...,*,  j  ,*,...,*))
-;                                                           /\
-;                                                          /||\ 
-;                                                           || 
-;                                                         i-ter Index
+;*A = A(a1 x a2 x a3 x a4 x a5 x a6 x a7)
+;*   
+;*(IMax(A,i))(j) = MAX(A(*,...,*,  j  ,*,...,*))
+;*                                 /\
+;*                                /||\ 
+;*                                 || 
+;*                                  i-ter Index
 ;
-; CATEGORY:            MISC ARRAY-OPERATIONS
+; CATEGORY:
+;  Array
 ;
-; CALLING SEQUENCE:    m = IMax(A,i [,indices] [,/ONED])
+; CALLING SEQUENCE: 
+;*m = IMax(A,i [,indices] [,/ONED] [,/ITER])
 ;
-; INPUTS:              A: ein beliebiges Array beliebigen Typs
-;                      i: der Index, ueber den das Maximum gebildet
-;                         werden soll
+; INPUTS:
+; A :: ein beliebiges Array beliebigen Typs
+; i :: der Index, ueber den das Maximum gebildet
+;      werden soll
 ;
-; KEYWORD PARAMETERS:  ONED: falls gesetzt werden die indices der Positionen der Maxima
-;                            im Originalarray zurueckgegeben, sodass mit A(indices)
-;                            darauf zugegeriffen werden kann. Dies funktioniert nur fuer
-;                            ein- und zweidimensional Arrays.
+; INPUT KEYWORDS:
+;  ONED:: falls gesetzt werden die indices der Positionen der Maxima
+;         im Originalarray zurueckgegeben, sodass mit A(indices)
+;         darauf zugegeriffen werden kann. Dies funktioniert nur fuer
+;         ein- und zweidimensional Arrays.
+;  ITER:: I ist dann der Iterationsindex (default: 0)
 ;
-;                      ITER: I ist dann der Iterationsindex (default: 0)
+; OUTPUTS:
+;  m:: der Maximums-Vektor mit dem gleichen Typ wie A
 ;
-; OUTPUTS:             m: der Maximums-Vektor mit dem gleichen Typ wie A
+; OPTIONAL OUTPUT:
+;  indices:: gibt analog zur MAX-Function von IDL die
+;            entsprechenden Indices (bzgl der angegeben Dimension) 
+;            der Maxima zurueck (aber nur fuer die jeweilige Spalte,Zeile).
+;            Das Verhalten aendert sich, wenn das Keyword ONED gesetzt
+;            wird, siehe dazu dort.
 ;
-; OPTIONAL OUTPUT:     indices: gibt analog zur MAX-Function von IDL die
-;                               entsprechenden Indices (bzgl der angegeben Dimension) 
-;                               der Maxima zurueck (aber nur fuer die jeweilige Spalte,Zeile).
-;                               Das Verhalten aendert sich, wenn das Keyword ONED gesetzt
-;                               wird, siehe dazu dort.
-;
-;
-; RESTRICTIONS:        i <= 6 (IDL-Einschraenkung)
+; RESTRICTIONS:
+;   i <= 6 (IDL-Einschraenkung)
 ;
 ; EXAMPLE:       
-;                      A = IndGen(10,10)
-;                      print, IMax(A,0)
-;                         90      91      92      93      94      95      96      97      98 
-;                         99
-;                      print, IMax(A,1)
-;                          9      19      29      39      49      59      69      79      89
-;                         99
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.7  2000/09/25 09:12:55  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.6  1999/11/18 14:28:07  gabriel
-;           ITER Keyword added (s.a. imoment)
-;
-;     Revision 1.5  1999/01/14 14:18:19  saam
-;           + loop variables are long now
-;
-;     Revision 1.4  1998/08/11 15:16:58  saam
-;           new keyword ONED implemented
-;
-;     Revision 1.3  1998/07/02 09:35:23  saam
-;           returns now if an error occurs
-;
-;     Revision 1.2  1998/06/03 08:30:50  saam
-;           added optional output 'indices'
-;
-;     Revision 1.1  1997/12/15 11:46:47  saam
-;           Birth == Pain !!
-;
+;*A = IndGen(10,10)
+;*print, IMax(A,0)
+;*; 90      91      92      93      94      95      96      97      98 
+;*; 99
+;*print, IMax(A,1)
+;*;  9      19      29      39      49      59      69      79      89
+;*; 99
 ;
 ;-
 FUNCTION IMax, A, i, indices, ONED=oned, iter=iter
@@ -113,7 +94,8 @@ FUNCTION IMax, A, i, indices, ONED=oned, iter=iter
          s1 = size(Atmp2)
          indtot = indgen(s1(0))
          IF s(0) GT 2 THEN BEGIN
-            m(x,*,*,*,*,*,*) = imax(Atmp2,last(indtot),indices,/iter)
+            m(x,*,*,*,*,*,*) = imax(Atmp2,last(indtot),tmp,/iter)
+            indices(x,*,*,*,*,*,*)=temporary(tmp)
          END ELSE BEGIN
             m(x) = max(Atmp2,tmp)
             indices(x) = tmp
