@@ -25,6 +25,8 @@
 ; INPUTS:
 ;  MyCons:: Handle pointing towards a <A>console</A>-structure. Get
 ;           such a handle by calling <A>InitConsole()</A>.
+;           If this argument is omitted, the default console handle,
+;           stored in the <*>!CONSOLE</*> system variable, is used.
 ;
 ; INPUT KEYWORDS:
 ;  BIN:: Number of timesteps already simulated.
@@ -66,6 +68,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.4  2001/08/02 14:43:30  kupper
+;     Now !CONSOLE is used, if argument is omitted.
+;
 ;     Revision 2.3  2001/03/07 13:46:25  thiel
 ;        Now progress can be displayed optionally.
 ;
@@ -79,6 +84,8 @@
 
 
 PRO ConsoleTime, _console, BIN=bin, MS=ms, PROGRESS=progress
+
+   default, _console, !CONSOLE
 
    Handle_Value, _console, status, /NO_COPY
 
