@@ -89,7 +89,26 @@
 ;                                  parameters when the display is next
 ;                                  updated. All keywords will be passed to <A>PlotTvScl</A>,
 ;                                  together with an unintialized
-;                                  {PLOTTVSCL_INFO} struct. (See there for details.)
+;                                  {PLOTTVSCL_INFO} struct. (See there
+;                                  for details.)
+;
+;   surfit [,keywords=kw]       :: pass the contained image to
+;                                  <A>SurfIt</A>. All keywords will be
+;                                  passed through. The default for the
+;                                  <*>NASE</*> keyword is taken from
+;                                  the current plot parameters, but
+;                                  can be overridden. (Note that this
+;                                  default does not exist, if widget
+;                                  was not yet realized.)
+;
+;   examineit [,keywords=kw]    :: pass the contained image to
+;                                  <A>ExamineIt</A>. All keywords will be
+;                                  passed through. The default for the
+;                                  <*>NASE</*> keyword is taken from
+;                                  the current plot parameters, but
+;                                  can be overridden. (Note that this
+;                                  default does not exist, if widget
+;                                  was not yet realized.)
 ;
 ;  -plus those inherited from <A>class basic_draw_object</A> (see there for details)-
 ;   among which to note especially:
@@ -241,6 +260,20 @@ Pro widget_image_container::renew_plot, XPOS=xpos, YPOS=ypos, _EXTRA=_extra
    If Set(ypos) then self.ypos = ypos
    Default, _extra, {dummy: 0}
    *self.extra = _extra         ;save any keywords to pass to PlotTvScl   
+End
+
+Pro widget_image_container::examineit, _EXTRA=_extra
+   examineit, self->image(), $
+              GROUP=self->widget(), $
+              NASE=(*self.update_info).nase, $
+              _EXTRA=_extra
+End
+
+Pro widget_image_container::surfit, _EXTRA=_extra
+   surfit, self->image(), $
+              GROUP=self->widget(), $
+              NASE=(*self.update_info).nase, $
+              _EXTRA=_extra
 End
 
 ;; ------------ Protected ------------------
