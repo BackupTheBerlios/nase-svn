@@ -122,21 +122,26 @@ Rüdiger\\[2cm]
 
 \section{Graphic}
 \begin{itemize}
-\item \texttt{UTvScl}:
-\begin{itemize}
-  \item Handling of 1-dim arrays is broken.
-  \item Handling of arrays with trailing dimensions of 1 is broken.
-  \item When /POLY is set, and only one positioning-argument is given,
-    it is interpreted as the x-coordinate, and y defaults to zero.
-    This is wrong, positions in the window should be counted in this
-    case, see documentation of IDL's TV or POLY=0-behaviour.
-  \item Now that UTvScl does hndling of !NONEs, it would really by
-    nice, if they could be preserved when using CUBIC or INTERP.
-    Currently, interpolation breaks handling of !NONEs. Idea: resize
-    separate array of nones, and imprint it on the result. Or: Use
-    value that stays unchaned during interpolation, e.g. !NaN. Would
-    be elegant, but then !NaN must not be contained for other reasons!
-\end{itemize}
+  \item \texttt{UTvScl}:
+    \begin{itemize}
+      \item Handling of 1-dim arrays is broken.
+      \item Handling of arrays with trailing dimensions of 1 is broken.
+      \item When /POLY is set, and only one positioning-argument is given,
+        it is interpreted as the x-coordinate, and y defaults to zero.
+        This is wrong, positions in the window should be counted in this
+        case, see documentation of IDL's TV or POLY=0-behaviour.
+      \item Now that UTvScl does hndling of !NONEs, it would really by
+        nice, if they could be preserved when using CUBIC or INTERP.
+        Currently, interpolation breaks handling of !NONEs. Idea: resize
+        separate array of nones, and imprint it on the result. Or: Use
+        value that stays unchaned during interpolation, e.g. !NaN. Would
+        be elegant, but then !NaN must not be contained for other reasons!
+    \end{itemize}
+  \item \texttt{Examineit}:
+    \begin{itemize}
+      \item ``bound'' display type fails when array contains !NONE
+        (value -999999).
+    \end{itemize}
 \end{itemize}
 
 
