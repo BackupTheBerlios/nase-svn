@@ -1,39 +1,53 @@
 ;+
 ; NAME:               VCR
 ;
-; PURPOSE:            Darstellen einer Bild-Sequenz mit Controls
+; PURPOSE:            Darstellen einer ein- oder zweidimensionalen Sequenz mit Controls
 ;                     aehnlich denen eines Videoplayers (nicht Recorder!). 
-;                     Eine aehnliche Routine bietet auch IDL (CW_ANIMATE).
-;                     Diese hat aber Nachteile:
+;                     Eine aehnliche Routine bietet auch IDL (CW_ANIMATE zumindest fuer
+;                     2d Sequenzen). Diese hat aber Nachteile:
 ;                        - lange Sequenzen brauchen ewig zum initialisieren
 ;                        - bei langen Sequenzen kein genaues Anspringen von
 ;                          Zeitpunkten moeglich
 ;                        - Bei zoomen erheblicher Spiecherbedarf 
+;                     VCR stellt 2D-Sequenzen via TV (und Partner),
+;                     1D-Sequenzen mittels von Plot dar. 
 ; 
 ; CATEGORY:           GRAPHIC NONASE
 ;
 ; CALLING SEQUENCE:   VCR, Sequence [,/NASE] [,/ZOOM] [,DELAY=delay] [,TITLE=title] [,/SCALE]
 ;
-; INPUTS:             Sequence: ein 3d-Array der Form (x,y,t)
+; INPUTS:             Sequence: entweder ein 3d-Array der Form (x,y,t) oder ein 2d-Array
+;                               der Form (x,t)
 ;
 ; KEYWORD PARAMETERS: NASE : korrekte Darstellung von NASE-Layern
-;                     ZOOM : vergroesserte Darstellung um Faktor
 ;                     DELAY: minimale Verzoegerung in ms zwischen zwei Frames 
 ;                             dies ist der Startwert, der tatsaechliche kann 
 ;                             waehrend der Animation durch einen Slider
 ;                             veraendert werden
 ;                     TITLE: ein Titel
+;                  3d spezifisches Keywords:
 ;                     SCALE: normalerweise wird das ganze Video so skaliert, dass
 ;                            eine Farbintensitaet auch einem Arraywert entspricht.
 ;                            SCALE bewirkt eine Skalierung jedes einzelnen Frames.
+;                     ZOOM : vergroesserte Darstellung um Faktor
+;                  2d spezifisches Keywords:
+;                     XSIZE/
+;                     YSIZE: Gibt die Groesse des Plot-Bereichs vor (Default: 320x200)  
+;
 ;
 ; EXAMPLE:
 ;           l = RANDOMU(seed,40,10,100)
 ;           VCR, l, ZOOM=5, DELAY=150, TITLE='TEST ME'
+;           l = RANDOMU(seed,10,2000)
+;           VCR, l
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/07/21 08:55:48  saam
+;           + corrected wrong maxtime display for (x,t) displaying
+;           + DocHeader for (x,t) arrays
+;
 ;     Revision 2.4  1998/07/20 12:56:50  saam
 ;           now also displays (x,t) data via plot
 ;
@@ -251,6 +265,21 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
      END
   END
   
+  ;----->
+  ;-----> SET PARAEMTERS FOR 2d OR 3d DATA
+  ;----->
+  IF (s(0) EQ 2) THEN BEGIN
+     w = xsize
+     h = ysize
+     mt = s(2)
+     modus = 0
+  END ELSE BEGIN
+     w = s(1)
+     h = s(2)
+     mt = s(3)
+     modus = 1
+  END
+
       
 
 
@@ -293,7 +322,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
 
   LABEL44 = WIDGET_LABEL( BASE43, $
       UVALUE='LABEL44', $
-      VALUE='max time: '+STRCOMPRESS((SIZE(A))(3), /REMOVE_ALL ))
+      VALUE='max time: '+STRCOMPRESS(mt, /REMOVE_ALL ))
 
 
   BASE5 = WIDGET_BASE(BASE3, $
@@ -637,21 +666,6 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   WIDGET_CONTROL, DRAW4, GET_VALUE=drawid, /REALIZE
 
 
-
-  ;----->
-  ;-----> SET PARAEMTERS FOR 2d OR 3d DATA
-  ;----->
-  IF (s(0) EQ 2) THEN BEGIN
-     w = xsize
-     h = ysize
-     mt = s(2)
-     modus = 0
-  END ELSE BEGIN
-     w = s(1)
-     h = s(2)
-     mt = s(3)
-     modus = 1
-  END
 
   ;----->
   ;-----> CREATE A PIXMAP IF NEEDED
