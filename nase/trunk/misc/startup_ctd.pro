@@ -73,7 +73,7 @@ Pro Startup_ctd
 
    ;; --- in a nohup-session, don't connect to X-Server ------
    if IsInteractiveSession then $
-    if !D.NAME EQ 'X' THEN DEVICE, TRUE_COLOR=24       ; try to get it, if available, but no DIRECT_COLOR!
+    if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24       ; try to get it, if available, but no DIRECT_COLOR!
    if IsInteractiveSession then $
     DEVICE, DECOMPOSED=0
    ;; --------------------------------------------------------
