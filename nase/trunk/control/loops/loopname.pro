@@ -47,6 +47,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/01/21 21:39:47  saam
+;           Wird ueberhaupt kein Parameter variiert
+;           war der Name vorher leer, jetzt lautet
+;           er '_'
+;
 ;     Revision 1.2  1997/11/26 09:21:38  saam
 ;           Update der Docu
 ;
@@ -69,9 +74,9 @@ FUNCTION LoopName, LS, NOLONG=nolong
          IF tagSize(N_Elements(tagSize)-1) GT 1 THEN BEGIN
             IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
             Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
-         END
+         END 
       END
-
+      IF Name EQ '' THEN Name = '_'
       RETURN, Name
 
    END ELSE Message, 'no valid loop structure passed'
