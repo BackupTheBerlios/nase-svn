@@ -1,43 +1,30 @@
 ;+
-; NAME: New_Color_Convert
+; NAME:
+;  New_Color_Convert
 ;
-; AIM: Convert between color systems (RGB, HLS, ...), including YIC.
+; AIM:
+;  Convert between color systems (RGB, HLS, ...), including YIC.
 ;
-; PURPOSE: Kann alles, was Color_Convert (standard-IDL) kann,
-;          beherrscht aber auch das YIC-Farbmodell.
+; PURPOSE:
+;  Extends the functionality of IDLs <C>Color_Convert</C> by the YIC
+;  color model
 ;
-; CATEGORY: Graphic, allgemein, Farben
+; CATEGORY:
+;  Color
+;  Graphic
 ;
-; CALLING SEQUENCE: s. Color_Convert, zusätzliche Keyords:
+; CALLING SEQUENCE:
+;  identical to <C>Color_Convert</C> 
 ;
-; KEYWORD PARAMETERS:   RGB_YIC, YIC_RGB,
-;                       HSV_YIC, YIC_HSV, 
-;                       HLS_YIC, YIC_HLS
+; INPUT KEYWORDS:
+;  accepts all <C>Color_Convert</C> keywords and additionally
+;  <*>RGB_YIC, YIC_RGB, HSV_YIC, YIC_HSV, HLS_YIC, YIC_HLS</*>
 ;
-; OUTPUTS: s. Color_Convert
+; OUTPUTS:
+;  see <C>Color_Convert</C>
 ;
-; SEE ALSO: Color_Convert (Standard_IDL)
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.6  2000/10/01 14:50:57  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 2.5  1998/02/19 17:58:03  kupper
-;               Header geschrieben...
-;
-;        Revision 2.4  1998/02/19 17:13:29  kupper
-;               Fiese Skalar/Array-Seltsamkeit von IDL...
-;
-;        Revision 2.3  1998/02/19 16:15:58  kupper
-;               Fehlerchen...
-;
-;        Revision 2.2  1998/02/19 16:09:21  kupper
-;               Fehlerchen...
-;
-;        Revision 2.1  1998/02/19 16:04:42  kupper
-;               Aus der Not geboren...
+; SEE ALSO:
+;  IDLs <C>Color_Convert</C> routine
 ;
 ;-
 Pro New_Color_Convert, I0, I1, I2, O0, O1, O2, $
@@ -45,6 +32,8 @@ Pro New_Color_Convert, I0, I1, I2, O0, O1, O2, $
        HSV_YIC=hsv_yic, YIC_HSV=yic_hsv, $
        HLS_YIC=hls_yic, YIC_HLS=yic_hls, $
        _EXTRA=_extra
+
+   ON_Error, 2
 
    RGB2YIC = [ [0.299,  0.587,  0.114], $
                [0.596, -0.275, -0.321], $
