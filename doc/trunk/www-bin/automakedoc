@@ -7,7 +7,7 @@
 # Mirko Saam
 #
 CVSWORK=/vol/neuro/nase/www-nase-copy
-MAKEDOC=$CVSWORK/www-bin/makedoc
+MAKEDOC=$CVSWORK/doc/www-bin/makedoc
 
 USERNAME=`id --name --user`
 if ! [ "$USERNAME" == "www-data" ] ; then
