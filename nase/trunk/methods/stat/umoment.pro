@@ -70,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  2004/05/10 15:42:56  kupper
+;       mdev and sdev should also be !none when variance is undefined!
+;
 ;       Revision 1.10  2004/02/06 15:13:22  kupper
 ;       when array contained only !NONEs and /NONE was set, the return value
 ;       for mean was (accidentally correctly) !NONE, but the return value vor
@@ -149,6 +152,8 @@ FUNCTION UMoment, X,ORDER=ORDER, Double = Double $
                           , MDEV=mdev, SDEV=sdev)
       endif else begin
          ;; ALL entries are !NONE
+         MDEV = !NONE
+         SDEV = !NONE
          return, replicate(!NONE, order+1)
       endelse
          
