@@ -22,7 +22,7 @@
 ;* ResetCM
 ;
 ; SEE ALSO:
-;  <A>Foreground<A>, <A>Background</A>, <A>GetForeground<A>,
+;  <A>Foreground</A>, <A>Background</A>, <A>GetForeground</A>,
 ;  <A>GetBackground</A>, <A>CIndex2RGB</A>, <A>ULoadCT</A>
 ;
 ;-
