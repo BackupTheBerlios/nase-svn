@@ -136,11 +136,11 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if keyword_set(ALL) then begin
           Default, LWX, V_Matrix.source_w/V_Matrix.target_w
           Default, LWY, V_Matrix.source_h/V_Matrix.target_h
-          Weight = Shift(Weight, -LWY*t_row, -LWX*t_col)
-          for x=0, V_Matrix.target_w-1 do begin
-             for y=0, v_Matrix.target_h-1 do begin
-                if keyword_set(TRUNCATE) then V_Matrix.Weights(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
-                   else V_Matrix.Weights(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Weight, LWY*y, LWX*x)
+;          Weight = Shift(Weight, -LWY*t_row, -LWX*t_col)
+          for x=-t_col, V_Matrix.target_w-1-t_col do begin
+             for y=-t_row, v_Matrix.target_h-1-t_row do begin
+                if keyword_set(TRUNCATE) then V_Matrix.Weights(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
+                   else V_Matrix.Weights(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Weight, LWY*y, LWX*x)
              endfor
           endfor
        end else V_Matrix.Weights(t_index, *) = Weight 
@@ -161,11 +161,11 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if keyword_set(ALL) then begin
           Default, LWX, V_Matrix.target_w/V_Matrix.source_w
           Default, LWY, V_Matrix.target_h/V_Matrix.source_h
-          Weight = Shift(Weight, -LWY*s_row, -LWX*s_col)
-          for x=0, V_Matrix.source_w-1 do begin
-             for y=0, v_Matrix.source_h-1 do begin
-                if Keyword_set(TRUNCATE) then V_Matrix.Weights(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
-                else V_Matrix.Weights(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Weight, LWY*y, LWX*x)
+;          Weight = Shift(Weight, -LWY*s_row, -LWX*s_col)
+          for x=-s_col, V_Matrix.source_w-1-s_col do begin
+             for y=-s_row, v_Matrix.source_h-1-s_row do begin
+                if Keyword_set(TRUNCATE) then V_Matrix.Weights(*, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
+                else V_Matrix.Weights(*, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Weight, LWY*y, LWX*x)
              endfor
           endfor
        end else V_Matrix.Weights(*, s_index) = Weight
