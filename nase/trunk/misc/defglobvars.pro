@@ -61,6 +61,11 @@ DefSysV, '!NOMERCYFORPOT', 0.01, 1
 
 DefSysV, '!SIGMA2HWB', sqrt(alog(4d)), 1
 DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
+;; these should better be named in english, according to NASE
+;; conventions, hence:
+DefSysV, '!SIGMA2HMW', !SIGMA2HWB, 1
+DefSysV, '!HMW2SIGMA', !HWB2SIGMA, 1
+
 DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
 			DOWN	: string(27b)+'[B', $
 			RIGHT	: string(27b)+'[C', $
@@ -117,6 +122,10 @@ DefSysV, '!NASEP', {!NASEPLT, $ ; according to !P, !PLT of standard IDL
                     BACKGROUND: {!NASECOLOR}}
 ;; the !NASEP variable will be corretly initialized at the end of "misc/startup".
 
+;; Path to the COIL object image database:
+DefSysV, '!COILPATH', "/vol/data/simu/coil-database",1
+
+
 
 
 
@@ -131,6 +140,8 @@ DefSysV, '!CREATEDIR', 0, 0
 
 ; os independent file separator
 DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
+
+
 
 ; Tells "RealFilename" how to work
 DefSysV, '!CHANGEFILENAME', 'marburg'
