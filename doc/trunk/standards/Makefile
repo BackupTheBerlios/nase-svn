@@ -15,6 +15,9 @@
 # MODIFICATION HISTORY:
 #
 #       $Log$
+#       Revision 1.3  2000/09/26 14:05:27  saam
+#       changes to directory structure
+#
 #       Revision 1.2  2000/09/21 10:09:16  saam
 #             updated doc section
 #
@@ -22,7 +25,6 @@
 #             first version
 #
 #
-#-
 
 # how is your file called that you want to latex?
 # master without ending, nonps-pics with .bb-ending, ps-pics with .[e]ps-ending 
@@ -71,7 +73,10 @@ all: all-recursive $(MYDVI)
 
 $(MYDVI): $(MYTEX) $(MYBIB) $(NONPS_PICS) $(PS_PICS)
 
+%.html: %.tex
+	latex2html -split 0 -no_navigation -no_subdir -info '' $*
 %.dvi: %.tex 
+	ln -s ../header.pro ../header.pro.tex
 	latex  $* 
 	((grep bibcite $*.aux > /dev/null) && ( bibtex $* ; latex  $* ; latex  $* ) || true )
 	((grep -i rerun *.log > /dev/null) && (latex $*) || true )
