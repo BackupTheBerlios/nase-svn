@@ -57,6 +57,8 @@
 ;
 ; SIDE EFFECTS:
 ;  console_struct is updated.
+;  If the console was a window-console, and the window has been
+;  closed, it is re-created.
 ;
 ; RESTRICTIONS:
 ;  PICKCALLER needs to be positive and not larger than the depth of
@@ -127,11 +129,29 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    IF Keyword_Set(UP) THEN dummy = DeTail(viz)
    mlogfile = GetHTag(_console, 'logfile')
    For i=0, n_elements(yell)-1 do BEGIN
-       IF mlogfile NE !NONE THEN PrintF, mlogfile, yell(i)
+       IF mlogfile NE !NONE THEN begin
+          PrintF, mlogfile, yell(i)
+          Flush, mlogfile
+       endif
        EnQueue, viz, yell(i)
    END
 
    mmode = GetHTag(_console, 'mode')
+   if (mmode eq 1) and not $
+     Widget_Info(/Valid_Id, GetHTag(_console, 'base')) then begin
+      Message, /Informational, "Console window does not exist any " + $
+        "more. Re-opening."
+      ;; PROGRAMMER please keep in mind that the folloiwng code must
+      ;; be equivalent to the code that is used inside
+      ;; "initconsole.pro" for creation of the original widget. Keep
+      ;; in sync!
+      newbase = widget_base(title=GetHTag(_console, 'title'),/column)
+      SetHTag, _console, 'base', newbase
+      SetHTag, _console, 'cons', widget_text(newbase,xsize=80,ysize=15,/scroll,value=Queue(GetHTag(_console, 'viz')))
+      SetHTag, _console, 'timewid', widget_text(newbase,xsize=80,ysize=1,value='')
+      widget_control,newbase,/realize  
+   endif
+
    CASE mmode OF
       0: for i=0, n_elements(yell)-1 do print, yell(i)
       1: Widget_Control,GetHTag(_console, 'cons'),set_value=queue(viz, /valid), $
