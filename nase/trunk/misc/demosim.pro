@@ -6,17 +6,17 @@
 ;          verdeutlichen. Im einzelnen sind dies Routinen
 ;          
 ;          -zur Behandlung von Neuronenschichten: 
-;            <A HREF="file:../simu/layers/index.html#INITPARA_1">InitPara_1</A>, <A HREF="file:../simu/layers/index.html#INITLAYER_1">InitLayer_1</A>, <A HREF="file:../simu/layers/index.html#INPUTLAYER_1">InputLayer_1</A>, <A HREF="file:../simu/layers/index.html#PROCEEDLAYER_1">ProceedLayer_1</A>,
-;            <A HREF="file:../simu/layers/index.html#FREELAYER_1">FreeLayer_1</A>
+;            <A HREF="../simu/layers/#INITPARA_1">InitPara_1</A>, <A HREF="../simu/layers/#INITLAYER_1">InitLayer_1</A>, <A HREF="../simu/layers/#INPUTLAYER_1">InputLayer_1</A>, <A HREF="../simu/layers/#PROCEEDLAYER_1">ProceedLayer_1</A>,
+;            <A HREF="../simu/layers/#FREELAYER_1">FreeLayer_1</A>
 ;
 ;          -zur Behandlung von Verbindungen zwischen Neuronenschichten:
-;            <A HREF="file:../simu/connections/index.html#INITDW">InitDW</A>, <A HREF="file:../simu/connections/index.html#DELAYWEIGH">DelayWeigh</A>, <A HREF="file:../simu/connections/index.html#FREEDW">FreeDW</A>
+;            <A HREF="../simu/connections/#INITDW">InitDW</A>, <A HREF="../simu/connections/#DELAYWEIGH">DelayWeigh</A>, <A HREF="../simu/connections/#FREEDW">FreeDW</A>
 ;
 ;          -zum Lernen von Verbindungsstaerken:
-;            <A HREF="file:../simu/plasticity/index.html#INITRECALL">InitRecall</A>, <A HREF="file:../simu/plasticity/index.html#TOTALRECALL">TotalRecall</A>, <A HREF="file:../simu/plasticity/index.html#LEARNHEBBLP">LearnHebbLP</A>, <A HREF="file:../simu/plasticity/index.html#FREERECALL">FreeRecall</A>
+;            <A HREF="../simu/plasticity/#INITRECALL">InitRecall</A>, <A HREF="../simu/plasticity/#TOTALRECALL">TotalRecall</A>, <A HREF="../simu/plasticity/#LEARNHEBBLP">LearnHebbLP</A>, <A HREF="../simu/plasticity/#FREERECALL">FreeRecall</A>
 ;
 ;          -zur graphischen Darstellung:
-;            <A HREF="file:../graphic/index.html#SHOWWEIGHTS">ShowWeights</A>, <A HREF="file:../graphic/index.html#TRAINSPOTTING">Trainspotting</A>
+;            <A HREF="../graphic/#SHOWWEIGHTS">ShowWeights</A>, <A HREF="../graphic/#TRAINSPOTTING">Trainspotting</A>
 ;
 ;          Das Beispielnetzwerk besteht aus einer Schicht von 10x10
 ;          Neuronen (im Programm L1 genannt) und einem Inhibitionsneuron 
@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  1998/02/19 13:36:06  thiel
+;              Hoffentlich stimmen die Hyperlinks jetzt.
+;
 ;       Revision 1.12  1998/02/19 13:14:00  thiel
 ;              Bessere Hyperlinks.
 ;
