@@ -1,0 +1,23 @@
+
+COMMENT {color: red}
+SIMULATION {color: green}
+PARAM { margin: 1em; text-indent: 1em; text-align: left; display:block}
+LAYER {color: blue; display: block}
+NAME { color: green ; display: block}
+TYPE { color: green ; display: block}
+WPOS { margin: 1em; text-indent: 1em; text-align: left; display:block}
+HPOS { margin: 1em; text-indent: 1em; text-align: left; display:block}
+WINIT { margin: 3em; text-indent: 1em; text-align: left; display:block}
+DINIT { margin: 3em; text-indent: 1em; text-align: left; display:block}
+START { color: green ; display: block}
+STOP { color: green ; display: block}
+
+NEURONWATCH {color: yellow}
+CONNECTION {color: pink }
+INPUTFILTER {color: black; display: block}
+INPUT {color: grey; display: block}
+ARTICLE { font-family: sans-serif;background: white; color: black }
+AUTHOR { margin: 1em; color: red }
+HEADLINE { text-align: right; margin-bottom: 2em }
+PARA { line-height: 1.5; margin-left: 15% }
+INSTRUMENT { color: blue }

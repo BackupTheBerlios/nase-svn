@@ -1,0 +1,137 @@
+<?xml-stylesheet href="dsim.css" type="text/css"?>
+<MIND>
+  
+  <COMMENT>
+    DSIM.PRO in XML-Style
+  </COMMENT>
+  
+  
+  
+  
+  <COMMENT>
+    general simulation parameters
+  </COMMENT>
+  
+  <SIMULATION>
+    <PARAM>"VER"->"."</PARAM>
+    <PARAM>"SKEL"->"dsim"</PARAM>
+    <PARAM>"TIME"->500l</PARAM>
+    <PARAM>"SAMPLE"->0.001</PARAM>
+  </SIMULATION>
+  
+  
+  
+  <COMMENT>
+    one layer
+  </COMMENT>
+  
+  
+  <LAYER NAME="Simple Cells">
+    <WIDTH>11</WIDTH>
+    <HEIGHT>11</HEIGHT>
+    <FILE>'s'</FILE>
+    <TYPE>"INITPARA_6"</TYPE>
+    <PARAM>"TAUF"->[0.2789d,9.0d]</PARAM>
+    <PARAM>"TAUL"->[0.3866d,4.0d]</PARAM>
+    <PARAM>"TAUI"->10.0d</PARAM>
+    <PARAM>"VS"->2.0d</PARAM>
+    <PARAM>"TAUS"->10.0d</PARAM>
+    <PARAM>"VR"->0.0d</PARAM>
+    <PARAM>"TAUR"->5.0d</PARAM>
+    <PARAM>"TH0"->0.3d</PARAM>
+    <PARAM>"FADE"->0</PARAM>
+    <PARAM>"SIGMA"->0.0d</PARAM>
+    <PARAM>"NOISYSTART"->0.0d</PARAM>
+    <PARAM>"SPIKENOISE"->0.0d</PARAM>
+
+    <RECORD_O>[0l, SIMULATION.TIME]</RECORD_O>
+    <RECORD_M>[0l,0l]</RECORD_M>
+    <RECORD_MUA>1</RECORD_MUA>
+    <RECORD_LFP>0</RECORD_LFP>
+    <ANALYZE>0</ANALYZE>
+    <SPIKERASTER>1</SPIKERASTER>
+  </LAYER>
+  
+  <COMMENT>
+    neuron watchers
+  </COMMENT>
+  
+  
+  <NEURONWATCH>
+    <LAYER>0</LAYER>
+    <WPOS>5</WPOS>
+    <HPOS>5</HPOS>
+  </NEURONWATCH>
+  
+  <NEURONWATCH>
+    <LAYER>1</LAYER>
+    <WPOS>5</WPOS>
+    <HPOS>5</HPOS>
+  </NEURONWATCH>
+  
+
+  <COMMENT>
+    connections
+  </COMMENT>
+  
+  
+  
+  <CONNECTION NAME="S->C">
+    <PARAM>"FILE"->"s-c"</PARAM>
+    <PARAM>"SYNAPSE"->"FEEDING"</PARAM>
+    <PARAM>"SOURCE"->0</PARAM>
+    <PARAM>"TARGET"->1</PARAM>
+    <PARAM>"BOUND"->"TOROID"</PARAM>
+    <PARAM>"SELF"->"SELF"</PARAM>
+    <PARAM>"T2S"->0</PARAM>
+    <WINIT>
+      <PARAM>"TYPE"->"GAUSSIAN"</PARAM>
+      <PARAM>"A"->0.</PARAM>
+      <PARAM>"S"->5.</PARAM>
+      <PARAM>"R"->10</PARAM>
+      <PARAM>"NORM"->0</PARAM>
+    </WINIT>
+    <DINIT>
+      <PARAM>"TYPE"->"LINEAR"</PARAM>
+      <PARAM>"M"->1</PARAM>
+      <PARAM>"D"->12</PARAM>
+      <PARAM>"R"->10</PARAM>
+    </DINIT>
+  </CONNECTION>
+  
+  
+  <INPUTFILTER>
+    <NAME>"FirstFilter"</NAME>
+    <TYPE>"sifpoissonc"</TYPE>
+    <START>0</START>
+    <STOP>99</STOP>
+  </INPUTFILTER>
+  
+
+  <INPUTFILTER>
+    <NAME>"SecondFilter"</NAME>
+    <TYPE>"sifjitter"</TYPE>
+    <START>0</START>
+    <STOP>99</STOP>
+    <PARAM>"jitter"->2</PARAM>
+  </INPUTFILTER>
+  
+  
+  <INPUT>
+    <PARAM>"INDEX"->0</PARAM>
+    <PARAM>"LAYER"->0</PARAM>
+    <PARAM>"SYNAPSE"->"FEEDING"</PARAM>
+    <PARAM>"TYPE"->"EXTERN"</PARAM>
+    <PARAM>"START"->0l</PARAM>
+    <PARAM>"STOP"->SIMULATION.TIME-1</PARAM>
+    <PARAM>"PERIOD"->250</PARAM>
+    <FILTER>first</FILTER>
+    <FILTER>second</FILTER>
+  </INPUT>
+  
+  <RAW>
+    print, "the RAW-tag is for plain idl-text"
+  </RAW>
+  
+  
+</MIND>
