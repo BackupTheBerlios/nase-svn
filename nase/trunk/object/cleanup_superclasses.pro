@@ -16,9 +16,15 @@
 ;
 ; CATEGORY: Objects
 ;
-; CALLING SEQUENCE: Cleanup_SuperClasses, self, _EXTRA=_extra
+; CALLING SEQUENCE: Cleanup_SuperClasses, self, classname, _EXTRA=_extra
 ;
-; INPUTS: self: A reference to the object to destroy. This is always "self".
+; INPUTS: self     : A reference to the object to destroy. This is always
+;                    "self".
+;         classname: A string containing the classname of the object to
+;                    destroy.
+;                    CAUTION: do NOT refer to this as OBJ_CLASS(self), as this
+;                             will cause infinite recursion. Do always specify
+;                             the classname as a string constant.
 ;
 ; KEYWORD PARAMETERS: Any keyword parameters are passed to the superclasses'
 ;                     CLEANUP methods through _REF_EXTRA.
@@ -52,7 +58,7 @@
 ;           [...]
 ;
 ;           ; Clean up the superclass-part of the object:
-;           Cleanup_SuperClasses, self, _EXTRA=other_keywords
+;           Cleanup_SuperClasses, self, "MyClass", _EXTRA=other_keywords
 ;
 ;          End
 ;            
@@ -61,6 +67,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/03/12 16:59:16  kupper
+;        Added classname argument.
+;        This was necessary to avoid infinite recursion when calling the init methods
+;        recursively.
+;
 ;        Revision 1.3  2000/02/21 19:34:23  kupper
 ;        Added comment on restriction due to _EXTRA mechanism.
 ;
@@ -73,8 +84,8 @@
 ;
 ;-
 
-Pro Cleanup_Superclasses, self, _REF_EXTRA=_ref_extra
-   superclasses =  Obj_Class(self, /SUPERCLASS)
+Pro Cleanup_Superclasses, self, classname, _REF_EXTRA=_ref_extra
+   superclasses =  Obj_Class(classname, /SUPERCLASS)
 
    for i=0, n_elements(superclasses)-1 do $ 
        Call_Method,  superclasses[i]+"::CLEANUP", self, _EXTRA=_ref_extra

@@ -17,9 +17,15 @@
 ;
 ; CATEGORY: Objects
 ;
-; CALLING SEQUENCE: success = Init_SuperClasses(self, _EXTRA=_extra)
+; CALLING SEQUENCE: success = Init_SuperClasses(self, classname, _EXTRA=_extra)
 ;
-; INPUTS: self: A reference to the object to initialize. This is always "self".
+; INPUTS: self     : A reference to the object to initialize. This is always
+;                    "self".
+;         classname: A string containing the classname of the object to
+;                    initialize.
+;                    CAUTION: do NOT refer to this as OBJ_CLASS(self), as this
+;                             will cause infinite recursion. Do always specify
+;                             the classname as a string constant.
 ;
 ; KEYWORD PARAMETERS: Any keyword parameters are passed to the superclasses'
 ;                     INIT methods through _REF_EXTRA.
@@ -55,7 +61,7 @@
 ;
 ;           ; Try to initialize the superclass-portion of the
 ;           ; object. If it fails, exit returning false:
-;           If not Init_Superclasses(self, _EXTRA=other_keywords) then return, 0
+;           If not Init_Superclasses(self, "MyClass", _EXTRA=other_keywords) then return, 0
 ;
 ;           ; Try whatever initialization is needed for a MyClass object,
 ;           ; IN ADDITION to the initialization of the superclasses:
@@ -66,7 +72,7 @@
 ;           ; superclass-portion again, then exit returning false:
 ;           If not success then begin
 ;             [...]
-;             <A HREF="#CLEANUP_SUPERCLASSES">Cleanup_SuperClasses</A>, self, KEYWORD1=k1, ...
+;             <A HREF="#CLEANUP_SUPERCLASSES">Cleanup_SuperClasses</A>, self, "MyClass", KEYWORD1=k1, ...
 ;             return, 0
 ;           EndIf
 ;
@@ -81,6 +87,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/03/12 16:59:16  kupper
+;        Added classname argument.
+;        This was necessary to avoid infinite recursion when calling the init methods
+;        recursively.
+;
 ;        Revision 1.3  2000/02/21 19:34:23  kupper
 ;        Added comment on restriction due to _EXTRA mechanism.
 ;
@@ -92,8 +103,8 @@
 ;
 ;-
 
-Function Init_Superclasses, self, _REF_EXTRA=_ref_extra
-   superclasses =  Obj_Class(self, /SUPERCLASS)
+Function Init_Superclasses, self, classname, _REF_EXTRA=_ref_extra
+   superclasses =  Obj_Class(classname, /SUPERCLASS)
    success = 1
 
    i = 0
