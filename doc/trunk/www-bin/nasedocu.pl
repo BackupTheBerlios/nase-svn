@@ -22,13 +22,13 @@ import_names('P');
 # NASE/MIND Settings
 chop ($hostname = `uname -a`);
 {
-  $hostname =~ /SMP/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-			     $DOCDIR="/vol/neuro/nase/nasedocu"; 
-			     $CGIROOT="/vol/neuro/www";
-			     $IDXDIR="$DOCDIR";
-			     $HTDOCS="/vol/neuro/www/htdocs/nase";
-			     $URL="http://neuro.physik.uni-marburg.de/nase/";
-			     last;};
+#  $hostname =~ /SMP/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
+#			     $DOCDIR="/vol/neuro/nase/nasedocu"; 
+#			     $CGIROOT="/vol/neuro/www";
+#			     $IDXDIR="$DOCDIR";
+#			     $HTDOCS="/vol/neuro/www/htdocs/nase";
+#			     $URL="http://neuro.physik.uni-marburg.de/nase/";
+#			     last;};
   $DOCDIR="/mhome/saam/sim"; 
   $CGIROOT="/usr/lib"; 
   $IDXDIR="/tmp";
@@ -254,11 +254,9 @@ sub showdir {
 print header;
 #print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
 print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE>\n";
-print '<style type="text/css">', "\n";
-#print "<!-- blockquote { margin-left:15px; }\n";
-#print "//-->\n</style>\n</HEAD>";
-print "blockquote { margin-left:-25px; }\n";
-print "</style>\n</HEAD>";
+#print '<style type="text/css">', "\n";
+#print "blockquote { margin-left:-25px; }\n";
+#print "</style>\n</HEAD>";
 
 $lastmod = checkRoutineIdx();
 if ($P::mode){
