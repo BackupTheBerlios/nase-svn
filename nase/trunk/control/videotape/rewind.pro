@@ -1,47 +1,68 @@
 ;+
-; NAME: Rewind
+; NAME:
+;  Rewind
 ;
-; AIM: Positions a frame-pointer in a formerly recorded array-video.
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Positionieren des internen FramePointers in einem zuvor
-;          aufgezeichneten Array-Video.
+; AIM:
+;  Positions the frame-pointer of a formerly recorded array-video.
 ;
-; CATEGORY: Simulation
+; PURPOSE:
+;  <C>Rewind</C> is used to position the internal frame-pointer of a
+;  formerly recorded and now reopened array-video. This enables
+;  reading or writing data beginning at an arbitrary position inside the
+;  video by a following <A>Replay()</A> or <A>CamCord()</A>
+;  instruction. 
 ;
-; CALLING SEQUENCE: Rewind, Video, {FrameNumber | /APPEND} [,/VERBOSE]
-;                   [,/SHUTUP]
-; 
-; INPUTS: Video: Eine mit LoadVideo iitialisierte Video-Struktur
-;         FrameNumber: Neue Position des Framepointers
+; CATEGORY:
+;  DataStorage
+;  DataStructures
+;  Files
+;  IO
 ;
-; OPTIONAL INPUTS: ---
-;	
-; KEYWORD PARAMETERS:  VERBOSE: Für mehr Freude am Simulieren...
-;                      APPEND : Funktioniert nur bei Videos, die mit
-;                               LoadVideo und /EDIT geöffnet wurden.
-;                               Setzt den internen Framepointer so,
-;                               daß mit folgenden CamCords an das
-;                               Video Frames angehängt werden können.
-;                      SHUTUP: falls gesetzt, gibt es ueberhaupt keine
-;                              Informationen aus
+; CALLING SEQUENCE:
+;* Rewind, video, {framenumber | /APPEND} [,/VERBOSE] [,/SHUTUP]
 ;
-; SIDE EFFECTS: Der interne FramePointer wird neu gesetzt.
+; INPUTS:
+;  video:: Video-structure initialized by <A>LoadVideo()</A>.
+;  framenumber:: Desired position of the frame-pointer. Note that the 
+;  first frame is position 0.
 ;
-; RESTRICTIONS: Ist die angegebene Position zu gross, so wird ein
-;               Fehler ausgegeben.
+; INPUT KEYWORDS:
+;  VERBOSE:: More fun during simulation...
+;  APPEND:: Automatically set the internal frame-pointer to the end of
+;           the video to enable appending of new frames with the
+;           <A>CamCord()</A>-function. <B>Attention:</B> Only possible
+;           in videos opened with the <C>/EDIT</C>-option of
+;           <A>LoadVideo()</A>.
+;  SHUTUP:: Dont print any messages at all.
 ;
-; PROCEDURE: Straightforward, wie man so schön sagt.
+; SIDE EFFECTS:
+;  The frame-pointer is modified of course.
 ;
-; EXAMPLE: Rewind, MyVideo, 3
+; RESTRICTIONS:
+;  New position of the frame-pointer must not be larger than length of
+;  video.
 ;
-; SEE ALSO: <A HREF="#INITVIDEO">InitVideo()</A>, <A HREF="#CAMCORD">CamCord</A>,
-;           <A HREF="#LOADVIDEO">LoadVideo()</A>, <A HREF="#REPLAY">Replay()</A>,
-;           <A HREF="#EJECT">Eject</A>, <A HREF="#LABEL">Label</A>,
-;           <A HREF="#INFORMATIONOVERKILL">InformationOverkill()</A>.
+; PROCEDURE:
+;  Straightforward
+;
+; EXAMPLE:
+;* Rewind, MyVideo, 3
+;
+; SEE ALSO:
+;  <A>InitVideo()</A>, <A>Camcord()</A>, <A>LoadVideo()</A>,
+;  <A>Replay()</A>, <A>Eject</A>.
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  2001/05/21 13:22:56  thiel
+;          Nicer header, also in english now.
+;
 ;       Revision 2.9  2000/09/28 13:23:29  alshaikh
 ;             added AIM
 ;
@@ -76,7 +97,7 @@
 ;
 ;		Urversion
 ;
-;-
+
 
 Pro Rewind, _Video, FrameNumber, VERBOSE=verbose, SHUTUP=shutup, APPEND=append
 
