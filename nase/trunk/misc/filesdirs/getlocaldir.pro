@@ -37,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1997/10/29 11:37:32  saam
+;           Bestimmung des Hosts aus dem Pfadnamen ausgelagert in
+;             Path2Host
+;
 ;     Revision 1.3  1997/10/29 10:05:07  saam
 ;           print-Befehle vom Developing entfernt
 ;
@@ -80,17 +84,10 @@ FUNCTION GetLocalDir, WishDir
       WorkDir = WorkDir + '/' + TmpDir
    END ELSE IF N_Params() EQ 1 THEN BEGIN
       ; a WishDir was passwd
-      WishHost = 'dummy'
-      IF Contains(WishDir, '/usr/ax1302') THEN WishHost = 'ax1302'
-      IF Contains(WishDir, '/usr/ax1303') THEN WishHost = 'ax1303'
-      IF Contains(WishDir, '/usr/elauge1') OR Contains(WishDir, '/usr/ax1315') THEN WishHost = 'ax1315'
-      IF Contains(WishDir, '/usr/ax1317') OR Contains(WishDir, '/home/gonzo') THEN WishHost = 'ax1317'
-      IF Contains(WishDir, '/usr/ax1318') THEN WishHost = 'ax1318'
-      IF Contains(WishDir, '/usr/ax1319') THEN WishHost = 'ax1319'
-      IF Contains(WishDir, '/usr/neuro') OR Contains(WishDir, '/home/neuro') THEN WishHost = 'neuro'
-      IF WishHost EQ 'dummy' THEN Message, 'could not get host where datadir resides'
 
+      WishHost = Path2Host(WishDir)
       IF WishHost EQ Host THEN WorkDir = WishDir ELSE WorkDir = GetLocalDir()
+
    END ELSE Message, 'wrong calling sequence'
    
    
