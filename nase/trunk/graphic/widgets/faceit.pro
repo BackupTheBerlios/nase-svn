@@ -58,16 +58,20 @@
 ; OUTPUTS: Eine IDL-Widget-Anwendung mit folgenden Bedienelementen:
 ;           FILE-Menü: Die bisher enthaltenen Unterpunkte dienen dem Laden
 ;                      und Speichern und dem Verlassen der Simulation.
+;           SIMULATION-Menü: Die Unterpunkte ermöglichen die Wahl einer
+;                            begrenzten oder unbegrenzten Simulationsdauer
+;                            (DURATION) und die Verzögerung der Darstellung,
+;                            um auch schnelle Abläufe nachvollziehen zu können
+;                            (DELAY).
 ;           DISPLAY: Schaltet die Darstellung während der Simulation ein oder 
 ;                    aus.
-;           Steps: Zeigt die Zahl der Simulationsschritte an. Der Zähler wird
+;           Step: Zeigt die Zahl der Simulationsschritte an. Der Zähler wird
 ;                  bei jedem Simulate-Aufruf um 1 erhöht.
-;           Duration: Zeigt die Dauer des letzten Simulationsschrittes in
-;                     Millisekunden.
-;           SIMULATION DELAY: Zur Bestimmung der Verzögerung. Soll ja 
-;                             Simulationen geben, die so schnell sind, daß man
-;                             nicht mehr zugucken kann. Hiermit kann man diese
-;                             bremsen.
+;           Last: Zeigt die Dauer des letzten Simulationsschrittes in
+;                  Millisekunden.
+;           Simulation Progress: Zeigt den Fortschritt der Simulation, falls
+;                                eine begrenzte Simulationsdauer gewählt wurde.
+;                                (Siehe dazu SIMULATION-Menü.)
 ;           START / STOP: Startet / stoppt die Simulation. Nach einem Stop wird
 ;                         der Simulationablauf bei erneutem Start-Drücken 
 ;                         an der gleichen Stelle fortgesetzt. Ein Zurücksetzen
@@ -119,6 +123,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  1999/09/15 15:08:42  thiel
+;            Some changes:
+;            - RESET and KILL_REQUEST moved into separate routines.
+;            - Delay-slider exhanged by progression display.
+;            - Now possible to run simulation until maximum duration is reached.
+;            - Added new menu-items.
+;
 ;        Revision 1.5  1999/09/03 14:23:55  thiel
 ;            Changed funcs to procs where possible and improved docu.
 ;
@@ -181,8 +192,35 @@ FUNCTION FaceIt_CreateDisplay, simname, dataptr, W_userbase
 END ; FaceIt_CreateDisplay
 
 
+
+PRO  FaceIt_RESET, uv
+            
+   Call_Procedure, UV.simname+'_RESET', UV.dataptr, UV.displayptr
+   UV.stepcounter = 0l
+   Widget_Control, UV.W_SimStepCounter, SET_VALUE='Step: '+str(UV.stepcounter)
+   Widget_Control, uv.simprogress, SET_VALUE=0
+
+END ; FaceIt_RESET
+
+
+
+FUNCTION FaceIt_KILL_REQUEST, name, dataptr, displayptr, base
+
+   IF Call_FUNCTION(name+'_KILL_REQUEST', dataptr, displayptr) THEN BEGIN
+      Ptr_Free, dataptr 
+      Ptr_Free, displayptr
+      WIDGET_CONTROL, base, /DESTROY
+      Return, 1
+   ENDIF ELSE Return, 0
+
+END ; FaceIt_KILL_REQUEST
+
+
+
 ;--- This handles the basic events
 PRO FaceIt_EVENT, Event
+
+
 
    WIDGET_CONTROL, Event.Top, GET_UVALUE=UV, /NO_COPY
    widget_killed = 0
@@ -198,30 +236,41 @@ PRO FaceIt_EVENT, Event
          "WIDGET_TIMER" : $
           BEGIN
             IF UV.continue_simulation THEN BEGIN 
-               ;Initiate next simulation cycle
+               ; Initiate next simulation cycle:
                WIDGET_CONTROL, UV.W_Base, TIMER=UV.SimDelay
+
+               ; Print stepcounter and display progress:
                Widget_Control, UV.W_SimStepCounter, $
-                SET_VALUE='Steps: '+str(UV.stepcounter)               
+                SET_VALUE='Step: '+str(UV.stepcounter)               
+               IF (uv.duration GT 0) THEN $
+                Widget_Control, uv.simprogress, SET_VALUE=uv.stepcounter
+
                UV.continue_simulation = $
                 Call_FUNCTION(UV.simname+'_SIMULATE', UV.dataptr)
                
                UV.stepcounter = UV.stepcounter+1
+
+               ; Stop if counter has reached duration:
+               IF (uv.duration GT 0) AND uv.stepcounter GT uv.duration THEN $
+                UV.continue_simulation = 0
+               
+               ; Display duration of last cycle:
                CurrentTime = SysTime(1)
-               Widget_Control, UV.W_SimStepTime, SET_VALUE='Duration: '+str(round((CurrentTime-UV.SimAbsTime)*1000))
+               Widget_Control, UV.W_SimStepTime, SET_VALUE='Last: '+ $
+                str(round((CurrentTime-UV.SimAbsTime)*1000))
                UV.SimAbsTime = CurrentTime
+
+               ; If display-flag is set call DISPLAY-Routine to show results:
                IF (UV.display) THEN $ 
                   Call_Procedure, UV.simname+'_DISPLAY', $
-                                  UV.dataptr, UV.displayptr
+                                  UV.dataptr, UV.displayptr               
             ENDIF
          END ; WIDGET_TIMER
                                               
          "WIDGET_KILL_REQUEST" : $
-          IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr) THEN BEGIN
-            Ptr_Free, UV.dataptr 
-            Ptr_Free, UV.displayptr
-            WIDGET_CONTROL, Event.Top, /DESTROY
-            widget_killed = 1
-         ENDIF ; WIDGET_KILL_REQUEST
+             widget_killed = $
+             FaceIt_KILL_REQUEST(UV.simname, UV.dataptr, UV.displayptr, $
+                                 UV.w_base)
   
          "SIMULATION_START" : $
           IF NOT UV.continue_simulation THEN BEGIN
@@ -232,13 +281,7 @@ PRO FaceIt_EVENT, Event
 
          "SIMULATION_STOP" : UV.continue_simulation = 0
                                               
-         'SIMULATION_RESET' : BEGIN
-            Call_Procedure, UV.simname+'_RESET', $
-             UV.dataptr, UV.displayptr;, UV.W_userbase
-            UV.stepcounter = 0l
-            Widget_Control, UV.W_SimStepCounter, $
-             SET_VALUE='Steps: '+str(UV.stepcounter)               
-         END
+         'SIMULATION_RESET' : FaceIt_RESET, uv
 
          ELSE : Message, "Unexpected event caught from W_Base: "+ EventName
               
@@ -248,16 +291,7 @@ PRO FaceIt_EVENT, Event
 
 
       ;--- Internal basic events, button presses and such:
-      UV.W_SimDelay: CASE EventName OF  
-         "WIDGET_SLIDER" : BEGIN
-            WIDGET_CONTROL, UV.W_SimDelay, GET_VALUE=NewDelay
-            UV.SimDelay = (NewDelay/1000.0) > UV.minSimDelay
-         END 
-     
-         ELSE : Message, "Unexpected event caught from W_SimDelay: "+ EventName
-      ENDCASE 
- 
-     
+
       UV.W_SimStart: $ ; "Pressed" is the only event that this will generate
        IF NOT UV.continue_simulation THEN BEGIN  
          UV.continue_simulation = 1
@@ -265,19 +299,14 @@ PRO FaceIt_EVENT, Event
          WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
       ENDIF 
 
-      UV.W_SimStop : UV.continue_simulation = 0 ; "Pressed" is the only event that this will generate
+      UV.W_SimStop : UV.continue_simulation = 0 
+         ; "Pressed" is the only event that this will generate
 
-      UV.W_SimReset : BEGIN
-         Call_Procedure, UV.simname+'_RESET', UV.dataptr, UV.displayptr;, $
-          ;UV.W_userbase
-         UV.stepcounter = 0l
-         Widget_Control, UV.W_SimStepCounter, $
-          SET_VALUE='Steps: '+str(UV.stepcounter)               
-      END
+      UV.W_SimReset : FaceIt_RESET, uv
 
       UV.W_SimDisplay: BEGIN
          UV.display = Event.Select
-         Widget_Control, UV.W_SimDelay, SENSITIVE=UV.display
+         Widget_Control, UV.simprogress, SENSITIVE=UV.display
          Widget_Control, UV.W_userbase, SENSITIVE=UV.display
          IF UV.display THEN BEGIN 
             UV.SimDelay = UV.oldsimdelay
@@ -289,14 +318,11 @@ PRO FaceIt_EVENT, Event
 
       uv.topmenu: BEGIN
          CASE event.value OF
-            'File.Quit' : BEGIN 
-               IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr) THEN BEGIN
-                  Ptr_Free, UV.dataptr 
-                  Ptr_Free, UV.displayptr
-                  WIDGET_CONTROL, Event.Top, /DESTROY
-                  widget_killed = 1
-               ENDIF            ; WIDGET_KILL_REQUEST
-            END
+
+            'File.Quit' : $
+             widget_killed = $
+             FaceIt_KILL_REQUEST(UV.simname, UV.dataptr, UV.displayptr, $
+                                 UV.w_base)
 
             'File.Save' : $
                Call_Procedure, uv.simname+'_FILESAVE', uv.dataptr, uv.topmenu
@@ -304,6 +330,45 @@ PRO FaceIt_EVENT, Event
             'File.Open' : $
                Call_Procedure, uv.simname+'_FILEOPEN', uv.dataptr, $
                                uv.displayptr, uv.topmenu
+
+            'Simulation.Duration' : BEGIN
+               simulation_duration_desc = [ $
+                  '0, BUTTON, Eternal|Limited, TAG=eternal, EXCLUSIVE' , $
+                  '0, INTEGER, '+String(uv.duration, FORMAT="(I7)") + $
+                     ', LABEL_LEFT=Duration / bin:, WIDTH=7' + $ 
+                     ', TAG=duration', $
+                  '1, BASE,, ROW', $
+                  '0, BUTTON, OK, QUIT, TAG=ok', $
+                  '2, BUTTON, Cancel, QUIT, TAG=cancel']
+               result = CW_FORM2(simulation_duration_desc, /COLUMN, $
+                                TITLE='Simulation.Duration')  
+               help, result, /STRUC
+               IF result.ok THEN $
+                IF result.eternal EQ 0 THEN BEGIN
+                  uv.duration = 0l
+                  Widget_Control, uv.simprogress, SET_VALUE=0
+               ENDIF ELSE BEGIN 
+                  uv.duration = Long(result.duration) > 1l
+                  Widget_Control, uv.simprogress, SET_SLIDER_MAX=uv.duration
+               ENDELSE
+
+            END
+
+            'Simulation.Delay' : BEGIN
+               simulation_delay_desc = [ $
+                  '0, INTEGER, '+String(1000.*uv.simdelay, FORMAT="(I4)") + $
+                     ', LABEL_LEFT=Simulation Delay / ms:, WIDTH=4' + $ 
+                     ', TAG=delay', $
+                  '1, BASE,, ROW', $
+                  '0, BUTTON, OK, QUIT, TAG=ok', $
+                  '2, BUTTON, Cancel, QUIT, TAG=cancel']
+               result = CW_FORM2(simulation_delay_desc, /COLUMN, $
+                                TITLE='Simulation.Delay')  
+               IF result.ok THEN $
+                uv.simdelay = (result.delay/1000.0) > UV.minSimDelay
+             
+            END
+
 
             ELSE : Message, /INFO, "Caught unhandled menu event!"
          ENDCASE
@@ -315,8 +380,10 @@ PRO FaceIt_EVENT, Event
    ENDCASE 
 
 
+   IF NOT(widget_killed) THEN $
+    WIDGET_CONTROL, Event.Top, SET_UVALUE=UV, /NO_COPY
 
-   IF NOT(widget_killed) THEN WIDGET_CONTROL, Event.Top, SET_UVALUE=UV, /NO_COPY
+
 END ; faceit_EVENT
 
 
@@ -343,6 +410,7 @@ PRO FaceIt, simname
    ;--- Base:
    W_Base = Widget_Base (TITLE='FaceIt! '+simname, $
                          /BASE_ALIGN_LEFT, /COLUMN, $
+                         MBAR=menubar, $
                          /TLB_KILL_REQUEST_EVENTS $ ;test: IF TAG_NAMES(event, /STRUCTURE_NAME) EQ 'WIDGET_KILL_REQUEST' THEN ...
                          $      ;Note that widgets that have this keyword set are responsible for killing themselves
                          $      ; after receiving a WIDGET_KILL_REQUEST event. They cannot be destroyed using the usual window system controls.
@@ -350,12 +418,15 @@ PRO FaceIt, simname
 
 
    ;--- Menu:
-   desc = ['3\File', $
+   desc = ['1\File', $
            '0\Open', $
            '0\Save', $
-           '2\Quit']
+           '2\Quit', $
+           '3\Simulation', $
+           '0\Duration', $
+           '2\Delay' ]
 
-   topmenu = CW_PDMenu(w_base, desc, /RETURN_FULL_NAME, FONT=myfont) 
+   topmenu = CW_PDMenu(menubar, desc, /RETURN_FULL_NAME, FONT=myfont, /MBAR) 
 
 
    ;--- Control buttons:
@@ -371,14 +442,14 @@ PRO FaceIt, simname
    W_simtimes = Widget_Base(W_simcontrol, /BASE_ALIGN_LEFT, /COL)
 
    W_SimStepCounter = Widget_Label(W_simtimes, FONT=MySmallFont, $
-                                   VALUE='Steps: ----')
+                                   VALUE='Step: -----')
 
    W_SimStepTime = Widget_Label(W_simtimes, FONT=MySmallFont, $
-                                VALUE='Duration: ----')
+                                VALUE='Last: ----')
 
-   W_SimDelay = Widget_Slider(W_SimControl, MINIMUM=0, MAXIMUM=1000, $
-                              XSIZE=238, TITLE="Simulation Delay / ms", $
-                              FONT=MySmallFont)
+   simprogress = Widget_Slider(W_SimControl, MINIMUM=0, MAXIMUM=1, $
+                              XSIZE=125, TITLE="Simulation Progress", $
+                              FONT=MySmallFont, /SUPPRESS_VALUE)
 
    W_SimStart = Widget_Button(W_SimControl, VALUE="Start", FONT=MyFont)
 
@@ -417,13 +488,14 @@ PRO FaceIt, simname
       'W_SimDisplay', W_SimDisplay, $
       'W_SimStepCounter', W_SimStepCounter, $
       'stepcounter', 0l, $
-      'W_SimDelay', W_SimDelay, $
+      'simprogress', simprogress, $
       'W_SimStepTime', W_SimStepTime, $
       'SimAbsTime', SysTime(1), $
       'W_SimStart', W_SimStart, $
       'W_SimStop', W_SimStop, $
       'W_SimReset', W_SimReset, $
       'W_UserBase', W_UserBase, $
+      'duration', 0l, $ ; duration of simulation in bin, 0 = eternal
       'minSimDelay', minSimDelay, $
       'oldSimDelay', minSimDelay, $
       'SimDelay', minSimDelay, $ ;SimulationDelay/ms
@@ -440,7 +512,9 @@ PRO FaceIt, simname
    Message, /INFO, "   *** Registering Main Widget  ***"
    Message, /INFO, "   ********************************"
 
-   Widget_Control, W_Base, /REALIZE  
+   Widget_Control, W_Base, /REALIZE
+
+   Widget_Control, userstruct.simprogress, SENSITIVE=0
 
 
    ;--- display nase-logo:
