@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.32  2000/02/22 14:46:22  kupper
+;       Added new object directory.
+;
 ;       Revision 1.31  2000/02/11 15:02:08  kupper
 ;       Changed startup not to connect to X-Server in a nohup session!
 ;
@@ -141,6 +144,7 @@ NASEDIRS = FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["alien"]) + separator
  NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["misc","regler"]) + separator
  NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["misc","strings"]) + separator
  NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["misc","structures"]) + separator
+ NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["object"]) + separator
  NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["simu"]) + separator
  NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["simu","input"]) + separator
  NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=NASEPATH, SUBDIRECTORY=["simu","connections"]) + separator
