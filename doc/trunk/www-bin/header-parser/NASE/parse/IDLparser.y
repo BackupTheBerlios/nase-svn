@@ -48,6 +48,8 @@
 %token RBRACE
 %token CLBRACE
 %token CRBRACE
+%token ALBRACE
+%token ARBRACE
 %token LANK
 %token RANK
 %token SUPERCLASSES
@@ -118,6 +120,8 @@
       $RBRACE,
       $CLBRACE,
       $CRBRACE,
+      $ALBRACE,
+      $ARBRACE,
       $LANK,
       $RANK,
       $SUPERCLASSES,
@@ -149,7 +153,6 @@
   my $tag    = 0;
   my $pre    = 0;  # format like in source file
   my $prestr = ''; # string to be cut from pre environments
-  my $rbrace = 0;  # level of open round braces
   my $name   = 0;  # are we in the NAME tag?
   my $aim    = 3;  # we are in the aim tag, 1:yes 2:just left >2:no
   my $aimstr = '';
@@ -275,14 +278,16 @@ WORD : CVSTAG                           { push(@line, "<PRE>".$1."</PRE>"); }
      | BREAK                            { push(@line, "<BR>"); }
      | DEFAULT                          { push(@line, $1); }
      | WS                               { push(@line, $1); }
-     | LBRACE                           { push(@line, $1); $rbrace++; }
-     | RBRACE                           { push(@line, $1); $rbrace--; }
-     | CLBRACE                          { push(@line, $1); $rbrace++; }
-     | CRBRACE                          { push(@line, $1); $rbrace--; }
+     | LBRACE                           { push(@line, $1); }
+     | RBRACE                           { push(@line, $1); }
+     | CLBRACE                          { push(@line, $1); }
+     | CRBRACE                          { push(@line, $1); }
+     | ALBRACE                          { push(@line, $1); }
+     | ARBRACE                          { push(@line, $1); }
      | COLON                            { push(@line, $1); }
      | DCOLON                           { 
-                                          if ($pre || $rbrace) {					    
-					    push(@line, ":");
+                                          if ($pre) {					    
+					    push(@line, "::");
 					  } else {
                                             $tab='<TR><TD VALIGN=TOP CLASS="keycode">';
 					    if ($colon){ push(@lines, pop(@lines)."</TD></TR>\n"); } 
