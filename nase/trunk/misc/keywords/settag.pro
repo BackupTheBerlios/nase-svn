@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/04/04 14:22:34  saam
+;           changed implementation to not change the
+;           order of existing tags
+;
 ;     Revision 1.3  2000/04/04 13:59:24  saam
 ;           bug if structure contained only one tag corrected
 ;
@@ -59,7 +63,21 @@ PRO SetTag, S, TN, TV
    IF TypeOf(S)  NE 'STRUCT' THEN Message, 'first argument has to be a structure'
    IF TypeOf(TN) NE 'STRING' THEN message, 'second argument has to be a string'
 
-   DelTag, S, TN
-   IF TypeOf(S) EQ "STRUCT" THEN S = Create_Struct(S, TN, TV) ELSE S = Create_Struct(TN, TV)
+   IF ExtraSet(S, TN, TAGNR=tagnr) THEN BEGIN
+       tn = Tag_Names(S)
+       FOR i=0,tagnr-1 DO IF Set(_S) THEN _S = Create_Struct(_S, tn(i), S.(i)) ELSE _S = Create_Struct(tn(i), S.(i))  
+       IF Set(_S) THEN _S = Create_Struct(_S, tn(tagnr), TV) ELSE _S = Create_Struct(tn(tagnr), TV)
+       FOR i=tagnr+1, N_Tags(S)-1 DO IF Set(_S) THEN _S = Create_Struct(_S, tn(i), S.(i)) ELSE _S = Create_Struct(tn(i), S.(i))
+       S = _S
+   END ELSE BEGIN
+       IF TypeOf(S) EQ "STRUCT" THEN S = Create_Struct(S, TN, TV) ELSE S = Create_Struct(TN, TV)
+   END
+
+       ; the following was the old implementation:
+       ; works even for the THEN case above
+       ; but it w/could change the order of the tags, and i didn't want this
+       ; for several reasons, therfore the above more complicated implementation 
+       ;DelTag, S, TN
+       ;IF TypeOf(S) EQ "STRUCT" THEN S = Create_Struct(S, TN, TV) ELSE S = Create_Struct(TN, TV)
 
 END
