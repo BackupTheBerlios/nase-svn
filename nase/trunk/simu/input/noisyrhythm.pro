@@ -41,6 +41,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1997/12/02 11:31:22  saam
+;           Leider hat Revision 2.3 entgegen Docu und Modification-
+;           History doch noch die SDev mit der Rate multipliziert.
+;           Jetzt ist das endlich behoben.
+;
 ;     Revision 2.3  1997/11/26 09:30:25  saam
 ;           Rauschamplitude wird nun nicht mehr mit der Rate multipliziert
 ;
@@ -75,11 +80,11 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
       END
       
       IF Set(GAUSS) THEN BEGIN
-         sdev = gauss*LONG(1000./FLOAT(rate))
+         sdev = gauss
          type = 'Gauss'
       END
       IF Set(CONST) THEN BEGIN
-         sdev = const*LONG(1000./FLOAT(rate))
+         sdev = const
          type =  'Const'
       END
 
