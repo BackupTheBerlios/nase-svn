@@ -328,11 +328,15 @@ Pro widget_image_container::examineit, xpos=xpos, ypos=ypos, _EXTRA=_extra
    ;; The color table shall not be modified, so we pass SETCOL=0.
    ;; In addition, no rescaling of the array contents shall be done at
    ;; all, but examineit shall inherit "our" RANGE values. So we pass
-   ;; the range in the RANGE_IN parameter.
+   ;; the range in the RANGE_IN parameter. (That's why passing NSCALE
+   ;; should have no effect, but we pass it to be complete, or it may
+   ;; confuse me if I see it later :-))
    examineit, self->image(), $
               GROUP=self->widget(), $
               XPOS=xpos, YPOS=ypos, $
               NASE=(*self.update_info).nase, $
+              NORDER = (*self.update_info).nase, $
+              NSCALE = (*self.update_info).nase, $
               SETCOL=0, $
               RANGE_IN=(*self.update_info).range_in, $
               _EXTRA=_extra
