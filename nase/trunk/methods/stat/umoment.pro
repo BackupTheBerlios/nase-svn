@@ -9,9 +9,10 @@
 ;
 ; CATEGORY:           METHODS STATISTICS
 ;
-; CALLING SEQUENCE:   Result = UMoment(X, [,/DOUBLE] [,MDEV=mdev] [,SDEV=sdev])
+; CALLING SEQUENCE:   Result = UMoment(X [,ORDER=ORDER] [,/DOUBLE] [,MDEV=mdev] [,SDEV=sdev])
 ;
-; INPUTS:             X : An n-element vector of type integer, float or double.
+; INPUTS:             X :        An n-element vector of type integer, float or double.
+
 ;
 ; KEYWORD PARAMETERS: DOUBLE: If set to a non-zero value, computations are done in
 ;                             double precision arithmetic.
@@ -20,6 +21,11 @@
 ;
 ;                     SDEV:   Use this keyword to specify a named variable which returns
 ;                             the standard deviation of X.
+;                     ORDER:  the maximal order of the moment to calculate
+;                             (default: 3)  
+; SIDE EFFECTS:
+;                    if keyword ORDER is equal zero, no MDEV and SDEV are
+;                    calculated
 ;
 ; EXAMPLE:
 ;       Define the n-element vector of sample data.
@@ -34,6 +40,8 @@
 ;       n-element vector of sample data. The computational formulas 
 ;       are given in the Univariate Statistics section of the Mathematics
 ;       Guide.
+; 
+;
 ;
 ; REFERENCE:
 ;       APPLIED STATISTICS (third edition)
@@ -43,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/10/05 16:39:14  gabriel
+;            KEYWORD order new
+;
 ;       Revision 1.6  2000/09/28 09:48:34  gabriel
 ;             AIM tag added , message <> console
 ;
@@ -86,9 +97,14 @@ FUNCTION DATOTAL, Arg, Double = Double
 END
 
 
-FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
+FUNCTION UMoment, X,ORDER=ORDER, Double = Double, Mdev = Mdev, Sdev = Sdev
 
    ON_ERROR, 2
+   default, order, 3
+   
+
+   if order gt 3 or order lt 0 then $
+    Console, /FATAL , "Maximal order of moment is exceeded: "+str(order)
 
    TypeX = SIZE(X)
 
@@ -96,7 +112,7 @@ FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
    if TypeX(TypeX(0)+2) eq 1 then BEGIN
       SDEV = !NONE
       MDEV = !NONE
-      RETURN, [X(0),0.0,!NONE,!NONE]
+      RETURN, ([X(0),0.0,!NONE,!NONE])(0:order)
    END
 
    if TypeX(TypeX(0)+2) lt 2 then $
@@ -109,18 +125,56 @@ FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
 
   nX = TypeX(TypeX(0)+2)
   Mean = DATOTAL(X, Double = Double) / nX
+  case order of 
+     0: begin 
+        return, [Mean]
+     end
+     1: begin
+        Resid = X - Mean
+        Var = DATOTAL(Resid^2, Double = Double) / (nX-1.0)
+        Mdev = DATOTAL(ABS(Resid), Double = Double) / nX
+        Sdev = SQRT(Var)
+        return, [Mean, var] 
+     end
+     2: begin
+        Resid = X - Mean
+        Var = DATOTAL(Resid^2, Double = Double) / (nX-1.0)
+        Mdev = DATOTAL(ABS(Resid), Double = Double) / nX
+        Sdev = SQRT(Var)    
+        if Sdev ne 0 then begin	;Skew & kurtosis defined?  
+           return, [Mean,var,$
+                    DATOTAL(Resid^3, Double = Double) / (nX * Sdev ^ 3)] 
+        end else  RETURN, [Mean, Var, !NONE ]
+     end
+     3: begin
+        Resid = X - Mean
+        Var = DATOTAL(Resid^2, Double = Double) / (nX-1.0)
+        Mdev = DATOTAL(ABS(Resid), Double = Double) / nX
+        Sdev = SQRT(Var)     
+        if Sdev ne 0 then begin	;Skew & kurtosis defined?  
+           return, [Mean,var,$
+                    DATOTAL(Resid^3, Double = Double) / (nX * Sdev ^ 3), $
+                    DATOTAL(Resid^4, Double = Double) / (nX * Sdev ^ 4) - 3.0] 
+        end else  RETURN, [Mean, Var, !NONE, !NONE]
+     end
+  endcase
+
+  ;;;;;;;;;;;;;;;; this is the old part (obsolete) ;;;;;;;;;;;;;;;;;;;;;;;;
+
   Resid = X - Mean
 
   ;Mean absolute deviation (returned through the Mdev keyword).
   Mdev = DATOTAL(ABS(Resid), Double = Double) / nX
  
   Var = DATOTAL(Resid^2, Double = Double) / (nX-1.0)
-    ;Numerically-stable "two-pass" formula.
-    ;r2 = DATOTAL(Resid^2, Double = Double)
-    ;Var1 = r2 / (nX-1.0)
-    ;Var2 = (r2 - (DATOTAL(Resid, Double = Double)^2)/nX)/(nX-1.0)
-    ;Var =  (Var1 + Var2)/2.0
 
+  ;;;;;;;;;;;;;;;; this is the original code of IDL  ;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;Numerically-stable "two-pass" formula.
+    ;;r2 = DATOTAL(Resid^2, Double = Double)
+    ;;Var1 = r2 / (nX-1.0)
+    ;;Var2 = (r2 - (DATOTAL(Resid, Double = Double)^2)/nX)/(nX-1.0)
+    ;;Var =  (Var1 + Var2)/2.0
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;Standard deviation (returned through the Sdev keyword).
   Sdev = SQRT(Var)
   if Sdev ne 0 then begin	;Skew & kurtosis defined?
@@ -133,5 +187,6 @@ FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
     RETURN, [Mean, Var, Skew, Kurt]
   endif else $		;All elements equal. Return NaN for skew & kurtosis
     RETURN, [Mean, Var, !NONE, !NONE]
+
 end
 
