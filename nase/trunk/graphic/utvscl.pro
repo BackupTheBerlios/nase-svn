@@ -10,12 +10,11 @@
 ;  contents.
 ;
 ; PURPOSE:
-;  Ersetzt TvScl und hat folgende tolle, neue Features:
-;* + Device-unabhaegige Darstellung
-;* + Positionierung in Normalkoordinaten
-;* + Vergroesserung via STRETCH
-;  <C>UTvScl</C> gibt (fuer UTvScl) unbekannte Optionen an
-;  TvScl weiter, z.B. /ORDER
+;  <C>UTVScl</C> substitutes IDL's <C>TVScl</C> routine because it
+;  offers some nice advantages and extras.<BR>
+;  + Device-independent display<BR>
+;  + Positioning in normal coordinates<BR>
+;  + Arbitrary size<BR>
 ;
 ; CATEGORY:
 ;  Array
@@ -23,15 +22,18 @@
 ;  Image
 ;
 ; CALLING SEQUENCE:   
-;*UTvScl, Image [,XNorm [,YNorm [,Dimension]]]
-;*              [,/XCENTER] [,/YCENTER] [,/CENTER]
-;*              [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
-;*              [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
-;*              [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
-;*              [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
+;* UTvScl, Image [,XNorm [,YNorm [,Dimension]]]
+;*               [,/XCENTER] [,/YCENTER] [,/CENTER]
+;*               [,X_SIZE=x_size | ,NORM_X_SIZE] 
+;*               [,Y_SIZE=y_size | ,NORM_Y_SIZE]
+;*               [,STRETCH=stretch][,H_STRETCH=h_stretch][,V_STRETCH=v_stretch]
+;*               [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
+;*               [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
+;
+;  <C>UTvScl</C> passes unknown options to <C>TvScl</C>, e.g. <*>/ORDER</*>.
 ;
 ; INPUTS:
-;  image:: ein ein- oder zweidimensionales Array
+;  image:: One or two dimensional array.
 ;
 ; OPTIONAL INPUTS:
 ;  XNorm, YNorm:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
@@ -68,7 +70,12 @@
 ;                     DEVICE::       falls gesetzt werden [XY]Norm als Device-Koordinaten ausgewertet. Eigentlich
 ;                                    sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
 ;                                    die Deviceunabhaegigkeit ist.
-;                     POLYGON::      Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
+; POLYGON:: Instead of composing the final image of a large number of pixels
+;           depending on the desired size, this option uses colored
+;           rectangles that are sufficiently large. This is
+;           recommended for Postscript output. This option invokes the
+;           <A>PolyTV</A> routine.
+;  
 ;                     TOP::          es werden nur die Farbindices von 0..TOP belegt (siehe IDL5 Hilfe von TvSCL)
 ;       CUBIC, INTERP, MINUS_ONE::   werden an ConGrid uebergeben (s. IDL_Hilfe)
 ;                                    Man beachte, daﬂ die Interpolation eines Arrays, das !NONE-Elemente enth‰lt,
@@ -82,15 +89,15 @@
 ;                     nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
 ;                
 ; EXAMPLE:
-;*bild = FIndgen(100,100)
-;*ULoadCt, 5
-;*UTvScl, bild
-;*UTVScl, bild, /CENTER, STRETCH=2.0
-;*UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
-;*UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
+;* bild = FIndgen(100,100)
+;* ULoadCt, 5
+;* UTvScl, bild
+;* UTVScl, bild, /CENTER, STRETCH=2.0
+;* UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
+;* UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
 ; SEE ALSO:
-;  <A>UTv</A>
+;  <A>UTv</A>, <A>PolyTV</A>.
 ; 
 ;-
 
@@ -126,9 +133,11 @@ PRO __HelpTvScl, A, p1, p2, _EXTRA=e
 END
 
 
-;; plottet polygone statt pixel
-PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCALE ,DEVICE=DEVICE $
-                     ,CENTIMETERS=centimeters , TOP=TOP ,ORDER=ORDER
+;; --- Plot polygons instead of pixels
+PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
+                     , NOSCALE=NOSCALE, DEVICE=DEVICE $
+                     ;,CENTIMETERS=centimeters $ ;;Not used in this routine!
+                     , TOP=TOP ,ORDER=ORDER
    ON_ERROR, 2
    as = size(A)
    xsize = as(1)
@@ -139,17 +148,18 @@ PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCA
    default,Y_size,ysize
    default,noscale,0
    default,device,1
-   default,centimeters,0 ;;dummy
+;   default,centimeters,0 ;; Not used!
    default,order,0
-   IF  (NOSCALE EQ 1) THEN BEGIN
+
+   IF (NOSCALE EQ 1) THEN BEGIN
       ARRAY = A
    END ELSE BEGIN
       ARRAY = __ScaleArray(A, TOP=top)
       TVLCT,R,G,B,/GET   
    ENDELSE
 
-   xpix = FLOAT(X_size)/FLOAT(xsize)
-   ypix = FLOAT(Y_size)/FLOAT(ysize)
+;   xpix = FLOAT(X_size)/FLOAT(xsize) No longer necessary!
+;   ypix = FLOAT(Y_size)/FLOAT(ysize)
 
    IF  DEVICE EQ 1 THEN BEGIN
       X_PX_CM = !D.X_PX_CM
@@ -158,35 +168,47 @@ PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCA
       X_PX_CM = 1.0
       Y_PX_CM = 1.0
    ENDELSE
-   IF ORDER EQ 1 THEN BEGIN
-      Y_START = ysize -1
-      Y_END = 0
-      Y_STEP =  -1
-   END ELSE BEGIN
-      Y_START = 0
-      Y_END = ysize -1
-      Y_STEP =  1
-   ENDELSE
-      FOR j = Y_START , Y_END,Y_STEP DO BEGIN
-         FOR i = 0L , xsize -1 DO BEGIN
-         x = [ i  , i + 1 , i + 1 , i  ] 
-         y = [ Y_START +  Y_STEP * j  , Y_START +  Y_STEP *j   , Y_START +  Y_STEP *j + 1 , Y_START +  Y_STEP *j + 1 ]
-         x(*) = (x(*)*xpix + Xnorm) * X_PX_CM
-         y(*) = (y(*)*ypix + Ynorm) * Y_PX_CM
+
+;; No longer needed and substituted by PolyTV
+;   IF ORDER EQ 1 THEN BEGIN
+;      Y_START = ysize -1
+;      Y_END = 0
+;      Y_STEP =  -1
+;   END ELSE BEGIN
+;      Y_START = 0
+;      Y_END = ysize -1
+;      Y_STEP =  1
+;   ENDELSE
+;      FOR j = Y_START , Y_END,Y_STEP DO BEGIN
+;         FOR i = 0L , xsize -1 DO BEGIN
+;         x = [ i  , i + 1 , i + 1 , i  ] 
+;         y = [ Y_START +  Y_STEP * j  , Y_START +  Y_STEP *j   , Y_START +  Y_STEP *j + 1 , Y_START +  Y_STEP *j + 1 ]
+;         x(*) = (x(*)*xpix + Xnorm) * X_PX_CM
+;         y(*) = (y(*)*ypix + Ynorm) * Y_PX_CM
          
-         IF  (NOSCALE EQ 1) THEN BEGIN
-            polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
+;         IF  (NOSCALE EQ 1) THEN BEGIN
+;            polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
           
            
-         END ELSE BEGIN
-           polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
-           colorindex = RGB(R(ARRAY(i,j)) ,G(ARRAY(i,j)) ,B(ARRAY(i,j)),/NOALLOC)
-           polyfill,x,y,COLOR=colorindex ,/DEVICE
+;         END ELSE BEGIN
+;           polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
+;           colorindex = RGB(R(ARRAY(i,j)) ,G(ARRAY(i,j)) ,B(ARRAY(i,j)),/NOALLOC)
+;           polyfill,x,y,COLOR=colorindex ,/DEVICE
             
-         ENDELSE
-      ENDFOR
-   ENDFOR
+;         ENDELSE
+;      ENDFOR
+;   ENDFOR
+
+   PolyTV, array, XSIZE=x_size* X_PX_CM, YSIZE=y_size* X_PX_CM $
+    , XORPOS=xnorm* X_PX_CM, YORPOS=ynorm* X_PX_CM $
+    , DEVICE=1, ORDER=order
+
 END
+
+
+
+;; --- Main routine starts here
+
 PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , XCENTER=xcenter, YCENTER=ycenter, CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
@@ -301,17 +323,26 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       im_max = max(Image)
       im_min = min(Image)
       IF !D.NAME EQ "PS" THEN begin
-           ; a dot in postscript is 1/72 inch and 1 inch is approx. 2.54cm
-           ; so we have a constant resolution for the bitmap 
-          _smooth = 1./(2.54/72.)*[1, 1] 
+         ;; a dot in postscript is 1/72 inch and 1 inch is approx. 2.54cm
+         ;; so we have a constant resolution for the bitmap 
+         _smooth = 1./(2.54/72.)*[1, 1] 
       END ELSE BEGIN
-          _smooth = [!D.X_PX_CM, !D.Y_PX_CM]
-      END      
-      _Image = FltArr((xsize*_smooth(0)) > 1, (ysize*_smooth(1)) > 1, TRUE > 1)
-      FOR i=0, 2 * (TRUE GT 0) DO $
-        _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1, (ysize*_smooth(1)) > 1, $
-                                CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
-      Image = Temporary(_Image)
+         _smooth = [!D.X_PX_CM, !D.Y_PX_CM]
+      END
+
+      ;; If POLYGON is set, the image array need not be resized,
+      ;; because POLYTV later resizes the pixels, not the array:
+      IF NOT(Keyword_Set(POLYGON)) THEN BEGIN
+         _Image = FltArr((xsize*_smooth(0)) > 1 $
+                         , (ysize*_smooth(1)) > 1, TRUE > 1)
+         FOR i=0, 2 * (TRUE GT 0) DO $
+          _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1 $
+                                  , (ysize*_smooth(1)) > 1, $
+                                  CUBIC=cubic, INTERP=interp $
+                                  , MINUS_ONE=minus_one)
+         Image = Temporary(_Image)
+      ENDIF
+
 
       ;;If CUBIC was used, the maximum or
       ;;minimum may have been changed by
@@ -344,18 +375,26 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                __HelpTVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END
-      END ELSE BEGIN ;; polygone statt pixel
+      END ELSE BEGIN ;; polygons instead of pixels
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-                __multipolyplot , Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, _EXTRA=e 
+               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $ Not used by MultiPolyPlot anyway
+               , /NOSCALE, _EXTRA=e 
             END ELSE BEGIN
-               __multipolyplot, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $
+               , _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, _EXTRA=e
+               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $ Not used by MultiPolyPlot anyway
+               , /NOSCALE, _EXTRA=e
             END ELSE BEGIN
-                __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $
+               , _EXTRA=e
             END
          END 
       ENDELSE
@@ -377,18 +416,32 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                __HelpTVScl, Image, xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END
-      END ELSE BEGIN ;; polygone statt pixel
+      END ELSE BEGIN ;; polygons instead of pixels
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __multipolyplot , Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, TRUE=true, _EXTRA=e 
+               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $
+               , /NOSCALE $
+                ;;, TRUE=true $ ;; TRUE not supported for polygons
+               , _EXTRA=e 
             END ELSE BEGIN
-               __multipolyplot, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $
+               ;;, TRUE=true $
+               , _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, TRUE=true, _EXTRA=e
+               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $
+               , /NOSCALE $
+                ;;, TRUE=true $
+               , _EXTRA=e
             END ELSE BEGIN
-               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+                ;;, CENTIMETERS=centi $
+               ;;, TRUE=true $
+               , _EXTRA=e
             END
          END 
          
