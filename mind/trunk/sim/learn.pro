@@ -184,9 +184,9 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
       ;-------------> RECORD MATRIX PROPERTIES
       DM = LS._distMat
       Handle_Value, DM, tmp, /NO_COPY
-      dist = TwoDimEuklidNorm(Weights(CON(LS.index))-tmp)
+      dist = TwoDimEuklidNorm(Weights(CON(LS.dw))-tmp)
       dummy = CamCord(LS._vidDist, [DOUBLE(dist)/DOUBLE(LS.RECCON), MeanW, MaxW])
-      Handle_Value, DM, Weights(CON(LS.index)), /SET
+      Handle_Value, DM, Weights(CON(LS.dw)), /SET
       LS._distMAT = DM
    ENDIF ;; ((t MOD LS.RECCON) EQ 0) AND (ls.reccon GT 0)
 
