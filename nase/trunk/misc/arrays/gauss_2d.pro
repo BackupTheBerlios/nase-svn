@@ -172,6 +172,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.28  2001/05/23 13:42:37  kupper
+;        Protected sigma from being changed.
+;        Added COMPILE_OPT HIDDEN in service routines.
+;
 ;        Revision 1.27  2001/03/26 15:43:36  kupper
 ;        /NORM did not work for 1-dim arrays. Corrected.
 ;
@@ -264,31 +268,37 @@
 
 ;; The normal gauss function:
 Function Gauss_function, x, sigma
+   COMPILE_OPT HIDDEN
    return, exp( -0.5 * ( double(x)^2 / sigma^2 ) )
 End
 ;; This one starts with x_quad=x^2 already computed:
 Function Gauss_function_quad, x_quad, sigma
+   COMPILE_OPT HIDDEN
    return, exp( -0.5 * ( double(x_quad) / sigma^2 ) )
 End
 ;; This one starts with x already scaled by sigma (x_sigma=x/sigma):
 Function Gauss_function_x_sigma, x_sigma
+   COMPILE_OPT HIDDEN
    return, exp( -0.5 * double(x_sigma)^2  )
 End
 ;; This one starts with x already scaled by sigma, and quadratic
 ;; (x_sigma_quad=(x/sigma)^2):
 Function Gauss_function_x_sigma_quad, x_sigma_quad
+   COMPILE_OPT HIDDEN
    return, exp( -0.5 * x_sigma_quad  )
 End
 
 
 Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
-                   sigma,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
+                   sigma_,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
                    X0_ARR=x0_arr, Y0_ARR=y0_arr, PHI=phi, $
                    WARP=WARP, ABSWARP=ABSWARP, GROUNDWIDTH=groundwidth
+
 
    ;; Defaults:
    Default, x0, 0
    Default, y0, 0
+   Default, sigma, sigma_;;protect from changing
    
    IF (set(XHWB) AND NOT set(YHWB)) OR (set(YHWB) AND NOT set(XHWB)) THEN $
     message,'Both XHWB and YHWB must be set'
