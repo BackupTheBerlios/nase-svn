@@ -25,9 +25,10 @@
 ;  Algebra
 ;  Math
 ;  Signals
+;  Image
 ;
 ; CALLING SEQUENCE:
-;* c = ConvolFFT(x, k)
+;* c = Convol2DFFT(x, k)
 ;
 ; INPUTS:
 ;  x::  Any integer, float or complex array of any dimensionality, with the first two dimensions representing the
