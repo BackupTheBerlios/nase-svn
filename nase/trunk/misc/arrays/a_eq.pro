@@ -1,23 +1,42 @@
 ;+
-; NAME: A_EQ
+; NAME:
+;  A_EQ()
 ;
-; AIM: checks if two variables/arrays are identical
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Vergleich von zwei Variablen, insbes. von Arrays
+; AIM:
+;  Checks if two variables/arrays are identical.
 ;
-; CATEGORY: misc
+; PURPOSE:
+;  Comparison of two variables, especially arrays.
 ;
-; CALLING SEQUENCE: Erg = A_EQ (Arr1, Arr2)
+; CATEGORY:
+;  Array
 ;
-; INPUTS: Arr1, Arr2: bel. Arrays
+; CALLING SEQUENCE: 
+;* Erg = A_EQ (Arr1, Arr2)
 ;
-; OUTPUTS: Erg: Boolean
-;;
-; EXAMPLE: if A_EQ (A, B) then print, "sind gleich!"
+; INPUTS: 
+;  Arr1, Arr2:: Arbitray arrays.
+;
+; OUTPUTS:
+;  Erg:: Boolean
+;
+; EXAMPLE: 
+;* if A_EQ (A, B) then Print, "are equal!"
+;
+; SEE ALSO:
+;  <A>A_NE</A>.
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2001/03/09 16:36:45  thiel
+;           Another header fixed.
+;
 ;        Revision 1.2  2000/09/25 09:12:54  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -27,7 +46,8 @@
 ;               Schöpfung!
 ;               (Hoffentlich gibts das nicht eh schon...)
 ;
-;-
+
+
 
 Function A_EQ, a, b
    TRUE  = (1 eq 1)
