@@ -80,6 +80,13 @@
 ;                               wie ein Wert w, der im
 ;                               Originalarray enthalten war).
 ;
+;                Zur Information: Es gelten die Beziehungen
+;
+;                     GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,
+;                                   = [0, max(Array)]  sonst.
+;
+;                     GET_RANGE_OUT = [0, GET_MAXCOL]
+;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
 ;
 ; PROCEDURE: Aus Showweights, Rev. 2.15 ausgelagert.
@@ -104,6 +111,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.14  1999/09/23 08:21:00  kupper
+;        Added some lines to docu.
+;
 ;        Revision 2.13  1999/09/22 16:49:51  kupper
 ;        Implemented Keywords RANGE_IN, GET_RANGE_IN and GET_RANGE_OUT.
 ;
