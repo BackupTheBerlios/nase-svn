@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/03/09 17:23:41  kupper
+;        corrected tau() method.
+;
 ;        Revision 1.4  2000/03/09 17:12:53  kupper
 ;        really corrected reset method...
 ;
@@ -54,7 +57,7 @@ Pro leaky_integrator_array::tau, tau
    self.decay_factor = exp(-1/float(tau))
 End
 Function leaky_integrator_array::tau
-   return, alog(-1/self.decay_factor)
+   return, -1/alog(self.decay_factor)
 End
 
 ;; ------------ Constructor, Destructor & Resetter ----------
