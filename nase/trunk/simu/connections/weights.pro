@@ -23,10 +23,14 @@
 ;                               W               FLOAT     = Array(25, 100)  
 ;
 ; SEE ALSO:            <A HREF="#INITDW">InitDW</A>
+;                      <A HREF="#SETWEIGHTS"></A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/01/27 12:54:25  kupper
+;            Nur einen Verweis auf SETWEIGHTS hinzugefügt.
+;
 ;     Revision 2.1  1997/12/10 15:34:34  saam
 ;           Creation
 ;
@@ -34,7 +38,7 @@
 ;-
 FUNCTION Weights, _DW
    
-   Handle_Value, _DW, DW, /NO_COPY 
+   Handle_Value, _DW, DW, /NO_COPY
    W = DW.Weights
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
