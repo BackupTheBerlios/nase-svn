@@ -11,16 +11,20 @@
 ;
 ;
 ;
-; CALLING SEQUENCE: Array = Gauss_2D ( x_Laenge, y_Laenge [,NORM] 
-;                                      [[,sigma | ,HWB=hwb] | [ ,XHWB=xhwb ,YHWB=yhwb]] 
-;                                      [,x0] [,y0] [,BLOW])
+; CALLING SEQUENCE: Array = Gauss_2D ( {
+;                                        /AUTOSIZE, {(sigma|HWB=hwb) | XHWB=xhwb,YHWB=yhwb} 
+;                                       |
+;                                        x_Laenge, y_Laenge [(,sigma|,HWB=hwb)|,XHWB=xhwb,YHWB=yhwb] [,x0] [,y0] 
+;                                      }
+;                                      [,/NORM])
 ;
+; OPTIONAL INPUTS: x_Lange, y_Laenge: Dimensionen des gewünschten Arrays.
+;                                     Für y_Laenge=1 wird ein eindimensionales
+;                                     Array erzeugt.
+;                                     Diese Parameter entfallen bei Gebrauch des 
+;                                     AUTOSIZE-Schluesselwortes (s.u.)
 ;
-; 
-; INPUTS: x_Lange, y_Laenge: Dimensionen des gewünschten Arrays. Für y_Laenge=1 wird ein eindimensionales Array erzeugt.
-;
-;
-; OPTIONAL INPUTS: sigma           : Die Standardabweichung in Gitterpunkten. (Default = X_Laenge/6)
+;                  sigma           : Die Standardabweichung in Gitterpunkten. (Default = X_Laenge/6)
 ;                  Norm            : Volumen der Gaussmaske auf Eins normiert
 ;	  	   HWB		   : Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu sigma angegeben werden.
 ;	  	   XHWB, YHWB	   : Die Halbwertsbreite in Gitterpunkten bzgl. x und y (alternativ zu sigma und HWB)
@@ -30,6 +34,16 @@
 ;
 ;	
 ; KEYWORD PARAMETERS: HWB, x0_arr, y0_arr, s.o.
+;
+;                     AUTOSIZE: Wenn gesetzt werden die Ausmaße des
+;                       zurueckgelieferten Arrays auf die sechsfache
+;                       Standardabweichung eingestellt. (D.h. dreifache
+;                       Standardabweichung in beide Richtungen.)
+;                       Die Parameter x_Laenge und y_Laenge duerfen in diesem
+;                       Fall nicht uebergeben werden.
+;                        Es ist zu beachten, dass bei gesetztem AUTOSIZE maximal 
+;                       ein Positionsparameter (sigma) uebergeben werden
+;                       kann. In anderen Faellen ist das Verhalten der Routine undefiniert!
 ;
 ;
 ;
@@ -58,6 +72,9 @@
 ;               Abhilfe: Eine noch zu implementierende elliptische
 ;                        DIST()-Funktion als Grundlage verwenden!
 ;
+;               Es ist zu beachten, dass bei gesetztem AUTOSIZE maximal 
+;               ein Positionsparameter (sigma) uebergeben werden
+;               kann. In anderen Faellen ist das Verhalten der Routine undefiniert!
 ;
 ;
 ; PROCEDURE: Default
@@ -72,6 +89,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  2000/02/29 17:29:33  kupper
+;        Added AUTOSIZE Keyword.
+;
 ;        Revision 1.10  2000/02/29 15:03:05  kupper
 ;        Added comment on case XHWB != YHWB.
 ;
@@ -101,26 +121,40 @@
 ;-
 
 
-Function Gauss_2D, xlen,ylen, $
+Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
                    sigma,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
                    X0_ARR=x0_arr, Y0_ARR=y0_arr ;(optional)
 
-  ; Defaults:
-    Default, x0, 0
-    Default, y0, 0
-    Default, x0_arr, x0+xlen/2d
-    Default, y0_arr, y0+ylen/2d
-    Default,sigma,xlen/6d
+   ;; Defaults:
+   Default, x0, 0
+   Default, y0, 0
    
-  If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
-  
-  IF (set(XHWB) AND NOT set(YHWB)) OR (set(YHWB) AND NOT set(XHWB)) THEN $
-   message,'Both XHWB and YHWB must be set'
+   IF (set(XHWB) AND NOT set(YHWB)) OR (set(YHWB) AND NOT set(XHWB)) THEN $
+    message,'Both XHWB and YHWB must be set'
+   
+   If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
+   If keyword_set(XHWB) then sigmax=xhwb/sqrt(alog(4))
+   If keyword_set(YHWB) then sigmay=yhwb/sqrt(alog(4))
+   
+   If Keyword_Set(AUTOSIZE) then begin
+      If Keyword_Set(XHWB) then begin
+         xlen = 2*3*sigmax
+         ylen = 2*3*sigmay
+      Endif Else begin
+         If not Keyword_Set(HWB) then sigma = xlen ;;the first parameter
+         xlen = 2*3*sigma
+         ylen = 2*3*sigma
+      EndElse
+   Endif
+    
+   Default, x0_arr, x0+xlen/2d
+   Default, y0_arr, y0+ylen/2d
+   Default, sigma,xlen/6d
 
-  IF set(XHWB) AND set(XHWB) THEN BEGIN
+
+
+  IF set(XHWB) THEN BEGIN
      
-     sigmax=xhwb/sqrt(alog(4))
-     sigmay=yhwb/sqrt(alog(4))
      xerg = exp(-shift(dist(xlen,1),x0_arr)^2d / 2d /sigmax^2d)
      yerg = exp(-shift(dist(1,ylen),x0_arr,y0_arr)^2d / 2d /sigmay^2d)
      xerg = REBIN(temporary(xerg),xlen,ylen,/SAMPLE)
