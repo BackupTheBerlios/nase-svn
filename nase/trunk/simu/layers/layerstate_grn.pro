@@ -6,12 +6,13 @@
 ;  $Id$
 ;
 ; AIM:
-;  Return current state of Graded Response Neurons in a given layer.
+;  Return or set current state of Graded Response Neurons in a given layer.
 ;
 ; PURPOSE:
 ;  <C>LayerState_GRN</C> can be used to determine internal membrane
 ;  potentials and output states of graded response
-;  neurons. Graded response
+;  neurons. It can also set the feeding and linking potentials of
+;  these neurons. Graded response
 ;  neurons generate 
 ;  a continuous output activation as opposed to pulse coding
 ;  neurons. The way in which their membrane potentials are transformed
@@ -27,6 +28,7 @@
 ; CALLING SEQUENCE:
 ;* LayerState_GRN, layer, [,/DIMENSIONS] $
 ;*               [,OUTPUT=...][,POTENTIAL=...]
+;*               [,SETFEEDING=...][,SETLINKING=...]
 ;
 ; INPUTS:
 ;  layer:: A handle on a layer of graded response neuron, initialized
@@ -37,6 +39,18 @@
 ;               potentials of <*>layer</*> in its original rectangular
 ;               dimensions. Otherwise, a one dimensional array is
 ;               returned.
+;  SETFEEDING, SETLINKING:: Values passed with these keywords are used
+;                           to set the respective potentials. The
+;                           internal decrement flag is then set to zero to
+;                           avoid decreasing of the desired values. By
+;                           calling <A>ProceedLayer_GRN</A> right
+;                           after setting the potentials, the
+;                           corresponding output state is
+;                           computed. This is useful during
+;                           initialization of the
+;                           potentials. <*>SETFEEDING/-LINKING</*> may
+;                           either be supplied in one- or
+;                           twodimensional format.
 ;
 ; OPTIONAL OUTPUTS:
 ;  OUTPUT:: The output activation of the neurons in <*>layer</*>,
@@ -80,10 +94,21 @@
 
 
 PRO LayerState_GRN, _L, DIMENSIONS=DIMENSIONS $
-                    , OUTPUT=output, POTENTIAL=potential
+                    , OUTPUT=output, POTENTIAL=potential $
+                    , SETFEEDING=setfeeding, SETLINKING=setlinking
 
    Handle_Value, _L, L, /NO_COPY
    
+   IF Set(SETFEEDING) THEN BEGIN
+      l.f = Reform(setfeeding, l.w*l.h, /OVERWRITE)
+      l.decr = 0
+   ENDIF
+
+   IF Set(SETLINKING) THEN BEGIN
+      l.l = Reform(setlinking, l.w*l.h, /OVERWRITE)
+      l.decr = 0
+   ENDIF
+
    output = SpassBeiseite(Handle_Val(l.o))
    potential = l.m 
 
