@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.26  1999/11/04 13:18:54  thiel
+;           Added /misc/assoziativ and /misc/depression to directory tree.
+;
 ;       Revision 1.25  1999/09/22 13:33:49  kupper
 ;       Added new procompiling-feature to NASE-startup script.
 ;       Allowing identically named Procs/Funcs (currently NoNone and Scl).
@@ -106,7 +109,9 @@ NASEDIRS = NASEPATH+"/alien:"$
  +NASEPATH+"/methods/stat:"$
  +NASEPATH+"/misc:"$
  +NASEPATH+"/misc/arrays:"$
+ +NASEPATH+"/misc/assoziativ:"$
  +NASEPATH+"/misc/bugs:"$
+ +NASEPATH+"/misc/depression:"$
  +NASEPATH+"/misc/files+dirs:"$
  +NASEPATH+"/misc/files+dirs/compress:"$
  +NASEPATH+"/misc/handles:"$
