@@ -55,6 +55,10 @@ PRO TomWaits_Event, Event
       
       'WIDGET_DRAW': begin   
          !TopColor = data.my_TopColor
+         If Event.Type eq 1 then begin ;Mouse Button Release
+            If (Event.Release and 1) eq 1 then Widget_Control, Widget_Info(Event.ID, /SIBLING), /DESTROY ;Left Button
+         Endif                  ;Mouse Button Release
+
          If Event.Type eq 0 then begin ;Mouse Button Press
             ;;------------------> Neuronennummer bestimmen:
             col = fix((Event.X-data.tvinfo.x0)/data.tvinfo.subxsize)
@@ -68,6 +72,17 @@ PRO TomWaits_Event, Event
                row = row > 0 < (DWDim(data.DW, /TH)-1)
                row = (DWDim(data.DW, /TH)-1) - row
             endelse
+            ;;--------------------------------
+            Widget_Control, Event.Top, TLB_GET_OFFSET=BaseOffset ;von OBEN links
+            Widget_Control, Event.ID,  GET_DRAW_VIEW=ViewPos ;von UNTEN links
+            If data.yscroll then ViewPos(1) = data.ysize-ViewPos(1)-data.y_scroll_size ;jetzt isses von OBEN links
+           ;;------------------> Position für Surfit und Examineit:
+            xpos = BaseOffset(0)+10+data.tvinfo.x0+col*data.tvinfo.subxsize-ViewPos(0)
+            ypos = BaseOffset(1)+20+data.tvinfo.y00+row*data.tvinfo.subysize-ViewPos(1)
+            ;;--------------------------------
+            ;;------------------> Position für Magnify:
+            xmpos = data.tvinfo.x0+(col-0.5)*data.tvinfo.subxsize-ViewPos(0)
+            ympos = data.tvinfo.y00+(row-0.5)*data.tvinfo.subysize-ViewPos(1)
             ;;--------------------------------
             ;;------------------> Untermatrix auslesen:
             If data.projective then begin ;Projective
@@ -99,28 +114,22 @@ PRO TomWaits_Event, Event
              tv_w = ShowWeights_Scale(w, COLORMODE=data.colormode)
            ;;--------------------------------
 
-;            If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
-;               print, event.clicks
-;               If data.projective then begin
-;                  col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
-;                  row = Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
-;                  mag = Widget_Draw(Event.Top, $
-;                                    XOFFSET=col*DWDim(data.DW, /SW), $
-;                                    YOFFSET=row*DWDim(data.DW, /SH))
-;                  W = ShowWeights_Scale(Weights(data.DW, /DIMENSIONS))
-;                  nasetv, W(row, col, *, *), ZOOM=data.magnify
-;               Endif 
-;                                ;Cursor, dummy, dummy, 4 ;Wait for Button up
-;               Widget_Control, mag, /DESTROY
-;            Endif               ;Left Button
+            If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
+               mag = Widget_Draw(data.drawbase, $
+                                 XOFFSET=xmpos, $
+                                 YOFFSET=ympos, $
+                                 FRAME=3)
+               nasetv, tv_w, ZOOM=data.magnify
+;               plotweights, tv_w
+            Endif               ;Left Button
             
             If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
-                  Surfit, xsize=300, ysize=300, /NASE, w, $
+                  Surfit, xpos=xpos, ypos=ypos, xsize=300, ysize=300, /NASE, w, $
                    GROUP=Event.Top, TITLE=title, /JUST_REG
             Endif               ;Middle Button
 
             If (Event.Press and 4) eq 4 then begin ;Right Mouse Button
-                  ExamineIt, /NASE, TITLE=title, $
+                  ExamineIt, xpos=xpos, ypos=ypos, /NASE, TITLE=title, $
                    GROUP=Event.Top, w, tv_w, ZOOM=data.magnify, /JUST_REG
             Endif               ;Middle Button
 
@@ -171,7 +180,9 @@ PRO TomWaits, GROUP=Group, $
   x_else = 42+2*7+2*10          ;pixel, die nicht vom draw-Widget eingenommen werden: 42 Fensterrand,2*7 Rahmen, 2*10 XPAD
   y_else = 42+4*10+3*53         ;42 Fensterrand,2*7 Rahmen, 4*10 XPAD und SPACE,3*53 Knopfhöhe
 
+  yscroll = 0;Merken, ob Ausschnitt in y-Richtung voll sichtbar (nur für Positionsbestimmung später...)
   If ((xsize+x_else) gt maxsize(0)) and ((ysize+y_else) gt maxsize(1)) then begin
+     yscroll = 1
      x_scroll_size = maxsize(0)-x_else
      y_scroll_size = maxsize(1)-y_else
   Endif else begin
@@ -180,6 +191,7 @@ PRO TomWaits, GROUP=Group, $
         y_scroll_size = ysize
      endif
      If (ysize+y_else) gt maxsize(1) then begin
+        yscroll = 1
         y_scroll_size = maxsize(1)-y_else
         x_scroll_size = xsize
      endif
@@ -203,7 +215,8 @@ else $;höhere IDL-Versionen kennen BASE_ALIGN:
                     MAP=1, $
                     TITLE=title) ;UVALUE wird unten gesetzt!
 
-  Draw = WIDGET_DRAW( Base, $
+  DrawBase = WIDGET_BASE(Base, Frame=0)
+  Draw = WIDGET_DRAW( DrawBase, $
                       BUTTON_EVENTS=1, $
                       FRAME=7, $
                       RETAIN=1, $
@@ -286,6 +299,10 @@ endelse
   Widget_Control, Base, SET_UVALUE={info    : 'TOMWAITS_BASE', $
                                     DW : DW, $ ;EinHandle...
                                     win: DrawId, $ ; Die Fensternummer des Draw-Widgets
+                                    xsize: xsize, ysize: ysize, $ ;Die virtuelle Größe
+                                    x_scroll_size: x_scroll_size, y_scroll_size: y_scroll_size, $ ;Die sichtbare Größe
+                                    yscroll: yscroll, $
+                                    DrawBase: DrawBase, $ ;Base des Draw-Widgets
                                     zoom: zoom, $
                                     projective: projective, $
                                     receptive: receptive, $
