@@ -266,10 +266,15 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
       im_max = max(Image)
       im_min = min(Image)
-      IF !D.NAME NE "PS" THEN begin
-         Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, $
-                         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
-      endif
+      IF !D.NAME EQ "PS" THEN begin
+           ; a dot in postscript is 1/72 inch and 1 inch is approx. 2.54cm
+           ; so we have a constant resolution for the bitmap 
+          _smooth = 1./(2.54/72.)*[1, 1] 
+      END ELSE BEGIN
+          _smooth = [!D.X_PX_CM, !D.Y_PX_CM]
+      END
+      Image = Congrid(Image, (xsize*_smooth(0)) > 1, (ysize*_smooth(1)) > 1, $
+                      CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
 
      ;;If CUBIC was used, the maximum or
       ;;minimum may have been changed by
