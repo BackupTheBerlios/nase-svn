@@ -51,9 +51,6 @@
 ;   foo(parameter)       : computes the meaning of life.
 ;   bar, parameter       : crashes the system. Delay: parameter.
 ;
-;   -plus those inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A> (see there for details)-
-;   -plus those inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A> (see there for details)-
-;
 ;  protected: Protected methods may only be called from within a derived class's
 ;             methods.
 ;   *please remove any sections that do not apply*
@@ -61,6 +58,9 @@
 ;  private: Private methods are not intended to be called by the user and are
 ;           not decribed in this header. Refer to the source code for information.
 ;   *please remove any sections that do not apply*
+;
+;  -plus those inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A> (see there for details)-
+;  -plus those inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A> (see there for details)-
 ;
 ; ABSTRACT METHODS:
 ;
