@@ -1,13 +1,15 @@
 ;+
 ; NAME: 
-;   ProcedureName or FunctionName()  [without .pro!]
+;  ProcedureName or FunctionName()  [without .pro!]
 ;
 ; VERSION:
-;   $Id$
+;  $Id$
 ;
 ; AIM:
+;  
 ;   
 ; PURPOSE:
+;  
 ;   
 ; CATEGORY:
 ;  Animation
@@ -43,28 +45,41 @@
 ;  Windows
 ;
 ; CALLING SEQUENCE:
+;* 
 ;  
 ; INPUTS:
 ;  
+;  
 ; OPTIONAL INPUTS:
+;  
 ;  
 ; INPUT KEYWORDS:
 ;  
+;  
 ; OUTPUTS:
+;  
 ;  
 ; OPTIONAL OUTPUTS:
 ;  
+;  
 ; COMMON BLOCKS:
+;  
 ;  
 ; SIDE EFFECTS:
 ;  
+;  
 ; RESTRICTIONS:
+;  
 ;  
 ; PROCEDURE:
 ;  
+;  
 ; EXAMPLE:
+;* 
+;* > 
 ;  
 ; SEE ALSO:
+; 
 ;-
 
 ;;; look in ../doc/header.pro for explanations and syntax,
