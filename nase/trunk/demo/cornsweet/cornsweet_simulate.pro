@@ -1,6 +1,7 @@
 ;+
 ; NAME: cornsweet_simulate
 ;
+; AIM : Module of cornsweet.pro (see also: FaceIt)
 ;
 ; PURPOSE:
 ;
@@ -40,15 +41,19 @@
 ; EXAMPLE:
 ;
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/27 15:08:05  alshaikh
+;           AIM-tag added
+;
 ;     Revision 1.1  2000/02/16 10:20:37  alshaikh
 ;           initial version
 ;
 ;
-;-
+;
 
 FUNCTION gen_pattern,LENGTH=length,AMPLITUDE=amplitude,TAU=tau,POS1=pos1
 middle =  length/2

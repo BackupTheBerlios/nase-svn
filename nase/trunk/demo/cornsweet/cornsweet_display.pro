@@ -1,6 +1,7 @@
 ;+
 ; NAME:  cornsweet_display
 ;
+; AIM : Module of cornsweet.pro (see also: FaceIt)
 ;
 ; PURPOSE:
 ;
@@ -42,13 +43,17 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;-
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/27 15:08:03  alshaikh
+;           AIM-tag added
+;
 ;     Revision 1.1  2000/02/16 10:20:34  alshaikh
 ;           initial version
 ;
 ;
-;-
+;
 
 PRO cornsweet_DISPLAY, dataptr, displayptr
 
