@@ -1,16 +1,12 @@
 ;+
 ; NAME:               SIM
 ;
-; PURPOSE:            + new learning mechanism
-;                     + new input mechanism
-;                     + Layer no named structure any more
-;                     + selective saving of spikes & membrane potentials
-;
-; Records Membrane Potential every MILLISECOND
+; PURPOSE:            Simulates a defined network topology with variable input, connectionism, learning.
+;                     Displays relevant simulation variables and records the results.
 ;
 ; CATEGORY:           MIND SIM
 ;
-; CALLING SEQUENCE:   SIMN [,/WSTOP]
+; CALLING SEQUENCE:   SIM [,/WSTOP]
 ;
 ; KEYWORD PARAMETERS: 
 ;                     WSTOP        : stop after weight initialization; DWs are in CON(i),  i=0..n-1
@@ -18,12 +14,15 @@
 ;
 ; COMMON BLOCKS:      ATTENTION
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/simu/>
-;                          InitWeights, InitInput, Input
+; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INPUT>input</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITWEIGHTS>initweights</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>  
 ;
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.2  1999/12/10 09:36:48  saam
+;            * hope these are all routines needed
+;            * no test, yet
+;
 ;      Revision 1.1  1999/12/09 18:21:00  saam
 ;            renamed from simn5
 ;
@@ -284,8 +283,6 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
             CloseSheet, CSIM_1, i
          END
       END ; graphic
-
-;      ModifyWeights, IWS, CON_L2_L1
 
 
 
