@@ -1,117 +1,62 @@
 ;+
-; NAME: NOROT_SHIFT
+; NAME: NoRot_Shift
 ;
-; AIM: edge truncating version of IDL's SHIFT function
+; VERSION:
+;  $Id$
 ;
+; AIM: edge truncating version of IDL's <C>SHIFT</C> function
 ;
 ; PURPOSE: 
-;
-;    The SHIFT function shifts elements of vectors or arrays
-;    along any dimension by any number of elements. 
-;	The result is a vector or array of the same structure and                   
-;	Type as Array. Positive shifts are to the right while left
-;	shifts are expressed as a negative number. 
-;	All shifts are not circular (the circular shifted regions are
-;	setted to zero).   
-;
+;  The <C>NoRot_Shift</C> function shifts elements of vectors or arrays
+;  along any dimension by any number of elements. 
+;  The result is a vector or array of the same structure and                   
+;  Type as Array. Positive shifts are to the right while left
+;  shifts are expressed as a negative number. 
+;  All shifts are not circular (the circular shifted regions are
+;  set to zero).   
 ;
 ; CATEGORY: 
-;
-; 	Array and Image Processing Routines 
-;
-;
+;  Array
+;  Image
+:
 ; CALLING SEQUENCE: 
-;
-;	result = NOROT_SHIFT(Array,S0,..,S6)
+;* result = NoRot_Shift(Array,S0,..,S6)
 ;
 ; 
 ; INPUTS: 
-;	Array
-;	The array to be shifted.
+;  Array::
+;   The array to be shifted.
 ;
-;	Si
-;	The shift parameters. For arrays of more than one dimension,
-;	the parameter Sn specifies the shift applied to the nth dimension. 
-;	S1 specifies the shift along the first dimension and so on. 
-;	If only one shift parameter is present and the parameter is an array, 
-;	he array is treated as a vector (i.e., the array is treated as
-; 	having one-dimensional subscripts).
-;	A shift specification of 0 means that no shift is to be
-;    performed along that dimension.
+;  Si::
+;   The shift parameters. For arrays of more than one dimension,
+;   the parameter Sn specifies the shift applied to the nth dimension. 
+;   S1 specifies the shift along the first dimension and so on. 
+;   If only one shift parameter is present and the parameter is an array, 
+;   he array is treated as a vector (i.e., the array is treated as
+;   having one-dimensional subscripts).
+;   A shift specification of 0 means that no shift is to be
+;   performed along that dimension.
 ;
-; OPTIONAL INPUTS: -
-;
-;
-;	
-; KEYWORD PARAMETERS: 
-;	WEIGHT
-;    Value to set the circular shifted regions (default is zero).
+; INPUT KEYWORDS: 
+;  WEIGHT::
+;   Value to set the circular shifted regions (default is zero).
 ;	    
-;
 ; OUTPUTS: 
-;
-;     Result is the shifted Array
-;
-;
-; OPTIONAL OUTPUTS: -
-;
-;
-;
-; COMMON BLOCKS: -
-;
-;
-;
-; SIDE EFFECTS: -
-;
-;    If one shiftparameter Sn exceeds the size of nth dimension of the
-;    Array, Sn is setted to the maximal size of nth dimension.
-;  
+;   Result is the shifted Array
 ;
 ; RESTRICTIONS:
+;   If one shiftparameter Sn exceeds the size of nth dimension of the
+;   Array, Sn is set to the maximal size of nth dimension.
+;   Highest allowed dimension of the array is six.
 ;
-; 	Highest allowed dimension of the array is six.
+; EXAMPLE:   	
+;*    A = shift(DIST(50,50,25,25))  ; two dimensional indexed array  	
+;*    B = exp(-A^2/75)              ; gaussean derviation
+;*    result = norot_shift(A,20,20)
+;*	tvscl,result
 ;
-;
-; PROCEDURE: -
-;
-;
-;
-; EXAMPLE:
-;    	
-;    A = shift(DIST(50,50,25,25))  ; two dimensional indexed array  	
-;    B = exp(-A^2/75)              ; gaussean derviation
-;    result = norot_shift(A,20,20)
-;	tvscl,result
-;
-;
-;
-;
-;     
-;
-; MODIFICATION HISTORY: 
-;
-;
-;     $Log$
-;     Revision 1.7  2000/09/27 15:59:32  saam
-;     service commit fixing several doc header violations
-;
-;     Revision 1.6  2000/09/25 09:12:55  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.5  2000/03/17 15:16:14  kupper
-;     Shiftsize-warning-message now is informational!
-;
-;     Revision 1.4  1998/02/02 19:28:51  gabriel
-;          nochmal Log
-;
-;
-;        ANDREAS GABRIEL 4. August 1997
-;
-;
-;
-;
+; SEE ALSO:
+;   IDL's <C>SHIT</C> command.
 ;-
 
 function create_index , S ,DIM
@@ -176,7 +121,7 @@ function norot_shift,A,S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,WEIGHT = w
          if S4  NE 0 then TMPARR(*,*,*,*,create_index(S4,DIMARR(5))) = W
      END
      ELSE : BEGIN
-         message,"something is wrong: to much arguments > 7 "
+         message,"something is wrong: too much arguments > 7 "
      END
  ENDCASE
  RETURN,TMPARR
