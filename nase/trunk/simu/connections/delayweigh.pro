@@ -46,6 +46,14 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Thu Sep 4 17:08:54 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Es gibt nun einen learn-tag, der
+;                 a) bei unverzoegerten Verbindungen: die Aktivitaet des praesynaptischen Layers
+;                 b) bei verzoegerten Verbindungen: das Ergebis der SpikeQueue
+;               enthaelt. Die ist f"ur Update des Lernpotentials notwendig.
+;
 ;       Wed Sep 3 11:35:20 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -101,6 +109,9 @@ FUNCTION DelayWeigh, DelMat, In
 ;      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
 ;      RETURN, DelMat.Weights # In 
 
+
+      DelMat.Learn = In ; Learning with Potentials needs this information
+
       count = 0
       active = where(In NE 0, count)
       If count EQ 0 Then Return, FltArr(DeLMat.target_w*DelMat.Target_h)
@@ -132,11 +143,11 @@ FUNCTION DelayWeigh, DelMat, In
                                 ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
                                 ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
       tmpQU = DelMat.Queue
-      spikes = SpikeQueue( tmpQu, tmp )
+      DelMat.Learn = SpikeQueue( tmpQu, tmp )
       DelMat.Queue = tmpQu
       
       res = FltArr(DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h)
-      active = WHERE(spikes NE 0, count) 
+      active = WHERE(DelMat.learn NE 0, count) 
       IF (count NE 0) THEN res(active) = DelMat.weights(active) ;* spikes(active)
 
       noweights = WHERE(res LE !NONE, count)
