@@ -124,6 +124,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2000/03/13 15:47:34  kupper
+;        initial_paint_hook_ now issues abstract method warning.
+;
 ;        Revision 1.8  2000/03/13 14:04:25  kupper
 ;        Polished header.
 ;
@@ -306,11 +309,13 @@ End
 Pro basic_draw_object::paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
    On_error, 2
-   message, "Abstract method 'paint_hook_' was not overridden in derived class '"+Obj_Class(self)+"'!"
+   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
 End
 
 Pro basic_draw_object::initial_paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
+   On_error, 2
+   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
 End
 
 Function basic_draw_object::save_colors_
