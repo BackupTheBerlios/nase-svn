@@ -1,44 +1,57 @@
 ;+
-; NAME:               ShowSUA
+; NAME:               
+;  ShowSUA
 ;
-; PURPOSE:            Shows previously recorded SUA as TrainSpotting and
-;                     VCR.
+; VERSION:
+;  $Id$
 ;
-; CATEGORY:           MIND XPLORE 
+; AIM:
+;  shows previously recorded SUA as TrainSpotting and VCR
 ;
-; CALLING SEQUENCE:   ShowSUA [,LayerIndex] [,/VCR] [,EXTRA=e] [,/STOP]
+; PURPOSE:            
+;  Shows previously recorded SUA as TrainSpotting and VCR.
 ;
-; INPUTS:             LayerIndex: the index of the layer to be displayed
+; CATEGORY:           
+;  MIND 
+;  graphic 
 ;
-; KEYWORD PARAMETERS: 
-;                     VCR   : displays the spatio-temporal activity profile
-;                             as a video (you probably want to use VCR's
-;                             ZOOM=x option, to scale the video)
-;                     STOP  : stop after displaying
-;                     EXTRA : all Keywords are passed to VCR/TrainSpotting/ReadSimu
-;                             selectively
+; CALLING SEQUENCE:   
+;*ShowSUA [,LayerIndex] [,/VCR] [,EXTRA=e] [,/STOP] [,/NOSHEETS]
 ;
-; COMMON BLOCKS:      ATTENTION
-;                     SH_SS     : sheets
+; INPUTS:             
+;  LayerIndex:: the index of the layer to be displayed
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic#VCR>vcr</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic#TRAINSPOTTING>trainspotting</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#READSIMU>readsimu</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>
+; OPTIONAL INPUTS: 
 ;
-; MODIFICATION HISTORY:
+; INPUT KEYWORDS:
+;   VCR :: displays the spatio-temporal activity profile as a video
+;          (you probably want to use VCR's ZOOM=x option, to scale the video) 
+;    STOP :: stop after displaying
+;    NOSHEETS :: for displaying several SUAs in one window via wrapper
+;    EXTRA :: all Keywords are passed to VCR/TrainSpotting/ReadSimu selectively
 ;
-;     $Log$
-;     Revision 1.3  2000/01/11 14:17:29  saam
-;           minor change in doc header
+; OUTPUTS:
+;  
 ;
-;     Revision 1.2  2000/01/04 11:06:46  saam
-;           + DOC-header updated
-;           + file- and layer-titles are displayed
+; OPTIONAL OUTPUTS:
+;  
+; COMMON BLOCKS:      
+;  ATTENTION ::
+;  SH_SS     :: sheets
 ;
-;     Revision 1.1  2000/01/04 10:37:21  saam
-;           ok
+; SIDE EFFECTS:
 ;
+; RESTRICTIONS:
+;  
+; PROCEDURE:
+;
+; EXAMPLE:
+;
+; SEE ALSO:           
+;   <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic#VCR>vcr</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic#TRAINSPOTTING>trainspotting</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#READSIMU>readsimu</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>
 ;
 ;-
-PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, _EXTRA=e
+PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, NOSHEETS=nosheets, _EXTRA=e
 
    On_Error, 2
 
@@ -56,6 +69,8 @@ PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, _EXTRA=e
    END ELSE IF ExtraSet(e, 'PS') THEN BEGIN
       SS_1 = DefineSheet(/NULL)
       SSwins = 0
+   END ELSE IF Keyword_Set(NOSHEETS) THEN BEGIN
+      ; sheets are defined by e.g. SHOW
    END ELSE BEGIN
       IF (SIZE(SSwins))(1) EQ 0 THEN BEGIN
          SS_1 = DefineSheet(/Window, XSIZE=1000, YSIZE=200, TITLE='Show SUA')
@@ -65,12 +80,13 @@ PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, _EXTRA=e
 
    NT = ReadSimu(LayerIndex, /TD, _EXTRA=e)
 
-   OpenSheet, SS_1
+   IF NOT Keyword_Set(NOSHEETS) THEN OpenSheet, SS_1
    s = SIZE(NT)
    L = Handle_Val(P.LW(LayerIndex))
-   Trainspotting, Reform(Nt, s(1)*s(2), s(3)), OFFSET=0, TITLE='Spikeraster: '+L.NAME
+   Trainspotting, Reform(Nt, s(1)*s(2), s(3)), OFFSET=0, TITLE='Spikeraster: '+L.NAME, _EXTRA=e 
+     ; e.g. attribute XRANGE can be forwarded to TrainSpotting
    Inscription, AP.ofile, /OUTSIDE, /RIGHT, /TOP, CHARSIZE=0.4, CHARTHICK=1 
-   CloseSheet, SS_1
+   IF NOT Keyword_Set(NOSHEETS) THEN CloseSheet, SS_1
 
    IF Keyword_Set(VCR) THEN BEGIN
       IF Set(e) THEN BEGIN
