@@ -41,10 +41,13 @@
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotentials, Mirko Saam, 25.7.97
 ;                       Schwelle wird jetzt erst im naechsten Zeitschritt erhoeht, Mirko Saam, 29.7.97
-;                       LinkingIn und InhibitionIn sind jetzt optional. Rüdiger, 22. August '97
+;                       LinkingIn und InhibitionIn sind jetzt
+;                       optional. Rüdiger, 22. August '97
+;                       Random-Commonblock zugefügt, Rüdiger, 5.Sept 97
 ;
 ;- 
 FUNCTION ProceedLayer_2, Layer, FeedingIn, LinkingIn, InhibitionIn
+common common_random, seed
 
    Default, LinkingIn, fltarr(LayerSize(Layer))
    Default, InhibitionIn, fltarr(LayerSize(Layer))

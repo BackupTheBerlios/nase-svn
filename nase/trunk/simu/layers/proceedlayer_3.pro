@@ -44,8 +44,11 @@
 ;                       Zusaetzlich Lernpotential (realisiert als Leckintegrator) Andreas. 29. Juli 97
 ;                       geaenderter Ablauf, LP wird sofort erhoeht. Andreas. 30. Juli '97
 ;                       LinkingIn und InhibitionIn sind jetzt optional. Rüdiger, 22. August '97
+;                       Common_Random-Block zugefügt, Rüdiger, 5.9.97
 ;- 
+
 FUNCTION ProceedLayer_3, Layer, FeedingIn, LinkingIn, InhibitionIn
+common common_random, seed
 
    Default, LinkingIn, fltarr(LayerSize(Layer))
    Default, InhibitionIn, fltarr(LayerSize(Layer))
