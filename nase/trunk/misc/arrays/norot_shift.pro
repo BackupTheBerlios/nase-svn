@@ -56,7 +56,7 @@
 ;*	tvscl,result
 ;
 ; SEE ALSO:
-;   IDL's <C>SHIT</C> command.
+;   IDL's <C>SHIFT</C> command.
 ;-
 
 function create_index , S ,DIM
