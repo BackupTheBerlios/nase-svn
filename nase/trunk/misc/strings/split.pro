@@ -1,43 +1,47 @@
 ;+
-; NAME:               Split
+; NAME:
+;  Split()
 ;
-; AIM:                divides a string into pieces as designated by a separator string (superceded by IDL>=5 STR_SEP!?)
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            Splits a string into substrings. The separator
-;                     string can be chosen.
+; AIM:
+;  Divides a string into pieces as designated by a separator string, superceeded by <C>Str_Sep()</C>.
 ;
-; CATEGORY:           MISC STRINGS
+; PURPOSE:
+;  Splits a string into substrings. The separator string can be
+;  chosen. This routine seems to be superceeded by <C>Str_Sep()</C> in
+;  IDL versions GE 5.
 ;
-; CALLING SEQUENCE:   subs = Split(string, sep [,/I])
+; CATEGORY:
+;  Strings
 ;
-; INPUTS:             string: the string to be split
-;                     sep   : a separator string (e.g., " " or ",")
+; CALLING SEQUENCE:
+;* subs = Split(string, sep [,/I])
 ;
-; KEYWORD PARAMETERS: I     : the separator is matched case INsensitive
+; INPUTS:
+;  string:: The string to be split.
+;  sep:: A separator string (e.g., " " or ",").
 ;
-; OUTPUTS:            subs  : resulting array of substrings
+; INPUT KEYWORDS:
+;  I:: The separator is matched case INsensitive.
+;
+; OUTPUTS:
+;  subs:: resulting array of substrings
+;
+; PROCEDURE:
+;  Invented long ago.
 ;
 ; EXAMPLE:
-;                     IDL> subs = split('a b c d e f', ' ')
-;                     IDL> help, subs
-;                     SUBS            STRING    = Array[6]
-;                     
-; MODIFICATION HISTORY:
+;* subs = Split('a b c d e f', ' ')
+;* help, subs
+;*> SUBS            STRING    = Array[6]
 ;
-;     $Log$
-;     Revision 1.3  2000/10/10 16:28:59  kupper
-;     Broke on seperators longer than one character. Fixed.
-;
-;     Revision 1.2  2000/09/25 09:13:11  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  2000/06/19 13:38:47  saam
-;           + unbelievable it does not already exist
-;
-;
+; SEE ALSO:
+;  IDL's own <C>Str_Sep()</C>
 ;-
+
+
 FUNCTION Split, string, sep, I=I
 
    On_Error, 2
