@@ -21,10 +21,12 @@
 ;
 ; CATEGORY:           STAT
 ;
-; CALLING SEQUENCE:   CI = CorrIndex(ch, t [, PEAKWIDTH=peakwidth] [,PLOT])
+; CALLING SEQUENCE:   CI = CorrIndex(ch [,t] [, PEAKWIDTH=peakwidth] [,PLOT])
 ;
 ; INPUTS:             ch : ein Korrelationshistogramm, z.B. durch CrossCor erzeugt
-;                     t  : die zugehoerige Zeitachse
+;
+; OPTIONAL INPUT:     t  : die zugehoerige Zeitachse, wird es nicht angegeben, so wird
+;                          eine Achse von [-tau_max,tau_max] angenommen
 ;
 ; KEYWORD PARAMETERS: PEAKWIDTH: Gibt den Bereich an der zum zentral Peak gehoeren darf; dieser
 ;                                Parameter steuert hauptsaechlich den Einzugsbereich fuer die
@@ -43,6 +45,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/06/14 15:52:28  saam
+;           + now returns to calling procedure if an error occurs
+;           + time axis is now optional
+;
 ;     Revision 1.1  1997/11/03 11:33:40  saam
 ;           aus den Tiefen meiner IDL-Verzeichnisse geborgen und
 ;           dokumentiert
@@ -52,8 +58,9 @@
 
 FUNCTION CorrIndex, ch, t, PEAKWIDTH=peakwidth, PLOT=plot
 
+   On_Error,2
    
-   IF (N_PARAMS()    NE 2 )    THEN Message, 'wrong number of arguments'
+   IF (N_PARAMS()    LT 2 )    THEN t=IndGen(N_Elements(ch))-N_ELements(ch)/2
    IF ((Size(ch))(0) NE 1 )    THEN Message, 'wrong format for signal'
    IF ((Size(t))(0)  NE 1 )    THEN Message, 'wrong format for signal'
 
