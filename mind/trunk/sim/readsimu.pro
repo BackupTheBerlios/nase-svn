@@ -39,6 +39,8 @@
 ;   TD    :: returns the result in dimensions of the actual
 ;            layer. This option is ignored if you restore partial data
 ;            using <*>SELECT<*> as documented in <A>ReadSim</A>.
+;
+; OPTIONAL OUTPUTS:
 ;   UDS  :: will contain parameters (saved as structur) saved during simulation.
 ;           This can be used to preserve simulation or other
 ;           relevant parameters.
@@ -57,7 +59,7 @@
 ;  <A>ReadSim</A>
 ;
 ;-
-FUNCTION ReadSIMU, Layer, LAYER=layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=info, UDS=uds, _EXTRA=e
+FUNCTION ReadSIMU, Layer, LAYER=_layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=info, UDS=uds, _EXTRA=e
 
    COMMON ATTENTION
 
@@ -69,6 +71,7 @@ FUNCTION ReadSIMU, Layer, LAYER=layer, FILE=file, SUFF=suff, OS=OS, TD=TD, INFO=
    ;-----> COMPLETE COMMAND LINE SYNTAX
    ;----->
    Default, OS    , 1./(1000.*P.SIMULATION.SAMPLE)
+   IF Set(_Layer) THEN Default, Layer, _Layer
    Default, LAYER , 0
    IF NOT Set(FILE) THEN file = P.File
 
