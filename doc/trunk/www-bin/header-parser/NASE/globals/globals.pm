@@ -42,9 +42,9 @@ my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $CVSROOT); #, $lockmgr
 ###################################################################################
 sub createTablesIfNotExist {
   my ($sql, $sth);
-  my @cats = ("Animation", "Array", "Color", "Connections", "DataStorage", "DataStructures", "Demonstration", 
+  my @cats = ("Algebra", "Animation", "Array", "Color", "CombinationTheory", "Connections", "DataStorage", "DataStructures", "Demonstration", 
 	      "Dirs", "ExecutionControl", "Files", "Fonts", "Graphic", "Help", "Image", "Input", "Internal",
-	      "IO", "Layers", "Math", "MIND", "NASE", "Objects", "OS", "Plasticity", "Startup", "Signals",
+	      "IO", "Layers", "Math", "MIND", "NASE", "NumberTheory", "Objects", "OS", "Plasticity", "Startup", "Statistics", "Signals",
 	      "Simulation", "Strings", "Structures", "Widgets", "Windows", "_Error");
   # _Error is an internal category that contains doc headers with errors
 
@@ -111,7 +111,7 @@ BEGIN {
 #    $INDEXDIR="/tmp";
   }
   
-  $BASEURL  = "http://neuro.physik.uni-marburg.de/cgi-bin-neuro/nasedocu.pl";
+  $BASEURL  = "http://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
   $SUBDIR   = "/";
   ## just default settings (END) ##
 
