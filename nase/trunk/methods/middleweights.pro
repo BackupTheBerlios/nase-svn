@@ -70,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  2000/09/05 19:15:00  kupper
+;       Old typo.
+;
 ;       Revision 1.12  1999/12/02 15:05:56  saam
 ;             + keyword NODW added
 ;
@@ -198,7 +201,7 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, NODW=nodw, $
 
    ;;------------------> Über Reihen mitteln:
    If Keyword_Set(COLS) then begin
-      Message, /INFORM, "Das ROWS-Keyord ist noch nicht implementiert..."
+      Message, /INFORM, "Das COLS-Keyord ist noch nicht implementiert..."
       Message, " Aber das könntest Du mal machen: Orientiere Dich an der Implementierung von ROWS!"
    EndIf
    ;;--------------------------------
