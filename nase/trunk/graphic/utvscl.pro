@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1997/11/13 13:15:41  saam
+;           Device Null wird unterstuetzt
+;
 ;     Revision 2.7  1997/11/12 15:00:38  saam
 ;           Keywords X_SIZE und Y_SIZE fktionierten fuer
 ;           Fenster nicht richtig
@@ -75,6 +78,8 @@ PRO UTvScl, _Image, XNorm, YNorm $
             , X_SIZE=x_size, Y_SIZE=y_size $
             , DIMENSIONS=dimensions $
             , _EXTRA=e
+
+   IF !D.Name EQ 'NULL' THEN RETURN
 
    IF N_Params() LT 1 THEN Message, 'argument expected'
    IF (Size(_Image))(0) NE 2 THEN Message, 'two dimensional array expected'
