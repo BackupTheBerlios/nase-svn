@@ -2,6 +2,9 @@
 ; NAME:
 ;  SetColorIndex
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM:
 ;  Set one entry in the current color table (or translation table
 ;  for truecolor).
