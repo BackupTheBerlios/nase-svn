@@ -10,7 +10,8 @@
 ;
 ; PURPOSE:
 ;  <C>HistMD()</C> computes a histogram of multidimensional data,
-;  i.e. it counts the occurrences of vectors or combinations of numbers in a
+;  in other words, it counts the occurrences of vectors
+;  i.e. certain combinations of numbers in a
 ;  stream of data. It is an extension of IDL's own <C>Hist_2D()</C>
 ;  routine.
 ;
@@ -21,7 +22,7 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* result = HistMD(vectors [,NBINS=...] 
+;* result = HistMD(vectors [,NBINS=...] [/BIN_START]
 ;*                         [,GET_BINVALUES=...] [,REVERSE_INDICES=...])
 ;
 ; INPUTS:
@@ -33,6 +34,9 @@
 ;          desired for each of the n dimensions. <*>NBINS(i)</*>
 ;          therefore specifies the number of bins to be used for the
 ;          <*>i</*>th dimension. The default is 10 for all dimensions.
+;  BIN_START:: Return bin values as those where bins start, otherwise
+;              return bin values as those in the middle of
+;              bins. Default: <*>BIN_START=0</*>.
 ;
 ; OUTPUTS:
 ;  result:: A longword array of dimensions specified by
@@ -42,7 +46,8 @@
 ;
 ; OPTIONAL OUTPUTS:
 ;  GET_BINVALUES:: Use this keyword to retreive the values
-;                  corresponding to the histogram bins. The format of
+;                  corresponding to the histogram bins. See switch
+;                  <*>BIN_START</*> as well. The format of
 ;                  the array returned is:<BR>
 ;                  array(0,j): Number of bins in the <*>j</*>th
 ;                              dimension.<BR>
@@ -89,7 +94,7 @@
 ;* a=10.*RandomN(seed,1000)
 ;* b=2.*RandomN(seed,1000)
 ;* h=HistMD([[a],[b]],NBINS=[20,30],GET_BINVALUES=bv)
-;* ptvs, h, xrange=bv(1:bv(0,0),0), yrange=bv(1:bv(0,1),1)
+;* newPTVS, h, bv(1:bv(0,0),0), bv(1:bv(0,1),1)
 ;
 ; SEE ALSO:
 ;  <A>Hist()</A>, IDL's <C>Histogram()</C> and IDL's <C>Hist_2D()</C>.
@@ -97,14 +102,19 @@
 
 
 FUNCTION HistMD, s, NBINS=nbins $
+                 , BIN_START=bin_start $
                  , GET_BINVALUES=get_binvalues $
                  , REVERSE_INDICES=reverse_indices
 
+   Default, bin_start, 0
+
+   binmidflag = bin_start EQ 0
+
    ssize = Size(s)
-   sdur = ssize(1)
-   IF ssize(0) EQ 1 $
+   sdur = ssize[1]
+   IF ssize[0] EQ 1 $
     THEN sdim = 1 $
-   ELSE sdim = ssize(2)
+   ELSE sdim = ssize[2]
       
    Default, nbins, Make_Array(sdim, VALUE=10, /INT)
 
@@ -118,15 +128,22 @@ FUNCTION HistMD, s, NBINS=nbins $
       smin = Min(s, MAX=smax)
    ENDELSE 
 
-   sbinsize = (smax-smin)/(nbins-1)
+   ;;   sbinsize = (smax-smin)/(nbins-1) ;; old version
+   sbinsize = Float(smax-smin)/(nbins)
 
-   combine = Long((s(*,0)-smin(0))/sbinsize(0))
+   ;; compute bin indices for the first dimension
+   ;; the max values, which would be in the nbins+1 bin are restricted by
+   ;; "< (nbins[0]-1)" so they are counted in the last bin, see also
+   ;; in the loop below
+   combine = Long((s[*,0]-smin[0])/sbinsize[0]) < (nbins[0]-1)
+
    ;; for multidimensional stimuli generate onedimensional combined
    ;; array, see IDL's hist_2d routine
    IF sdim GT 1 THEN BEGIN
       FOR sdimidx=1, sdim-1 DO $
-       combine = Temporary(combine)+(Product(nbins(0:sdimidx-1))) $
-       *Long((s(*,sdimidx)-smin(sdimidx))/sbinsize(sdimidx))
+       combine = Temporary(combine)+Product(nbins[0:sdimidx-1]) $
+       *(Long((s[*,sdimidx]-smin[sdimidx])/sbinsize[sdimidx]) $
+         < (nbins[sdimidx]-1))
    ENDIF
 
    shist = Hist(combine, sbinval, 1 $
@@ -136,10 +153,10 @@ FUNCTION HistMD, s, NBINS=nbins $
    reverse_indices=srevidx
 
    get_binvalues = Make_Array(Max(nbins)+1, sdim, /FLOAT, VALUE=!NONE)
-   get_binvalues(0, *) = nbins
+   get_binvalues[0, *] = nbins
    FOR idx = 0, sdim-1 DO $
-    get_binvalues(1:nbins(idx), idx) = $
-    smin(idx)+FIndGen(nbins(idx))*sbinsize(idx)
+    get_binvalues[1:nbins[idx], idx] = $
+    smin[idx]+FIndGen(nbins[idx])*sbinsize[idx]+0.5*sbinsize[idx]*binmidflag
 
    Return, Reform(shist, nbins)
 
