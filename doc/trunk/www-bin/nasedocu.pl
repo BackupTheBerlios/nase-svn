@@ -77,6 +77,25 @@ sub newrout {
 }
 
 
+###################################################################################
+###################################################################################
+###################################################################################
+sub changerout {
+  my $DOCDIR = getDocDir();
+  
+  my @r = `grep ^M /vol/neuro/nase/IDLCVS/CVSROOT/history | grep -i pro\$ | tail -30 | cut -d '|' -f 6 | uniq`;
+
+  print "<OL>";
+  foreach (reverse @r){
+    chomp;
+    s/\.pro//i;
+    print "<LI>",makeURL($_,undef,'text','log'),"</LI>";
+  }
+  print "</OL>";
+
+}
+
+
 
 
 
@@ -198,6 +217,13 @@ if ($P::mode){
 			    submit(-name=>'Check'),
 			    endform,
 			  "</TD></TR></TABLE>",
+			  "</TD></TR><TR><TD>\n",
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
+			  '<TR CLASS="title"><TD CLASS="title">Most Recent Updates</TD></TR>',
+			    '<TR><TD CLASS="left">';
+		      changerout();
+		      print 
+			  "</TD></TR></TABLE>\n",
 			"</TD></TR><TR><TD>",
 			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
 			  '<TR CLASS="title"><TD CLASS="title">Update</TD></TR>',
