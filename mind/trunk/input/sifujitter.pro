@@ -3,6 +3,8 @@
 ;
 ; PURPOSE:            Jitters the incoming spikes randomly in time by a uniform
 ;                     distribution (so each spike has an individual jitter).
+;                     If two input spikes of one neuron are accidentally
+;                     jittered into the same BIN then only one spike survives.
 ;                     Note that the average output is shifted by jitter/2 to
 ;                     later times. Output is binary, jitter is specified in 
 ;                     milliseconds.
@@ -41,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/26 16:11:05  saam
+;           expanded the doc header
+;
 ;     Revision 1.2  2000/01/26 14:36:39  saam
 ;           expanded the log message
 ;
