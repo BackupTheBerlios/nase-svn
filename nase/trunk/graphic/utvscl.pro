@@ -141,9 +141,8 @@ END
 
 ;; --- Plot polygons instead of pixels
 PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
-                     , NOSCALE=NOSCALE, DEVICE=DEVICE $
-                     ;,CENTIMETERS=centimeters $ ;;Not used in this routine!
-                     , TOP=TOP ,ORDER=ORDER
+                     , NOSCALE=NOSCALE, DEVICE=device $
+                     , TOP=TOP ,ORDER=ORDER, _EXTRA=extra
    ON_ERROR, 2
    as = size(A)
    xsize = as(1)
@@ -154,7 +153,6 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
    default,Y_size,ysize
    default,noscale,0
    default,device,1
-;   default,centimeters,0 ;; Not used!
    default,order,0
 
    IF (NOSCALE EQ 1) THEN BEGIN
@@ -164,10 +162,13 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
       TVLCT,R,G,B,/GET   
    ENDELSE
 
-;   xpix = FLOAT(X_size)/FLOAT(xsize) No longer necessary!
-;   ypix = FLOAT(Y_size)/FLOAT(ysize)
-
-   IF  DEVICE EQ 1 THEN BEGIN
+   ;; Position of the origin is passed to MultiPolyPlot either in cm
+   ;; coordinates (DEVICE=0) or in device coordinates (DEVICE=1). It
+   ;; has to be transformed into device coordinates before passing it
+   ;; to PolyTV. Size of the plot is ALWAYS passed to MultiPolyPlot in
+   ;; cm coordinates, it has to be transformed to device coordinates
+   ;; in any case.
+   IF DEVICE EQ 0 THEN BEGIN
       X_PX_CM = !D.X_PX_CM
       Y_PX_CM = !D.Y_PX_CM
    END ELSE BEGIN
@@ -175,38 +176,8 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
       Y_PX_CM = 1.0
    ENDELSE
 
-;; No longer needed and substituted by PolyTV
-;   IF ORDER EQ 1 THEN BEGIN
-;      Y_START = ysize -1
-;      Y_END = 0
-;      Y_STEP =  -1
-;   END ELSE BEGIN
-;      Y_START = 0
-;      Y_END = ysize -1
-;      Y_STEP =  1
-;   ENDELSE
-;      FOR j = Y_START , Y_END,Y_STEP DO BEGIN
-;         FOR i = 0L , xsize -1 DO BEGIN
-;         x = [ i  , i + 1 , i + 1 , i  ] 
-;         y = [ Y_START +  Y_STEP * j  , Y_START +  Y_STEP *j   , Y_START +  Y_STEP *j + 1 , Y_START +  Y_STEP *j + 1 ]
-;         x(*) = (x(*)*xpix + Xnorm) * X_PX_CM
-;         y(*) = (y(*)*ypix + Ynorm) * Y_PX_CM
-         
-;         IF  (NOSCALE EQ 1) THEN BEGIN
-;            polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
-          
-           
-;         END ELSE BEGIN
-;           polyfill,x,y,COLOR=ROUND(ARRAY(i,j)), /DEVICE 
-;           colorindex = RGB(R(ARRAY(i,j)) ,G(ARRAY(i,j)) ,B(ARRAY(i,j)),/NOALLOC)
-;           polyfill,x,y,COLOR=colorindex ,/DEVICE
-            
-;         ENDELSE
-;      ENDFOR
-;   ENDFOR
-
-   PolyTV, array, XSIZE=x_size* X_PX_CM, YSIZE=y_size* Y_PX_CM $
-    , XORPOS=xnorm* X_PX_CM, YORPOS=ynorm* Y_PX_CM $
+   PolyTV, array, XSIZE=x_size*!D.X_PX_CM, YSIZE=y_size*!D.Y_PX_CM $
+    , XORPOS=xnorm*X_PX_CM, YORPOS=ynorm*Y_PX_CM $
     , DEVICE=1, ORDER=order
 
 END
@@ -231,9 +202,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
+   Default, DEVICE, 0
 
    ;; correct handling of top keyword;
-   ;; NASE stanard is that TV and partners use the palette
+   ;; NASE standard is that TV and partners use the palette
    ;; only from 0..!TOPCOLOR, this is ensured here if nothing
    ;; else is specified
    IF Keyword_Set(TRUE) THEN BEGIN
@@ -250,7 +222,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    END
 
    ; don't modify the original image
-   IF N_Params() LT 1 THEN Console, 'at leat one positional argument expected', /FATAL
+   IF N_Params() LT 1 THEN Console, 'at least one positional argument expected', /FATAL
    Image = REFORM(__Image)
    
 
@@ -338,7 +310,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
       ;; If POLYGON is set, the image array need not be resized,
       ;; because POLYTV later resizes the pixels, not the array.
-      ;; BUT if the user wants interpolation, resizing has to done.
+      ;; BUT if the user wants interpolation, resizing has to be done.
       IF NOT(Keyword_Set(POLYGON)) THEN BEGIN
          ;; Congrid when POLYGON is not set
          _Image = FltArr((xsize*_smooth(0)) > 1 $
@@ -352,7 +324,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       ENDIF ELSE BEGIN
          IF Set(CUBIC) OR Keyword_Set(INTERP) OR $
           Keyword_Set(MINUS_ONE) THEN BEGIN
-            ;; Congrid when POLYGON is set but INETRPOLATION is desired
+            ;; Congrid when POLYGON is set but INTERPOLATION is desired
             _Image = FltArr((xsize*_smooth(0)) > 1 $
                             , (ysize*_smooth(1)) > 1, TRUE > 1)
             FOR i=0, 2 * (TRUE GT 0) DO $
@@ -399,30 +371,26 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $ Not used by MultiPolyPlot anyway
-               , /NOSCALE, _EXTRA=e 
+                , /NOSCALE, DEVICE = device, _EXTRA=e 
             END ELSE BEGIN
                __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $
-               , _EXTRA=e
+                , DEVICE = device, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $ Not used by MultiPolyPlot anyway
-               , /NOSCALE, _EXTRA=e
+                , /NOSCALE, DEVICE = device, _EXTRA=e
             END ELSE BEGIN
                __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $
-               , _EXTRA=e
+                , DEVICE = device, _EXTRA=e
             END
          END 
       ENDELSE
       IF Keyword_Set(TRUE) THEN TVLCT, sp
  
-  END ELSE BEGIN   ;; it is a WINDOW
+   END ELSE BEGIN   ;; it is a WINDOW
       IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
-      
+         
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
@@ -440,28 +408,20 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $
-               , /NOSCALE $
+                , /NOSCALE, DEVICE = device $
                 ;;, TRUE=true $ ;; TRUE not supported for polygons
                , _EXTRA=e 
             END ELSE BEGIN
                __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $
-               ;;, TRUE=true $
-               , _EXTRA=e
+                , DEVICE = device, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
                __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $
-               , /NOSCALE $
-                ;;, TRUE=true $
-               , _EXTRA=e
+                , /NOSCALE, DEVICE = device, _EXTRA=e
             END ELSE BEGIN
                __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
-                ;;, CENTIMETERS=centi $
-               ;;, TRUE=true $
-               , _EXTRA=e
+                , DEVICE = device, _EXTRA=e
             END
          END 
          
