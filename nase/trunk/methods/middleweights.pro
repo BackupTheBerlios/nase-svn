@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1998/03/04 19:49:51  thiel
+;              Jetzt mit KEYWORD_SET beim WRAP.
+;
 ;       Revision 1.7  1998/01/05 14:49:54  saam
 ;             Anpassung an neue DWDim-Routine
 ;
@@ -100,7 +103,7 @@ FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
    middle = fltarr(Matrix.th,Matrix.tw)
    
    
-   If Not Set(WRAP) Then Begin
+   If Not Keyword_Set(WRAP) Then Begin
       sum = fltarr(Matrix.th,Matrix.tw)
       for YY= 0, Matrix.sh-1 do begin
          for XX= 0, Matrix.sw-1 do begin  
