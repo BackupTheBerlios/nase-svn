@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1999/07/26 12:51:45  thiel
+;           Array now contains right values of tmaxpre/tmaxpost.
+;
 ;       Revision 2.1  1999/02/03 13:35:59  saam
 ;              + part of the new learning system
 ;
@@ -85,6 +88,6 @@ FUNCTION InitLearnBiPoo, POSTTAU=posttau, PRETAU=pretau, POSTV=postv, PREV=prev,
    IF Keyword_Set(PREBAL) THEN deltapre = deltapre/ipre*ipost 
    IF Keyword_Set(POSTBAL) THEN deltapost = deltapost/ipost*ipre 
 
-   RETURN, [tmaxpre, tmaxpost, deltapre, 0.0, deltapost]
+   RETURN, [N_Elements(deltapre), N_Elements(deltapost), deltapre, 0.0, deltapost]
    
 END
