@@ -84,10 +84,12 @@ Pro basic_draw_object::realize
    Widget_Control, self->widget(), /Realize
 End
 
-Pro basic_draw_object::register, TITLE = title, _ref_extra = e
+Pro basic_draw_object::register, TITLE=title, NO_BLOCK=no_block, _ref_extra=e
+   ;; no_block is default!
    Default, title, Obj_Class(self)
+   Default, no_block, 1
    widget_Control, Tlb_Set_Title=title, self->widget()
-   Xmanager, title, self->widget(), _EXTRA=e
+   Xmanager, title, self->widget(), NO_BLOCK=no_block, _EXTRA=e
 End
 
 ;; ------------ Private --------------------
