@@ -19,9 +19,9 @@
 ;
 ; CATEGORY:           MISC
 ;
-; CALLING SEQUENCE:   WorkingDir = GetLocalDir( [DataDir] )
+; CALLING SEQUENCE:   WorkingDir = GetLocalDir( [WishDir] )
 ;
-; OPTIONAL INPUTS:    DataDir: ein (lokales) Wunschverzeichnis, das die Routine
+; OPTIONAL INPUTS:    WishDir: ein (lokales) Wunschverzeichnis, das die Routine
 ;                              ggf. erstellt. Ist das Verzeichnis nicht lokal, dann
 ;                              wird das Argument ignoriert.
 ;
@@ -37,12 +37,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/10/29 09:57:28  saam
+;           Sinnvollere Variablennamen
+;
 ;     Revision 1.1  1997/10/29 09:51:59  saam
 ;           vom Himmel gefallen
 ;
 ;
 ;-
-FUNCTION GetLocalDir, DataDir
+FUNCTION GetLocalDir, WishDir
 
    COMMON Random_Seed, seed
 
@@ -56,7 +59,7 @@ FUNCTION GetLocalDir, DataDir
    
 
    IF N_Params() EQ 0 THEN BEGIN
-      ; no DataDir passed
+      ; no WishDir passed
       CASE Host OF
          'ax1302' : WorkDir = '/usr/ax1302'
          'ax1303' : WorkDir = '/usr/ax1303'
@@ -73,21 +76,21 @@ FUNCTION GetLocalDir, DataDir
       TmpDir  = User + '/' + STRING([BYTE(97+25*RANDOMU(seed,20))])    
       WorkDir = WorkDir + '/' + TmpDir
    END ELSE IF N_Params() EQ 1 THEN BEGIN
-      ; a DataDir was passwd
-      DataHost = 'dummy'
-      IF Contains(DataDir, '/usr/ax1302') THEN DataHost = 'ax1302'
-      IF Contains(DataDir, '/usr/ax1303') THEN DataHost = 'ax1303'
-      IF Contains(DataDir, '/usr/elauge1') OR Contains(DataDir, '/usr/ax1315') THEN DataHost = 'ax1315'
-      IF Contains(DataDir, '/usr/ax1317') OR Contains(DataDir, '/home/gonzo') THEN DataHost = 'ax1317'
-      IF Contains(DataDir, '/usr/ax1318') THEN DataHost = 'ax1318'
-      IF Contains(DataDir, '/usr/ax1319') THEN DataHost = 'ax1319'
-      IF Contains(DataDir, '/usr/neuro') OR Contains(DataDir, '/home/neuro') THEN DataHost = 'neuro'
-      IF DataHost EQ 'dummy' THEN Message, 'could not get host where datadir resides'
+      ; a WishDir was passwd
+      WishHost = 'dummy'
+      IF Contains(WishDir, '/usr/ax1302') THEN WishHost = 'ax1302'
+      IF Contains(WishDir, '/usr/ax1303') THEN WishHost = 'ax1303'
+      IF Contains(WishDir, '/usr/elauge1') OR Contains(WishDir, '/usr/ax1315') THEN WishHost = 'ax1315'
+      IF Contains(WishDir, '/usr/ax1317') OR Contains(WishDir, '/home/gonzo') THEN WishHost = 'ax1317'
+      IF Contains(WishDir, '/usr/ax1318') THEN WishHost = 'ax1318'
+      IF Contains(WishDir, '/usr/ax1319') THEN WishHost = 'ax1319'
+      IF Contains(WishDir, '/usr/neuro') OR Contains(WishDir, '/home/neuro') THEN WishHost = 'neuro'
+      IF WishHost EQ 'dummy' THEN Message, 'could not get host where datadir resides'
 
-      print, DataHost
+      print, WishHost
       print, Host
       
-      IF DataHost EQ Host THEN WorkDir = DataDir ELSE WorkDir = GetLocalDir()
+      IF WishHost EQ Host THEN WorkDir = WishDir ELSE WorkDir = GetLocalDir()
    END ELSE Message, 'wrong calling sequence'
    
    
