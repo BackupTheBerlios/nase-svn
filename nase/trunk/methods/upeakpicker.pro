@@ -1,5 +1,8 @@
 ;+
-; NAME:               PeakPicker
+; NAME:               UPeakPicker
+;
+; AIM:                identifying maximas and minimas in noisy data (math. method)
+;      
 ;
 ; PURPOSE:            identifying maximas and minimas in noisy data
 ;
@@ -19,8 +22,8 @@
 ;                                     given in fraction of maximal data range (Def.: 5%)
 ;                     DataCrit:       An optional criterion for peak/noise discrimination
 ;                                     given in absolute data coordinates.
-;                     Delta:          Intervallbreite, ueber die die 1. Ableitung von ydata
-;                                     gemittelt wird  (default 5)
+;                     Delta:          width for smoothing the  1. deviation of ydata
+;                                     (default 5)
 ;                     MaxIndex:       vector subscript to select maximas of ydata, tdata                                                                            
 ;                     MinIndex:       vector subscript to select minimas of ydata, tdata
 ;
@@ -42,10 +45,13 @@
 ;                     minnumber:      Like maxnumber for minimas.
 ;
 ; AUHTOR:             A.Gabriel
-;
+; -
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 09:22:03  gabriel
+;           AIM tag added
+;
 ;     Revision 1.2  1998/03/02 16:08:53  gabriel
 ;          keywords wieder als argumente fuer ymin, tmin, minumber
 ;
@@ -53,7 +59,7 @@
 ;          ein PeakPicker mit Methoden aus der Analysis
 ;
 ;
-;-
+;
 PRO UPeakPicker, ydata,tdata, ymax,tmax,maxnumber,ymin,tmin,minnumber,$
              RelativCrit=RelativeCrit,DataCrit=DataCrit,DELTA=delta,MAXINDEX=maxIndex,MININDEX=minIndex
 
