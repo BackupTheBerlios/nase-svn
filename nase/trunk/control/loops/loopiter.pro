@@ -1,55 +1,52 @@
 ;+
-; NAME:               LoopIter
+; NAME:
+;  LoopIter()
 ;
-; AIM: returns the number of iterations, defined in a loop-structure
+; VERSION:
+;  $Id$ 
 ;
-; PURPOSE:            Liefert die Zahl an Iteration, die in einer LoopStructure 
-;                     definiert sind.
+; AIM:
+;  returns the number of iterations, defined in a loop-structure
+;
+; PURPOSE:
+;  returns the number of iterations, defined in a loop-structure
 ;                         
-; CATEGORY:           CONTROL
+; CATEGORY:
+;  ExecutionControl
 ;
-; CALLING SEQUENCE:   Iter = LoopIter(LS [,TagIter] [,/STRUCTURE])
+; CALLING SEQUENCE:
+;* iter = LoopIter(LS [,tagiter] [,/STRUCTURE])
 ;
-; INPUTS:             LS: eine mit InitLoop initialisierte LoopStructure bzw.
-;                         die zugrundeliegende Struktur, wenn Keyword STRUCTURE
-;                         gesetzt ist.
+; INPUTS:
+;  LS:: a loop structure that was previously initialized with
+;       <A>InitLoop</A>, or a structure conforming to the loop
+;       conventions (set <*>/STRUCTURE</*> for this option).
 ;
-; KEYWORD PARAMETERS: STRUCTURE: Wenn gesetzt wird LS als allg. Struktur interpretiert.
+; INPUT KEYWORDS: 
+;  STRUCTURE:: <*>LS</*> will be interpreted as general loop structure
 ;
-; OUTPUTS:            Iter: die Zahl durchzufuehrender Iteration
+; OUTPUTS:
+;  iter:: die Zahl durchzufuehrender Iteration
 ;                              
-; OPTIONAL OUTPUTS:   TagIter: ein Array, das die Einzeliterationen fuer jede Schleifen-
-;                              variable enthaelt.
+; OPTIONAL OUTPUTS:
+;  tagiter:: array, containing the loop values for the current
+;            iterations
 ;
 ; EXAMPLE:
-;                         MeineParameter={ a: 0.5, b:1.5432, $
-;                                          c:[1,2], $
-;                                          d:['A','C'] }
-;                         LS = InitLoop(MeineParameter)
-;                         print, LoopIter(LS, tagIter)
-;                         print, LoopIter(MeineParameter, /STRUCTURE), tagIter
-;                    ScreenShot:
-;                         4
-;                         4
-;                         2 2
+;*mypara={ a: 0.5, b:1.5432, $
+;*         c:[1,2], $
+;*         d:['A','C'] }
+;*LS = InitLoop(mypara)
+;*print, LoopIter(LS, tagiter)
+;*print, LoopIter(mypara, /STRUCTURE), tagiter
+;results in the following output  
+;*;    4
+;*;    4
+;*;    2 2
 ;      
-; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPING">Looping</A>, <A HREF="#LOOPVALUE">LoopValue</A>, <A HREF="#LOOPNAME">LoopName</A>
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.4  2000/09/28 13:24:44  alshaikh
-;           added AIM
-;
-;     Revision 1.3  1997/12/02 10:11:47  saam
-;           optionaler Output tagIter hinzugefuegt
-;
-;     Revision 1.2  1997/11/26 10:02:28  saam
-;           Behandlung normaler Structuren nun mit Keyword STRUCTURE moeglich
-;
-;     Revision 1.1  1997/11/26 09:48:56  saam
-;           Urversion
-;
+; SEE ALSO:
+;  <A>InitLoop</A>, <A>Looping</A>, <A>LoopValue</A>, <A>LoopName</A>
+;  and <A>ForEach</A> as a high level approach to using general loops.
 ;
 ;-
 FUNCTION LoopIter, LS, tagIter, STRUCTURE=structure
@@ -66,10 +63,10 @@ FUNCTION LoopIter, LS, tagIter, STRUCTURE=structure
                dims = dims+1
             END
          END
-      END ELSE Message, 'no valid loop structure passed'
+      END ELSE Console, 'no valid loop structure passed', /FATAL
    END ELSE BEGIN
       s = SIZE(LS)
-      IF s(N_Elements(s)-2) NE 8 THEN Message, 'sorry, but function is only designed for structures'
+      IF s(N_Elements(s)-2) NE 8 THEN Console, 'sorry, but function is only designed for structures', /FATAL
       
       nTags = N_Tags(LS)
       FOR tag=0,nTags-1 DO BEGIN
