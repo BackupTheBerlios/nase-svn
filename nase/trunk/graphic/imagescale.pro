@@ -28,7 +28,7 @@
 ;
 ; INPUT KEYWORDS:
 ;  BACKGROUND:: The value to fill into the space that becomes
-;               available when the image is shrinked. Default is
+;               available when the image is shrunken. Default is
 ;               <*>0</*>.
 ;
 ; OUTPUTS:

@@ -13,7 +13,7 @@
 ;  given eye position, and a given visual distance from the eye (along
 ;  the z-axis).<BR>
 ;  Optionally, an additional linear scaling factor (specifying the
-;  images "realworld size") may be defined.<BR>
+;  image's "realworld size") may be defined.<BR>
 ;  This procedure works for greyscale or truecolor images.
 ;*
 ;*                                  .
@@ -56,7 +56,7 @@
 ;               See the examples below for further carification.
 ;
 ;  BACKGROUND:: The value to fill into the space that becomes
-;               available when the image is shrinked. Default is
+;               available when the image is shrunken. Default is
 ;               <*>0</*>.
 ;
 ; OUTPUTS:
