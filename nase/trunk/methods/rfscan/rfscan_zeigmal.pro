@@ -1,35 +1,40 @@
 ;+
 ; NAME: RFScan_Zeigmal()
 ;
-; PURPOSE:
+; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
 ;
-; CATEGORY:
+; CALLING SEQUENCE: Inputbild = RFScan_Zeigmal( My_RFScan [,Picture] )
 ;
-; CALLING SEQUENCE:
+; INPUTS: My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
+;                    RFScan-Struktur.
 ;
-; INPUTS:
+; OPTIONAL INPUTS: Picture: Wurde bei der Initialisierung der manuelle Modus gewählt
+;                           (vgl. <A HREF="#RFSCAN_INIT">RFScan_Init()</A>), so muß beim Aufruf das
+;                           gewünschte Inputbild manuell übergeben werden. In diesem
+;                           Fall wird genau dieses Bild auch von der Fubktion zurück-
+;                           gegeben.
 ;
-; OPTIONAL INPUTS:
+; OUTPUTS: Inputbild: Ein FloatArray passender Größe, das dem zu
+;                     testenden Netz als Input präsentiert werden
+;                     soll.
+;                     Dieses Bild muß mindestens einen Zeitschritt
+;                     lang (i.a. aber beliebig lang) als Input
+;                     angelegen haben, bevor <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>
+;                     aufgerufen wird.
 ;
-; KEYWORD PARAMETERS:
+; COMMON BLOCKS: common_Random (Standard)
 ;
-; OUTPUTS:
+; EXAMPLE: MyPic = RFScan_Zeigmal( My_RFScan )
 ;
-; OPTIONAL OUTPUTS:
-;
-; COMMON BLOCKS:
-;
-; SIDE EFFECTS:
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-; EXAMPLE:
+; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/01/30 17:02:53  kupper
+;               Header geschrieben und kosmetische Veränderungen.
+;                 VISULAIZE ist noch immer nicht implementiert.
+;
 ;        Revision 1.1  1998/01/29 14:45:07  kupper
 ;               Erste Beta-Version.
 ;                 Header mach ich noch...
@@ -39,8 +44,8 @@
 
 Function RFScan_Zeigmal, RFS, Picture
    common common_random, seed
-  
-   If not contains(RFS.info, "RFSCAN", /IGNORECASE) then message, "Hey - this is not a RFScan-Structure!"
+
+   TestInfo, RFS, "RFScan"
    
    ;;------------------> Manual Definition of Picture
    If RFS.manual then begin

@@ -1,35 +1,28 @@
 ;+
 ; NAME: RFScan_Schaumal
 ;
-; PURPOSE:
+; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
 ;
-; CATEGORY:
+; CALLING SEQUENCE: RFScan_Schaumal, My_RFScan, OutLayer
 ;
-; CALLING SEQUENCE:
+; INPUTS: My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
+;                    RFScan-Struktur.
+;         OutLayer : Der Layer mit den zu untersuchenden Neuronen. Das 
+;                    muﬂ der gleicher Layer sein, der auch bei der
+;                    Initialisierung angegeben wurde (zumindest muﬂ er 
+;                    die gleichen Ausmaﬂe haben...)
 ;
-; INPUTS:
+; EXAMPLE: RFScan_Schaumal, My_RFScan, SimpleCells
 ;
-; OPTIONAL INPUTS:
-;
-; KEYWORD PARAMETERS:
-;
-; OUTPUTS:
-;
-; OPTIONAL OUTPUTS:
-;
-; COMMON BLOCKS:
-;
-; SIDE EFFECTS:
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-; EXAMPLE:
+; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/01/30 17:02:52  kupper
+;               Header geschrieben und kosmetische Ver‰nderungen.
+;                 VISULAIZE ist noch immer nicht implementiert.
+;
 ;        Revision 1.1  1998/01/29 14:45:08  kupper
 ;               Erste Beta-Version.
 ;                 Header mach ich noch...
@@ -38,6 +31,8 @@
 ;-
 
 Pro RFScan_Schaumal, RFS, OutLayer
+
+   TestInfo, RFS, "RFScan"
 
    If RFS.OBSERVE_SPIKES     then LayerData, OutLayer, OUTPUT=Out
    If RFS.OBSERVE_POTENTIALS then LayerData, OutLayer, POTENTIAL=Out
