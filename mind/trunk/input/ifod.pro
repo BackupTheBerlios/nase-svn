@@ -54,7 +54,7 @@
 FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                       LOGIC=op, STIMORIENT=stimorient, DETECTORIENT=detectorient, STIMPERIOD=stimperiod, STIMPHASE=stimphase, $
                 STIMSHIFT=stimshift,$ $
-                STEPANGLE=stepangle,detectsize=detectsize, step=step, $
+                STEPANGLE=stepangle,detectsize=detectsize, blow=blow, $
                       A=a, _EXTRA=e
 
 ;   ON_ERROR, 2
@@ -64,7 +64,7 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
    Default, op  , 'ADD'
    Default, rotperiod, !NONE
    Default, stepangle, 0.
-   Default, step, 1.
+   Default, blow, 1.
    Default, detectsize, 25.
 
    Handle_Value, _TV, TV, /NO_COPY
@@ -78,11 +78,11 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
           Default, stimphase, 0
           Default, stimshift, 0
           Default, stimperiod, 1
-          mdx = w*step+2*detectsize
-          mdy = h*step+2*detectsize
+          mdx = w*blow+2*detectsize
+          mdy = h*blow+2*detectsize
           md = fix((max([mdx, mdy])+1)*2)/2
-          y1=sin(2*!DPi*((dindgen(md)/step - md/2)/stimperiod + stimphase/360.d))          
-          y2=sin(2*!DPi*((dindgen(md)/step - md/2)/stimperiod + (stimphase+stimshift)/360.d))          
+          y1=sin(2*!DPi*((dindgen(md)/blow - md/2)/stimperiod + stimphase/360.d))          
+          y2=sin(2*!DPi*((dindgen(md)/blow - md/2)/stimperiod + (stimphase+stimshift)/360.d))          
 
           lstim1=(1+rebin(y1,md,md/2,/SAMPLE))*0.5
           lstim2 =(1+rebin(y2,md,md-md/2,/SAMPLE))*0.5
@@ -95,8 +95,8 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
           temp = a*((convol(stim, odm))^2)
 
           ; points to pick
-          lowx = indgen(w)*step+md/2-(step*w/2)+1
-          lowy = indgen(h)*step+md/2-step*h/2+1
+          lowx = indgen(w)*blow+md/2-(blow*w/2)+1
+          lowy = indgen(h)*blow+md/2-blow*h/2+1
 
           mem = fltarr(h, w)
           for y=0, n_elements(lowy)-1 do begin
@@ -115,7 +115,7 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
                   stimshift    : stimshift   ,$
                   detectorient : detectorient,$
                   detectsize   : detectsize, $
-                  step         : step,  $
+                  blow         : blow,  $
                   stimorient   : stimorient  ,$
                   stepangle    : stepangle   ,$
                   cangle       : 0d          ,$
@@ -135,8 +135,8 @@ console, outputstring
       1: BEGIN                             
           IF (TV.stepangle NE 0) THEN BEGIN
              TV.cangle = (TV.cangle + TV.stepangle) MOD 360
-             mdx = w*TV.step+2*TV.detectsize
-             mdy = h*TV.step+2*TV.detectsize
+             mdx = w*TV.blow+2*TV.detectsize
+             mdy = h*TV.blow+2*TV.detectsize
              md = FIX(MAX([mdx,mdy]))
              y1=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + TV.stimphase/360.d))          
              y2=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + (TV.stimphase+TV.stimshift)/360.d))          
@@ -152,8 +152,8 @@ console, outputstring
               temp = a*((convol(stim, odm))^2)
 
                                 ; points to pick
-              lowx = indgen(w)*TV.step+md/2-(TV.step*w/2)+1
-              lowy = indgen(h)*TV.step+md/2-TV.step*h/2+1
+              lowx = indgen(w)*TV.blow+md/2-(TV.blow*w/2)+1
+              lowy = indgen(h)*TV.blow+md/2-TV.blow*h/2+1
               
               TV.mem = fltarr(h, w)
               for y=0, n_elements(lowy)-1 do begin
