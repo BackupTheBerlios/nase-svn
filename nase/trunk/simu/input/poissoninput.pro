@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/03/03 18:00:38  saam
+;           little bug
+;
 ;     Revision 2.1  1998/03/03 17:27:37  saam
 ;           schwere Geburt, simple Funktion
 ;
@@ -53,11 +56,10 @@ FUNCTION PoissonInput, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rat
 
    COMMON Common_Random, seed
 
-   IF NOT Set(v) THEN sspass = 1
+   IF NOT Set(v) THEN sspass = 1 ELSE sspass = 0
    Default, rate    , 40.0
    Default, oversamp,  1
    default, v       ,  1.0
-
 
    IF Keyword_Set(KLAYER) THEN BEGIN
       w = KLayer.w
