@@ -45,12 +45,18 @@
 ;               Plotcilloscope, PS, y
 ;               wait, 0.06
 ;            END
+;            FreePlotcilloscope, PS
 ;
-; SEE ALSO:  <A HREF="#PLOTCILLOSCOPE">Plotcilloscope</A>
+; SEE ALSO:  <A HREF="#PLOTCILLOSCOPE">Plotcilloscope</A>, <A HREF="#FREEPLOTCILLOSCOPE">FreePlotcilloscope</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  1998/11/08 14:30:41  saam
+;           + hyperlink updates
+;           + the plotcilloscope structure is now
+;              a handle and has to freed via FreePlotcilloscope
+;
 ;     Revision 2.11  1998/05/18 19:39:09  saam
 ;           added Keyword OVERSAMPLING
 ;
@@ -93,11 +99,13 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
                              INSTANTREFRESH=instantrefresh, $
                              XTITLE=xtitle, _EXTRA=_extra
 
+   On_Error, 2
+
    Default, OVERSAMPLING, 1
    Default, TIME, 100l
    time = time / OVERSAMPLING
    Default, YMIN, 0.0
-   Default, YMAX, 1.0
+   Default, YMAX, 0.0
    Default, Rays, 1
    Default, XTITLE, 't / ms'
    If not keyword_set(_EXTRA) then _extra = {XTITLE: xtitle} else begin
@@ -129,5 +137,6 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
    
    plot, [PS.y], /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, _EXTRA=_extra
 
-   RETURN, PS
+
+   RETURN, HANDLE_CREATE(!MH, VALUE=ps, /NO_COPY)
 END

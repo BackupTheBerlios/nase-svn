@@ -8,11 +8,11 @@
 ;                      automatisch skaliert. Es werden auch 
 ;                      mehrere Strahlen unterstuetzt.
 ;
-; CATEGORY:            GRAPHIC
+; CATEGORY:            GRAPHIC PLOTCILLOSCOPE
 ;
 ; CALLING SEQUENCE:    Plotcilloscope, PS, y
 ;
-; INPUTS:              PS: eine mit InitPlotcilloscope initialisierte
+; INPUTS:              PS: eine mit <A HREF="#INITPLOTCILLOSCOPE>InitPlotcilloscope</A> initialisierte
 ;                          Struktur
 ;                       y: ein Array der aktuell aufzuzeichnende/
 ;                          darzustellenden Werte
@@ -29,12 +29,18 @@
 ;               Plotcilloscope, PS, y
 ;               wait, 0.06
 ;            END
+;            FreePlotcilloscope, PS
 ;
-; SEE ALSO:  <A HREF="#INITPLOTCILLOSCOPE">InitPlotcilloscope</A>
+; SEE ALSO:  <A HREF="#INITPLOTCILLOSCOPE">InitPlotcilloscope</A>, <A HREF="#FREEPLOTCILLOSCOPE">FreePlotcilloscope</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  1998/11/08 14:30:41  saam
+;           + hyperlink updates
+;           + the plotcilloscope structure is now
+;              a handle and has to freed via FreePlotcilloscope
+;
 ;     Revision 2.10  1998/10/29 12:16:18  saam
 ;           now checks passed arguements
 ;
@@ -67,11 +73,12 @@
 ;
 ;
 ;-
-PRO Plotcilloscope, PS, value
+PRO Plotcilloscope, _PS, value
 
    On_Error, 2
 
-   TestInfo, PS, 'T_PLOT'
+   TestInfo, _PS, 'T_PLOT'
+   Handle_Value, _PS, PS, /NO_COPY
 
    rayRed   = [  0, 200,   0, 200, 200, 200,   0]
    rayGreen = [200,   0,   0, 200, 200,   0, 200]
@@ -112,4 +119,6 @@ PRO Plotcilloscope, PS, value
          IF xpos LT PS.time-4 AND PS.t GE PS.time THEN oplot, (Indgen(PS.time-xpos-3)+xpos+3)/Float(PS.OS), PS.y(ray,xpos+3:*), COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray), /NOALLOC)
       END
    END
+
+   Handle_Value, _PS, PS, /NO_COPY, /SET
 END
