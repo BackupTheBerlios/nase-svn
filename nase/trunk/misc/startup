@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.16  1999/03/14 11:21:16  saam
+;             corrected idl3/4-incompatible structure reference
+;
 ;       Revision 1.15  1999/03/11 17:32:06  kupper
 ;       Showlogo hat jetzt das SECS Keyword.
 ;
@@ -46,9 +49,9 @@
 ;-
 
 ;; ----------- Show Logo on startup? ----------------------
+tmp = fstat(-1)
 WillShowLogo = (GetEnv("NASELOGO") ne "FALSE") $
-		   AND ( $
-			fstat(-1)).interactive $
+		   AND tmp.interactive $
 			OR (GetEnv("NASELOGO") eq "TRUE" $
 			)
 ;; --------------------------------------------------------
