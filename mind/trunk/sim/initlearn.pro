@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/26 10:02:26  alshaikh
+;           bugfix
+;
 ;     Revision 1.5  2000/01/26 09:58:24  alshaikh
 ;           + now initlearn is only called ONCE by sim
 ;           + allows multiple SHOWWEIGHTS-sheets
@@ -112,7 +115,7 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
   FOR LLoop=0, MaxWin-1 DO BEGIN   ; Layer-Loop
   
      Handle_Value, _LS(LLoop), LS, /NO_COPY
-     TestInfor,LS,'LEARN'
+     TestInfo,LS,'LEARN'
   
       
             
