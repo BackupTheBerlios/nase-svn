@@ -41,46 +41,6 @@
 ;
 ;-
 
-;;; look in ../doc/header.pro for explanations and syntax,
-;;; or view the NASE Standards Document
-;-------------------------------------------------------------
-;+
-; NAME:
-;       ARCS
-; PURPOSE:
-;       Plot specified arcs or circles on the current plot device.
-; CATEGORY:
-; CALLING SEQUENCE:
-;       arcs, r, a1, a2, [x0, y0]
-; INPUTS:
-;       r = radii of arcs to draw (data units).                  in
-;       [a1] = Start angle of arc (deg CCW from X axis, def=0).  in
-;       [a2] = End angle of arc (deg CCW from X axis, def=360).  in
-;       [x0, y0] = optional arc center (def=0,0).                in
-; KEYWORD PARAMETERS:
-;       Keywords:
-;         /DEVICE means use device coordinates .
-;         /DATA means use data coordinates (default).
-;         /NORM means use normalized coordinates.
-;         COLOR=c  plot color (scalar or array).
-;         LINESTYLE=l  linestyle (scalar or array).
-; OUTPUTS:
-; COMMON BLOCKS:
-; NOTES:
-;       Note: all parameters may be scalars or arrays.
-; MODIFICATION HISTORY:
-;       Written by R. Sterner, 12 July, 1988.
-;       Johns Hopkins University Applied Physics Laboratory.
-;       RES 15 Sep, 1989 --- converted to SUN.
-;       R. Sterner, 17 Jun, 1992 --- added coordinate systems, cleaned up.
-;
-; Copyright (C) 1988, Johns Hopkins University/Applied Physics Laboratory
-; This software may be used, copied, or redistributed as long as it is not
-; sold and this copyright notice is reproduced on each copy made.  This
-; routine is provided as is without any express or implied warranties
-; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
-;-
-;-------------------------------------------------------------
  
 
 ; NAME:
