@@ -5,7 +5,9 @@
 ;
 ; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gaussverteilung mit Maximum 1.
 ;
-; CATEGORY: Allgemein, Kohonen, X-Zellen, Basic
+; CATEGORY:
+;  Array
+;  Math
 ;
 ; CALLING SEQUENCE: 
 ;   Array = Gauss_2D ( {
@@ -170,6 +172,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.26  2001/01/23 16:16:06  kupper
+;        Replaced manual check for floating underflow errors by call to new
+;        IgnoreUnderflows procedure (which is platform independent).
+;
 ;        Revision 1.25  2000/09/27 15:59:32  saam
 ;        service commit fixing several doc header violations
 ;
@@ -346,7 +352,7 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
       Endif
 
       ;; Ignore any floating underflows:
-      IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+      IgnoreUnderflows
       
       return, ERG
 
@@ -363,7 +369,7 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
                                  )
 
      ;; Ignore any floating underflows:
-     IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+     IgnoreUnderflows
      
      return, ERG
   endif
@@ -396,7 +402,7 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
   Endif
 
   ;; Ignore any floating underflows:
-  IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+  IgnoreUnderflows
 
   return, ERG          
 end

@@ -18,7 +18,12 @@
 ;                      dies ist hier nicht mehr notwendig
 ;          Nachteil: - grosser Speicherbedarf fuer viele aktive Elemente
 ;
-; CATEGORY: MISCELLANEOUS / ARRAY OPERATIONS
+; CATEGORY:
+;  Array
+;  DataStorage
+;  DataStructures
+;  NASE
+;  Simulation
 ;
 ; CALLING SEQUENCE: sparse = Spassmacher(array [,TYPE=type][,/DIMENSIONS])
 ;
@@ -64,6 +69,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2001/01/23 16:16:06  kupper
+;        Replaced manual check for floating underflow errors by call to new
+;        IgnoreUnderflows procedure (which is platform independent).
+;
 ;        Revision 1.4  2000/09/25 09:12:55  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -117,7 +126,7 @@ FUNCTION Spassmacher, a, DIMENSIONS=dimensions, TYPE=type
   
    
    ;; Ignore any floating underflows:
-   IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+   IgnoreUnderflows
 
    RETURN, sparse
 
