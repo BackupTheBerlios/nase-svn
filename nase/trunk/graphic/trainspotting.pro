@@ -22,9 +22,10 @@
 ;* Trainspotting, nt [,XRANGE=xrange] [,YRANGE=yrange]
 ;*                   [,TITLE=...] [,XTITLE=...] [,YTITLE=...]
 ;*                   [,WIN=...], [CHARSIZE=...]
-;*                   [,LEVEL=level] [,OFFSET=offset]
+;*                   [,LEVEL=...] [,OFFSET=...]
 ;*                   [,XSYMBOLSIZE=...] [YSYMBOLSIZE=...]
 ;*                   [,OVERSAMPLING=...]
+;*                   [,/MUA [,MCOLOR=...]]
 ;*                   [,/CLEAN] [,/SPASS] [,/OVERPLOT]
 ;
 ; INPUTS: 
@@ -72,8 +73,13 @@
 ;                     
 ;
 ; INPUT KEYWORDS: 
-;    CLEAN:: unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
-;            (fuer Weiterbearbeitungen mit anderen Programmen)
+;    CLEAN :: unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
+;             (fuer Weiterbearbeitungen mit anderen Programmen)
+;    MCOLOR:: color index used for the <*>/MUA</*> option (default is red)
+;    MUA  :: Shades the plot with the time-resolved total spike
+;            activity scaled using the already existing ordinate. This
+;            cannot be done in advance (e.g. before the call of
+;            <C>Trainspotting</C> because the coordinate doesn't yet exist.)
 ;    SPASS:: Gibt an, ob das übergebene nt-Array als Sparse interpretiert werden
 ;           soll. Dazu muß das Sparse-Array allerdings Infromation über die
 ;           Dimension enthalten. Siehe dazu /DIMENSIONS - Keyword in 
@@ -117,7 +123,9 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
                    XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
                    OverSampling=OverSampling, $
                    XTITLE=xtitle, SPASS=spass, $
-                   XRANGE=xrange, YRANGE=yrange, _EXTRA=_extra
+                   XRANGE=xrange, YRANGE=yrange, $
+                   MUA=mua, MCOLOR=mcolor ,$
+                   _EXTRA=_extra
 
 ;---------------> check syntax
    IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
@@ -203,6 +211,15 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
              _EXTRA=_extra
        ENDELSE 
    END
+
+
+
+;----------------> plot shaded mua 
+   IF Keyword_Set(MUA) THEN BEGIN
+       Default, MCOLOR, RGB(200,0,0)
+       Polyfill, [0,LIndgen((SIZE(nt))(2)), (SIZE(nt))(2),0], [0,TOTAL(nt,1), 0, 0], COLOR=mcolor
+   END
+
 
 
 ;----------------> define UserSymbol: filled square
