@@ -87,6 +87,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Aug 5 17:50:20 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		TRUNCATE, TRUNC_VALUE zugefügt.
+;
 ;       Mon Aug 4 01:01:40 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -103,10 +108,8 @@
 
 Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
-                                    ALL=all, LWX=lwx, LWY=lwy
+                                    ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
     
-   if V_Matrix.Delays(0) eq -1 then message, 'Die übergebene Delay-Weight-Struktur enthält gar keine Delays!'
-
    s = size(Delay)
 
     if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
@@ -123,10 +126,11 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if keyword_set(ALL) then begin
           Default, LWX, V_Matrix.source_w/V_Matrix.target_w
           Default, LWY, V_Matrix.source_h/V_Matrix.target_h
-          Delay = Shift(Delay, -LWY*t_row, -LWX*t_col)
-          for x=0, V_Matrix.target_w-1 do begin
-             for y=0, v_Matrix.target_h-1 do begin
-                V_Matrix.Delays(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Delay, LWY*y, LWX*x)
+;          Delay = Shift(Delay, -LWY*t_row, -LWX*t_col)
+          for x=-t_col, V_Matrix.target_w-1-t_col do begin
+             for y=-t_row, v_Matrix.target_h-1-t_row do begin
+                if keyword_set(TRUNCATE) then V_Matrix.Delays(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=NoRot_Shift(Delay, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
+                   else V_Matrix.Delays(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Delay, LWY*y, LWX*x)
              endfor
           endfor
        end else V_Matrix.Delays(t_index, *) = Delay 
@@ -147,10 +151,11 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if keyword_set(ALL) then begin
           Default, LWX, V_Matrix.target_w/V_Matrix.source_w
           Default, LWY, V_Matrix.target_h/V_Matrix.source_h
-          Delay = Shift(Delay, -LWY*s_row, -LWX*s_col)
-          for x=0, V_Matrix.source_w-1 do begin
-             for y=0, v_Matrix.source_h-1 do begin
-                V_Matrix.Delays(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Delay, LWY*y, LWX*x)
+;          Delay = Shift(Delay, -LWY*s_row, -LWX*s_col)
+          for x=-s_col, V_Matrix.source_w-1-s_col do begin
+             for y=-s_row, v_Matrix.source_h-1-s_row do begin
+                if Keyword_set(TRUNCATE) then V_Matrix.Delays(*, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=NoRot_Shift(Delay, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
+                else V_Matrix.Delays(*, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Delay, LWY*y, LWX*x)
              endfor
           endfor
        end else V_Matrix.Delays(*, s_index) = Delay
@@ -169,4 +174,3 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
    end
 
 end   
-
