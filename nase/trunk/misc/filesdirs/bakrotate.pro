@@ -1,72 +1,73 @@
 ;+
-; NAME:               BakRotate
+; NAME:
+;   BakRotate
 ;
-; AIM:                creates, rotates and compresses backup files
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:            Realisiert ein einfaches Backupsystem fuer Files.
-;                     Das Prinzip ist das einer Queue. Alte Backups werden
-;                     nach hinten geschoben. Wird die maximale Anzahl ueber-
-;                     schritten, wird das aelteste Backup geloescht. Die
-;                     Backups werden automatisch gezippt. Die Backups erhalten
-;                     eine laufende Nummer (0: neuestes Backup)
+; AIM:
+;   creates, rotates and compresses backup files
+;
+; PURPOSE:
+;   Implements a simple backup system for files. It keeps a fixed
+;   number of backups in compressed form. All Versions
+;   are assigned a running number, where a higher number indicates an
+;   older version. Too old backups will be erased. The most recent
+;   backup is not compressed. For Windows, compression is disables.
 ;                     
-; CATEGORY:           CONTROL FILES DIRS
+; CATEGORY:
+;  DataStorage
+;  Files
+;  IO
 ; 
-; CALLING SEQUENCE:   BakRotate, files [,NUMBER=number] [,/NOCOMPRESS] [,INFIX=infix]
+; CALLING SEQUENCE:
+;*  BakRotate, files [,NUMBER=number] [,/NOCOMPRESS] [,INFIX=infix]
 ;
-; INPUTS:             files: ein (Array von) Filename, fuer das ein Backup erstellt
-;                            werden soll.
+; INPUTS:
+;   files :: a scalar or and array of filenames, that should be backed
+;            up
 ;
-; KEYWORD PARAMETERS: NUMBER    : maximale Zahl von Backups fuer ein File (Default: 5)
-;                     NOCOMPRESS: Backups werden nicht gezippt
-;                     INFIX     : Backups erhalten laufende Nummern, die durch
-;                                 INFIX vom Filename getrennt sind (Default: '.')
+; INPUT KEYWORDS:
+;   NUMBER     :: maximal number of backups for a given file (Default: 5)
+;   NOCOMPRESS :: backups (except) will not be compressed (Default for
+;                 Windows)
+;   INFIX      :: backups get filenames with a running number. This a
+;                 by default separated by a ".". The separator may be
+;                 changed with this keyword.
 ;
+; EXAMPLE:
 ;
-; EXAMPLE:            $touch test
-;                     BakRotate, 'test'
-;                     $ls
-;                     ;test.0 
-;                     $touch test
-;                     BakRotate, 'test'
-;                     ;test.0     test.1.gz 
-;            
-;                     usw.
+;*  $touch test
+;*  BakRotate, 'test'
+;*  $ls
+;*  ;test.0 
+;*  $touch test
+;*  BakRotate, 'test'
+;*  ;test.0     test.1.gz 
+;*            
+;*  ...
+;*
+;*  $touch test
+;*  BakRotate, 'test'
+;*  $ls
+;*  ;test.0     test.2.gz  test.4.gz
+;*  ;test.1.gz  test.3.gz 
 ;
-;                     $touch test
-;                     BakRotate, 'test'
-;                     $ls
-;                     ;test.0     test.2.gz  test.4.gz
-;                     ;test.1.gz  test.3.gz 
 ;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.3  2000/09/27 15:59:33  saam
-;     service commit fixing several doc header violations
-;
-;     Revision 1.2  2000/09/25 09:13:02  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  1999/02/22 11:14:37  saam
-;           new & cool
-;
 PRO BakRotate, files, NUMBER=number, NOCOMPRESS=nocompress, INFIX=infix
 
+
+
    Default, NUMBER    , 5
-   Default, NOCOMPRESS, 0 
-   Default, INFIX     , '.'
+   IF (fix(!VERSION.Release) GE 4) AND (!VERSION.OS_FAMILY eq "Windows") THEN NOCOMPRESS=1 ELSE Default, NOCOMPRESS, 0 
+   Default, INFIX, '.'
    
    ZIPSUFFIX = 'gz'
 
-   mv   = Command('mv')
-   rm   = Command('rm')
    gzip = Command('gzip')
 
-   IF N_Params() NE 1 THEN Message, 'at least on filename expected'
-   IF TypeOf(files) NE 'STRING' THEN Message, 'filename expected'
+   Assert, N_Params() EQ 1, 'at least on filename expected'
+   Assert, TypeOf(files) EQ 'STRING', 'filename expected'
    
    nf = N_Elements(files)
 
@@ -103,15 +104,15 @@ PRO BakRotate, files, NUMBER=number, NOCOMPRESS=nocompress, INFIX=infix
             IF zipped THEN nbakfile = nbakfile+INFIX+ZIPSUFFIX
 
             IF version LT NUMBER THEN BEGIN
-               spawn, mv+' '+bakfiles(i)+' '+nbakfile
+               FileMove, bakfiles(i), nbakfile
                IF (NOT NOCOMPRESS) AND (NOT zipped) THEN spawn, gzip+' '+nbakfile 
-            END ELSE spawn, rm+' '+bakfiles(i)
+            END ELSE spawn, FileDel, bakfiles(i)
 
          END
          ; backup lastest file
-         spawn, mv+' '+files(k)+' '+files(k)+'.0'
+         FileMove, files(k), files(k)+INFIX+'0'
          
-      END ELSE Message, /INFO, 'Warning: File "'+Str(files(i))+'" not existent'
+      END
    END
 
 
