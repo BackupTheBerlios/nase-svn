@@ -2,6 +2,9 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.7  2001/07/17 12:43:55  kupper
+#         now including export.h from $(IDL_DIR)/external, to alwys get the right version!
+#
 #         Revision 1.6  2000/08/31 08:56:29  saam
 #               OSF needs c++ and not cc as c++ compiler
 #
@@ -49,13 +52,13 @@ all :
 			"CC=cc" \
 			"CXX=c++" \
 			"C_LD=ld" \
-			"CFLAGS=-DOSF1" \
+			"CFLAGS=-DOSF1 -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-S -shared" ;; \
 	   "Linux" ) make libs \
 			"CC=cc" \
-			"CXX=cc" \
+			"CXX=c++" \
 			"C_LD=ld" \
-			"CFLAGS=-fPIC -shared" \
+			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-shared" ;; \
 	   *) echo "This system is not supported" ;; \
        esac
