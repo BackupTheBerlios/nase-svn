@@ -37,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  1998/03/06 11:35:10  kupper
+;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
+;                wenn beim Aufruf kein Fenster geöffnet war.
+;
 ;        Revision 1.4  1998/03/03 14:44:20  kupper
 ;               RFScan_Schaumal ist jetzt viel schneller, weil es
 ;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
@@ -91,7 +95,7 @@ Function RFScan_Return, RFS, FILENAME=filename
          Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), color=RGB('orange', /NOALLOC)      
          !P = ActP
 
-         WSet, ActWin
+         If ActWin ne -1 then WSet, ActWin
       EndIf
       ;;--------------------------------
    EndIf

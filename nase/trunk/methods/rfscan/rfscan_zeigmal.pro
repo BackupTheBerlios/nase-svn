@@ -31,6 +31,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  1998/03/06 11:35:10  kupper
+;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
+;                wenn beim Aufruf kein Fenster geöffnet war.
+;
 ;        Revision 1.4  1998/03/03 14:44:21  kupper
 ;               RFScan_Schaumal ist jetzt viel schneller, weil es
 ;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
@@ -60,7 +64,7 @@ Function ReturnPic, RFS
       WSet, RFS.WinIn
       NASETV, ShowWeights_Scale(RFS.Picture, COLORMODE=RFS.ColorMode), ZOOM=RFS.VISUALIZE(0)
 
-      WSet, ActWin
+      If ActWin ne -1 then WSet, ActWin
    EndIf
    Return, RFS.Picture
 End
