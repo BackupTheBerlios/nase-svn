@@ -10,6 +10,10 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.7  2000/09/25 14:13:59  saam
+%       updated the doc header
+%       appendend short description of console
+%
 %       Revision 1.6  2000/09/22 18:32:03  saam
 %             added some todos
 %
@@ -41,7 +45,7 @@
 \usepackage{showkeys}                          % prints label, ref, cite and bib keys
 \usepackage{draftcopy}                         % displays draft in background of page (ps only!)
 \usepackage{changebar}                         % changebars at margin via \cbstart ... \cbend (ps only!)
-
+\usepackage{verbatim}
 
 % References & Citations
 \usepackage{lastpage}                          % access last page by \pageref{LastPage}
@@ -108,8 +112,16 @@
 
 
 \begin{document}
-
-{\Huge\textbf{N.A.S.E. / M.I.N.D. Standards}}
+\begin{titlepage}
+\begin{center}
+{\Huge\textbf{N.A.S.E. / M.I.N.D. Standards}\\[2cm]}
+Version: \$Id$ $\$ 
+\end{center}
+\vfill
+\tableofcontents
+\vfill
+\vfill
+\end{titlepage}
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -124,18 +136,14 @@
 
 \subsection{Documentation Header}
 A current version of the documentation header can always be found in the main directory of nase call \texttt{header.txt}.
-\begin{verbatim}
 
-\end{verbatim}
+\verbatiminput{../../header2.pro}
 
-\begin{itemize}
-\item Hyperlinks.
-\item Syntax of Calling Sequence
-\item What is forbidden in the Docheader
-\end{itemize}
 
 \subsection{CVS Logs}
-
+\begin{itemize}
+\item Please produce a log message, that other people are able to understand what you have changed. Expressions like \texttt{small bug fix} are not accaptable (what was the bug? how was it fixed?).  
+\end{itemize}
 
 
 
@@ -179,7 +187,7 @@ Console, 'what happened' [,/MSG | ,/INFO]
 \end{verbatim}
 With this policy the user can decide if he/she actually wants to see all this stuff by changing the console properties.
 %
-\item Fatal errors should stop the routine at the position of the calling program segment. You may implement a fallback, that the calling function may use to handle the error. Thi should look like:
+\item Fatal errors should stop the routine at the position of the calling program segment. You may implement a fallback, that the calling function may use to handle the error. This should look like:
 \begin{verbatim}
 PRO RoutineGeneratingError, ERROR=error
 On_Error, 2
@@ -193,8 +201,12 @@ IF Keyword_Set(ERROR) THEN BEGIN
 END
 \end{verbatim}
 %
-\item Console
-%
+\item The console provides a unified message-mechanism for all
+  NASE/MIND routines. The commonly used methods like \texttt{print} and
+  \texttt{message} have the disadvantage, that you can't supress these
+  logs. Console provides messaging using different importance levels
+  (e.g., message, warning, fatal) and the user can decide what level
+  to ignore, which to log and when the execution has to be stopped.
 \end{itemize}
 \subsection{Syntax Checking}
 \begin{itemize}
