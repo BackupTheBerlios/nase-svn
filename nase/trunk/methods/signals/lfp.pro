@@ -9,16 +9,19 @@
 ;
 ; CATEGORY:            STAT SIGNAL
 ;
-; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } )
+; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] )
 ;
 ; INPUTS:              mt      : 3d-Array, das den Zeitverlauf der Membranpotentiale 
 ;                                enthaelt. Die Dimensionen sind (HOEHE, BREITE, ZEIT).
 ;                      recSites: ein Liste von Ableitorten der Form [[x1,y1],[x2,y2],..]
 ;
-; KEYWORD PARAMETERS:  CONST:  konstante Gewichtung (=1) aller Membranpotentiale
+; KEYWORD PARAMETERS:  CONST : konstante Gewichtung (=1) aller Membranpotentiale
 ;                              mit maximaler Distanz const vom jeweiligen Ableitort.
 ;                      HMW_X2: quadratisch abfallende Gewichtung der Potentiale
 ;                              mit einer Halbwertsbreite von hmw_x2.
+;                      ROI   : nach Aufruf von LFP enthaelt ROI die verwendeten Masken
+;                              fuer die Gewichtung der LFP's. Dimension (SIGNAL_NR,HOEHE,BREITE)
+;                       
 ; OUTPUTS:             LFPS  : Array das die LFP-Signale fuer die Ableitorte enthaelt.
 ;                              Dimension: (ABLEITINDEX, ZEIT)
 ;
@@ -31,12 +34,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/03/04 09:34:59  saam
+;           new keyword ROI
+;
 ;     Revision 1.1  1998/03/03 19:03:14  saam
 ;           a birth
 ;
 ;
 ;-
-FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2
+FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
 
    Default, radius, 5
 
@@ -70,15 +76,12 @@ FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2
          tmpArr = 1./(1.+tmpArr)
          ROI(i,*,*) = tmpArr/MAX(tmpArr)
       ENDIF ELSE Message, 'unknown integration method or no method specified'
-      help, roi(i,*,*)
-      utvscl, REFORM(ROI(i,*,*)), STRETCH=20
-      dummy = get_kbrd(1)
    ENDFOR
    
    ; -----> INTEGRATE REGIONS FOR EACH TIMESTEP
    print, 'LFP: integrating potentials for '+STRCOMPRESS(listS(1),/REMOVE_ALL)+' recording site(s)'
    print, '   '
-   FOR t=0, maxT-1 DO BEGIN
+   FOR t=0l, maxT-1 DO BEGIN
       FOR i=0, maxROI-1 DO BEGIN
          roiSigs(i, t) = TOTAL( REFORM(mt(*,*,t))*REFORM(ROI(i,*,*)) )
       ENDFOR
