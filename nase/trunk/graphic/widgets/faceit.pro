@@ -131,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.16  2000/03/31 17:14:50  kupper
+;        Fixed small bug in comparison.
+;
 ;        Revision 1.15  2000/03/31 12:15:36  kupper
 ;        FaceIt_NewUserBase()es are now realized automatically.
 ;        Fixed passing of /FLOATING keyword to FaceIt_NewUserBase().
@@ -711,7 +714,7 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
       ;; turn off display
       FaceIt_Set_Display, userstruct, 0
       ;; permanently freeze some widgets if requested:
-      If n_elements((*userstruct.batchptr).freeze) ne 0 then $
+      If (*userstruct.batchptr).freeze[0] ne 0 then $
          for i=1, n_elements((*userstruct.batchptr).freeze) do $
           Widget_Control, (*userstruct.batchptr).freeze[i-1], Sensitive=0
    Endif else begin
