@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.3  1999/08/05 14:21:14  thiel
+;           Changed maximal length for integer-queue from 15 to 14.
+;
 ;       Revision 1.2  1997/12/02 10:40:22  saam
 ;             Fehler in Hyperlinks korrigiert
 ;
@@ -55,7 +58,7 @@ FUNCTION InitBasicSpikeQueue, INIT_DELAYS=init_delays
 
    IF MAX(init_delays) GT 30 THEN Message, 'maximal delay is 30'
 
-   IF MAX(init_delays) LE 15 THEN BEGIN
+   IF MAX(init_delays) LE 14 THEN BEGIN
       Queue={Q     : intarr(n_elements(init_delays)), $
              starts: 2^round(init_delays)}
    END ELSE BEGIN
