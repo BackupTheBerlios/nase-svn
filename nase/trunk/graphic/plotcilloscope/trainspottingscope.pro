@@ -6,7 +6,7 @@
 ;                    die Funktionalitaet von <A HREF=/nase/graphic/#TRAINSPOTTING>Trainspotting</A>
 ;                    und dem <A HREF=/nase/graphic/plotcilloscope/#PLOTCILLOSCOPE>Plotcilloscope</A>.                     
 ;
-; CATEGORY:          GRAPHICS PLOTCILLOSCOPE
+; CATEGORY:          GRAPHICS / PLOTCILLOSCOPE
 ;
 ; CALLING SEQUENCE:  TrainspottingScope, TSC, O
 ;
@@ -14,8 +14,8 @@
 ;                    O  : der Output einer Neuronengruppe als Handle auf SSpass-Format
 ;
 ; EXAMPLE:               
-;                    LP = InitPara1()
-;                    L = InitLayer(5,5,TYPE=LP)                   
+;                    LP = InitPara1(SPIKENOISE=100)
+;                    L = InitLayer(WIDTH=5,HEIGHT=5,TYPE=LP)                   
 ;                    TSC = InitTrainspottingScope(NEURONS=5*5)
 ;                    FOR ....
 ;                         ProceedLayer, L
@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.6  1999/03/08 12:54:26  thiel
+;            Bugfix bei der OVERSAMPLING-BIN-Umrechnung.
+;
 ;     Revision 2.5  1998/11/09 15:14:55  saam
 ;           passing of extra-arguments was corrupted
 ;
@@ -57,16 +60,15 @@ PRO TrainspottingScope, _SR, _y
       UserSym, [-xsc, xsc, xsc, -xsc, -xsc], [-ysc,-ysc,ysc,ysc,-ysc], FILL=SR.Fill
       
       neuronC = LIndGen(SR.neurons)
-      vertLine = Make_Array(SR.neurons, VALUE=SR.t)
+      vertLine = Make_Array(SR.neurons, VALUE=SR.t/SR.os)
 
       PlotS, vertLine(0:y(0)-1), y(2:y(0)+1), PSYM=8, SYMSIZE=1.0
    END
    SR.t = SR.t + 1
 
-   IF (SR.T MOD SR.TIME) EQ 0 THEN BEGIN
-      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[-1+SR.T,SR.T+SR.time/SR.os+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=SR._extra
+   IF (SR.T MOD SR.TIME/SR.OS) EQ 0 THEN BEGIN
+      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[-1+SR.T/SR.os,(SR.T+SR.time)/SR.os+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=SR._extra
    END
-
 
    Handle_Value, _SR, SR, /NO_COPY, /SET
       

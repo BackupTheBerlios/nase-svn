@@ -4,14 +4,14 @@
 ; PURPOSE:            Initialisiert ein TrainspottingScope
 ;                     (siehe <A HREF="#TRAINSPOTTINGSCOPE">TrainspottingScope</A>)
 ;
-; CATEGORY:           GRAPHIC PLOTCILLOSCOPE
+; CATEGORY:           GRAPHICS / PLOTCILLOSCOPE
 ;
 ; CALLING SEQUENCE:   TSC = InitTrainspottingScope(NEURONS=neurons [,TIME=time] 
 ;                            [,OVERSAMPLING=oversampling]
 ;                            [-other-Plot-Keywords-] 
 ;
 ; KEYWORD PARAMETERS: NEURONS      : Anzahl der darzustellenden Neurone
-;                     TIME         : die Laenge der dargestellten Zeitachse (Def.:500)
+;                     TIME         : die Laenge der dargestellten Zeitachse in ms (Def.:500)
 ;                     OVERSAMPLING : korrekte Umrechnung von BIN in ms bei
 ;                                    ueberabtastenden Neuronen
 ;
@@ -22,8 +22,8 @@
 ; OUTPUTS:            TSC : ein Struktur zum Benutzen mit TrainspottingScope (HANDLE!)
 ;
 ; EXAMPLE:
-;                    LP = InitPara1()
-;                    L = InitLayer(5,5,TYPE=LP)                   
+;                    LP = InitPara1(SPIKENOISE=100)
+;                    L = InitLayer(WIDTH=5,HEIGHT=5,TYPE=LP)                   
 ;                    TSC = InitTrainspottingScope(NEURONS=5*5)
 ;                    FOR ....
 ;                         ProceedLayer, L
@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1999/03/08 12:54:26  thiel
+;            Bugfix bei der OVERSAMPLING-BIN-Umrechnung.
+;
 ;     Revision 2.3  1998/11/09 15:14:54  saam
 ;           passing of extra-arguments was corrupted
 ;
@@ -96,7 +99,7 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
    PS = { info   : 'SPIKERASTER'  ,$
           neurons: neurons        ,$
           t      : 0l             ,$
-          time   : LONG(time)     ,$
+          time   : LONG(time*oversampling)     ,$
           os     : oversampling   ,$
           xsc    : xsizechar/2.   ,$
           ysc    : ysizechar/2.   ,$
