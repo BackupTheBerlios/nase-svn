@@ -96,6 +96,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.16  1998/05/20 14:17:39  kupper
+;              SPACE=0 hinzugefügt.
+;
 ;       Revision 2.15  1998/05/19 14:19:59  kupper
 ;              BASE_[XY]SIZE hinzugefügt.
 ;
@@ -222,7 +225,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                       XOFFSET=xpos, YOFFSET=ypos, $
                       X_SCROLL_SIZE=BASE_XSIZE, Y_SCROLL_SIZE=BASE_YSIZE, $
                       COLUMN=basecolumn, ROW=baserow, $
-                      XPAD=0, YPAD=0, $
+                      XPAD=0, YPAD=0, SPACE=0, $
                       /TLB_SIZE_EVENTS, MAP=1-PIXMAP, UVALUE={info          : 'ScrollIt_Base', $
                                                               deliver_events: [deliver_events], $
                                                               winrows       : winrows, $
@@ -233,7 +236,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    count = 0
 
    For i=1, countmajor do begin
-      SubBase = Widget_Base(Base, COLUMN=subcolumn, ROW=subrow, XPAD=0, YPAD=0, FRAME=0)
+      SubBase = Widget_Base(Base, COLUMN=subcolumn, ROW=subrow, XPAD=0, YPAD=0, SPACE=0, FRAME=0)
       For j=1, countminor do begin
          If count lt multi(0) then begin
             Draws(count) = Widget_Draw(SubBase, $
