@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.9  1998/05/21 17:57:37  kupper
+;               ...noch immer...
+;
 ;        Revision 2.8  1998/05/21 17:34:03  kupper
 ;               Test wegen PS-Bug.
 ;
@@ -126,10 +129,10 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          If !D.NAME eq "PS" then begin
             If not Keyword_Set(PRINTSTYLE) then begin
-              tvlct, GET_MAXCOL-g, GET_MAXCOL-g, GET_MAXCOL-g
-               !REVERTPSCOLORS = 0
+              utvlct, GET_MAXCOL-g, GET_MAXCOL-g, GET_MAXCOL-g
+               !REVERTPSCOLORS = 1
             endif else begin
-               tvlct, g, g, g
+               utvlct, g, g, g
                !REVERTPSCOLORS = 1
             endelse
          endif else utvlct, g, g, g ;Grauwerte
