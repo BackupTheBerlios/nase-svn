@@ -25,7 +25,7 @@
 ;  Statistics
 ;
 ; CALLING SEQUENCE:
-;* y = FZT(x [, direction] [, CLIPIND = ...)
+;* y = FZT(x [, direction] [, /OVERWRITE] [, CLIPIND = ...)
 ;
 ; INPUTS:
 ;  x::  Any integer or float scalar or array containing the value(s) to be transformed.
