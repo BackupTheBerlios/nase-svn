@@ -28,6 +28,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.3  1998/01/21 21:44:08  saam
+;             korrekte Behandlung der DGL durch Keyword CORRECT
+;             in InputLayer_?
+;
 ;       Revision 1.2  1998/01/14 20:21:42  saam
 ;             Die Potentiale koennen nun zufaellig
 ;             vorbelegt werden
@@ -52,8 +56,12 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             di   : exp(-1./taui)  ,$
+            tauf : FLOAT(tauf)    ,$
+            taul : FLOAT(taul)    ,$
+            taui : FLOAT(taui)    ,$
             vs   : vs             ,$
             ds   : exp(-1./taus)  ,$
+            taus : FLOAT(taus)    ,$
             th0  : th0            ,$
             sigma: sigma          ,$
             ns   : noisystart*th0 }

@@ -18,6 +18,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.6  1998/01/21 21:44:10  saam
+;             korrekte Behandlung der DGL durch Keyword CORRECT
+;             in InputLayer_?
+;
 ;       Revision 1.5  1997/10/14 16:31:39  kupper
 ;              Schöpfung, durch Übernahme von initlayer_1
 ;
@@ -32,21 +36,23 @@
 
 FUNCTION InitLayer_2, WIDTH=width, HEIGHT=height, TYPE=type
 
+   COMMON Random_Seed, seed
+
    IF (NOT Keyword_Set(width))  THEN Message, 'Keyword WIDTH expected'
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
    handle = Handle_Create(VALUE=[0, width*height])
 
-   Layer = { info   : 'LAYER', $
-             Type   : '2'                  , $
+   Layer = { info   : 'LAYER'              ,$
+             Type   : '2'                  ,$
              w      : width                ,$
              h      : height               ,$
              para   : type                 ,$
              decr   : 1                    ,$ ;decides if potentials are to be decremented or not
-             F      : DblArr(width*height) ,$
-             L      : DblArr(width*height) ,$
-             I      : DblArr(width*height) ,$
+             F      : type.ns*Double(RandomU(seed,width*height)) ,$
+             L      : type.ns*Double(RandomU(seed,width*height)) ,$
+             I      : type.ns*Double(RandomU(seed,width*height)) ,$
              M      : DblArr(width*height) ,$
              S      : DblArr(width*height) ,$
              R      : DblArr(width*height) ,$

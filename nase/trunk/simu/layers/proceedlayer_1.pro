@@ -24,6 +24,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  1998/01/21 21:44:09  saam
+;             korrekte Behandlung der DGL durch Keyword CORRECT
+;             in InputLayer_?
+;
 ;       Revision 1.6  1997/09/19 16:35:26  thiel
 ;              Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
 ;                                        von vector2spass nach Spassmacher
@@ -46,7 +50,7 @@
 ;                       LinkingIn und InhibitionIn sind jetzt
 ;                       optional. Rüdiger, 22. August '97
 ;- 
-PRO ProceedLayer_1, Layer
+PRO ProceedLayer_1, Layer, CORRECT=correct
 COMMON common_random, seed
 
 
@@ -60,7 +64,11 @@ COMMON common_random, seed
    Handle_Value, Layer.O, oldOut
    IF oldOut(0) GT 0 THEN BEGIN
       oldOut = oldOut(2:oldOut(0)+1)
-      Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs
+      IF Keyword_Set(CORRECT) THEN BEGIN
+         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs/Layer.para.taus
+      END ELSE BEGIN
+         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs
+      END
    END
 
    

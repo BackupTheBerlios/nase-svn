@@ -24,6 +24,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.6  1998/01/21 21:44:11  saam
+;             korrekte Behandlung der DGL durch Keyword CORRECT
+;             in InputLayer_?
+;
 ;       Revision 1.5  1997/10/14 16:33:11  kupper
 ;              Sparse-Version durch Übernahme vom schon sparsen proceedlayer_1
 ;     
@@ -36,28 +40,33 @@
 ;                       Random-Commonblock zugefügt, Rüdiger, 5.Sept 97
 ;
 ;- 
-PRO ProceedLayer_2, Layer
+PRO ProceedLayer_2, Layer, CORRECT=correct
 common common_random, seed
 
    IF Layer.decr THEN BEGIN
-   Layer.F = Layer.F * Layer.para.df
-   Layer.L = Layer.L * Layer.para.dl
-   Layer.I = Layer.I * Layer.para.di
-   Layer.R = Layer.R * Layer.para.dr
-   Layer.S = Layer.S * Layer.para.ds
+      Layer.F = Layer.F * Layer.para.df
+      Layer.L = Layer.L * Layer.para.dl
+      Layer.I = Layer.I * Layer.para.di
+      Layer.R = Layer.R * Layer.para.dr
+      Layer.S = Layer.S * Layer.para.ds
    END
    
    Handle_Value, Layer.O, oldOut
    IF oldOut(0) GT 0 THEN BEGIN
       oldOut = oldOut(2:oldOut(0)+1)
-   Layer.R(oldOut) = Layer.R(oldOut) + Layer.para.vr
-   Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs
+      IF Keyword_Set(CORRECT) THEN BEGIN
+         Layer.R(oldOut) = Layer.R(oldOut) + Layer.para.vr/Layer.para.taur
+         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs/Layer.para.taus
+      END ELSE BEGIN
+         Layer.R(oldOut) = Layer.R(oldOut) + Layer.para.vr
+         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs
+      END
    END
-
+   
    Layer.M = Layer.F*(1.+Layer.L)-Layer.I
-
+   
    IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
-
+   
 
    result  = WHERE(Layer.M GE (Layer.R + Layer.S + Layer.Para.th0), count) 
 
