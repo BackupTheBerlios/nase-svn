@@ -32,6 +32,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.2  1997/10/14 15:30:01  kupper
+;              Kosmetische Änderung beim Textoutput.
+;
+;
 ;       Wed Aug 27 17:59:21 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -49,6 +54,6 @@ Pro Rewind, Video, FrameNumber, VERBOSE=verbose
    If keyword_set(VERBOSE) then begin
       print, 'Ah! Eine besonders schöne Szene in "'+Video.title+'": Nummer '+strtrim(string(FrameNumber), 1)
    endif else begin
-      print, 'Video is now at Frame #'+strtrim(string(FrameNumber), 1)+'.'
+      message, /inform, 'Video is now at Frame #'+strtrim(string(FrameNumber), 1)+'.'
    endelse
 End
