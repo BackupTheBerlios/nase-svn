@@ -1,8 +1,11 @@
 ;+
 ; NAME: 
-;  PROCEDURE_NAME or
-;  FUNCTION_NAME()
+;  ProcedureName or
+;  FunctionName()
 ;
+;  A name consisting of several words or keys has to be capitalized 
+;  for each constituent, e.g PlotWithSpecialOptions.
+;  
 ; VERSION:
 ;  $Id$
 ;
@@ -16,38 +19,37 @@
 ;  Put the following category (or categories, specified separate
 ;  lines) here.
 ;
-;*  *Animation
-;*  *Array Creation
-;*  *Array and Image Processing
-;*  -Font Manipulation
-;*  *General Graphics
-;*  *Graphics, Color Table Manipulation
-;*  *Help
-;*  *Image Display
-;*  *Input/Output
-;*  -Mapping
-;*  *Mathematics
-;*  *Operating System Access
-;*  *Plotting, Two-Dimensional and General
-;*  *Plotting, Multi-Dimensional
-;*  *Programming and IDL Control
-;*  +NASE/MIND Startup
-;*  *Signal Processing
-;*  *String Processing
-;*  *Type Conversion
-;*  *Widget and Dialog
-;*  *Widget, Compound
-;*  *Window
+;*  Animation
+;*  Array
+;*  Color
+;*  Font
+;*  Graphic
+;*  Help
+;*  Image
+;*  IO
+;*  Math
+;*  MIND
+;*  NASE 
+;*  Object
+;*  Operating System Access
+;*  Startup
+;*  Signal
+;*  Simulation
+;*  String
+;*  Structure
+;*  Type
+;*  Widget
+;*  Window
 ;
 ; CALLING SEQUENCE:
 ;  Write the calling sequence here. For procedures, use the form
 ;
-;*    PROCEDURE_NAME, in1, in2, out1 [,in3] [,out1] [,/IN4] [,IN5=in5] [,OUT2=out2]
+;*    ProcedureName, in1, in2, out1 [,in3] [,out1] [,/IN4] [,IN5=in5] [,OUT2=out2]
 ;
-;  Note that the routine name is ALL CAPS. Positional arguments are written in lower case,
+;  Positional arguments are written in lower case,
 ;  while all keyword arguments are written in all caps. For functions, use the form
 ; 
-;*    out0 = FUNCTION_NAME(in1, in2, out1 [,in3] [,out2] [,/IN4] [,IN5=in5] [,OUT3=out3])
+;*    out0 = FunctionName(in1, in2, out1 [,in3] [,out2] [,/IN4] [,IN5=in5] [,OUT3=out3])
 ;
 ;  In more complex routines, certain keyword dependencies may arise.
 ;  Use the following compound symbols to improve understanding
@@ -63,34 +65,34 @@
 ; INPUTS:
 ;  positional input arguments necessarily needed to use
 ;  the routine. They are written in lower case.
-;  in1: description for argument in1
-;  in2: description for argument in2
+;  in1:: description for argument in1
+;  in2:: description for argument in2
 ;  
 ; OPTIONAL INPUTS:
 ;  positional input arguments that may be optionally
 ;  passed to the routine. They are writen in lower case.
-;  in3: description for argument in3
+;  in3:: description for argument in3
 ;  
 ; KEYWORD PARAMETERS:
 ;  Optional input keywords are specified her. The are
 ;  noted by all caps. No routine should ever need required keywords!
-;  IN4: description for keyword IN4 
+;  IN4:: description for keyword IN4 
 ;  
 ; OUTPUTS:
 ;  outputs the routine requires to pass to the caller,
 ;  including the function result (here: out0, out1). They
 ;  are noted by lower case.
-;  out0: the doumentation system can of course handle for long descriptions without
-;        any problems, as long as you do not use any colons, except they are 'protected'
-;        by round or curly braces (:) {:} 
-;  out1: description for output out1
+;  out0:: the doumentation system can of course handle for long descriptions without
+;         any problems, as long as you do not use any colons, except they are 'protected'
+;         by round or curly braces (:) {:} 
+;  out1:: description for output out1
 ;  
 ; OPTIONAL OUTPUTS:
 ;  outputs the routine can, but need not pass to the caller,
 ;  without difference for positional or keyword arguments.
 ;  Depending if the outputs are positional or Keyword they are
 ;  written in lower case and all caps, respectively.
-;  out2: description for output out2
+;  out2:: description for output out2
 ;  
 ; COMMON BLOCKS:
 ;  please specify at least the name of the common
@@ -128,7 +130,7 @@
 ;  Please provide a simple example here. Things
 ;  you specifiy on IDLs command line should be indicated
 ;  by 
-;*  IDL> print, "foobar" 
+;*  print, "foobar" 
 ;  
 ;  IDLs output should be shown using
 ;*  >foobar
@@ -139,9 +141,6 @@
 ;  <A>DemoSim</A>. If you are bored, click 
 ; <A NREF=CVS>here</A>.
 ;  
-; AUTHOR:
-;  FORNAME SURNAME
-;
 ;-
 
 
