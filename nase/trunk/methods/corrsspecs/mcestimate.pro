@@ -9,34 +9,36 @@
 ;  
 ;
 ; PURPOSE:
-;           Multiple Coherence (MC) Estimate. In 1963, the multiple coherence estimate or "sample multiple
-;           coherence" was introduced in [1]. The MC estimate between
-;           a reference channel x<sub>j</sub> and channels
-;           x<sub>i</sub>,..,x<sub>j-1</sub>,x<sub>j+1</sub>,..,x<sub>M</sub> 
-;           is defined as |c<sub>j:1,..,j-1,j+1,..,M</sub>(f)|^2 = 1 -
-;           1/(S<sub>jj</sub>(f)S<sup>jj</sup>(f)),
-;           where S<sub>jj</sub>(f) is the j-th diagonal element of
-;           the estimatetd cross spectral density matrix S<sub>xx</sub>(f)and
-;           S<sup>jj</sup>(f) ist the j-th diagonal element of the
-;           inverse of S<sub>xx</sub>(f). As with the pairwise
+;           Multiple Coherence (MC) Estimate. In 1963, the multiple coherence estimate or <I>sample multiple
+;           coherence</I> was introduced in [1]. The MC estimate between
+;           a reference channel x<SUB>j</SUB> and channels
+;           x<SUB>i</SUB>,..,x<SUB>j-1</SUB>,x<SUB>j+1</SUB>,..,x<SUB>M</SUB> 
+;           is defined as <BR><*>|c<SUB>j:1,..,j-1,j+1,..,M</SUB>(f)|<SUP>2</SUP> = 1 -
+;           1/(S<SUB>jj</SUB>(f)S<SUP>jj</SUP>(f))</*>,<BR>
+;           where <*>S<SUB>jj</SUB>(f)</*> is the j-th diagonal element of
+;           the estimatetd cross spectral density matrix
+;           <*>S<SUB>xx</SUB>(f)</*> and
+;           <*>S<SUP>jj</SUP>(f)</*> ist the j-th diagonal element of the
+;           inverse of <*>S<SUB>xx</SUB>(f)</*>. As with the pairwise
 ;           <a>COHERENCE</a>, the MC estimate is bounded between zero
 ;           and one. Furthermore, the MC estimate is equal 1 if and
-;           only if x<sub>j</sub> is exactly linearly related to the
-;           other channels and if x<sub>j</sub> is orthogonal to the
+;           only if <*>x<SUB>j</SUB></*> is exactly linearly related to the
+;           other channels and if <*>x<SUB>j</SUB></*> is orthogonal to the
 ;           other channels, the MC estimate becomes zero. However, the
 ;           the MC estimate is in general not invariant to reordering
 ;           of the channels. The distributen of the estimate
 ;           conditioned on the value of multiple coherence function is
 ;           given in [1]. A multiple-channel nonparametric detector
 ;           based on MC estimate as defined before was introduced in [2].
-;           <br>Please note that the multiple
+;           <BR>Please note that the multiple
 ;           coherence for two channels <*>N=2</*> is identical to the pairwise <a>COHERENCE</a>
 ;
-;
+;           <BR>
 ;           [1] N. R. Goodman, "Statistical analysis based uppon a
 ;           certain multivariate complex gaussian distrobution (an
 ;           introduction)", Annals of Mathematical Statistics,
 ;           vol. 34, pp. 152-177, 1963.
+;           <BR>
 ;           [2] R. D. Trueblood and D. L. Alspach, "Multiple coherence
 ;           as a detection statistic", Tech. Rep., Naval Ocean Systems
 ;           Center, San Diego, 1978.
@@ -68,8 +70,8 @@
 ;                          the dimension which is to be interpreted as the dimension
 ;                          containing the different realizations, i.e.,
 ;                          "trials" (default: 3). Since the 1st dimension is reserved
-;                          for the signal epochs themselves, <*>DIMENSION</*> must be >=3, and of course it must be
-;                          <=<*>N<sub>Dim</sub></*>, where <*>N<sub>Dim</sub></*> is the number of dimensions of <*>x</*> 
+;                          for the signal epochs themselves, <*>DIMENSION</*> must be &gt;=3, and of course it must be
+;                          &lt;= <*>N<SUB>Dim</SUB></*>, where <*>N<SUB>Dim</SUB></*> is the number of dimensions of <*>x</*> 
 ;         SAMPLEPERIOD::   Set this keyword to an float
 ;                          scalar giving the sample period (in seconds) which is assumed
 ;                          to have been used in sampling the signals <*>x</*> (default: 0.001). The only effect of
@@ -79,7 +81,7 @@
 ; OUTPUTS:
 ;   
 ;         mc::             A (double) float array of the same dimensional
-;                          structure as x, but with the Channel (2nd) and DIMENSIONth dimension
+;                          structure as <*>x</*>, but with the Channel (2nd) and DIMENSIONth dimension
 ;                          missing, and containing the generalized coherence
 ;                          function(s) in the 1st dimension. Moreover, the 1st
 ;                          dimension is reduced to half 
