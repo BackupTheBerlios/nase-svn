@@ -10,7 +10,7 @@
 ; CATEGORY:              STATISTICS
 ;
 ; CALLING SEQUENCE:      cp = CrossPower( xseries,yseries [,xaxis] [,/HAMMING][,/DOUBLE]        $
-;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel])
+;                                        [,PHASE=phase] [,COMPLEX=complex] [,NEGFREQ=negfreq][,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel])
 ;
 ; INPUTS:                xseries : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
 ;                                  mit mind. 10 Elementen
@@ -25,6 +25,10 @@
 ;                                     auf Null gesetzt.
 ;                        KERNEL:      Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
 ;                                     KEYWORD PHASE
+;                        COMPLEX:     als Output complexe CrossPower
+;
+;                        NEGFREQ:     Output mit negativen Frequenzen (default ist: nur pos. freq.)
+;
 ;
 ; OUTPUTS:               cp      : Betrag der berechneten CrossPower
 ;
@@ -62,6 +66,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.3  1998/02/23 11:24:26  gabriel
+;      KEYWORD PHASE Fehler behoben, neue Keywords NEGFREQ und COMPLEX
+;
 ; Revision 1.2  1998/01/27 18:40:30  gabriel
 ;      Smooth Kernel Keyword hinzugefuegt
 ;
@@ -75,7 +82,9 @@
 
 
 
-FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel
+FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
+                     DOUBLE=Double ,COMPLEX=COMPLEX,Phase=Phase ,$
+                     TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel, NEGFREQ=negfreq
    
    IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN Message, 'wrong number of arguments'
    IF (Size(xseries))(0) NE 1                 THEN Message, 'wrong format for x-signal'
@@ -120,12 +129,22 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Ph
  
   
    CPower = (xFFT*CONJ(yFFT) ) * N / HammingNorm
-   
-   CPower = 2*CPower(0:N/2-1) ; use the symmetry
    CPower(0) = CPower(0) + xMedian*yMedian
 
-   ; generate x-axis
-   xaxis = FIndGen(N_Elements(CPower))*FreqRes
+   IF set(NEGFREQ) THEN BEGIN
+      CPower = shift(CPower,N/2)
+                                ; generate x-axis
+      xaxis = (FIndGen(N_Elements(CPower))-N/2)*FreqRes
+   END ELSE BEGIN
+      CPower = 2*CPower(0:N/2-1) ; use the symmetry
+                                ; generate x-axis
+      xaxis = FIndGen(N_Elements(CPower))*FreqRes
+      
+   ENDELSE
+
+
+   
+
 
    
    IF SET(Phase) THEN BEGIN
@@ -133,15 +152,19 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING, DOUBLE=Double ,Ph
       ELSE RE_CPower =   FLOAT(CPower)
       IM_CPower =IMAGINARY(CPower)
       IF SET(KERNEL) THEN BEGIN 
-         RE_CPower = convol(RE_CPower,kernel,/EDGE_TRUNCATE,/CENTER) 
-         IM_CPower = convol(IM_CPower,kernel,/EDGE_TRUNCATE,/CENTER)
+         CPower = convol(CPower,kernel,/EDGE_TRUNCATE,/CENTER)
       ENDIF
       Phase = ATAN(-IM_CPower, RE_CPower)
+      
+   
+       
+
    ENDIF
-   CPower = Complex(RE_CPower,IM_CPower)
-   CPOWER = ABS(CPOWER)
+
+   IF NOT Set(COMPLEX) THEN CPOWER = ABS(CPOWER)
+
    IF SET(TRUNC_PHASE) THEN BEGIN
-      TRUNC = CPower GT  (TRUNC_PHASE * MAX(CPower)) 
+      TRUNC = ABS(CPower) GT  (TRUNC_PHASE * MAX(ABS(CPower))) 
       Phase = TRUNC * Phase
    ENDIF
 
