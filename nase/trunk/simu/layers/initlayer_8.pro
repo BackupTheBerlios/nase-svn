@@ -106,6 +106,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 1.2  1999/03/16 16:35:14  thiel
+;             LongArray for refractory period.
+;
 ;      Revision 1.1  1999/03/08 09:47:12  thiel
 ;             Neuer Neuronentyp Nr. 8.
 ;
@@ -138,7 +141,7 @@ FUNCTION InitLayer_8, WIDTH=width, HEIGHT=height, TYPE=type, INIT_V=init_v
              dualexp : FltArr(3*width*height,2), $
              V       : V, $
              o       : handle, $
-             ar      : BytArr(width*height)  }  ; for the absolute refractory period
+             ar      : LonArr(width*height)  }  ; for the absolute refractory period
 
    
    RETURN, Handle_Create(!MH, VALUE=layer, /NO_COPY)
