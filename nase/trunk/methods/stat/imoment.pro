@@ -139,7 +139,7 @@ FUNCTION IMoment, A, i, ORDER=order, mdev=mdev, sdev=sdeviation $
             IF s(0) GT 2 THEN BEGIN
                ;; hier gehts ab recursiv ! (Glaube ist besser als Wissen)
                ;; solange bis (size(a))(0) > 2 und immer nach den letzten index,den  haben wir ja oben getauscht
-               m(x,*,*,*,*,*,*) = imoment(Atmp2,last(indtot)+1,/iter, order=order)
+               m(x,*,*,*,*,*,*) = imoment(Atmp2,last(indtot)+1,/iter, order=order, none=none)
             END ELSE BEGIN
                ;; hier wenn (size(a))(0) = 2
                ;;stop
@@ -162,7 +162,7 @@ FUNCTION IMoment, A, i, ORDER=order, mdev=mdev, sdev=sdeviation $
          RETURN, m
       END ELSE BEGIN
          ;ind =  where(indgen(s(0)) NE (i-1))
-         ;return,imoment(A, ind+1 , mdev = mdev, sdev = sdeviation, min=min, max=max,/iter)
+         ;return,imoment(A, ind+1 , mdev = mdev, sdev = sdeviation, min=min, max=max,/iter,none=none)
          ;;old version
          IF 1 EQ 1 THEN BEGIN
             m    = FltArr(s(i),order+1)
