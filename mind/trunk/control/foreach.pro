@@ -81,6 +81,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.12  2000/10/03 13:29:57  saam
+;     + extended to process several parameters, simultaneously
+;     + still undocumented
+;
 ;     Revision 1.11  2000/09/29 08:10:28  saam
 ;     added the AIM tag
 ;
@@ -208,7 +212,9 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9 $
             ;P.pfile = pname
             ;Set loop values, if requested
             FOR i=0, N_Tags(LV)-1 DO BEGIN
-                SetHTag, P, TSN.(i), LV.(i)
+                FOR j=0, N_Elements(TSN.(i))-1 DO BEGIN
+                    SetHTag, P, (TSN.(i))(j), REFORM((LV.(i))(j,*))
+                END
             END
             
             IF TypeOF(kset) EQ 'STRUCT' THEN BEGIN
