@@ -69,6 +69,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.7  1997/10/30 12:57:52  kupper
+;              Bug beim ALL-Schlüsselwort behoben (Integerdivision durch Fließkomma ersetzt.)
+;
+;
 ;       Sun Sep 7 23:36:35 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -125,17 +130,17 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
           t_col = LayerCol(INDEX=t_index, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
        end
        if keyword_set(ALL) then begin
-          Default, LWX, V_Matrix.source_w/V_Matrix.target_w
-          Default, LWY, V_Matrix.source_h/V_Matrix.target_h
+          Default, LWX, V_Matrix.source_w/float(V_Matrix.target_w)
+          Default, LWY, V_Matrix.source_h/float(V_Matrix.target_h)
 
           for x=-t_col, V_Matrix.target_w-1-t_col do begin
              for y=-t_row, v_Matrix.target_h-1-t_row do begin
                 if keyword_set(TRUNCATE) then begin ;truncate
-                   if count ne -1 then maske = where(NoRot_Shift(boolmaske, LWY*y, LWX*x, WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
-                   V_Matrix.Delays(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), maske)=(NoRot_Shift(Delay, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE))(maske)
+                   if count ne -1 then maske = where(NoRot_Shift(boolmaske, round(LWY*y), round(LWX*x), WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
+                   V_Matrix.Delays(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), maske)=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
                 endif else begin ;no truncate
-                   if count ne -1 then maske = where(Shift(boolmaske, LWY*y, LWX*x)) ;hat transparente stellen 
-                   V_Matrix.Delays(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), maske)=(Shift(Delay, LWY*y, LWX*x))(maske)
+                   if count ne -1 then maske = where(Shift(boolmaske, round(LWY*y), round(LWX*x) )) ;hat transparente stellen 
+                   V_Matrix.Delays(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), maske)=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)
                 endelse
              endfor
           endfor
@@ -165,17 +170,17 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
           s_col = LayerCol(INDEX=s_index, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
        end
        if keyword_set(ALL) then begin
-          Default, LWX, V_Matrix.target_w/V_Matrix.source_w
-          Default, LWY, V_Matrix.target_h/V_Matrix.source_h
+          Default, LWX, V_Matrix.target_w/float(V_Matrix.source_w)
+          Default, LWY, V_Matrix.target_h/float(V_Matrix.source_h)
 
           for x=-s_col, V_Matrix.source_w-1-s_col do begin
              for y=-s_row, v_Matrix.source_h-1-s_row do begin
                 if Keyword_set(TRUNCATE) then begin ;truncate
-                   if count ne -1 then maske = where(NoRot_Shift(boolmaske, LWY*y, LWX*x, WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
-                   V_Matrix.Delays(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=(NoRot_Shift(Delay, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE))(maske)
+                   if count ne -1 then maske = where(NoRot_Shift(boolmaske, round(LWY*y), round(LWX*x), WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
+                   V_Matrix.Delays(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
                 endif else begin ;no Truncate
-                   if count ne -1 then maske = where(Shift(boolmaske, LWY*y, LWX*x)) ;hat transparente stellen 
-                   V_Matrix.Delays(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=(Shift(Delay, LWY*y, LWX*x))(maske)
+                   if count ne -1 then maske = where(Shift(boolmaske, round(LWY*y), round(LWX*x) )) ;hat transparente stellen 
+                   V_Matrix.Delays(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)
                 endelse
              endfor
           endfor
