@@ -1,8 +1,12 @@
 ;+
 ; NAME:
-;  SLICES
+;  Slices()
 ;
-;  AIM:   Divides an array into parts of a fixed length and fixed overlap
+; VERSION:
+;   $Id$
+; 
+; AIM:
+;   Divides an array into parts of a fixed length and fixed overlap
 ;
 ; PURPOSE:
 ;  Divides an array into parts of a fixed length and with fixed
@@ -15,89 +19,54 @@
 ;  fitting into the first/last part are not returned.
 ;
 ; CATEGORY:
-;  METHODS
+;  Array
+;  Signals
 ;
 ; CALLING SEQUENCE: 
-;  s = Slices (a [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] $
-;                [,TVALUES=tvalues] [,TINDICES=tindices] )
+;*  s = Slices (a [,SSIZE=...] [,SSHIFT=...] [,SAMPLEPERIOD=...] 
+;*                [,TVALUES=...] [,TINDICES=...] [,/TFIRST] )
 ; 
 ; INPUTS: 
-;  a : The array to be divided. If multidimensional, the array is
-;      divided according to the last index (the time index).
+;  a :: The array to be divided. If multidimensional, the array is
+;      divided according to the time index (first index in array,
+;      if <*>/TFIRST</*> is set, last index else).
 ;
-; OPTIONAL INPUTS:
-;  ssize        : Size of resulting parts / ms. (Default: 128ms)
-;  sshift       : Distance between parts / ms. (Default: ssize/2)
-;  sampleperiod : Duration of the sampling period / s (Default: 0.001s)
+; INPUT KEYWORDS:
+;  SSIZE        :: Size of resulting parts / ms. (Default: 128ms)
+;  SSHIFT       :: Distance between parts / ms. (Default: ssize/2)
+;  SAMPLEPERIOD :: Duration of the sampling period / s (Default: 0.001s)
+;  TFIRST       :: Normally the last index of <*>a</*> is assumed to
+;                  be the time index. Setting <*>TFIRST</*> enforces
+;                  <C>Slices</C> to use the first array index as time.
 ;
 ; OUTPUTS: 
-;  s: Array containing the parts of array a arranged like (slice_nr,
-;     data)
+;  s:: Array containing the parts of array a arranged like (slice_nr,
+;      iteration, time) or (time, slice_nr, iteration) if <*>TFIRST</*> is set.
 ;
 ; OPTIONAL OUTPUTS: 
-;  tvalues  : Returns the times/ms at which parts start.
-;  tindices : Returns starting time array indices of the parts.
+;  tvalues  :: Returns the times/ms at which parts start.
+;  tindices :: Returns starting time array indices of the parts.
 ;
 ; PROCEDURE:
-;  - Calculate number of parts needed for given ssize and sshift.
-;  - Determine size of array to be returned.
-;  - Compute starting indices of parts.
-;  - Store parts inside return array.
+;*  - Calculate number of parts needed for given ssize and sshift.
+;*  - Determine size of array to be returned.
+;*  - Compute starting indices of parts.
+;*  - Store parts inside return array.
 ;
 ; EXAMPLE: 
-;  a=RandomU(s,3,500) LT 0.1
-;  ; generate 3 spiketrains each 500ms long
-;  b=Slices(a, SSIZE=100)
-;  ; divide them, parts are 100ms and begin each 50ms (default for SSHIFT)
-;  help, b
-;  B               BYTE      = Array[9, 3, 100]
-;  b contains 9 slices of 3 spiketrains 100ms long
-;  Trainspotting, Reform(b(3,*,*))
-;  ; show slice no. 3          
+;* a=RandomU(s,3,500) LT 0.1
+;* ; generate 3 spiketrains each 500ms long
+;* b=Slices(a, SSIZE=100)
+;* ; divide them, parts are 100ms and begin each 50ms (default for SSHIFT)
+;* help, b
+;* >B               BYTE      = Array[9, 3, 100]
+;* ; b contains 9 slices of 3 spiketrains 100ms long
+;* Trainspotting, Reform(b(3,*,*))
+;* ; show slice no. 3          
 ;
 ; SEE ALSO: <A>INSTANTRATE</A>.
-;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.11  2000/10/19 09:59:43  saam
-;     checkin from 1.8->1.9 was desastrous and totally unwanted
-;     reverted to default behaviour and optionally added new behaviour
-;
-;     Revision 1.10  2000/09/28 09:28:00  gabriel
-;           AIM tag added
-;
-;     Revision 1.9  2000/09/27 15:59:23  saam
-;     service commit fixing several doc header violations
-;
-;     Revision 1.8  2000/03/14 17:43:14  thiel
-;         Added timeunit description in header.
-;
-;     Revision 1.7  2000/02/23 12:30:47  thiel
-;         Optimized. LEXTRAC is no longer used. Header translated.
-;
-;     Revision 1.6  1998/07/28 12:54:19  gabriel
-;          SSIZE SSHIFT jetzt lokale Variablen
-;
-;     Revision 1.5  1998/06/23 11:15:08  saam
-;           fixed problems with 1d-Slices
-;
-;     Revision 1.4  1998/06/10 12:38:33  saam
-;           added multidimensional array support
-;
-;     Revision 1.3  1998/06/08 10:06:06  saam
-;           + changed output format: a(slice,data)
-;           + new keywords TVALUES, TINDICES
-;
-;     Revision 1.2  1998/06/08 09:36:53  saam
-;           debug messages removed
-;
-;     Revision 1.1  1998/06/08 09:33:28  saam
-;           hope it works
 ;
 ;-
-
-
 FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
                  , TVALUES=tvalues, TINDICES=tindices, TFIRST=tfirst
 
