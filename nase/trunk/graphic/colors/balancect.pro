@@ -131,7 +131,7 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
    IF Set(data) THEN BEGIN
        mid = FLOAT(MIN(data))
        mad = FLOAT(MAX(data))
-       Default, neutral, MIN(ABS(data))
+       Default, neutral, MAX([MIN(data),0])
    END ELSE BEGIN
        ; symmetric around zero if no data is given
        mid = -1.
