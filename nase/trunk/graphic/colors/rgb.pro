@@ -50,6 +50,21 @@
 ;
 ; SIDE EFFECTS: Die Farbtabelle wird (evtl.) verändert.
 ;
+;               Folgendes betrifft nur die IDL version 5.0:
+;               Für die IDL Version 5.0 und True-Color-Displays
+;               ist ein Workaround für einen Bug im
+;               Color-Management eingebaut. IDL 5.0 schickt den
+;               Farbindex bei nromalen Plot-Befehlen
+;               fälschlicherweise durch den Translation
+;               Table. Dies tat IDL 4 nicht, und tut auch IDL
+;               5.2 nicht mehr. Der Bug wird umgangen, indem die 
+;               lineare Farbtabelle (Nr. 0) geladen wird.
+;               Man beachte, daß das laden von Farbtabellen auf
+;               True-Color-Displays, insgesondere bei
+;               Verbindungen über das Netzwerk, sehr langsam
+;               sein kann!
+;
+;
 ; RESTRICTIONS: Auf einem ColorTable-Display liefert diese Funktion i.d.R. spätestens
 ;                nach dem 256. Aufruf den Fehler "!Farbpalette voll!".
 ;                Das kann jedoch durch Angabe eines neuen START-Wertes
@@ -114,6 +129,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.16  1999/11/04 18:13:46  kupper
+;        Added to Header comment on IDL 5.0 workaround.
+;
 ;        Revision 1.15  1999/11/04 17:40:47  kupper
 ;        typo.
 ;
