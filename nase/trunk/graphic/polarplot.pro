@@ -1,65 +1,103 @@
 ;+
-; NAME: PolarPlot
+; NAME:               PolarPlot
 ;
-; PURPOSE: Zeichnen eines Polardiagramms
+; AIM:                plots polar diagrams
 ;
-; CATEGORY: GRAPHICS / GENERAL
+; PURPOSE:            Plots a polar diagram.
 ;
-; CALLING SEQUENCE: PolarPlot, radiusarray, winkelarray [,sdev]
-;                              [,TITLE=title] [,CHARSIZE=charsize]
-;                              [,XRANGE=xrange] [,YRANGE=yrange]
-;                              [,XSTYLE=xstyle] [,YSTYLE=ystyle]
-;                              [,MINORANGLETICKS=minorangleticks]
-;                              [,THICK=thick],[CLOSE=CLOSE],
-;                              [SDCOLOR=sdcolor],[MCOLOR=mcolor],[DELTA=DELTA],
-;                              [ORIGPT=ORIGPT]
+; CATEGORY:           GRAPHICS
 ;
-; INPUTS: radiusarray: Die in diesem Array enthaltenen Werte werden als Abstaende
-;                      gemessen vom Ursprung dargestellt.
-;         winkelarray: Die zugehoerigen Winkel in Rad.
 ;
-; OPTIONAL INPUTS: 
-;                  sdev       : Array, das die Standardabweichung enthaelt 
-;                  title: Ein String, der nachher ueber dem Plot steht.
-;                  charsize: Groesse der Beschriftung bezogen auf die Normalgroesse
-;                            von 1.0.
-;                  xrange, yrange: Plotbereiche.
-;                                  Default: [-Max(radiusarray),+Max(radiusarray)]
-;                  xstyle, ystyle: Beeinflusst die Darstellung der Achsen.
-;                                  Default: 4, d.h. kein Kasten um den Plot herum.
-;                                  Falls exakte Achsenbereiche gewuenscht werden, 
-;                                  sollte xystyle=5 gewaehlt werden.
-;                  minorangleticks: Zusaetzlich zu den Achsen koennen 
-;                                   Zwischenwinkel eingezeichnet werden.
-;                                   minorangleticks=n malt in jedem Quadranten
-;                                   n Zwischenwinkelmarkierungen, z.B. liefert
-;                                   n=1 Markierungen bei 45, 135, 225 und 315 Grad. 
-;                  thick: Die Liniendicke, Normal: 1.0, Default: 3.0
-;                  close: Endpunkt wird mit Anfangspunkt verbunden: 
-;                         Darstellung als geschlossene Kurve (default: 0)
-;                  DELTA: Interpoliert zwischen den Stuetzpunkten (radius,winkel) mit sin(x)/x um 
-;                         den Faktor Delta (default: 1). Setzt Keyword CLOSE auf 1 wenn es gesetzt ist,
-;                         da eine Interpolation nur fuer geschlossene  Kurven sinnvoll ist.  
-;                  MCOLOR  : Farbindex fuer den Mittelwert         (Default: weiss)
-;                  SDCOLOR : Farbindex fuer die Standardabweichung (Default: dunkelblau) 
-;                  ORIGPT:   Original Stuetzstellen werden als Kreise
-;                            mit dem Radius ORIGPT  eingezeichnet
-;                            (default: 0) 
+; CALLING SEQUENCE:   PolarPlot, radiusarray, anglearray [,sdevarray]
+;                                [,TITLE=title]   [,CHARSIZE=charsize]
+;                                [,XRANGE=xrange] [,YRANGE=yrange]
+;                                [,XSTYLE=xstyle] [,YSTYLE=ystyle]
+;                                [,MINORANGLETICKS=minorangleticks]
+;                                [,THICK=thick]   [,/CLOSE],
+;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor],
+;                                [,SMOOTH=smooth]
+;                                [,ORIGPT=ORIGPT]
 ;
-; OUTPUTS: Polardarstellung der Daten auf dem aktuellen Plot-Device.
+; INPUTS:             radiusarray: array containing the values, that
+;                                  are plotted as distances from the
+;                                  orgin of the coordinate system 
+;                     anglearray : the angles corresponding to
+;                                  radiusarray in rad (0..2*!Pi)
 ;
-; PROCEDURE: 1. Plot mit /Polar-Schluesselwort ohne Achsen.
-;            2. Achsen malen.
-;            3. So viele Kreise wie Tickmarks malen. (Benutzt importierte ARCS-Prozedur.)
-;            4. Auf Wunsch Zwischenwinkel malen. (Benutzt importierte RADII-Prozedur.)  
+; OPTIONAL INPUTS:    sdevarray  : array containing the standard
+;                                  deviation for each value of
+;                                  radiusarray 
+;
+; KEYWORD PARAMETERS:
+;                     title      : Produces a main title centered above the plot window
+;                     charsize   : The overall character size for the
+;                                  annotation. This keyword does not
+;                                  apply when hardware
+;                                  (i.e. PostScript) fonts are
+;                                  selected. A CHARSIZE of 1.0 is
+;                                  normal. The main title is
+;                                  written with a character size of
+;                                  1.25 times this parameterThe size
+;                                  of the characters used to annotate
+;                                  the axis and its title 
+;                      [xy]range : The desired data range of the axis,
+;                                  a 2-element vector. The first
+;                                  element is the axis minimum, and
+;                                  the second is the maximum. IDL will
+;                                  frequently round this range. This
+;                                  override can be defeated using the
+;                                  [XYZ]STYLE keywords. (Default:
+;                                  [-Max(radiusarray),+Max(radiusarray)]) 
+;                      [xy]style : This keyword allows specification
+;                                  of axis options such as rounding of
+;                                  tick values and selection of a box
+;                                  axis. (see IDL-Help, default: 4)
+;                 minorangleticks: Additional axes for for equidistant
+;                                  angles. minorangleticks=n draws n
+;                                  subaxes in each quadrant. For n=1 
+;                                  axes at 45, 135, 225 and 315 dg are
+;                                  plotted.
+;                           thick: Indicates the line thickness
+;                                  (normal: 1.0, default: 3.0) 
+;                           close: the endpoint of the plot is
+;                                  connected to the initial data point.
+;                          smooth: Interpolated the plot between data
+;                                  points (radius,angle) with a
+;                                  sin(x)/x function. 
+;                                  Smooth specifies the degree of
+;                                  interpolation (1 means NO
+;                                  interpolation). Sets Keyword CLOSE
+;                                  to 1.
+;                          mcolor: Color index for the mean data
+;                                  points (default: white) 
+;                         sdcolor: Color index for the standard
+;                                  deviation (if set, default: dark blue) 
+;                          origpt: original data points are emphasized
+;                                  by bold dots with a radius of
+;                                  origpt (default: 0)
+;
+; PROCEDURE: 0. determines useful plot area
+;            1. scale the plot area appropriate
+;            2. plot mean and standard deviation using opolarplot
+;            3. plot axes
+;            4. plot circle at any tickmarks position (uses ARCS in alien)
+;            5. plot intermediate axes (uses RADII in alien)  
 ;
 ; EXAMPLE: radius = findgen(33)
-;          winkel = findgen(33)*2.0*!PI/32.0
-;          PolarPlot, radius, winkel, MINORANGLETICKS=4, TITLE='Spiralplot'
+;          angle = findgen(33)*2.0*!PI/32.0
+;          PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
+;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50)
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.16  2000/07/18 12:56:51  saam
+;              + split into plot and oplot part
+;              + code cleanup
+;              + translated doc header
+;              + cut unneccessary plot elements
+;
 ;        Revision 2.15  2000/07/05 16:20:20  gabriel
 ;             BUGFIX Origpt
 ;
@@ -88,7 +126,7 @@
 ;              Bugfix: Axis weren't printed properly
 ;
 ;        Revision 2.6  1999/04/29 09:17:26  gabriel
-;             Interpolation der Winkel war falsch
+;             Interpolation der Angle war falsch
 ;
 ;        Revision 2.5  1999/04/28 17:10:41  gabriel
 ;             Keyword DELTA neu
@@ -105,78 +143,39 @@
 ;        Revision 2.1  1998/01/22 13:46:52  thiel
 ;               Die erste Version ist fertig.
 ;
-;-
+;
+
+PRO PolarPlot, radiusarray, anglearray, sdevarray,                               $
+               TITLE=title,                                                 $
+               CHARSIZE=charsize,                                           $
+               XRANGE=xrange, YRANGE=yrange,                                $
+               XSTYLE=xstyle, YSTYLE=ystyle,                                $
+               MINORANGLETICKS=minorangleticks,                             $
+               radiusinterpol=radiusinterpol, winkelinterpol=winkelinterpol,$
+               _EXTRA=e
 
 
-PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor,DELTA=DELTA,$
-               TITLE=title, $
-               CHARSIZE=charsize, $
-               XRANGE=xrange, YRANGE=yrange, $
-               XSTYLE=xstyle, YSTYLE=ystyle, $
-               MINORANGLETICKS=minorangleticks, $
-               THICK=thick , CLOSE=CLOSE,radiusinterpol=radiusinterpol,$
-               winkelinterpol=winkelinterpol, ORIGPT=ORIGPT,_EXTRA=e
+On_Error, 2
 
+IF (N_Params() LT 2) OR (N_Params() GT 3) THEN Console, 'wrong parameter count', /FATAL
+IF Set(radiusinterpol) THEN Console, 'keyword RADIUSINTERPOL is undocumented, please document if you need it', /WARN
+IF Set(winkelinterpol) THEN Console, 'keyword WINKELINTERPOL is undocumented, please document if you need it', /WARN
 
-   On_Error, 2
-_radiusarray = radiusarray
-_winkelarray = winkelarray
-
-IF set(SDEV) THEN _sdev = sdev
-BGCOLOR = GetBgColor()
-BGCOLOR = RGB(BGCOLOR(0), BGCOLOR(1), BGCOLOR(2),/NOALLOC)
-Default, MCOLOR , !P.COLOR
-Default, SDCOLOR, RGB(150,150,200,/NOALLOC)
-IF set(DELTA) THEN DEFAULT,CLOSE ,1
-
-DEFAULT,CLOSE ,0
-Default, xstyle, 4
-Default, ystyle, 4
-Default, xrange, [-Max(_RadiusArray),Max(_RadiusArray)]
-Default, yrange, [-Max(_RadiusArray),Max(_RadiusArray)]
-Default, title, ''
+Default, xstyle  , 4
+Default, ystyle  , 4
+Default, xrange  , [-Max(radiusarray),Max(radiusarray)]
+Default, yrange  , [-Max(radiusarray),Max(radiusarray)]
+Default, title   , ''
 Default, charsize, 1.0
-Default, thick, 3.0
-default,delta,1
-default, origpt, 0
-
-
-IF DELTA GT 1 THEN BEGIN
-   index = 0
-   WHILE N_ELEMENTS(_radiusarray) LT 30 DO BEGIN 
-      index = N_ELEMENTS(_radiusarray) + index
-      _radiusarray = [_radiusarray,_radiusarray,_radiusarray]
-      IF set(_SDEV) THEN  _sdev=[_sdev,_sdev,_sdev]
-   ENDWHILE
-
-   IF set(_SDEV) THEN   _sdev =   Sincerpolate(_sdev ,delta)
-
-   _radiusarray = Sincerpolate(_radiusarray,delta)
-   _radiusarray = _radiusarray(index*delta : (index+ N_ELEMENTS(radiusarray))*delta-1+close)
-
-   IF set(_SDEV) THEN BEGIN 
-      _sdev = _sdev(index*delta : (index+ N_ELEMENTS(radiusarray))*delta-1+close)
-      ;_sdev = _sdev - _radiusarray
-   ENDIF
-
-   _winkelarray = (signum(last(_winkelarray))*(abs(last(_winkelarray))+close*abs(_winkelarray(1)-_winkelarray(0)))-_winkelarray(0))*findgen(delta*(N_ELEMENTS(_winkelarray))+close)/FLOAT(N_ELEMENTS(_winkelarray)*DELTA+close-1)+_winkelarray(0)
-;print, _winkelarray
-END ELSE BEGIN
-
-   IF CLOSE EQ 1 THEN BEGIN
-      _radiusarray = [_radiusarray,_radiusarray(0)]
-      _winkelarray = [_winkelarray,last(_winkelarray)+_winkelarray(1)-_winkelarray(0)]
-      IF set(SDEV) THEN _sdev = [_sdev,_sdev(0)]
-   ENDIF
-
-ENDELSE
 
 
 
-plot,_radiusarray , _winkelarray,/POLAR, /NODATA, $
+; this longish region is to get a proper scaling
+; for the plot ..... and to care for MULTI plots
+plot,radiusarray , anglearray,/POLAR, /NODATA, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
- TITLE=title,COLOR=BGCOLOR,_EXTRA=e
+ TITLE=title,_EXTRA=e
 
 PTMP = !P.MULTI
 !P.MULTI(0) = 1
@@ -186,13 +185,8 @@ plotregion_norm_center = [0.5,0.5]
 plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
 plotregion_device_center = convert_coord(plotregion_norm_center,/NORM,/TO_DEVICE)
 
-
-
 plotregion_device = plotregion_device(0:1,*)
-
 plotregion_device_center(0) = plotregion_device_center(0)
-
-
 xsize_device = plotregion_device(0,1)-plotregion_device(0,0)
 ysize_device = plotregion_device(1,1)-plotregion_device(1,0)
 org_plotregion_device = [ plotregion_device(0,0) + xsize_device/2.,$
@@ -212,52 +206,46 @@ corr_fac(min_size_ind) = 1.0
 plotregion_device_new = [[plotregion_device(*,0)]-shift_plotregion_device,$
                          [plotregion_device(*,0)+xy_dim*corr_fac]-shift_plotregion_device]
 
-
-plot,_radiusarray , _winkelarray,/POLAR, $
- XSTYLE=xstyle, YSTYLE=ystyle, $
- XRANGE=xrange, YRANGE=yrange, $
- TITLE=title ,POSITION=plotregion_device_new,/DEVICE,_EXTRA=e
-
-
-IF set(_SDEV) THEN BEGIN
-   x1 = (_radiusarray(*)-_sdev(*))*cos(_winkelarray(*))
-   m1 = (_radiusarray(*)-_sdev(*))*sin(_winkelarray(*))
-   x2 = (_radiusarray(*)+_sdev(*))*cos(_winkelarray(*))
-   m2 = (_radiusarray(*)+_sdev(*))*sin(_winkelarray(*))
-   polyfill, [x1,last(x1),REVERSE(x2),x2(0)], [m1,last(m1), REVERSE(m2),m2(0)], COLOR=sdcolor
-   
-ENDIF
-
-oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
-if ORIGPT GT 0 then begin
- 
- 
-   r = ORIGPT
-   PHI=findgen(40+1)*2*!PI/40. 
-   y=r*sin(PHI) & x=r*cos(PHI) 
-   usersym,x,y,/fill
-
-   oplot,radiusarray, winkelarray,/polar,PSYM=8
-
-endif
-Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
-    XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
-Axis, 0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
-  YRANGE=yrange, CHARSIZE=charsize
-
-Arcs, TickArray, LINESTYLE=1
+plot, radiusarray, anglearray,/POLAR, $
+  XSTYLE=xstyle, YSTYLE=ystyle, $
+  XRANGE=xrange, YRANGE=yrange, $
+  TITLE=title ,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e
 
 
 
+; now, we can do the data plot
+IF Set(sdevarray) THEN opolarplot, radiusarray, anglearray, sdevarray, RADIUSINTERPOL=radiusinterpol, WINKELINTERPOL=winkelinterpol, _EXTRA=e $
+                  ELSE opolarplot, radiusarray, anglearray, RADIUSINTERPOL=radiusinterpol, WINKELINTERPOL=winkelinterpol, _EXTRA=e
+                                ; i cant pass RADIUSINTERPOL and
+                                ; WINKELINTERPOL via _EXTRA because
+                                ; _EXTRA doesn't return data!
 
+
+; plot the axes
+Axis, 0,0, xax=0, /DATA, XTICKFORMAT=('AbsoluteTicks'), XRANGE=xrange, CHARSIZE=charsize, XTICK_GET=TA
+Axis, 0,0, yax=0, /DATA, YTICKFORMAT=('AbsoluteTicks'), YRANGE=yrange, CHARSIZE=charsize
+
+; plot a solid circle (constant radius) at each tick position
+; avoids problems with double plotting of -x, x and circles near zero
+; radius (this often produced incriptions like 0.343434E-17 which was
+; of course very annoying)
+TA = ABS(TA)
+myArcs = TA(uniq(TA, sort(TA))) 
+nozero = WHERE(myArcs GT MAX(myArcs/100.), c)
+IF c NE 0 THEN myArcs = myArcs(nozero)
+
+Arcs, myArcs, LINESTYLE=1
+
+
+; plot a solid line (constant angle) for each minor tick
 IF (Set(minorangleticks)) THEN BEGIN
  IF minorangleticks NE 0 THEN BEGIN
     rayarray = 90.0/(minorangleticks+1)*(1.0+findgen(4*(minorangleticks+1)))
-    Radii, 0.0, max(tickarray), rayarray, LINESTYLE=1, /DATA
+    Radii, 0.0, max(TA), rayarray, LINESTYLE=1, /DATA
  ENDIF
 ENDIF 
+
+
 !P.MULTI = PTMP
 
-radiusinterpol = _radiusarray
-winkelinterpol = _winkelarray
 END 
