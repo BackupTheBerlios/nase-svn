@@ -72,7 +72,7 @@
   ;; --end set location of the document header template--
 
 
-  (message "NASE idlwave extention $version$")
+  (message "NASE idlwave extention $Revision$.")
 
   )
 
