@@ -90,6 +90,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/09/04 19:17:37  kupper
+;       Typo
+;
 ;       Revision 1.3  2000/09/04 17:55:12  kupper
 ;       Added red BOUND indicators.
 ;
@@ -315,9 +318,9 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          endelse
          if info.bound then begin
             oplot, indgen(info.Width)+1, replicate(colplotmin, $
-                                                   info.Width), color=rgb("red", /noalloc), thick=2
+                                                   info.Height), color=rgb("red", /noalloc), thick=2
             oplot, indgen(info.Width)+1, replicate(colplotmax, $
-                                                   info.Width), $
+                                                   info.Height), $
              color=rgb("red", /noalloc), thick=2
          endif
          colplotmin = !Y.CRANGE(0)
@@ -327,7 +330,7 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          PrepareNASEPlot, RESTORE_OLD=oldplot
          tv = tvrd()
          wset, info.col_win           ;copy and rotate
-         tv, rotate(tv, 3)
+         utv, rotate(Temporary(tv), 3)
          wset, Actwin
          !P.Color = ActCol
                                 ;end
