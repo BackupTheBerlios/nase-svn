@@ -67,7 +67,7 @@
 ;*   , MCOLOR=RGB(200,100,100), SDCOLOR=RGB(100,50,50)
 ;  
 ; SEE ALSO:
-;  IDL's own routines <C>Plot</C>, , <C>Axis</C>, <C>OPlotErr</C> and <C>PlotErr</C>.
+;  IDL's own routines <C>Plot</C>, <C>Axis</C>, <C>OPlotErr</C> and <C>PlotErr</C>.
 ;-
 
 
@@ -178,9 +178,9 @@ PRO MSPLOT, z, zz, zzz $
        , XTICKFORMAT=xtickformat, _EXTRA=extra
       Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks' $
        , _EXTRA=extra
-      Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, YTITLE=ytitle $
+      Axis, YAXIS=0, YRANGE=yr, YSTYLE=ystyle, YTITLE=ytitle $
        , YTICKFORMAT=ytickformat, _EXTRA=extra
-      Axis, YAXIS=1, YRANGE=yrange, YSTYLE=ystyle, YTICKFORMAT='noticks' $
+      Axis, YAXIS=1, YRANGE=yr, YSTYLE=ystyle, YTICKFORMAT='noticks' $
        , _EXTRA=extra
    ENDIF
  
