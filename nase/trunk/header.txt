@@ -4,33 +4,33 @@
 ; HTML-help. If you put it elsewhere, the HTML-help item will be 
 ; generated from the filename.)
 ;
-; PURPOSE:
+; PURPOSE: 
 ;
-; CATEGORY:
+; CATEGORY: 
 ;
-; CALLING SEQUENCE:
+; CALLING SEQUENCE: 
 ;
-; INPUTS:
+; INPUTS: 
 ;
-; OPTIONAL INPUTS:
+; OPTIONAL INPUTS: -please remove any sections that do not apply-
 ;
-; KEYWORD PARAMETERS:
+; KEYWORD PARAMETERS: 
 ;
-; OUTPUTS:
+; OUTPUTS: 
 ;
-; OPTIONAL OUTPUTS:
+; OPTIONAL OUTPUTS: 
 ;
-; COMMON BLOCKS:
+; COMMON BLOCKS: 
 ;
-; SIDE EFFECTS:
+; SIDE EFFECTS: 
 ;
-; RESTRICTIONS:
+; RESTRICTIONS: 
 ;
-; PROCEDURE:
+; PROCEDURE: 
 ;
-; EXAMPLE:
+; EXAMPLE: 
 ;
-; SEE ALSO:
+; SEE ALSO: <A HREF="#MY_ROUTINE">My_Routine()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
