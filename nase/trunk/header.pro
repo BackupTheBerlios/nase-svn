@@ -6,10 +6,10 @@
 ;  $Id$
 ;
 ; AIM:
-;
+;  
 ;
 ; PURPOSE:
-;
+;  
 ;
 ; CATEGORY:
 ;  Algebra
@@ -49,41 +49,42 @@
 ;  Windows
 ;
 ; CALLING SEQUENCE:
-;*
+;*ProcedureName, par, [,optpar] [,/SWITCH] [,KEYWORD=...]
+;*reslult = FunctionName, par, [,optpar] [,/SWITCH] [,KEYWORD=...]
 ;
 ; INPUTS:
-;
+;  
 ;
 ; OPTIONAL INPUTS:
-;
+;  
 ;
 ; INPUT KEYWORDS:
-;
+;  
 ;
 ; OUTPUTS:
-;
+;  
 ;
 ; OPTIONAL OUTPUTS:
-;
+;  
 ;
 ; COMMON BLOCKS:
-;
+;  
 ;
 ; SIDE EFFECTS:
-;
+;  
 ;
 ; RESTRICTIONS:
-;
+;  
 ;
 ; PROCEDURE:
-;
+;  
 ;
 ; EXAMPLE:
 ;*
-;* >
+;*>
 ;
 ; SEE ALSO:
-;
+;  
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
