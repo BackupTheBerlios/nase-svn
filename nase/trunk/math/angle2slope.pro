@@ -22,7 +22,10 @@
 ;  slope: Slope of the line (dy/dx), a value in (-oo, +oo)
 ;  
 ; RESTRICTIONS:
-;  Computation is performed in double precision.
+;  Computation is performed (and result is returned) in single
+;  precision, if the argument is of integer type or float. Computation
+;  is performed in double precision, if the argument is of type
+;  double.
 ;  
 ; PROCEDURE:
 ;  Straightforward TAN().
@@ -36,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/06/14 12:59:35  kupper
+;        Changed policy of floating / double computation.
+;
 ;        Revision 2.1  2000/06/13 14:29:01  kupper
 ;        New, simple, but convenient.
 ;
@@ -43,6 +49,7 @@
 
 Function Angle2Slope, s
 
-   return, tan(s/180d*!DPI)
+   If size(s, /Tname) eq "DOUBLE" then pi = !DPI else pi = !PI
+   return, tan(s*pi/180)
 
 End

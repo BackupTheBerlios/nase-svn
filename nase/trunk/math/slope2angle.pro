@@ -22,7 +22,10 @@
 ;         (-90°, +90°)
 ;  
 ; RESTRICTIONS:
-;  Computation is performed in double precision.
+;  Computation is performed (and result is returned) in single
+;  precision, if the argument is of integer type or float. Computation
+;  is performed in double precision, if the argument is of type
+;  double.
 ;  
 ; PROCEDURE:
 ;  Straightforward ATAN().
@@ -36,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/06/14 12:59:36  kupper
+;        Changed policy of floating / double computation.
+;
 ;        Revision 2.1  2000/06/13 14:29:01  kupper
 ;        New, simple, but convenient.
 ;
@@ -43,6 +49,7 @@
 
 Function Slope2Angle, s
 
-   return, atan(s)/!DPI*180d
+   If size(s, /Tname) eq "DOUBLE" then pi = !DPI else pi = !PI
+   return, atan(s)*180/pi
 
 End
