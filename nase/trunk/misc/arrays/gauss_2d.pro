@@ -172,6 +172,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.21  2000/09/01 14:17:36  saam
+;              replaced [] by () array indexing
+;
 ;        Revision 1.20  2000/08/11 14:38:44  kupper
 ;        Polished Header. (Not translated, sorry...)
 ;        Now using extended form of Distance() to scale to standard
@@ -300,10 +303,10 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
    ;; Furthermore, Distance() will be scaled by sigma, hence the
    ;; function applied afterwards has sigma=1.
    If Keyword_Set(WARP) and not Keyword_Set(GROUNDWIDTH) then $
-    WARP[2] = sqrt(-2*alog(WARP[2]))
+    WARP(2) = sqrt(-2*alog(WARP(2)))
 
    ;; Directions are opposite with the gauss function:
-   If Keyword_Set(WARP) then WARP[1] = -WARP[1]
+   If Keyword_Set(WARP) then WARP(1) = -WARP(1)
 
 
    ;; 2-d result, xsigma != ysigma
