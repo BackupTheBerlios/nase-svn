@@ -8,26 +8,44 @@
 ; PURPOSE: Definition eines User-Plotsymbols entsprechend einer
 ;          angegebenen Orientierung.
 ;
-; CATEGORY: Graphic, Visualisierung
+; CATEGORY:
+;  Array
+;  Graphic
+;  NASE
 ;
 ; CALLING SEQUENCE: Der Aufruf erfolgt üblicherweise innerhalb eines
 ;                   Plot-Kommandos:
-;                   Plot, [blablabla], PSYM = OrientSym( angle [,/RAD] [,/DIRECTION] 
-;                                                              [,/FILL] [,/THICK] )
+;*Plot, (blablabla), PSYM = OrientSym( angle [,/RAD] [,/DIRECTION] 
+;*                                     [,/FILL] [,/THICK] )
 ;
 ; INPUTS: angle: Der Orientierungswinkel in Grad. (Wenn /RAD angegeben 
 ;                wird in Radiant.)
 ;
-; KEYWORD PARAMETERS: RAD: Wird dieses Schlüsselwort gesetzt, so
+; KEYWORD PARAMETERS: 
+;                    RAD:: Wird dieses Schlüsselwort gesetzt, so
 ;                          werden alle Winkelangaben als Radiant
 ;                          interpretiert, sonst als Grad.
-;               DIRECTION: Es wird ein Richtungssymbol generiert (ein
+;              DIRECTION:: Es wird ein Richtungssymbol generiert (ein
 ;                          Pfeil), sonst ein Orientierungssymbol (eine 
 ;                          gerade Linie)
-;                    FILL: Es werden ausgefüllte Symbole generiert,
+;                   FILL:: Es werden ausgefüllte Symbole generiert,
 ;                          sonst nur Strichsymbole.
-;                   THICK: Gibt bei Strichsymbolen die dicker der
+;                  THICK:: Gibt bei Strichsymbolen die dicker der
 ;                          Striche an. Default ist 1.
+;               DISPLACE:: Generate a plotsymbol that is slightly
+;                          displaced from the plotting center,
+;                          perpendicular to the symbol
+;                          orientation. This may be used to prevent
+;                          covering of symbols when overplotting with
+;                          the <*>/OPLOT</*> option. <*>DISPLACE</*>
+;                          should be set to a small value, in the
+;                          range of <*>[-1,1]</*>. <BR>
+;                          Note: When using
+;                          the <*>/FILL</*> option, lines and arrows
+;                          will have a thickness of <*>0.3</*>. So
+;                          setting <*>DISPLACE=0.3</*> when
+;                          overplotting should place symbols right
+;                          aside the original symbols.
 ;
 ; OUTPUTS: Das Funktionsergebnis ist - völlig unabhängig von jeglichem 
 ;          Input (!) - immer 8.
@@ -38,25 +56,19 @@
 ; PROCEDURE: Symbolkoordinaten richtig drehen und dann Symbol mit
 ;            UserSym (Standard-IDL) definieren. 8 zurückgeben.
 ;
-; EXAMPLE: Plot, indgen(10), PSYM=-OrientSym(45, /DIRECTION, /FILL), SYMSIZE=5
+; EXAMPLE:
+;*Plot, indgen(10), PSYM=-OrientSym(45, /DIRECTION, /FILL), SYMSIZE=5
 ;
-; SEE ALSO: <A HREF="#SYMBOLPLOT">SymbolPlot</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.2  2000/10/01 14:50:42  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 2.1  1998/05/26 14:43:26  kupper
-;               Neu, insbesondere für den SymbolPlot gedacht.
-;
+; SEE ALSO:
+;  <A>SymbolPlot</A>
 ;-
 
-Function OrientSym, _angle, rad=RAD, DIRECTION=direction, FILL=fill, THICK=thick
+Function OrientSym, _angle, rad=RAD, DIRECTION=direction, FILL=fill, $
+                    THICK=thick, DISPLACE=displace
 
    Default, fill, 0
    Default, thick, 0
+   Default, displace, 0
 
    If not Keyword_Set(RAD) then angle = _angle/180.*!DPI else angle = _angle
 
@@ -91,6 +103,11 @@ Function OrientSym, _angle, rad=RAD, DIRECTION=direction, FILL=fill, THICK=thick
    Endif else begin
       If Keyword_Set(FILL) then symbol = fillline else symbol = line
    EndElse
+
+   ;;------------------> Displacement in y-direction:
+   symbol = float(Temporary(symbol))
+   symbol[1, *] = symbol[1, *]+displace
+   ;;--------------------------------
 
    usersym, rotmatrix#symbol, FILL=fill, THICK=thick
 
