@@ -90,7 +90,13 @@ PRO OPlotMaximumFirst, z, zz $
       Console, /Msg, "Passed onedimensional data. Fallback to normal " + $
         "PLOT routine."
       if set(color) then color_ = color[0]
-      Plot, z, zz $
+      If set(zz) then $
+        Plot, z, zz $
+        , LINESTYLE=linestyle, PSYM=psym, THICK=thick $
+        , COLOR=color_, XRANGE=xrange $
+        , _EXTRA=_extra $
+        else $
+        Plot, z $
         , LINESTYLE=linestyle, PSYM=psym, THICK=thick $
         , COLOR=color_, XRANGE=xrange $
         , _EXTRA=_extra
