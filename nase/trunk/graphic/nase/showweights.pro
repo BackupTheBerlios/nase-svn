@@ -1,15 +1,15 @@
 ;+
 ; NAME: ShowWeights
 ;
-; PURPOSE: formt eine Gewichtsmatrix um und stellt diese auf dem Bildschirm dar.
-;          dabei werden die Gewichte der Verbindungen NACH Neuron#0
+; PURPOSE: Formt eine Gewichtsmatrix um und stellt diese auf dem Bildschirm dar.
+;          Dabei werden die Gewichte der Verbindungen NACH Neuron#0
 ;          (also dessen rezeptives Feld) in der linken
 ;          oberen Ecke des Fensters als grau-schattierte Kaestchen
-;          gezeigt (Keyword /Tos oder /RECEPTIVE), die Gewichte der Verbindungen NACH Neuron#1 rechts
+;          gezeigt (Keyword /TOS oder /RECEPTIVE), die Gewichte der Verbindungen NACH Neuron#1 rechts
 ;          daneben usw.
 ;          Seit Version 1.5 können alternativ auch die Verbindungen VON
 ;          den Neuronen dargestellt werden, also deren projektives
-;          Feld (Keyword, /FROMS oder /PROJECTIVE).
+;          Feld (Keyword /FROMS oder /PROJECTIVE).
 ;          Set Version 1.13 werden auch Matrizen mit negativen Werten
 ;          verarbeitet. Sie werden in grün/rot-Schattierungen für
 ;          positive/negative Werte angezeigt.
@@ -19,7 +19,7 @@
 ;          Nichtexistierende Verbindungen (!NONE) werden seit Version 1.17 
 ;          dunkelblau dargestellt.
 ;   
-; CATEGORY: GRAPHIC
+; CATEGORY: GRAPHICS / NASE SPECIFIC ROUTINES
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
 ;                               [,TITEL='Titel'][,GROESSE=ZOOM=Vergrößerungsfaktor]
@@ -33,6 +33,7 @@
 ;                               [,/SURF [,/GRID] [,/SUPERIMPOSE]]
 ;                               [ weitere Surface-/Shade_Surf-Parameter ]
 ;                               [,COLORMODE=colormode] [,/PRINTSTYLE]
+;                               [,SETCOL=setcol]
 ;                               [,GET_BASE=Base_ID] 
 ;                               [,GET_MAXCOL=Farbindex] [,GET_COLORMODE=cm]
 ;                             ( [,GET_INFO=positioninfo] [,GET_COLORS=usedcolors] )
@@ -89,6 +90,10 @@
 ;                             für Farbschattierungen benutzt. Die Farben orange
 ;                             und blau werden NICHT gesetzt.
 ;                             (gedacht für Ausdruck von schwarzweiss-Zeichnungen.)
+;                     SETCOL: Bei SETCOL=1 ändert ShowWeights bei jedem Aufruf
+;                             die Farbpalette. Dieses evtl unerwünschte
+;                             Verhalten kann man SETCOL=0 unterbunden werden.
+;                             Default: SETCOL=1 
 ;                       SURF: Wenn gesetzt, werden die
 ;                             rezeptiven/projektiven Felder als
 ;                             Surface-Plots dargestellt.
@@ -166,6 +171,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.28  1999/08/18 09:56:25  thiel
+;           New keyword: SETCOL to prevent color flickering in multi-sheet-
+;           applications.
+;
 ;       Revision 2.27  1998/05/26 13:15:43  kupper
 ;              1. Die Routinen benutzen die neuen NASE-Colortables
 ;              2. Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
@@ -311,7 +320,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                  GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, COLORMODE=colormode, $
                  SURF=surf, GRID=grid, SUPERIMPOSE=superimpose, $
                  GET_INFO=get_info, GET_COLORS=get_colors, $
-                 PRINTSTYLE=printstyle, $
+                 PRINTSTYLE=printstyle, SETCOL=setcol, $
                  _EXTRA=_extra
 
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -324,6 +333,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
    Default, XGroesse, Groesse
    default, YGroesse, Groesse
    Default, PRINTSTYLE, 0
+   Default, setcol, 1
    default, _extra, {title:''}  ;Title wird eh nich benutzt
 
    If !D.Name ne "PS" then begin
@@ -404,13 +414,24 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
       IF Keyword_Set(Delay) THEN MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w) $
       ELSE MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
         ;;------------------> Farben setzen und Matrix skalieren:
-      old_topcolor = !TOPCOLOR
-      IF NOT KEYWORD_SET(PRINTSTYLE) then begin
-         back = RGB("very dark yellow", INDEX=!TOPCOLOR)
-         fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
-         !TOPCOLOR = !TOPCOLOR-2
-      endif
+      IF Keyword_Set(SETCOL) THEN BEGIN
+         old_topcolor = !TOPCOLOR
+         IF NOT KEYWORD_SET(PRINTSTYLE) then begin
+            back = RGB("very dark yellow", INDEX=!TOPCOLOR)
+            fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
+            !TOPCOLOR = !TOPCOLOR-2
+         ENDIF
+      ENDIF ELSE BEGIN ; Keyword_Set(SETCOL) 
+         old_topcolor = !TOPCOLOR
+         IF NOT KEYWORD_SET(PRINTSTYLE) then begin
+            back = RGB("very dark yellow", INDEX=!TOPCOLOR, /NOALLOC)
+            fore = RGB("pale brown", INDEX=!TOPCOLOR-1, /NOALLOC)
+            !TOPCOLOR = !TOPCOLOR-2
+         ENDIF
+      ENDELSE
 
+         
+ 
       If Keyword_Set(SURF) then begin
          If keyword_set(SUPERIMPOSE) then begin
             IF Keyword_Set(Delay) THEN begin
@@ -418,26 +439,28 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
             endif ELSE begin
                OtherOther= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
             endelse
-            OtherOther = ShowWeights_Scale(OtherOther, /SETCOL, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=printstyle)
+            OtherOther = ShowWeights_Scale(OtherOther, SETCOL=setcol, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=printstyle)
          endif else begin 
-            dummy = ShowWeights_Scale(0, /SETCOL, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=PRINTSTYLE) ;Grautabelle laden
+            dummy = ShowWeights_Scale(0, SETCOL=setcol, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=PRINTSTYLE) ;Grautabelle laden
             nones = where(MatrixMatrix eq !NONE, count)
             If count ne 0 then MatrixMatrix(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
          endelse
-      endif else MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE, PRINTSTYLE=PRINTSTYLE)
+      endif else MatrixMatrix = ShowWeights_Scale(MatrixMatrix, SETCOL=setcol, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE, PRINTSTYLE=PRINTSTYLE)
 ;   erase, RGB('orange',/NOALLOC) ;GET_MAXCOL+2
+
       black = !P.Background
       GET_MAXCOL = white
       If Keyword_Set(PRINTSTYLE) then begin
-         orange = 0         ;black
-         fore = 0           ;black
+         orange = 0             ;black
+         fore = 0               ;black
          back = white/2         ;!D.Table_Size-1
          !TOPCOLOR = !D.Table_Size-1
       endif else orange = RGB('orange',/NOALLOC)
       GET_COLORS = [black, back, fore, white, !TOPCOLOR]
       !TOPCOLOR = old_TOPCOLOR
+
       ;;--------------------------------
-   ;;--------------------------------
+      ;;--------------------------------
 
 
 If Set(WinNr) then WSet, WinNr
