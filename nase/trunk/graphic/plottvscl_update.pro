@@ -92,7 +92,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
    
    if keyword_set(INIT) then begin
       ;; this is INIT, use value if explicitely specified:
-      Default, RANGE_IN, Info.Range_In
+      Default, RANGE_IN, [-1d, -1d]
    endif else begin
       ;; this is no INIT, stored value overrides in any case:
       RANGE_IN = Info.Range_In
