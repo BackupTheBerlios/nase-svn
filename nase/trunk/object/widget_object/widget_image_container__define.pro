@@ -6,7 +6,7 @@ Pro MyWidget_Notify_Realize, id
    ;;
 End
 
-Pro widget_PlotTvScl_MyWidget_handler, event
+Pro widget_image_container_MyWidget_handler, event
    Widget_Control, event.id, Get_Uvalue=object
    ;; What to do when the widget produces an event (e.g. is modified
    ;; interactively by the user)
@@ -18,27 +18,27 @@ End
 
 
 ;; ------------ Member access methods -----------------------
-Pro widget_PlotTvScl::size, value
+Pro widget_image_container::size, value
    ;;
    ;; insert code here: set data member and adjust widget
    ;;
 End
 
-Function widget_PlotTvScl::size
+Function widget_image_container::size
    ;;
    ;; insert code here
    ;;
 End
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
-Function widget_PlotTvScl::init, _REF_EXTRA=_ref_extra
+Function widget_image_container::init, _REF_EXTRA=_ref_extra
    message, /Info, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
    If not Init_Superclasses(self, _EXTRA=_ref_extra) then return, 0
 
-   ;; Try whatever initialization is needed for a PlotTvScl object,
+   ;; Try whatever initialization is needed for a image_container object,
    ;; IN ADDITION to the initialization of the superclasses:
    ;;
    ;; insert code here
@@ -57,7 +57,7 @@ Function widget_PlotTvScl::init, _REF_EXTRA=_ref_extra
    ;; self.w_size = CW_fslider2(self.widget, /Vertical, Minimum=0.0, Maximum=1.0, $
    ;;                           StepWidth=0.01, Value=self.size, Title="size", $
    ;;                           UValue=self, $
-   ;;                           Event_Pro="PlotTvScl_size_handler")
+   ;;                           Event_Pro="image_container_size_handler")
    ;;
 
    ;; note: adding widgets will never fail.
@@ -69,18 +69,18 @@ Function widget_PlotTvScl::init, _REF_EXTRA=_ref_extra
    return, 1                    ;TRUE
 End
 
-Pro widget_PlotTvScl::cleanup, _REF_EXTRA = _ref_extra
+Pro widget_image_container::cleanup, _REF_EXTRA = _ref_extra
    message, /Info, "I'm dying!"
    Cleanup_Superclasses, self, _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
-   ;; Now do what is needed to cleanup a PlotTvScl object:
+   ;; Now do what is needed to cleanup a image_container object:
    ;;
    ;; insert code here
    ;;
 End
 
-Pro widget_PlotTvScl::reset
+Pro widget_image_container::reset
    ;; set all data members to defaults, using the member access methods (this
    ;; will also set the widgets correctly!)
    ;;
@@ -93,8 +93,8 @@ End
 ;; ------------ Private --------------------
 
 ;; ------------ Object definition ---------------------------
-Pro widget_PlotTvScl__DEFINE
-   dummy = {widget_PlotTvScl, $
+Pro widget_image_container__DEFINE
+   dummy = {widget_image_container, $
             $
             inherits basic_widget_object $
            }
