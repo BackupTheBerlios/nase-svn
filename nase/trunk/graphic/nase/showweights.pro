@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.5  1997/11/13 13:24:14  saam
+;             Device Null wird uenterstuetzt
+;
 ;       Revision 2.4  1997/10/30 13:00:53  kupper
 ;              PROJECTIVE, RECEPTIVE als Alternative zu TOS, FROMS eingeführt.
 ;
@@ -113,11 +116,15 @@
 PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, $
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
-                 PROJECTIVE=projective, RECEPTIVE=receptive
+                 PROJECTIVE=projective, RECEPTIVE=receptive, $
+                 NOWIN = nowin
+
+   IF !D.Name EQ 'NULL' THEN RETURN
 
    Default, FROMS, PROJECTIVE
    Default, TOS, RECEPTIVE
 
+   IF Keyword_Set(NOWIN) THEN Winnr = !D.Window
    If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
    if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
