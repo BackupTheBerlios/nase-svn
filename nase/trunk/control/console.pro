@@ -137,19 +137,20 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    END
 
    mmode = GetHTag(_console, 'mode')
-   if (mmode eq 1) and not $
-     Widget_Info(/Valid_Id, GetHTag(_console, 'base')) then begin
-      Message, /Informational, "Console window does not exist any " + $
-        "more. Re-opening."
-      ;; PROGRAMMER please keep in mind that the folloiwng code must
-      ;; be equivalent to the code that is used inside
-      ;; "initconsole.pro" for creation of the original widget. Keep
-      ;; in sync!
-      newbase = widget_base(title=GetHTag(_console, 'title'),/column)
-      SetHTag, _console, 'base', newbase
-      SetHTag, _console, 'cons', widget_text(newbase,xsize=80,ysize=15,/scroll,value=Queue(GetHTag(_console, 'viz')))
-      SetHTag, _console, 'timewid', widget_text(newbase,xsize=80,ysize=1,value='')
-      widget_control,newbase,/realize  
+   if mmode eq 1 then begin
+      if not Widget_Info(/Valid_Id, GetHTag(_console, 'base')) then begin
+         Message, /Informational, "Console window does not exist any " + $
+           "more. Re-opening."
+         ;; PROGRAMMER please keep in mind that the folloiwng code must
+         ;; be equivalent to the code that is used inside
+         ;; "initconsole.pro" for creation of the original widget. Keep
+         ;; in sync!
+         newbase = widget_base(title=GetHTag(_console, 'title'),/column)
+         SetHTag, _console, 'base', newbase
+         SetHTag, _console, 'cons', widget_text(newbase,xsize=80,ysize=15,/scroll,value=Queue(GetHTag(_console, 'viz')))
+         SetHTag, _console, 'timewid', widget_text(newbase,xsize=80,ysize=1,value='')
+         widget_control,newbase,/realize  
+      endif
    endif
 
    CASE mmode OF
