@@ -214,7 +214,7 @@ sub showdir {
   if ((!$mydir) || ($targetdir =~ m,$tmprep,)){
     # search for non-dot subdirs and IDL files
     opendir(DIR, "$DOCDIR/$mydir") || print "can't opendir $mydir: $!\n";
-    @sdir = grep { /^[^\.]/ && -d "$DOCDIR/$mydir/$_" && ! /(CVS)|(RCS)/ } readdir(DIR);
+    @sdir = grep { /^[^\.]/ && -d "$DOCDIR/$mydir/$_" && ! /(CVS)|(RCS)/ && ! /doc/ } readdir(DIR);
     rewinddir(DIR);
     @file = sort grep { /\.pro$/i && -f "$DOCDIR/$mydir/$_" } readdir(DIR);
     closedir DIR;      
