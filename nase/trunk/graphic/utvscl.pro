@@ -6,9 +6,9 @@
 ;  contents.
 ;
 ; PURPOSE:            Ersetzt TvScl und hat folgende tolle, neue Features:
-;                         + Device-unabhaegige Darstellung
-;                         + Positionierung in Normalkoordinaten
-;                         + Vergroesserung via STRETCH
+;*                         + Device-unabhaegige Darstellung
+;*                         + Positionierung in Normalkoordinaten
+;*                         + Vergroesserung via STRETCH
 ;                     UTvScl gibt (fuer UTvScl) unbekannte Optionen an
 ;                     TvScl weiter, z.B. /ORDER
 ;
@@ -79,192 +79,34 @@
 ;
 ; SEE ALSO:           <A HREF="#UTV">UTv</A>
 ; 
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.37  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.36  2000/09/01 09:17:44  gabriel
-;           !D.{X|Y}_PX_CM instead of hardcoding 40.0 isn't correct for postscript.
-;           Exception included!
-;
-;     Revision 2.35  2000/08/30 22:33:49  kupper
-;     Chaged to use !D.{X|Y}_PX_CM instead of hardcoding 40.0, as it has
-;     different value on WIN device!
-;
-;     Revision 2.34  1999/11/04 17:31:40  kupper
-;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
-;     -extremely- slow down performance on True-Color-Displays when
-;     connecting over a network!
-;     Furthermore, it seems to me, the only thing they do is to work
-;     around a bug in IDL 5.0 that wasn't there in IDL 4 and isn't
-;     there any more in IDL 5.2.
-;     I do now handle this special bug by loading the translation table
-;     with a linear ramp. This is much faster.
-;     However, slight changes in behaviour on a True-Color-Display may
-;     be encountered.
-;
-;     Revision 2.33  1999/09/23 14:10:31  kupper
-;     No changes.
-;
-;     Revision 2.32  1999/09/23 13:20:57  kupper
-;     Added a long() in __ScaleArray.
-;     Removed double copying of Image!!!
-;
-;     Revision 2.31  1999/09/23 12:23:19  kupper
-;     Replaced weird looking __ScaleArray-Function.
-;     Hope nothing broke...
-;
-;     Revision 2.30  1999/07/16 14:22:58  kupper
-;     Bug fix: Min & Max of array were allways recomputed, not only in the
-;     case of CUBIC interpolation. This led to vanishing NONEs and
-;     misbehaviour of showweights/tomwaits. Fixed.
-;
-;     Revision 2.29  1999/06/10 12:35:27  kupper
-;     Added Correction of Minimum/Maximum if CUBIC Interpolation was used (to prevent color-table-artefacts!)
-;
-;     Revision 2.28  1999/06/07 14:40:44  kupper
-;     Added CUBIC,INTERP,MINUS_ONE-Keywords for ConGrid.
-;
-;     Revision 2.27  1999/03/17 16:29:58  saam
-;           TOP keyword implemented
-;
-;     Revision 2.26  1998/08/10 08:37:15  gabriel
-;           ORDER Keyword fuer Polygon-Plot neu
-;
-;     Revision 2.25  1998/08/07 19:08:01  gabriel
-;           TOP Keyword implementiert
-;
-;     Revision 2.24  1998/08/07 15:33:39  gabriel
-;          PolyPlot implementiert
-;
-;     Revision 2.23  1998/04/18 15:09:02  kupper
-;            Fehler bei der !Revertpscolors-Verarbeitung.
-;
-;     Revision 2.22  1998/04/09 12:35:59  kupper
-;            Bug: Der Congrid-Aufruf stürzte ab bei zu kleinen Ausmaßen.
-;
-;     Revision 2.21  1998/04/09 12:21:50  saam
-;           first argument is not changed any more
-;
-;     Revision 2.20  1998/03/21 16:27:44  saam
-;           now handles array of types like (1,m,n)
-;
-;     Revision 2.19  1998/03/14 17:34:52  saam
-;           new Keywords [XY]_SIZE_NORM blocked the use of [XY]_SIZE
-;           because of ambiguous keyword abbreviation, therefore
-;           renamed it to NORM_[XY]_SIZE
-;
-;     Revision 2.18  1998/03/12 19:44:08  kupper
-;            X/Y_SIZE_NORM-Keywords hinzugefügt.
-;
-;     Revision 2.17  1998/02/27 13:28:51  saam
-;           verbesserte Implementierung der DEVICE section
-;
-;     Revision 2.16  1998/02/27 13:07:13  saam
-;           Keyword DEVICE hinzugefuegt
-;
-;     Revision 2.15  1998/01/06 13:27:09  saam
-;           fktioniert jetzt auch mit 1-d Arrays
-;
-;     Revision 2.14  1997/12/17 15:28:58  saam
-;           Ergaenzung um optionalen Output Dimension
-;
-;     Revision 2.13  1997/12/17 14:47:18  saam
-;          reden wir nicht davon
-;
-;     Revision 2.12  1997/12/17 14:41:58  saam
-;           Wieder mal ein Bug bei den HREFs
-;
-;     Revision 2.11  1997/12/17 14:38:22  saam
-;           Header geupdated
-;
-;     Revision 2.10  1997/12/17 14:26:00  saam
-;           Keyword NOSCALE hinzugefuegt
-;
-;     Revision 2.9  1997/11/14 16:10:03  saam
-;           Header ergaenzt
-;
-;     Revision 2.8  1997/11/13 13:15:41  saam
-;           Device Null wird unterstuetzt
-;
-;     Revision 2.7  1997/11/12 15:00:38  saam
-;           Keywords X_SIZE und Y_SIZE fktionierten fuer
-;           Fenster nicht richtig
-;
-;     Revision 2.6  1997/11/07 16:10:48  saam
-;          Doku ergaenzt
-;
-;     Revision 2.5  1997/11/07 16:08:11  saam
-;           das Pos-Argument scheint zu fktionieren
-;
-;     Revision 2.4  1997/11/07 15:56:08  saam
-;         Beginn des Einfuegens des Pos-Arguments
-;
-;     Revision 2.3  1997/11/06 18:47:17  saam
-;           Keyword X_Size und Y_Size hinzugefuegt
-;
-;     Revision 2.2  1997/11/06 15:22:26  saam
-;           schaut nicht zu viel TV, UTvScl ist besser
-;
-;
 ;-
 
 
 
-; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top-1 falls top gesetzt)
+; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top falls top gesetzt)
 ; skalierte Version eines Arrays A zurueck
-;FUNCTION __ScaleArray, A, TOP=top
+;Function __ScaleArray, A, TOP=top
 
-;   DEFAULT, top, !D.TABLE_SIZE
-;   _TOP = ROUND(TOP)
-;   _TOP = _TOP < 255.
+;   Default, top, !D.TABLE_SIZE-1
+;   _top = top < (!D.TABLE_SIZE-1)
+;   Return, long(Scl(A, [0, _top]))
 
-;   FAC = (_TOP/FLOAT(!D.TABLE_SIZE))
-;   _A = BYTE(FLOAT(A(*,*)-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(_TOP-1))
-;   IF FAC GT 1. THEN BEGIN
-;      index = where(_A GT MAX(1./FAC *_A),count)
-;      IF count GT 0 THEN  _A(index) = MAX(1./FAC *_A)
-;   ENDIF
-
-;   RETURN, _A
-;END
+;End
 
 
-;; Neue Version von __ScaleArray, R Kupper, Sep 23 1999
-;; Die obige, alte Version scheint mir sehr
-;; "strange"... Außerdem skaliert sie auf TOP-1 und nicht auf
-;; TOP, wie das TvScl tut. Das ist inkonsistent. Der IF-Teil
-;; hätte auch in einer "<" Anweisung erledigt werden können,
-;; aber das Abschneiden oberhalb von !D.TABLE_SIZE, falls
-;; TOP>!D.TABLE_SIZE scheint mir ohnehin nicht geheuer. Eher
-;; sollte dann eben auf deisen Wert skaliert werden.
-;; Auch das Kopieren des Arrays in _A ist nicht nötig und
-;; braucht ev. viel Speicher.
-;; Wieauchimmer, falls die neue Version Probleme hervorruft kann 
-;; man das wieder ändern...
-Function __ScaleArray, A, TOP=top
-
-   Default, top, !D.TABLE_SIZE-1
-
-   _top = top < (!D.TABLE_SIZE-1)
-
-   Return, long(Scl(A, [0, _top]))
-
-End
 
 
 ; TvSCL-Version die das TOP-Keyword richtig behandelt
 PRO __HelpTvScl, A, p1, p2, _EXTRA=e
 
-   IF ExtraSet(e, 'TOP') THEN _A = __ScaleArray(A, TOP=e.top) ELSE _A = __ScaleArray(A)
-   DelTag, e, 'TOP'
-
+;   IF ExtraSet(e, 'TOP') THEN _A = __ScaleArray(A, TOP=e.top) ELSE _A = __ScaleArray(A)
+;   DelTag, e, 'TOP'
+;_A = A
+; the lower routines then called tv, _a
    CASE N_Params() OF
-      1: TV, _A, _EXTRA=e
-      2: TV, _A, p1, _EXTRA = e
-      3: TV, _A, p1, p2, _EXTRA=e
+      1: TVSCL, A, _EXTRA=e
+      2: TVSCL, A, p1, _EXTRA = e
+      3: TVSCL, A, p1, p2, _EXTRA=e
       ELSE: Message, 'something wrong in UTVSCL'
    END
 
@@ -346,6 +188,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
+
+
+   ;; correct handling of top keyword;
+   ;; NASE stanard is that TV and partners use the palette
+   ;; only from 0..!TOPCOLOR, this is ensured here if nothing
+   ;; else is specified
+   IF NOT ExtraSet(E, 'TOP') THEN SetTag, E, "TOP", !TOPCOLOR
 
 
    ; don't modify the original image
