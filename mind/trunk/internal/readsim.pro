@@ -30,13 +30,18 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.2  1999/12/21 09:42:38  saam
+;            return on error now
+;
 ;      Revision 1.1  1999/12/21 09:02:52  saam
 ;            moved to internal, but it can be used by
 ;            the user anyway
 ;
 ;
 ;
-FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, TIME=time, SELECT=select, _EXTRA=e
+FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, TIME=time, SELECT=select
+
+   On_Error, 2
 
    IF Set(TIME) THEN BEGIN
       IF N_Elements(TIME) EQ 1 THEN TIME = [0,TIME]
