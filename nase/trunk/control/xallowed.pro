@@ -25,6 +25,7 @@
 ;  following points are checked in the given order until the first one
 ;  applies):<BR>
 ;
+;  o Allow X connections if running under Windows OS.
 ;  o Forbid X connections, if environment variable DISPLAY is not
 ;    set or is set to the empty string. (As connecting the X
 ;    server would fail anyway.)<BR> 
@@ -72,6 +73,7 @@ Function XAllowed
    ;;  The following points are checked in the given order until the
    ;;  first one applies:
    ;;
+   ;;  o Allow X connections if running under Windows OS.
    ;;  o Forbid X connections, if environment variable DISPLAY is not
    ;;    set or is set to the empty string. (As connecting the X
    ;;    server would fail anyway.)
@@ -83,6 +85,13 @@ Function XAllowed
    ;;  o Forbid X connections. (As session is not interactive, e.g. a
    ;;    nohup session).
  
+
+   IF (fix(!VERSION.Release) ge 4) THEN $
+    OS_FAMILY=!version.OS_FAMILY $
+   ELSE $
+    OS_FAMILY='unix'
+   
+   IF StrUpcase(OS_FAMILY) EQ "WINDOWS" THEN Return, 1
 
    If GetEnv("DISPLAY") eq "" then return, 0
    
