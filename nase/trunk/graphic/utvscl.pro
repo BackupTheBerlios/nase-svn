@@ -77,6 +77,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.33  1999/09/23 14:10:31  kupper
+;     No changes.
+;
 ;     Revision 2.32  1999/09/23 13:20:57  kupper
 ;     Added a long() in __ScaleArray.
 ;     Removed double copying of Image!!!
@@ -229,7 +232,7 @@ PRO __HelpTvScl, A, p1, p2, _EXTRA=e
 
    IF ExtraSet(e, 'TOP') THEN _A = __ScaleArray(A, TOP=e.top) ELSE _A = __ScaleArray(A)
    DelTag, e, 'TOP'
-help, max(_A)
+
    CASE N_Params() OF
       1: TV, _A, _EXTRA=e
       2: TV, _A, p1, _EXTRA = e
@@ -467,6 +470,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                                          xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
    IF N_Params() EQ 4 THEN dimension = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $
                                          xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
+
 
 END
 
