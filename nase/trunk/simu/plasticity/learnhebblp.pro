@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.19  1998/05/12 10:25:33  thiel
+;              Bugfix im Delay-Teil, da fehlte ein DW.
+;
 ;       Revision 1.18  1998/02/11 17:57:10  thiel
 ;              Benutzt nicht mehr die Info()-Funktion, sondern
 ;              den .info-Tag, geht schneller.
@@ -185,7 +188,7 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
                Handle_Value, DW.T2C(tn), wi
                deltaw = Alpha*(GetRecall(LP))(wi) - DW.W(wi)
                IF Set(NONSELF) THEN BEGIN
-                  self = WHERE(C2S(wi) EQ tn, count)
+                  self = WHERE(DW.C2S(wi) EQ tn, count)
                   IF count NE 0 THEN deltaw(self) = 0.0
                ENDIF
                DW.W(wi) = DW.W(wi) + Rate*deltaw
