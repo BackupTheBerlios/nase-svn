@@ -1,7 +1,7 @@
 ;+
-; NAME:                SetWeights
+; NAME:                SetDelays
 ;
-; PURPOSE:             Setzt die Gewichtsmatrix der DelayWeigh-Struktur 
+; PURPOSE:             Setzt die Delaysmatrix der DelayWeigh-Struktur 
 ;
 ; CATEGORY:            SIMULATION CONNECTIONS
 ;
@@ -17,11 +17,18 @@
 ;                      D = FltArr(5*5, 10*10)
 ;                      SetDelays, DW, D
 ;
-; SEE ALSO:            <A HREF="#INITDW">InitDW</A>, <A HREF="#WEIGHTS#">Weights</A>
+; SEE ALSO:            <A HREF="#INITDW">InitDW</A>, <A HREF="#DELAYS#">Delays</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/02/05 13:16:06  saam
+;           + Gewichte und Delays als Listen
+;           + keine direkten Zugriffe auf DW-Strukturen
+;           + verbesserte Handle-Handling :->
+;           + vereinfachte Lernroutinen
+;           + einige Tests bestanden
+;
 ;     Revision 2.2  1998/01/29 16:15:39  saam
 ;           last revision was completely unusable,
 ;           now it seems to work :-0
@@ -31,21 +38,25 @@
 ;
 ;
 ;-
-PRO SetDelays, _DW, W
+PRO SetDelays, _DW, D
    
-   IF NOT Contains(Info(_DW), 'DW_DELAY_WEIGHT', /IGNORECASE) THEN Message, 'no DelayWeigh structure, but ...'+Info(_DW)
+   IStr = Info(_DW) 
+   IF (IStr EQ 'SDW_WEIGHT') OR (IStr EQ 'SDW_DELAY_WEIGHT') THEN sdw = 1 ELSE sdw = 0
+   IF NOT sdw AND (IStr NE 'DW_WEIGHT') AND (IStr NE 'DW_DELAY_WEIGHT') THEN Message,'DW structure expected, but got '+iStr+' !'
    
+   tS = DWDim(_DW, /TW)*DWDim(_DW, /TH)
+   sS = DWDim(_DW, /SW)*DWDim(_DW, /SH)
+
+   IF sdw THEN _DW = SDW2DW(_DW)
+      
    Handle_Value, _DW, DW, /NO_COPY 
-   
-   S = Size(W)
-   IF S(0) NE 2                 THEN Message, 'Delay Matrix has to be two-dimensional'
-   IF S(1) NE DW.target_w*DW.target_h THEN Message, 'wrong target dimensions'
-   IF S(2) NE DW.source_w*DW.source_h THEN Message, 'wrong source dimensions'
-   DW.Delays = W
-
-   FreeSpikeQueue, DW.Queue
-   DW.Queue = InitSpikeQueue(INIT_DELAYS = DW.Delays)
-
+      S = Size(D)
+      IF S(0) NE 2  THEN Message, 'Weight-Matrix has to be two-dimensional'
+      IF S(1) NE tS THEN Message, 'wrong target dimensions'
+      IF S(2) NE sS THEN Message, 'wrong source dimensions'
+      DW.Delays = D
    Handle_Value, _DW, DW, /NO_COPY, /SET
-   
+
+   IF sdw THEN DW2SDW, _DW
+
 END

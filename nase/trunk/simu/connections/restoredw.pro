@@ -30,6 +30,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/02/05 13:16:03  saam
+;           + Gewichte und Delays als Listen
+;           + keine direkten Zugriffe auf DW-Strukturen
+;           + verbesserte Handle-Handling :->
+;           + vereinfachte Lernroutinen
+;           + einige Tests bestanden
+;
 ;     Revision 2.4  1997/12/17 11:00:38  saam
 ;           Bug im verzoegerten Teil: SpikeQueue wurde nicht neu
 ;           initialisiert
@@ -54,11 +61,9 @@
 
 FUNCTION RestoreDW, DW
 
-   Init_SDW, DW
-   DW.Learn = -1
-
-   IF Contains(DW.info, 'DELAY') THEN DW.Queue = InitSpikeQueue( INIT_DELAYS=DW.Delays )
-
-   RETURN, Handle_Create(VALUE=DW, /NO_COPY)
+   IF Info(DW) NE 'DW_WEIGHT' AND Info(DW) NE 'DW_DELAY_WEIGHT' THEN Message,'DW[_DELAY]_WEIGHT structure expected, but got '+Info(DW)+' !'
+   _DW = Handle_Create(!MH, VALUE=DW, /NO_COPY)
+   DW2SDW, _DW
+   RETURN, _DW
 
 END

@@ -25,6 +25,13 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.4  1998/02/05 13:15:59  saam
+;           + Gewichte und Delays als Listen
+;           + keine direkten Zugriffe auf DW-Strukturen
+;           + verbesserte Handle-Handling :->
+;           + vereinfachte Lernroutinen
+;           + einige Tests bestanden
+;
 ;     Revision 2.3  1997/12/10 15:53:36  saam
 ;           Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;           nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -40,15 +47,14 @@
 ;
 ;-
 
-PRO BOOSTWEIGHT,_V_Matrix, factor
+PRO BOOSTWEIGHT, DW, factor
 
-   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY
-
-   index = where(V_Matrix.Weights NE !NONE,count)
+   W = Weights(DW)
+   index = where(W NE !NONE,count)
      
-   IF count GT 0 THEN BEGIN  V_Matrix.Weights(index) = V_Matrix.Weights(index)*factor
+   IF count GT 0 THEN BEGIN  W(index) = W(index)*factor
    END ELSE MESSAGE,'Irgendwas ist faul mit der Gewichtsmatrix: alle Gewichte !NONE' 
    
-   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
+   Weights, DW, W
 
 END

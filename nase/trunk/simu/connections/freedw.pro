@@ -18,6 +18,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  1998/02/05 13:16:01  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 2.6  1997/12/10 15:53:38  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -40,17 +47,21 @@
 ;-
 PRO FreeDW, _DW
 
+   IF (Info(_DW) EQ 'DW_DELAY_WEIGHT') OR (Info(_DW) EQ 'DW_WEIGHT') THEN RETURN
+   IF (Info(_DW) NE 'SDW_DELAY_WEIGHT') AND (Info(_DW) NE 'SDW_WEIGHT') THEN Message,'expected DW structure but got '+STRING(Info(_DW))+' !'
+
    Handle_Value, _DW, DW, /NO_COPY
 
-   FOR source=0, DW.source_w*DW.source_h-1 DO IF DW.STarget(source) NE -1 THEN BEGIN
-      Handle_Free, DW.STarget(source) 
-      DW.STarget(source) = -1
+   FOR s=0, DW.source_w*DW.source_h-1 DO IF DW.S2C(s) NE -1 THEN BEGIN
+      Handle_Free, DW.S2C(s) 
+      DW.S2C(s) = -1
    END
 
-   FOR target=0, DW.target_w*DW.target_h-1 DO IF DW.SSource(target) NE -1 THEN BEGIN
-      Handle_Free, DW.SSource(target)
-      DW.SSource(target) = -1
+   FOR t=0, DW.target_w*DW.target_h-1 DO IF DW.T2C(t) NE -1 THEN BEGIN
+      Handle_Free, DW.T2C(t)
+      DW.T2C(t) = -1
    END
+
 
    IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN FreeSpikeQueue, DW.Queue 
 

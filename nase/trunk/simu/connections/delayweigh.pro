@@ -32,6 +32,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.28  1998/02/05 13:16:00  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 1.27  1997/12/10 15:53:37  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -128,22 +135,28 @@
 ;                         waren im foldenden auch wirksam sind, Mirko, 5.8.97
 ;
 ;-
-FUNCTION DelayWeigh, _DelMat, InHandle
+FUNCTION DelayWeigh, _DW, InHandle
    
-Handle_Value, _DelMat, DelMat, /NO_COPY 
-Handle_Value, InHandle, In
+   tw = DWDim(_DW, /TW)
+   th = DWDim(_DW, /TH)
+   sw = DWDim(_DW, /SW)
+   sh = DWDim(_DW, /SH)
+
+
+   Handle_Value, _DW, DW, /NO_COPY 
+   Handle_Value, InHandle, In
 
 ;----- Der Teil ohne Delays:   
-   IF (DelMat.info EQ 'DW_WEIGHT') THEN BEGIN
+   IF (Info(DW) EQ 'SDW_WEIGHT') THEN BEGIN
 
 
-      IF Handle_Info(DelMat.Learn) THEN Handle_Value, DelMat.Learn, In, /SET $
-      ELSE  DelMat.Learn = Handle_Create(VALUE=In)
+      IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, In, /SET $
+      ELSE  DW.Learn = Handle_Create(VALUE=In)
 
       IF In(0) EQ 0 THEN BEGIN
          result = FltArr(2,1)
-         result(1,0) = DeLMat.target_w*DelMat.Target_h
-         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
+         result(1,0) = tw*th
+         Handle_Value, _DW, DW, /NO_COPY, /SET 
          RETURN, result
                                 ;aus der Funktion rausspringen, wenn
                                 ;ohnehin keine Aktivitaet im Input vorliegt:
@@ -152,91 +165,92 @@ Handle_Value, InHandle, In
       
       ; asi : active source index
       ; asn : active source neuron
-      ; tn  : target neurons
-      vector = FltArr(DeLMat.target_w*DelMat.Target_h)
-
+      ; wi  : weight indices
+      vector = FltArr(tw*th)
+      
       FOR asi=2,In(0)+1 DO BEGIN
          asn = In(asi)
-         IF DelMat.STarget(asn) NE -1 THEN BEGIN
-            Handle_Value, DelMat.STarget(asn), tn
-            vector(tn) = vector(tn) + DelMat.Weights( tn, asn )
+         IF DW.S2C(asn) NE -1 THEN BEGIN
+            Handle_Value, DW.S2C(asn), wi
+            ; C2T(wi) has each target neuron only once,
+            ; because there is only one connection between
+            ; source and target; therefore next assignment is ok
+            vector(DW.C2T(wi)) = vector(DW.C2T(wi)) + DW.W(wi)
          END
       END
 
-      Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
+      Handle_Value, _DW, DW, /NO_COPY, /SET 
       RETURN, Spassmacher(vector)
       
       
       
       
 ;----- Der Teil mit Delays:      
-   END ELSE BEGIN
+   END ELSE IF (Info(DW) EQ 'SDW_DELAY_WEIGHT') THEN BEGIN
       
       ; acili: active connection index list IN
       ; acilo: active connection index list OUT
       ; asi  : active source index
       ; asn  : active source neuron
       ; atn  : active target neurons
-      ; snc  : total number of source neurons 
-      ; tnc  : total number of target neurons 
-      snc = LONG(DelMat.source_w*DelMat.target_h)
-      tnc = LONG(DelMat.target_w*DelMat.target_h)
 
       acili_empty = 1 ;TRUE
 
+
+      ; compute the weight indices receiving input from IN in a list named ACILI
       FOR asi= 2, In(0)+1 DO BEGIN
          asn = In(asi)
-         IF DelMat.STarget(asn) NE -1 THEN BEGIN
-            Handle_Value, DelMat.STarget(In(asi)), atn            
-            aci = asn*tnc + atn
+         IF DW.S2C(asn) NE -1 THEN BEGIN
+            Handle_Value, DW.S2C(asn), wi            
             IF NOT acili_empty THEN BEGIN
-               acili = [acili, aci] 
+               acili = [acili, wi] 
             END ELSE BEGIN
-               acili = aci
+               acili = wi
                acili_empty = 0
             END
          END
       END
 
-      
+      ; convert ACILI into an SSpass list 
       IF NOT acili_empty THEN BEGIN
-         acili = [n_elements(acili), snc*tnc, acili]
+         acili = [n_elements(acili), N_Elements(DW.W), acili]
       END ELSE BEGIN
-         acili = [0, snc*tnc]
+         acili = [0, N_Elements(DW.W)]
       END
 
-      tmpQU = DelMat.Queue
+      ; enQueue it and deQueue results in ACILO
+      tmpQU = DW.Queue
       acilo = SpikeQueue( tmpQu, acili ) 
-      DelMat.Queue = tmpQu
+      DW.Queue = tmpQu
 
-      IF Handle_Info(DelMat.Learn) THEN Handle_Value, DelMat.Learn, acilo, /SET $
-      ELSE DelMat.Learn = Handle_Create(VALUE=acilo)
+      IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, acilo, /SET $
+      ELSE DW.Learn = Handle_Create(VALUE=acilo)
 
-      vector = FltArr(tnc)
+      vector = FltArr(tw*th)
 
+      ; create a Spass vector with the output activity
       IF acilo(0) GT 0 THEN BEGIN
          counter = 0
          acilo = acilo(2:acilo(0)+1)
          
-         FOR source = 0l, snc-1 DO BEGIN
-            cutoff = MAX(WHERE( acilo LT (source+1)*tnc))
-            IF cutoff NE -1 THEN BEGIN
-               tn = acilo(0:cutoff) MOD tnc
-               
-               vector(tn) = vector(tn) + DelMat.Weights(acilo(0:cutoff))
-               
-               nel = N_Elements(acilo)-1
-               IF nel GT cutoff THEN acilo = acilo(cutoff+1:nel) ELSE source = snc
-            END
+         ; wi: weight index
+         FOR i=0,N_Elements(acilo)-1 DO BEGIN
+            wi = acilo(i)
+            ; get corresponding target index
+            vector(DW.C2T(wi)) = vector(DW.C2T(wi)) + DW.W(wi)
          END
 
-         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
+
+         Handle_Value, _DW, DW, /NO_COPY, /SET 
          RETURN, Spassmacher(vector)
       END ELSE BEGIN
-         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
-         RETURN, [0, tnc]
+         Handle_Value, _DW, DW, /NO_COPY, /SET 
+         RETURN, [0, tw*th]
       END
               
+      
+   END ELSE Message, 'SDW[_DELAY]_WEIGHT structure expected, but got '+Info(DW)
 
-   END   
+
+
 END   

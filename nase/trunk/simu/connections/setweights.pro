@@ -22,6 +22,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/02/05 13:16:09  saam
+;           + Gewichte und Delays als Listen
+;           + keine direkten Zugriffe auf DW-Strukturen
+;           + verbesserte Handle-Handling :->
+;           + vereinfachte Lernroutinen
+;           + einige Tests bestanden
+;
 ;     Revision 2.1  1998/01/05 17:20:23  saam
 ;           Jo, hmm, viel Spass...
 ;
@@ -29,14 +36,22 @@
 ;-
 PRO SetWeights, _DW, W
    
-   Handle_Value, _DW, DW, /NO_COPY 
+   IStr = Info(_DW) 
+   IF (IStr EQ 'SDW_WEIGHT') OR (IStr EQ 'SDW_DELAY_WEIGHT') THEN sdw = 1 ELSE sdw = 0
+   IF NOT sdw AND (IStr NE 'DW_WEIGHT') AND (IStr NE 'DW_DELAY_WEIGHT') THEN Message,'DW structure expected, but got '+iStr+' !'
    
-   S = Size(W)
-   IF S(0) NE 2                 THEN Message, 'Weight-Matrix has to be two-dimensional'
-   IF S(1) NE target_h*target_s THEN Message, 'wrong target dimensions'
-   IF S(2) NE source_w*source_h THEN Message, 'wrong source dimensions'
-   DW.Weights = W
+   tS = DWDim(_DW, /TW)*DWDim(_DW, /TH)
+   sS = DWDim(_DW, /SW)*DWDim(_DW, /SH)
 
+   IF sdw THEN _DW = SDW2DW(_DW)
+      
+   Handle_Value, _DW, DW, /NO_COPY 
+      S = Size(W)
+      IF S(0) NE 2  THEN Message, 'Weight-Matrix has to be two-dimensional'
+      IF S(1) NE tS THEN Message, 'wrong target dimensions'
+      IF S(2) NE sS THEN Message, 'wrong source dimensions'
+      DW.Weights = W
    Handle_Value, _DW, DW, /NO_COPY, /SET
-   
+
+   IF sdw THEN DW2SDW, _DW
 END

@@ -112,6 +112,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  1998/02/05 13:16:02  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 2.9  1997/12/10 15:53:39  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -262,29 +269,22 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
       
       Default, delay, 0
       
-      _DelMat = Handle_Create(VALUE={ info    : 'DW_DELAY_WEIGHT',$
-                 source_w: s_width,$
-                 source_h: s_height,$
-                 target_w: t_width,$
-                 target_h: t_height,$
-                 STarget : LonArr(s_width*s_height),$
-                 SSource : LonArr(t_width*t_height),$
-                 Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
-;                 Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
-                 Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height ),$
-                 Learn   : -1l $
-               }, /NO_COPY)
+      _DW = Handle_Create(VALUE={ info    : 'DW_DELAY_WEIGHT',$
+                                  source_w: s_width,$
+                                  source_h: s_height,$
+                                  target_w: t_width,$
+                                  target_h: t_height,$
+                                  Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
+                                  Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height )$
+                                }, /NO_COPY)
    END ELSE BEGIN         
-      _DelMat = Handle_Create(VALUE={info    : 'DW_WEIGHT', $
-                source_w: s_width,$
-                source_h: s_height,$
-                target_w: t_width,$
-                target_h: t_height,$
-                STarget : LonArr(s_width*s_height),$
-                SSource : LonArr(t_width*t_height),$
-                Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
-                Learn   : -1l $
-               }, /NO_COPY)
+      _DW = Handle_Create(VALUE={info    : 'DW_WEIGHT', $
+                                 source_w: s_width,$
+                                 source_h: s_height,$
+                                 target_w: t_width,$
+                                 target_h: t_height,$
+                                 Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )$
+                                }, /NO_COPY)
    END
    
 
@@ -296,71 +296,71 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
 ; --------------------- Gauss, Linear, Const, DOG: -----------------------------------------------
    If keyword_set(TARGET_TO_SOURCE) then begin ;------------Target -> Source: 
-      if set (W_GAUSS) then SetGaussWeight, _DelMat, w_gauss(0), w_gauss(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_GAUSS) then SetGaussDelay,  _DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (W_GAUSS) then SetGaussWeight, _DW, w_gauss(0), w_gauss(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_GAUSS) then SetGaussDelay,  _DW, d_gauss(1), min=d_gauss(0), d_gauss(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
       
-      if set (W_CONST) then SetConstWeight, _DelMat, w_const(0), w_const(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_CONST) then SetConstDelay,  _DelMat, d_const(1), min=d_const(0), d_const(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (W_CONST) then SetConstWeight, _DW, w_const(0), w_const(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_CONST) then SetConstDelay,  _DW, d_const(1), min=d_const(0), d_const(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-      if set (W_LINEAR) then SetLinearWeight, _DelMat, w_linear(0), w_linear(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_LINEAR) then SetLinearDelay,  _DelMat, d_linear(1), min=d_linear(0), d_linear(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (W_LINEAR) then SetLinearWeight, _DW, w_linear(0), w_linear(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_LINEAR) then SetLinearDelay,  _DW, d_linear(1), min=d_linear(0), d_linear(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-      if set (W_DOG) then SetDOGWeight, _DelMat, w_dog(0), w_dog(1), w_dog(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (W_DOG) then SetDOGWeight, _DW, w_dog(0), w_dog(1), w_dog(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
       
    endif else begin             ;------------------------------Source -> Target:
-      if set (W_GAUSS) then SetGaussWeight, _DelMat, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_GAUSS) then SetGaussDelay,  _DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (W_GAUSS) then SetGaussWeight, _DW, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_GAUSS) then SetGaussDelay,  _DW, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
       
-      if set (W_CONST) then SetConstWeight, _DelMat, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_CONST) then SetConstDelay,  _DelMat, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (W_CONST) then SetConstWeight, _DW, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_CONST) then SetConstDelay,  _DW, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-      if set (W_LINEAR) then SetLinearWeight, _DelMat, w_linear(0), w_linear(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_LINEAR) then SetLinearDelay,  _DelMat, d_linear(1), min=d_linear(0), d_linear(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (W_LINEAR) then SetLinearWeight, _DW, w_linear(0), w_linear(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (D_LINEAR) then SetLinearDelay,  _DW, d_linear(1), min=d_linear(0), d_linear(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
-      if set (W_DOG) then SetDOGWeight, _DelMat, w_dog(0), w_dog(1), w_dog(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (W_DOG) then SetDOGWeight, _DW, w_dog(0), w_dog(1), w_dog(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
    endelse
 ; ----------------------------------------------------------------------------------------------------------------------
       
 
-   Handle_Value, _DelMat, DelMat, /NO_COPY   
+   Handle_Value, _DW, DW, /NO_COPY   
 ; ---------------Die Random-Initialisierungen sollen additiv sein: -----------------------------------------------------
-      if set (W_RANDOM) then DelMat.Weights = DelMat.Weights + w_random(0) + (w_random(1)-w_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
-      if set (D_RANDOM) then DelMat.Delays  = DelMat.Delays  + d_random(0) + (d_random(1)-d_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
+      if set (W_RANDOM) then DW.Weights = DW.Weights + w_random(0) + (w_random(1)-w_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
+      if set (D_RANDOM) then DW.Delays  = DW.Delays  + d_random(0) + (d_random(1)-d_random(0)) * RandomU(seed,t_width*t_height, s_width*s_height) 
 
-      if set (W_NRANDOM) then DelMat.Weights = DelMat.Weights + w_nrandom(0) + w_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
-      if set (D_NRANDOM) then DelMat.Delays  = DelMat.Delays  + d_nrandom(0) + d_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
+      if set (W_NRANDOM) then DW.Weights = DW.Weights + w_nrandom(0) + w_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
+      if set (D_NRANDOM) then DW.Delays  = DW.Delays  + d_nrandom(0) + d_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
 ; ----------------------------------------------------------------------------------------------------------------------
 
 ; ---------------NONSELF und IDENT: -----------------------------------------------------
       if keyword_set(W_NONSELF) then begin
          if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-         DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = !NONE
+         DW.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = !NONE
       end
 
       if keyword_set(D_NONSELF) then begin
          if t_width*t_height ne s_width*s_height then message, "Schluesselwort NONSELF ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-         DelMat.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = 0
+         DW.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = 0
       end
 
       if set (W_IDENT) then BEGIN
          if t_width*t_height ne s_width*s_height then message, "Schluesselwort W_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-;         SetConstWeight, DelMat, w_ident, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-         DelMat.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = w_ident
+;         SetConstWeight, DW, w_ident, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+         DW.Weights(indgen(t_width*t_height), indgen(s_width*s_height)) = w_ident
       END
       if set (D_IDENT) then BEGIN
          if t_width*t_height ne s_width*s_height then message, "Schluesselwort D_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
-;         SetConstDelay,  DelMat, d_ident, 1, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
-         DelMat.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = d_ident
+;         SetConstDelay,  DW, d_ident, 1, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+         DW.Delays(indgen(t_width*t_height), indgen(s_width*s_height)) = d_ident
       END
 ; ----------------------------------------------------------------------------------------------------------------------
-      Handle_Value, _DelMat, DelMat, /NO_COPY, /SET
+      Handle_Value, _DW, DW, /NO_COPY, /SET
       
 
 ; ------------------------- NOCON: ----------------------------------------------------------------
       IF keyword_set(NOCON) THEN BEGIN
-         SetConstWeight, _DelMat, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+         SetConstWeight, _DW, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
          if HasDelay then begin
-            SetConstDelay, _DelMat, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+            SetConstDelay, _DW, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
          endif
       END
 ; ----------------------------------------------------------------------------------------------------------------------
@@ -368,39 +368,9 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 ; ================================ Ende der Initialisierungen ====================================================================================================================
 
 
-
-;      FOR source=0, s_width*s_height-1 DO BEGIN
-;         wtn = WHERE(_DelMat.Weights(*,source) NE !NONE, count)
-;         IF count NE 0 THEN _DelMat.STarget(source) = Handle_Create( VALUE=wtn) ELSE _DelMat.STarget(source) = -1
-;      ENDFOR 
+      ; init lists
+      DW2SDW, _DW
       
-;      FOR target=0, t_width*t_height-1 DO BEGIN
-;         wsn = WHERE(_DelMat.Weights(target,*) NE !NONE, count)
-;         IF count NE 0 THEN _DelMat.SSource(target) = Handle_Create( VALUE=wsn, /NO_COPY) ELSE _DelMat.SSource(target) = -1
-;      ENDFOR
-
-
-      Handle_Value, _DelMat, DelMat, /NO_COPY   
+      RETURN, _DW
       
-      Init_SDW, DelMat
-      
-      IF HasDelay THEN BEGIN
-         
-         Handle_Value, _DelMat, {  info    : 'DW_DELAY_WEIGHT', $
-                    source_w: DelMat.source_w,$
-                    source_h: DelMat.source_h,$
-                    target_w: DelMat.target_w,$
-                    target_h: DelMat.target_h,$
-                    STarget : DelMat.STarget,$
-                    SSource : DelMat.SSource,$
-                    Weights : DelMat.Weights,$
-;                    Matrix  : DelMat.Matrix,$
-                    Delays  : DelMat.Delays,$
-                    Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
-                    Learn   : DelMat.Learn}, /NO_COPY, /SET
-      END ELSE BEGIN
-         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET
-      END
-      RETURN, _DelMat
-
-   end
+END

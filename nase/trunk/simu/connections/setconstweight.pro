@@ -51,6 +51,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  1998/02/05 13:16:05  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 1.8  1997/12/10 15:53:41  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -83,14 +90,12 @@ PRO SetConstWeight, DWS, Amp, Range, $
                     S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                     T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                     ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                    TRANSPARENT=transparent, INVERSE=inverse, INITSDW=InitSDW
+                    TRANSPARENT=transparent, INVERSE=inverse
 
-   Handle_Value, DWS, _DWS, /NO_COPY
-   tw = _DWS.target_w
-   th = _DWS.target_h
-   sw = _DWS.source_w
-   sh = _DWS.source_h
-   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+   tw = DWDim(DWS, /TW)
+   th = DWDim(DWS, /TH)
+   sw = DWDim(DWS, /SW)
+   sh = DWDim(DWS, /SH)
    
    Default, Range, tw/6  
    Default, Amp, 1
@@ -105,12 +110,12 @@ PRO SetConstWeight, DWS, Amp, Range, $
          SetWeight, DWS, (Amp*(Range LE Shift(Dist(th, tw), t_hs_row, t_hs_col))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-          TRANSPARENT=transparent, INITSDW=InitSDW
+          TRANSPARENT=transparent
       ENDIF ELSE BEGIN
          SetWeight, DWS, (Amp*(Range GT Shift(Dist(th, tw), t_hs_row, t_hs_col))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-          TRANSPARENT=transparent, INITSDW=InitSDW
+          TRANSPARENT=transparent
       ENDELSE
       
       
@@ -123,12 +128,12 @@ PRO SetConstWeight, DWS, Amp, Range, $
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
           Amp*((Range LE Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-          TRANSPARENT=transparent, INITSDW=InitSDW
+          TRANSPARENT=transparent
       END ELSE BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
           Amp*(Range GT Shift(Dist(sh, sw), s_hs_row, s_hs_col)), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-          TRANSPARENT=transparent, INITSDW=InitSDW
+          TRANSPARENT=transparent
       ENDELSE 
       
       

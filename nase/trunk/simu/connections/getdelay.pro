@@ -19,8 +19,6 @@
 ;
 ; INPUTS: D_W_Struktur: Eine (initialisierte) Delay_Weight_Struktur, aus der Gewichte gelesen werden sollen. 
 ;
-; OPTIONAL INPUTS:
-;	
 ; KEYWORD PARAMETERS: S_ROW, S_COL: Zeile und Spalte des SourceNourons. Alternativ kann der eindimensionale Index in S_INDEX angegeben werden.
 ;                     T_ROW, T_COL: Zeile und Spalte des SourceNourons. Alternativ kann der eindimensionale Index in T_INDEX angegeben werden.
 ;
@@ -40,6 +38,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1998/02/05 13:16:01  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 1.5  1997/12/10 15:53:38  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -53,40 +58,41 @@
 ;		GetWeight().
 ;
 ;-  
-Function GetDelay, _V_Matrix, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
-                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
+Function GetDelay, DW, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
+                   T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
 
-   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY
 
-   if V_Matrix.Delays(0) eq -1 then message, 'Die übergebene Delay-Weight-Struktur enthält gar keine Delays!'
+   IStr = Info(DW) 
+   IF (IStr EQ 'SDW_DELAY_WEIGHT') THEN sdw = 1 ELSE sdw = 0
+   IF NOT sdw AND (IStr NE 'DW_DELAY_WEIGHT') THEN Message,'[S]DW_DELAY_WEIGHT structure expected, but got '+iStr+' !'
+
+   tw = DWDim(DW, /TW)
+   th = DWDim(DW, /TH)
+   sw = DWDim(DW, /SW)
+   sh = DWDim(DW, /SH)
+   D  = Delays(DW)
   
     if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
 
-       if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
-       result = reform( V_Matrix.Delays(t_index, *), V_Matrix.source_h, V_Matrix.source_w )
-       Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
-       RETURN, result
+       if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=tw, HEIGHT=th)
+       RETURN, REFORM( D(t_index, *), sh, sw )
 
     end
 
  
    if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
 
-       if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
-       result = reform( V_Matrix.Delays(*, s_index),  V_Matrix.target_h, V_Matrix.target_w )
-       Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
-       RETURN, result
+       if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=sw, HEIGHT=sh)
+       RETURN, REFORM( D(*, s_index),  th, tw )
    
  end
 
 ; Nur einzelne Verbindung zurückliefern:
 
- if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
- if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
+ if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=sw, HEIGHT=sh)
+ if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=tw, HEIGHT=th)
 
- result = V_Matrix.Delays(t_index, s_index)
- Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
- RETURN, result
+ RETURN, D(t_index, s_index)
 
 END
 

@@ -1,3 +1,4 @@
+
 ;+
 ; NAME: SetGaussWeight
 ;
@@ -59,6 +60,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  1998/02/05 13:16:07  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 1.12  1997/12/15 12:35:33  gabriel
 ;            Da war noch ein _EXTRA=extra drinnen
 ;
@@ -107,14 +115,14 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                       TRANSPARENT=transparent, INITSDW=initsdw
+                       TRANSPARENT=transparent
 
-   Handle_Value, DWS, _DWS, /NO_COPY
-   tw = _DWS.target_w
-   th = _DWS.target_h
-   sw = _DWS.source_w
-   sh = _DWS.source_h
-   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+   tw = DWDim(DWS, /TW)
+   th = DWDim(DWS, /TH)
+   sw = DWDim(DWS, /SW)
+   sh = DWDim(DWS, /SH)
+
+
 
    Default, Amp, 1
    IF Keyword_Set(Norm) THEN Amp = 1
@@ -133,7 +141,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
        ENDIF
 
        SetWeight, DWS, S_ROW=s_row, S_COL=s_col, GaussMask, $
-        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent,INITSDW=initsdw
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
 
    endif else begin             ; Wir definieren FROMS:
 
@@ -148,7 +156,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
        ENDIF
 
        SetWeight, DWS, T_ROW=t_row, T_COL=t_col, GaussMask,$
-        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent,INITSDW=initsdw
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
 
    endelse
 

@@ -52,6 +52,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1998/02/05 13:16:08  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 1.4  1997/12/10 15:53:45  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -76,12 +83,11 @@ Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
 
-   Handle_Value, DWS, _DWS, /NO_COPY
-   tw = _DWS.target_w
-   th = _DWS.target_h
-   sw = _DWS.source_w
-   sh = _DWS.source_h
-   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+   tw = DWDim(DWS, /TW)
+   th = DWDim(DWS, /TH)
+   sw = DWDim(DWS, /SW)
+   sh = DWDim(DWS, /SH)
+
 
    Default, Range, th/6
    Default, Amp, 1

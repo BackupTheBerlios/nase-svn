@@ -40,6 +40,13 @@
 ;
 ;
 ;       $Log$
+;       Revision 1.5  1998/02/05 13:16:02  saam
+;             + Gewichte und Delays als Listen
+;             + keine direkten Zugriffe auf DW-Strukturen
+;             + verbesserte Handle-Handling :->
+;             + vereinfachte Lernroutinen
+;             + einige Tests bestanden
+;
 ;       Revision 1.4  1997/12/10 15:53:39  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -62,49 +69,55 @@
 ;		Urversion erstellt.
 ;-
 
-Function GetWeight, _V_Matrix, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
-                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, NONE=none
+Function GetWeight, DW, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
+                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, NONE=none
 
-   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY
+
+   IStr = Info(DW) 
+   IF (IStr EQ 'SDW_WEIGHT') OR (IStr EQ 'SDW_DELAY_WEIGHT') THEN sdw = 1 ELSE sdw = 0
+   IF NOT sdw AND (IStr NE 'DW_WEIGHT') AND (IStr NE 'DW_DELAY_WEIGHT') THEN Message,'DW structure expected, but got '+iStr+' !'
+
+   tw = DWDim(DW, /TW)
+   th = DWDim(DW, /TH)
+   sw = DWDim(DW, /SW)
+   sh = DWDim(DW, /SH)
+   W  = Weights(DW)
+
 
    if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
       
-      if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
-      ERG = reform( V_Matrix.Weights(t_index, *), V_Matrix.source_h, V_Matrix.source_w )
+      if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=tw, HEIGHT=th)
+      ERG = reform( W(t_index, *), sh, sw )
   
       If set(NONE) THEN BEGIN
-       
-          n_index = where(ERG EQ !NONE,n_count)
-          IF n_count GT 0 THEN ERG(n_index) = none
-       ENDIF
-       Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
-       return, ERG      
+         n_index = where(ERG EQ !NONE,n_count)
+         IF n_count GT 0 THEN ERG(n_index) = none
+      ENDIF
+      return, ERG      
    end
    
    
    if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
       
-      if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
-      ERG = reform( V_Matrix.Weights(*, s_index),  V_Matrix.target_h, V_Matrix.target_w )
+      if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=sw, HEIGHT=sh)
+      ERG = reform( W(*, s_index),  th, tw )
      
       If set(NONE) THEN BEGIN
          n_index = where(ERG EQ !NONE,n_count)
          IF n_count GT 0 THEN ERG(n_index) = none
       ENDIF
-      Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
       return, ERG  
       
    end
    
 ; Nur einzelne Verbindung zurückliefern:
    
-   if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
-   if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
-   ERG =  V_Matrix.Weights(t_index, s_index)
+   if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=sw, HEIGHT=sh)
+   if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=tw, HEIGHT=th)
+   ERG =  W(t_index, s_index)
    If set(NONE) THEN BEGIN
       IF ERG EQ !NONE THEN ERG = none
    ENDIF
-   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
    return, ERG
    
    
