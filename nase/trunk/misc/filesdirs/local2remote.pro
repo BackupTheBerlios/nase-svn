@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/02/09 20:14:22  thiel
+;            Aufraeumen funktioniert jetzt noch besser.
+;
 ;     Revision 1.4  1998/02/09 17:00:18  saam
 ;           Loescht nun alle leeren Verzeichnisse
 ;
@@ -94,7 +97,10 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
 
       IF NOT Keyword_Set(NOZIP) THEN spawn, 'rm -f '+LocalDir+'/'+TARFILE ELSE spawn, 'rm -f '+LocalDir+'/'+TARFILE+'.gz'
       spawn, 'rsh '+RemoteHost+' "cd '+RemoteDir+'; rm -f '+TARFILE+'"' 
-      IF NOT Keyword_Set(NODEL) THEN spawn, 'rm -f '+LocalDir+'/*'
+      IF NOT Keyword_Set(NODEL) THEN BEGIN
+         spawn, 'rm -f '+LocalDir+'*'
+         spawn, 'rmdir -p '+LocalDir
+      ENDIF
 
    END ELSE BEGIN
       ; data is local
@@ -104,8 +110,8 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
             ; the user seems to want a local copy
             spawn, 'cp -R '+RemoteDir+'/* '+LocalDir
             IF NOT Keyword_Set(NODEL) THEN BEGIN
-               spawn, 'rm -f '+LocalDir
-               spawn, 'rmdir -P '+LocalDir
+               spawn, 'rm -f '+LocalDir+'*'
+               spawn, 'rmdir -p '+LocalDir
             END
          END
       END
