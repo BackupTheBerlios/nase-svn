@@ -77,6 +77,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2001/01/16 18:20:17  thiel
+;            Found XRANGE bug: now max and min are determined only inside xrange.
+;
 ;        Revision 1.7  2000/11/20 13:51:23  thiel
 ;            Checked for correct XRANGE use, found no bug.
 ;            Updated header instead.
@@ -103,7 +106,8 @@
 
 PRO OPlotMaximumFirst, z, zz $
                        , LINESTYLE=linestyle, PSYM=psym, THICK=thick $
-                       , COLOR=color, XRANGE=xrange, _EXTRA=_extra
+                       , COLOR=color, XRANGE=xrange $
+                       , _EXTRA=_extra
 
    Default, LINESTYLE, 0
    Default, PSYM, -1
@@ -122,21 +126,26 @@ PRO OPlotMaximumFirst, z, zz $
    IF N_Params() EQ 2 THEN BEGIN
       x = z
       y = zz
-   END ELSE BEGIN
+  END ELSE BEGIN
       x = LindGen(n)
       y = z
    END
  
+   Default, xrange, [0, Last(x)]
+
+   xri = [(Where(x GE xrange(0)))(0), last((Where(x LE xrange(1))))] 
+
+   maxvalue = Max(IMax(y(xri(0):xri(1),*),1));, index)
+   minvalue = Min(IMin(y(xri(0):xri(1),*),1));, index)
+
    plotnr = (Size(y))(2)
 
-   maxvalue = Max(IMax(y,1), index)
-   minvalue = Min(IMin(y,1), index)
 
    nodata = y
-   IF maxvalue EQ minvalue THEN nodata(0) = maxvalue $
-    ELSE nodata(0:1) = [minvalue,maxvalue]
+   IF maxvalue EQ minvalue THEN nodata(xri(0)) = maxvalue $
+    ELSE nodata(xri(0):xri(0)+1) = [minvalue,maxvalue]
 
-   Plot, x, nodata, /NODATA, THICK=thick, _EXTRA=_extra
+   Plot, x, nodata, /NODATA, THICK=thick, XRANGE=xrange, _EXTRA=_extra
 
    FOR n=0,plotnr-1 DO $
     OPlot, x, y(*,n) $
