@@ -48,7 +48,7 @@
 ;* >  Lottery chance:   7.1511238e-006 %
 ;
 ; SEE ALSO:
-;  <*>n</*>! and <*>k</*>! are computed using IDL's <A>Factorial</A>! function.
+;  <*>n</*>! and <*>k</*>! are computed using IDL's <*>Factorial</*> function.
 ;
 ;-
 
