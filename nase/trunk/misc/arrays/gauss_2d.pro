@@ -89,6 +89,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.12  2000/02/29 17:44:01  kupper
+;        Added 1 to the sizes computed by AUTOSIZE. Thus, the array has odd size again.
+;
 ;        Revision 1.11  2000/02/29 17:29:33  kupper
 ;        Added AUTOSIZE Keyword.
 ;
@@ -138,12 +141,12 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
    
    If Keyword_Set(AUTOSIZE) then begin
       If Keyword_Set(XHWB) then begin
-         xlen = 2*3*sigmax
-         ylen = 2*3*sigmay
+         xlen = 2*3*sigmax+1
+         ylen = 2*3*sigmay+1
       Endif Else begin
          If not Keyword_Set(HWB) then sigma = xlen ;;the first parameter
-         xlen = 2*3*sigma
-         ylen = 2*3*sigma
+         xlen = 2*3*sigma+1
+         ylen = 2*3*sigma+1
       EndElse
    Endif
     
