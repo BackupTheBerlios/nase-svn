@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1998/02/11 15:47:16  saam
+;             kein Showweights in Schleife
+;
 ;       Revision 1.9  1998/02/11 15:09:40  saam
 ;             Zeit wird ohne Initialiseirung gemessen
 ;
@@ -141,7 +144,7 @@ Window, 2, XSIZE=800, YSIZE=400
 ;------------->
    Print, 'Starting main simulation loop...'
    SimTimeInit      
-   FOR t=0l,2000l DO BEGIN
+   FOR t=0l,10000l DO BEGIN
 
 ;-------------> CREATE INPUT
       ; generate two static squares
@@ -184,7 +187,7 @@ Window, 2, XSIZE=800, YSIZE=400
          TrainSpotting, O_L1, TITLE='Output L1', OFFSET=t-500
          TrainSpotting, O_L2, TITLE='Output L2', OFFSET=t-500
          
-         ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
+;         ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
       END
       IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MAX(Weights(CON_L1_L1))
    END
