@@ -79,6 +79,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  1999/04/28 15:11:53  gabriel
+;          Hat bei 2-dim Arrays immer transponiert egal ob p=[0,1] oder p=[1,0]
+;
 ;     Revision 1.2  1999/02/19 14:24:54  gabriel
 ;          Handle_Free vergessen
 ;
@@ -94,7 +97,7 @@ FUNCTION UTRANSPOSE,ARRAY,P
    sa = size(array)
    
    IF sa(0) LT 2 THEN message,'Array dimensions must be greater than 1'
-   IF sa(0) EQ 2 THEN return, transpose(ARRAY)
+   IF sa(0) EQ 2 AND set(P) EQ 0 THEN return, transpose(ARRAY)
    default,P,REVERSE(indgen(sa(0)))
 
    IF N_ELEMENTS(P) NE sa(0) THEN message,'The elements of P should correspond to the dimensions of Array'
