@@ -69,6 +69,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.12  1997/09/20 17:29:29  thiel
+;              TOTALRECALL wird NICHT MEHR von der Lernregel aufgerufen.
+;              Das muss man jetzt selbst erledigen.
+;
 ;       Revision 1.11  1997/09/17 10:35:04  saam
 ;            kleine Bugs korrigiert
 ;
@@ -124,8 +128,11 @@ PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
    If Not Set(ALPHA) Then Alpha = Lerrate/Entlernrate
 
    ; update learning potentials
-   TotalRecall, LP, DW.Learn
+   ; TotalRecall, LP, DW.Learn
 
+   ; TOTALRECALL sollte vor der Lernregel in der eigentlichen Simulation
+   ; aufgerufen werden, da sonst eventuell zu oft geupdated wird.
+ 
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then Return
 
