@@ -52,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/11/08 14:56:15  saam
+;           improved RSH usage
+;
 ;     Revision 1.4  1998/10/18 21:13:13  saam
 ;           now handles passing of string-variables correctly
 ;
@@ -80,8 +83,8 @@ IF Set(e) THEN BEGIN
    tagName  =  Tag_Names(e)
    tagCount = N_Elements(tagName)
    FOR i=0l,tagCount-1 DO BEGIN
-      info = SIZE(e.(i))
-      IF info(info(0)+1) EQ 7 THEN tagVal = "`"+e.(i)+"`" $ ; hey, its a string 
+      inf = SIZE(e.(i))
+      IF inf(inf(0)+1) EQ 7 THEN tagVal = "`"+e.(i)+"`" $ ; hey, its a string 
       ELSE tagVal = e.(i)  
       S = S + STRLOWCASE(tagName(i)) + ':=' + STRCOMPRESS(tagVal,/REMOVE_ALL) + ';'
    END
@@ -102,8 +105,13 @@ END
 IF Keyword_Set(VERBOSE) THEN Print, 'MAPLE: additional variables are ', S
 
 IF FileExists(mfile) THEN BEGIN
-   command = rsh+' '+host+" '(( "+cat+' '+mfile+suff+' '+mfile+';'+echo+' "quit;" ) | '+maple+")'"
-  IF Keyword_Set(VERBOSE) THEN print, 'MAPLE: running MAPLE on '+host+'...'
+   spawn, "hostname | cut -b 1-5", res
+   IF res(0) NE host THEN BEGIN
+      command = rsh+' '+host+" '(( "+cat+' '+mfile+suff+' '+mfile+';'+echo+' "quit;" ) | nice -10 '+maple+")'"
+   END ELSE BEGIN
+      command = "( "+cat+' '+mfile+suff+' '+mfile+';'+echo+' "quit;" ) | /usr/bin/nice -10 '+maple
+   END      
+   IF Keyword_Set(VERBOSE) THEN print, 'MAPLE: running MAPLE on '+host+'...'
    spawn, command, output
    IF Keyword_Set(VERBOSE) THEN BEGIN
       print, !KEY.UP, 'MAPLE: running MAPLE on '+host+'...done'
