@@ -9,9 +9,17 @@
 ;
 ; CALLING SEQUENCE:     Vector = Out2Vector(OutHandle)
 ;
-; INPUTS:               OutHandle: ein Handle auf eine sparse Liste, z.B. Layer.O
+; INPUTS:               OutHandle: ein Handle auf eine sparse Liste, z.B. Layer.O bzw.
+;                                  eine Layer-Struktur wenn Keyword DIMENSIONS angegeben
+;                                  wurde
 ;
-; OUTPUTS:              Vector: das resultierende BytArray aktiver Neurone
+; KEYWORD PARAMETERS:   DIMENSIONS: als Input verarbeitet die Funktion nun eine Layerstruktur
+;                                   und gibt die aktiven Neurone in den Dimensionen des Layers
+;                                   zurueck
+;
+; OUTPUTS:              Vector: das resultierende eindimensionale BytArray aktiver Neurone
+;                               bzw. das zweidimensionale von das Keyword DIMENSIONS gesetzt
+;                               ist
 ;
 ; EXAMPLE:              
 ;                       LayerProceed, L1
@@ -20,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/24 10:08:44  saam
+;           Keyword DIMENSIONS hinzugefuegt, nicht getestet!!
+;
 ;     Revision 2.2  1997/09/19 16:35:24  thiel
 ;            Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
 ;                                      von vector2spass nach Spassmacher
@@ -29,8 +40,11 @@
 ;
 ;
 ;-
-FUNCTION Out2Vector, OutHandle
+FUNCTION Out2Vector, OutHandle, DIMENSIONS=dimensions
 
-   RETURN, SSpassBeiseite(Handle_Val(OutHandle))
-
+   IF NOT Keyword_Set(DIMENSIONS) THEN BEGIN
+      RETURN, SSpassBeiseite(Handle_Val(OutHandle))
+   END ELSE BEGIN
+      RETURN, REFORM(SSpassBeiseite(Handle_Val(OutHandle.O)), OutHandle.w, OutHandle.h)
+   END
 END
