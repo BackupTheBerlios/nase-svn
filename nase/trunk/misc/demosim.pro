@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  1998/02/11 16:16:43  saam
+;             alles weg
+;
 ;       Revision 1.10  1998/02/11 15:47:16  saam
 ;             kein Showweights in Schleife
 ;
@@ -162,10 +165,10 @@ Window, 2, XSIZE=800, YSIZE=400
 
       
 ;-------------> LEARN SOMETHING
-      TotalRecall, LP_L1_L1, CON_L1_L1
-      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
+;      TotalRecall, LP_L1_L1, CON_L1_L1
+;      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
  
-      IF t EQ 3000 THEN ShowNoMercy, CON_L1_L1, LESSTHAN=0.01
+;      IF t EQ 3000 THEN ShowNoMercy, CON_L1_L1, LESSTHAN=0.01
 
 ;-------------> PROCEED NEURONS
       ; Input -> Layer -> Output
@@ -184,8 +187,8 @@ Window, 2, XSIZE=800, YSIZE=400
          WSet, 2
          !P.Multi = [0,1,2,0,0]
          ; plot output activities as spikeraster
-         TrainSpotting, O_L1, TITLE='Output L1', OFFSET=t-500
-         TrainSpotting, O_L2, TITLE='Output L2', OFFSET=t-500
+;         TrainSpotting, O_L1, TITLE='Output L1', OFFSET=t-500
+;         TrainSpotting, O_L2, TITLE='Output L2', OFFSET=t-500
          
 ;         ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
       END
