@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  2000/04/06 09:34:51  saam
+;             passes INFO keyword from and to readsim
+;
 ;       Revision 1.4  2000/01/05 13:53:48  saam
 ;             minus in doc was missing
 ;
@@ -43,11 +46,12 @@
 ;
 ;
 ;-
-FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, _EXTRA=e
+FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, INFO=info, _EXTRA=e
 
    COMMON ATTENTION
 
    On_Error, 2
+   Default, INFO, ''
 
    ;----->
    ;-----> COMPLETE COMMAND LINE SYNTAX
@@ -70,7 +74,7 @@ FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, _EXTRA=e
    h = L.h
    filename = FILE+'.'+L.FILE
    
-   data = ReadSim(filename, _EXTRA=e)
+   data = ReadSim(filename, INFO=info, _EXTRA=e)
    IF Keyword_Set(TD) THEN data = REFORM(data, h, w, (SIZE(data))(2), /OVERWRITE)
 
    RETURN, data
