@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.44  2001/08/10 08:59:35  saam
+;       added SaveGD call
+;
 ;       Revision 1.43  2001/02/27 17:04:41  saam
 ;       defined several default values (as defined by the IDL help)
 ;       for !P, !X, !Y settings, because IDL leaves them zero, but assumes other default,
@@ -175,6 +178,8 @@ Background, "black"          ; default background is black
 !X.CHARSIZE  = 1.
 !Y.CHARSIZE  = 1.
 !P.CHARTHICK = 1
+
+SaveGD ; save the current status of all relevant graphic variables for a later restore
                              ; 
 SelectNASETable, /STANDARD   ; default NASE color table set
 !NASEP.INTERPOLATION=0       ; 0:none, 1:linear, 2:cubic, 3:none(polygons)
