@@ -67,13 +67,14 @@
 ;
 ;-
 
-FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE, SAMPLEPERIOD=sampleperiod, TVALUES=TVALUES, TINDICES=TINDICES, AVERAGE=average, SLICESIZE=slicesize, F=f
+FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE, SAMPLEPERIOD=sampleperiod, TVALUES=TVALUES, TINDICES=TINDICES, AVERAGE=average, SLICESIZE=_slicesize, F=f
 
    default,double,0
    
    
    IF (N_PARAMS() LT 1 )     THEN console, /fatal , 'wrong number of arguments'
-   Default, slicesize, 256
+   Default, _slicesize, 256
+   Default, slicesize, _slicesize
 
    IF set(TRUNC_PHASE) AND NOT set(PHASE)   THEN console, /fatal, 'Keyword TRUNC_PHASE must be set with Keyword PPHASE'
    
