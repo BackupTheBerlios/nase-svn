@@ -11,6 +11,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/14 12:54:29  saam
+;           uses the changed DWW system
+;
 ;     Revision 1.1  2000/01/13 10:36:53  saam
 ;           hope it works
 ;
@@ -164,9 +167,29 @@ PRO DSIM, _EXTRA=e ;,CLEAN
 
    
    ;-------> CONNECTIONS
-   DWW = REPLICATE({DWW}, 1)
-   DWW(0) = {DWW, 'S->C' , 'FEEDING'   , 0, 1, 'TOROID', 'SELF'   , {DWWINIT, 'GAUSSIAN', 0.005,  0.05, 10.0 , 11, 0.025, 0}, {DWDINIT, 'LINEAR' , 1, 12, 0, 11}, 1, 's-c'}
-
+   DWW = LonArr(1)
+   DWW(0) = Handle_Create(!MH, VALUE={INFO    : 'DWW'    ,$
+                                      NAME    : 'S->C'   ,$
+                                      SYNAPSE : 'FEEDING',$
+                                      SOURCE  : 0        ,$
+                                      TARGET  : 1        ,$
+                                      BOUND   : 'TOROID' ,$
+                                      SELF    : 'SELF'   ,$
+                                      WINIT   : {INFO : 'DWWINIT' ,$
+                                                 TYPE : 'GAUSSIAN',$
+                                                 A    :  0.05     ,$
+                                                 S    : 10.       ,$
+                                                 R    : 11        ,$
+                                                 N    :  0.025    ,$
+                                                 NORM :  0        },$
+                                      DINIT   : {INFO : 'DWDINIT' ,$
+                                                 TYPE : 'LINEAR'  ,$
+                                                 M    :  1        ,$
+                                                 D    : 12        ,$
+                                                 R    : 11        },$
+                                      T2S     : 0        ,$
+                                      FILE    : 's-c'    })
+   
 
 
 
