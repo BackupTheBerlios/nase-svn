@@ -35,12 +35,17 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1999/12/02 14:11:23  saam
+;           returns on error
+;
 ;     Revision 2.1  1998/08/11 10:41:26  saam
 ;           simple
 ;
 ;
 ;-
 PRO MSPLOT, z, zz, zzz, MCOLOR=mcolor, SDCOLOR=sdcolor, _EXTRA=e
+
+   On_Error, 2
 
    Default, MCOLOR , RGB(255,255,255,/NOALLOC)
    Default, SDCOLOR, RGB(100,100,200,/NOALLOC)
