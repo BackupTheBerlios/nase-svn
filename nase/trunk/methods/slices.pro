@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  1998/07/28 12:54:19  gabriel
+;          SSIZE SSHIFT jetzt lokale Variablen
+;
 ;     Revision 1.5  1998/06/23 11:15:08  saam
 ;           fixed problems with 1d-Slices
 ;
@@ -59,35 +62,35 @@ FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALU
    OS = 1./(1000.*SAMPLEPERIOD)
    Default, SSIZE       , 128
    Default, SSHIFT      , SSIZE/2
-   SSIZE = LONG(ssize*os)
-   SSHIFT = LONG(sshift*os)
+   __SSIZE = LONG(ssize*os)
+   __SSHIFT = LONG(sshift*os)
 
    S = SIZE(A)   
   
-   steps = (S(S(0))-ssize)/sshift
+   steps = (S(S(0))-__ssize)/__sshift
    tvalues = FLTARR(steps+1)
    tindices = LONARR(steps+1)
 
    Sn = N_Elements(S)
    SB = [steps+1]
    IF S(0) GT 1 THEN SB = [SB, S(1:S(0)-1)] 
-   SB = [SB, SSIZE]
+   SB = [SB, __SSIZE]
    SB = [S(0)+1, SB, S(S(0)+1), PRODUCT(SB)]
    B =  Make_Array(SIZE=SB)
 
    FOR slice=0,steps DO BEGIN
-      tvalues(slice) = slice*SSHIFT/OS
-      tindices(slice) = slice*SSHIFT
+      tvalues(slice) = slice*__SSHIFT/OS
+      tindices(slice) = slice*__SSHIFT
       CASE s(0) OF
-	      1: B(slice,*)           = LExtrac( A, S(0), LindGen(SSIZE)+slice*SSHIFT )
-	      2: B(slice,*,*)         = LExtrac( A, S(0), LindGen(SSIZE)+slice*SSHIFT )
-	      3: B(slice,*,*,*)       = LExtrac( A, S(0), LindGen(SSIZE)+slice*SSHIFT )
-	      4: B(slice,*,*,*,*)     = LExtrac( A, S(0), LindGen(SSIZE)+slice*SSHIFT )
-	      5: B(slice,*,*,*,*,*)   = LExtrac( A, S(0), LindGen(SSIZE)+slice*SSHIFT )
-	      6: B(slice,*,*,*,*,*,*) = LExtrac( A, S(0), LindGen(SSIZE)+slice*SSHIFT )
+	      1: B(slice,*)           = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
+	      2: B(slice,*,*)         = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
+	      3: B(slice,*,*,*)       = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
+	      4: B(slice,*,*,*,*)     = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
+	      5: B(slice,*,*,*,*,*)   = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
+	      6: B(slice,*,*,*,*,*,*) = LExtrac( A, S(0), LindGen(__SSIZE)+slice*__SSHIFT )
            ELSE: Message, 'array has tooo much dimensions'
         END
-;      print, slice*SSHIFT, ':', slice*SSHIFT+SSIZE-1
+;      print, slice*__SSHIFT, ':', slice*__SSHIFT+__SSIZE-1
    END
 
    RETURN, B
