@@ -51,7 +51,7 @@ End
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA=_ref_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
  
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
@@ -102,7 +102,7 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
 End
 
 Pro widget_image_factory::cleanup, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
    Ptr_Free, self.types
 
    Cleanup_Superclasses, self, "widget_image_factory", _EXTRA = _ref_extra

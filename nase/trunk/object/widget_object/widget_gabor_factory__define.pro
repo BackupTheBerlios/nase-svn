@@ -79,6 +79,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2001/08/02 14:28:52  kupper
+;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
+;
 ;        Revision 1.1  2000/08/16 12:09:41  kupper
 ;        Initial revision
 ;
@@ -96,7 +99,7 @@ End
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_gabor_factory::init, WIDTH = width, _REF_EXTRA=_ref_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
 
    ;; Try whatever initialization is needed for a widget_gabor_factory object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -159,7 +162,7 @@ Function widget_gabor_factory::init, WIDTH = width, _REF_EXTRA=_ref_extra
 End
 
 Pro widget_gabor_factory::cleanup, KEYWORD = keyword, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
    Cleanup_Superclasses, self, "widget_gabor_factory", _EXTRA=_ref_extra
@@ -225,7 +228,7 @@ End
 ;Pro widget_gabor_factory::override_me_; -ABSTRACT-
 ;   ;; use this template for all abstract methods.
 ;   On_error, 2
-;   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
+;   Console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
 ;End
 
 

@@ -91,6 +91,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2001/08/02 14:32:00  kupper
+;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
+;
 ;        Revision 1.3  2000/03/16 13:21:11  kupper
 ;        Removed leftover keyword=keyword.
 ;
@@ -107,7 +110,7 @@
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_leaky_integrator_array::init, MAX_IN=max_in, _REF_EXTRA=_ref_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
@@ -134,7 +137,7 @@ Function widget_leaky_integrator_array::init, MAX_IN=max_in, _REF_EXTRA=_ref_ext
 End
 
 Pro widget_leaky_integrator_array::cleanup, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
    Cleanup_Superclasses, self, "widget_leaky_integrator_array", _EXTRA=_ref_extra

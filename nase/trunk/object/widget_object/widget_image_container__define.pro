@@ -144,6 +144,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2001/08/02 14:30:01  kupper
+;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
+;
 ;        Revision 1.7  2000/03/23 15:01:43  kupper
 ;        Added header comment on IMAGE keyword.
 ;
@@ -165,7 +168,7 @@
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_image_container::init, IMAGE=image, XPOS=xpos, YPOS=ypos, $
                                _EXTRA=_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
@@ -197,7 +200,7 @@ Function widget_image_container::init, IMAGE=image, XPOS=xpos, YPOS=ypos, $
 End
 
 Pro widget_image_container::cleanup, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
    Cleanup_Superclasses, self, "widget_image_container", _EXTRA=_ref_extra
