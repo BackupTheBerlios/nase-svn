@@ -349,7 +349,7 @@ unless the optional second argument NOINDENT is non-nil."
   (local-set-key [(control n) (down)] 'idlwave-nase-subscriptface)
   (local-set-key [(control n) (return)] 'idlwave-nase-linebreak)
   (local-set-key [(control n) (r)] 'idlwave-nase-commonrandom)
-  (local-set-key [(control n) (control c)] 'idlwave-nase-commentedblock)
+  (local-set-key [(control n) (\;)] 'idlwave-nase-commentedblock)
 ;  (local-set-key "\C-nf" 'idlwave-fill-paragraph)
   ;; --End: add key bindings--
   
