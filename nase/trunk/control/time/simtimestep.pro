@@ -7,7 +7,8 @@
 ;
 ; CATEGORY:              ORGANISATION
 ;
-; CALLING SEQUENCE:      SimTimeStep
+; CALLING SEQUENCE:      SimTimeStep,[CLEAR=CLEAR]
+;             
 ;
 ; COMMON BLOCKS:         SimTime
 ;
@@ -22,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/06/19 09:22:08  gabriel
+;          Ausfuehrliche Ausgabe, CLEAR Keyword
+;
 ;     Revision 1.4  1998/06/16 17:44:03  gabriel
 ;          Ein paar neue Ausgaben
 ;
@@ -39,7 +43,7 @@
 PRO SimTimeStep
    
    COMMON SimTime, stat
-
+   default, CLEAR,0
 
    IF stat.step LT stat.maxsteps THEN BEGIN
       stat.ast            = SysTime(1)
@@ -52,7 +56,9 @@ PRO SimTimeStep
    ;;mittelwert bilden Time/Iteration
    median = total(stat.tpi)/FLOAT(stat.step)
    estimation = median*(stat.maxsteps-stat.step)
+   
    IF stat.print THEN BEGIN
+      IF STAT.CLEAR EQ 1 THEN PRINT,!KEY.CLEAR
       print, '-----------------------------------------------'
       print, '  Iteration              :  ', STRCOMPRESS(STRING(stat.step),/REMOVE_ALL)
       print, '  Progress               :  ', STRCOMPRESS(STRING(((stat.step)/FLOAT(stat.maxsteps)*100)),/REMOVE_ALL),"%"
@@ -62,6 +68,7 @@ PRO SimTimeStep
       print, '  Mission completed in   : ', Seconds2String(estimation)
       print, '  Estim. total Time      : ', Seconds2String(Total(stat.tpi)+estimation)
       print, '-----------------------------------------------'
+
    END
 
 END
