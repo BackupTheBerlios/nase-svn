@@ -8,19 +8,31 @@
 ;
 ; CALLING SEQUENCE: Gemittelt = MiddleWeights ( Matrix 
 ;                                               {,/FROMS | ,/TOS |, PROJECTIVE |, /RECEPTIVE }
-;                                               [,/WRAP] )
+;                                               [,/WRAP]
+;                                               [,/ROWS] [,/COLS] )
 ;
 ; INPUTS: Matrix: Eine DW-Struktur
 ;
 ; KEYWORD PARAMETERS: PROJECTIVE(FROMS) / RECEPTIVE(TOS) :
 ;                                   Gibt an, ob ueber einlaufende oder
-;                                   auslaufende Verbindugen gemittelt
+;                                   auslaufende Verbindungen gemittelt
 ;                                   werden soll. (siehe ShowWeights)
 ;                     WRAP: Fuer zyklische Randbedingungen.
+;                     ROWS: Es wird nur über die Reihen gemittelt. Das 
+;                           Ergebnis ist dann  eine vierdimensionale Matrix,
+;                           die bei Bedarf direkt an InitDW() über das
+;                           W_INIT-Schlüsselwort übergeben werden
+;                           kann. (Liefert dann eine normale
+;                           DW-Struktur mit nur noch einer Reihe.)
+;                    (COLS: Entsprechend für Spalten.
+;                           *** NOCH NICHT IMPLEMENTIERT! ***)
 ;                     
 ; OUTPUTS: Gemittelt: eine zweidimensionale Matrix (Source_H x
 ;                     Source_W bzw. Target_H x Target_W, je nachdem, ob TOS oder FROMS
-;                     angegeben wurden)
+;                     angegeben wurden).
+;                     Wenn /ROWS oder /COLS angegeben wird, ist das
+;                     Ergebnis eine vierdimensionale Matrix.
+;                     (s. Beschreibung von ROWS)
 ;
 ; RESTRICTIONS: Bisher kann nur ueber die gesamte Gewichtsmatrix
 ;               gemittelt werden.
@@ -42,6 +54,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  1998/05/19 19:33:58  kupper
+;              ROWS implementiert.
+;
 ;       Revision 1.8  1998/03/04 19:49:51  thiel
 ;              Jetzt mit KEYWORD_SET beim WRAP.
 ;
@@ -68,7 +83,8 @@
 ;-
 
 FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
-                        PROJECTIVE=projective, RECEPTIVE=receptive
+                        PROJECTIVE=projective, RECEPTIVE=receptive, $
+                        ROWS=rows, COLS=cols
 
 
    Default, FROMS, PROJECTIVE
@@ -100,9 +116,49 @@ FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
    zentrumx = Matrix.sw / 2
    zentrumy = Matrix.sh / 2
    
+
+   
+   ;;------------------> Über Reihen mitteln:
+   If Keyword_Set(ROWS) then begin
+
+      middle = fltarr(Matrix.th,Matrix.tw, 1, Matrix.sw)
+      If Not Keyword_Set(WRAP) Then Begin
+         sum = fltarr(Matrix.th,Matrix.tw, 1, Matrix.sw)
+         for YY= 0, Matrix.sh-1 do begin
+               untermatrix = MatrixMatrix(*, *, YY, *)
+               geshiftet = norot_shift(untermatrix, zentrumy-YY,0, 0, 0)
+               middle = middle + geshiftet
+               sum = sum + norot_shift(bytarr(Matrix.th,Matrix.tw, 1, Matrix.sw)+1, zentrumy-YY,0, 0, 0)
+         end
+      Endif Else Begin
+         sum = Matrix.sh
+         for YY= 0, Matrix.sh-1 do begin
+               untermatrix = MatrixMatrix(*, *, YY, *)
+               geshiftet = shift(untermatrix, zentrumy-YY, 0, 0, 0)
+               middle = middle + geshiftet
+         end
+      EndElse
+      
+      middle = middle/double(sum)
+      If Keyword_Set(TOS) then begin ;Matrix wurde oben vertauscht, das wird nun rückgängig gemacht:
+         middle = reform(/OVERWRITE, middle, Matrix.th*Matrix.tw, Matrix.sw)
+         middle = transpose(middle)
+         middle = reform(/OverWrite, middle, 1, Matrix.sw, Matrix.th, Matrix.tw)
+      end
+      RETURN, middle
+
+   EndIf
+   ;;--------------------------------
+
+   ;;------------------> Über Reihen mitteln:
+   If Keyword_Set(COLS) then begin
+      Message, /INFORM, "Das ROWS-Keyord ist noch nicht implementiert..."
+      Message, " Aber das könntest Du mal machen: Orientiere Dich an der Implementierung von ROWS!"
+   EndIf
+   ;;--------------------------------
+
+   ;;------------------> Über alle Source-Neuronen mitteln:
    middle = fltarr(Matrix.th,Matrix.tw)
-   
-   
    If Not Keyword_Set(WRAP) Then Begin
       sum = fltarr(Matrix.th,Matrix.tw)
       for YY= 0, Matrix.sh-1 do begin
@@ -126,5 +182,6 @@ FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
    
    
    RETURN, middle/double(sum)
+   ;;--------------------------------
    
 END
