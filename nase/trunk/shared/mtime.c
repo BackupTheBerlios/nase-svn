@@ -14,6 +14,9 @@
 ** MODIFICATION HISTORY:
 **
 **       $Log$
+**       Revision 1.2  1999/03/04 16:30:26  saam
+**            + works for alpha, problems with i386 architecture
+**
 **       Revision 1.1  1999/02/25 20:49:21  saam
 **             + added optional outputstring
 **             + memory holes fixed
@@ -47,6 +50,7 @@ IDL_LONG mtime(int   argc  ,
   struct stat         mystat;
   int                 error ;
   extern int          errno ;   
+  extern long int     timezone;
   char	             *filestr;    /* pointer to a C string (FILE) */
   char               *datestr;    /* pointer to a C string (DATE) */
   char               *returnstr;
@@ -63,20 +67,22 @@ IDL_LONG mtime(int   argc  ,
   */
   arg0str = (IDL_STRING *) argv[0];
   if( (filestr=(char*)malloc((unsigned)sizeof(char)* (arg0str->slen)+1) ) == (char*)NULL ){
-    //fprintf(stderr,"mtime: malloc error\r\n");
+    /*fprintf(stderr,"mtime: malloc error\r\n");*/
     return(ERROR);
   }
   filestr = strcpy(filestr, arg0str->s);
 
 
   error = stat(filestr, &mystat);
+  free(filestr);
   if (error){
-    //fprintf(stderr, "fstat: %s, %s\n", filestr, strerror(errno));
+    /*fprintf(stderr, "fstat: %s, %s\n", filestr, strerror(errno));*/
     return(ERROR);
   } 
-  free(filestr);
-  time=mystat.st_mtime;
 
+  fprintf(stderr, "timezone: %i\n", timezone);
+  time=mystat.st_mtime+timezone+3600;
+  fprintf(stderr, "mm: %i\n", time);
 
   if (argc == 2){
     arg1str = (IDL_STRING *) argv[1];
@@ -86,15 +92,14 @@ IDL_LONG mtime(int   argc  ,
       fprintf(stderr,"mtime: malloc error.\r\n");
       return(ERROR);
     }
-    returnstr = strcpy(returnstr, datestr, strlen(datestr));
-    free(datestr);
+    returnstr = strcpy(returnstr, datestr);
 
     free(arg1str->s);
     arg1str->slen=strlen(returnstr);
-    arg1str->s=returnstr;    
+    arg1str->s=returnstr;
   }
 
   
-  //printf("%i\n", mystat.st_mtime);
-  return(mystat.st_mtime);
+  /*printf("%i\n", mystat.st_mtime);*/
+  return(time);
 }   
