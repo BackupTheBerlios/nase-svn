@@ -24,17 +24,19 @@ End
 
 
 ;; ------------ Constructor & Destructor --------------------
-Function basic_widget_object::init, PARENT=Parent, _REF_EXTRA=_extra
+Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
+                            _REF_EXTRA=_extra
    message, /Info, "I am created."
    
+   If Keyword_Set(OParent) then Parent = OParent->widget()
+
    If Keyword_Set(Parent) then begin
-      self.widget = widget_base(Parent, /Column, $
+      self.widget = widget_base(Parent, $
                                 UName="basic_widget_object", $
                                 Func_Get_Value="basic_widget_object_get_value", $
                                 _EXTRA=_extra)
    endif else begin             ;create top-level-base
-      self.widget = widget_base(/Column, $
-                                UName="basic_widget_object", $
+      self.widget = widget_base(UName="basic_widget_object", $
                                 Func_Get_Value="basic_widget_object_get_value", $
                                 _EXTRA=_extra)
    Endelse
