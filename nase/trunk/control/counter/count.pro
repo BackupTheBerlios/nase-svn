@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/25 10:03:02  saam
+;           BUG in Rekursion eliminiert
+;
 ;     Revision 2.2  1997/11/25 09:11:06  saam
 ;           In eine Procedure verwandelt, aktueller Zaehlerstand
 ;           wird nun mit CountValue ausgelesen
@@ -44,7 +47,7 @@ FUNCTION CountIt, CS, index
       IF CS.counter(index) GE CS.maxCount(index) THEN BEGIN
          CS.counter(index) = 0
          RETURN, CountIt(CS, index-1)
-      END
+      END ELSE RETURN, 0
    END ELSE RETURN, 1
 END
 
