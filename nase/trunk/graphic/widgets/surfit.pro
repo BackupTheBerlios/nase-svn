@@ -110,15 +110,28 @@
 ;
 ;-
 
+Pro SurfIt_Cleanup, ID
+ WIDGET_CONTROL, ID, GET_UVALUE=info, /NO_COPY
+ PTR_FREE, info.surface
+ ; and leave uvale undefined.
+End
+
 Pro SurfIt_Paint, info
    ;;Paint surface to the currently active window (or pixmap)
-   PrepareNasePlot, (size(info.surface))(2), (size(info.surface))(1), get_old=oldplot, CENTER=info.center, NONASE=1-info.nase
 
-   If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MAX_VALUE=999998, _EXTRA=info._extra else $
-    call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
-   xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
+   If (info.lun ne -1) and not(info.got_streamdata) then begin
+      xyouts, /normal, 0.1, 0.5, "waiting for stream data..."
+   endif else begin
+      PrepareNasePlot, (size(*info.surface))(2), (size(*info.surface))(1), get_old=oldplot, CENTER=info.center, NONASE=1-info.nase
+      
+      If info.nase then call_Procedure, info.plotproc, *info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MAX_VALUE=999998, _EXTRA=info._extra else $
+       call_Procedure, info.plotproc, *info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
+      xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
+      
+      PrepareNasePlot, restore_old=oldplot
 
-   PrepareNasePlot, restore_old=oldplot
+      If info.lun ne -1 then xyouts, /device, 20, 20, "frame #"+str(info.frame_no)
+   endelse
 End
 
 Pro SurfIt_Draw_Notify_Realize, ID
@@ -134,6 +147,10 @@ Pro SurfIt_Draw_Notify_Realize, ID
    wset, drawwin
    SurfIt_Paint, info
 
+   If info.lun ne -1 then begin      ;Stream-Update-Mode
+      Widget_Control, SurfWidget, TIMER=0 ;Request Timer-Event
+   endif
+
    WIDGET_CONTROL, SurfWidget, SET_UVALUE=info, /NO_COPY
 End
 
@@ -142,9 +159,34 @@ Pro SurfIt_Event, Event
  WIDGET_CONTROL, Event.Handler, GET_UVALUE=info, /NO_COPY
 ; If Event.Top eq Event.Id then Ev = info else WIDGET_CONTROL, Event.Id, GET_UVALUE=Ev
 
-    PrepareNasePlot, (size(info.surface))(2), (size(info.surface))(1), get_old=oldplot, NONASE=1-info.nase, CENTER=info.center
-
     CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
+     "WIDGET_TIMER": Begin ;A timer-event for stream update
+        if not(eof(info.lun)) then begin
+;        If available(info.lun) then begin
+           If info.got_streamdata then begin
+                                ; Read next frame
+              Readf, info.lun, *info.surface
+              info.frame_no = info.frame_no+1
+                                ;Paint Window
+              wset, info.pixwin
+              SurfIt_Paint, info
+              wset, info.drawwin
+              Device, copy=[0, 0, info.xsize-1, info.ysize-1, 0, 0, info.pixwin]
+              
+           endif else begin
+                                ; Read stream specification (frame size)
+              frame_rows = 0l
+              frame_cols = 0l
+              Readf, info.lun, frame_rows, frame_cols
+              info.got_streamdata = 1
+              ptr_free, info.surface
+              info.surface = ptr_new(fltarr(frame_rows, frame_cols), /NO_COPY)
+           endelse
+;          end
+         ;  If no data is available, do nothing!
+           Widget_Control, Event.Handler, TIMER=0.001 ;Request new timer event
+        endif; If eof(lun), request NO further timer events!
+     End
      "WIDGET_BASE": Begin ;Unser Main-Widget wird resized
         Ev = info
         info.xsize = Event.X
@@ -165,7 +207,7 @@ Pro SurfIt_Event, Event
         Case Event.Type of
            0: Begin ;Button Press
               If (Event.Clicks eq 2) then begin ;Double-Click! Raise copy of myself!
-                 Surfit, info.surface, $
+                 Surfit, *info.surface, $
                   $             ;XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
                   GROUP=Event.ID, $
                   DELIVER_EVENTS=Event.ID, $
@@ -196,8 +238,6 @@ Pro SurfIt_Event, Event
            Endcase          
      End
   Endcase
-
-  PrepareNasePlot, restore_old=oldplot
 
    ;;-----------Deliver Events to other Widgets?-------------------------
    deliver_events = info.deliver_events
@@ -234,7 +274,6 @@ PRO SurfIt, _data, Parent, $
    Default, ax, 30.0
    Default, az, 30.0
    Default, grid, 0
-   data = reform(_data)         ;Do not change Contents!
    Default, shades, _shades     ;Do not change Contents!
 ;   Default, xpos, 500
 ;   Default, ypos, 100
@@ -254,7 +293,16 @@ PRO SurfIt, _data, Parent, $
    If Keyword_Set(GRID) then plotproc = "SURFACE" else plotproc = "SHADE_SURF"
    Default, no_block, 1
    Default, modal, 0
-
+   If (size(_data))(0) eq 0 then begin
+      ; Stream-Update mode!
+      lun = _data
+      data = -1
+   endif else begin
+      data = reform(_data)      ;Do not change Contents!
+      lun = -1
+   endelse
+   got_streamdata = 0           ;For stream-update
+   
    ;;------------------> NASE-Array:
    If Keyword_Set(NASE) then begin
       data = rotate(data, 3)
@@ -273,7 +321,12 @@ PRO SurfIt, _data, Parent, $
    If Set(Parent) then begin; Will be child
        SurfWidget = WIDGET_BASE(Parent, GROUP_LEADER=Group, $
                                 UVALUE={Widget        : "Main", $
-                                        surface       : data, $
+                                        surface       : ptr_new(data, /NO_COPY), $
+                                        got_streamdata: got_streamdata, $
+                                        lun           : lun, $
+;                                        frame_rows    : 0l, $ ; # of rows in the frame for stream-update
+;                                        frame_cols    : 0l, $ ; # of cols in the frame for stream-update
+                                        frame_no      : 0, $
                                         Button_Pressed: (0 eq 1), $ ;FALSE
                                         Press_x       :0, $
                                         Press_y       :0, $
@@ -303,7 +356,12 @@ PRO SurfIt, _data, Parent, $
                                 MODAL=modal, $
                                 TITLE=title, $
                                 UVALUE={Widget        : "Main", $
-                                        surface       : data, $
+                                        surface       : ptr_new(data, /NO_COPY), $
+                                        lun           : lun, $
+                                        got_streamdata: got_streamdata, $
+;                                        frame_rows    : 0l, $ ; # of rows in the frame for stream-update
+;                                        frame_cols    : 0l, $ ; # of cols in the frame for stream-update
+                                        frame_no      : 0, $
                                         Button_Pressed: (0 eq 1), $ ;FALSE
                                         Press_x       :0, $
                                         Press_y       :0, $
@@ -331,7 +389,12 @@ PRO SurfIt, _data, Parent, $
       else SurfWidget = WIDGET_BASE(GROUP_LEADER=Group, $ ; IDL 4 oder früher
                                     TITLE=title, $
                                     UVALUE={Widget        : "Main", $
-                                            surface       : data, $
+                                            surface       : ptr_new(data, /NO_COPY), $
+                                            lun           : lun, $
+                                            got_streamdata: got_streamdata, $
+;                                            frame_rows    : 0l, $ ; # of rows in the frame for stream-update
+;                                            frame_cols    : 0l, $ ; # of cols in the frame for stream-update
+                                            frame_no      : 0, $
                                             Button_Pressed: (0 eq 1), $ ;FALSE
                                             Press_x       :0, $
                                             Press_y       :0, $
@@ -369,13 +432,12 @@ PRO SurfIt, _data, Parent, $
                       NOTIFY_REALIZE="SurfIt_Draw_Notify_Realize")
 
 
-
    get_base = SurfWidget
 
    If not Set(Parent) then begin; I am top level, so realize and register!
       WIDGET_CONTROL, SurfWidget, /REALIZE
-      If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, NO_BLOCK=no_block $
-      else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, MODAL=modal
+      If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, NO_BLOCK=no_block, CLEANUP='SurfIt_cleanup' $
+      else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, MODAL=modal, CLEANUP='SurfIt_cleanup'
    endif else begin; I am child, just establ. my private event-handler
       Widget_Control, SurfWidget, EVENT_PRO="SurfIt_Event"
    endelse
