@@ -9,7 +9,6 @@
 ;
 ; CALLING SEQUENCE: PlotTvScl, Array 
 ;                             [, XNorm] [, YNorm]
-;                             [, XTITLE=Abszissentext] [,YTITLE=Ordinatentext]
 ;                             [, CHARSIZE=Schriftgroesse]
 ;                             [, /FULLSHEET]
 ;                             [, /NOSCALE]
@@ -33,6 +32,9 @@
 ;                             [, RANGE_IN=[a,b] ]
 ;                             [, UPDATE_INFO=Update_struct [, /INIT ] ]
 ;
+;                            - all other Keywords are passed to the PLOT -
+;                            - command, using the _REF_EXTRA mechanism,  -
+;                            - for example: [X|Y]TITLE, SUBTITLE, ...    -
 ;
 ; INPUTS: Array : klar!
 ;
@@ -183,6 +185,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.65  2000/03/14 13:33:27  kupper
+;     Updated header to inform user that keywords are passed to PLOT.
+;     Changed use of _EXTRA to _REF_EXTRA => Keywords are also passed FROM PLOT now!
+;
 ;     Revision 2.64  2000/03/07 17:08:52  kupper
 ;     Didn't know that structures can not be compared. Now using new "defined" tag to
 ;     indentify an undefined PLOTTVSCL_INFO struct.
@@ -430,7 +436,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                RANGE_IN=range_in, $
                UPDATE_INFO=update_info, $
                INIT=init, $
-               _EXTRA=_extra
+               _REF_EXTRA=_extra
 
 
    On_Error, 2
