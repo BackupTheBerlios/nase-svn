@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1997/10/29 10:05:07  saam
+;           print-Befehle vom Developing entfernt
+;
 ;     Revision 1.2  1997/10/29 09:57:28  saam
 ;           Sinnvollere Variablennamen
 ;
@@ -87,9 +90,6 @@ FUNCTION GetLocalDir, WishDir
       IF Contains(WishDir, '/usr/neuro') OR Contains(WishDir, '/home/neuro') THEN WishHost = 'neuro'
       IF WishHost EQ 'dummy' THEN Message, 'could not get host where datadir resides'
 
-      print, WishHost
-      print, Host
-      
       IF WishHost EQ Host THEN WorkDir = WishDir ELSE WorkDir = GetLocalDir()
    END ELSE Message, 'wrong calling sequence'
    
