@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  1999/01/14 15:53:41  niederha
+;       haelt jetzt auf Wunsch auch die Klappe
+;
 ;       Revision 2.6  1998/11/08 14:51:40  saam
 ;             + video-structure made a handle
 ;             + ZIP-handling replaced by UOpen[RW]
@@ -64,7 +67,7 @@
 ;
 ;-
 
-Pro Rewind, _Video, FrameNumber, VERBOSE=verbose, APPEND=append
+Pro Rewind, _Video, FrameNumber, VERBOSE=verbose, SHUTUP=shutup, APPEND=append
 
    ON_ERROR, 2
 
@@ -80,11 +83,12 @@ Pro Rewind, _Video, FrameNumber, VERBOSE=verbose, APPEND=append
       Video.FramePointer = FrameNumber
    Endelse
 
+
    If keyword_set(VERBOSE) then begin
       print, 'Ah! Eine besonders schöne Szene in "'+Video.title+'": Nummer '+strtrim(string(Video.FramePointer), 1)
-   endif else begin
+   endif else IF NOT keyword_set(shutup) then begin
       message, /inform, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(Video.FramePointer), 1)+'.'
-   endelse
+   end
 
    Handle_Value, _Video, Video, /NO_COPY, /SET
 
