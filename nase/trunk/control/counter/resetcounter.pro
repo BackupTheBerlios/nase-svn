@@ -17,11 +17,14 @@
 ;                    END
 ;                    ResetCounter, DigitalUhrMitSekunden ; ein neuer Tag beginnt
 ;
-; SEE ALSO:          </A HREF=#COUNT>Count</A>, </A HREF=#INITCOUNTER>InitCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>
+; SEE ALSO:          <A HREF=#COUNT>Count</A>, </A HREF=#INITCOUNTER>InitCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/11/25 10:30:25  saam
+;           Hyperlinks hatten einen BUG
+;
 ;     Revision 2.1  1997/11/25 09:10:27  saam
 ;           Neu und Toll
 ;

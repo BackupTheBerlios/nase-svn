@@ -21,11 +21,14 @@
 ;                       IF Overflow THEN Print,'Ueberlauf'
 ;                    END
 ;
-; SEE ALSO:          </A HREF=#INITCOUNTER>InitCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>, </A HREF=#COUNTVALUE>ResetCounter</A>
+; SEE ALSO:          <A HREF=#INITCOUNTER>InitCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>, </A HREF=#COUNTVALUE>ResetCounter</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1997/11/25 10:30:24  saam
+;           Hyperlinks hatten einen BUG
+;
 ;     Revision 2.3  1997/11/25 10:03:02  saam
 ;           BUG in Rekursion eliminiert
 ;
