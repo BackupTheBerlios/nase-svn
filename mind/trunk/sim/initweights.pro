@@ -15,6 +15,10 @@
 ; MODIFACTION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  2000/01/19 17:26:36  saam
+;             does non-delays as what they are (and
+;             doesn't emulate them as delay-0 delays)
+;
 ;       Revision 1.1  1999/12/10 09:36:47  saam
 ;             * hope these are all routines needed
 ;             * no test, yet
@@ -72,11 +76,11 @@ FUNCTION InitWeights, DWW
          OPT = Create_Struct(OPT, 'D_CONST', [OS*DWW.DINIT.C, DWW.DINIT.R])
       END ELSE IF Contains(DWW.DINIT.TYPE, 'LINEAR') THEN BEGIN
          OPT = Create_Struct(OPT, 'D_LINEAR', [OS*DWW.DINIT.M, OS*DWW.DINIT.D, DWW.DINIT.R])
-      END ELSE IF Contains(DWW.DINIT.TYPE, 'NONE') THEN BEGIN
-         OPT = Create_Struct(OPT, 'DELAY', 0)
+;      END ELSE IF Contains(DWW.DINIT.TYPE, 'NONE') THEN BEGIN
+;         OPT = Create_Struct(OPT, 'DELAY', 0)
       END ELSE IF Contains(DWW.DINIT.TYPE, 'DELAY') THEN BEGIN
          OPT = Create_Struct(OPT, 'DELAY', DWW.DINIT.C)
-      END ELSE Message, 'unknown value for delays'
+      END ;ELSE Message, 'unknown value for delays'
 
       ; COMPLETE WIDTH LAYER DIMENSIONS
       OPT = Create_Struct(OPT, 'S_WIDTH', SW, 'S_HEIGHT', SH, 'T_WIDTH', TW, 'T_HEIGHT', TH)
