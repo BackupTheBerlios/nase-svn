@@ -17,8 +17,10 @@
 ;  the sense that no entries in the colortable are wasted, because the
 ;  data is not equally distributed around zero. The routine assures
 ;  that MAX(ABS(data)) is displayed with maximal saturation, but in
-;  general the colortable is not symmetric around zero. However, zero is
-;  assured to be black or white. You may use a linear, logarithmic or
+;  general the colortable is not symmetric around the neutral
+;  element. The neutral element (which will be either black or white)
+;  is by default MIN(ABS(data)), but you can specify arbitrary values.
+;  You may use a linear, logarithmic or
 ;  exponential distribution of color values.
 ;
 ; CATEGORY:
@@ -28,6 +30,7 @@
 ; CALLING SEQUENCE:
 ;*BalanceCT [,data] [,TOP=...] [, {/TOPRED | /TOPGREEN | /TOPBLUE} ]
 ;*                             [, {/ZEROBLACK | /ZEROWHITE} ]
+;*                             [, NEUTRAL=...]
 ;*                             [, {/BOTTOMRED | /BOTTOMGREEN | /BOTTOMBLUE} ]
 ;*                             [ {,EXP=...} | {,LOG=...} ]
 ;
@@ -43,9 +46,13 @@
 ; INPUT KEYWORDS:
 ;  TOPRED,TOPGREEN,TOPBLUE :: positive values are displayed red, green
 ;                             or blue (default: <*>TOPRED</*>)
-;  ZEROBLACK,ZEROWHITE    :: value zero will be black (good for
+;  ZEROBLACK,ZEROWHITE     :: value zero will be black (good for
 ;                             screen display) or white (good for
 ;                             postscripts), respectively. Default is <*>ZEROBLACK</*>. 
+;  NEUTRAL                 :: specifies the data value that will be
+;                             displayed either black or white (may
+;                             exceed the data range and will then not be
+;                             displayed). The default is <*>MIN(ABS(data))</*>.
 ;  BOTTOMRED,BOTTOMGREEN,BOTTOMBLUE :: negative values are displayed red, green
 ;                             or blue (default: <*>BOTTOMBLUE</*>)
 ;  EXP,LOG :: allows an exponential or logarithmic scaling of the
@@ -58,10 +65,27 @@
 ;  overwrites the existing colormap
 ;
 ; EXAMPLE:
+;Given a set of data points that are not symmetrical distributed
+;around zero, we get an asymmetric color table:
 ;*n=randomu(seed,20,20)-0.3
-;*balancect, n              
-;*plottvscl, n,/legend     
+;*balancect, n & ptvs, n,/legend              
 ;
+;You may change the neutral element of the color table  (that is white
+;in this case) to be 0.5:
+;*balancect, n, /topgreen, /zerowhite, neutral=0.5 & ptvs, n,/legend 
+;All values above 0.5 will be slightly green. To emphasize small
+;values you may use a logarithmic color table:
+;*balancect, n, /log & ptvs, n,/legend 
+;You can increase/decrease the effect of the nonlinearity by
+;specifying values above or below 1:
+;*balancect, n, log=3 & ptvs, n,/legend 
+;If you have solely positive data, like
+;*n=randomu(seed,20,20)+2  
+;then the minimal value (black is this case) will be around 2:
+;*balancect, n & ptvs, n,/legend
+;by specifying
+;*balancect, n, neutral=0 & ptvs, n,/legend
+;you can set the origin of the color table to zero.
 ;-
 
 
@@ -85,6 +109,7 @@ END
 
 PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue, ZEROWHITE=zerowhite, ZEROBLACK=zeroblack, $
                BOTTOMRED=bottomred, BOTTOMGREEN=bottomgreen, BOTTOMBLUE=bottomblue, $
+               NEUTRAL=neutral, $
                LOG=log, EXP=exp
 
    ON_ERROR, 2
@@ -100,7 +125,6 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
 
    Default, maci, !TOPCOLOR        ;max used color index
    Default, mici, 0                ;min used color index
-  
 
    cid = maci-mici+1             ;number of color indices used
 
@@ -113,6 +137,10 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
        mad =  1.
    END
 
+   Default, neutral, MIN(ABS(data))
+   mid = mid - neutral
+   mad = mad - neutral
+
 
    ; nuf : negative upstroke flank
    ; puf : positive upstroke flank
@@ -122,34 +150,30 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
    nuf = intarr(cid)
    pdf = intarr(cid)+255
    ndf = intarr(cid)+255
-   IF mid GE 0.0 THEN BEGIN
-       perc = 0.0
-       puf = FIX(_FIndGen(cid, LOG=log, EXP=exp)*255)
-       pdf = max(puf)-puf
-   END ELSE BEGIN
-       IF mad LE 0.0 THEN BEGIN
-           perc = 1.0
-           ndf = FIX(_FIndGen(cid)*255)
-           nuf = MAX(ndf)-ndf
-       END ELSE BEGIN
-           perc = mid / (mid-mad) 
-           border = mici + fix (cid * perc)
-           
-           IF perc LT 0.5 THEN BEGIN
-               scale_r = 255 
-               scale_b = FIX(perc*cid/(1-perc))
-           END ELSE BEGIN
-               scale_r = FIX(cid*(1-perc)/perc)
-               scale_b = 255
-           END
-           
-           puf(border:maci) =         FIX( _FindGen(maci+1-border, LOG=log, EXP=exp) * scale_r )
-           pdf(border:maci) = REVERSE(FIX( _FindGen(maci+1-border, LOG=exp, EXP=log) * scale_r )) + (255-scale_r)
-           nuf(mici:border) = REVERSE(FIX( _FindGen(border-mici+1, LOG=log, EXP=exp) * scale_b ))
-           ndf(mici:border) =        (FIX( _FindGen(border-mici+1, LOG=exp, EXP=log) * scale_b))  + (255-scale_b)
-       END
-   END
 
+   perc = mid / (mid-mad) 
+   border = mici + fix (cid * perc)
+   
+   IF perc LT 0.5 THEN BEGIN
+       scale_r = 255 
+       scale_b = FIX(perc*cid/(1-perc))
+   END ELSE BEGIN
+       scale_r = FIX(cid*(1-perc)/perc)
+       scale_b = 255
+   END
+   
+                                ; the expressions below may be
+                                ; simplified, i guess, but they work and thinking
+                                ; about this stuff is really ugly....
+   IF (border LE maci) THEN BEGIN
+       puf(MAX([0,border]):maci) = (FIX( _FindGen(maci+1-border, LOG=log, EXP=exp) * scale_r ))                         (MAX([0,-border]):maci-border)
+       pdf(MAX([0,border]):maci) = REVERSE(((FIX( _FindGen(maci+1-border, LOG=exp, EXP=log) * scale_r )) + (255-scale_r))(MAX([0,-border]):maci-border))
+   END
+   IF (border GE mici) THEN BEGIN
+       nuf(mici:MIN([border,maci])) = REVERSE((FIX( _FindGen(border-mici+1, LOG=log, EXP=exp) * scale_b ))                (MAX([0,border-maci]):border-mici))
+       ndf(mici:MIN([border,maci])) =        (FIX(( _FindGen(border-mici+1, LOG=exp, EXP=log) * scale_b))  + (255-scale_b))(MAX([0,border-maci]):border-mici)
+   END
+   
    IF Keyword_Set(ZEROBLACK) THEN BEGIN
        R = intarr(cid)
        G = intarr(cid)
@@ -168,13 +192,18 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
        G = ndf+pdf-MIN(ndf+pdf)
        B = ndf+pdf-MIN(ndf+pdf)
 
-       IF Keyword_Set(TOPRED)   THEN R = R > ndf
-       IF Keyword_Set(TOPGREEN) THEN G = G > ndf
-       IF Keyword_Set(TOPBLUE)  THEN B = B > ndf
+       IF perc LT 1. THEN BEGIN
+           IF Keyword_Set(TOPRED)   THEN R = R > ndf
+           IF Keyword_Set(TOPGREEN) THEN G = G > ndf
+           IF Keyword_Set(TOPBLUE)  THEN B = B > ndf
+       END
 
-       IF Keyword_Set(BOTTOMRED)   THEN R = R > pdf
-       IF Keyword_Set(BOTTOMGREEN) THEN G = G > pdf
-       IF Keyword_Set(BOTTOMBLUE)  THEN B = B > pdf
+       IF perc GT 0. THEN BEGIN
+           IF Keyword_Set(BOTTOMRED)   THEN R = R > pdf
+           IF Keyword_Set(BOTTOMGREEN) THEN G = G > pdf
+           IF Keyword_Set(BOTTOMBLUE)  THEN B = B > pdf
+       END
+
    END
    UTVLCT, R, G, B
 
