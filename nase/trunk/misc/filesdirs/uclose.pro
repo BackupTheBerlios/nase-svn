@@ -3,7 +3,7 @@
 ;  UClose
 ;
 ; AIM:
-:  generalized version of IDL's close function (allows zipping)
+;  generalized version of IDL's close function (allows zipping)
 ;
 ; PURPOSE:
 ;   Der Gegenspieler von <A>UOpenR</A>. Beide Routinen ermoeglichen
