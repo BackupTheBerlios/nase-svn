@@ -28,7 +28,7 @@ Function basic_widget_object::widget
 End
 
 ;; ------------ Constructor & Destructor --------------------
-Function basic_widget_object::init, PARENT=Parent, _REF_EXREA=_extra
+Function basic_widget_object::init, PARENT=Parent, _REF_EXTRA=_extra
    message, /Info, "I am created."
    self.widget = widget_base(Parent, /Column, $
                              UName="basic_widget_object", $
