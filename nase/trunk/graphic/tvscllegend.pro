@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1998/06/10 13:44:49  kupper
+;            Mal wieder Postscript-Farbverwirrung
+;
 ;     Revision 2.8  1998/03/16 14:40:43  kupper
 ;            Schlüsselwort TOP ersetzt durch CEILING für Kompatibilität mit TVScl
 ;
@@ -79,7 +82,7 @@ PRO TvSclLegend, xnorm, ynorm $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
                  ,MAX=max, MID=mid, MIN=min $
                  ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom $
-                 ,CHARSIZE=Charsize $
+                 ,CHARSIZE=Charsize, COLOR=color $
                  ,NOSCALE=NOSCALE, _EXTRA = e
    
    
@@ -93,12 +96,24 @@ PRO TvSclLegend, xnorm, ynorm $
    Default, Charsize, 1.0
 
    
-   bg = GetBGColor()
-   ; if device is PS and REVERTPS is on 
-   save_rpsc = !REVERTPSCOLORS
-   !REVERTPSCOLORS = 0
-   sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-   !REVERTPSCOLORS = save_rpsc
+;   bg = GetBGColor()
+;   ; if device is PS and REVERTPS is on 
+;   save_rpsc = !REVERTPSCOLORS
+;   !REVERTPSCOLORS = 0
+;   sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
+;   !REVERTPSCOLORS = save_rpsc
+
+   If Keyword_Set(COLOR) then sc = COLOR else begin
+                                ;-----Optimale Farbe fuer die Achsen ermitteln:
+      bg = GetBGColor()
+                                ; if device is !PSGREY and !REVERTPS is on 
+      If !PSGREY then begin
+         save_rpsc = !REVERTPSCOLORS
+         !REVERTPSCOLORS = 0
+      EndIf
+      sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
+      If !PSGREY then !REVERTPSCOLORS = save_rpsc
+   endelse
 
    IF Keyword_Set(VERTICAL) THEN BEGIN
       x_pix =  20
