@@ -4,7 +4,9 @@
 ; PURPOSE:            Jitters the incoming spikes randomly in time by a uniform
 ;                     distribution (so each spike has an individual jitter).
 ;                     Note that the average output is shifted by jitter/2 to
-;                     later times. Output is binary, jitter is specified in 
+;                     later times. If two input spikes of one neuron are accidentally
+;                     jittered into the same BIN then only one spike survives.
+;                     Output is binary, jitter is specified in 
 ;                     milliseconds.
 ;
 ; CATEGORY:           MIND INPUT 
@@ -41,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/26 16:11:22  saam
+;           got the bug, its working now
+;
 ;     Revision 1.1  2000/01/24 10:10:24  saam
 ;           xtracted from poissoninput.pro. WARNING! this
 ;           version is NOT WORKING YET
@@ -57,7 +62,7 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
    Default, R     , !NONE
    Default, jitter, 10
    Default, cut   , .99
-   
+
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      
       ; INITIALIZE
@@ -76,7 +81,6 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
                 sim_time : .0d                $
                }
          print,'SIFnJitter: hmw: '+STR(jitter/delta_t)+' ms, cutoff: '+STR(cut)+', average shift: '+STR(rj/2*delta_t)+' ms'
-         stop
       END
       
       ; STEP
@@ -85,15 +89,13 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
          spikes = WHERE(pattern GE 1, c)
     
          IF c GT 0 THEN BEGIN
-            print, c
-            cj = (TV.as + FIX(TV.jitter*RandomN(seed, c))) < TV.as > 0; current jitter for spikes
-            TV.ja(cj, spikes MOD TV.h, spikes / TV.h) = 1 ; assign to jitter array
+            cj = (TV.as/2 + FIX(TV.jitter*RandomN(seed, c))) < TV.as > 0; current jitter for spikes
+            TV.ja((TV.ji+cj) MOD TV.as, spikes MOD TV.h, spikes / TV.h) = 1 ; assign to jitter array
          END
          
          ; read the current output
          R = TV.ja(TV.ji, *, *) 
-    ;     print, total(r)
-
+ü
          ; clear this time step
          TV.ja(TV.ji, *, *) = 0
 
