@@ -179,7 +179,7 @@ if ($P::mode){
 			  '<TR CLASS="title"><TD CLASS="title">Update</TD></TR>',
 			  '<TR><TD CLASS="left">',
 #			    "<LI>",a({href=>getBaseURL()."?mode=update", target=>"_new"}, "update now"), "</LI>", 
-			    "<LI>",a({href=>"$relpath/nasenews.pl", target=>"text"}, "Add news"), "</LI>",
+			    "<LI>",a({href=>"/cgi-bin-nase/nasenews.pl", target=>"text"}, "Add news"), "</LI>",
 			    '<LI>$Id$ </LI>',
 			  "</TD></TR></TABLE>",
 			"</TD></TR>",
