@@ -11,80 +11,73 @@
 ;             of Lee, Girolami & Sejnowski (in press).
 ;
 ;
-; CATEGORY: METHODS
+; CATEGORY: 
+;        Signals
 ;
 ;
-; CALLING SEQUENCE:    result=runica(data[,weights][,sphere][,activations][,bias][,signs][,lrates][,sphering=sphering][,PCA=PCA],$
-;                                   [weights=weights][,lrate=lrate][,block=block][,annealstep=annealstep][,annealdeg=annealdeg],$
-;                                   [nochange=nochange][,maxsteps=maxsteps][,bias=bias][,momentum=momentum],$
-;                                   [extended=extended][,posact=posact[,verbose=verbose]
+; CALLING SEQUENCE:
+;*    result=runica(data[,weights][,sphere][,activations][,bias][,signs][,lrates][,sphering=sphering][,PCA=PCA],$
+;*                  [weights=weights][,lrate=lrate][,block=block][,annealstep=annealstep][,annealdeg=annealdeg],$
+;*                  [nochange=nochange][,maxsteps=maxsteps][,bias=bias][,momentum=momentum],$
+;*                  [extended=extended][,posact=posact[,verbose=verbose]
 ;
 ; 
 ; INPUTS:
-;            data:     input data (chans,frames*epochs)
+;            data::     input data (chans,frames*epochs)
 ;                      Note: If data consists of multiple discontinuous epochs, 
 ;                           each epoch should be separately baseline-zero'd.
 ;
 ;	
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;
-;            ncomps    = number of ICA components to compute     (default -> chans)
+;            ncomps::    number of ICA components to compute     (default -> chans)
 ;                        using rectangular ICA decomposition
-;            pca       = decompose a principal component subspace(default -> 0=off)
+;            pca::       decompose a principal component subspace(default -> 0=off)
 ;                        of the data. Value is the number of PCs to retain.
-;            sphering  = flag sphering of data (on/off)      (default -> 1=on)
-;            weights   = initial weight matrix                   (default -> eye())
+;            sphering::  flag sphering of data (on/off)      (default -> 1=on)
+;            weights::   initial weight matrix                   (default -> eye())
 ;                                (Note: if sphering off,        (default -> spher())
-;            lrate     = initial ICA learning rate << 1          (default -> heuristic)
-;            block     = ICA block size (integer << datalength)  (default -> heuristic)
-;            annealstep = annealing constant (0,1] (defaults -> 0.90, or 0.98, extended)
+;            lrate::     initial ICA learning rate << 1          (default -> heuristic)
+;            block::    ICA block size (integer << datalength)  (default -> heuristic)
+;            annealstep:: annealing constant (0,1] (defaults -> 0.90, or 0.98, extended)
 ;                         controls speed of convergence
-;            annealdeg = degrees weight change for annealing     (default -> 60)
-;            stop      = stop training when weight-change < this (default -> 1e-6)
-;            maxsteps  = maximum number of ICA training steps    (default -> 512)
-;            bias      = perform bias adjustment (on/off)    (default -> 1=on)
-;            momentum  = momentum gain [0,1]                     (default -> 0)
-;            extended  = [N] perform tanh() "extended-ICA" with kurtosis estimation 
+;            annealdeg:: degrees weight change for annealing     (default -> 60)
+;            stop::      stop training when weight-change < this (default -> 1e-6)
+;            maxsteps::  maximum number of ICA training steps    (default -> 512)
+;            bias::      perform bias adjustment (on/off)    (default -> 1=on)
+;            momentum::  momentum gain [0,1]                     (default -> 0)
+;            extended::  [N] perform tanh() "extended-ICA" with kurtosis estimation 
 ;                        every N training blocks. If N < 0, fix number of sub-Gaussian
 ;                        components to -N [faster than N>0]      (default|0 -> off)
-;            posact    = make all component activations net-positive(default 1=on}
-;            verbose   = give ascii messages (on/off)        (default -> 1=on)
+;            posact::    make all component activations net-positive(default 1=on}
+;            verbose::   give ascii messages (on/off)        (default -> 1=on)
 ;
 ;
 ;
 ; OUTPUTS:
-;           result:   activation time courses of the output components (ncomps,frames*epochs)
+;           result::  activation time courses of the output components (ncomps,frames*epochs)
 ;
 ; OPTIONAL OUTPUTS:
 ;
-;           weights:       ICA weight matrix (comps,chans)     [RO]
-;           sphere:        data sphering matrix (chans,chans) = spher(data)
+;           weights::       ICA weight matrix (comps,chans)     [RO]
+;           sphere::        data sphering matrix (chans,chans) = spher(data)
 ;                          Note: unmixing_matrix = weights*sphere {sphering off -> eye(chans)}
-;           activations:   activation time courses of the output components (ncomps,frames*epochs)
-;           bias:          vector of final (ncomps) online bias [RO]    (default = zeros())
-;           signs:         extended-ICA signs for components    [RO]    (default = ones())
+;           activations::   activation time courses of the output components (ncomps,frames*epochs)
+;           bias::          vector of final (ncomps) online bias [RO]    (default = zeros())
+;           signs::         extended-ICA signs for components    [RO]    (default = ones())
 ;                          [-1 = sub-Gaussian; 1 = super-Gaussian]
-;           lrates:        vector of learning rates used at each training step
+;           lrates::        vector of learning rates used at each training step
 ;
 ;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-;
-; EXAMPLE:
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2003/04/03 11:46:02  gabriel
+;          some header fixes
+;
 ;     Revision 1.3  2000/09/28 11:45:41  gabriel
 ;          AIM tag added , message <> console
 ;
@@ -229,7 +222,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    IF NOT extended THEN default,annealstep , 0.90 $     ;; anneal by multiplying lrate by this
    ELSE default,annealstep , 0.98                       ;;or this if extended-ICA
    IF NOT SET(annealdeg) THEN BEGIN
-      annealdeg = 60 - momentum *90  ;; when angle change reaches this value, heuristic
+      annealdeg = 60. - momentum *90.  ;; when angle change reaches this value, heuristic
       IF  annealdeg LT 0 THEN annealdeg = 0
    END
    IF lrate GT MAX_LRATE OR lrate LT 0 THEN $
@@ -294,7 +287,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    ;; Use the sphering matrix
    IF sphering EQ 1 THEN BEGIN  ;; sphering on
       IF verbose THEN print,'Computing the sphering matrix...'
-      sphere = 2.0*invert(sqrtm(cov(transpose(data)),/double))
+      sphere = 2.0*invert(sqrtm(cov(transpose(data)),/double, METHOD=1))
       IF NOT set(weights_in) THEN BEGIN
          IF verbose THEN print,'Starting weights are the identity matrix ...'
          weights = runica_eye(ncomps,chans)
@@ -310,7 +303,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
             print,'Using the sphering matrix as the starting weight matrix ...'
             print,'Returning the identity matrix in variable "sphere" ...'
          END
-         sphere = 2.0*invert(sqrtm(cov(transpose(data)),/double)) ;; find the "sphering" matrix = spher()
+         sphere = 2.0*invert(sqrtm(cov(transpose(data)),/double, METHOD=1)) ;; find the "sphering" matrix = spher()
          weights = runica_eye(ncomps,chans)#sphere ;;begin with the identity matrix
          sphere = runica_eye(chans) ;;return the identity matrix
       END ELSE BEGIN
@@ -377,7 +370,8 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
          IF BIASFLAG THEN BEGIN
             u= weights # data(*,permute(t:t+block-1)) + bias # onesrow ;      
          END ELSE BEGIN
-            u=weights*data(*,permute(t:t+block-1)) ;        
+            ;;u=weights*data(*,permute(t:t+block-1)) ;        
+            u=weights # data(*,permute(t:t+block-1))
          ENDELSE
          
          if  NOT extended  THEN BEGIN ;; Logistic ICA weight update 
@@ -420,7 +414,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
                   ;;; of data. Compute
                   partact=weights # data(*,rp(0:kurtsize-1));;; partial activation
                END ELSE BEGIN                               ;;; for small data sets,
-                  partact=weights#data                      ;;; use whole data
+                  partact=weights # data                      ;;; use whole data
                ENDELSE 
                kk= (imoment(partact,1))(*,2)  ;;; kurtosis estimates        ;;; kurtosis estimates
                                 ;print,kk," kurtosis estimates"
