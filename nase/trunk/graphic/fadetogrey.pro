@@ -1,103 +1,169 @@
 ;+
-; NAME: FadeToGrey
+; NAME:
+;  FadeToGrey()  [without .pro!]
 ;
-; AIM: Turn a color indexed BMP into greylevel image, using linear
-;      sorted colortable.   
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Einlesen eines Bitmap-Bildes mit 8 Bit Farbtiefe
-;          und Speichern einer Grauwert-Bitmap dieses Bildes
-;          mit gleichzeitiger Rueckgabe der Grauwert-Bitmap
-;          als Funktionsergebnis
+; AIM:
+;  Compute greylevel image from a *.bmp-file, or from truecolor
+;  data stored in an IDL variable. 
+;  
+; PURPOSE:
+;  This routine computes greylevel images from two possible sources:<BR>
+;  1. From a *.bmp (indexed color table) file.<BR>
+;  2. From a <*>3</*> x <*>n</*> x <*>m</*> numeric array containing
+;  truecolor data.<BR>
+;  It returns a twodimensional (<*>n</*> x <*>m</*>) array containing
+;  greylevel values, according to the Y channel of the YIC color
+;  model (see <A>New_Color_Convert</A>).<BR>
+;  If data was read from a *.bmp-file, the greylevel data can be
+;  rewritten in a *.bmp-file with a linearly sorted greyscale
+;  colormap. This allows using <C>Read_BMP</C> on the new file and use
+;  the result as greyscale image, whithout bothering for the color
+;  map. Note that this procedure may also be used to sort the colormap
+;  of a greyscale *.bmp-file with an unsorted colormap.
 ;
-; CATEGORY: GRAPHICS / GENERAL
+; CATEGORY:
+;  Color
+;  Image
+;  IO
 ;
-; CALLING SEQUENCE: array = FadeToGrey('bitmapfilename')
+; CALLING SEQUENCE:
+;*result = FadeToGrey(bmpfilename ,[/NOSAVE])
+;*result = FadeToGrey(truecolor_array)
 ;
-; INPUTS: bitmapfilename : Ein Bitmap-File mit 8 Bit Farbtiefe,
-;                          darf sowohl farbig als auch schwarzweiss
-;                          sein. Die '.bmp'-Endung ist optional.
+; INPUTS:
+;  bmpfilename:: An 8-bit *.bmp file. (Extension <*>.bmp</*> will be added if
+;                omitted).
+;  truecolor_array:: A <*>3</*> x <*>n</*> x <*>m</*> numeric array containing
+;                    truecolor data. Data range is <I>not</I>
+;                    restricted to bytes. Output data will be of the
+;                    same numeric type as input data.
 ;
-; OUTPUTS: array : Ein Array, das die Grauwert-Version der
-;                  urspruenglichen Bitmap enthaelt.
+; INPUT KEYWORDS:
+;  NOSAVE:: In case of file-input, setting this keyword prevents the
+;           greyscale data from being written to a *.bmp file with a
+;           sorted greyscale colormap. If this keyword is not set,
+;           the result will be written to the file
+;           <*>bmpfilename_greyscale.bmp</*>.
 ;
-;          bitmapfilename_greyscale.bmp : Ein Bitmap-File, das die
-;                  Grauwert-Version des uebergebenen Bildes enthaelt.
-;                  Dieses File besitzt lineare Farbtabelleneintraege, 
-;                  kann spaeter also problemlos mit Read_BMP eingelesen
-;                  und weiterverwendet werden.
+; OUTPUTS:
+;  result:: Two-dimensional numerical array containing the greylevel
+;           data. Output data type will be the same as input data
+;           type. (In case of file-input, this means type BYTE).
 ;
-; PROCEDURE: 1. Bitmap zusammen mit der Farbtabelle einlesen
-;            2. RGB-Farbtabelle in YIC-Farbtabelle umwandeln
-;               (Y gibt dann den Grauwert an, dieses Farbmodell
-;                wurde damals uebrigens fuer den Uebergang vom 
-;                Schwarzweiss- zum Farbfernsehen eingefuehrt,
-;                sagt Manfred Sommer...)
-;            3. Grauwerte anstatt den Farbtabellenindizes in
-;               die Bitmap reinschreiben
-;            4. Lineare Farbtabelle fuer die zu speichernde
-;               Bitmap erzeugen
-;            5. Write_BMP...
-;            6. Array als Funktionsergebnis zurueckgeben
+; OPTIONAL OUTPUTS:
+;  If keyword <*>NOSAVE</*> was not set, the result will be written to
+;  a *.bmp file with a sorted greyscale colormap.
+;  This allows using <C>Read_BMP</C> on the new file and use
+;  the result as greyscale image, whithout bothering for the color
+;  map. Note that this procedure may also be used to sort the colormap
+;  of a greyscale *.bmp-file with an unsorted colormap.
+;  Output filename will be <*>bmpfilename_greyscale.bmp</*>.
 ;
-; EXAMPLE: Entweder ohne Farbtabelle, sieht irgendwie falsch aus:
-;          bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/nonase/alison.bmp')
-;          TV, bitmap
-;          
-;          oder mit Farbtabelle:
-;          bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/nonase/alison.bmp', r,g,b)
-;          UTVlct, R,G,B
-;          TV, bitmap
-;          
-;          oder mit der superpraktischen FadeToGrey-Funktion:
-;          LoadCt, 0
-;          bitmap=fadetogrey(Getenv('NASEPATH')+'/graphic/nonase/alison.bmp')
-;          TV, bitmap
+; SIDE EFFECTS:
+;  If keyword <*>NOSAVE</*> was not set, the result will be written to
+;  a *.bmp file with a sorted greyscale colormap.
+;  Output filename will be <*>bmpfilename_greyscale.bmp</*>.
 ;
-;          und jetzt geht das auch ganz einfach mit Read_BMP:
-;          bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/nonase/alison_greyscale.bmp')
-;          TV, bitmap
+; RESTRICTIONS:
+;  Input *.bmp files need to be of 8bit indexed colortable type.
 ;
-; SEE ALSO: Standard-IDL-Routinen READ_BMP und WRITE_BMP
-;            
-; MODIFICATION HISTORY:
+; PROCEDURE:
+;  For file input:<BR>
+;  1. read bitmap and colortable.<BR>
+;  2. Convert RGB colormodel to YIC (created for transition form b/w
+;  to color-tv, according to Manfred Sommer :-) ). See
+;  <A>New_Color_Convert</A>.<BR>
+;  3. Optional Write_BMP with a linear colormap.<BR>
+;  4. return result.<BR>
+;  For array input, only steps 2. and 4. are performed.
 ;
-;        $Log$
-;        Revision 2.2  2000/10/01 14:50:42  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
+; EXAMPLE:
+;  Reading a color-bmp while ignoring colortable (looking strange):
+;*bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/alison.bmp')
+;*UTV, bitmap
 ;
-;        Revision 2.1  1998/04/02 15:19:37  thiel
-;               Nie wieder Aerger mit Farbtabellen von
-;               eingelesenen Bitmaps!
+;  Reading a color-bmp whith colortable:
+;*bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/alison.bmp', r,g,b)
+;*UTVlct, R,G,B, /OVER
+;*UTV, bitmap
 ;
+;  Using the great <C>FadeToGrey()</C> function:
+;*ULoadCt, 0
+;*bitmap=fadetogrey(Getenv('NASEPATH')+'/graphic/alison.bmp')
+;*UTV, bitmap
+;
+;  Now we can simply use Read_BMP on the sorted image!
+;*bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/alison_greyscale.bmp')
+;*UTV, bitmap
+;
+; SEE ALSO:
+;  IDL's <C>Read_BMP</C> and <C>Write_BMP</C>, <A>New_Color_Convert</A>.
 ;-
 
-FUNCTION FadeToGrey, filename
-
-sepfilename = Str_Sep(filename, '.')
-filenameparts = N_Elements(sepfilename)
-
-IF filenameparts EQ 1 THEN BEGIN
-   loadfilename = filename+'.bmp'
-   savefilename = filename+'_greyscale.bmp'
-ENDIF ELSE BEGIN
-   IF sepfilename(filenameparts-1) EQ 'bmp' THEN BEGIN
-      loadfilename = filename
-      savefilename = StrMid(filename, 0, StrLen(filename)-4)+'_greyscale.bmp'
-   ENDIF ELSE Message, 'Sorry, this seems to be no BMP-File.'
-ENDELSE
-         
-bitmap = Read_Bmp(loadfilename, r, g, b)
-
-New_Color_Convert, r, g, b, y, i, c, /RGB_YIC
-
-bitmap = y(bitmap)
-
-colortable = Indgen(256)
-
-Write_BMP, savefilename, bitmap, colortable, colortable, colortable
-Message, 'Wrote new Bitmap-File '+savefilename, /INFORM
+Function FadeToGrey_True, pic
+   assert, Size(pic, /N_Dimensions) eq 3, $
+     "Argument must be a Truecolor picture, i.e. a 3-element-array " + $
+     "with the first dimension==3."
+   assert, (Size(pic, /Dimensions))[0] eq 3, $
+     "Argument must be a Truecolor picture, i.e. a 3-element-array " + $
+     "with the first dimension==3."
+   
+   dims = Size(pic, /Dimensions)
+   n_pixels = Product(dims[1:2])
+   
+   New_Color_Convert, $
+     reform(pic[0,*,*], n_pixels), $
+     reform(pic[1,*,*], n_pixels), $
+     reform((Temporary(pic))[2,*,*], n_pixels), $
+     y, i, c, /RGB_YIC
+   
+   return, reform(y, dims[1:2], /overwrite)
+End
 
 
-RETURN, bitmap
+FUNCTION FadeToGrey, filename, NOSAVE=nosave
+
+   If size(filename, /tname) ne "STRING" then begin
+      ;; argument "filename" is a true color array:
+      
+      return, FadeToGrey_True(filename)
+
+
+   endif else begin
+      ;; argument "filename" is a *.bmp-file:
+      
+      assert, size(filename, /tname) eq "STRING"
+      sepfilename = Str_Sep(filename, '.')
+      filenameparts = N_Elements(sepfilename)
+      
+      IF filenameparts EQ 1 THEN BEGIN
+         loadfilename = filename+'.bmp'
+         savefilename = filename+'_greyscale.bmp'
+      ENDIF ELSE BEGIN
+         IF sepfilename(filenameparts-1) EQ 'bmp' THEN BEGIN
+            loadfilename = filename
+            savefilename = StrMid(filename, 0, StrLen(filename)-4)+'_greyscale.bmp'
+         ENDIF ELSE Message, 'Sorry, this seems to be no BMP-File.'
+      ENDELSE
+      
+      bitmap = Read_Bmp(loadfilename, r, g, b)
+      
+      New_Color_Convert, r, g, b, y, i, c, /RGB_YIC
+      
+      bitmap = y(Temporary(bitmap))
+
+      If not Keyword_Set(NOSAVE) then begin
+         colortable = Indgen(256)
+         Write_BMP, savefilename, bitmap, colortable, colortable, colortable
+         Console, 'Wrote new Bitmap-File '+savefilename, /MSG
+      EndIf
+
+
+      RETURN, bitmap
+
+   endelse
 
 END
