@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1999/12/21 09:48:54  saam
+;            error in TD section
+;
 ;       Revision 1.1  1999/12/21 09:43:14  saam
 ;            first version
 ;            changed from PRO to FUNCTION
@@ -62,7 +65,7 @@ FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, _EXTRA=e
    filename = FILE+'.'+L.FILE
    
    data = ReadSim(filename, _EXTRA=e)
-   IF Keyword_Set(TD) THEN data = REFORM(L, h, w, (SIZE(L))(2), /OVERWRITE)
+   IF Keyword_Set(TD) THEN data = REFORM(L, h, w, (SIZE(data))(2), /OVERWRITE)
 
    RETURN, data
 END
