@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  Plot dataset using a histogram style.
+;  plots dataset using a histogram style
 ;
 ; PURPOSE:
 ;  Plot dataset with values depicted as bar heights. <*>UBar_Plot</*>
@@ -16,10 +16,10 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;* ubar_plot, xdata, ydata
-;*            [,COLORS=...][,OFFSET=...][,BARSPACE=...]
-;*            [/CENTER][/OPLOT][/SYMMETRIC]
-;*            [,_EXTRA=...]
+;*ubar_plot, xdata, ydata
+;*           [,COLORS=...][,OFFSET=...][,BARSPACE=...]
+;*           [/CENTER][/OPLOT][/SYMMETRIC]
+;*           [,_EXTRA=...]
 ;
 ; INPUTS:
 ;  xdata:: Onedimensional array of bar positions on the abscissa.
@@ -46,57 +46,11 @@
 ;  Bar diagram of <*>ydata</*>.
 ;
 ; EXAMPLE:
-;* xdata = IndGen(20)
-;* ydata = RandomU(s,20)
-;* ubar_plot, xdata, ydata, OFFSET=0.5, COLORS=255*randomn(s,20)
+;*xdata = IndGen(20)
+;*ydata = RandomU(s,20)
+;*ubar_plot, xdata, ydata, OFFSET=0.5, COLORS=255*randomn(s,20)
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 2.12  2000/11/21 18:38:28  thiel
-;         Removed comments from merging.
-;
-;     Revision 2.11  2000/11/21 18:31:59  thiel
-;         New header, also small bugfix in /SYMMETRIC section.
-;         Added missing /NOERASE in Plot command.
-;
-;     Revision 2.10  2000/11/16 14:25:29  saam
-;     double coordinate system plotting only on
-;     a screen device.
-;
-;     Revision 2.9  2000/10/11 16:14:24  gabriel
-;           Modification History ;- deleted
-;
-;     Revision 2.8  2000/10/11 12:26:51  gabriel
-;          BUG fixed: xdata now a local variable
-;
-;     Revision 2.7  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.6  2000/06/08 10:09:10  gabriel
-;            xbase, keword oplot
-;
-;     Revision 2.5  1998/07/21 15:41:31  saam
-;           new keyword SYMMETRIC implemented
-;
-;     Revision 2.4  1998/07/20 14:30:01  gabriel
-;          Verbessert und an die Routine hist angepasst
-;
-;     Revision 2.3  1998/05/12 17:48:24  gabriel
-;          kleinen !P.MULTI Fehler behoben
-;
-;     Revision 2.2  1998/05/12 14:10:11  gabriel
-;          Docu erweitert bei COLORS
-;
-;     Revision 2.1  1998/05/12 13:58:09  gabriel
-;          Eine kleine neue Routine
-;
-;
-
-
 
 PRO UBar_Plot, xdata, ydata, xbase $
                , COLORS=COLORS, OFFSET=OFFSET ,CENTER=CENTER $
