@@ -56,6 +56,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.12  2000/11/21 18:38:28  thiel
+;         Removed comments from merging.
+;
 ;     Revision 2.11  2000/11/21 18:31:59  thiel
 ;         New header, also small bugfix in /SYMMETRIC section.
 ;         Added missing /NOERASE in Plot command.
@@ -149,41 +152,6 @@ PRO UBar_Plot, xdata, ydata, xbase $
       ;;print,!P.MULTI
    ENDIF ;; OPLOT EQ 0 
 
-;   PTMP2 = !P.MULTI
-;   FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN 
-;      x = [ __xdata(i)-stepl,__xdata(i)-stepl,__xdata(i)+stepr,__xdata(i)+stepr ]
-;      y = [ offset ,ydata(i),ydata(i),offset ]
-;      polyfill,x,y,COLOR=COLORS(i),NOCLIP=0
-
-;   END
-
-;;IF OPLOT EQ 0 THEN BEGIN
-;   ;;Und Nochmal Drueber
-;   ;;print,!P.MULTI
-
-;   !P.MULTI = PTMP 
-
-;   CASE 1 OF
-;      ExtraSet(e, 'XRANGE'): plot,__xdata,ydata,/NODATA,/NOERASE $
-;       ,/XSTYLE,_EXTRA=e
-;      ExtraSet(e, 'XSTYLE'): plot,__xdata,ydata,/NODATA,/NOERASE $
-;       ,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],_EXTRA=e
-;      ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
-;         maxr = MAX([ABS(__xdata(0)-stepl),ABS(MAX(__xdata)+stepr)])
-;         plot,__xdata,ydata,/NODATA,/NOERASE,XRANGE=[-maxr,maxr] $
-;          ,/XSTYLE,_EXTRA=e
-;      END ELSE BEGIN
-;         plot,__xdata,ydata,/NODATA,/NOERASE $
-;          ,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],/XSTYLE,_EXTRA=e
-;      END
-;   ENDCASE
-   
-;   ;;print,!P.MULTI
-;<<<<<<< ubar_plot.pro
-;;ENDIF
-;   !P.MULTI = PTMP2
-;=======
-;ENDIF
 
    PTMP2 = !P.MULTI
    FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN 
