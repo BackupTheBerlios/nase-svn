@@ -28,12 +28,12 @@
 ;  
 ; OPTIONAL INPUTS:
 ;  tip: The position of the tip. This value can take any floating
-;       value in [0, len-1]. It defaults to (len-1)/2.0. For a
-;       non-integer tip position, the value given in TOP may not
-;       actually be contained in the array. Instead, the slopes are
-;       adjusted as to virtually meat the TOP value at the tip
-;       position in between two array sample points.
-;       For tip=0 or tip=len-1, a Ramp() is returned.  
+;       value. It may be located inside or outside the array and
+;       defaults to (len-1)/2.0. For a non-integer tip position, the
+;       value given in TOP may not actually be contained in the
+;       array. Instead, the slopes are adjusted as to virtually meat
+;       the TOP value at the tip position in between two array sample
+;       points. For tip<=0 or tip>=len-1, a Ramp() is returned.  
 ;
 ;  LEFT:   value of the leftmost element (index 0)
 ;  RIGHT:  value of the rightmost element (index len-1)
@@ -74,6 +74,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/07/20 14:15:36  kupper
+;        Tip positions outside the array are now allowed!
+;
 ;        Revision 1.1  2000/07/18 13:44:27  kupper
 ;        Hope it works.
 ;
@@ -85,13 +88,6 @@ Function hill, len, tip, LEFT=left, RIGHT=right, TOP=top, $
 
    Default, tip, (len-1)/2.0
 
-   ;; handle special cases:
-   if tip eq 0       then return, Ramp(len, LEFT=top, RIGHT=right, SLOPE=lslope, ANGLE=langle)
-   if tip eq (len-1) then return, Rotate(Ramp(len, LEFT=top, $
-                                              RIGHT=left, SLOPE=rslope, ANGLE=rangle), 2)
-   ;; have to use transpose here, because we cannot write -rslope, in
-   ;; case it is not defined. Cannot default it either, as Ramp() will
-   ;; read it as set then...
 
 
    ;; Length of left and right ramp:
@@ -110,6 +106,18 @@ Function hill, len, tip, LEFT=left, RIGHT=right, TOP=top, $
 
    ;; at this point, left, lslope, right and rslope are known.
    
+
+   ;; handle special cases (tip outside array):
+   if tip le 0       then return, Ramp(len, RIGHT=right, SLOPE=-rslope)
+;   if tip ge (len-1) then return, Rotate(Ramp(len, LEFT=top, $
+;                                              RIGHT=left, SLOPE=rslope, ANGLE=rangle), 2)
+   ;; have to use transpose here, because we cannot write -rslope, in
+   ;; case it is not defined. Cannot default it either, as Ramp() will
+   ;; read it as set then...
+   if tip ge (len-1) then return, Ramp(len, LEFT=left, SLOPE=lslope)
+
+
+   ;; general case (tip inside array):
    lramp = Ramp(llen, LEFT=left, SLOPE=lslope)
    rramp = Ramp(rlen, RIGHT=right, SLOPE=-rslope)
 
