@@ -1,18 +1,13 @@
 ;+
 ; NAME: Gauss_2D()
 ;
-;
-;
 ; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gaußverteilung mit Maximum 1.
-;
-;
 ;
 ; CATEGORY: Allgemein, Kohonen, X-Zellen, Basic
 ;
-;
-;
 ; CALLING SEQUENCE: Array = Gauss_2D ( {
-;                                        /AUTOSIZE, {(sigma|HWB=hwb) | XHWB=xhwb,YHWB=yhwb} 
+;                                        /AUTOSIZE, {{(sigma|HWB=hwb)}
+;                                        | {XHWB=xhwb,YHWB=yhwb [,phi=phi]}} 
 ;                                       |
 ;                                        x_Laenge, y_Laenge [(,sigma|,HWB=hwb)|,XHWB=xhwb,YHWB=yhwb] [,x0] [,y0] 
 ;                                      }
@@ -28,11 +23,13 @@
 ;                  Norm            : Volumen der Gaussmaske auf Eins normiert
 ;	  	   HWB		   : Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu sigma angegeben werden.
 ;	  	   XHWB, YHWB	   : Die Halbwertsbreite in Gitterpunkten bzgl. x und y (alternativ zu sigma und HWB)
+;                  PHI             : an assymetric distribution can be
+;                                    rotated by an angle of PHI in
+;                                    degree (clockwise)
 ;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
 ;			  	     Feldes. (Genauer: bei fix(Laenge/2)).
 ;                  x0_arr,y0_arr   : wie x0,y0, relativ zur linken oberen Arrayecke
 ;
-;	
 ; KEYWORD PARAMETERS: HWB, x0_arr, y0_arr, s.o.
 ;
 ;                     AUTOSIZE: Wenn gesetzt werden die Ausmaße des
@@ -46,22 +43,7 @@
 ;                       kann. In anderen Faellen ist das Verhalten der Routine undefiniert!
 ;
 ;
-;
 ; OUTPUTS: Array: Ein ein- oder zweidimensionales Array vom Typ Double und der angegebenen Dimension mit Maximum 1.
-;
-;
-;
-; OPTIONAL OUTPUTS: ---
-;
-;
-;
-; COMMON BLOCKS: ---
-;
-;
-;
-; SIDE EFFECTS: ---
-;
-;
 ;
 ; RESTRICTIONS: Man beachte, dass die Arraydimensionen ungerade sein müssen,
 ;               wenn der Berg symmetrisch im Array liegen soll!
@@ -89,6 +71,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.14  2000/06/19 13:25:15  saam
+;              + new keyword PHI to rotate assymmetric distributions
+;
 ;        Revision 1.13  2000/02/29 18:53:10  kupper
 ;        Removed stupid ABS in normalization (gaussians are always positive!)
 ;        Corrected use of Temporary() in normalization.
@@ -130,7 +115,7 @@
 
 Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
                    sigma,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
-                   X0_ARR=x0_arr, Y0_ARR=y0_arr ;(optional)
+                   X0_ARR=x0_arr, Y0_ARR=y0_arr, PHI=phi ;(optional)
 
    ;; Defaults:
    Default, x0, 0
@@ -160,18 +145,24 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
 
 
 
-  IF set(XHWB) THEN BEGIN
-     
-     xerg = exp(-shift(dist(xlen,1),x0_arr)^2d / 2d /sigmax^2d)
-     yerg = exp(-shift(dist(1,ylen),x0_arr,y0_arr)^2d / 2d /sigmay^2d)
-     xerg = REBIN(temporary(xerg),xlen,ylen,/SAMPLE)
-     yerg = REBIN(temporary(yerg),xlen,ylen,/SAMPLE)
-     ERG = temporary(xerg)*temporary(yerg)
-     If Keyword_Set(NORM) then begin
-        i = TOTAL(ERG)
-        ERG = temporary(ERG) / i
-     Endif
-    return, ERG(*,*)   
+   IF set(XHWB) THEN BEGIN
+       Default, phi, 0d
+
+       xn = REBIN(shift(dist(xlen,1),x0_arr)       , xlen, ylen, /SAMPLE)
+       yn = REBIN(shift(dist(1,ylen),x0_arr,y0_arr), xlen, ylen, /SAMPLE)
+       IF PHI NE 0d THEN BEGIN
+           xn = ROT(xn,phi,1,xlen/2,ylen/2,/CUBIC,/PIVOT)
+           yn = ROT(yn,phi,1,xlen/2,ylen/2,/CUBIC,/PIVOT)
+       END
+       xerg = exp(-xn^2d / 2d /sigmax^2d)
+       yerg = exp(-yn^2d / 2d /sigmay^2d)
+
+       ERG = temporary(xerg)*temporary(yerg)
+       If Keyword_Set(NORM) then begin
+           i = TOTAL(ERG)
+           ERG = temporary(ERG) / i
+       Endif
+       return, ERG(*,*)   
 
   ENDIF
 
