@@ -112,29 +112,19 @@ End
 
 
 
-;; ------------ Member access methods -----------------------
-Pro widget_MyClass::example, value
-   COMPILE_OPT IDL2
-   ;;
-   ;; insert code here: set data member and adjust widget
-   ;;
-   ;; EXAMPLE:
-   ;; self.example = value
-   ;; Widget_Control, self.w_example, SET_VALUE=value
-End
+;; ------------ Static member declaration -------------------
+Common widget_MyClass_static, MyStaticMember, MyOtherStaticMember
+;; (This is meant to be outside any procedure or function.)
+;; Static members should all be regarded private, just like the
+;; non-static data members.
+;; Is there any way to have static -methods-?
 
-Function widget_MyClass::example
-   COMPILE_OPT IDL2
-   ;;
-   ;; insert code here
-   ;;
-   ;; EXAMPLE:
-   ;; return, self.example
-End
+
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_MyClass::init, _REF_EXTRA=_ref_extra
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
@@ -174,6 +164,7 @@ End
 
 Pro widget_MyClass::cleanup, _REF_EXTRA = _ref_extra
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
    DMsg, "I'm dying!"
    Cleanup_Superclasses, self, "widget_MyClass", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
@@ -186,6 +177,7 @@ End
 
 Pro widget_MyClass::reset
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
    ;; set all data members to defaults, using the member access methods (this
    ;; will also set the widgets correctly!)
    ;;
@@ -199,6 +191,7 @@ End
 ;;  (for any data members that should be open to the public)
 Pro widget_MyClass::example, value
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
    ;;
    ;; insert code here
    ;;
@@ -207,6 +200,7 @@ Pro widget_MyClass::example, value
 End
 Function widget_MyClass::example
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
    ;;
    ;; insert code here
    ;;
@@ -217,10 +211,12 @@ End
 ;; Other public methods:
 Function widget_MyClass::foo, parameter
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
 End
 
 Pro widget_MyClass::bar, parameter
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
 End
 
 
@@ -230,6 +226,7 @@ End
 ;; ------------ Private --------------------
 Pro widget_MyClass::override_me_; -ABSTRACT-
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
    ;; use this template for all abstract methods.
    On_error, 2
    Console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
@@ -241,6 +238,14 @@ End
 ;; ------------ Object definition ---------------------------
 Pro widget_MyClass__DEFINE
    COMPILE_OPT IDL2
+
+   ;; initialization of static members:
+   Common widget_MyClass_static
+   MyStaticMember      = "foo"
+   MyOtherStaticMember = "bar"
+
+
+   ;; class definition
    dummy = {widget_MyClass, $
             $
             inherits basic_widget_object, $
