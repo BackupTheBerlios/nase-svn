@@ -1,69 +1,54 @@
 ;+
-; NAME: RFScan_Zeigmal()
+; NAME:
+;  RFScan_Zeigmal()
 ;
-; AIM:  
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
+; AIM:
+;  Get the next automatically generated input for the (simplified) RF-Cinematogram.
 ;
-; CALLING SEQUENCE: Inputbild = RFScan_Zeigmal( My_RFScan [,Picture] )
+; PURPOSE:
+;  see <A>RFScan_Init</A>
 ;
-; INPUTS: My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
-;                    RFScan-Struktur.
+; CATEGORY:
+;  NASE
+;  Statistics
+;  Signals
+;  Simulation
 ;
-; OPTIONAL INPUTS: Picture: Wurde bei der Initialisierung der manuelle Modus gewählt
-;                           (vgl. <A HREF="#RFSCAN_INIT">RFScan_Init()</A>), so muß beim Aufruf das
-;                           gewünschte Inputbild manuell übergeben werden. In diesem
-;                           Fall wird genau dieses Bild auch von der Fubktion zurück-
-;                           gegeben.
+; CALLING SEQUENCE:
+;*Inputbild = RFScan_Zeigmal(My_RFScan [,Picture])
 ;
-; OUTPUTS: Inputbild: Ein FloatArray passender Größe, das dem zu
-;                     testenden Netz als Input präsentiert werden
-;                     soll.
-;                     Dieses Bild muß mindestens einen Zeitschritt
-;                     lang (i.a. aber beliebig lang) als Input
-;                     angelegen haben, bevor <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>
-;                     aufgerufen wird.
+; INPUTS:
+;  My_RFScan::Eine mit <A>RFScan_Init</A> initialisierte
+;             RFScan-Struktur.
 ;
-; COMMON BLOCKS: common_Random (Standard)
+; OPTIONAL INPUTS:
+;  Picture:: Wurde bei der Initialisierung der manuelle Modus gewählt
+;            (vgl. <A>RFScan_Init</A>), so muß beim Aufruf das
+;            gewünschte Inputbild manuell übergeben werden. In diesem
+;            Fall wird genau dieses Bild auch von der Fubktion zurückgegeben.
 ;
-; EXAMPLE: MyPic = RFScan_Zeigmal( My_RFScan )
+; OUTPUTS:
+;  Inputbild:: Ein FloatArray passender Größe, das dem zu
+;              testenden Netz als Input präsentiert werden
+;              soll.
+;              Dieses Bild muß mindestens einen Zeitschritt
+;              lang (i.a. aber beliebig lang) als Input
+;              angelegen haben, bevor <A>RFScan_Schaumal</A>
+;              aufgerufen wird.
 ;
-; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
+; COMMON BLOCKS:
+;  common_Random (Standard)
+;
+; EXAMPLE:
+;*MyPic = RFScan_Zeigmal(My_RFScan)
+;
+; SEE ALSO:
+;  <A>RFScan_Init</A>, <A>RFScan_Schaumal</A>, <A>RFScan_Return</A>
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.7  2000/09/28 12:39:57  gabriel
-;             AIM tag added , message <> console
-;
-;        Revision 1.6  2000/06/16 08:53:15  kupper
-;        Added AUTO_SINGLEDOT.
-;
-;        Revision 1.5  1998/03/06 11:35:10  kupper
-;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
-;                wenn beim Aufruf kein Fenster geöffnet war.
-;
-;        Revision 1.4  1998/03/03 14:44:21  kupper
-;               RFScan_Schaumal ist jetzt viel schneller, weil es
-;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
-;                   Das ist zwar unelegant, aber schnell.
-;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
-;                   macht und daher nur für die tatsächlich feuernden Neuronen
-;                   Berechnungen durchführt.
-;
-;        Revision 1.3  1998/02/16 14:59:48  kupper
-;               VISUALIZE ist jetzt implementiert. WRAP auch.
-;
-;        Revision 1.2  1998/01/30 17:02:53  kupper
-;               Header geschrieben und kosmetische Veränderungen.
-;                 VISULAIZE ist noch immer nicht implementiert.
-;
-;        Revision 1.1  1998/01/29 14:45:07  kupper
-;               Erste Beta-Version.
-;                 Header mach ich noch...
-;                 VISUALIZE-Keyword ist noch nicht implementiert...
-;
-;
+
 
 Function ReturnPic, RFS
    If Keyword_Set(RFS.VISUALIZE) then begin

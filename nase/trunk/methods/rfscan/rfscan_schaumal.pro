@@ -1,71 +1,49 @@
 ;+
-; NAME: RFScan_Schaumal
+; NAME:
+;  RFScan_Schaumal
 ;
-; AIM: 
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
+; AIM:
+;  Register the current output of a neuron layer for the (simplified) RF-Cinematogram.
 ;
-; CALLING SEQUENCE: RFScan_Schaumal, My_RFScan, OutLayer [,/NOVISUALIZE]
+; PURPOSE:
+;  see <A>RFScan_Init</A>.
 ;
-; INPUTS: My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
-;                    RFScan-Struktur.
-;         OutLayer : Der Layer mit den zu untersuchenden Neuronen. Das 
-;                    muß der gleicher Layer sein, der auch bei der
-;                    Initialisierung angegeben wurde (zumindest muß er 
-;                    die gleichen Ausmaße haben...)
+; CATEGORY:
+;  NASE
+;  Statistics
+;  Signals
+;  Simulation
 ;
-; KEYWORD PARAMETERS: NOVISUALIZE: Wenn gesetzt, wird kein Update der
-;                                  Visualisierung gemacht
-;                                  (zeitsparend)
-;                                  Wurde RFScan_Init ohne VISUALIZE
-;                                  initialisiert, so wird dieses
-;                                  Keyword ignoriert.
+; CALLING SEQUENCE:
+;*RFScan_Schaumal, My_RFScan, OutLayer [,/NOVISUALIZE]
 ;
-; EXAMPLE: RFScan_Schaumal, My_RFScan, SimpleCells
+; INPUTS:
+;  My_RFScan:: Eine mit <A>RFScan_Init</A> initialisierte
+;              RFScan-Struktur.
+;  OutLayer:: Der Layer mit den zu untersuchenden Neuronen. Das 
+;             muß der gleicher Layer sein, der auch bei der
+;             Initialisierung angegeben wurde (zumindest muß er 
+;             die gleichen Ausmaße haben...) 
 ;
-; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
+; INPUT KEYWORDS:
+;  NOVISUALIZE:: Wenn gesetzt, wird kein Update der
+;                Visualisierung gemacht
+;                (zeitsparend)
+;                Wurde <A>RFScan_Init</A> ohne <*>VISUALIZE</*>
+;                initialisiert, so wird dieses
+;                Keyword ignoriert.
+;
+; EXAMPLE:
+;*RFScan_Schaumal, My_RFScan, SimpleCells
+;
+; SEE ALSO:
+;  <A>RFScan_Init</A>, <A>RFScan_Zeigmal</A>, <A>RFScan_Return</A>
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.9  2000/09/28 12:40:35  gabriel
-;             AIM tag added , message <> console
-;
-;        Revision 1.8  1999/06/07 16:11:41  kupper
-;        Wasnt working with OBSERVE_SPIKES as layers are handles now. Fixed.
-;
-;        Revision 1.7  1998/03/23 17:44:09  kupper
-;               NOVISUALIZE implementiert.
-;
-;        Revision 1.6  1998/03/14 11:26:47  kupper
-;               Inputkantentypen -1 und -2 implementiert.
-;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
-;
-;        Revision 1.5  1998/03/06 11:35:10  kupper
-;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
-;                wenn beim Aufruf kein Fenster geöffnet war.
-;
-;        Revision 1.4  1998/03/03 14:44:20  kupper
-;               RFScan_Schaumal ist jetzt viel schneller, weil es
-;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
-;                   Das ist zwar unelegant, aber schnell.
-;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
-;                   macht und daher nur für die tatsächlich feuernden Neuronen
-;                   Berechnungen durchführt.
-;
-;        Revision 1.3  1998/02/16 14:59:48  kupper
-;               VISUALIZE ist jetzt implementiert. WRAP auch.
-;
-;        Revision 1.2  1998/01/30 17:02:52  kupper
-;               Header geschrieben und kosmetische Veränderungen.
-;                 VISULAIZE ist noch immer nicht implementiert.
-;
-;        Revision 1.1  1998/01/29 14:45:08  kupper
-;               Erste Beta-Version.
-;                 Header mach ich noch...
-;                 VISUALIZE-Keyword ist noch nicht implementiert...
-;
-;
+
+
 
 Pro RFScan_Schaumal, RFS, OutLayer, NOVISUALIZE=novisualize
 
