@@ -14,8 +14,8 @@ use NASE::parse;
 
 my ($hostname, $CVSROOT, $DOCDIR, $DOCURL, $myurl, $fullurl, $sub, $lastmod);
 
-$CGI::POSTMAX         = 1024; # maximal post is 1k
-$CGI::DISABLE_UPLOADS =    1; # no uploads
+$CGI::POSTMAX         = 1024*100; # maximal post is 100k
+#$CGI::DISABLE_UPLOADS =    1; # no uploads
 import_names('P');
 
 
@@ -56,7 +56,7 @@ sub updatedoc {
 # this is hopefully done by loginfo from cvs directly
 #    `rm -Rf $DOCDIR/*`;
 #    foreach (@projects){
-#      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_; chmod -R g+w $_`;
+#      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_`;
 #      print "checking out $_ ... done\n";
 #    }
         
@@ -68,18 +68,29 @@ sub updatedoc {
   print "looking for projects ... ", join(" ",@projects), "\n";
 
 
-  print "generating routine index..."; 
+#  print "generating routine index..."; 
 #  createRoutineIdx();
-  print "...done\n";
-  print "generating directory indices...";
+#  print "...done\n";
+
+
   createAim(@projects);
 
-  print "generating keyword lists...";
-  keylista();
+  print "generating routines by name...";
+  RoutinesByName();
   print "...done</PRE>";
+
+#  print "generating routine by category...";
+#  RoutinesByCat();
+#  print "...done</PRE>";
+
+#  print "generating keyword lists...";
+#  keylista();
+#  print "...done</PRE>";
+
   print "create HTML documentation...";
-#  `$DOCDIR/doc/www-bin/automakedoc`;
+  `$DOCDIR/doc/www-bin/automakedoc`;
   print "...done</PRE>";
+
 }
 
 
@@ -148,20 +159,40 @@ if ($P::mode){
     /list/i   && do { print myBody();
 		      print img({src=>"$DOCURL/doc/www-doc/snasedoc.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
-		      print hr,
-		      a({href=>"/nase.list/", target=>"text"}, "mailing list"), ", ",
-		      a({href=>$DOCURL.RoutinesHTML(), target=>"text"}, "routine index"), ", ",
-		      "keyword index (",a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), ", ",
-		      a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), ")",
-		      font({size=>"-2"}, 
-			   hr,
-			   "last update: $lastmod, ",
-			   a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), br,
-		      font({size=>"-2"}, 
-			   '$Id$ ');
+		      print 
+			hr, 
+			a({href=>"/nase.list/", target=>"text"}, "mailing list"), ", ",
+			"routines (", a({href=>$DOCURL.RoutinesHTML(), target=>"text"}, "name"), ", ",
+			a({href=>$DOCURL.RoutinesCatHTML(), target=>"text"}, "category"), "), ",		      
+			"keyword index (",a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), ", ",
+			a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), ")",
+			hr,
+			start_multipart_form(-target=>"text"),
+			textfield(-name=>'QuickSearch', -size=>15, -maxlength=>80),
+			#		        hidden(-name=>'mode', -value=>'search'), doesn't work inserts $P::MODE
+			'<INPUT NAME="mode" VALUE="search" TYPE=HIDDEN>',
+			submit(-name=>'Search'),br,
+			checkbox_group(-name=>'sfields',
+				       -values=>['name','aim'],
+				       -defaults=>['name']),
+			endform,
+			hr,
+			"Test the format of your documentation header before checking in!",
+			start_multipart_form(-target=>"text"),
+			filefield(-name=>'filename',-size=>5),
+			'<INPUT NAME="mode" VALUE="check" TYPE=HIDDEN>',
+			submit(-name=>'Check'),
+			endform,
+			hr,
+			font({size=>"-2"}, 
+			     "last update: $lastmod, ",
+			     a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), 
+			br,
+			font({size=>"-2"}, 
+			     '$Id$ ');
 		      last TRUNK;};
     /text/i   && do { print myBody();
-		      if ($P::file){if ($P::show eq "header") { showHeader($P::file); };
+		      if ($P::file){if ($P::show eq "header") { showHeader(key=>$P::file); };
 				    if ($P::show eq "source") { showSource($P::file); };
 				    if ($P::show eq "log"   ) { showLog($P::file);    };
 				  } else {
@@ -175,6 +206,24 @@ if ($P::mode){
 				    close(IDX) || die "can't close index: $!\n";
 				    last TRUNK;};
 				  };
+    /search/i   && do { print myBody();
+			quickSearch($P::QuickSearch, param('sfields'));
+			last TRUNK;
+                      };
+    /check/i    && do {
+			print myBody();
+			chomp (my $chkfile = `/bin/mktemp /tmp/nasedocu_checkXXXXXX`);
+			open (CHK, ">$chkfile") || die "can't open $chkfile: $!\n";
+                        my $filename = param('filename');
+			while (<$filename>) {
+			  print CHK $_;
+			}
+			close (CHK) || die "can't close $chkfile: $!\n";
+			close ($filename) || die "can't close nsform: $!\n";
+			showHeader(file=>$chkfile);
+			unlink $chkfile || die "can't unlink $chkfile: $!\n";
+                        last TRUNK;
+                      };
     /dir/i   && do { print '<frameset cols="180,*">';
 		     print frame({src=>"$fullurl?mode=list", name=>"list"});
 		     print frame({src=>"$fullurl?mode=text&show=aim", name=>"text"});
