@@ -153,6 +153,7 @@ PRO newPTV, first, second, third $
             , XTICKLEN=xticklen, YTICKLEN=yticklen $
             , XMINOR=xminor, YMINOR=yminor $
             , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
+            , XTICKNAME=xtickname, YTICKNAME=ytickname $
             , TITLE=title, XTITLE=xtitle, YTITLE=ytitle $
             , FITPLOT=fitplot, CORNERS=corners $
             , POLYGON=polygon, ORDER=order $
@@ -424,7 +425,7 @@ PRO newPTV, first, second, third $
          ;; a one column array? Then set keywords such that only a center
          ;; tick appears with a single value
          xticks = 2
-         xtickname = [' ', Str(xrange[0], FORMAT='(G0.0)'), ' ']
+         Default, xtickname, [' ', Str(xrange[0], FORMAT='(G0.0)'), ' ']
       ENDIF ELSE $
       xtinter = (xrange[1]-xrange[0])/(nx-1)
       ;; no minor tick marks, since each array column is marked by a
@@ -447,7 +448,8 @@ PRO newPTV, first, second, third $
          ;; a one row array? Then set keywords such that only a center
          ;; tick appears with a single value
          yticks = 2
-         ytickname = [' ', Str(yrange[0], FORMAT='(G0.0)'), ' ']
+;         ytickname = [' ', Str(yrange[0], FORMAT='(G0.0)'), ' ']
+         Default, ytickname, [' ', Str(yrange[0], FORMAT='(G0.0)'), ' ']
       ENDIF ELSE $
       ytinter = Abs(yrange[1]-yrange[0])/(ny-1)
       ;; Abs() because /ORDER may have reversed the annotation
@@ -467,13 +469,13 @@ PRO newPTV, first, second, third $
    Axis, 23., yo, XAXIS=0, /NORMAL, XSTYLE=1 $
     , XTICKINTERVAL=xtinter, XTICKS=xticks, XTICKNAME=xtickname $
     , XMINOR=xminor, XTICKLEN=xticklen*yfrac, XTITLE=xtitle $
-    , XTICKFORMAT=xtickformat $
+    , XTICKFORMAT=xtickformat $ ;, XTICKNAME=xtickckname $
     , CHARSIZE=charsize
 
    Axis, xo, 23., YAXIS=0, /NORMAL, YSTYLE=1 $
     , YTICKINTERVAL=ytinter, YTICKS=yticks, YTICKNAME=ytickname $
     , YMINOR=yminor, YTICKLEN=yticklen*xfrac, YTITLE=ytitle $
-    , YTICKFORMAT=ytickformat $
+    , YTICKFORMAT=ytickformat $;, YTICKNAME=ytickname $
     , CHARSIZE=charsize
 
    Axis, 23., ye, XAXIS=1, /NORMAL, XSTYLE=1, XTICKFORMAT='noticks' $
