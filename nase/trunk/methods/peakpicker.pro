@@ -1,72 +1,80 @@
 ;+
-; NAME:               PeakPicker
+; NAME: 
+;  Peakpicker
+;  
+; VERSION:
+;  $Id$
 ;
-; AIM:                identifying peaks and valleys in noisy data (num. method)
+; AIM:
+;  Identifying peaks and valleys in noisy data (num. method).
+;  
+; PURPOSE:
+;  Identifying peaks and valleys in noisy data (num. method).
+;  Authors: K. Kopecz, A. Steinhage
 ;
-; PURPOSE:            identifying peaks and valleys in noisy data
+; CATEGORY:
+;  Array
+;  Math
+;  Signals
+;  Simulation
 ;
-; CATEGORY:           STAT
+; CALLING SEQUENCE:
+;  PeakPicker, ydata, tdata, ypeak, tpeak, number 
+;              [, yvalley, tvalley]
+;              [, RELATIVCRIT=...] [, DATACRIT=...]
+;              [, INTERVALL=...]
+;  
+; INPUTS:
+;  ydata:: Vector of data values.
+;  tdata:: Vector of corresponding times (,or whatever)
+;  
+; INPUT KEYWORDS:
+;  RELATIVCRIT:: An optional criterion for peak/noise discrimination
+;                given in fraction of maximal data range (Def.: 5%)
+;  DATACRIT:: An optional criterion for peak/noise discrimination
+;             given in absolute data coordinates.
+;  
+; OUTPUTS:
+;  ypeak:: Vector of peaks heights found.
+;  tpeak:: Vector of corresponding peak times.
+;  number:: If no significant peaks and valleys are found, -1 is 
+;           returned in 'number', otherwise the number of peaks
+;           found. The lengths of the resulting vectors are according
+;           to the number of peaks and valleys found.
 ;
-; CALLING SEQUENCE:   PeakPicker, ydata,tdata, ypeak,tpeak,number [, yvalley, tvalley] $
-;                                   [, RelativCrit=RelativeCrit] [, DataCrit=DataCrit] $
-;                                   [ ,Intervall=Intervall]
-;
-; INPUTS:             ydata: Vector of data values.
-;                     tdata: Vector of corresponding times (,or whatever)
-;
-; KEYWORD PARAMETERS: RelativeCrit:   An optional criterion for peak/noise discrimination
-;                                     given in fraction of maximal data range (Def.: 5%)
-;                     DataCrit:       An optional criterion for peak/noise discrimination
-;                                     given in absolute data coordinates.
-;
-; OUTPUTS:           If no significant peaks and valleys are found, -1 is returned in 
-;                    'number', otherwise the number of peaks found. If no information about 
-;                    valleys is required, 'yvalley' and 'tvalley' needn't be given when 
-;                    calling the peakpicker function.
-; 
-;                     ypeak:          Vector of peaks heights found.
-;                     tpeak:          Vector of corresponding peak times.
-;                     number:         See above.
-;
-;                     The lengths of the resulting vectors are according to the number of
-;                     peaks and valleys found.
-;
-; OPTIONAL OUTPUTS:   yvalley:        Like ypeak for valleys.
-;                     tvalley:        Like tpeak for valleys.
-;
-; AUHTOR:             K. Kopecz, A. Steinhage
+; OPTIONAL OUTPUTS:
+;  yvalley:: Vector of valley depths found.
+;  tvalley:: Vector of corresponding valley times.
+;            If no information about valleys is required, 'yvalley' 
+;            and 'tvalley' needn't be given when calling the
+;            peakpicker function.
+;  
+; EXAMPLE:
+;* x=RandomN(s,100)
+;* Plot, x
+;* PeakPicker, x, indgen(100), yp, tp, RELATIVCRIT=0.1
+;* OPlot, tp, yp, COLOR=RGB("red")
+;  
+; SEE ALSO:
+;  <A>UPeakPicker</A>.
 ;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.3  2000/09/28 09:39:10  gabriel
-;          AIM tag added
-;
-;     Revision 1.2  1998/01/27 16:32:32  saam
-;           little bug in docu corrected
-;
-;     Revision 1.1  1997/11/12 14:35:30  saam
-;           Header angepasst
-;
-;
-;
+
+
 PRO PeakPicker, ydata,tdata, ypeak,tpeak,number, yvalley,tvalley, $
              RelativCrit=RelativeCrit,DataCrit=DataCrit,Intervall=Intervall
 
-
-   If Not Keyword_Set(RelativeCrit) Then RelativeCrit=0
-   If Not Keyword_Set(DataCrit) Then DataCrit=0
-   If (Not Keyword_Set(Intervall)) or (RelativeCrit eq 0) then Intervall=0
+   IF SET(RelativeCrit) AND SET(DataCrit) THEN $ 
+    Console, /FATAL, "Don't use both keywords: RelativeCrit, DataCrit."
+  
+   Default, RelativeCrit, 0.05
+   Default, DataCrit, 0
+   Default, intervall, 0
    
-   If (Not Keyword_Set(RelativeCrit)) AND (Not Keyword_Set(DataCrit)) Then Begin
-      RelativeCrit=0.05
-      DataCrit=0
-   EndIf
-   If Keyword_Set(RelativeCrit) AND Keyword_Set(DataCrit) Then DataCrit=0
+   ymin=Min(ydata)
+   ymax=Max(ydata)
    
-   ymin=Min(ydata)  &  ymax=Max(ydata)
-   If RelativeCrit Then ycrit=RelativeCrit*(ymax-ymin) ; criterion into data range
-   If set(DataCrit) Then ycrit=DataCrit
+   IF RelativeCrit GT 0 Then ycrit=RelativeCrit*(ymax-ymin) ; criterion into data range
+   IF DataCrit GT 0  Then ycrit=DataCrit
 
 ;Initialization
 
