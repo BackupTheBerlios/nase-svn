@@ -1,6 +1,9 @@
 ;+
-; NAME:               DefineSheet
+; NAME:
+;  DefineSheet
 ;
+; VERSION:
+; 
 ; AIM:
 ;  Define a structure for device independent graphics output.
 ;
@@ -18,7 +21,9 @@
 ;                     die verwendetet Farbtabelle ab.
 ;                     Ab Revision 2.15 koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
 ;
-; CATEGORY:           GRAPHIC, WIDGETS, allgemein
+; CATEGORY:
+;  Graphic
+;  Windows
 ;
 ; CALLING SEQUENCE:   
 ;*                      Sheet = DefineSheet( [ Parent ]
@@ -87,6 +92,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.23  2000/11/30 16:57:46  saam
+;     now color and 8 bits_per_pixel are default for ps sheets
+;
 ;     Revision 2.22  2000/11/02 09:40:28  gabriel
 ;          doc header modified
 ;
@@ -214,7 +222,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
 
       Default, incremental, 0
       Default, encapsulated, 0
-      Default, color, 0
+      Default, color, 1
 
       IF NOT Keyword_Set(FILENAME) THEN filename = 'sheet_'+STRING([BYTE(97+25*RANDOMU(seed,10))])
       
@@ -225,7 +233,12 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
          Print, '   Type:     ', ty, tz
          Print, '   Filename: ', filename+'.'+ty
       END
-      
+
+      IF TypeOf(E) EQ "STRUCT" THEN BEGIN
+          IF NOT ExtraSet(e, "BITS_PER_PIXEL") THEN SetTag, e, "BITS_PER_PIXEL", 8
+      END ELSE BEGIN
+          e = {BITS_PER_PIXEL : 8}
+      END
       uSet_Plot, 'ps'      
       sheet = { type     : 'ps'         ,$
                 filename : filename     ,$
