@@ -13,10 +13,7 @@
 ;  distance and returns these parts in another array so that they can
 ;  be processed separately. Parts may overlap depending on the chosen
 ;  size and distance. The result can then be used for sliding spectra
-;  correlation or firing rate analysis etc. 
-;  <B>You should always specify the /TFIRST option</B>, which assumes
-;  time to be in the first index of your signal array and on the other
-;  hand returns time in the first index of the slice array.
+;  correlation or firing rate analysis etc.
 ;  Data at the beginning and the end of the original array not
 ;  fitting into the first/last part are not returned.
 ;
@@ -26,17 +23,17 @@
 ;
 ; CALLING SEQUENCE: 
 ;*  s = Slices (a [,SSIZE=...] [,SSHIFT=...] [,SAMPLEPERIOD=...] 
-;*                [,TVALUES=...] [,TINDICES=...] [,/TFIRST] 
+;*                [,TVALUES=...] [,TINDICES=...] 
 ;*                [,SNR=...] [,SMAX=...] )
 ;
 ;*  smax = Slices (a [,SSIZE=...] [,SSHIFT=...] [,SAMPLEPERIOD=...] 
-;*                 [,TVALUES=...] [,TINDICES=...] [,/TFIRST] 
+;*                 [,TVALUES=...] [,TINDICES=...]
 ;*                 /GETMAX )
 ; 
 ; INPUTS: 
 ;  a :: The array to be divided. If multidimensional, the array is
-;      divided according to the time index (first index in array,
-;      if <*>/TFIRST</*> is set, last index else).
+;      divided according to the first index of the array (usually the
+;      time index).
 ;
 ; INPUT KEYWORDS:
 ;  GETMAX       :: <*>Slices</*> will just return the maximal number
@@ -50,18 +47,22 @@
 ;                  your memory.
 ;  SSIZE        :: Size of resulting parts / ms. (Default: 128ms)
 ;  SSHIFT       :: Distance between parts / ms. (Default: ssize/2)
-;  TFIRST       :: Normally the last index of <*>a</*> is assumed to
-;                  be the time index. Setting <*>TFIRST</*> enforces
-;                  <C>Slices</C> to use the first array index as time.
+;  TFIRST=0     :: Normally the first index of <*>a</*> is assumed to
+;                  be the time index. Setting <*>TFIRST=0</*> enforces
+;                  <C>Slices</C> to use the last array index as
+;                  time. The result will then have the following
+;                  dimensions (slice_nr, iteration, time). <B>BEWARE!</B> This option is
+;                  unmaintained and inefficient and only kept for
+;                  compatibility with old programs.
 ;
 ; OUTPUTS: 
-;  s:: Array containing the parts of array a arranged like (slice_nr,
-;      iteration, time) or (time, slice_nr, iteration) if <*>TFIRST</*> is set.
+;  s:: Array containing the parts of array a arranged like (time, slice_nr,
+;      iteration) 
 ;
 ; OPTIONAL OUTPUTS: 
-;  tvalues  :: Returns the times/ms at which parts start.
-;  tindices :: Returns starting time array indices of the parts.
-;  SMAX     :: Returns the maximal number of slices that can be or are
+;  tvalues  :: returns starting times of all slices in ms
+;  tindices :: returns starting time array indices of all slices
+;  SMAX     :: returns the maximal number of slices that can be or are
 ;              generated. This information is 
 ;              especially useful, when working with the <*>SNR<*> option.  
 ;
@@ -76,16 +77,16 @@
 ;*a=RandomU(s,500,3) LT 0.1
 ;
 ; divide them, parts are 100ms and begin each 50ms (default for SSHIFT)
-;*b=Slices(a, SSIZE=100, /TFIRST)
+;*b=Slices(a, SSIZE=100)
 ;*help, b
 ;*;B               BYTE      = Array[100, 9, 3]
 ;b contains 9 slices of 3 spiketrains 100ms long
 ;*
 ; get maximal count of possible slices
-;*print, Slices(a, SSIZE=100, /TFIRST, /GETMAX) 
+;*print, Slices(a, SSIZE=100, /GETMAX) 
 ;*; 9
 ;extract slices number 3 and 5
-;*C=Slices(a, SSIZE=100, /TFIRST, SNR=[3,5])
+;*C=Slices(a, SSIZE=100, SNR=[3,5])
 ;*; C    BYTE      = Array[100, 2, 3]
 ;
 ; SEE ALSO: <A>INSTANTRATE</A>.
@@ -97,11 +98,15 @@ FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
    On_Error, 2
 
    Default, SAMPLEPERIOD, 0.001
+   Default, TFIRST, 1
    OS = 1./(1000.*SAMPLEPERIOD)
    Default, SSIZE       , 128
    Default, SSHIFT      , SSIZE/2
    __SSIZE = LONG(ssize*os)
    __SSHIFT = LONG(sshift*os)
+   
+   IF ABS(__SSHIFT - (sshift*os)) GT SAMPLEPERIOD THEN $
+     Console, "SSHIFT="+STR(SSHIFT)+"ms not compatible with SAMPLEPERIOD="+STR(1000*SAMPLEPERIOD)+"ms ...expect strange results", /WARN
 
    S = SIZE(a)   
    
@@ -135,7 +140,7 @@ FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
    END ELSE BEGIN
 
        DMsg, "assuming time in last index"
-       Console, "would you mind assuming time as the first array index?", /WARN
+       Console, "leaving supported area, consider to NOT use TFIRST=0", /WARN
        IF Set(_SNR) THEN Console, 'keyword SNR is only supported for /TFIRST',/FATAL
        IF __SSIZE GT s(s(0)) THEN Message, 'SSIZE too large.'
  
