@@ -13,26 +13,30 @@
 ;  without simulating learning, connections...  
 ;
 ; CATEGORY:
+;  Input
 ;  MIND
 ;  Simulation
 ;
 ; CALLING SEQUENCE: 
-;  CheckInput [,NUMBER=number] [,VIZ_MODE=viz_mode]
+;  CheckInput [,NUMBER=number] [,VIZ_MODE=viz_mode] [,/DYNAMIC]
 ;
 ; 
-; INPUTS:    see sim.pro
-;            NUMBER   : INPUT-INDEX
-;            VIZ_MODE : array of #FILTER int's,
+; INPUT KEYWORDS:
+;   NUMBER   :: index of the input
+;   VIZ_MODE :: array of #FILTER int's,
 ;                       determines visualization-mode :
-;                       1 -> plottvscl
-;                       2 -> surface
-;                       3 -> trainspottingscope  
+;                       plottvscl (1), 
+;                       surface (2),
+;                       trainspottingscope (3)
+;   DYNAMIC:: normally only one sample input is shown. If you want
+;             to watch the dynamics of your input, use this option.    
+; 
+; SEE ALSO:
+;   have a look at <A>Sim</A> for additional keywords
 ;
 ;-
 
-
-
-PRO _CHECKINP, WSTOP=WSTOP, _EXTRA=e,NUMBER=number,viz_mode=viz_mode
+PRO _CHECKINP, WSTOP=WSTOP, _EXTRA=e,NUMBER=number,viz_mode=viz_mode, DYNAMIC=dynamic
 
 
 
@@ -134,82 +138,139 @@ Default, NUMBER, 0
    FilterSheet =  DefineSheet(/window,TITLE='Filter Definitions', xsize=512,ysize=512,colors=256,multi=[j,3,(1+j)MOD 3])
 
 
-   
-   FOR time=0l, (p.simulation.time/(1000.0*P.SIMULATION.SAMPLE))-1 DO BEGIN 
-      
-      act_time =  round(time*1000*1000*P.SIMULATION.SAMPLE) MOD round(period*1000) ; time in microsec ;-)
-      
-      IF ((act_time) MOD round(delta_t*1000) EQ 0) THEN BEGIN
-         
-         pattern = fltarr(h,w)  ; initialize input-matrix
-         
-         filter_list = ''
-         FOR i=0, number_filter-1 DO BEGIN
-            Handle_Value,INn.filters(i),act_filter 
-            IF i NE 0 THEN filter_list =  filter_list +'*'
-            filter_list = filter_list + act_filter.NAME
-            
-            IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN BEGIN 
-                IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
-                    OpenSheet, FilterSheet, i
-                    IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
-                        temp = CALL_FUNCTION(act_filter.NAME,$
-                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
-                        dummy = CALL_FUNCTION(act_filter.NAME,$
-                                             MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
-                    END ELSE BEGIN
-                        temp = CALL_FUNCTION(act_filter.NAME,$
-                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
-                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
-                        dummy = CALL_FUNCTION(act_filter.NAME,$
-                                             MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
-                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
-                    ENDELSE  
-                    ULoadct,0
-                    CloseSheet, FilterSheet, i
-                ENDIF  
+
+   IF Keyword_Set(DYNAMIC) THEN BEGIN
+       FOR time=0l, (p.simulation.time/(1000.0*P.SIMULATION.SAMPLE))-1 DO BEGIN 
+           
+           act_time =  round(time*1000*1000*P.SIMULATION.SAMPLE) MOD round(period*1000) ; time in microsec ;-)
+           
+           IF ((act_time) MOD round(delta_t*1000) EQ 0) THEN BEGIN
+               
+               pattern = fltarr(h,w) ; initialize input-matrix
+               
+               filter_list = ''
+               FOR i=0, number_filter-1 DO BEGIN
+                   Handle_Value,INn.filters(i),act_filter 
+                   IF i NE 0 THEN filter_list =  filter_list +'*'
+                   filter_list = filter_list + act_filter.NAME
+                   
+                   IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN BEGIN 
+                       IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
+                           OpenSheet, FilterSheet, i
+                           IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                               temp = CALL_FUNCTION(act_filter.NAME,$
+                                                    MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                                    temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                               dummy = CALL_FUNCTION(act_filter.NAME,$
+                                                     MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                                     temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                           END ELSE BEGIN
+                               temp = CALL_FUNCTION(act_filter.NAME,$
+                                                    MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                                    temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                               dummy = CALL_FUNCTION(act_filter.NAME,$
+                                                     MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                                     temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                           ENDELSE  
+                           ULoadct,0
+                           CloseSheet, FilterSheet, i
+                       ENDIF  
                                 ; ELSE NextStep 
-                IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
-                  pattern = CALL_FUNCTION(act_filter.NAME,$
-                                          PATTERN=pattern, temp_vals=INn.temps(i)) 
-                
-                IF act_time/1000.0 eq act_filter.stop THEN console, P.CON,'INPUT:filter '''+act_filter.NAME+''' inactive',/msg
-                
-                INn.pattern = pattern ; store for future use
-                
-                
-                IF viz_mode[i] EQ 3 THEN BEGIN 
-                    opensheet,sheet,i
-                    trainspottingscope,ts(i),INN.pattern
-                    closesheet,sheet,i
-                END ELSE BEGIN 
-                    
-                    IF i NE 0 THEN title = filter_list $
-                    ELSE $
-                      title = filter_list+string((act_time/1000.0))
-                    wset,0
-                    IF viz_mode[i] EQ 1 THEN $
-                      PlotTvScl, INn.pattern,TITLE=title
-                    IF viz_mode[i] EQ 2 THEN $
-                      surface, INn.pattern,TITLE=title
-                    
-                    opensheet, sheet,i               
-                    Device,Copy=[0,0,256,256,0,0,0]
-                    closesheet,sheet,i
-                END
-                
-            ENDIF  
-        ENDFOR 
-    ENDIF 
+                       IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
+                         pattern = CALL_FUNCTION(act_filter.NAME,$
+                                                 PATTERN=pattern, temp_vals=INn.temps(i)) 
+                       
+                       IF act_time/1000.0 eq act_filter.stop THEN console, P.CON,'INPUT:filter '''+act_filter.NAME+''' inactive',/msg
+                       
+                       INn.pattern = pattern ; store for future use
+                       
+                       
+                       IF viz_mode[i] EQ 3 THEN BEGIN 
+                           opensheet,sheet,i
+                           trainspottingscope,ts(i),INN.pattern
+                           closesheet,sheet,i
+                       END ELSE BEGIN 
+                           
+                           IF i NE 0 THEN title = filter_list $
+                           ELSE $
+                             title = filter_list+string((act_time/1000.0))
+                           wset,0
+                           IF viz_mode[i] EQ 1 THEN $
+                             PlotTvScl, INn.pattern,TITLE=title
+                           IF viz_mode[i] EQ 2 THEN $
+                             surface, INn.pattern,TITLE=title
+                           
+                           opensheet, sheet,i               
+                           Device,Copy=[0,0,256,256,0,0,0]
+                           closesheet,sheet,i
+                       END
+                       
+                   ENDIF  
+               ENDFOR 
+           ENDIF 
+           
+           
+           handle_value,in(number),inn,/set
+                                ;INn.t = INn.t + 1
+           
+           
+       ENDFOR  
+   END ELSE BEGIN
+       pattern = fltarr(h,w)    ; initialize input-matrix
+       FOR i=0, number_filter-1 DO BEGIN
+           Handle_Value,INn.filters(i),act_filter 
+           filter_list = ''
+           IF i NE 0 THEN filter_list =  filter_list +'*'
+           filter_list = filter_list + act_filter.NAME
+           
+           OpenSheet, FilterSheet, i
+           IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+               temp = CALL_FUNCTION(act_filter.NAME,$
+                                    MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                    temp_vals=INn.temps(i),DELTA_T=delta_t) 
+               dummy = CALL_FUNCTION(act_filter.NAME,$
+                                     MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                     temp_vals=INn.temps(i),DELTA_T=delta_t) 
+           END ELSE BEGIN
+               temp = CALL_FUNCTION(act_filter.NAME,$
+                                    MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                    temp_vals=INn.temps(i),DELTA_T=delta_t) 
+               dummy = CALL_FUNCTION(act_filter.NAME,$
+                                     MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                     temp_vals=INn.temps(i),DELTA_T=delta_t) 
+           ENDELSE  
+           ULoadct,0
+           CloseSheet, FilterSheet, i
 
- 
-    handle_value,in(number),inn,/set
-      ;INn.t = INn.t + 1
+           pattern = CALL_FUNCTION(act_filter.NAME,$
+                                       PATTERN=pattern, temp_vals=INn.temps(i)) 
+           pattern = CALL_FUNCTION(act_filter.NAME,$
+                                       PATTERN=pattern, temp_vals=INn.temps(i)) 
+           
+           IF viz_mode[i] EQ 3 THEN BEGIN 
+               opensheet,sheet,i
+               trainspottingscope,ts(i),pattern
+               closesheet,sheet,i
+           END ELSE BEGIN 
+               
+               IF i NE 0 THEN title = filter_list $
+               ELSE $
+                 title = filter_list
+               wset,0
+               IF viz_mode[i] EQ 1 THEN $
+                 PlotTvScl, pattern,TITLE=title
+               IF viz_mode[i] EQ 2 THEN $
+                 surface, pattern,TITLE=title
+               
+               opensheet, sheet,i               
+               Device,Copy=[0,0,256,256,0,0,0]
+               closesheet,sheet,i
+           END
+           
+       ENDFOR  
+   END
    
 
-   ENDFOR  
     
     IF ExtraSet(e,'WAIT') THEN BEGIN
        print, "--> I'm waiting for you <--"
@@ -224,7 +285,14 @@ Default, NUMBER, 0
    FOR j=0,INn.number_filter-1 DO BEGIN
       IF viz_mode(j) EQ 3 THEN FreeTrainspottingscope,ts(j)
    ENDFOR 
-   DestroySheet,sheet
+   
+   
+   print, "--> d: deletes sheets, other key to continue<--"
+   dummy =  get_kbrd(1)
+   IF dummy EQ 'd' THEN BEGIN
+       DestroySheet,sheet
+       DestroySheet, FilterSheet
+   END
 END 
  
 
