@@ -24,11 +24,14 @@
 ;                                     W_RANDOM=[0,0.3], /W_NONSELF)
 ;                    print, MaxWeight(DWS)
 ;
-; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights</A>
+; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights</A>, <A HREF="#MINWEIGHT">MinWeight</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/02/19 13:47:44  saam
+;           Hyperlinks geupdated
+;
 ;     Revision 2.1  1998/02/19 13:06:51  saam
 ;           wow ist das schnell; sogar wesentlich schneller als
 ;           vor der Umstellung, da nun das Maximum nur ueber
