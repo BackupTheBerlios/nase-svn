@@ -15,7 +15,6 @@
 ; INPUTS: lun: A(n array of) valid IDL-Logical-Unit-Number(s)
 ;
 ; KEYWORD PARAMETERS: HELP: If set, display informational message
-
 ;                     USE_SELECT: By default, this procedure calls the 
 ;                                 C++ function non_block_readable(), which
 ;                                 determines the status of the file by starting a
@@ -66,9 +65,13 @@
 ;           Keyword HELP,
 ;           documentation of c++-routine in shared/IDL_IO_support.h
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  2000/09/27 15:59:33  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 2.4  2000/09/25 09:13:02  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -99,7 +102,6 @@
 ;        Revision 2.1  1999/03/05 14:30:22  kupper
 ;        Geburt der Wrapper-Routinen für CALL_EXTERNAL.
 ;
-;-
 
 Function available, lun, HELP=HELP, USE_SELECT=USE_SELECT
 

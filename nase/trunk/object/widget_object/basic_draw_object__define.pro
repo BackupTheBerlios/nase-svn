@@ -8,7 +8,7 @@
 ;
 ; SUPERCLASSES:
 ;   <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>
-;
+;-
 ; CONSTRUCTION: 
 ;
 ;   o = Obj_New("basic_draw_object"
@@ -127,6 +127,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.13  2000/09/27 15:59:37  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.12  2000/03/15 19:07:10  kupper
 ;        Hm, postponing solution of the added-to-realized-widget-problem to future...
 ;        Changed update_info method not to break on unrealized objects.

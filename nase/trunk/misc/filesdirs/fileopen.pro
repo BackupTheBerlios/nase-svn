@@ -20,11 +20,15 @@
 ;                           ELSE Print, 'File is closed!'
 ;                     END ELSE Print, 'no such File'
 ;            
-; SEE ALSO:           <A HREF="FILEEXISTS"FileExists</A>
+; SEE ALSO:           <A>FileExists</A>
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/27 15:59:33  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.3  2000/09/25 09:13:02  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -37,8 +41,6 @@
 ;     Revision 2.1  1998/04/09 14:35:41  saam
 ;           here we go
 ;
-;
-;-
 FUNCTION FileOpen, filename
    
    On_Error, 2

@@ -3,10 +3,10 @@
 ;
 ; AIM: checks the occurrence of a substring in a given string
 ;
-; PURPOSE: Prüft einen String auf Vorkommen eines Substrings
+; PURPOSE: Prueft einen String auf Vorkommen eines Substrings
 ;          Insbesondere bei Info-Tags zu verwenden (s. Beispiel)
-;          Dafür gibt es inzwischen sogar noch komfortabler die
-;          Routine <A HREF="../#TESTINFO">TestInfo</A>.
+;          Dafuer gibt es inzwischen sogar noch komfortabler die
+;          Routine <A>TestInfo</A>.
 ;
 ; CATEGORY: Misc
 ;
@@ -16,7 +16,7 @@
 ;         Pattern: String, nach dem gesucht werden soll
 ;
 ; KEYWORD PARAMETERS: IGNORECASE: Wenn gesetzt, werden Strings 
-;                                 vorm Vergleich in Großbuchstaben konvertiert.
+;                                 vorm Vergleich in Grossbuchstaben konvertiert.
 ;                                 DIES IST SEIT VERSION 1.3 DEFAULT!
 ;                     WATCHCASE : Das Gegenteil von IGNORECASE: Beim
 ;                                 Vergeleich wird Gross-/Kleinschreibung beachtet.
@@ -25,11 +25,16 @@
 ;
 ; EXAMPLE: If Contains(Struct.Info, 'Foobar') then print, 'Struct is of Foobar-Type!'
 ;
-; SEE ALSO: <A HREF="../#TESTINFO">TestInfo</A>
+; SEE ALSO: <A>TestInfo</A>
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/09/27 15:59:32  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.4  2000/09/25 09:12:54  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -45,7 +50,7 @@
 ;        Revision 1.1  1997/10/21 13:23:55  kupper
 ;               Schöpfung.
 ;
-;-
+
 
 Function Contains, string, pattern, IGNORECASE=ignorecase, WATCHCASE=watchcase
 

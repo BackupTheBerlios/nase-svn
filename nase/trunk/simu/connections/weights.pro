@@ -21,7 +21,7 @@
 ;                         nicht das Schlüsselwort /DIMENSIONS
 ;                         angegeben wurde.
 ;
-; KEYWORDS:            DIMENSIONS: Wird dieses Schlüsselwort
+; KEYWORD PARAMETERS:  DIMENSIONS: Wird dieses Schlüsselwort
 ;                                  angegeben, so ist W eine
 ;                                  vierdimensionale Matrix (Matrix von 
 ;                                  Matrizen) der Form
@@ -42,14 +42,17 @@
 ;                      Output:
 ;                               W               FLOAT     = Array(5, 5, 10, 10)  
 ;
-; SEE ALSO:            <A HREF="#INITDW">InitDW</A>
-;                      <A HREF="#SETWEIGHTS"></A>
+; SEE ALSO:            <A>InitDW</A>
+;                      <A>SETWEIGHTS</A>
 ;
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  2000/09/27 15:59:39  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.12  2000/09/25 16:49:14  thiel
 ;         AIMS added.
 ;

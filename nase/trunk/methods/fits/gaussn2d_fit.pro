@@ -1,4 +1,4 @@
-PRO	GAUSSN2__FUNCT, X, A, F, PDER
+;+
 ; NAME:
 ;	GAUSS2__FUNCT
 ; PURPOSE:
@@ -6,26 +6,27 @@ PRO	GAUSSN2__FUNCT, X, A, F, PDER
 ; CALLING SEQUENCE:
 ;	FUNCT,X,A,F,PDER
 ; INPUTS:
-;	X = values of independent variables, encoded as: [nx, ny, x, y]
-;	A = parameters of equation described below.
+;	X : values of independent variables, encoded as: [nx, ny, x, y]
+;	A : parameters of equation described below.
 ; OUTPUTS:
-;	F = value of function at each X(i,j), Y(i,j).
+;	F : value of function at each X(i,j), Y(i,j).
 ;	Function is:
 ;	        F(x,y) = A0*EXP(-U/2)
 ;	        where U = ABS((yp/A2)^A1 + (xp/A2)^A1)
 ;               and yp=y-A4, xp=x-A3
 ;
-; Optional output parameters:
-;	PDER = (n_elements(z),6 or 7) array containing the
+; Optional outputs:
+;	PDER : (n_elements(z),6 or 7) array containing the
 ;		partial derivatives.  pder(i,j) = derivative
 ;		at ith point w/respect to jth parameter.
 ; PROCEDURE:
 ;	Evaluate the function and then if requested, eval partials.
-;
+;-
 ; MODIFICATION HISTORY:
 ;	WRITTEN, DMS, RSI, June, 1995.
 ;
 
+PRO	GAUSSN2__FUNCT, X, A, F, PDER
 nx = long(x(0))		;Retrieve X and Y vectors
 ny = long(x(1))
 
@@ -151,6 +152,9 @@ Function Gaussn2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = 
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/27 15:59:26  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.1  1999/02/22 11:14:34  saam
 ;             new & cool
 ;

@@ -15,7 +15,8 @@
 ;
 ; CALLING SEQUENCE: FaceIt, name [,/COMPILE]
 ;
-; INPUTS: name: Ein String, der den Namen der auszuführenden Simulation 
+; INPUTS PARAMETERS: 
+;         name: Ein String, der den Namen der auszuführenden Simulation 
 ;               enthält.
 ;
 ;         FaceIt erwartet, daß es die unten aufgeführten Routinen finden kann. 
@@ -84,7 +85,8 @@
 ;          w_userbase, das sich unter den Bedienelementen befindet und zur 
 ;          Aufnahme der simulationsspezifischen Widgets dient.
 ;
-; KEYWORDS: COMPILE:  Wenn gesetzt, werden alle Teilroutinen der
+; KEYWORD PARAMETERS: 
+;           COMPILE:  Wenn gesetzt, werden alle Teilroutinen der
 ;                     in "name" angegebenen Simulation vor dem
 ;                     Start neu kompiliert. Das ist in der
 ;                     Probephase nützlich, wenn oft Änderungen
@@ -92,7 +94,8 @@
 ;                     werden. Hier geht das Neukompilieren sonst 
 ;                     oft vergessen.
 ;           
-; COMMON BLOCKS: WidgetSimulation, MyFont, MySmallFont
+; COMMON BLOCKS: 
+;                WidgetSimulation, MyFont, MySmallFont
 ;                mit: MyFont = '-adobe-helvetica-bold-r-normal$
 ;                               --14-140-75-75-p-82-iso8859-1'
 ;                und: MySmallFont = '-adobe-helvetica-bold-r-normal$
@@ -128,9 +131,14 @@
 ;          Zur Definition der Netzwerkarchitektur siehe auch den Programmtext 
 ;          von <A HREF="./faceit_demo/#HAUS2_INITDATA">haus2_INITDATA</A>. 
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.18  2000/09/27 15:59:17  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.17  2000/09/01 19:46:12  kupper
 ;        Stepcounter is now an unsigned LONG64.
 ;
@@ -214,7 +222,7 @@
 ;        Simulationsoberflaeche.
 ;        Fuer Andreas.
 ;
-;-
+
 
 
 

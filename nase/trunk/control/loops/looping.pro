@@ -21,7 +21,6 @@
 ;                               Zaehlerzustandes
 ; OPTIONAL OUTPUTS:   dizzy: wurden alle Permutatuionen durchgenudelt, ist 
 ;                            diese Variable TRUE
-;
 ; EXAMPLE:
 ;                         MeineParameter={ a: 0.5, b:1.5432, $
 ;                                          c:[1,2], $
@@ -34,7 +33,7 @@
 ;                           Looping, LS, dizzy
 ;                         END UNTIL dizzy
 ;
-;                    ScreenShot:
+;                    ScreenShot
 ;                        ** Structure <40004208>, 4 tags, length=32, refs=1:
 ;                           A               FLOAT          0.500000
 ;                           B               FLOAT           1.54320
@@ -57,10 +56,13 @@
 ;                           D               STRING    'C'
 ;      
 ; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPNAME">LoopName</A>, <A HREF="#LOOPVALUE">LoopValue</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/27 15:59:10  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.5  1997/11/26 09:20:42  saam
 ;           Aktueller Schleifenzustand nun ueber LoopValue zu ermitteln
 ;           Function -> Procedure
@@ -76,7 +78,7 @@
 ;           IDL ist supertoll ;-)
 ;
 ;
-;-
+;
 PRO Looping, LS, dizzy
 
    IF Contains(LS.Info,'Loop') THEN BEGIN

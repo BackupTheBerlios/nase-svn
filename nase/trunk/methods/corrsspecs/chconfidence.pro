@@ -7,14 +7,13 @@
 ;
 ; CATEGORY: Corrs + Specs
 ;
-;
 ; CALLING SEQUENCE:    confidence = chconfidence(coherence, N, cfvalue)
 ;
-; 
-; INPUTS:              coherence: the result from the coherence function
+; INPUTS:
+;                      coherence: the result from the coherence function
 ;                      N:         number of trials
 ;                      cfvalue:   the confidencevalue for the result (default: 0.95)
-;	
+;
 ; OUTPUTS:   
 ;                      confidence: an array with the confidence interval for each coherencevalue.
 ;                                  For example, if coherence is an array of (freqdim , timedim), the
@@ -22,18 +21,20 @@
 ;                                  confidence(*,*,0) is the lower  limit and the entry confidence(*,*,1) is
 ;                                  the upper limit of confidence interval.
 ;
-; SEE ALSO: <A HREF="#COHERENCE">Coherence Function</A>
+; SEE ALSO: <A>Coherence</A>
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/27 15:59:24  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.1  1998/11/20 17:21:30  gabriel
 ;          Wird von der Coherence function  benoetigt
 ;
-;
-;-
+
 
 FUNCTION  chconfidence,  Kohaerenz, N, Konfidenzwert
 

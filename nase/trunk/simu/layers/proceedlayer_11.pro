@@ -20,14 +20,17 @@
 ;                       ProceedLayer_11, InputLayer
 ;                       Print, 'Output: ', Out2Vector(InputLayer.O)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/27 15:59:41  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 2.1  2000/06/06 15:02:33  alshaikh
 ;              new layertype 11
 ;
-;- 
+ 
 PRO ProceedLayer_11, _Layer, CORRECT=correct
 COMMON common_random, seed
 

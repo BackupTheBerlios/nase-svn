@@ -20,10 +20,13 @@
 ;                       ProceedLayer_7, MyLayer
 ;                       Print, 'Output: ', Out2Vector(MyLayer.O)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  2000/09/27 15:59:41  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 2.2  1998/11/08 17:27:26  saam
 ;             the layer-structure is now a handle
 ;
@@ -48,7 +51,7 @@
 ;                       optional. Rüdiger, 22. August '97
 ;                       Random-Commonblock zugefügt, Rüdiger, 5.Sept 97
 ;
-;- 
+; 
 PRO ProceedLayer_7, _Layer, CORRECT=correct
 common common_random, seed
 

@@ -20,7 +20,7 @@
 ; INPUTS:
 ;       Parent:	The ID of the parent widget.  Omitted for a top level 
 ;		modal widget.
-
+;
 ; Desc: A string array describing the form.  Each element of the
 ;	string array contains two or more comma-delimited fields.  The
 ;	character '\' may be used to escape commas that appear within fields.
@@ -120,7 +120,7 @@
 ; RESTRICTIONS:
 ;	
 ; EXAMPLES:
-
+;
 ;	**** Define a form, with a label, followed by two vertical button
 ;	groups one non-exclusive and the other exclusive, followed by a text
 ;	field, and an integer field, followed lastly by OK and Done buttons.
@@ -185,9 +185,14 @@
 ;	   	WIDGET_CONTROL, b, SET_VALUE={FNAME: 'junk.dat'}
 ;	This statement sets the file name field of this example.
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/27 15:59:17  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.1  1999/09/15 15:10:50  thiel
 ;            Bugfixed version of standard-IDL's CW_FORM.
 ;
@@ -196,7 +201,6 @@
 ;	January, 1995.  DMS, Written.
 ;       June, 1996.     MLR, allowed SET_VALUE to be specified in the
 ;                       description string for DROPLIST widgets.
-;-
 ;
 
 

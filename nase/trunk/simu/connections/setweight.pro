@@ -67,7 +67,7 @@
 ;                                  nachgeschoben. (Kann jedoch in
 ;                                  TRUNC_VALUE explizit angegeben werden.)
 ;
-;                     alles andere: <A HREF="#GETWEIGHT">siehe GetWeight()</A>
+;                     alles andere: <A>GetWeight()</A>
 ;
 ; RESTRICTIONS: Die übergebenen Gewichte müssen je nach Kontext
 ;               entweder ein Skalar oder ein Array mit entsprechenden
@@ -75,13 +75,16 @@
 ;
 ; PROCEDURE:siehe GetWeight()
 ;
-; SEE ALSO: <A HREF="#GETWEIGHT">GETWEIGHT</A>
+; SEE ALSO: <A>GETWEIGHT()</A>
 ;
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.22  2000/09/27 15:59:39  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.21  2000/09/25 16:49:14  thiel
 ;           AIMS added.
 ;

@@ -30,15 +30,18 @@
 ;
 ; SEE ALSO: <A HREF="#INITPARA_10">InitPara_10</A>, <A HREF="#INITLAYER_10">InitLayer_10</A>, <A HREF="#INPUTLAYER_10">InputLayer_10</A>,
 ;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/27 15:59:41  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.1  1999/05/07 12:43:21  thiel
 ;              Neu. Neu. Neu.
 ;
 ;
-;- 
+; 
 PRO ProceedLayer_10, _layer, _EXTRA=_extra
 
    COMMON common_random, seed

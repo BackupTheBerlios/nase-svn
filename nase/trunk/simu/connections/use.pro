@@ -1,3 +1,4 @@
+;+
 ; NAME:
 ;  Use()
 ;
@@ -20,7 +21,7 @@
 ;                         nicht das Schlüsselwort /DIMENSIONS
 ;                         angegeben wurde.
 ;
-; KEYWORDS:            DIMENSIONS: Wird dieses Schlüsselwort
+; KEYWORD PARAMETERS:  DIMENSIONS: Wird dieses Schlüsselwort
 ;                                  angegeben, so ist U_se eine
 ;                                  vierdimensionale Matrix (Matrix von 
 ;                                  Matrizen) der Form
@@ -44,6 +45,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/27 15:59:39  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.2  2000/09/25 16:49:14  thiel
 ;         AIMS added.
 ;

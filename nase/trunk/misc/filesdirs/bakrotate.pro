@@ -38,10 +38,13 @@
 ;                     $ls
 ;                     ;test.0     test.2.gz  test.4.gz
 ;                     ;test.1.gz  test.3.gz 
-I
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/27 15:59:33  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.2  2000/09/25 09:13:02  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -50,8 +53,6 @@ I
 ;     Revision 1.1  1999/02/22 11:14:37  saam
 ;           new & cool
 ;
-;
-;-
 PRO BakRotate, files, NUMBER=number, NOCOMPRESS=nocompress, INFIX=infix
 
    Default, NUMBER    , 5

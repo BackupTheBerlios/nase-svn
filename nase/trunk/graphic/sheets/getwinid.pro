@@ -8,9 +8,11 @@
 ;
 ; CALLING SEQUENCE: winid = GetWinID(Sh)
 ;
-; INPUTS: Sh : ein mit DefineSheet initialisiertes Sheet
+; INPUTS: 
+;         Sh : ein mit DefineSheet initialisiertes Sheet
 ;
-; OUTPUTS: winid: die WinID oder !NONE, falls keine vorhanden
+; OUTPUTS: 
+;         winid: die WinID oder !NONE, falls keine vorhanden
 ;
 ; SIDE EFFECTS: Falls das Sheet ein Kind einer Widget-Applikation ist, wird die
 ;               gesamte Hierarchie, zu der das Sheet gehört, mit diesem Aufruf
@@ -20,11 +22,13 @@
 ;               Hierarchie in der aktuellen IDL-Version (5.0.2) unter KDE zu 
 ;               einem astreinen IDL-Absturz fuehrt!
 ;
-; SEE ALSO: <A HREF="http://neuro.physik.uni-marburg.de/nase/graphic/sheets">andere Sheet-Routinen</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/27 15:59:16  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.3  1999/09/06 13:33:34  thiel
 ;         Now works with Multi-sheets as well.
 ;

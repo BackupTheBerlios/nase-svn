@@ -12,12 +12,12 @@
 ;                        Die Ausmaße der Layer werden über die Dimension 
 ;                        dieses Arrays festgelegt. Die Feuerwahrscheinlich-
 ;                        keit kann zusätzlcih durch Feeding-Input beeinflußt
-;                        werden (siehe) <A HREF="#INPUTLAYER_10">Inputlayer_10</A>. Dabei
+;                        werden (siehe) <A>Inputlayer_10</A>. Dabei
 ;                        bleibt die Kontrolle über die Gesamtwahrscheinlichkeit
 ;                        und die Gewichtung der einzelnen Beiträge dem
 ;                        Benutzer überlassen. Default: [0.5]
 ;         type : Struktur, die neuronenspezifische Parameter enthält; 
-;                definiert in <A HREF="#INITPARA_10">InitPara_10</A>
+;                definiert in <A>InitPara_10</A>
 ;
 ; OUTPUTS:  Layer : Struktur, die folgende Tags enthaelt:
 ;
@@ -34,12 +34,16 @@
 ; EXAMPLE: para10 = InitPara_10(tauf=10.0)     
 ;          layer = InitLayer_10(PROBABILITY=[0.5,0.7], TYPE=para10)
 ;
-; SEE ALSO: <A HREF="#INPUTLAYER_10">InputLayer_10</A>, <A HREF="#INITPARA_10">InitPara_10</A>, <A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>,
-;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>.
+; SEE ALSO: <A>InputLayer_10</A>, <A>InitPara_10</A>, <A>ProceedLayer_10</A>,
+;           <A>PoissonInput</A>.
 ;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.4  2000/09/27 15:59:40  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.3  1999/07/28 14:59:21  thiel
 ;           Header updates.
 ;
@@ -49,9 +53,6 @@
 ;       Revision 1.1  1999/05/07 12:43:21  thiel
 ;              Neu. Neu. Neu.
 ;
-
-;
-;-
 
 FUNCTION InitLayer_10, PROBABILITY=probability, TYPE=type
 

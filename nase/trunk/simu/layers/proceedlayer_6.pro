@@ -20,10 +20,13 @@
 ;                       ProceedLayer_6, MyLayer
 ;                       Print, 'Output: ', Out2Vector(MyLayer.O)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.4  2000/09/27 15:59:41  saam
+;      service commit fixing several doc header violations
+;
 ;      Revision 2.3  1999/12/02 18:11:56  saam
 ;            new "SYNPASE" DIRECT
 ;
@@ -34,7 +37,7 @@
 ;            is there anything to say?
 ;
 ;
-;- 
+; 
 PRO ProceedLayer_6, _Layer, _EXTRA=e
    COMMON COMMON_RANDOM, seed
 

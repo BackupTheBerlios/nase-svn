@@ -9,22 +9,26 @@
 ;
 ; CALLING SEQUENCE: Array = All_Random (n)
 ;
-; INPUTS:           n: Integer, n>0.
+; INPUTS:           n: Integer, n > 0.
 ;
-; OUTPUTS:          Array: Long-Array der Länge n, das jede ganze Zahl im
-;                          Intervall [0,n) genau einmal enthält. 
+; OUTPUTS:          Array: Long-Array der Laenge n, das jede ganze Zahl im
+;                          Intervall [0,n) genau einmal enthaelt. 
 ;
 ; COMMON BLOCKS:    common_random
 ;
-; RESTRICTIONS:     n>0
+; RESTRICTIONS:     n > 0
 ; 
 ; SEE ALSO:         <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#FRACRANDOM">FracRandom</A>
 ;
 ; EXAMPLE:          Zufaellige_Reihenfolge = All_Random (100)
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/27 15:59:32  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.3  2000/09/25 09:12:54  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -36,7 +40,6 @@
 ;        Revision 1.1  1997/10/06 16:25:00  kupper
 ;              Aus der Traufe gehoben. Aeh.. Taufe. (Wiege?) Oder wie sagt man...?
 ;
-;-
 
 Function All_Random, n
    RETURN, FracRandom(n)

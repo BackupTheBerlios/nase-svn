@@ -33,7 +33,6 @@
 ;                                   naehert, bzw. wenn er sich um mehr als lowerscl*(...) 
 ;                                   davon entfernt. (Def.:[0.1,0.65])
 ;       
-
 ;                   Außerdem sind alle Schlüsselworte erlaubt, die
 ;                   auch PLOT nimmt. Der Default für XTITLE ist "t / ms".
 ;
@@ -59,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  2000/09/27 15:59:15  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.13  1999/10/07 09:42:17  alshaikh
 ;           added Keyword SCALE
 ;

@@ -1,5 +1,3 @@
-; Copyright (c) 1993, TC-Products, Inc.  All rights reserved.
-;       Unauthorized reproduction prohibited.
 ;+
 ; NAME:
 ;       CrossCor
@@ -59,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  2000/09/27 15:59:25  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.7  1998/07/21 09:46:00  saam
 ;             two input signals were modified!!!
 ;

@@ -1,4 +1,4 @@
-;
+;+
 ; NAME:              _Count
 ;
 ; PURPOSE:           Wird von Count benutzt.
@@ -7,12 +7,17 @@
 ;
 ; CALLING SEQUENCE:  _Count(CS, index)
 ;
-; INPUTS:            CS   : eine mit InitCounter initialisiertes Zaehlwerk
+; INPUTS:            
+;                    CS   : eine mit InitCounter initialisiertes Zaehlwerk
 ;                    index: der Zaehler index wird um eins hochgezaehlt 
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/27 15:59:08  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.2  1997/12/01 11:44:19  saam
 ;           Modification History ergaenzt
 ;

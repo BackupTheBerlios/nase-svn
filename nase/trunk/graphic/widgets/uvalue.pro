@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  UValue[()]
+;  UValue
 ;
 ; AIM: Get or set widget user values with a convenient call.
 ;  
@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/27 15:59:17  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.1  2000/09/06 12:13:04  kupper
 ;        new and simple, but useful.
 ;

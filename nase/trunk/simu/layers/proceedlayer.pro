@@ -3,17 +3,17 @@
 ;
 ; PURPOSE:              Führt einen Simulationszeitschritt durch (Schwellenvergleich), 
 ;                       der Input fuer die Layer muß vorher mit
-;                       Prozeduren  <A HREF="#INPUTLAYER">InputLayer</A> übergeben werden.
+;                       Prozeduren  <A>InputLayer</A> übergeben werden.
 ;
 ;                       ProceddLayer ist lediglich eine Rahmenprozedur, die
 ;                       selbständig die für den jeweiligen Neuronentyp
-;                       spezifische <A HREF="#PROCEEDLAYER_1">ProceedLayer_i</A>-Prozdeur aufruft.
+;                       spezifische <A NREF=PROCEEDLAYER_1>ProceedLayer_i</A>-Prozdeur aufruft.
 ;                       
 ; CATEGORY:             SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:     ProceedLayer, Layer [,_EXTRA=_extra]  
 ;
-; INPUTS:               Layer : eine mit  <A HREF="#INITLAYER">InitLayer</A> erzeugte Struktur
+; INPUTS:               Layer : eine mit  <A>InitLayer</A> erzeugte Struktur
 ;
 ; OPTIONAL INPUTS &
 ; KEYWORD PARAMETERS:   _extra: alle übrigen Parameter werden an die jeweilige
@@ -33,10 +33,13 @@
 ;                       ProceedLayer, mylayer
 ;                       Print, 'Output: ', Out2Vector(mylayer.O)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.8  2000/09/27 15:59:40  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 2.7  2000/09/08 16:11:53  kupper
 ;       Now catching floating underflows, as already done in InputLayer().
 ;
@@ -60,7 +63,7 @@
 ;              ProceedLayer_x-Prozedur selbstaendig
 ;              aufruft.
 ;
-;- 
+ 
 
 PRO ProceedLayer, _Layer, _EXTRA=_extra
    

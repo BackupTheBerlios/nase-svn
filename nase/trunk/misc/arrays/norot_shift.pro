@@ -26,7 +26,6 @@
 ;
 ; 
 ; INPUTS: 
-
 ;	Array
 ;	The array to be shifted.
 ;
@@ -93,6 +92,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/09/27 15:59:32  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.6  2000/09/25 09:12:55  saam
 ;     * added AIM tag
 ;     * update header for some files

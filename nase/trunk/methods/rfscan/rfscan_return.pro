@@ -6,21 +6,22 @@
 ;
 ; CALLING SEQUENCE: Scanned_RFs = RFScan_Return( My_RFScan )
 ;
-; INPUTS: My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
+; INPUTS:
+;         My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
 ;                    RFScan-Struktur.
 ;
-; OUTPUTS: Scanned_RFs: Eine DW-Struktur, die die geschätzten RFs
+; OUTPUTS:
+;          Scanned_RFs: Eine DW-Struktur, die die geschätzten RFs
 ;                       enthält. ACHTUNG! Dies ist eine dynamische
 ;                       Datenstruktur, die nach Gebrauch vom BENUTZER
-;                       mit <A
-;                       HREF="../simu/connections/#FREEDW">FreeDW</A>
+;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A>
 ;                       freigegeben werden muß!
 ;                       Die Gewichte sind auf die Anzahl der
 ;                       beobachteten Outputs normiert. (D.h. im Falle
 ;                       von /OBSERVE_SPIKES liegen alle Gewichte
 ;                       zwischen Null und Eins.)
 ;
-; RESTRICTIONS:ACHTUNG! Der Output  ist eine dynamische
+; RESTRICTIONS: ACHTUNG! Der Output  ist eine dynamische
 ;                       Datenstruktur, die nach Gebrauch vom BENUTZER
 ;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A>
 ;                       freigegeben werden muß!
@@ -34,9 +35,13 @@
 ;
 ; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/09/27 15:59:28  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.6  1998/03/14 11:26:46  kupper
 ;               Inputkantentypen -1 und -2 implementiert.
 ;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
@@ -65,7 +70,6 @@
 ;                 Header mach ich noch...
 ;                 VISUALIZE-Keyword ist noch nicht implementiert...
 ;
-;-
 
 Function RFScan_Return, RFS, FILENAME=filename
 

@@ -1,17 +1,17 @@
 ;+
 ; NAME: InputLayer_10
 ;
-; PURPOSE: Addiert Input vom Typ Sparse (siehe <A HREF="#SPASSMACHER">Spassmacher</A>) 
+; PURPOSE: Addiert Input vom Typ Sparse (siehe <A>Spassmacher</A>) 
 ;          auf die Neuronenpotentiale und klingt diese vorher ab. 
 ;          Ein mehrmaliger Aufruf von InputLayer_10 ist möglich.
-;          Danach sollte man auf jeden Fall <A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>
+;          Danach sollte man auf jeden Fall <A>ProceedLayer_10</A>
 ;          aufrufen.
 ;
 ; CATEGORY: SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE: InputLayer_10, Layer [,FEEDING=feeding] [,/CORRECT]
 ;
-; INPUTS: Layer : eine mit <A HREF="#INITLAYER_10">InitLayer_10</A> erzeugte Struktur
+; INPUTS: Layer : eine mit <A>InitLayer_10</A> erzeugte Struktur
 ;
 ; OPTIONAL INPUTS:  feeding : Sparse-Vektor, der auf das entsprechende Potential
 ;                             addiert wird.
@@ -39,19 +39,23 @@
 ;          InputLayer_10, InputLayer, FEEDING=FeedingIn
 ;          ProceedLayer_10, InputLayer
 ;
-; SEE ALSO: <A HREF="#INITPARA_10">InitPara_10</A>, <A HREF="#INITLAYER_10">InitLayer_10</A>, <A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>, 
-;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>
+; SEE ALSO: <A>InitPara_10</A>, <A>InitLayer_10</A>, <A>ProceedLayer_10</A>, 
+;           <A>PoissonInput</A>
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/27 15:59:40  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.2  1999/07/28 14:59:21  thiel
 ;           Header updates.
 ;
 ;       Revision 1.1  1999/05/07 12:43:21  thiel
 ;              Neu. Neu. Neu.
 ;
-;-
+;
 
 PRO InputLayer_10, _Layer, FEEDING=feeding, CORRECT=correct
 

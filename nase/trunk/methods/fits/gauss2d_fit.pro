@@ -1,4 +1,4 @@
-PRO	GAUSS2__FUNCT, X, A, F, PDER
+;+
 ; NAME:
 ;	GAUSS2__FUNCT
 ; PURPOSE:
@@ -6,10 +6,10 @@ PRO	GAUSS2__FUNCT, X, A, F, PDER
 ; CALLING SEQUENCE:
 ;	FUNCT,X,A,F,PDER
 ; INPUTS:
-;	X = values of independent variables, encoded as: [nx, ny, x, y]
-;	A = parameters of equation described below.
+;	X : values of independent variables, encoded as: [nx, ny, x, y]
+;	A : parameters of equation described below.
 ; OUTPUTS:
-;	F = value of function at each X(i,j), Y(i,j).
+;	F : value of function at each X(i,j), Y(i,j).
 ;	Function is:
 ;		F(x,y) = A0 + A1*EXP(-U/2)
 ;		where: U= (yp/A2)^2 + (xp/A3)^2
@@ -21,16 +21,18 @@ PRO	GAUSS2__FUNCT, X, A, F, PDER
 ;	  of the ellipse are parallel to the XY axes, and:
 ;		xp = (x-A4)   and   yp = (x-A5)
 ;
-; Optional output parameters:
-;	PDER = (n_elements(z),6 or 7) array containing the
+; Optional outputs:
+;	PDER : (n_elements(z),6 or 7) array containing the
 ;		partial derivatives.  pder(i,j) = derivative
 ;		at ith point w/respect to jth parameter.
 ; PROCEDURE:
 ;	Evaluate the function and then if requested, eval partials.
 ;
+;-
 ; MODIFICATION HISTORY:
 ;	WRITTEN, DMS, RSI, June, 1995.
 ;
+PRO	GAUSS2__FUNCT, X, A, F, PDER
 
 nx = long(x(0))		;Retrieve X and Y vectors
 ny = long(x(1))
@@ -179,6 +181,9 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/09/27 15:59:26  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.5  1998/03/14 13:58:31  saam
 ;             new Keyword WEIGHTS
 ;

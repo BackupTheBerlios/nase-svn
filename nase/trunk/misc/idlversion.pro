@@ -8,25 +8,29 @@
 ;
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    version = IDLVERSION([/FULL])
+; CALLING SEQUENCE:    ver = IDLVERSION([/FULL])
 ;
-; KEYWORDS: FULL:      Liefert die Haupt- und alle
-;                      Minor-Versionen als LONG-Array zurück.
+; KEYWORD PARAMETERS: 
+;           FULL:      Liefert die Haupt- und alle
+;                      Minor-Versionen als LONG-Array zurueck.
 ;
-; OUTPUTS:             version: die IDL-Version als LONG, (momentan also 3,4 oder 5)
+; OUTPUTS:             
+;           ver: die IDL-Version als LONG, (momentan also 3,4 oder 5)
 ;
 ; EXAMPLE:
-;                      print, IDLVERSION()
-;                      5
-;                            ; hey, i'm running idl 5 :)
+;*  IDL> print, IDLVERSION()
+;*  > 5      ; hey, i'm running idl 5 :)
+;*                            
+;*  IDL> print, IDLVERSION(/FULL)
+;*  > 5 0 2  ; I'm running IDL 5.0.2
 ;
-;                      print, IDLVERSION(/FULL)
-;                      5 0 2
-;                            ; I'm running IDL 5.0.2
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/27 15:59:30  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.3  2000/09/25 09:10:32  saam
 ;     * appended AIM tag
 ;     * some routines got a documentation update

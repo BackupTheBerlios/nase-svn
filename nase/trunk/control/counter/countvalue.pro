@@ -13,7 +13,7 @@
 ;
 ; OPTIONAL OUTPUTS:  iter: enthaelt nach dem Aufruf die Gesamtzahl
 ;                           bereits durchgefuehrter Zaehlungen
-
+;
 ; EXAMPLE:
 ;                    ThreeBits = InitCounter( [2,2,2] )
 ;                    FOR i=0,20 DO BEGIN
@@ -24,10 +24,13 @@
 ;                    END
 ;
 ; SEE ALSO:          <A HREF="#INITCOUNTER">InitCounter</A>, <A HREF="#COUNT">Count</A>, <A HREF="#RESETCOUNTER">ResetCounter</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/27 15:59:08  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.5  1998/01/20 12:01:37  saam
 ;           Erweiterung um optional output: iter
 ;
@@ -47,7 +50,7 @@
 ;           erstellt fuer Looping
 ;
 ;
-;-
+;
 FUNCTION CountValue, CS, iter
    IF Contains(CS.info, 'Counter', /IGNORECASE) THEN BEGIN
       iter = 0

@@ -37,7 +37,7 @@
 ;                  Norm          : Volumen der Gaussmaske auf Eins normiert
 ;                  Sigma         : Standardabweichung in Gitterpunkten.
 ;                                  alternativ kann in HWB oder in HWBX und HWBY die Halbwertsbreite angegeben werden.
-;                                  SEE ALSO: <A HREF="/usr/ax1303/neuroadm/nase#GAUSS_2D"></A>
+;                                  SEE ALSO: <A>GAUSS_2D</A>
 ;                  Abschneidewert: Legt fest, wie klein die Gewichte
 ;                                  werden duerfen, bevor sie auf !NONE gesetzt werden 
 ;                                  ( TRUNC_VALUE wird dann auf !NONE gesetzt !!!)
@@ -67,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.17  2000/09/27 15:59:39  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.16  2000/09/25 16:49:13  thiel
 ;           AIMS added.
 ;

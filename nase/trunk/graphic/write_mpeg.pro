@@ -1,41 +1,11 @@
-FUNCTION pseudo_to_true, image8
-
-s = SIZE(image8)
-IF s(0) NE 2 THEN BEGIN
-  MESSAGE, 'input array must be 2D BYTE array.'
-  RETURN, -1
-ENDIF
-
-width = s(1)
-height = s(2)
-
-; Load current color table into byte arrays
-TVLCT, red, green, blue, /GET
-
-image24 = BYTARR(3,width, height)
-image24(0,*,*) = red(image8(*,*))
-image24(1,*,*) = green(image8(*,*))
-image24(2,*,*) = blue(image8(*,*))
-
-RETURN, image24
-
-END
-
-
 ;+
 ; NAME: 
 ;        WRITE_MPEG
 ;
-;
-;
 ; PURPOSE: 
 ;        Write a sequence of images as an mpeg movie
 ;
-;
-;
 ; CATEGORY: graphics
-;
-;
 ;
 ; CALLING SEQUENCE: 
 ;     There are two methods
@@ -71,7 +41,7 @@ END
 ;                        INIT:          calls write_mpeg to initialice image writing,
 ;                                       where INIT is the number of images (default: 0)
 ;                        WRITE:         calls write_mpeg to write the image
-           ;             CLOSE:         calls write_mpeg to produce a mpeg
+;                        CLOSE:         calls write_mpeg to produce a mpeg
 ;
 ;     1.+ 2. method: 
 ;                        delaft:        if set delete temporary array after movie was created
@@ -127,9 +97,13 @@ END
 ;                     
 ;                     write_mpeg,/close
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/27 15:59:13  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.3  2000/06/08 10:28:58  gabriel
 ;             compressed image files now used
 ;
@@ -145,7 +119,31 @@ END
 ;
 ;		grabbed original from the net and made slight modifications
 ;
-;-
+;
+FUNCTION pseudo_to_true, image8
+
+s = SIZE(image8)
+IF s(0) NE 2 THEN BEGIN
+  MESSAGE, 'input array must be 2D BYTE array.'
+  RETURN, -1
+ENDIF
+
+width = s(1)
+height = s(2)
+
+; Load current color table into byte arrays
+TVLCT, red, green, blue, /GET
+
+image24 = BYTARR(3,width, height)
+image24(0,*,*) = red(image8(*,*))
+image24(1,*,*) = green(image8(*,*))
+image24(2,*,*) = blue(image8(*,*))
+
+RETURN, image24
+
+END
+
+
 PRO WRITE_MPEG, image_array,mpegFileName=mpegFileName,delaft=delaft, rep=rep,TMPDIR=TMPDIR,INIT=INIT,WRITE=WRITE,CLOSE=CLOSE
 COMMON WRITE_MPEG_BLOCK,info
 

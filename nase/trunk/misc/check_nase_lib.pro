@@ -12,7 +12,7 @@
 ;   To extend the functionality of IDL, there are several routines that
 ;   use external C-programs. This routine checks, if the shared library
 ;   providing these functionalities exists and is up to date in your 
-;   working copy of the NASE repository in $NASEDIR/shared/<architecture>. 
+;   working copy of the NASE repository in $NASEDIR/shared/<architecture>
 ;   If not, it tries to compile it for you. You probably do not 
 ;   want to call this routine, because it is used during NASE's startup 
 ;   process. (UNIX only)

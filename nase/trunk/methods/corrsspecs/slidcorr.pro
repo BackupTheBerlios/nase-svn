@@ -58,7 +58,6 @@
 ;                                     } 
 ;
 ;
-
 ; COMMON BLOCKS:
 ;                  COMMON SLIDCORR_BLOCK, SHEET_3 ,PLOTFLAG
 ;                  dient zur visuellen Anzeige
@@ -75,35 +74,38 @@
 ;			fr = 50.                               ;; Frequenz des Inputs Hz 
 ;			n_size = 51                            ;; Laenge des Wellen-Signals [ms]
 ;			ushift = 10                            ;; kuenstlicher Phasenversatz [ms]
-
+;
 ;			;; Einheiten anpassen
 ;			ushift = ushift /SAMPLPERIOD 
 ;			t_size = t_size/SAMPLPERIOD 
-
+;
 ;			;; Signal erzeugen
 ;			n_size = FLOOR(n_size/SAMPLPERIOD)
 ;			xh = findgen(n_size)
 ;			w = 0.54 - 0.46*Cos(2*!Pi*xh/(n_size-1))
 ;			cos_input = (cos(2.*!PI*fr*SAMPLPERIOD *xh/1000))*w 
-
+;
 ;			;; Einheiten anpassen
 ;			SAMPLPERIOD = SAMPLPERIOD /1000.
-
+;
 ;			;;SignalArray erzeugen
 ;			input = dblarr(t_size,m_size)
 ;			;; bisschen Rauschen
 ;			noise = randomn(S,t_size,m_size)/1000.
-
+;
 ;			for i = 0 , m_size-1 do begin
 ;			   input(200+i*ushift:200+n_size+i*ushift-1,i)=  cos_input(*)
 ;			endfor
 ;			input=input+noise
 ;			erg = slidcorr(input(*,0),input(*,1),/PLOT,SAMPLPERIOD=SAMPLPERIOD,/NOPERIOD,FBAND=[35,65])
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.12  2000/09/27 15:59:25  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.11  1999/02/12 15:58:52  gabriel
 ;          device, copy an handle sheets angep.
 ;

@@ -25,22 +25,27 @@
 ;  
 ; EXAMPLE:
 ;                       Assume the following construct:
-;                         _a = {HI: -1}
-;                         _b = Handle_Create(!MH, VALUE={a:_a})
-;                         _c = Handle_Create(!MH, VALUE={b:_b})
-;                         _d = Handle_Create(!MH, VALUE={c:_c})
-;                          e = {d:_d}
-;                       If you to change HI simply call:
-;                         SetHTag, e, "HI/a/b/c/d", 1
-;                       and retrieve HI in value by:
-;                         GetHTag, e, "HI/a/b/c/d", value
+;*  _a = {HI: -1}
+;*  _b = Handle_Create(!MH, VALUE={a:_a})
+;*  _c = Handle_Create(!MH, VALUE={b:_b})
+;*  _d = Handle_Create(!MH, VALUE={c:_c})
+;*  e = {d:_d}
+;
+;                       If you to change HI simply call
+;*  SetHTag, e, "HI/a/b/c/d", 1
+;                       and retrieve HI in value by
+;*  GetHTag, e, "HI/a/b/c/d", value
 ;
 ; SEE ALSO:             <A>GetHTag</A>, <A>SetTag</A>
 ;
-;-  
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/27 15:59:35  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.2  2000/09/25 09:13:08  saam
 ;        * added AIM tag
 ;        * update header for some files

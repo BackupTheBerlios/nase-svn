@@ -22,17 +22,14 @@
 ;
 ; CALLING SEQUENCE: .run spiketiming_demo
 ;
-; 
-; INPUTS: ---
-;
-;
-; OPTIONAL INPUTS:  ---
-;
-
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/27 15:59:11  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.2  2000/09/25 09:10:32  saam
 ;     * appended AIM tag
 ;     * some routines got a documentation update
@@ -42,7 +39,6 @@
 ;           initial version
 ;
 ;
-;-
 
 
 ; simulation parameters

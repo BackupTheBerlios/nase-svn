@@ -1,8 +1,7 @@
 ;+
 ; NAME: InitLayer_8
 ;
-;
-; PURPOSE: Initialisiert eine Neuronenschicht vom <A HREF="#INITPARA_8">Typ 8</A>.
+; PURPOSE: Initialisiert eine Neuronenschicht vom Typ 8.
 ;
 ; CATEGORY: SIMULATION / LAYERS
 ;
@@ -12,7 +11,7 @@
 ;
 ; INPUTS: WIDTH, HEIGHT : Breite und Höhe des Layers
 ;         TYPE          : Struktur, die neuronenspezifische Parameter enthält;
-;                          definiert mit <A HREF="#INITPARA_8">InitPara_8</A>.
+;                          definiert mit <A>InitPara_8</A>.
 ; 
 ; OPTIONAL INPUTS : init_v : Die Potentiale aller Neuronen der Layer
 ;                             werden mit den in init_v angegebenen Werten
@@ -101,11 +100,14 @@
 ;  END
 ;
 ;
-; SEE ALSO: <A HREF="#INITPARA_8">InitPara_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>, <A HREF="#PROCEEDLAYER_8">ProceedLayer_8</A>
-;
+; SEE ALSO: <A>InitPara_8</A>, <A>InputLayer_8</A>, <A>ProceedLayer_8</A>
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 1.3  2000/09/27 15:59:40  saam
+;      service commit fixing several doc header violations
+;
 ;      Revision 1.2  1999/03/16 16:35:14  thiel
 ;             LongArray for refractory period.
 ;

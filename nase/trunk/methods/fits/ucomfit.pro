@@ -1,10 +1,8 @@
-;$Id$
-;
-; Copyright (c) 1994, Research Systems, Inc.  All rights reserved.
-;       Unauthorized reproduction prohibited.
 ;+
 ; NAME:
 ;       UCOMFIT
+;
+; VERSION: $Id$
 ;
 ; PURPOSE:
 ;       This function fits the paired data {X(i), Y(i)} to one of nine common
@@ -79,9 +77,12 @@
 ;       APPLIED STATISTICS (third edition)
 ;       J. Neter, W. Wasserman, G.A. Whitmore
 ;       ISBN 0-205-10328-6
-;
+;-
 ; MODIFICATION HISTORY:
 ;       $Log$
+;       Revision 1.2  2000/09/27 15:59:26  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.1  1998/03/13 20:20:29  pauly
 ;            Als erweiterte COMFIT-Routine zum erstenmal angemeldet.
 ;

@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/09/27 15:59:23  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.8  2000/03/14 17:43:14  thiel
 ;         Added timeunit description in header.
 ;
@@ -89,7 +92,7 @@
 FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
                  , TVALUES=tvalues, TINDICES=tindices
 
-   On_Error, 2
+;   On_Error, 2
 
    Default, SAMPLEPERIOD, 0.001
    OS = 1./(1000.*SAMPLEPERIOD)
@@ -99,36 +102,27 @@ FUNCTION Slices, a, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD $
    __SSHIFT = LONG(sshift*os)
 
    S = SIZE(a)   
- 
-   IF __SSIZE GT s(s(0)) THEN Message, 'SSIZE too large.'
- 
-   steps = (S(S(0))-__ssize)/__sshift
-
-   Sn = N_Elements(S)
-   SB = [steps+1]
-   IF S(0) GT 1 THEN SB = [SB, S(1:S(0)-1)] 
-   SB = [SB, __SSIZE]
-   SB = [S(0)+1, SB, S(S(0)+1), PRODUCT(SB)]
-   b =  Make_Array(SIZE=SB)
    
-   tvalues = FIndGen(steps+1)*__SSHIFT/OS
-   tindices = LIndGen(steps+1)*__SSHIFT
 
-   FOR slice=0,steps DO BEGIN
-      start = slice*__SSHIFT
-      CASE s(0) OF
-         1: b(slice,*)           = a(start:start+__SSIZE-1)
-         2: b(slice,*,*)         = a(*,start:start+__SSIZE-1)
-         3: b(slice,*,*,*)       = a(*,*,start:start+__SSIZE-1)
-         4: b(slice,*,*,*,*)     = a(*,*,*,start:start+__SSIZE-1)
-         5: b(slice,*,*,*,*,*)   = a(*,*,*,*,start:start+__SSIZE-1)
-         6: b(slice,*,*,*,*,*,*) = a(*,*,*,*,*,start:start+__SSIZE-1)
+   IF __SSIZE GT S(1) THEN Console, 'SSIZE too large.', /FATAL
+ 
+   steps = (S(1)-__ssize)/__sshift + 1
 
-         ELSE: Message, 'array has tooo much dimensions'
-      END
-   END
+   SB = [__SSIZE, steps]
+   IF S(0) GT 1 THEN SB = [SB, S(2:S(0))] 
+;   SB = [S(0)+1, SB, S(S(0)+1), PRODUCT(SB)]
+;   b =  Make_Array(SIZE=SB, /NOZERO)
+   
+   tvalues = FIndGen(steps)*__SSHIFT/OS
+   tindices = LIndGen(steps)*__SSHIFT
 
-   RETURN, b
+;   FOR slice=0,steps-1 DO BEGIN
+;      start = slice*__SSHIFT
+;      b(*,slice,*,*,*,*,*,*) = a(start:start+__SSIZE-1,*,*,*,*,*,*)
+;   END
 
+   t = (LIndGen(__SSIZE*steps) MOD __SSIZE) + __SSHIFT*(LIndGen(__SSIZE*steps) / __SSIZE)
+
+   RETURN,  REFORM(a(t,*,*,*,*,*,*), SB, /OVERWRITE)
 
 END

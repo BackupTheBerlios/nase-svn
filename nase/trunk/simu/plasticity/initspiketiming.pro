@@ -18,7 +18,6 @@
 ; 
 ; INPUTS:  LearnWindow : Lernfenster welches z.B.  mit InitLearnBiPoo definiert wurde
 ;
-
 ;
 ; OUTPUTS:     Counter: Zaehlstruktur, welche von DoSpikeTiming benutzt wird.     
 ;
@@ -32,6 +31,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/27 15:59:42  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.2  2000/09/26 15:13:43  thiel
 ;         AIMS added.
 ;

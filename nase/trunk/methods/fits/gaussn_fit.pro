@@ -1,8 +1,8 @@
-; $Id$
-
-PRO	GAUSSN__FUNCT,X,A,F,PDER
+;+
 ; NAME:
 ;	GAUSSN__FUNCT
+;
+; VERSION: $Id$
 ;
 ; PURPOSE:
 ;	EVALUATE THE SUM OF A GAUSSIAN AND A 2ND ORDER POLYNOMIAL
@@ -11,17 +11,17 @@ PRO	GAUSSN__FUNCT,X,A,F,PDER
 ;	SUM OF A LINE AND A VARYING BACKGROUND TO ACTUAL DATA.
 ;
 ; CATEGORY:
-;	E2 - CURVE AND SURFACE FITTING.
+;	E2  CURVE AND SURFACE FITTING.
 ; CALLING SEQUENCE:
 ;	FUNCT,X,A,F,PDER
 ; INPUTS:
-;	X = VALUES OF INDEPENDENT VARIABLE.
-;	A = PARAMETERS OF EQUATION DESCRIBED BELOW.
+;	X : VALUES OF INDEPENDENT VARIABLE.
+;	A : PARAMETERS OF EQUATION DESCRIBED BELOW.
 ; OUTPUTS:
-;	F = VALUE OF FUNCTION AT EACH X(I).
+;	F : VALUE OF FUNCTION AT EACH X(I).
 ;
-; OPTIONAL OUTPUT PARAMETERS:
-;	PDER = (N_ELEMENTS(X),6) ARRAY CONTAINING THE
+; OPTIONAL OUTPUTS:
+;	PDER : (N_ELEMENTS(X),6) ARRAY CONTAINING THE
 ;		PARTIAL DERIVATIVES.  P(I,J) = DERIVATIVE
 ;		AT ITH POINT W/RESPECT TO JTH PARAMETER.
 ; COMMON BLOCKS:
@@ -38,7 +38,8 @@ PRO	GAUSSN__FUNCT,X,A,F,PDER
 ;	Modified, DMS, Oct 1990.  Avoids divide by 0 if A(2) is 0.
 ;	Added to Gauss_fit, when the variable function name to
 ;		Curve_fit was implemented.  DMS, Nov, 1990.
-;
+;-
+PRO	GAUSSN__FUNCT,X,A,F,PDER
 	n = n_elements(a)
 ;	ON_ERROR,2                      ;Return to caller if an error occurs
 	if a(2) ne 0.0 then begin
@@ -142,6 +143,9 @@ Function GaussN_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/27 15:59:26  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.1  1999/02/22 11:14:34  saam
 ;             new & cool
 ;

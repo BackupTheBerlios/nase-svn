@@ -1,8 +1,8 @@
-; $Id$
-
-PRO	GAUSS__FUNCT,X,A,F,PDER
+;+
 ; NAME:
 ;	GAUSS__FUNCT
+;
+; VERSION: $Id$
 ;
 ; PURPOSE:
 ;	EVALUATE THE SUM OF A GAUSSIAN AND A 2ND ORDER POLYNOMIAL
@@ -15,13 +15,13 @@ PRO	GAUSS__FUNCT,X,A,F,PDER
 ; CALLING SEQUENCE:
 ;	FUNCT,X,A,F,PDER
 ; INPUTS:
-;	X = VALUES OF INDEPENDENT VARIABLE.
-;	A = PARAMETERS OF EQUATION DESCRIBED BELOW.
+;	X : VALUES OF INDEPENDENT VARIABLE.
+;	A : PARAMETERS OF EQUATION DESCRIBED BELOW.
 ; OUTPUTS:
-;	F = VALUE OF FUNCTION AT EACH X(I).
+;	F : VALUE OF FUNCTION AT EACH X(I).
 ;
 ; OPTIONAL OUTPUT PARAMETERS:
-;	PDER = (N_ELEMENTS(X),6) ARRAY CONTAINING THE
+;	PDER : (N_ELEMENTS(X),6) ARRAY CONTAINING THE
 ;		PARTIAL DERIVATIVES.  P(I,J) = DERIVATIVE
 ;		AT ITH POINT W/RESPECT TO JTH PARAMETER.
 ; COMMON BLOCKS:
@@ -34,12 +34,14 @@ PRO	GAUSS__FUNCT,X,A,F,PDER
 ;	F = A(0)*EXP(-Z^2/2) + A(3) + A(4)*X + A(5)*X^2
 ;	Z = (X-A(1))/A(2)
 ;	Elements beyond A(2) are optional.
+;-
 ; MODIFICATION HISTORY:
 ;	WRITTEN, DMS, RSI, SEPT, 1982.
 ;	Modified, DMS, Oct 1990.  Avoids divide by 0 if A(2) is 0.
 ;	Added to Gauss_fit, when the variable function name to
 ;		Curve_fit was implemented.  DMS, Nov, 1990.
 ;
+PRO	GAUSS__FUNCT,X,A,F,PDER
 	n = n_elements(a)
 	ON_ERROR,2                      ;Return to caller if an error occurs
 	if a(2) ne 0.0 then begin
@@ -144,6 +146,9 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/09/27 15:59:26  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.5  1998/03/10 17:05:24  saam
 ;             dirty bug with CONVERGED
 ;

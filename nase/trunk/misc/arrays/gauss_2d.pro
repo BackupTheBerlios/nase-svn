@@ -3,7 +3,7 @@
 ;
 ; AIM: constructs array containing a two dimensional Gaussian
 ;
-; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gaußverteilung mit Maximum 1.
+; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gaussverteilung mit Maximum 1.
 ;
 ; CATEGORY: Allgemein, Kohonen, X-Zellen, Basic
 ;
@@ -22,7 +22,7 @@
 ;                      [,WARP=.. [,/ABSWARP] [,/GROUNDWIDTH]])
 ;
 ; OPTIONAL INPUTS:
-;   x_Lange, y_Laenge: Dimensionen des gewünschten Arrays.  Für
+;   x_Lange/y_Laenge : Dimensionen des gewuenschten Arrays.  Fuer
 ;                      y_Laenge=1 wird ein eindimensionales Array
 ;                      erzeugt.  Diese Parameter entfallen bei
 ;                      Gebrauch des AUTOSIZE-Schluesselwortes (s.u.)
@@ -31,13 +31,13 @@
 ;          X_Laenge/6)
 ;
 ;   x0, y0: Die Position der Bergspitze(relativ zum
-;           Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg
+;           Arraymittelpunkt). Fuer x0=0, y0=0 (Default) liegt der Berg
 ;           in der Mitte des Feldes. (Genauer: bei Laenge/2.0).
 ;
 ; KEYWORD PARAMETERS:
 ;   X0_ARR, Y0_ARR: wie x0,y0, aber relativ zur linken oberen Arrayecke.
 ;
-;   AUTOSIZE: Wenn gesetzt, werden die Ausmaße des zurueckgelieferten
+;   AUTOSIZE: Wenn gesetzt, werden die Ausmasse des zurueckgelieferten
 ;             Arrays auf die sechsfache Standardabweichung
 ;             eingestellt. (D.h. dreifache Standardabweichung in beide
 ;             Richtungen.)  Die Parameter x_Laenge und y_Laenge
@@ -62,7 +62,6 @@
 ;       x/y-plane CLOCKWISE from the w-axis (which, by the way, always
 ;       is the second coordinate by NASE conventions). The angle is
 ;       measured clockwise for compatibility reasons.
-
 ;       This argument is passed to the Distance() function. Please
 ;       note that, if keyword WARP is used, or if different standard
 ;       deviations for the x- and y-direction are specified,
@@ -171,6 +170,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.25  2000/09/27 15:59:32  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 1.24  2000/09/25 09:12:54  saam
 ;        * added AIM tag
 ;        * update header for some files

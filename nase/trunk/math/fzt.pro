@@ -35,6 +35,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/27 15:59:22  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 2.2  2000/05/03 16:22:06  saam
 ;           improved error handling
 ;             + warns if data is too large or small
@@ -55,7 +58,7 @@ FUNCTION  FZT, data, direction
 
    CASE direction OF
        -1: BEGIN
-           IF (Max(Z) GT 1.d) OR (Min(Z) LT -1.d) THEN Console, 'data exeeds [-1,1]', /WARN
+           IF (Max(Z, MIN=minz) GT 1.d) OR (minz LT -1.d) THEN Console, 'data exeeds [-1,1]', /WARN
            ZuGross = WHERE(Z GT  Eins)
            IF  TOTAL(ZuGross) NE -1  THEN  Z(ZuGross) =  Eins
            ZuKlein = WHERE(Z LT -Eins)

@@ -1,6 +1,3 @@
-function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
-                        itmax=itmax, iter=iter, tol=tol, chi2=chi2, $
-                        noderivative=noderivative, converged=converged
 ;+
 ; NAME:
 ;       CURVEFIT
@@ -126,9 +123,13 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
 ;         print, yfit
 ;       end
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.3  2000/09/27 15:59:26  saam
+;      service commit fixing several doc header violations
+;
 ;      Revision 1.2  1998/03/11 09:59:20  saam
 ;            another endless loop terminated
 ;
@@ -137,7 +138,10 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
 ;            with improved error handling
 ;
 ;           
-;-
+function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
+                        itmax=itmax, iter=iter, tol=tol, chi2=chi2, $
+                        noderivative=noderivative, converged=converged
+
        on_error,2              ;Return to caller if error
 
        ;Name of function to fit

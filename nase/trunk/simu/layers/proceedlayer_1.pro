@@ -20,10 +20,13 @@
 ;                       ProceedLayer_1, InputLayer
 ;                       Print, 'Output: ', Out2Vector(InputLayer.O)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.10  2000/09/27 15:59:41  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.9  1998/11/08 17:27:22  saam
 ;             the layer-structure is now a handle
 ;
@@ -55,7 +58,7 @@
 ;                       Zeitschritt erhoeht, Mirko Saam, 29.7.97
 ;                       LinkingIn und InhibitionIn sind jetzt
 ;                       optional. Rüdiger, 22. August '97
-;- 
+; 
 PRO ProceedLayer_1, _Layer, CORRECT=correct
 COMMON common_random, seed
 

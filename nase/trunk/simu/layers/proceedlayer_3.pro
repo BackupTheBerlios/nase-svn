@@ -23,10 +23,13 @@
 ;                       InhibitionIn  = DblArr(InputLayer.w*InputLayer.h)
 ;                       Out           = ProceedLayer_3(InputLayer, FeedingIn, LinkingIn, InhibitionIn)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  2000/09/27 15:59:41  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.7  1998/11/08 15:53:18  saam
 ;             neuron type disabled cause it out of date, use type 1
 ;             with a Recall-Structure instead
@@ -39,7 +42,7 @@
 ;                       geaenderter Ablauf, LP wird sofort erhoeht. Andreas. 30. Juli '97
 ;                       LinkingIn und InhibitionIn sind jetzt optional. Rüdiger, 22. August '97
 ;                       Common_Random-Block zugefügt, Rüdiger, 5.9.97
-;- 
+; 
 
 FUNCTION ProceedLayer_3, Layer, FeedingIn, LinkingIn, InhibitionIn
 

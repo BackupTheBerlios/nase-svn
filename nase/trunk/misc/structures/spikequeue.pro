@@ -1,22 +1,22 @@
 ;+
-; NAME: 		SpikeQueue
+; NAME:                 SpikeQueue
 ;
-; AIM:                  en- and dequeues data from spike queue initialized with <A>InitSpikeQueue></A>
+; AIM:                  en- and dequeues data from spike queue initialized with <A>InitSpikeQueue</A>
 ;
 ; PURPOSE:		En- und Dequeue einer Bounded Queue zur Realisierung eines Spike-Delays
 ;
-; CATEGORY:		MISC/STRUCTURES
+; CATEGORY:		MISC STRUCTURES
 ;
-; CALLING SEQUENCE:	Output = SpikeQueue ( Queue, Input)
+; CALLING SEQUENCE:	Output = SpikeQueue (Queue, Input)
 ;
 ; INPUTS:		Queue : Eine zuvor mit InitQuikeQueue initialisierte Queue-Struktur
-;			Input : (Array von) Booleans - Achtung! Darf nur 0 oder 1 enthalten!
+;			Input : (Array von) Booleans - Achtung. Darf nur 0 oder 1 enthalten.
 ;				 Die Dimension muss mit der Dimension von INIT_DELAYS bei der Initialisierung
-;				 übereinstimmen. (Ansonsten wird ein Warnmeldung ausgegeben!)
+;			        ubereinstimmen. (Ansonsten wird ein Warnmeldung ausgegeben.)
 ;
-; OUTPUTS:		Output: Der Input von vor (Delay) Zeitschritten (=Aufrufen)
+; OUTPUTS:		Output: Der Input von vor (Delay) Zeitschritten (Aufrufen)
 ;			
-; RESTRICTIONS: 	Input darf nur 0 oder 1 enthalten und muß gleiche Dimension wie INIT_DELAYS haben.
+; RESTRICTIONS: 	Input darf nur 0 oder 1 enthalten und muss gleiche Dimension wie INIT_DELAYS haben.
 ;
 ; EXAMPLE:              Queue        = InitSpikeQueue( INIT_DELAYS=[0,5,7,100,442,2] )
 ;                       OutputSpikes = SpikeQueue( Queue, [1,0,1,0,1,0] ) 
@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.9  2000/09/27 15:59:36  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.8  2000/09/25 09:13:14  saam
 ;       * added AIM tag
 ;       * update header for some files

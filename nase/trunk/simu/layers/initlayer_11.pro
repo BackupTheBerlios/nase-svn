@@ -12,7 +12,6 @@
 ;
 ;                       L = max (( NORMALES_LINKING - INHIBITORISCHES_LINKING),0)
 ;
-
 ; CATEGORY:             SIMULATION
 ;
 ; CALLING SEQUENCE:     Layer = InitLayer_11( WIDTH=width, HEIGHT=height, TYPE=type )
@@ -42,6 +41,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/27 15:59:40  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 2.1  2000/06/06 15:02:31  alshaikh
 ;              new layertype 11
 ;

@@ -20,7 +20,7 @@
 ; OUTPUTS: Ein Indexfeld mit den Positionen, an denen subarray in array auftaucht, bzw. -1 falls keine
 ;          Vorkommen entdeckt wird.
 ;
-;          Achtung : Wenn in einem array a=[2, 4, 1, 1, 1, 1, 1, 3, 6, 1, 9]
+;          Achtung!  Wenn in einem array a=[2, 4, 1, 1, 1, 1, 1, 3, 6, 1, 9]
 ;                    das Vorkommen von s=[1,1,1] gesucht wird, so liefert die Funktion
 ;                    nur eine 2 zurueck und nicht 2,3,4.
 ;
@@ -28,20 +28,13 @@
 ;                    wird nur die erste Stelle zurueckgeliefert.
 ;                     
 ;
-;
-; SIDE EFFECTS: noch keine bekannt ;-)
-;
-;
 ; RESTRICTIONS: Bei der Suche in einem Floatingpoint-Array ist unbedingt die Genauigkeit zu beachten!!!
 ;               Eventuell wird eine Suchfolge nicht erkannt, weil eine Abweichung in der 6. Nachkomma-
 ;               stelle auftritt.
 ;
-; PROCEDURE:
-;
-;
 ; EXAMPLE: Ist unten angefuegt.
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     Die Grundfunktion stammt von Alex!
@@ -50,6 +43,9 @@
 ;              erweitert.          Hans Joerg
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/27 15:59:32  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.2  2000/09/25 09:12:55  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -58,8 +54,6 @@
 ;     Revision 1.1  1998/11/16 13:04:28  brinks
 ;     *** empty log message ***
 ;
-;
-;-
 
 ;-------------------------------------------------------------------------------------------------       
 ;-------------------------------------------------------------------------------------------------           

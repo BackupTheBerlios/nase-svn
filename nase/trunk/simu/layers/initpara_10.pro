@@ -23,17 +23,21 @@
 ;
 ; EXAMPLE: para10 = InitPara_10(tauf=10.0)
 ;
-; SEE ALSO: <A HREF="#INITLAYER_10">InitLayer_10</A>, <A HREF="#INPUTLAYER_10">InputLayer_10</A>, A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>,
-;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>
+; SEE ALSO: <A>InitLayer_10</A>, <A>InputLayer_10</A>, <A>ProceedLayer_10</A>,
+;           <A>PoissonInput</A>
 ;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/27 15:59:40  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.1  1999/05/07 12:43:21  thiel
 ;              Neu. Neu. Neu.
 ;
 ;
-;-
+;
 
 FUNCTION InitPara_10, TAUF=tauf
 

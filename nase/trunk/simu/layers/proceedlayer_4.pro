@@ -20,10 +20,13 @@
 ;                       ProceedLayer_4, MyLayer
 ;                       Print, 'Output: ', Out2Vector(MyLayer.O)
 ;
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.6  2000/09/27 15:59:41  saam
+;      service commit fixing several doc header violations
+;
 ;      Revision 2.5  1998/11/08 17:27:24  saam
 ;            the layer-structure is now a handle
 ;
@@ -40,7 +43,7 @@
 ;            Cool
 ;
 ;
-;- 
+;
 PRO ProceedLayer_4, _Layer, _EXTRA=e
 common common_random, seed
 

@@ -21,19 +21,23 @@
 ;
 ; EXAMPLE: ResetLayer, MyLayer
 ;
-; SEE ALSO: <A HREF="#FREELAYER_1">FreeLayer_?</A>, <AHREF="#INITLAYER_1">InitLayer_?</A>,
-;           <A HREF="#LAYERDATA">LayerData</A>.
+; SEE ALSO: <A>FreeLayer_1</A>, <A>InitLayer_1</A>,
+;           <A>LayerData</A>.
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/27 15:59:41  saam
+;        service commit fixing several doc header violations
+;
 ;        Revision 2.2  2000/03/12 16:52:09  kupper
 ;        Changed to use the neuron-type independent "FreeLayer" and "InitLayer".
 ;
 ;        Revision 2.1  1998/03/10 16:03:18  kupper
 ;               Schöpfung.
 ;
-;-
+
 
 Pro ResetLayer, Layer
 

@@ -17,14 +17,12 @@
 ; INPUTS:
 ;                     array:   (MxN)-Matrix. M Dimension der Zeit. N Anzahl der Messpunkte.
 ;
-
 ;                  
 ;
 ; OPTIONAL INPUTS:
 ;
 ;                     timearr: Zeitachse 
 ;
-
 ;
 ;	
 ; KEYWORD PARAMETERS:
@@ -131,11 +129,14 @@
 ;          input=input+noise
 ;
 ;          result = wavescan( input,FBAND=[35,65],SAMPLPERIOD=SAMPLPERIOD,/PLOT)
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.11  2000/09/27 15:59:29  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.10  2000/06/08 10:15:40  gabriel
 ;             warning for subsampling included
 ;
@@ -167,7 +168,6 @@
 ;          Geburt war schwer
 ;
 ;
-;-
 FUNCTION wavescan, array,timearr,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,VELCRIT=VELCRIT,AMPLCRIT=AMPLCRIT,ELDIST=ELDIST,$
                    SAMPLPERIOD=SAMPLPERIOD,NBARR=NBARR,PLOT=PLOT,TRANSP=TRANSP,NULLHYPO=NULLHYPO,PSPLOT=PSPLOT,$
                    FILENAME=filename,VIDREC=vidrec,VIDPLAY=VIDPLAY,XSIZE=XSIZE,YSIZE=YSIZE,VERBOSE=VERBOSE,_EXTRA=e

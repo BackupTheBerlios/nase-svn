@@ -80,9 +80,13 @@
 ;
 ; SEE ALSO: <A HREF="#INITPARA_8">InitPara_8</A>, <A HREF="#INITLAYER_8">InitLayer_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>
 ;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 1.5  2000/09/27 15:59:41  saam
+;      service commit fixing several doc header violations
+;
 ;      Revision 1.4  1999/05/07 12:47:07  thiel
 ;          Weiﬂ nich mehr, was da ge‰ndert wurde.
 ;
@@ -95,7 +99,7 @@
 ;      Revision 1.1  1999/03/05 13:10:19  thiel
 ;             Neuer Neuronentyp 8, ein Vier-Compartment-Modellneuron.
 ;
-;- 
+; 
 
 
 FUNCTION ProceedLayer_8_DGLS, t, V

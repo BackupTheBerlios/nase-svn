@@ -35,14 +35,16 @@
 ;
 ; RESTRICTIONS: Geht natürlich nur, wenn die Struktur mit Delays
 ;               initialisiert wurde!
-;
-; PROCEDURE: Set(), LayerIndex()
-;
-;-  
+; PROCEDURE: Set, LayerIndex
+;-
+;  
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  2000/09/27 15:59:39  saam
+;       service commit fixing several doc header violations
+;
 ;       Revision 1.7  2000/09/25 16:49:13  thiel
 ;           AIMS added.
 ;

@@ -1,9 +1,9 @@
 ;+
 ; NAME: asso_display
 ;
-; AIM: Module of assoziativ.pro (see also: FaceIt)
-;
-; PURPOSE: siehe assoziativ.pro
+; AIM: Module of assoziativ.pro (aakkefkef:dfrfre)
+;-
+; PURPOSE: siehe <A>assoziativ</A> 
 ;
 ;-
 ;
@@ -11,6 +11,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/27 15:59:12  saam
+;     service commit fixing several doc header violations
+;
 ;     Revision 1.2  2000/09/27 12:14:06  alshaikh
 ;           added aim
 ;
