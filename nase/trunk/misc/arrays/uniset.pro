@@ -48,12 +48,22 @@ FUNCTION UniSet, SetA, SetB
 
   IF NOT (Set(SetA) AND Set(SetB)) THEN Console, 'invalid arguments', /FATAL
 
-  ; if called with an empty set then return the elements of the other set
-  IF (SetA(0) EQ !None) THEN Return, Elements(SetB)
-  IF (SetB(0) EQ !None) THEN Return, Elements(SetA)
+  ; handle string arguments
+  IF (SIZE(SetA, /TYPE) EQ 7) XOR (SIZE(SetB, /TYPE) EQ 7) THEN  $
+    Console, /FATAL, 'both or no arguments may be strings'
+
+; if called with an empty set then return the elements of the other set
+  IF (SIZE(SetA, /TYPE) EQ 7) THEN BEGIN
+    IF (SetA(0) EQ ''   ) THEN Return, Elements(SetB)
+    IF (SetB(0) EQ ''   ) THEN Return, Elements(SetA)
+  ENDIF ELSE BEGIN
+    IF (SetA(0) EQ !None) THEN Return, Elements(SetB)
+    IF (SetB(0) EQ !None) THEN Return, Elements(SetA)
+  ENDELSE
+
 
 ; concatenate both sets and extract all distinct elements
-  Return, Elements([Reform(SetA,N_Elements(SetA)),Reform(SetB,N_Elements(SetB))])
+  Return, Elements([Reform([SetA],N_Elements(SetA)),Reform([SetB],N_Elements(SetB))])
 
 
 END

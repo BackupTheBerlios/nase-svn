@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2001/03/15 15:07:12  gail
+;     bug fix: string handling
+;
 ;     Revision 1.4  2000/12/20 18:07:26  gail
 ;     * fixed header bug (example code)
 ;
@@ -66,10 +69,18 @@ FUNCTION CutSet, SetA, SetB
 
   On_Error, 2
 
-  IF NOT (Set(SetA) AND Set(SetB)) THEN Console, 'invalid arguments', /FATAL
+  IF NOT (Set(SetA) AND Set(SetB)) THEN Console, /FATAL, 'invalid arguments'
 
-  ; if called with an empty set then return an empty set
-  IF (SetA(0) EQ !None) OR (SetB(0) EQ !None) THEN Return, !None
+  ; handle string arguments
+  IF (SIZE(SetA, /TYPE) EQ 7) XOR (SIZE(SetB, /TYPE) EQ 7) THEN  $
+    Console, /FATAL, 'both or no arguments may be strings'
+
+; if called with an empty set then return an empty set
+  IF (SIZE(SetA, /TYPE) EQ 7) THEN BEGIN
+    IF (SetA(0) EQ '')    OR (SetB(0) EQ '')    THEN Return, ''
+  ENDIF ELSE BEGIN
+    IF (SetA(0) EQ !None) OR (SetB(0) EQ !None) THEN Return, !None
+  ENDELSE
 
 ; reduce to a set for the case that SetA contains multiple instances of the same value (array!)
   ElmA = Elements(SetA)

@@ -49,6 +49,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2001/03/15 15:07:12  gail
+;     bug fix: string handling
+;
 ;     Revision 1.3  2000/12/20 18:08:55  gail
 ;     * completely revised
 ;     * updated header
@@ -70,8 +73,16 @@ FUNCTION DiffSet, SetA, Sub, array=array
 
   IF NOT (Set(SetA) AND Set(Sub)) THEN Console, 'invalid arguments', /FATAL
 
+  ; handle string arguments
+  IF (SIZE(SetA, /TYPE) EQ 7) XOR (SIZE(Sub, /TYPE) EQ 7) THEN  $
+    Console, /FATAL, 'both or no arguments may be strings'
+
   ; if called with an empty set then return SetA (because there's nothing to do)
-  IF (SetA(0) EQ !None) OR (Sub(0) EQ !None) THEN Return, SetA
+  IF (SIZE(SetA, /TYPE) EQ 7) THEN BEGIN
+    IF (SetA(0) EQ ''   ) OR (Sub(0) EQ ''   ) THEN Return, SetA
+  ENDIF ELSE BEGIN
+    IF (SetA(0) EQ !None) OR (Sub(0) EQ !None) THEN Return, SetA
+  ENDELSE
 
   ; evtl. reduce to a set for the case that SetA contains multiple instances of the same value (array!)
   IF Keyword_Set(array) THEN ElmA = SetA  $
