@@ -60,23 +60,26 @@
 ;  
 ; SEE ALSO:
 ;  <A HREF="#LRINITPRECALL">LRInitPrecall</A>, <A HREF="#LRTOTALPRECALL">LRTotalPrecall</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#TOTALPRECALL>TotalPrecall</A>, 
-;  <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#INITPRECALL>InitPrecall</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#LEARNDELAYS>LearnDelays</A>.
+;  <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#LEARNDELAYS>LearnDelays</A>.
 ;  
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/15 15:17:03  thiel
+;            SHUTUP-Keyword removed.
+;
 ;        Revision 1.1  2000/08/11 13:43:34  thiel
 ;            A new external learning rule.
 ;
 ;
 
-PRO LRDelays, CON=con, WIN=win, LEARNFUNC=learnfunc, SHUTUP=shutup $ 
+PRO LRDelays, CON=con, WIN=win, LEARNFUNC=learnfunc $
               , _EXTRA=_extra
 
 
-   LearnDelays, CON, WIN, learnfunc, SHUTUP=shutup
+   LearnDelays, CON, WIN, learnfunc
 
 
 END 
