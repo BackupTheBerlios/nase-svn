@@ -45,6 +45,7 @@ setBaseURL($myurl);
 
 # the directory we are currently
 $sub = path_info();
+$sub =~ s/\/\//\//gi;
 setSubDir($sub);
 $fullurl = "$myurl/$sub";
 
@@ -264,7 +265,11 @@ if ($P::mode){
 				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
 				  } else {
 				    `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout doc/www-doc`;
-				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") ||	open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
+				    if($sub eq '/'){
+				      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
+				    } else {
+				      open(IDX, "<".$DOCDIR."/".$sub."/"."index.html");
+				    }
 				    while(<IDX>){print;};
 				    close(IDX) || die "can't close index: $!\n";
 				    last TRUNK;};
