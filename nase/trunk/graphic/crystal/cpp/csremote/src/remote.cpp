@@ -60,7 +60,7 @@ bool csRemoteControl::Initialize(csRef<iGraphics2D> g2d, int port)
     return false;
   }
   int portnumber;
-  if ((port > 1000) and (port < 9999)) 
+  if ((port > 1000) && (port < 9999)) 
   {
     portnumber=port; 
     cout << portnumber;
@@ -108,7 +108,7 @@ bool csRemoteControl::ConnectToLocalHost()
   if (server)
     {
 
-      if ((client == NULL) or (!client->IsConnected())) 
+      if ((client == NULL)|| (!client->IsConnected())) 
         {
           //          printf("Verbinde mit Client\n");
           client = server->Accept();

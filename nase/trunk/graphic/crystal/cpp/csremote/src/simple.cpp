@@ -364,7 +364,7 @@ int main (int argc, char* argv[])
       printf("PortNummer= %d\n", port);         
   }
 
-  if ((port > 1000) and (port < 9999)) printf("Valid PortNumber\n");
+  if ((port > 1000) && (port < 9999)) printf("Valid PortNumber\n");
   else port=0;
 
   iObjectRegistry* object_reg =
