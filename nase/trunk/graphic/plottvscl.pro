@@ -104,6 +104,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.44  1999/06/18 14:45:47  kupper
+;     LEG_MIN and LEG_MAX did not work with /NASE. Fixed.
+;     (What about /NEUTRAL? - Mirko?)
+;
 ;     Revision 2.43  1999/06/07 14:40:44  kupper
 ;     Added CUBIC,INTERP,MINUS_ONE-Keywords for ConGrid.
 ;
@@ -497,27 +501,29 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    IF Keyword_Set(LEGEND) THEN BEGIN
       IF Keyword_Set(NASE) THEN BEGIN
          IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-            MaxW = MAX([ABS(MaxW),ABS(MinW)])
-            MinW = -MaxW
-            Mid = 0
+            Default, LEG_MAX,  MAX([ABS(MaxW),ABS(MinW)])
+            Default, LEG_MIN, -MAX([ABS(MaxW),ABS(MinW)])
+            If LEG_MIN eq -LEG_MAX then Mid = '0'
             TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
              H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
              V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-             Max=MaxW, Min=MinW, Mid='0',$
+             Max=LEG_MAX, Min=LEG_MIN, Mid=Mid,$
              CHARSIZE=Charsize, $
              NOSCALE=NoScale, $
              /Vertical, /Center, COLOR=sc
          END ELSE BEGIN
-            MinW = 0
+            Default, LEG_MAX, MaxW
+            Default, LEG_MIN, 0
+            If LEG_MIN eq -LEG_MAX then Mid = '0'
             TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
              H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
              V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-             Max=MaxW, Min=MinW,$
+             Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
              CHARSIZE=Charsize, $
              NOSCALE=NoScale, $
              /Vertical, /Center, COLOR=sc
          END
-      END ELSE BEGIN
+      END  ELSE BEGIN; No-NASE
          Default, LEG_MAX, MAX(w)
          Default, LEG_MIN, MIN(w)
          IF Keyword_Set(NEUTRAL) THEN BEGIN
