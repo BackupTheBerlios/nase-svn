@@ -22,6 +22,7 @@
 ;                             [, GET_XTICKS=XTicks]
 ;                             [, GET_YTICKS=YTicks]
 ;                             [, GET_PIXELSIZE=Pixelgroesse]
+;                             [, GET_INFO=PlotDaten]
 ;                             [, LAGMARGIN=LEGMARGIN]
 ;                             [, /NEUTRAL]
 ;                             [, /POLYGON]
@@ -78,15 +79,32 @@
 ;                     PLOTCOL   : Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
 ;                                 wird versucht, eine passende Farbe zu raten.
 ;
-; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
+; OPTIONAL OUTPUTS: GET_POSITION: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
 ;                                 zurueckgibt.
-;                   Farbe       : Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
-;                   [XY]Ticks   : Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
+;                   GET_COLOR   : Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
+;                   GET_[XY]Ticks:Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
 ;                                 ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
 ;                                 beschriftet worden waere. 
-;                   Pixelgroesse: Ein zweielementiges Array [XSize, YSize], das die Groesse der
-;                                 TV-Pixel in Normalkoordinaten zurueckliefert.
+;                   GET_PIXELSIZE:Ein zweielementiges Array [XSize, YSize], das die Groesse der
+;                                 TV-Pixel in Normalkoordinaten
+;                                 zurueckliefert.
+;                   GET_INFO    : Eine Struktur, die wichtige
+;                                 Plotparameter enth‰lt. Muﬂ bei 
+;                                 der Verwendung von <A HREF="#PLOTTVSCL_UPDATE">PlotTVScl_update</A>
+;                                 angegeben werden.
+;                                 Format:   
+;                                  GET_INFO = {x0      : 0                ,$
+;                                              y0      : 0                ,$
+;                                              x1      :                  ,$
+;                                              y1      :                  ,$
+;                                              x00     :                  ,$
+;                                              y00     : --TO BE DUCUMENTED!--  ,$ 
+;                                              tvxsize :                  ,$
+;                                              tvysize :                  ,$
+;                                              subxsize:                  ,$
+;                                              subysize: }
+;
 ;
 ; PROCEDURE: 1. Ermitteln des fuer die Darstellung zur Verfuegung stehenden Raums.
 ;            2. Zeichnen der Achsen an der ermittelten Position.
@@ -104,6 +122,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.47  1999/09/21 15:53:41  kupper
+;     Added documentation of GET_INFO and GET_COLOR that was missing.
+;
 ;     Revision 2.46  1999/08/12 10:11:11  thiel
 ;         Replaced 'NoNone' with 'NoNone_Func', because 'NoNone' is no longer in use.
 ;
