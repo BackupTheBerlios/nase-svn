@@ -1,13 +1,8 @@
 
 ;; ------------ Member access methods -----------------------
 Function image_factory::image
-   If self.recompute then begin
-      Message, /INFO, "Creating image."
-      PTR_FREE, self.image
-      call_method, self.type+"_", self
-      self.recompute = 0
-   Endif
-   return, (*self.image)*self.brightness
+   If self.recompute then self->recompute
+   return, (*self.image)
 End
 Function image_factory::imageptr
    return, self.image
@@ -49,6 +44,7 @@ Function image_factory::brightness
    return, self.brightness
 End
 Pro image_factory::brightness, value
+   *self.image = *self.image / self.brightness * value
    self.brightness = value
 End
 
@@ -62,8 +58,9 @@ Function image_factory::init, HEIGHT=height, WIDTH=width
 
    self.size = 1.0
    self.brightness = 1.0
-   self.type = "gauss"   
+   self.type = "gauss"
 
+   self.image = Ptr_New(/Allocate_Heap) ;let it point to an undefined variable
    self.recompute = 1
    return, 1                    ;TRUE
 End
@@ -92,6 +89,12 @@ Function image_factory::types
    return, methods
 End
 
+Pro image_factory::recompute
+   Message, /INFO, "Creating image."
+   call_method, self.type+"_", self
+   *self.image = *self.image * self.brightness
+   self.recompute = 0
+End
 ;; ------------ Private --------------------
 Function image_factory::mindim_
    return, min([self.height, self.width])
