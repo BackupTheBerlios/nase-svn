@@ -20,6 +20,7 @@
 ; CALLING SEQUENCE:
 ;*   result = subsample (A, fraction               [,/EDGE_WRAP|,/EDGE_TRUNCATE])
 ;*   result = subsample (A [,SIGMA=...|,HMW=...]   [,/EDGE_WRAP|,/EDGE_TRUNCATE])
+;  with <*>fraction</*>, <*>SIGMA</*>, <*>HMW</*> either scalars or two-element-vectors.
 ;
 ; INPUTS:
 ;  A       :: The array to subsample. This must be two-dimensional, squareness
@@ -27,8 +28,12 @@
 ;  fraction:: The distance of sampling points (= the factor by which to reduce
 ;             the array size). This is not required to be an integer value.
 ;             The dimenions of A are not required to be integer
-;             multiples of fraction. To determine the width and height of the
-;             result array, the width and height of A will be
+;             multiples of fraction. <BR>
+;             This parameter can be either a scalar (resulting in same
+;             fraction for x and y) or a vector of two
+;             elements [x,y] (separate values for x and y).<BR>
+;             To determine the width and height of the
+;             resulting array, the width and height of A will be
 ;             multiplied by fraction and then converted to integer.<BR>
 ;             Example: a fraction of 3 reduces the size of the array
 ;                      by factor 3.<BR>
@@ -41,10 +46,16 @@
 ;   EDGE_TRUNCATE:: Keyword passed to CONVOL() for convolution (see IDL reference).
 ;   SIGMA        :: Standard deviation of the Gaussian kernel used to
 ;                   low-pass filter the array before resampling.
+;                   This parameter can be either a scalar (resulting in same
+;                   deviation for x and y) or a vector of two
+;                   elements [x,y] (separate values for x and y).<BR>
 ;                   Only one of SIGMA, HMW, or the fraction parameter
 ;                   shall be specified.
 ;   HMW          :: Half mean width of the Gaussian kernel used to
 ;                   low-pass filter the array before resampling.
+;                   This parameter can be either a scalar (resulting in same
+;                   width for x and y) or a vector of two
+;                   elements [x,y] (separate values for x and y).<BR>
 ;                   Only one of SIGMA, HMW, or the fraction parameter
 ;                   shall be specified.
 ;
@@ -76,6 +87,12 @@ Function Subsample, A, frac, $
                     Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate, $
                     HMW=hmw, SIGMA=sigma
 
+   ;; fractions et al can be given as scalar or as vector of two.
+   ;; Convert them to vectors of two:
+   if n_elements(frac)  eq 1 then frac  = [frac, frac]
+   if n_elements(hmw)   eq 1 then hmw   = [hmw, hmw]
+   if n_elements(sigma) eq 1 then sigma = [sigma, sigma]
+
 
    ;; first handle HMW and SIGMA: derive frac
    ;; SIGMA overrides HMW overrides frac.
@@ -85,13 +102,13 @@ Function Subsample, A, frac, $
 
    frac = float(temporary(frac))
 
-   samples_per_row = Fix((size(A))[1]/frac)
-   samples_per_col = Fix((size(A))[2]/frac)
+   samples_per_row = Fix((size(A))[1]/frac[0])
+   samples_per_col = Fix((size(A))[2]/frac[1])
 
    return, $
     Congrid( Convol( Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate, $
                      A, $
-                     Gauss_2d(/Autosize, HWB=hmw, /Norm) $
+                     Gauss_2d(/Autosize, XHWB=hmw[0], YHWB=hmw[1], /Norm) $
                    ), $
              samples_per_row, samples_per_col, $
              Cubic=-0.5, /Minus_One $
