@@ -22,7 +22,7 @@
 ;                                           | ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                         }
-;                                         [ ,ALL [ ,LWX ,LWY ] ]
+;                                         [ ,ALL [,LWX ,LWY] [,TRUNCATE [,TRUNC_VALUE]] ]
 ;                                       )
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: siehe GetWeight()!
@@ -47,6 +47,17 @@
 ;                          Layer verteilt sind. Wird eine andere
 ;                          Verschiebung gewünscht, so kann die
 ;                          Laufweite in LWX und LWY übergeben werden.
+;
+;                     TRUNCATE: Wird dieses Schluesselwort zusätzlich zu ALL gesetzt, 
+;                               so wirden beim Verschieben die Teile,
+;                               die über den Rand geschoben werden,
+;                               NICHT auf der anderen Seite
+;                               hereingerollt. (S. NoRot_Shift() )
+;                               Optional kann ein Wert in TRUNC_VALUE
+;                               angegeben werden, mit dem die
+;                               freiwerdenden Teile des Arrays
+;                               aufgefüllt werden. (Vgl. Schlüsselwort
+;                               WEIGHT in NoRot_Shift() )
 ;
 ;                     alles andere: siehe GetWeight()
 ;
@@ -84,6 +95,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Aug 5 17:15:27 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		TRUNCATE, TRUNC_VALUE zugefügt.
+;
 ;       Mon Aug 4 00:43:52 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -102,7 +118,7 @@
 
 Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
-                                    ALL=all, LWX=lwx, LWY=lwy
+                                    ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
     
    s = size(Weight)
 
@@ -123,7 +139,8 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
           Weight = Shift(Weight, -LWY*t_row, -LWX*t_col)
           for x=0, V_Matrix.target_w-1 do begin
              for y=0, v_Matrix.target_h-1 do begin
-                V_Matrix.Weights(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Weight, LWY*y, LWX*x)
+                if keyword_set(TRUNCATE) then V_Matrix.Weights(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
+                   else V_Matrix.Weights(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Weight, LWY*y, LWX*x)
              endfor
           endfor
        end else V_Matrix.Weights(t_index, *) = Weight 
@@ -147,7 +164,8 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
           Weight = Shift(Weight, -LWY*s_row, -LWX*s_col)
           for x=0, V_Matrix.source_w-1 do begin
              for y=0, v_Matrix.source_h-1 do begin
-                V_Matrix.Weights(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Weight, LWY*y, LWX*x)
+                if Keyword_set(TRUNCATE) then V_Matrix.Weights(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
+                else V_Matrix.Weights(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Weight, LWY*y, LWX*x)
              endfor
           endfor
        end else V_Matrix.Weights(*, s_index) = Weight
