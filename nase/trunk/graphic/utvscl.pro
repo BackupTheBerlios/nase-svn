@@ -30,11 +30,13 @@
 ;    only colors above the color table size are clipped, leaving the
 ;    indices between <*>!TOPCOLOR</*> and <*>!D.TABLE_SIZE-1</*>
 ;    untouched. This allows using the NASE colors that can be set
-;    using the <A>RGB()</A> command.
+;    using the <A>RGB()</A> command.<BR>
+;    No clipping is done in any way for truecolor images.<BR>
 ;
 ;  <I>Note on truecolor images:</I><BR>
 ;    <C>/POLY</C> is not supported for truecolor images.<BR>
-;    No handling of <*>!NONE</*> is done at all for truecolor images.<BR>
+;    No handling of <*>!NONE</*> is done in any way for truecolor images.<BR>
+;    No clipping is done in any way for truecolor images.<BR>
 ;       
 ;
 ; CATEGORY:
@@ -195,7 +197,11 @@ End
 ; table size are clipped, leaving the indices between !TOPCOLOR and
 ; !D.TABLE_SIZE-1 untouched. This allows using the NASE colors that can
 ; be set using the RGB() command.
-Function __ClipArray, A, ALLOWCOLORS=allowcolors
+Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
+   ;; do nothing at all for truecolor.
+   If Keyword_Set(TRUE) then return, A
+
+
    result = A
 
    If Keyword_Set(ALLOWCOLORS) then $
@@ -239,7 +245,7 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
    default,order,0
 
    IF (NOSCALE EQ 1) THEN BEGIN
-      ARRAY = __ClipArray(A, ALLOWCOLORS=allowcolors)
+      ARRAY = __ClipArray(A, ALLOWCOLORS=allowcolors, TRUE=true)
    END ELSE BEGIN
       ARRAY = __ScaleArray(A, TOP=top, TRUE=true)
       TVLCT,R,G,B,/GET   
@@ -446,13 +452,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e 
+               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e 
             END ELSE BEGIN
                TV, __ScaleArray(Image, TOP=top, TRUE=true), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END ELSE BEGIN
                TV, __ScaleArray(Image, TOP=top, TRUE=true), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
@@ -483,13 +489,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors), xnorm, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xnorm, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END ELSE BEGIN
                TV, __ScaleArray(Image, TOP=top, TRUE=true), xnorm, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors), xpos, ypos, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image, ALLOWCOLORS=allowcolors, TRUE=true), xpos, ypos, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END ELSE BEGIN
                TV, __ScaleArray(Image, TOP=top, TRUE=true), xpos, ypos, CENTIMETERS=centi, TOP=top, TRUE=true, _EXTRA=e
             END
