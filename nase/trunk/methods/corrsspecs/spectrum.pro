@@ -28,16 +28,16 @@
 ;  the sample rate <*>fS</*> in Hertz. Note also that seemingly contradictory results will be obtained when computing the
 ;  spectra of sinusoidal signals, in which case the height of the spectral peak <I>does</I> depend on the (physical)
 ;  window length. This paradox is easily explained by remembering that each spectral amplitude value gives the <I>mean</I>
-;  amplitude density within the whole corresponding frequency bin. Ideally, the spectral peak of a sinusoid has an infinite
-;  amplitude density (a delta peak weighted by the amplitude of the sinusoid). However, the bin-mean, i.e., the integral
-;  over the whole frequency bin around the sinusoid frequency, divided by the bin width, yields a finite value, which
-;  becomes smaller as the frequency bin width increases (or as the length of the time window decreases, respectively).
+;  amplitude density within the whole corresponding frequency bin. Ideally, the spectral peak of a sinusoid has an
+;  infinite amplitude density (a delta peak weighted by the amplitude of the sinusoid). However, the bin-mean, i.e., the
+;  integral over the whole frequency bin around the sinusoid frequency, divided by the bin width, yields a finite value,
+;  which becomes smaller as the frequency bin width increases (or as the length of the time window decreases, respectively).
 ;  Thus, <B>be careful:</B> The discrete Fourier transform (<B>DFT</B>) yields meaningful spectral values as long as there
-;  are no "delta", i.e., very narrow peaks in the "real" spectrum. "Very narrow" here means "narrow compared to the inverse
-;  of the (physical) window length". (This problem, of course, has nothing to do with the special scaling used in this
-;  routine, but is a general property of the DFT, which only becomes quite apparent here because this routine claims to
-;  deliver spectra which are independent of the parameters used in the analysis.)<BR>
-;  Another important aspect with respect to the scaling of the spectrum is explained in connection with the keyword
+;  are no "delta", i.e., very narrow peaks in the "real" spectrum. "Very narrow" here means "narrow compared to the
+;  inverse of the (physical) window length". (This problem, of course, has nothing to do with the special scaling used in
+;  this routine, but is a general property of the DFT, which only becomes quite apparent here because this routine claims
+;  to deliver spectra which are independent of the parameters used in the analysis.)<BR>
+;  Another aspect with respect to the scaling of the spectrum is explained in connection with the keyword
 ;  <*>NEGATIVEFREQUENCIES</*> (see below). Please also read that paragraph carefully.
 ;
 ; CATEGORY:
@@ -65,18 +65,18 @@
 ;                         it is symmetrical (amplitude, power, or real part of the complex spectrum) or antisymmetrical
 ;                         (imaginary part of the complex spectrum) to the positive-frequency branch. On the other hand,
 ;                         one would like the <I>total</I> contribution of the signal at a certain frequency to be
-;                         represented in the spectrum. Therefore, if only the positive-frequency branch is returned,
-;                         the complex spectral values are multiplied by 2 (leading to a factor 4 for the power spectrum),
-;                         in order to represent the amplitudes that actually contribute to the signal at each frequency.
-;                         Since the zero-frequency ("DC") bin occurs only once in the whole discrete Fourier spectrum,
-;                         this bin must <I>not</I> be multiplied by 2. The same holds for the Nyquist-frequency bin if
-;                         the total number of frequency bins is even (otherwise, there <I>is</I> no Nyquist-frequency bin,
-;                         but some frequency slightly below is represented twice). <B>WARNING</B>: This correction does
-;                         not have the desired effect when padding is performed! The reason is that the interpolation
-;                         values near the zero- and the Nyquist-bin always run towards the uncorrected values of these
-;                         bins, and correcting only the zero- and Nyquist-bins themselves afterwards introduces
-;                         discontinuities at the edges of the spectrum. I (Andreas) have not found a solution for this
-;                         problem so far, but I will think about it.
+;                         represented in the spectrum. Therefore, if only the positive-frequency branch is returned, the
+;                         relevant spectral values are multiplied by 2, in order to represent the amplitude or power
+;                         densities that actually contribute to the signal at each frequency. Note that this scaling is
+;                         performed <I>after</I> the complex/amplitude/power decision, because otherwise one would
+;                         receive the fourfold power values, which of course is not intended (the amplitude contributions
+;                         from positive and negative frequencies just add, and the power contributions from positive and
+;                         negative frequencies just add, as well). Note also that the zero-frequency ("DC") bin afterwards
+;                         represents only half of the normal bin width, i.e. when numerically integrating (see above) the
+;                         amplitude or the power, the zero-bin value has to be weighted by only half of the normal bin
+;                         width. The same holds for the Nyquist-frequency bin if the total number of frequency bins is
+;                         even (otherwise, there <I>is</I> no Nyquist-frequency bin, but some frequency slightly below is
+;                         represented twice).
 ;  PADDING::              "Padding" means artificially extending the length of the analysis time window in order to get
 ;                         a higher frequency resolution, which, of course, can only be a "pseudo-resolution", because
 ;                         the non-padded DFT spectrum already contains all information that is available from the given
@@ -170,26 +170,26 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
    DimsX  = Size(X , /dim)
    TypeX  = Size(X , /type)
    TypefS = Size(fS_, /type)
-   NX     = DimsX(0)
+   NX     = DimsX[0]
    IF  (TypeX  GE 7) AND (TypeX  LE 11) AND (TypeX NE 9)  THEN  Console, '  X is of wrong type.', /fatal
    IF  (TypefS GE 6) AND (TypefS LE 11)                   THEN  Console, '  fS is of wrong type.', /fatal
    IF  NX LT 2  THEN  Console, '  X epoch must have more than one element.', /fatal
    N = N_Elements(X) / NX
 
    IF  TypefS EQ 0  THEN  fS = 1.0  $
-                    ELSE  fS = Float(fS_(0))   ; If fS is an array, only the first value is taken seriously.
+                    ELSE  fS = Float(fS_[0])   ; If fS is an array, only the first value is taken seriously.
 
    ; Checking and "defaulting" the keyword PADDING:
    IF  Set(padding)  THEN  BEGIN
      IF  (Size(padding, /type) GE 6) AND (Size(padding, /type) LE 11)  THEN  Console, '  Keyword PADDING is of wrong type' , /fatal
-     IF  (Padding(0) LT 1) AND (Padding(0) NE 0)  THEN  Console, '  Keyword PADDING must be >=1. Set to 1.', fatal
-     Padding = Float(Padding(0)) > 1.0
+     IF  (Padding[0] LT 1) AND (Padding[0] NE 0)  THEN  Console, '  Keyword PADDING must be >=1. Set to 1.', fatal
+     Padding = Float(Padding[0]) > 1.0
    ENDIF  ELSE  Padding = 1.0
 
    ; Establishing the size parameters for the spectrum array S:
    NS = Round(Padding * NX)
    DimsS    = DimsX
-   DimsS(0) = NS
+   DimsS[0] = NS
    ; The array that will contain the spectra:
    S  = Make_Array(dim = DimsS, /complex)
    ; An array that will temporarily contain a long (padded) signal epoch in the FOR loop (see below):
@@ -220,16 +220,16 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
                        ELSE  iFlankR = [NFlankL + NX - 1]
      ; Defining the window function:
      W = FltArr(NS)
-     W(iCenter) = Hamming(NX)
+     W[iCenter] = Hamming(NX)
      IF  Keyword_Set(widewindow)  THEN  W = Hamming(NS)
      IF  Keyword_Set(nowindow)    THEN  W = FltArr(NS) + 1
      ; Each epoch is pasted into the center of a long epoch, continued to both sides, and multiplied by the window
      ; function; then the spectrum is computed:
-     FOR  i = 0, N-1  DO  BEGIN
-       Xi(iCenter) = X(*,i)
-       Xi(iFlankL) = X(0,i)
-       Xi(iFlankR) = X(NX-1,i)
-       S(*,i)      = FFT(Xi * W)
+     FOR  i = 0L, N-1  DO  BEGIN
+       Xi[iCenter] = X[*,i]
+       Xi[iFlankL] = X[0,i]
+       Xi[iFlankR] = X[NX-1,i]
+       S[*,i]      = FFT(Xi * W)
      ENDFOR
 
    ENDIF  ELSE  BEGIN
@@ -239,9 +239,9 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
      IF  Keyword_Set(nowindow)  THEN  W = FltArr(NX) + 1
      ; Each epoch is multiplied by the window function and pasted into the beginning of a long epoch, the rest being
      ; zeroes; then the spectrum is computed:
-     FOR  i = 0, N-1  DO  BEGIN
-       Xi(0:NX-1) = X(*,i) * W
-       S(*,i)     = FFT(Xi)
+     FOR  i = 0L, N-1  DO  BEGIN
+       Xi[0:NX-1] = X[*,i] * W
+       S[*,i]     = FFT(Xi)
      ENDFOR
 
    ENDELSE
@@ -250,29 +250,23 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
    ; Cutting-away the negative-frequency branch (unless desired) and correcting the phase shifts caused by padding:
    ;----------------------------------------------------------------------------------------------------------------------
 
-   ; Unless the negative frequency branch is desired, only the values corresponding to positive frequencies are retained.
-   ; However, in order to preserve the physical meaning of the scaling (see below), the spectrum has to be multiplied
-   ; by sqrt(2) (yielding factor 2 for the power), because one usually would like to see the SUM of the contributions
-   ; from positive and negative frequencies (which are physically equivalent). Since the DC-bin, on the other hand, occurs
-   ; only once in the whole spectrum, it must NOT be multiplied by this factor. And if the number of frequency bins is
-   ; even, the same holds for the Nyquist-frequency bin:
+   ; Unless the negative frequency branch is desired, only the values corresponding to positive frequencies are retained;
+   ; the size vector for the S array is correspondingly changed:
    IF  NOT Keyword_Set(negativefrequencies)  THEN  BEGIN
-     S = S(0:NS/2,*) * 2.0
-     S(0,*) = S(0,*) / 2.0
-     IF  (NS MOD 2) EQ 0  THEN  S(NS/2,*) = S(NS/2,*) / 2.0
-     DimsS(0) = NS/2+1
-     f = f(0:NS/2)
+     S = S[0:NS/2,*]
+     f = f[0:NS/2]
+     DimsS[0] = NS/2+1
    ENDIF  ELSE  $
-     f(NS/2+1:*) = - f(NS/2+1:*)
+     f[NS/2+1:*] = - f[NS/2+1:*]   ; making the negative frequencies really negative
 
    ; Scaling such that the obtained values have the physical meaning described in the doc header:
-   S = S * Float(NS) / sqrt(fS*NX)
+   S = Float(NS)/sqrt(fS*NX) * Temporary(S)
 
    ; If phase values are returned in some way (either explicitly or in the complex spectrum), phases must be corrected
    ; for the time shift if centred padding was used:
    IF  Keyword_Set(center) AND ((N_Params() EQ 4) OR NOT(Keyword_Set(amplitude) OR Keyword_Set(power)))  THEN  BEGIN
-     PhaseFactor = exp(Complex(0,1) * 2*!pi*f*NFlankL/fS)
-     FOR  i = 0, N-1  DO  S(*,i) = S(*,i) * PhaseFactor
+     PhaseFactor = exp(Complex(0,1) * 2*!pi*NFlankL/fS * f)
+     FOR  i = 0L, N-1  DO  S[*,i] = S[*,i] * PhaseFactor
    ENDIF
 
    ; The arrays must be reformed back:
@@ -295,6 +289,12 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
      2: S = Abs(Temporary(S))^2
      ELSE:
    ENDCASE
+
+   ; Unless the negative frequency branch is desired, only the values corresponding to positive frequencies have been
+   ; retained. However, in order to preserve the physical meaning of the scaling (see below), the spectrum has to be
+   ; multiplied by 2 (either the amplitude or the power density), because one usually would like to see the SUM of the
+   ; contributions from positive and negative frequencies (which are physically equivalent):
+   IF  NOT Keyword_Set(negativefrequencies)  THEN  S = 2.0 * Temporary(S)
 
    Return, S
 
