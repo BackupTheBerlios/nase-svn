@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/06/21 14:33:34  saam
+;              + corrected a silly typo
+;
 ;        Revision 1.4  2000/06/21 14:07:22  saam
 ;              + translated & updated docheader
 ;
@@ -44,6 +47,6 @@
 
 PRO default, var, val
 
-IF (n_elements(var) EQ 0) and (n_elements(val) ne 0) then var = value
+IF (n_elements(var) EQ 0) and (n_elements(val) ne 0) then var = val
 
 END
