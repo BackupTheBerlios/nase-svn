@@ -17,6 +17,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2000/07/04 08:55:53  saam
+;           + passes file skeleton to IFfilters via FILE keyword
+;           + passes TOROID boundary conditions to LIFfilters via /WRAP
+;
 ;     Revision 1.10  2000/06/20 13:14:09  saam
 ;           + filter handling had some serious bugs
 ;           + i hope it is working now
@@ -153,6 +157,7 @@ FUNCTION Input, L, _IN
       curLayer = Handle_Val(P.LW(INP.LAYER))
       w  = curLayer.w
       h  = curLayer.h
+      IF ExtraSet(curLayer, 'WRAP') THEN wrap = curLayer.wrap ELSE wrap = 0 ; toroidal boundary conditions
       LayerData, L(INP.LAYER), PARA=LP
       OS = 1./(1000*P.SIMULATION.SAMPLE)
    END
@@ -281,13 +286,14 @@ FUNCTION Input, L, _IN
                  IF ((act_time GE act_filter.start) AND (act_time LE act_filter.stop)) THEN BEGIN 
                      IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
                          console,P.CON, curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
+                         FILE = P.File+'.'+curLayer.FILE+'.if'+STR(i)
                          IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
                              temp = CALL_FUNCTION(act_filter.NAME,$
-                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h, WRAP=wrap, FILE=file, _EXTRA=act_filter.params,$
                                                   temp_vals=_t,DELTA_T=delta_t) 
                          END ELSE BEGIN
                              temp = CALL_FUNCTION(act_filter.NAME,$
-                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h, WRAP=wrap, FILE=file, $
                                                   temp_vals=_t,DELTA_T=delta_t) 
                          END
                      END                      
