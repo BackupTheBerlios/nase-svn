@@ -1,61 +1,65 @@
 ;+
-; NAME:                 IMin
+; NAME:
+;  IMin()
 ;
-; AIM:                  computes minimum function for arbitrary array dimensions
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  computes minimum function for arbitrary array dimensions
 ;
-; PURPOSE:              Die MIN-Routine von IDL bildet das Minimum
-;                       von der gesamten uebergebenen Matrix. IMax
-;                       bildet das Maximum ueber einen laufenden
+; PURPOSE:
+;                       Die MIN-Routine von IDL bildet das Minimum
+;                       von der gesamten uebergebenen Matrix. IMin
+;                       bildet das Minimum ueber einen laufenden
 ;                       Index.
 ;                       Bei einer zweidimensionalen Matrix kann
-;                       IMax beispielsweise das Spalten- bzw.
+;                       IMin beispielsweise das Spalten- bzw.
 ;                       Zeilenminimum ermitteln.
 ;                       Der Rueckgabewert ist ein Array von der
 ;                       Dimension des Indices.
 ;                       Etwas formaler:
-;                          A = A(a1 x a2 x a3 x a4 x a5 x a6 x a7)
-;   
-;                          (IMin(A,i))(j) = MIN(A(*,...,*,  j  ,*,...,*))
-;                                                           /\
-;                                                          /||\ 
-;                                                           || 
-;                                                         i-ter Index
+;*A = A(a1 x a2 x a3 x a4 x a5 x a6 x a7)
+;*   
+;*(IMin(A,i))(j) = MIN(A(*,...,*,  j  ,*,...,*))
+;*                                 /\
+;*                                /||\ 
+;*                                 || 
+;*                                  i-ter Index
 ;
-; CATEGORY:            MISC ARRAY-OPERATIONS
+; CATEGORY:
+;  Array
 ;
-; CALLING SEQUENCE:    m = IMin(A,i [,indices] [,/ONED])
+; CALLING SEQUENCE: 
+;*m = IMin(A,i [,indices] [,/ONED] [,/ITER])
 ;
-; INPUTS:              A: ein beliebiges Array beliebigen Typs
-;                      i: der Index, ueber den das Minimum gebildet
-;                         werden soll
+; INPUTS:
+; A :: ein beliebiges Array beliebigen Typs
+; i :: der Index, ueber den das Minimum gebildet
+;      werden soll
 ;
-; KEYWORD PARAMETERS:  ONED: falls gesetzt werden die indices der Positionen der Minima
-;                            im Originalarray zurueckgegeben, sodass mit A(indices)
-;                            darauf zugegeriffen werden kann. Dies funktioniert nur fuer
-;                            ein- und zweidimensional Arrays.
+; INPUT KEYWORDS:
+;  ONED:: falls gesetzt werden die indices der Positionen der Minima
+;         im Originalarray zurueckgegeben, sodass mit A(indices)
+;         darauf zugegeriffen werden kann. Dies funktioniert nur fuer
+;         ein- und zweidimensional Arrays.
+;  ITER:: I ist dann der Iterationsindex (default: 0)
 ;
-;                      ITER: I ist dann der Iterationsindex (default: 0)     
+; OUTPUTS:
+;  m:: der Minimums-Vektor mit dem gleichen Typ wie A
 ;
-; OUTPUTS:             m: der Minimums-Vektor mit dem gleichen Typ wie A
+; OPTIONAL OUTPUT:
+;  indices:: gibt analog zur MIN-Function von IDL die
+;            entsprechenden Indices (bzgl der angegeben Dimension) 
+;            der Minima zurueck (aber nur fuer die jeweilige Spalte,Zeile).
+;            Das Verhalten aendert sich, wenn das Keyword ONED gesetzt
+;            wird, siehe dazu dort.
 ;
-; OPTIONAL OUTPUT:     indices: gibt analog zur MIN-Function von IDL die
-;                               entsprechenden Indices (bzgl der angegeben Dimension) 
-;                               der Minima zurueck (aber nur fuer die jeweilige Spalte,Zeile).
-;                               Das Verhalten aendert sich, wenn das Keyword ONED gesetzt
-;                               wird, siehe dazu dort.
+; RESTRICTIONS:
+;   i <= 6 (IDL-Einschraenkung)
 ;
-;
-; RESTRICTIONS:        i <= 6 (IDL-Einschraenkung)
-;
-; EXAMPLE:       
-;                      A = IndGen(10,10)
-;                      print, IMin(A,0)
-;                      print, IMin(A,1)
-;
-; MODIFICATION HISTORY:
-;
-;     $Log: 
-;
+; SEE ALSO:
+;  <A>IMax</A>, <A>IMean</A>, <A>IMoment</A>
 ;
 ;-
 FUNCTION IMin, A, i, indices, ONED=oned, iter=iter
@@ -87,7 +91,8 @@ FUNCTION IMin, A, i, indices, ONED=oned, iter=iter
          s1 = size(Atmp2)
          indtot = indgen(s1(0))
          IF s(0) GT 2 THEN BEGIN
-            m(x,*,*,*,*,*,*) = imax(Atmp2,last(indtot),indices,/iter)
+            m(x,*,*,*,*,*,*) = imax(Atmp2,last(indtot),tmp,/iter)
+            indices(x,*,*,*,*,*,*)=temporary(tmp)
          END ELSE BEGIN
             m(x) = min(Atmp2,tmp)
             indices(x) = tmp
