@@ -1,16 +1,23 @@
 ;+
-; NAME:   CheckInput
+; NAME:
+;  CheckInput
 ;
-; AIM:    runs a simulation only generating and visualizing input
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  runs a simulation only generating and visualizing input
 ;
-; PURPOSE: allows to simulate the generated input within one period
-;          without simulating learning, connections...  
+; PURPOSE:
+;  allows to simulate the generated input within one period
+;  without simulating learning, connections...  
 ;
+; CATEGORY:
+;  MIND
+;  Simulation
 ;
-; CATEGORY:   mind/sim
-;
-;
-; CALLING SEQUENCE:  checkinput [,NUMBER=number] [,VIZ_MODE=viz_mode]
+; CALLING SEQUENCE: 
+;  CheckInput [,NUMBER=number] [,VIZ_MODE=viz_mode]
 ;
 ; 
 ; INPUTS:    see sim.pro
@@ -20,81 +27,6 @@
 ;                       1 -> plottvscl
 ;                       2 -> surface
 ;                       3 -> trainspottingscope  
-;
-;
-; OPTIONAL INPUTS:         
-;
-;	
-; KEYWORD PARAMETERS:
-;
-;
-; OUTPUTS:
-;
-;
-; OPTIONAL OUTPUTS:
-;
-;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-;
-; EXAMPLE:
-;
-;
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 1.13  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.12  2000/01/28 15:16:44  saam
-;           changend console call by putting the console
-;           data from the common block into the ap structure
-;
-;     Revision 1.11  2000/01/28 14:28:53  alshaikh
-;           some console-bugs were left
-;
-;     Revision 1.10  2000/01/27 17:45:23  alshaikh
-;           new console-syntax
-;
-;     Revision 1.9  2000/01/26 16:19:49  alshaikh
-;           print,message -> console
-;
-;     Revision 1.8  2000/01/25 11:00:50  alshaikh
-;           new layer-initialization
-;
-;     Revision 1.7  2000/01/21 10:23:39  saam
-;           + handles period=-1
-;           + viz_mode=3 working with oversampling
-;
-;     Revision 1.6  2000/01/20 16:28:07  alshaikh
-;          SOME bugfixes
-;
-;     Revision 1.5  2000/01/20 10:59:43  alshaikh
-;           problems with trainspottingscope solved
-;
-;     Revision 1.4  2000/01/19 14:45:12  alshaikh
-;           oversampling-bug fixed
-;
-;     Revision 1.3  2000/01/19 09:08:05  saam
-;           + params tag may be omitted now
-;           + still wrong handling of oversampling
-;           + removed redundancies in call of IFfilters
-;
-;     Revision 1.2  2000/01/18 09:47:28  saam
-;           bug with period=-1 fixed
-;
-;     Revision 1.1  2000/01/17 15:00:55  alshaikh
-;           initial version... there's much to do...
-;
 ;
 ;-
 
@@ -172,6 +104,11 @@ Default, NUMBER, 0
    
    sheet =  DefineSheet(/window,/verbose,xsize=256,ysize=256,colors=256,xpos=10,ypos=10,multi=[j,3,(1+j)MOD 3])
    
+
+
+
+
+   number_filter =  INn.number_filter
    FOR j=0,INn.number_filter-1 DO BEGIN    
       IF viz_mode[j] EQ 3 THEN BEGIN
          opensheet,sheet,j
@@ -192,6 +129,11 @@ Default, NUMBER, 0
    
 
    number_filter =  INn.number_filter
+
+   ; to display what the filters itself have to show
+   FilterSheet =  DefineSheet(/window,TITLE='Filter Definitions', xsize=512,ysize=512,colors=256,multi=[j,3,(1+j)MOD 3])
+
+
    
    FOR time=0l, (p.simulation.time/(1000.0*P.SIMULATION.SAMPLE))-1 DO BEGIN 
       
@@ -208,53 +150,62 @@ Default, NUMBER, 0
             filter_list = filter_list + act_filter.NAME
             
             IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN BEGIN 
-               IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
-                  IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
-                     temp = CALL_FUNCTION(act_filter.NAME,$
+                IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
+                    OpenSheet, FilterSheet, i
+                    IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                        temp = CALL_FUNCTION(act_filter.NAME,$
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
                                              temp_vals=INn.temps(i),DELTA_T=delta_t) 
-                  END ELSE BEGIN
-                     temp = CALL_FUNCTION(act_filter.NAME,$
+                        dummy = CALL_FUNCTION(act_filter.NAME,$
+                                             MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                    END ELSE BEGIN
+                        temp = CALL_FUNCTION(act_filter.NAME,$
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
                                              temp_vals=INn.temps(i),DELTA_T=delta_t) 
-                  ENDELSE  
-               ENDIF  
+                        dummy = CALL_FUNCTION(act_filter.NAME,$
+                                             MODE=3,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                             temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                    ENDELSE  
+                    ULoadct,0
+                    CloseSheet, FilterSheet, i
+                ENDIF  
                                 ; ELSE NextStep 
-               IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
-                pattern = CALL_FUNCTION(act_filter.NAME,$
-                                        PATTERN=pattern, temp_vals=INn.temps(i)) 
-               
-               IF act_time/1000.0 eq act_filter.stop THEN console, P.CON,'INPUT:filter '''+act_filter.NAME+''' inactive',/msg
-               
-               INn.pattern = pattern ; store for future use
-               
-       
-               IF viz_mode[i] EQ 3 THEN BEGIN 
-                  opensheet,sheet,i
-                  trainspottingscope,ts(i),INN.pattern
-                  closesheet,sheet,i
-               END ELSE BEGIN 
-
-                  IF i NE 0 THEN title = filter_list $
-                  ELSE $
-                   title = filter_list+string((act_time/1000.0))
-                  wset,0
-                  IF viz_mode[i] EQ 1 THEN $
-                   PlotTvScl, INn.pattern,TITLE=title
-                  IF viz_mode[i] EQ 2 THEN $
-                   surface, INn.pattern,TITLE=title
-                  
-                  opensheet, sheet,i               
-                  Device,Copy=[0,0,256,256,0,0,0]
-                  closesheet,sheet,i
-               END
-               
+                IF ((act_time/1000.0 GE act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
+                  pattern = CALL_FUNCTION(act_filter.NAME,$
+                                          PATTERN=pattern, temp_vals=INn.temps(i)) 
+                
+                IF act_time/1000.0 eq act_filter.stop THEN console, P.CON,'INPUT:filter '''+act_filter.NAME+''' inactive',/msg
+                
+                INn.pattern = pattern ; store for future use
+                
+                
+                IF viz_mode[i] EQ 3 THEN BEGIN 
+                    opensheet,sheet,i
+                    trainspottingscope,ts(i),INN.pattern
+                    closesheet,sheet,i
+                END ELSE BEGIN 
+                    
+                    IF i NE 0 THEN title = filter_list $
+                    ELSE $
+                      title = filter_list+string((act_time/1000.0))
+                    wset,0
+                    IF viz_mode[i] EQ 1 THEN $
+                      PlotTvScl, INn.pattern,TITLE=title
+                    IF viz_mode[i] EQ 2 THEN $
+                      surface, INn.pattern,TITLE=title
+                    
+                    opensheet, sheet,i               
+                    Device,Copy=[0,0,256,256,0,0,0]
+                    closesheet,sheet,i
+                END
+                
             ENDIF  
-         ENDFOR 
-      ENDIF 
+        ENDFOR 
+    ENDIF 
 
  
-      handle_value,in(number),inn,/set
+    handle_value,in(number),inn,/set
       ;INn.t = INn.t + 1
    
 
