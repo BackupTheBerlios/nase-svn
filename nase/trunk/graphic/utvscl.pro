@@ -60,13 +60,19 @@
 ;  <C>UTvScl</C> passes unknown options to <C>TvScl</C>, e.g. <*>/ORDER</*>.
 ;
 ; INPUTS:
-;  image:: One or two dimensional array.
+;  image:: Two dimensional array. If a one dimensional array has to be
+;          shown, it may be explicitely reformed to have two
+;          dimensions either with the first or the second being set to
+;          1.
 ;
 ; OPTIONAL INPUTS:
-;  XNorm, YNorm:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
-;                 bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
-;                 wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
-;                 von XNorm nebeneinander positioniert, siehe Docu von TV
+;  XNorm, YNorm:: Normal coordinates of the image's lower left corner.
+;                 Defaults: 0.0. With <*>CENTER</*> set, <*>xynorm</*>
+;                 are the normal coordinates of the image's center,
+;                 defaults are 0.5 in this case. If only <*>xnorm</*>
+;                 is set, images are positioned next to each other
+;                 according to <*>xnorm</*>'s value, see docu of IDL's
+;                 <C>TV</C> for more information.
 ;
 ; INPUT KEYWORDS: 
 ;              [X|Y]CENTER:: image will be
@@ -90,8 +96,9 @@
 ; /POLYGON:: Instead of composing the final image of a large number of pixels
 ;           depending on the desired size, this option uses colored
 ;           rectangles that are sufficiently large. This is
-;           recommended for Postscript output. This option invokes the
-;           <A>PolyTV</A> routine.
+;           recommended for Postscript output of arrays with up to
+;           1000 entries, since PS files generated are smaller in this
+;           case. This option invokes the <A>PolyTV</A> routine.
 ; TOP:: Only color indices ranging from 0 to <*>TOP</*> are used for
 ;       coloring. <*>TOP</*> is automatically limited to !TOPCOLOR (to !D.TABLE_SIZE-1 for
 ;       truecolor images). This mimicks the bahaviour of <C>TVScl</C>.
@@ -152,8 +159,6 @@
 ;  due to the interpolation process.
 ;<BR>
 ;  BUGS/TODO:<BR>
-;  o Handling of 1-dim arrays is broken.<BR>
-;  o Handling of arrays with trailing dimensions of 1 is broken.
 ;  o When /POLY is set, and only one positioning-argument is given, it
 ;    is interpreted as the x-coordinate, and y defaults to zero. This
 ;    is wrong, positions in the window should be counted in this case,
@@ -319,6 +324,9 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
+   ;; remeber the size of the array prior to any reforms
+   sizeimage = Size(__image)
+
    ;;NASE implies NORDER and NSCALE:
    Default, NASE, 0
    Default, NORDER, NASE
@@ -350,7 +358,6 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
      Image = Rotate(REFORM(__Image), 3) $
     else $
      Image = REFORM(__Image)
-   
 
    ; TRUE stands for TRUE color support, see IDL help of TV
    Default, _TRUE, 0
@@ -362,8 +369,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
        IF (SIZE(Image))(3) NE 3 THEN Console, 'TRUE color option expects (3,x,y), (x,3,y) or (x,y,3) array, see IDLs TV help'
        TRUE=3
    END ELSE BEGIN
-       IF (SIZE(Image))(0) GT 2 THEN Console, 'array has more than 2 dimensions', /FATAL
-       Image = REFORM(Image, (SIZE(image))(1), (SIZE(image))(2), 1, /OVERWRITE)
+       IF (SIZE(Image))(0) GT 2 THEN $
+        Console, 'Array has more than 2 dimensions.', /FATAL
+       ;; Add a third dimension to be compatioble to the TRUE color
+       ;; option. 
+       ;; this works for one dim array as well, since the original
+       ;; size has been kept in sizeimage 
+       image = Reform(image, sizeimage[1], sizeimage[2], 1, /OVERWRITE)
        TRUE=0
    END
 
@@ -383,8 +395,9 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    If Set(NORM_X_SIZE) then X_SIZE = (NORM_X_SIZE * !D.X_Size / !D.X_PX_CM)
    If Set(NORM_Y_SIZE) then Y_SIZE = (NORM_Y_SIZE * !D.Y_Size / !D.Y_PX_CM)
 
-
-  IF (Size(Image))(0) EQ 1 THEN Image = Reform(/OVERWRITE, Image, N_Elements(Image), 1)
+   ;; This command seems to stem from before the true color
+   ;; introduction? -- Disabled it. 
+   ;;  IF (Size(Image))(0) EQ 1 THEN Image = Reform(/OVERWRITE, Image, N_Elements(Image), 1)
 
    ; !D.X_PX_CM Pixels are One Centimeter (40 for the X Device)
    ; size in Centimeters
@@ -442,12 +455,17 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          ;; Congrid when POLYGON is not set
          _Image = DblArr((xsize*_smooth(0)) > 1 $
                          , (ysize*_smooth(1)) > 1, TRUE > 1)
-         FOR i=0, 2 * (TRUE GT 0) DO $
-          _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1 $
-                                  , (ysize*_smooth(1)) > 1, $
-                                  CUBIC=cubic, INTERP=interp $
-                                  , MINUS_ONE=minus_one)
+         FOR i=0, 2 * (TRUE GT 0) DO BEGIN
+            ;; extract one slice of the true color array and
+            ;; reform to the original size.
+            extract = Reform(image(*,*,i), sizeimage[1], sizeimage[2])
+            _Image(*,*,i) = Congrid(extract, (xsize*_smooth(0)) > 1 $
+                                    , (ysize*_smooth(1)) > 1 $
+                                    , CUBIC=cubic, INTERP=interp $
+                                    , MINUS_ONE=minus_one)
          Image = Temporary(_Image)
+      endFOR
+
       ENDIF ELSE BEGIN
          IF (CUBIC NE 0.) OR Keyword_Set(INTERP) OR $
           Keyword_Set(MINUS_ONE) THEN BEGIN
