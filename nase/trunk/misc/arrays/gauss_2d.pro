@@ -20,12 +20,12 @@
 ;
 ; OPTIONAL INPUTS: sigma           : Die Standardabweichung in Gitterpunkten. (Default = X_Laenge/6)
 ;	  	   HWB		   : Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu sigma angegeben werden.
-;	  	   x0, y0	   : Die Position der Bergspitze. Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
+;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
 ;			  	     Feldes. (Genauer: bei fix(Laenge/2)).
-;
+;                     x0_arr,y0_arr: wie x0,y0, relativ zur linken oberen Arrayecke
 ;
 ;	
-; KEYWORD PARAMETERS: HWB, s.o.
+; KEYWORD PARAMETERS: HWB, x0_arr, y0_arr, s.o.
 ;
 ;
 ;
@@ -61,18 +61,22 @@
 ; MODIFICATION HISTORY: Urversion irgendwann 1995 (?), Rüdiger Kupper
 ;			Keyword HWB zugefügt am 21.7.1997, Rüdiger Kupper
 ;			Standard-Arbeitsgruppen-Header angefügt am 25.7.1997, Rüdiger Kupper
+;                            Keywords X0_ARR und Y0_ARR zugefügt, 30.7.1997, Rüdiger Kupper
 ;-
 
 
 Function Gauss_2D, xlen,ylen, $
-                   sigma, hwb=HWB, x0, y0             ;(optional)
+                   sigma, hwb=HWB, x0, y0, $ ;(optional)
+                   X0_ARR=x0_arr, Y0_ARR=y0_arr ;(optional)
 
   ; Defaults:
     Default, x0, 0
     Default, y0, 0
+    Default, x0_arr, x0+xlen/2d
+    Default, y0_arr, y0+ylen/2d
     Default, sigma, xlen/6d
     If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
 
-  if ylen eq 1 then return, exp(-shift(dist(xlen,ylen),x0+xlen/2d)^2d / 2d /sigma^2d)           
-  return, exp(-shift(dist(xlen,ylen),x0+xlen/2d,y0+ylen/2d)^2d / 2d /sigma^2d)          
+  if ylen eq 1 then return, exp(-shift(dist(xlen,ylen),x0_arr)^2d / 2d /sigma^2d)           
+  return, exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d)          
 end
