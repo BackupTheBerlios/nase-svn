@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/02/05 14:15:47  saam
+;           loop variable was only int
+;
 ;     Revision 2.3  1998/02/05 13:16:10  saam
 ;           + Gewichte und Delays als Listen
 ;           + keine direkten Zugriffe auf DW-Strukturen
@@ -60,7 +63,7 @@ FUNCTION Weights, _DW
    W = Make_Array(tS, sS, /FLOAT, VALUE=!NONE)
 
    Handle_Value, _DW, DW, /NO_COPY
-   FOR wi=0, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
+   FOR wi=0l, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
    RETURN, W
