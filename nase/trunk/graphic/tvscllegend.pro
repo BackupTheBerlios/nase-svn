@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/11 16:53:56  saam
+;           Fehler bei Rahmen mit BW-PS korrigiert
+;
 ;     Revision 2.2  1997/11/06 14:57:20  saam
 ;           statt eigenem TvScl wird nun UTvScl benutzt
 ;           NEG_COLORS-Option wird durch SysVar !REVERTPSCOLORS geregelt
@@ -55,9 +58,11 @@ PRO TvSclLegend, xnorm, ynorm $
                  ,_EXTRA = e
    
    
-   Default, max, 1.0
-   Default, mid, ''
-   Default, min, 0.0
+   Default, xnorm, 0.5
+   Default, ynorm, 0.5
+   Default,   max, 1.0
+   Default,   mid, ''
+   Default,   min, 0.0
    
    type = Size(max)
    IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(max, FORMAT='(G0.0)'), /REMOVE_ALL)
@@ -69,8 +74,13 @@ PRO TvSclLegend, xnorm, ynorm $
    
    
    bg = GetBGColor()
+
+   ; if device is PS and REVERTPS is on 
+   save_rpsc = !REVERTPSCOLORS
+   !REVERTPSCOLORS = 0
    sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-   
+   !REVERTPSCOLORS = save_rpsc
+
    IF Keyword_Set(VERTICAL) THEN BEGIN
       x_pix =  20
       y_pix = 100
@@ -83,6 +93,7 @@ PRO TvSclLegend, xnorm, ynorm $
       colorarray = Rebin(colorarray, x_pix, y_pix)
    END      
    
+
    
    legend_dims = 0              ; needed for UTvScl-call
    UTvScl, colorarray, xnorm, ynorm, DIMENSIONS=legend_dims, _EXTRA=e
@@ -122,4 +133,3 @@ PRO TvSclLegend, xnorm, ynorm $
 END
 
 
-END
