@@ -1,20 +1,20 @@
 ;+
-; NAME:  dweighttemp.pro
+; NAME:
+;  DWeightTemp
 ;
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  Template for defining a DelayWeight data structure
 ;
-; PURPOSE: Template for Delays/Weights
+; PURPOSE:
+;  Template for defining a DelayWeight data structure
 ;
-;
-; CATEGORY: Templates
-;
-
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 1.1  2000/01/17 14:58:21  alshaikh
-;           initial version... copied from 'dsim.pro'
-;
+; CATEGORY: 
+;  Connections
+;  MIND
+;  Simulation
 ;
 ;-
 
@@ -41,3 +41,4 @@ DWW = LonArr(1)
                                       T2S     : 0        ,$
                                       FILE    : 's-c'    })
    
+   ; if FILE is omitted or set to NULL, nothing is saved
