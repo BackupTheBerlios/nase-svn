@@ -38,9 +38,9 @@
 ;
 ;  IDL prints:
 ;
-;* ><Expression>    STRING    = '     1.200'
-;* ><Expression>    STRING    = '000001.000'
-;* ><Expression>    STRING    = '1.000'
+;* ><Expression>    STRING    = '     2.200'
+;* ><Expression>    STRING    = '000002.000'
+;* ><Expression>    STRING    = '2.000'
 ;
 ; SEE ALSO:
 ;  <A>IntStr</A>
