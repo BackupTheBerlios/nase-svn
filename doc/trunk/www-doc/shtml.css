@@ -165,9 +165,9 @@ pre.normal { color:#000000; }
 /* a:link { color:#AA5522; text-decoration:underline; } */
 /* a:visited { color:#772200; text-decoration:underline; } */
 /* a:active { color:#000000; text-decoration:none; } */
-a:link { color:#0000C0; text-decoration:underline; } 
-a:visited { color:#0000C0; text-decoration:underline; } 
-a:active { color:#0000C0; text-decoration:underline; }
+a:link { color:#0000C0; text-decoration:none; } 
+a:visited { color:#0000C0; text-decoration:none; } 
+a:active { color:#0000C0; text-decoration:none; }
 
 
 /* a:link = Verweise zu noch nicht besuchten Seiten */
