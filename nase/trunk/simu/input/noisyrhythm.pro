@@ -4,7 +4,8 @@
 ; PURPOSE:            Erzeugt fuer eine Layer einen rhythmischen Input, der auf 
 ;                     unterschiedliche Arten verrauscht werden. Der erste Aufruf
 ;                     initialisiert die Struktur, folgende Aufrufe liefern eine
-;                     Spass-Liste fuer den jeweils naechsten Zeitschritt zurueck.
+;                     Spass-Liste (oder eine SSPassliste) fuer den jeweils naechsten 
+;                     Zeitschritt zurueck.
 ;                     Das Rauschen ist nicht additiv, sondern verschiebt vielmehr
 ;                     die Feuerzeitpunkte individuell nach vorne oder hinten.
 ;
@@ -13,7 +14,8 @@
 ; CALLING SEQUENCE:   INITIALISIERUNG:    structure = NoisyRhythm([RATE=rate] 
 ;                                                     [,GAUSS=gauss] [,CONST=const]
 ;                                                     { ,LAYER=Layer | ,WIDTH=width, HEIGHT=height }
-;                                                     [,RANDOM=random], [OVERSAMP=oversamp])
+;                                                     [,RANDOM=random], [OVERSAMP=oversamp]
+;                                                     [, /DW])
 ;                     NORMAL:             input = NoisyRhythm(structure)
 ;
 ; INPUTS:             structure : eine Struktur, die Informationen ueber den Zustand 
@@ -31,6 +33,8 @@
 ;                             mit folgenden Nebenbedingungen ausgeloest:
 ;                               Puls bei tp:  tp+1000/Rate <= naechster Puls <= tp+1000/Rate + Random
 ;                     OVERSAMP: Beruecksichtigt 1 BIN != 1 ms bei Berechnung der Raten...
+;                     DW    : gibt SSPassliste zurueck, die mit DelayWeigh weiterverarbeitet
+;                             werden kann
 ;                            
 ;
 ; OUTPUTS:            structure : s.o.
@@ -49,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/02/05 13:32:22  saam
+;           new syntax, check header
+;
 ;     Revision 2.6  1998/01/28 12:28:14  saam
 ;           cares about oversampling by new keyword OVERSAMP
 ;
@@ -74,7 +81,7 @@
 ;
 ;-
 FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $ 
-                      WIDTH=width, HEIGHT=height, RANDOM=random, V=v, OVERSAMP=oversamp
+                      WIDTH=width, HEIGHT=height, RANDOM=random, V=v, OVERSAMP=oversamp, DW=dw
 
    COMMON Common_Random, seed
    
@@ -142,9 +149,13 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
    Input.time = Input.time + 1
 
    ;
-   vector = FltArr(Input.size)
-   IF count NE 0 THEN vector(firing) = Input.v
-
-   RETURN, Spassmacher(vector)
-
+   IF NOT Keyword_Set(DW) THEN BEGIN
+      vector = FltArr(Input.size)
+      IF count NE 0 THEN vector(firing) = Input.v
+      RETURN, Spassmacher(vector)
+   END ELSE BEGIN
+      vector = BytArr(Input.size)
+      IF count NE 0 THEN vector(firing) = 1
+      RETURN, SSpassmacher(vector)
+   END
 END
