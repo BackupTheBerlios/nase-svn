@@ -10,7 +10,10 @@
 ;
 ; PURPOSE:
 ;  Creates a colortable to display your two dimensional data with a
-;  color code. The colors are best matched to the individual data, in
+;  color code, which can be displayed using <A>PlotTvSCL</A> or
+;  others. The main advantage to using a fixed colormap is that you
+;  do not have to scale your data to match the color table.
+;  The colors are best matched to the individual data, in
 ;  the sense that no entries in the colortable are wasted, because the
 ;  data is not equally distributed around zero. The routine assures
 ;  that MAX(ABS(data)) is displayed with maximal saturation, but in
@@ -22,7 +25,9 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;* BalanceCT, data [,TOP=...]  [{, /GREENBLACKRED | /BLUEBLACKRED} ]
+;* BalanceCT, data [,TOP=...]  [, {/TOPRED | /TOPGREEN | /TOPBLUE} ]
+;                              [, {/ZEROBLACK | /ZEROWHITE} ]
+;                              [, {/BOTTOMRED | /BOTTOMGREEN | /BOTTOMBLUE} ]
 ;
 ; INPUTS:
 ;  data :: the color table is adapted to this specific data
@@ -33,12 +38,13 @@
 ;          the default is <*>!TOPCOLOR</*>.
 ;
 ; INPUT KEYWORDS:
-;  GREENBLACKRED:: creates a colortable assigning different hues of
-;                  green to negative values, black for zero, and red
-;                  for positive values
-;  BLUEBLACKRED:: creates a colortable assigning different hues of
-;                  blue to negative values, black for zero, and red
-;                  for positive values (Default)
+;  TOPRED,TOPGREEN,TOPBLUE :: positive values are displayed red, green
+;                             or blue (default: <*>TOPRED</*>)
+;  ZEROBLACK, ZEROWHITE    :: value zero will be black (good for
+;                             screen display) or white (good for
+;                             postscripts), respectively. Default is <*>ZEROBLACK</*>. 
+;  BOTTOMRED,BOTTOMGREEN,BOTTOMBLUE :: negative values are displayed red, green
+;                             or blue (default: <*>BOTTOMBLUE<*/>)
 ;
 ; SIDE EFFECTS:
 ;  overwrites the existing colormap
@@ -49,12 +55,17 @@
 ;*  plottvscl, n,/legend     
 ;
 ;-
-PRO BALANCECT, data, TOP=maci, GREENBLACKRED=gbr, BLUEBLACKRED=bbr;
+PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue, ZEROWHITE=zerowhite, ZEROBLACK=zeroblack, $
+               BOTTOMRED=bottomred, BOTTOMGREEN=bottomgreen, BOTTOMBLUE=bottomblue
 
    ON_ERROR, 2
 
-   IF (Set(gbr)+Set(bbr)) GT 1 THEN Console, 'only one colormap a time', /FATAL
-   IF (Set(gbr)+Set(bbr)) EQ 0 THEN bbr=1 ; BLUEBLACKRED is default
+   IF Set(bottomred)+Set(bottomgreen)+Set(bottomblue) GT 1 THEN Console, 'only one bottom color a time', /FATAL
+   IF Set(bottomred)+Set(bottomgreen)+Set(bottomblue) EQ 0 THEN bottomblue=1
+   IF Set(topred)+Set(topgreen)+Set(topblue) GT 1 THEN Console, 'only one top color a time', /FATAL
+   IF Set(topred)+Set(topgreen)+Set(topblue) EQ 0 THEN topred=1
+   IF Set(zeroblack)+Set(zerowhite) GT 1 THEN Console, 'only one zero color a time', /FATAL
+   IF Set(zeroblack)+Set(zerowhite) EQ 0 THEN zeroblack=1
 
    Default, maci, !TOPCOLOR        ;max used color index
    Default, mici, 0                ;min used color index
@@ -65,17 +76,23 @@ PRO BALANCECT, data, TOP=maci, GREENBLACKRED=gbr, BLUEBLACKRED=bbr;
    mid = MIN(data)
    mad = MAX(data)
    
-   R = intarr(cid)
-   G = intarr(cid)
-   B = intarr(cid)
-   
+   ; nuf : negative upstroke flank
+   ; puf : positive upstroke flank
+   ; ndf : negative downstroke flank
+   ; pdf : positive downstroke flank
+   puf = intarr(cid)
+   nuf = intarr(cid)
+   pdf = intarr(cid)+255
+   ndf = intarr(cid)+255
    IF mid GE 0.0 THEN BEGIN
        perc = 0.0
-       R = FIX(FIndGen(cid)/(cid-1)*255)
+       puf = FIX(FIndGen(cid)/(cid-1)*255)
+       pdf = REVERSE(puf)
    END ELSE BEGIN
        IF mad LE 0.0 THEN BEGIN
            perc = 1.0
-           B = FIX(FIndGen(cid)/(cid-1)*255)
+           ndf = FIX(FIndGen(cid)/(cid-1)*255)
+           nuf = REVERSE(ndf)
        END ELSE BEGIN
            perc = mid / (mid-mad) 
            border = mici + fix (cid * perc)
@@ -88,14 +105,40 @@ PRO BALANCECT, data, TOP=maci, GREENBLACKRED=gbr, BLUEBLACKRED=bbr;
                scale_b = 255
            END
            
-           R(border:maci) = FIX( FindGen(maci+1-border) / (maci+1-1-border) * scale_r )
-           B(mici:border) = REVERSE(FIX( FindGen(border-mici+1) / Float(border-mici) * scale_b))
-           
+           puf(border:maci) = FIX( FindGen(maci+1-border) / (maci+1-1-border) * scale_r )
+           pdf(border:maci) = REVERSE(FIX( FindGen(maci+1-border) / (maci+1-1-border) * scale_r )) + (255-scale_r)
+           nuf(mici:border) = REVERSE(FIX( FindGen(border-mici+1) / Float(border-mici) * scale_b ))
+           ndf(mici:border) = (FIX( FindGen(border-mici+1) / Float(border-mici) * scale_b)) + (255-scale_b)
        END
    END
-   
-   IF Set(BBR) THEN UTVLCT,R,G,B 
-   IF Set(GBR) THEN UTVLCT,R,B,G
+
+   IF Keyword_Set(ZEROBLACK) THEN BEGIN
+       R = intarr(cid)
+       G = intarr(cid)
+       B = intarr(cid)
+
+       IF Keyword_Set(TOPRED)   THEN R = puf
+       IF Keyword_Set(TOPGREEN) THEN G = puf
+       IF Keyword_Set(TOPBLUE)  THEN B = puf
+
+       IF Keyword_Set(BOTTOMRED)   THEN R = nuf
+       IF Keyword_Set(BOTTOMGREEN) THEN G = nuf
+       IF Keyword_Set(BOTTOMBLUE)  THEN B = nuf
+
+   END ELSE BEGIN
+       R = ndf+pdf-MIN(ndf+pdf)
+       G = ndf+pdf-MIN(ndf+pdf)
+       B = ndf+pdf-MIN(ndf+pdf)
+
+       IF Keyword_Set(TOPRED)   THEN R = ndf
+       IF Keyword_Set(TOPGREEN) THEN G = ndf
+       IF Keyword_Set(TOPBLUE)  THEN B = ndf
+
+       IF Keyword_Set(BOTTOMRED)   THEN R = pdf
+       IF Keyword_Set(BOTTOMGREEN) THEN G = pdf
+       IF Keyword_Set(BOTTOMBLUE)  THEN B = pdf
+   END
+   UTVLCT, R, G, B
    
 END
 
