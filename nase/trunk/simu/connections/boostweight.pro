@@ -25,6 +25,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.5  1998/02/11 17:08:42  kupper
+;            Tippfehler korrigiert.
+;
 ;     Revision 2.4  1998/02/05 13:15:59  saam
 ;           + Gewichte und Delays als Listen
 ;           + keine direkten Zugriffe auf DW-Strukturen
@@ -55,6 +58,6 @@ PRO BOOSTWEIGHT, DW, factor
    IF count GT 0 THEN BEGIN  W(index) = W(index)*factor
    END ELSE MESSAGE,'Irgendwas ist faul mit der Gewichtsmatrix: alle Gewichte !NONE' 
    
-   Weights, DW, W
+   SetWeights, DW, W
 
 END
