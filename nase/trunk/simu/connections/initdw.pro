@@ -111,6 +111,14 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Thu Sep 4 17:11:25 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Es gibt nun einen learn-tag, der
+;                 a) bei unverzoegerten Verbindungen: die Aktivitaet des praesynaptischen Layers
+;                 b) bei verzoegerten Verbindungen: das Ergebis der SpikeQueue
+;               enthaelt. Die ist f"ur Update des Lernpotentials notwendig.
+;
 ;       Thu Sep 4 14:39:19 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -228,7 +236,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
       
       Default, delay, 0
       
-      DelMat = { info    : 'DW_WEIGHT', $
+      DelMat = { info    : 'DW_DELAY_WEIGHT',$
                  source_w: s_width,$
                  source_h: s_height,$
                  target_w: t_width,$
@@ -236,15 +244,17 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
                  Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
                  Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height ),$
-                 Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ) $
+                 Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ),$
+                 Learn   : BytArr( t_width*t_height, s_width*s_height ) $
                }
    END ELSE BEGIN         
-      DelMat = {info    : 'DW_DELAY_WEIGHT', $
+      DelMat = {info    : 'DW_WEIGHT', $
                 source_w: s_width,$
                 source_h: s_height,$
                 target_w: t_width,$
                 target_h: t_height,$
                 Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
+                Learn   : BytArr( s_width*s_height ),$
                 Delays  : [-1, -1] $
                }
    END
@@ -337,7 +347,8 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
                     Weights : DelMat.Weights,$
                     Matrix  : DelMat.Matrix,$
                     Delays  : DelMat.Delays,$
-                    Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ) }
+                    Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
+                    Learn   : DelMat.Learn}
       END ELSE BEGIN
          RETURN, DelMat
       END
