@@ -125,6 +125,20 @@
 ;                          never be called directly.
 ;                          Note the trailing underscore.
 ;
+;   xct_callback_        : This method is called during interactive
+;                          palette selection using the xct method. Its
+;                          purpose is to renew the portions of the
+;                          display that may be affected by a changed
+;                          colormap.
+;                          The default implementation of this method
+;                          simply calls the paint method to redraw the
+;                          whole display. Override this implementation
+;                          in a subclass, if more sophisticated update
+;                          methods exist.
+;                          This method is intended to be private and is called
+;                          from the objects UXLoadCT_callback routine. It should
+;                          never be called directly.
+;                          Note the trailing underscore.
 ;
 ; SIDE EFFECTS: 
 ;
@@ -180,7 +194,7 @@ End
 Pro BDO_UXLoadCT_Callback, DATA=o
    COMPILE_OPT HIDDEN
 ;;   o->paint_hook_
-   o->paint
+   o->xcd_callback_
 End
 
 ;; ------------ Member access methods -----------------------
@@ -395,6 +409,12 @@ Pro basic_draw_object::xct, _EXTRA=_extra
 End
 
 ;; ------------ Private --------------------
+Pro basic_draw_object::xct_callback_
+   ;; the default implementation of this routine simply calls the
+   ;; paint method. Override as desired.
+   self -> paint
+End
+
 Pro basic_draw_object::paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
    On_error, 2
