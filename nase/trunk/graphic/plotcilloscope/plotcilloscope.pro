@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  2000/09/06 16:36:56  kupper
+;     Replaced old () array indexing by new [], as we encountered problems
+;     with function/array "value".
+;
 ;     Revision 2.12  1999/10/07 09:42:18  alshaikh
 ;           added Keyword SCALE
 ;
@@ -91,11 +95,11 @@ PRO Plotcilloscope, _PS, value
 
    IF xpos GT 0 THEN BEGIN
       FOR ray=0,PS.rays-1 DO BEGIN
-         IF xpos LT PS.time-1 THEN PlotS, [xpos/Float(PS.os),(xpos+1)/Float(PS.os)], [PS.y(ray,xpos),PS.y(ray,xpos+1)], COLOR=!P.Background, NOCLIP=0
-         PlotS, [(xpos-1)/Float(PS.os),xpos/Float(PS.os)], [PS.y(ray,xpos-1),value(ray)], NOCLIP=0, COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray),/NOALLOC)
+         IF xpos LT PS.time-1 THEN PlotS, [xpos/Float(PS.os),(xpos+1)/Float(PS.os)], [PS.y[ray,xpos],PS.y[ray,xpos+1]], COLOR=!P.Background, NOCLIP=0
+         PlotS, [(xpos-1)/Float(PS.os),xpos/Float(PS.os)], [PS.y[ray,xpos-1],value[ray]], NOCLIP=0, COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray],/NOALLOC)
       END
    END
-   PS.y(*,xpos) = value
+   PS.y[*,xpos] = value
    PS.t = PS.t + 1  
 
    
@@ -120,10 +124,10 @@ PRO Plotcilloscope, _PS, value
       ticks = STRCOMPRESS(String((PS.t - (PS.t MOD PS.time))/PS.os), /REMOVE_ALL)
       FOR i=1,5 DO ticks = [ticks, STRCOMPRESS(STRING((PS.t - (PS.t MOD PS.time) +i*PS.time/5)/PS.os), /REMOVE_ALL) ]
 
-      plot, [PS.y(0,*)], YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XTICKS=5, XTICKNAME=ticks, /NODATA, XSTYLE=1, _EXTRA=PS._extra
+      plot, [PS.y[0,*]], YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XTICKS=5, XTICKNAME=ticks, /NODATA, XSTYLE=1, _EXTRA=PS._extra
       FOR ray=0,PS.rays-1 DO BEGIN
-         IF xpos GT 0 THEN oplot, FIndGen(xpos+1)/PS.os, PS.y(ray,0:xpos), COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray), /NOALLOC)
-         IF xpos LT PS.time-4 AND PS.t GE PS.time THEN oplot, (Indgen(PS.time-xpos-3)+xpos+3)/Float(PS.OS), PS.y(ray,xpos+3:*), COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray), /NOALLOC)
+         IF xpos GT 0 THEN oplot, FIndGen(xpos+1)/PS.os, PS.y[ray,0:xpos], COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray], /NOALLOC)
+         IF xpos LT PS.time-4 AND PS.t GE PS.time THEN oplot, (Indgen(PS.time-xpos-3)+xpos+3)/Float(PS.OS), PS.y[ray,xpos+3:*], COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray], /NOALLOC)
       END
    END
 
