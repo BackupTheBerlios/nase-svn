@@ -20,7 +20,7 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;  out = Cosine(frequency, phase, fsample, length [, /RADIANTS | /DEGREES] [, SAMPLES/ | /SECONDS])
+;  out = Cosine(frequency, phase, fsample, length [, /RADIANTS | /DEGREES] [, /SAMPLES | /SECONDS])
 ;
 ; INPUTS:
 ;  frequency:: A float, integer or complex scalar giving the frequency of the cosine waveform (in Hz).
