@@ -6,7 +6,7 @@
 ;
 ; PURPOSE: Darstellung großer Graphiken in kleinen Fenstern mit
 ;          Scrollbalken.
-;          Ab Revision 2.21 auch als Kind-Widgets in einer Widget-Applikation. 
+;          Ab Revision 2.21 auch als Kind-Widgets in einer Widget-Applikation.
 ;
 ; CATEGORY:
 ;  Graphic
@@ -29,13 +29,13 @@
 ;*                    [, GET_DRAWID=Array_of_Draw-Widget-IDs]
 ;*                    [, /PRIVATE_COLORS] [, NO_BLOCK=0])
 ;
-; OPTIONAL INPUTS: Parent:: Eine Widget-ID des Widgets, dessen Kind das 
+; OPTIONAL INPUTS: Parent:: Eine Widget-ID des Widgets, dessen Kind das
 ;                          neue ScrollIt-Widget werden soll.
 ;                          Man beachte, dass in diesem Fall der
 ;                          Rueckgabewert Win_Nr=-1 ist, da die
 ;                          Fensternummer eines Draw-Widgets erst nach
 ;                          dessen Realisierung ermittelt werden kann.
-; 
+;
 ; INPUT KEYWORDS:     XPOS, YPOS              :: Position des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
 ;                     XSIZE, YSIZE            :: Größe des Fensters, das tatsächlich auf
@@ -63,7 +63,7 @@
 ;                                                Window_ID : Window_ID};
 ;                                               gesetzt, damit man auch erfährt, welches Fenster gestorben ist.
 ;                     DELIVER_EVENTS          :: Hier kann ein Array
-;                                               von Widget-Indizes übergeben werden, an die alle 
+;                                               von Widget-Indizes übergeben werden, an die alle
 ;                                               ankommenden Events weitergereicht werden.
 ;                     BUTTON_EVENTS           :: Wird dieses Schlüsselwort gesetzt, so generiert das im ScrollIt enthaltene
 ;                                               DrawWidget bei Mausklicks in seinem Bereich entsprechende Events, die
@@ -75,7 +75,7 @@
 ;                                               das gleiche Format wie !P.Multi hat:
 ;
 ;                                               [Anzahl_ges,Anzahl_x,Anzahl_y,Anzahl_z,Order].
-;                                               Ausgelassene Argumente werden als 0 interpretiert. 
+;                                               Ausgelassene Argumente werden als 0 interpretiert.
 ;                                               Anzahl_ges: Gesamtzahl der Fenster. (weicht leicht von der !P.Multi-Konvention ab.)
 ;                                               Anzahl_x/y/z: Anzahl in x/y/z-Richtung (Layout)
 ;                                                             Die z-Zahl wird augenblicklich ignoriert.
@@ -115,7 +115,7 @@
 ; OPTIONAL OUTPUTS: GET_BASE:: ID des erstellten Base-Widgets.
 ;                   GET_DRAWID:: ID des Draw-Widgets, bzw. ein Array
 ;                    von IDs im Fall von MULTI.
-;                    Dieses Schlüsselwort ist für den Gebrauch mit den 
+;                    Dieses Schlüsselwort ist für den Gebrauch mit den
 ;                    Sheets gedacht, die eine private Colormap in
 ;                    jedem Widget speichern, sofern die
 ;                    /PRIVATE_COLORS-Option gesetzt ist.
@@ -127,7 +127,7 @@
 ;                  WDelete, Win_Nr gelöscht wird.
 ;                  Lieber das Widget ordnungsgemäß mit dem Close-Knopf schließen
 ;                  oder, wenn es programmgesteuert geschlossen werden
-;                  soll, das GET_BASE-Schlüsselwort benutzen und ein 
+;                  soll, das GET_BASE-Schlüsselwort benutzen und ein
 ;                     WIDGET_CONTROL, Widget_ID, /DESTROY
 ;                  machen.
 ;
@@ -174,26 +174,26 @@
 
 
 Pro ScrollIt_Event, Event
-   COMPILE_OPT HIDDEN
+;   COMPILE_OPT HIDDEN
 
    WIDGET_CONTROL, Event.Handler, GET_UVALUE=base_uval
 
-   CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
+   CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF
       "WIDGET_BASE" : begin  ;Resize-Event
          If base_uval.fullscroll then begin ;Resize TLB
             WIDGET_CONTROL, Event.Top, SCR_XSIZE=Event.X, SCR_YSIZE=Event.Y
          endif else begin       ;Resize all draw-widgets
             WIDGET_CONTROL, Event.Top, UPDATE=0 ;Prevent Screen-Update
-            
+
             New_XSize = (Event.X-base_uval.wincols*2*2)/base_uval.wincols ;Framedicke=2!
             New_YSize = (Event.Y-base_uval.winrows*2*2)/base_uval.winrows ;Framedicke=2!
-         
+
             SubBase = WIDGET_INFO(Event.Top, /CHILD) ;das ist unsere erste SubBase
             while SubBase ne 0 do begin
                Draw = WIDGET_INFO(SubBase, /CHILD) ;das ist unser erstes Draw-Widget in der SubBase!
                while Draw ne 0 do begin
                   WIDGET_CONTROL, Draw, SCR_XSIZE=New_XSize, SCR_YSIZE=New_YSize
-                  Draw = WIDGET_INFO(Draw, /SIBLING) ;das ist unser nächstes Draw-Widget!         
+                  Draw = WIDGET_INFO(Draw, /SIBLING) ;das ist unser nächstes Draw-Widget!
                endwhile
                SubBase = WIDGET_INFO(SubBase, /SIBLING) ;das ist unsere nächste SubBase!
             EndWhile
@@ -212,11 +212,11 @@ Pro ScrollIt_Event, Event
             draw_uval.YourPalette.B = Blue
             WIDGET_CONTROL, Event.ID, SET_UVALUE=draw_uval
                                 ;set private palette:
-            UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
+            UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B
                                 ;message, /INFO, "Setting private palette"
          Endif else begin       ;It's an LEAVE-event
                                 ;reset old palette:
-            UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B 
+            UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B
                                 ;message, /INFO, "Resetting private palette"
          EndElse
          ;;-----------End: Check if pointer entered widget and set color table-----
@@ -244,7 +244,7 @@ Pro ScrollIt_Event, Event
       ENDELSE
 
    ENDCASE
-  
+
 END
 
 
@@ -276,12 +276,12 @@ Function ScrollIt, Parent, $
    Default, button_events, 0
 
    If Not(PseudoColor_Visual()) then begin
-	message, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
-	private_colors = 0
+  message, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
+  private_colors = 0
    end
 
-   button_events = button_events * Set(deliver_events) 
-   ; Tell DrawWidget to generate BUTTON_EVENTS which can then be 
+   button_events = button_events * Set(deliver_events)
+   ; Tell DrawWidget to generate BUTTON_EVENTS which can then be
    ; delivered to other widgets, but if deliverevents is not set
    ; creating events is useless
 
@@ -306,8 +306,8 @@ Function ScrollIt, Parent, $
       YDRAWSIZE = YSIZE
       YSIZE = YSIZE-25
    EndIf
- 
-   
+
+
 
    If keyword_set(multi(4)) then begin
       basecolumn = wincols
@@ -370,7 +370,7 @@ Function ScrollIt, Parent, $
       Endfor
    EndFor
 
-   
+
    ;;obtain current color table:
    UTVLCT, /GET, Red, Green, Blue
 
@@ -381,8 +381,8 @@ Function ScrollIt, Parent, $
                                               YourPalette : {R: Red, G: Green, B: Blue} $
                                              };, NOTIFY_REALIZE="Scrollit_Draw_Notify_Realize"
    EndFor
-   
-      
+
+
 
    If not Set(Parent) then begin ; I am top level, so register!
 
@@ -400,7 +400,7 @@ Function ScrollIt, Parent, $
          Window_ID = WinIDs(0)  ;Do not return an array of one!
       endif else begin
          Window_ID = WinIDs
-      endelse             
+      endelse
 
    Endif else begin ;; I am child of Parent, so just est. event handler (for tracking events)
 
@@ -408,14 +408,14 @@ Function ScrollIt, Parent, $
       Window_ID = -1
 
    EndElse
-      
+
    If n_elements(Draws) eq 1 then begin
       Draw_ID   = Draws(0)      ;Do not return an array of one!
    endif else begin
       Draw_ID   = Draws
-   endelse             
+   endelse
 
-      
+
    get_base = Base
 
 
