@@ -1,34 +1,55 @@
 ;+
-; NAME:                FileExists
+; NAME:
+;  FileExists()
 ;
-; AIM:                 tests the existence of a given file
+; AIM:
+;  tests the existence of a given file;
 ;
-; PURPOSE:             Testet, ob der uebergebene Filename existiert und
-;                      gibt auf Wunsch die FStat(IDL-Struktur)- und die file
-;                      -Information(Shell Kommando) zurueck.
+; PURPOSE:
+;  To test whether the passed filename exists and optionally return the file statistics (IDL structure FStat)
+;  and file information (shell command; only under UNIX).
 ;
-; CATEGORY:            MISC
+; CATEGORY:
+;  DataStorage
+;  Dirs
+;  ExecutionControl
+;  Files
+;  IO
 ;
-; CALLING SEQUENCE:    trueFalse = FileExists(file [, INFO=info] [, STAT=stat])
+; CALLING SEQUENCE:
+;* out = FileExists(file [, STAT=...] [, INFO=...])
 ;
-; INPUTS:              file     : der zu testende Filename
+; INPUTS:
+;  file::  A string scalar containing the name of the file whose existence is to be tested.
 ;
-; OUTPUTS:             trueFalse: existiert file oder nicht?
+; OUTPUTS:
+;  out::  A boolean expression which is true (=1) if the specified file exists and false (=0) if not.
 ;
-; OPTIONAL OUTPUTS:    INFO: enthaelt das Ergebnis das file Kommandos, falls file
-;                            existiert
-;                      STAT: enthaelt die FSTAT-Info, falls file existiert
+; OPTIONAL OUTPUTS:
+;  STAT::  Set this keyword to a named variable which will contain the file statistics in an IDL-FStat structure
+;          if the specified file exists (if it does not exist, no changes are made to the named variable).
+;  INFO::  Set this keyword to a named variable which will contain the result of the <*>file</*> command
+;          if the specified file exists (if it does not exist, no changes are made to the named variable).
+;          This keyword has no effect under WINDOWS.
+;
+; PROCEDURE:
+;  This function tries to open the specified file via <*>OpenR</*> and proceeds depending on the error variable
+;  returned by <*>OpenR</*>.
 ;
 ; EXAMPLE:
-;                      print, fileExists('shit')
-;                      spawn, 'touch shit', r
-;                      print, fileExists('shit', INFO=info, STAT=stat)
-;                      print, info
-;                      help, stat, /STRUCTURES
+;* Info = 1  &  Stat = 1
+;* Print, FileExists('d:/temp/test.doc', INFO = Info, STAT = Stat)
+;* Print, Info
+;* Help , Stat, /str
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/11/28 13:24:07  bruns
+;     * translated doc header
+;     * fixed syntax violations in the doc header
+;     * established compatibility to WINDOWS
+;
 ;     Revision 2.3  2000/09/25 09:13:02  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -40,20 +61,26 @@
 ;     Revision 2.1  1998/02/24 08:40:52  saam
 ;           zip-zip-zippi-die-dip
 ;
-;
 ;-
-FUNCTION FileExists, file, STAT=stat, INFO=info
 
-   OpenR, lun, file, /GET_LUN, ERROR=err
-   IF err EQ 0 THEN BEGIN
-      stat = FStat(lun)      
-      Close, lun
-      Free_Lun, lun
 
-      spawn, 'file '+file, r
-      info = r(0)
-      
-      RETURN, 1
-   ENDIF ELSE RETURN, 0
-   
+
+FUNCTION  FileExists, file,   STAT = STAT, INFO = INFO
+
+   OpenR, lun, file, /GET_LUN, ERROR = Err
+
+   IF  Err EQ 0  THEN  BEGIN
+
+     IF  Keyword_Set(stat)  THEN  Stat = FStat(lun)
+     IF  Keyword_Set(info) AND (StrUpCase(!Version.OS_Family) EQ 'UNIX')  THEN  BEGIN
+       Spawn, 'file '+file, r
+       Info = r[0]
+     END
+     Close, lun
+     Free_Lun, lun
+
+     Return, 1
+
+   ENDIF  ELSE  Return, 0
+
 END
