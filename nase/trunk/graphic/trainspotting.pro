@@ -51,7 +51,7 @@
 ;  OFFSET:: Value added to the x-axis annotation. This may be useful
 ;             if only a part of the original array is to be displayed
 ;             and passed to <C>Trainspotting</C> in the form of eg
-;             <*>tn(*,500:1000)</*>. With appropriate <*>OFFSET</*>,
+;             <*>tn(500:1000,*)</*>. With appropriate <*>OFFSET</*>,
 ;             the annotation can be corrected. Note that <*>OFFSET</*>
 ;             is added to <*>XRANGE</*>, but only affects the
 ;             annotation, not the data actually displayed. To avoid
@@ -69,7 +69,8 @@
 ;                              total plot width respectively
 ;                              height. This strange unit was chosen to
 ;                              guarantee the same size of symbols on
-;                              different <A NREF=DEFINSHEET>sheets</A>. Defaults:
+;                              different 
+;                              <A NREF=DEFINESHEET>sheets</A>. Defaults: 
 ;                              <*>XSYMBOLSIZE=1 pixel</*>,
 ;                              <*>YSYMBOLSIZE=1/number of neurons</*>.
 ;  OVERPLOT:: Plots the data into an already existing coordinate system
