@@ -64,7 +64,7 @@
 ; EXAMPLE:
 ;*PlotTvScl, PerspectiveScale( Coil20(1,0), 0.0 )
 ;*PlotTvScl, PerspectiveScale( Coil20(1,0), 1.0 )
-;*PlotTvScl, PerspectiveScale( Coil20(1,0), 10.0 )
+;*PlotTvScl, PerspectiveScale( Coil20(1,0), 10.0, BACKGROUND=100 )
 ;*PlotTvScl, PerspectiveScale( Coil20(1,0), -0.5 )
 ;*undef, ui & for i=5.0,-0.5,-0.05 do PlotTvScl, PerspectiveScale( Coil20(1,0), i), update_info=ui
 ;*>
