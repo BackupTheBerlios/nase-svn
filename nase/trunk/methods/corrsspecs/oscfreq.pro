@@ -1,5 +1,7 @@
 ;+
 ; NAME:               OscFreq
+;
+; AIM:                computes the mean oscillation frequency of an given signal
 ;  
 ; PURPOSE:            Berechnet die mittlere Oscillationsfrequenz
 ;                     eines Signals.
@@ -41,10 +43,13 @@
 ;
 ; SEE ALSO:           <A HREF="#UPEAKPICKER">UPeakPicker</A>
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/09/28 13:55:06  gabriel
+;             AIM tag added
+;
 ;       Revision 1.3  1998/08/23 12:52:05  saam
 ;             returns {0,0,0,0} if no peaks were found
 ;
@@ -57,7 +62,7 @@
 ;       Revision 1.1  1998/05/26 14:13:52  saam
 ;             Initial revision
 ;
-;-
+;
 FUNCTION OscFreq, _sig, PLOT=plot, WAIT=WAIT, CRIT=crit, OS=os, CL=cl, _EXTRA=e
 
    COMMON SH_OF, OFwins, OF_1
@@ -100,7 +105,7 @@ FUNCTION OscFreq, _sig, PLOT=plot, WAIT=WAIT, CRIT=crit, OS=os, CL=cl, _EXTRA=e
    UPeakPicker, ac, t, ym, tm, mn, DELTA=10, RELATIVCRIT=crit, _EXTRA=e
 
    IF mn LE 1 THEN BEGIN
-      Print, "OSCFREQ: data isn't rhythmic"
+      console,/msg, "OSCFREQ: data isn't rhythmic"
       RETURN, {  m_hz : 0,$
                 sd_hz : 0,$
                 m_bin : 0,$
