@@ -32,6 +32,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.25  1997/09/20 09:52:43  thiel
+;              Da war noch ein 'Norm2Spass'-Aufruf von ganz frueher
+;              uebrig, am Ende des Delay-Teils.
+;              Wurde in 'Spassmacher' umbenannt.
+;
 ;       Revision 1.24  1997/09/19 16:35:20  thiel
 ;              Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
 ;                                        von vector2spass nach Spassmacher
@@ -214,7 +219,7 @@ Handle_Value, InHandle, In
             END
          END
          
-         RETURN, norm2spass(vector)
+         RETURN, Spassmacher(vector)
       END ELSE BEGIN
          RETURN, [0, tnc]
       END
