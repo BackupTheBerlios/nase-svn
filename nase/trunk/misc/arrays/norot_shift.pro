@@ -22,13 +22,10 @@
 ; CALLING SEQUENCE: 
 ;* result = NoRot_Shift(Array,S0,..,S6)
 ;
-; 
 ; INPUTS: 
-;  Array::
-;   The array to be shifted.
+;  Array:: The array to be shifted.
 ;
-;  Si::
-;   The shift parameters. For arrays of more than one dimension,
+;  Si:: The shift parameters. For arrays of more than one dimension,
 ;   the parameter Sn specifies the shift applied to the nth dimension. 
 ;   S1 specifies the shift along the first dimension and so on. 
 ;   If only one shift parameter is present and the parameter is an array, 
@@ -38,8 +35,7 @@
 ;   performed along that dimension.
 ;
 ; INPUT KEYWORDS: 
-;  WEIGHT::
-;   Value to set the circular shifted regions (default is zero).
+;  WEIGHT:: Value to set the circular shifted regions (default is zero).
 ;	    
 ; OUTPUTS: 
 ;   Result is the shifted Array
