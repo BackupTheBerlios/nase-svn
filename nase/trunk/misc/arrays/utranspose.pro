@@ -75,11 +75,15 @@
 ;
 ;                 C   INT  = Array[3, 4, 2]          ;Original array with indices re-ordered.
 ;
-;
+;-
 ;     MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/28 14:53:58  gabriel
+;           console <> message, call_function inserted
+;           because of conflicts with IDL Ver. 3.6
+;
 ;     Revision 1.4  2000/09/25 09:12:56  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -95,19 +99,20 @@
 ;          Damit IDL 3.x Benutzter auch toll transponieren koennen
 ;
 ;
-;-
+;
 
 FUNCTION UTRANSPOSE,ARRAY,P
 
    On_Error, 2
    sa = size(array)
-   
-   IF sa(0) LT 2 THEN message,'Array dimensions must be greater than 1'
-   IF sa(0) EQ 2 AND set(P) EQ 0 THEN return, transpose(ARRAY)
    default,P,REVERSE(indgen(sa(0)))
+   IF sa(0) LT 2 THEN console, /fatal,'Array dimensions must be greater than 1'
+   
+   IF sa(0) EQ 2  AND total(P eq REVERSE(indgen(sa(0)))) EQ sa(0) THEN return, transpose(ARRAY) $
+    ELSE IF sa(0) EQ 2 then return, (ARRAY)
 
-   IF N_ELEMENTS(P) NE sa(0) THEN message,'The elements of P should correspond to the dimensions of Array'
-   IF idlversion() GE 4 THEN return, transpose(ARRAY,P)
+   IF N_ELEMENTS(P) NE sa(0) THEN console, /fatal,'The elements of P should correspond to the dimensions of Array'
+   IF idlversion() GE 4 THEN return, call_function("transpose", ARRAY,P)
    size = [sa(0),sa((P+1)),sa(sa(0)+1),sa(sa(0)+2)]
    ;stop
    TMPARRAY = MAKE_ARRAY(SIZE=SIZE)
