@@ -29,8 +29,8 @@
 ;           conditioned on the value of multiple coherence function is
 ;           given in [1]. A multiple-channel nonparametric detector
 ;           based on MC estimate as defined before was introduced in [2].
-;           Please note that the multiple
-;           coherence for two channels <*>N=2 is identical to the pairwise <a>COHERENCE</a>
+;           <br>Please note that the multiple
+;           coherence for two channels <*>N=2</*> is identical to the pairwise <a>COHERENCE</a>
 ;
 ;
 ;           [1] N. R. Goodman, "Statistical analysis based uppon a
@@ -59,7 +59,7 @@
 ;             default, the 3nd dimension is interpreted to represent
 ;             different realizations, i.e., the members of the
 ;             ensemble(s) of signal epochs. This can be changed via the
-;             keyword <*>DIMENSION.
+;             keyword <*>DIMENSION</*>.
 ;
 ;
 ; INPUT KEYWORDS:
@@ -68,17 +68,17 @@
 ;                          the dimension which is to be interpreted as the dimension
 ;                          containing the different realizations, i.e.,
 ;                          "trials" (default: 3). Since the 1st dimension is reserved
-;                          for the signal epochs themselves, <*>DIMENSION must be >=3, and of course it must be
-;                          <=<*>N<sub>Dim</sub>, where <*>N<sub>Dim</sub> is the number of dimensions of <*>x 
+;                          for the signal epochs themselves, <*>DIMENSION</*> must be >=3, and of course it must be
+;                          <=<*>N<sub>Dim</sub></*>, where <*>N<sub>Dim</sub></*> is the number of dimensions of <*>x</*> 
 ;         SAMPLEPERIOD::   Set this keyword to an float
 ;                          scalar giving the sample period (in seconds) which is assumed
-;                          to have been used in sampling the signals <*>x (default: 0.001). The only effect of
-;                          this parameter is on the scaling of the frequency axis <*>f.
+;                          to have been used in sampling the signals <*>x</*> (default: 0.001). The only effect of
+;                          this parameter is on the scaling of the frequency axis <*>f</*>.
 ;         DOUBLE::         Set this keyword if you want double precision
 ;
 ; OUTPUTS:
 ;   
-;         gc::             A (double) float array of the same dimensional
+;         mc::             A (double) float array of the same dimensional
 ;                          structure as x, but with the Channel (2nd) and DIMENSIONth dimension
 ;                          missing, and containing the generalized coherence
 ;                          function(s) in the 1st dimension. Moreover, the 1st
@@ -88,7 +88,7 @@
 ; OPTIONAL OUTPUTS:
 ;         F::              Set this keyword to a named variable which on return
 ;                          will be a 1-dimensional array of the same length as the
-;                          1st dimension of <*>gc, providing the frequency axis 
+;                          1st dimension of <*>mc</*>, providing the frequency axis 
 ;                          for the coherence function(s).
 ;
 ; PROCEDURE:
@@ -248,26 +248,26 @@ end
 return, result
 end
 
-maxn = 4
-plot, 1+indgen(maxn), indgen(maxn), yrange=[0, 1], /nodata
-for n=3, maxn-1 do begin
+;maxn = 4
+;plot, 1+indgen(maxn), indgen(maxn), yrange=[0, 1], /nodata
+;for n=3, maxn-1 do begin
 
 
-ntrial = 50
-x = FltArr(128,n, ntrial) ;; array(time,channel,trials)
-RandomPhases = RandomU(seed,n,ntrial) * 2*!pi
-for j=0, n-1 do begin
-   FOR  i = 0, ntrial-1  DO  begin 
-         x[*,j,i] = RandomN(seed, 128)+ Cosine(60.0, RandomPhases[i], 500.0, 128, /samples) ;RandomN(seed, 128)
-         if  j eq 0 then x[*,j,i] = RandomN(seed, 128)
-   endfor;
-endfor
+;ntrial = 50
+;x = FltArr(128,n, ntrial) ;; array(time,channel,trials)
+;RandomPhases = RandomU(seed,n,ntrial) * 2*!pi
+;for j=0, n-1 do begin
+;   FOR  i = 0, ntrial-1  DO  begin 
+;         x[*,j,i] = RandomN(seed, 128)+ Cosine(60.0, RandomPhases[i], 500.0, 128, /samples) ;RandomN(seed, 128)
+;         if  j eq 0 then x[*,j,i] = RandomN(seed, 128)
+;   endfor;
+;endfor
 
-mc = mcestimate(x, SAMPLEPERIOD = 0.002, F = f, /corr)
+;mc = mcestimate(x, SAMPLEPERIOD = 0.002, F = f, /corr)
 
-;ptvs, mc,yrange=f, /legend, zrange=[0, 1]
- oplot,[n], [fztmean(mc)], psym=2
+;;ptvs, mc,yrange=f, /legend, zrange=[0, 1]
+; oplot,[n], [fztmean(mc)], psym=2
  
-endfor
-oplot, 1+findgen(maxn), (findgen(maxn))/double(ntrial)
-end
+;endfor
+;oplot, 1+findgen(maxn), (findgen(maxn))/double(ntrial)
+;end
