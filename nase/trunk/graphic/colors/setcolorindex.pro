@@ -6,8 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  Set one entry in the current color table (or translation table
-;  for truecolor).
+;  sets one entry in the current color table (better use <A>RGB</A>).
 ;
 ; PURPOSE:
 ;  Set one entry in the current color table (this also works for

@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  is more robust than IDLs <C>LoadCT</C>
+;  NASE compliant and more robust implementation of IDLs <C>LoadCT</C>
 ;
 ; PURPOSE:
 ;  Replaces IDLs <C>LOADCT</C> with compatible but extended calling
