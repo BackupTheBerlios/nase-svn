@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1998/03/20 16:45:22  thiel
+;            Weitere 3.6/4-Inkompatibilitaet beim
+;            GET_BASE-Aufruf behoben.
+;
 ;     Revision 2.9  1998/03/19 14:50:30  saam
 ;           common block like in define-sheet
 ;
@@ -87,6 +91,7 @@ PRO OpenSheet, sheet
       
       ; create a new window
       IF NOT exists THEN BEGIN
+         tid = 23               ;muss fuer IDL 3.6 vor dem GET_BASE-Aufruf definiert werden, Wert ist egal.
          IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
             sheet.winid = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled')
          END ELSE BEGIN
