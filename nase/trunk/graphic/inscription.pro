@@ -39,6 +39,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  1999/02/25 11:14:55  gabriel
+;          Da war was mit dem KEYWORD Default setting faul
+;
 ;     Revision 2.1  1998/08/24 10:08:08  gabriel
 ;           Was wir alle schon immer haben wollten
 ;
@@ -47,11 +50,11 @@
 PRO inscription ,TEXT,INSIDE=INSIDE,OUTSIDE=OUTSIDE,LEFT=LEFT,RIGHT=RIGHT,CENTER=CENTER,BOTTOM=BOTTOM,TOP=TOP,$
                   CHARSIZE=CHARSIZE,MIDDLE=MIDDLE,ORIENTATIOn=ORIENTATION,ALIGNMENT=ALIGNMENT,XCORR=XCORR,$
                  YCORR=ycorr,_EXTRA=e
-
+   on_ERROR,2
 
    IF NOT set(left) AND NOT set(right) AND NOT set(center) THEN  default,left,1
    IF NOT set(top) AND NOT set(bottom) AND NOT set(middle) THEN  default,top,1
-   IF NOT set(inside) AND NOT set(outside) AND NOT set(middle) THEN  default,outside,1 
+   IF NOT set(inside) AND NOT set(outside)  THEN  default,outside,1 
    default,xcorr,0
    default,ycorr,0
    default,inside,0
