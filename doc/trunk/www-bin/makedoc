@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# * creates HTML from LaTeX
+# * sets the NASE layout
+#
+# Mirko Saam
+#
+
+latex2html -split 0 -no_navigation -no_subdir -info '' $1.tex
+perl -e 's/HREF=.*\.css/HREF="http:\/\/neuro.physik.uni-marburg.de\/nase\/shtml.css/gi' -p -i~ $1.html
+perl -e 's/<\s*body\s*>/<body bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>/gi' -p -i~ $1.html
+
+exit 0
