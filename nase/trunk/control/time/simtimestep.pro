@@ -101,7 +101,7 @@ PRO SimTimeStep
          Handle_Value, stat.console, status, /NO_COPY
 
          out = 'Iteration: '+STR(stat.step) $
-          +'   Progress: '+STR((stat.step)/FLOAT(stat.maxsteps)*100)+'%' $
+          +'   Progress: '+STR(Round((stat.step)/FLOAT(stat.maxsteps)*100))+'%' $
           +'   Time: '+Seconds2String(Total(stat.tpi)) $
           +'   Completed in: '+Seconds2String(estimation)
 
