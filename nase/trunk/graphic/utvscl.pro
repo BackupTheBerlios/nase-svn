@@ -29,6 +29,7 @@
 ;*               [,STRETCH=stretch][,H_STRETCH=h_stretch][,V_STRETCH=v_stretch]
 ;*               [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
 ;*               [,CUBIC=...][,/INTERP][,/MINUS_ONE]
+;*               [,/NASE]
 ;
 ;  <C>UTvScl</C> passes unknown options to <C>TvScl</C>, e.g. <*>/ORDER</*>.
 ;
@@ -79,6 +80,8 @@
 ;                            interpolation with <*>POLYGON</*> set
 ;                            results in very large Postscript output
 ;                            files.
+;
+; NASE:: Array is in NASE coodinates (array will be transposed before output).
 ;
 ; OPTIONAL OUTPUTS:
 ; DIMENSIONS:: This keyword can be used to return the display
@@ -201,6 +204,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , POLYGON=POLYGON $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one $
             , TRUE=_true $
+            , NASE=nase  $
             , _EXTRA=e
 
    ON_ERROR, 2
@@ -225,9 +229,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
        YCENTER = 1
    END
 
-   ; don't modify the original image
+   ; don't modify the original image, and
+   ; do NASE-transpose if /NASE was set:
    IF N_Params() LT 1 THEN Console, 'at least one positional argument expected', /FATAL
-   Image = REFORM(__Image)
+   If Keyword_Set(NASE) then $
+     Image = Transpose(REFORM(__Image)) $
+    else $
+     Image = REFORM(__Image)
    
 
    ; TRUE stands for TRUE color support, see IDL help of TV
