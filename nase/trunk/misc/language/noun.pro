@@ -12,7 +12,7 @@ Common Common_Random, seed
    *(nouns[0]) = ["neuron", "spike", "nerve cell", "brain", "monkey", $
                   "barn owl", "human", "ferret", "cat", "ganglion cell", $
                   "simple cell", "complex cell", "synapse", "tea cup", "journal", $
-                  "scientist"]
+                  "scientist", "wave", "inhibition", "context", "features", "invariance"]
    
    
    
