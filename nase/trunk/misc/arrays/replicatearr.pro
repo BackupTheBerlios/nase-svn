@@ -6,17 +6,17 @@
 ;  Returns an array replicated in multiple dimensions.
 ;
 ; PURPOSE:
-;  IDL's <*>Replicate</*> returns a single value replicated in multiple dimensions .<BR>
-;  IDL's <*>Rebin</*> can do this for all arrays, except string and complex.
-;  <*>ReplicatArr</*> can do this for <I>all</I> arrays. <BR>
-;  In contrast to <*>Rebin</*> but similar to <*>Replicate</*> only the newly added dimensions
+;  IDL's <C>Replicate</C> returns a single value replicated in multiple dimensions .<BR>
+;  IDL's <C>Rebin</C> can do this for all arrays, except string and complex.
+;  <C>ReplicatArr</C> can do this for <I>all</I> arrays. <BR>
+;  In contrast to <C>Rebin</C> but similar to <C>Replicate</C> only the newly added dimensions
 ;  have to be specified, the size of the original array does not need to be known.
 ;
 ; CATEGORY:
 ;  Array
 ;
 ; CALLING SEQUENCE:
-;*    ra = ReplicateArr(a, repdim)
+;* ra = ReplicateArr(a, repdim)
 ;
 ; INPUTS:
 ;  a:: the array of any type to be replicated
@@ -29,7 +29,7 @@
 ;  IDL does not allow more than 8 dimensions.
 ;
 ; PROCEDURE:
-;  The routine uses <*>Rebin</*> where possible and else works brute force.
+;  The routine uses <C>Rebin</C> where possible and else works brute force.
 ;
 ; EXAMPLE:
 ;* a = IndGen(10)
@@ -39,41 +39,9 @@
 ;* >  R  INT = Array[10, 5, 1, 6]
 ;
 ; SEE ALSO:
-;  <*>Replicate</*>, <*>Rebin</*>.
+;  <C>Replicate</C>, <C>Rebin</C>.
 ;
 ;-
-
-
-
-; General Remarks:
-
-; I) LINEARTS
-; Due to the formatting in HTML, we use
-; a proportional font. This destroys most
-; kinds of line.
-; If you want do amuse the reader with
-; character artworks, indicate this by
-; marking the respective lines with an
-; asterisk:
-;*            1
-;*           2 3
-;*          4 5 6
-;*         7 8 9 0
-; They will then be typeset with a fixed
-; font.
-;
-;
-; II) URLS
-; Hyperlinks to other NASE/MIND routines may be inserted
-; anywhere, using the following syntax
-;   <A>routine</A>
-; generates a link named routine pointing to the actual
-; location OF routine
-;
-;   <A NREF=routine>text</A>
-; generates a link named text pointing to the actual
-; location OF routine
-;
 
 
 FUNCTION ReplicateArr, A, RepDim
