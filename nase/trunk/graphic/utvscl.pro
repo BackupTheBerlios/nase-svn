@@ -164,6 +164,9 @@
 ;    is wrong, positions in the window should be counted in this case,
 ;    see documentation of IDL's <C>TV</C> or POLY=0-behaviour.
 ;  o (more see the NASE ToDo list).
+;  o Handling of 1-dimensional true-color images is broken. But who
+;    would ever use something like this?? However, it should give a
+;    proper error message, but currently it just breaks.
 ;                
 ; EXAMPLE:
 ;* bild = FIndgen(100,100)
