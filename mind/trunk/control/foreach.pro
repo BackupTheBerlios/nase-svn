@@ -9,7 +9,10 @@
 ; CATEGORY:           MIND CONTROL
 ;
 ; CALLING SEQUENCE:   iter = ForEach(procedure [,p1 [,p2 [,p3 [,p4 [,p5 [,p6 [,p7 [p8 [,p9]]]]]]]]] $
-;                                     [,ISKIP=iskip] [,OSKIP=oskip] [,/W] [,VALUES=values] [,/FAKE] [,/QUIET] [,_EXTRA=e] )
+;                                     [,ISKIP=iskip] [,OSKIP=oskip]
+;                                     [,__XX (see below!)]
+;                                     [,/W] [,VALUES=values]
+;                                     [,/FAKE] [,/QUIET] [,_EXTRA=e] )
 ;
 ; INPUTS:             procedure: the string of the procedure to be performed for each iteration
 ;
@@ -26,10 +29,19 @@
 ;                             espacially useful for metaroutines that
 ;                             evaluate data accross multiple iterations
 ;                             negative values mean: skip all but  
+;                     __XX  : Loop Variables may be modified/set as
+;                             Keywords. If you have a loop variable
+;                             ITER, you can change the default value by passing
+;                             __ITER={whatever_you_like}. ForEach will
+;                             then use your KeywordOptions.
+;         
 ;
 ; OUTPUTS:            iter  : the number of performed iterations 
 ;
 ; COMMON BLOCKS:      ATTENTION
+;
+; RESTRICTIONS:       all Keywords beginning with __ will not be
+;                     passed to the client PROCEDURE 
 ;
 ; EXAMPLE:            see <A HREF=http://neuro.physik.uni-marburg.de/mind/demo#DFOREACH>dforeach</A>
 ;
@@ -38,6 +50,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/04/04 15:05:18  saam
+;           added the Commandline modification tool
+;           by keywords __
+;
 ;     Revision 1.4  2000/04/04 13:35:44  saam
 ;           + ISKIP and OSKIP now takes negative values
 ;           + handle/struct story now works and is put to NASE
@@ -80,6 +96,7 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    IF ISKIP+OSKIP GT loops THEN Console, 'skipping more than available', /WARN
 
    ; cut that __TV stuff away
+   ; set skipped loops to their current values
    TS = {____XXX : 0}
    FOR i=0,OSKIP-1 DO BEGIN
        ; get current value for the loop to be ignored
@@ -90,6 +107,16 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    END
    FOR i=OSKIP, N_TAGS(TST)-1-ISKIP DO SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)
    DelTag, TS, "____XXX"
+
+
+   ; if the users sets loopvalues on the commandline (or elsewhere)
+   uset = ExtraDiff(e, '__', /SUBSTRING)  ; and also removes these keywords!
+   IF TYPEOF(uset) EQ 'STRUCT' THEN BEGIN
+       FOR i=0, N_Tags(uset)-1 DO BEGIN
+           SetTag, TS, StrMid((Tag_Names(uset))(i),2), uset.(i)
+       END
+   END
+
 
 
    ltags = 0
