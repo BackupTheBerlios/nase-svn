@@ -20,7 +20,6 @@
 ;*CAW
 ;
 ; EXAMPLE:
-;*;closes all open 
 ;*CAW
 ;
 ; SEE ALSO:
