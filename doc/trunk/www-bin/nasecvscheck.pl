@@ -11,7 +11,7 @@ my $file;
 
 foreach $file (@files){
   # just check IDL source files
-  if ($file =~ /\.pro$/){
+  if (($file =~ /\.pro$/) && !($file =~ /neuro\//)){
     print STDERR "$file: checking...\n";
     if (-r $file){
       # if file is not readable commit should probably remove the file, so we do not check it
