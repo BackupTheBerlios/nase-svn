@@ -11,6 +11,7 @@
 ;                            [,/NOSCALEALL] [,/NOSCALEYMIN] $
 ;                            [,/NOSCALEYMAX] $
 ;                            [-other-Plot-Keywords-] $
+;                            [,OVERSAMPLING=oversampling]
 ;                            [,/INSTANTREFRESH])
 ;
 ; KEYWORD PARAMETERS:  TIME       : die Laenge der dargestellten Zeitachse (Def.:100)
@@ -23,6 +24,8 @@
 ;                   INSTANTREFRESH: bewirkt, daß die Achsen gleich
 ;                                   beim ersten geplotteten Wert neu
 ;                                   skaliert werden.
+;                     OVERSAMPLING: korrekte Umrechnung von BIN in ms bei
+;                                   ueberabtastenden Neuronen
 ;
 ;                   Außerdem sind alle Schlüsselworte erlaubt, die
 ;                   auch PLOT nimmt. Der Default für XTITLE ist "t / ms".
@@ -48,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1998/05/14 09:03:45  saam
+;           keyword oversampling now in doc-header
+;
 ;     Revision 2.8  1998/03/25 10:40:05  kupper
 ;            Whatever might be might be...
 ;
@@ -77,11 +83,11 @@
 FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
                              RAYS=rays,$
                              NOSCALEALL=noscaleall, NOSCALEYMIN=noscaleymin, NOSCALEYMAX=noscaleymax,$
-                             OVERSAMP=oversamp, $
+                             OVERSAMPLING=oversampling, $
                              INSTANTREFRESH=instantrefresh, $
                              XTITLE=xtitle, _EXTRA=_extra
 
-   Default, OVERSAMP, 1
+   Default, OVERSAMPLING, 1
    Default, TIME, 100l
    Default, YMIN, 0.0
    Default, YMAX, 1.0
@@ -90,7 +96,7 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
    If not keyword_set(_EXTRA) then _extra = {XTITLE: xtitle} else begin
       If not extraset(_extra, "xtitle") then _extra = create_struct(_extra, "xtitle", xtitle)
    EndElse
-   time =  time*OVERSAMP
+   time =  time*OVERSAMPLING
    maxSc = 1
    minSc = 1
    If Keyword_Set(INSTANTREFRESH) then startvalue = 0. else startvalue = ((ymax-ymin)/2.+ymin)
@@ -111,7 +117,7 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
           time  : LONG(time)    ,$
           maxSc : maxSc         ,$
           minSc : minSc         ,$
-          os    : oversamp      ,$
+          os    : oversampling  ,$
           _extra: _extra}
    
    plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, _EXTRA=_extra
