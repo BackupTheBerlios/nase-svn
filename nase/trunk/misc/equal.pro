@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1998/11/17 14:49:17  brinks
+;     *** empty log message ***
+;
 ;     Revision 1.1  1998/11/17 13:33:26  brinks
 ;     *** empty log message ***
 ;
@@ -70,7 +73,7 @@ FUNCTION equal, a, b, precision
   element_typ2 = size(b)
   element_typ2 = element_typ2(n_elements(element_typ2)-2)
 
-  IF ((element_typ1 EQ 0) OR (element_typ2 EQ 0)) OR ((size(a))(0) GT 1) OR ((size(b))(0) GT 1) OR (precision LT 0) THEN BEGIN
+  IF ((element_typ1 EQ 0) OR (element_typ2 EQ 0) OR (precision LT 0)) THEN BEGIN
    message,'kein gueltiger Parameter (function equal)'
    return, -1
   ENDIF 
@@ -82,7 +85,7 @@ FUNCTION equal, a, b, precision
     IF ((element_typ1 EQ 4 OR element_typ1 EQ 5) AND (element_typ2 EQ 4 OR element_typ2 EQ 5))  THEN $  ;; -> floats
       BEGIN
 
-        IF (total(abs(a-b)) LT (2*precision*(n_elements(a) >  n_elements(b))) THEN $   ;; Das Vorzeichen wird getrennt behandelt!!!
+        IF (total(abs(a-b)) LT (2*precision*(n_elements(a) >  n_elements(b)))) THEN $   ;; Das Vorzeichen wird getrennt behandelt!!!
           return, ( floor(precision*abs(a)) EQ floor(precision*abs(b)) ) $             ;; Wenn Abstand(Betraege) klein genug,  
             ELSE return, 0                                                             ;; dann verwirf das Vorzeichen!
 
