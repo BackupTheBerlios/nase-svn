@@ -2,6 +2,16 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.10  2001/09/25 15:12:20  kupper
+#         Treffen Offenbar 25 Sep. 2001
+#
+#         Revision 1.2  2001/09/25 15:10:19  synod
+#         25 Sep 2001, 17:00
+#         Rue
+#
+#         Revision 1.1.1.3  2001/09/20 13:56:39  synod
+#         get up-to-date for demo.
+#
 #         Revision 1.9  2001/08/28 15:15:07  kupper
 #         offenbach 28. aug 2001
 #
@@ -69,9 +79,9 @@ all :
 	   "SunOS" ) make libs \
 			"CC=gcc" \
 			"CXX=c++" \
-			"C_LD=ld" \
+			"C_LD=/usr/ccs/bin/ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
-			"C_LD_FLAGS=-shared" ;; \
+			"C_LD_FLAGS=-G -64" ;; \
 	   *) echo "This system is not supported" ;; \
        esac
 
