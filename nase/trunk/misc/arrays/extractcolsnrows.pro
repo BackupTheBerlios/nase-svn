@@ -10,7 +10,7 @@
 ;
 ; CALLING SEQUENCE: cut = ExtractColsNRows(original 
 ;                           [,COL_DIST=spaltenabstand] [,ROW_DIST=zeilenabstand] 
-;                           [,COL_OFFSET=spaltenoffset] {,ROW_OFFSET=zeilenoffset})
+;                           [,COL_OFFSET=spaltenoffset] [,ROW_OFFSET=zeilenoffset])
 ;
 ; INPUTS: original: 2d_Array
 ;
@@ -23,7 +23,7 @@
 ;                                 Offset muss kleiner als Abstand sein!
 ;                  zeilenabstand und zeilenoffset: entsprechend
 ;                    
-; OUTPUTS: rest: 2d-Array, das aus den herausgeschnittenen Zeilen 
+; OUTPUTS: cut: 2d-Array, das aus den herausgeschnittenen Zeilen 
 ;                und Spalten besteht.
 ;
 ; PROCEDURE: 1. Arraygroesse herausfinden.
@@ -52,9 +52,14 @@
 ;          IDL sagt:    1       4
 ;                      13      16
 ;          
+; SEE ALSO: <A HREF="#INSERTCOLSNROWS">InsertColsnRows</A>
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/06/15 19:09:59  thiel
+;               Header korrigiert.
+;
 ;        Revision 1.1  1998/06/06 14:30:11  thiel
 ;               Bruno sagt: colnsrows fuer alle in ganz Europa!
 ;
