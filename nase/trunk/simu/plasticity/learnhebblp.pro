@@ -69,6 +69,10 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
+;       Wed Sep 10 19:55:04 1997, Andreas Thiel
+;		DEFAULT funktioniert nicht, wenn ENTLERNRATE nicht
+;		gesetzt ist. Besser mit IF SET() usw.
+;
 ;       Sun Sep 7 16:14:37 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -101,10 +105,11 @@
 
 PRO LearnHebbLP, Matrix, LP, SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
                     LERNRATE=lernrate, ENTLERNRATE=entlernrate
-
-   Default, rate, entlernrate
-   Default, alpha, lernrate/entlernrate
-
+  
+   ;Default, rate, entlernrate
+   ;Default, alpha, lernrate/entlernrate
+   If Not Set(RATE) Then Rate = Entlernrate
+   If Not Set(ALPHA) Then Alpha = Lerrate/Entlernrate
 
    ; update learning potentials
    TotalRecall, LP, Matrix.Learn
