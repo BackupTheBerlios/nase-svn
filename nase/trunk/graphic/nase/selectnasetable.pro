@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/06/10 12:30:34  kupper
+;               Multicolor auch fuer Postscript (identische Farbtabelle wie Bildschirm...)
+;
 ;        Revision 2.2  1998/05/26 13:27:44  kupper
 ;               Header ergänzt.
 ;
@@ -53,9 +56,9 @@ Pro SelectNASETable, STANDARD=standard, EXPONENTIAL=exponential, MULTICOLOR=mult
    If Keyword_Set(MULTICOLOR) then begin
       !NASETABLE.POS          =  8
       !NASETABLE.NEGPOS       =  9
-      !NASETABLE.PAPER_POS    =  2
-      !NASETABLE.PAPER_NEGPOS =  3
-      Message, /INFORM, "Setze Multi-Color NASE-Farbtabellen für die Bildschirmdarstellung."
+      !NASETABLE.PAPER_POS    =  8
+      !NASETABLE.PAPER_NEGPOS =  9
+      Message, /INFORM, "Setze Multi-Color NASE-Farbtabellen (für die Bildschirmdarstellung)."
       Return
    Endif
 
