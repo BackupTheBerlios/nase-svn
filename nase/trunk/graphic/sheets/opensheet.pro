@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/12/02 10:08:08  saam
+;           Sheets merken sich nun ihren persoenlichen
+;           !P.Multi-Zustand; zusaetzlicher Tag: multi
+;
 ;     Revision 2.2  1997/11/26 09:28:48  saam
 ;           Weiss leider nicht mehr, was veraendert wurde
 ;
@@ -48,6 +52,9 @@ PRO OpenSheet, sheet
          sheet.winid = !D.Window
       END
 
+      oldMulti = !P.Multi
+      !P.Multi = sheet.multi
+      sheet.multi = oldMulti
 
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN
       IF NOT sheet.open THEN BEGIN
@@ -68,6 +75,10 @@ PRO OpenSheet, sheet
          END
       END ELSE Print, 'OpenSheet: Sheet already open!'
       
+      oldMulti = !P.Multi
+      !P.Multi = sheet.multi
+      sheet.multi = oldMulti
+
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'NULL'
    END ELSE Message, 'no initialized sheet???'

@@ -48,18 +48,24 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/12/02 10:08:08  saam
+;           Sheets merken sich nun ihren persoenlichen
+;           !P.Multi-Zustand; zusaetzlicher Tag: multi
+;
 ;     Revision 2.1  1997/11/13 13:03:29  saam
 ;           Creation
 ;
 ;
 ;-
-FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, VERBOSE=verbose,_EXTRA=e
+FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, $
+                      MULTI=multi, VERBOSE=verbose,_EXTRA=e
 
    COMMON Random_Seed, seed
 
 
    IF NOT Keyword_Set(PS) AND NOT Keyword_Set(WINDOW) AND NOT Keyword_SET(NULL) THEN Window = 1
    Default, e, -1
+   Default, multi, [0,0,1,0,0]
 
    IF Keyword_Set(WINDOW) THEN BEGIN
       
@@ -67,6 +73,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       
       sheet = { type  : 'X'   ,$
                 winid : -1    ,$
+                multi : multi ,$
                 extra : e     }
 
    END ELSE IF Keyword_Set(PS) THEN BEGIN
@@ -88,6 +95,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 filename : filename     ,$
                 inc      : incremental  ,$
                 eps      : encapsulated ,$
+                multi    : multi        ,$
                 extra    : e            ,$                
                 open     : 0            }
 

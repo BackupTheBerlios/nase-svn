@@ -21,6 +21,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/12/02 10:08:07  saam
+;           Sheets merken sich nun ihren persoenlichen
+;           !P.Multi-Zustand; zusaetzlicher Tag: multi
+;
 ;     Revision 2.1  1997/11/13 13:03:28  saam
 ;           Creation
 ;
@@ -34,6 +38,11 @@ PRO CloseSheet, sheet
          Set_Plot, 'X'
          sheet.open = 0
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
+
+      newMulti = !P.Multi
+      !P.Multi =  sheet.multi
+      sheet.multi = newMulti
+      
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'X'
    END
