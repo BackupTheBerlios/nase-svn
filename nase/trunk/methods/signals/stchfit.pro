@@ -123,6 +123,7 @@ function  __gauss_stch, x, y, p
    ;return, ( p(0)*exp(-(x-y*p(1))^2/(2*p(2)^2)))
 end
 
+
 function stchfit, stc, distance_ax, delay_ax, rv=rv, cs=cs, sf=sf, cosf=cosf, gaussf=gaussf, plot=plot, freqlimit=freqlimit, sigmalimit=sigmalimit,vellimit=rvlimit,limitidx=limitidx, verbose=verbose, interpol=interpol, correction=correction, thf=thf, grf=grf
    common stchfit_sheets, sheet_1
 
