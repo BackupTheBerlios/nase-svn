@@ -39,14 +39,15 @@
 ; INPUT KEYWORDS:
 ;  CHARSIZE:: Factor determining the charsize relative to the standard
 ;             size (default: <*>!P.CHARSIZE</*>).
-;  MAX,MID,MIN:: Strings or numbers used as labels for maximum, middle
-;                and minimum legend value (default: <*>MAX=255</*>, <*>MID=''</*>, <*>MIN=0</*>)
-;  COLOR:: Color used for drawing the legend's frame. If <*>COLOR</*>
-;          is not set, a suitable color is chosen.
 ;  RANGE:: Set this keyword to a two-element array, containing the
 ;          lowest and the highest color index to use for the legend
 ;          color range. If omitted, the legend will span the whole
-;          color table.
+;          color table (<*>[0,!TopColor]</*>).
+;  MAX,MID,MIN:: Strings or numbers used as labels for maximum, middle
+;                and minimum legend value (default: <*>MIN=Range[0]</*>, <*>MID=''</*>, <*>MAX=Range[1]</*>)
+;  COLOR:: Color used for drawing the legend's frame and labels. If <*>COLOR</*>
+;          is not set, it defaults to the standard foreground color
+;          (see <A>Foreground</A>).
 ;  HORIZONTAL, VERTICAL:: Horizontal or vertical legend (default:
 ;                         horizontal).
 ;  LEFT, RIGHT:: Vertical legends may be labeled on left or right side
@@ -89,9 +90,10 @@ PRO TvSclLegend, _xnorm, _ynorm $
    
    IF N_PARAMS() GE 1 THEN Default, xnorm, _xnorm ELSE Default, xnorm, 0.5
    IF N_PARAMS() GE 2 THEN Default, ynorm, _ynorm ELSE Default, ynorm, 0.5
-   Default,   max, 255
+   Default, range, [0, !TopColor]
+   Default,   max, range[1]
    Default,   mid, ''
-   Default,   min, 0.0
+   Default,   min, range[0]
    Default, _Charsize, !P.CHARSIZE
    CHARSIZE = _CHARSIZE*sqrt(1./MAX([1.,(!P.MULTI(1)), (!P.MULTI(2))])) 
    Default, COLOR, GetForeground()
@@ -128,29 +130,30 @@ PRO TvSclLegend, _xnorm, _ynorm $
    END
 
 
+   norm_length = 0.8
+   aspect_ratio = 0.2
    IF Keyword_Set(VERTICAL) THEN BEGIN
-      x_pix =  20
-      y_pix = 100
+      y_pix = (range[1]-range[0])+1
+      x_pix = y_pix * aspect_ratio
+      norm_y_size = norm_length
       colorarray = FindGen(y_pix)
-      colorarray = Rebin(Transpose(Temporary(colorarray)), x_pix, y_pix)
+      colorarray = rebin(Transpose(Temporary(colorarray)), x_pix, y_pix)
    END ELSE BEGIN
-      x_pix = 100
-      y_pix =  20
+      x_pix = (range[1]-range[0])+1
+      y_pix = x_pix * aspect_ratio
+      norm_x_size = norm_length
       colorarray = FindGen(x_pix)
-      colorarray = Rebin(Temporary(colorarray), x_pix, y_pix)
+      colorarray = rebin(Temporary(colorarray), x_pix, y_pix)
    END      
    
 
    IF Keyword_Set(NOSCALE) THEN BEGIN
       Scl, colorarray, [min, max]
-      UTv, colorarray, xnorm, ynorm, legend_dims 
-   END ELSE BEGIN
-      If Keyword_Set(RANGE) then begin
-          UTv, Scl(colorarray, Range), xnorm, ynorm, legend_dims
-      end else begin
-         UTvScl, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
-      END
-   end
+   ENDif
+   UTv, colorarray, xnorm, ynorm, legend_dims, $
+        Norm_x_size=norm_x_size, Norm_y_size=norm_y_size, $
+        _EXTRA=e
+
    
 
    
