@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.18  2003/08/13 12:59:07  thiel
+%          Small changes for test purpose.
+%
 %       Revision 1.17  2003/03/26 16:03:51  kupper
 %       added two bugs for UTvScl in todo-list.
 %
@@ -112,42 +115,6 @@
 \usepackage{SIunits}                           % use SI units by their name and produce upright greek symbols
 
         
-% Figures & Captions
-\usepackage{graphicx}
-\usepackage[footnotesize,nooneline]{caption}
-\DeclareGraphicsRule{.tif}{eps}{.bb}{`convert #1 eps:-}
-\DeclareGraphicsRule{.gif}{eps}{.bb}{`convert #1 eps:-}
-\DeclareGraphicsRule{.bmp}{eps}{.bb}{`convert #1 eps:-}
-\DeclareGraphicsRule{.jpg}{eps}{.bb}{`convert #1 eps:-}
-% TeX requirements for putting a figure onto a page
-% are rather strict (and therefore seldom fulfilled
-% the following command make the placement of figures
-% more sloppier
-\renewcommand{\textfraction}{0.1}
-\renewcommand{\topfraction}{0.9}
-\renewcommand{\bottomfraction}{0.9}
-
-
-% Definitions
-% the way a bind figures into the document:
-\newcommand{\myfig}[5]{\begin{figure}[tbh]\begin{center}\includegraphics[#3]{#2}\caption{\label{#1}{\sc#4.} #5}\end{center}\end{figure}}
-
-
-% define an acronym by: 
-%   \acrodef{CCH}{cross coincidence histogram} 
-% following commands produce the shown output:
-%   \ac{CCH}  -> cross coincidence histogram (CCH)  % for the first appearance 
-%   \ac{CCH}  -> CCH                                % any further appearance
-%   \acf{CCH} -> cross coincidence histogram (CCH)  % always
-%   \acl{CCH} -> cross coincidence histogram        % always
-%   \acs{CCH} -> CCH                                % always
-% you can also make a list of acronyms (see documentation)
-
-
-% integrate figures by:
-%   \myfig{label}{filename}{width,height}{short-title}{description}
-
-
 \begin{document}
 
 \begin{center}
@@ -163,7 +130,7 @@ Version: \$Id$ $\$
 \item \texttt{WhoUses} doesn't work and its wrapper calls routine with wrong path.
 \item Parser confuses occasional \texttt{NAME::}--keywords with name
   of the routine given by the \texttt{NAME:} statement in the header.
-\item The To Do--list displayed on the WWW page is too old.
+\item The To Do--list on the WWW page needs to be updated by hand..
 \end{itemize}
 
 
