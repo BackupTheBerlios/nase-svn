@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.4  2000/01/05 13:55:14  saam
+;            minus in doc was missing
+;
 ;      Revision 1.3  1999/12/21 09:55:29  saam
 ;            keyword MUA was not documented
 ;
@@ -42,7 +45,7 @@
 ;            the user anyway
 ;
 ;
-;
+;-
 FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, MEMBRANE=membrane, MUA=mua, TIME=time, SELECT=select
 
    On_Error, 2

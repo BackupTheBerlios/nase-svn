@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/01/05 13:53:48  saam
+;             minus in doc was missing
+;
 ;       Revision 1.3  1999/12/21 09:49:39  saam
 ;             doc header updated
 ;
@@ -68,7 +71,7 @@ FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, _EXTRA=e
    filename = FILE+'.'+L.FILE
    
    data = ReadSim(filename, _EXTRA=e)
-   IF Keyword_Set(TD) THEN data = REFORM(L, h, w, (SIZE(data))(2), /OVERWRITE)
+   IF Keyword_Set(TD) THEN data = REFORM(data, h, w, (SIZE(data))(2), /OVERWRITE)
 
    RETURN, data
 END
