@@ -16,13 +16,14 @@
 ;
 ;          Merke: DER WERT 0 HAT STETS DIE FARBE SCHWARZ!
 ;
-;          Nichtexistierende Verbindungen (!NONE) werden set Version 1.17 
+;          Nichtexistierende Verbindungen (!NONE) werden seit Version 1.17 
 ;          dunkelblau dargestellt.
 ;   
 ; CATEGORY: GRAPHIC
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
-;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr | ,/NOWIN]
+;                               [,TITEL='Titel'][,GROESSE=ZOOM=Fenstergroesse] 
+;                               [,WINNR=FensterNr | ,/NOWIN] [,GET_WIN=FensterNr]
 ;                               [,/DELAYS]
 ;                               [/SLIDE [,XVISIBLE=Fensterbreite] [,YVISIBLE=Fensterhöhe] [,GET_BASE=Base_ID] ]
 ;
@@ -31,7 +32,7 @@
 ; 
 ; KEYWORD PARAMETERS: TITEL: Titel des Fensters, das die Darstellung
 ;                            enthalten soll 
-;                     GROESSE: Faktor fuer die Vergroesserung der Darstellung
+;         ZOOM oder GROESSE: Faktor fuer die Vergroesserung der Darstellung
 ;                     WINNR: Nr des Fensters, in dem die Darstellung
 ;                            erfolgen soll (muss natuerlich offen
 ;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
@@ -65,6 +66,8 @@
 ;                   Wird WinNr UND SLIDE angegeben, so wird die Matrix wie gewohnt im angegebenen Fenster dargestellt.
 ;                       Ein Slide-WIndow wird außerdem geöffnet.
 ;                   
+;                    GET_WIN: Hier wird die Nummer des Fensters zurückgegeben, das 
+;                             für die Darstellung verwendet wurde.
 ;                   GET_BASE: Wird SLIDE angegeben, so kann hier die
 ;                             ID des erstellten Base-Widgets
 ;                             zurückgegeben werden, um das Fenster
@@ -87,17 +90,21 @@
 ;          Matrix' dar.
 ;
 ;
-; SEE ALSO: <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#INITDW">InitDW()</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#FREEDW">FreeDW</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#RESTOREDW">RestoreDW</A>,
-;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETWEIGHT">SetWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETDELAY">SetDelay</A>,
-;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETCONSTWEIGHT">SetConstWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETCONSTDELAY">SetConstDelay</A>,
-;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETLINEARWEIGHT">SetLinearWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETLINEARDELAY">SetLinearDelay</A>,
-;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETGAUSSWEIGHT">SetGaussWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETGAUSSDELAY">SetGaussDelay</A>,
-;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETDOGWEIGHT">SetDogWeight</A>,
-;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#DELAYWEIGH">DelayWeigh()</A>
+; SEE ALSO: <A HREF="../simu/connections/index.html#INITDW">InitDW()</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#FREEDW">FreeDW</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#RESTOREDW">RestoreDW</A>,
+;           <A HREF="../simu/connections/index.html#SETWEIGHT">SetWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETDELAY">SetDelay</A>,
+;           <A HREF="../simu/connections/index.html#SETCONSTWEIGHT">SetConstWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETCONSTDELAY">SetConstDelay</A>,
+;           <A HREF="../simu/connections/index.html#SETLINEARWEIGHT">SetLinearWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETLINEARDELAY">SetLinearDelay</A>,
+;           <A HREF="../simu/connections/index.html#SETGAUSSWEIGHT">SetGaussWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETGAUSSDELAY">SetGaussDelay</A>,
+;           <A HREF="../simu/connections/index.html#SETDOGWEIGHT">SetDogWeight</A>,
+;           <A HREF="../simu/connections/index.html#DELAYWEIGH">DelayWeigh()</A>
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.11  1998/02/03 17:29:15  kupper
+;              Statt GROESSE kann nun alternativ ZOOM verwendet werden.
+;              GET_WIN-Schlüsselwort zugefügt.
+;
 ;       Revision 2.10  1998/01/26 18:23:47  saam
 ;             Fehler bei Null-Device korrigiert
 ;
@@ -165,13 +172,15 @@
 ;-
 
 
-PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
+PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
-                 NOWIN = nowin
+                 NOWIN = nowin, GET_WIN=get_win
 
    IF !D.Name EQ 'NULL' THEN RETURN
+
+   Default, GROESSE, ZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
 
    Handle_Value, __Matrix, _Matrix, /NO_COPY 
 
@@ -317,7 +326,11 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
 
 
    Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
-   
+
+   ;;------------------> Fensternummer zurückliefern:
+   GET_WIN = !D.Window 
+   ;;--------------------------------
+
 END        
         
 
