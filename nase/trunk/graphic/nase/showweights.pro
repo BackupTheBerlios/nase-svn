@@ -128,6 +128,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.23  1998/03/22 14:07:59  kupper
+;              ?size sind jetzt longs, daher auch sehr grosse fenster moeglich.
+;               Scheint aber das Retain nicht mehr zu funktionieren, dann..
+;
 ;       Revision 2.22  1998/03/19 17:11:11  kupper
 ;              Bet_Base liefert jetzt -1 zurück, falls ein gewöhnliches Fenster geöffnet
 ;               wurde, so daß man bestimmen kann, wie man es wieder schließen muß
@@ -317,11 +321,11 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    
    If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
    If Not Set(GROESSE) Then Begin 
-      XGroesse = 1
-      YGroesse = 1 
+      XGroesse = 1l
+      YGroesse = 1l 
    Endif Else Begin 
-      XGroesse = Groesse
-      YGroesse = Groesse
+      XGroesse = long(Groesse)
+      YGroesse = long(Groesse)
    Endelse
 
    ;;------------------> Auto-Slide ?
@@ -422,7 +426,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
          If not set(WINNR) then wdelete
          
          ;; Ein zweifenstriges IDL-Slide-Window:
-         Slide_Image, Image, /RETAIN, $
+         Slide_Image, Image, $
           XSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
           XVISIBLE=xvisible, YVISIBLE=yvisible, $
           Title=titel, TOP_ID=Base, SLIDE_WINDOW=GET_WIN ;Fensternummer zurückliefern
