@@ -42,7 +42,8 @@
 ;*                         ]
 ;*                       )
 ;
-; INPUTS:;  INDW | WIDTH, HEIGHT::
+; INPUTS:
+;  INDW | WIDTH, HEIGHT::
 ;    Die DW-Struktur, als deren Input ein Bild generiert werden
 ;    soll. Für den Fall, daß die Verarbeitung des Bildes 
 ;    nicht direkt über DelayWeigh
@@ -56,8 +57,13 @@
 ;  
 ;
 ; OPTIONAL INPUTS:
-;   PICTURE:: If this argument ist present, semi-automatic input
-;             generation is selected (see <I>Method 2</I> below).
+;   PICTURE:: If this argument is present, semi-automatic input
+;             generation is selected (see <I>Method 2</I> in section
+;             "automatic input generation" below).
+;
+;   AUTO_*::  If one of these arguments is present, full-automatic input
+;             generation is selected (see <I>Method 3</I> in section
+;             "automatic input generation" below).
 ;
 ;         VISUALIZE:: Ist dieses Schlüsselwort benutzt, wird der
 ;                    Scanvorgang in einem Fenster dargestellt.
@@ -96,9 +102,10 @@
 ;                    enthalten.<BR>
 ;<BR>
 ;
-;         Alle weiteren Schlüsselworte und das "Picture"-Argument
+;  (automatic input generation)::
+;       Alle weiteren Schlüsselworte und das "Picture"-Argument
 ;         betreffen die Art des Inputs.
-;         Dabei werden drei mögliche Inputmethoden unterschieden:<BR>
+;         Dabei werden drei mögliche Inputmethoden unterschieden:<BR><BR>
 ;
 ;         <I>1. Die manuelle Methode:</I><BR>
 ;                                  Wird keins der <*>AUTO_*</*>-Schlüsselworte 
@@ -113,7 +120,7 @@
 ;                                  Wird der RF-Scan mit der manuellen
 ;                                  Methode initialisiert, so wird eine 
 ;                                  informative Message darüber
-;                                  ausgegeben.<BR>
+;                                  ausgegeben.<BR><BR>
 ;         <I>2. Die halbautomatische</I><BR>
 ;                         Methode: Wird bei der Initialisierung ein
 ;                                  Bild als <*>Picture</*>-Argument
@@ -133,14 +140,14 @@
 ;                                  präsentiert das Bild zufällig an
 ;                                  allen möglichen Positionen und
 ;                                  informiert darüber, wenn ein neuer
-;                                  Präsentationszyklus beginnt.<BR>
+;                                  Präsentationszyklus beginnt.<BR><BR>
 ;         <I>3. Die vollautomatischeMethode:</I><BR>
 ;                                  Wird eines der <*>AUTO_*</*>-Schlüsselworte
 ;                                  angegeben, so generiert
 ;                                  <A>RFScan_Zeigmal</A> den Input
 ;                                  automatisch.
-;                                  Es braucht kein "Picture"-Argument
-;                                  übergeben zu werden.<BR><BR>
+;                                  Es braucht kein <*>Picture</*>-Argument
+;                                  übergeben zu werden.<BR>
 ;            Die AUTO-Modi:<BR>
 ;                  <B>AUTO_SINGLEDOT:</B> Als Input wird ein einzelner Pixel
 ;                                  generiert, der gleichverteilt
