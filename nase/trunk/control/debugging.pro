@@ -1,3 +1,17 @@
+;+
+; NAME: 
+;   Debugging
+;
+; VERSION:
+;   $Id$
+;
+; AIM:
+;   Internal use
+;   
+; CATEGORY:
+;  Internal
+;
+;-
 Pro Debugging, MESSAGES=messages, ASSERTIONS=assertions
    If Set(Messages) then begin
       If Keyword_Set(Messages) then $
