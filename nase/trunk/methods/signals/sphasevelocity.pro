@@ -80,6 +80,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1999/02/12 15:52:49  gabriel
+;          An Handle sheets angepasst
+;
 ;     Revision 1.1  1999/02/02 14:32:28  gabriel
 ;          was neues
 ;
@@ -167,8 +170,8 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       closesheet,pix_2 
       opensheet,sheet_1
       !p.multi = 0
-      device,copy=[0,0,XSIZE-1,XSIZE-1,0,.5*XSIZE,pix_1.winid]
-      device,copy=[0,0,XSIZE,.5*XSIZE-1,0,0,pix_2.winid]
+      device,copy=[0,0,XSIZE-1,XSIZE-1,0,.5*XSIZE,getwinid(pix_1)]
+      device,copy=[0,0,XSIZE,.5*XSIZE-1,0,0,getwinid(pix_2)]
       closesheet,sheet_1
    ENDIF
    vel(i) = regtmp(1)
