@@ -29,7 +29,7 @@
 ;    xtitle:         Beschriftung der X-Achse, Default: 'Time / ms'
 ;    ytitle:         Beschriftung der Y-Achse, Default: 'Neuron #' 
 ;    win:            oeffnet und benutzt Fenster NR. Win zur Darstellung
-;    schriftgroesse: die Groesse der Achsenbeschriftung.
+;    schriftgroesse: die Größe der Achsenbeschriftung.
 ;    offset:         Zahlenwert, der zur x-Achsenbeschriftung addiert wird
 ;                    (beachte also OVERSAPMPLING); 
 ;                    sinnvoll, wenn man nur einen Teil der Zeitachse 
@@ -94,6 +94,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.12  1999/12/06 13:25:47  thiel
+;         Tried to turn on cvs watches.
+;
 ;     Revision 1.11  1999/12/06 13:18:45  thiel
 ;         Now able to use sparse-nt-arrays and x/yrange.
 ;
