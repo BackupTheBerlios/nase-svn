@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.5  1998/04/07 14:33:06  kupper
+;              Macht nun automatisch ein reform(), falls das Array führende 1-Dimensionen hat...
+;
 ;       Revision 2.4  1998/03/03 14:40:50  kupper
 ;              Benutzt jetzt UTVScl für Kompatibilität mit allerlei Devices...
 ;
@@ -66,10 +69,10 @@ Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackback
 ;      2:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
 ;      3:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
 ;      4:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
-      1:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
-      2:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
-      3:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
-      4:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
+      1:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
+      2:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
+      3:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
+      4:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
 
    endcase
 
