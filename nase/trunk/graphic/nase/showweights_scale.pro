@@ -13,215 +13,135 @@
 ;          durch den speziellen Farbindex ersetzt.)<BR>
 ;          Optional kann auch die Farbtabelle entsprechend gesetzt werden.
 ;
-; CATEGORY: Graphic
+; CATEGORY:
+;  Array
+;  Color
+;  Connections
+;  Graphic
+;  Image
+;  NASE
 ;
-; CALLING SEQUENCE: UTv_Array =ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
-;                                                       [,COLORMODE=mode]
-;                                                       [,RANGE_IN=upper_boundary]
-;                                                       [,GET_COLORMODE={+1|-1}]
+; CALLING SEQUENCE:
+;*  UTv_Array = ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
+;*                                [,COLORMODE=mode]
+;*                                [,RANGE_IN=upper_boundary]
+;*                                [,GET_COLORMODE={+1|-1}]
+;*                                <I>obsolete: </I>[,GET_MAXCOL=Farbindex]
+;*                                [,GET_RANGE_IN =scaling_boundaries_in ]
+;*                                <I>obsolete: </I>[,GET_RANGE_OUT=scaling_boundaries_out])
 ;
-;                                                       [,GET_MAXCOL=Farbindex]
-;                                                       [,GET_RANGE_IN =scaling_boundaries_in ]
-;                                                       [,GET_RANGE_OUT=scaling_boundaries_out])
-;
-; INPUTS: Array: Ein (nicht notwendigerweise, aber wohl meist)
-;                NASE-Array. (D.h. es darf auch !NONE-Werte
+; INPUTS: Array:: Ein (nicht notwendigerweise, aber wohl meist)
+;                NASE-Array. (D.h. es darf auch <*>!NONE</*>-Werte
 ;                enthalten..., ganz positiv oder positiv/negativ sein.)
 ;
-; KEYWORD PARAMETERS: SETCOL: Wird dieses Schlüsselwort auf 1 gesetzt, so
-;                             initialisiert die Routine auch die
-;                             Farbtabelle und paßt die Werte von 
-;                             !P.Background und Set_Shading
-;                             entsprechend an.
-;                             (Graustufen für positive Arrays,
-;                             Rot/Grün für gemischtwertige.)
+; INPUT KEYWORDS:
+;  SETCOL:: Wird dieses Schlüsselwort auf <*>1</*> gesetzt, so initialisiert
+;           die Routine auch die Farbtabelle und paßt die Werte von
+;           !P.Background und Set_Shading entsprechend an. (Graustufen
+;           für positive Arrays, Rot/Grün für gemischtwertige.)<BR>
+;<BR>
+;           Wird dieses Schlüsselwort auf <*>2</*> gesetzt, so initialisiert
+;           die Routine NUR die Farbtabelle und paßt die Werte von
+;           <*>!P.Background</*> und <C>Set_Shading</C> entsprechend an. Das Array
+;           wird NICHT skaliert. Der Rückgabewert ist in diesem Fall
+;           <*>0</*>.<BR>
+;<BR>
+;           Hat nur Effekt, wenn <C>/NASE</C> oder <C>/NEUTRAL</C> angegeben wurde.
 ;
-;                             Wird dieses Schlüsselwort auf 2
-;                             gesetzt, so initialisiert die
-;                             Routine NUR die Farbtabelle und
-;                             paßt die Werte von !P.Background
-;                             und Set_Shading entsprechend
-;                             an. Das Array wird NICHT
-;                             skaliert. Der Rückgabewert ist in
-;                             diesem Fall 0.
+;  COLORMODE:: Mit diesem Schlüsselwort kann unabhängig von den Werten
+;              im Array die schwarz/weiss-Darstellung (<C>COLORMODE</C><*>=+1</*>)
+;              oder die rot/grün-Darstellung (<C>COLORMODE</C><*>=-1</*>) erzwungen
+;              werden.
 ;
-;                             Hat nur Effekt, wenn /NASE oder
-;                             /NEUTRAL angegeben wurde.
-;                  COLORMODE: Mit diesem Schlüsselwort kann unabhängig 
-;                             von den Werten im Array die
-;                             schwarz/weiss-Darstellung (COLORMODE=+1) 
-;                             oder die rot/grün-Darstellung
-;                             (COLORMODE=-1) erzwungen werden.
-;                 PRINTSTYLE: Wird dieses Schlüsselwort gesetzt, so
-;                             wird die gesamte zur Verfügung stehende Farbpalette
-;                             für Farbschattierungen benutzt. Die Farben orange
-;                             und blau werden NICHT gesetzt.
-;                             (gedacht für Ausdruck von schwarzweiss-Zeichnungen.)
-;                   RANGE_IN: The positive scalar value given in RANGE_IN
-;                             will be scaled to the maximum
-;                             color (white / full green). Note
-;                             that this exact value does not
-;                             have to be contained in the array.
-;                             If the array contains values
-;                             greater than RANGE_IN, the result
-;                             will contain invalid color
-;                             indices.
-;                             By default, this value will be
-;                             determined from the arrays
-;                             contents such as to span the whole 
-;                             available color range.
+;  PRINTSTYLE:: Wird dieses Schlüsselwort gesetzt, so wird die gesamte
+;               zur Verfügung stehende Farbpalette für
+;               Farbschattierungen benutzt. Die Farben orange und blau
+;               werden NICHT gesetzt. (gedacht für Ausdruck von
+;               schwarzweiss-Zeichnungen.)
+;
+;  RANGE_IN:: The <I>positive scalar value</I> given in <C>RANGE_IN</C> will be
+;             scaled to the maximum color (white / full green). Note
+;             that this exact value does not have to be contained in
+;             the array. If the array contains values greater than
+;             <C>RANGE_IN</C>, the result will contain invalid color
+;             indices.<BR>
+;             By default, this value will be determined from the
+;             arrays contents such as to span the whole available
+;             color range.<BR>
+;             Please note that this expects a scalar value, in
+;             contrary to the <C>RANGE_IN</C> keywords in other
+;             routines like <A>UTvScl</A> or <A>PlotTvScl</A>.
 ;
 ; OUTPUTS: TV_Array: Das geeignet skalierte Array, das direkt mit TV
 ;                    oder NASETV dargestellt werden kann.
 ;
-; OPTIONAL OUTPUTS: GET_MAXCOL: ShowWeights benutzt die Farben Blau für 
-;                               !NONE-Verbindungen und Orange für das
-;                               Liniengitter.
-;                               Daher stehen für die Bilddarstellung
-;                               nicht mehr alle Farbindizes zur
-;                               Verfügung. In GET_MAXCOL kann der
-;                               letzte verwendbare Index abgefragt werden.
-;                GET_COLORMODE: Liefert als Ergebnis +1, falls der
-;                               schwarz/weiss-Modus zur Darstellung
-;                               benutzt wurde (DW-Matrix enthielt nur
-;                               positive Werte), und -1, falls der
-;                               rot/grün-Modus benutzt wurde (DW-Matrix
-;                               enthielt negative Werte).
-;                GET_RANGE_IN,
-;                GET_RANGE_OUT: Diese Werte können direkt an den 
-;                               Befehl <A HREF="../../misc/arrays/#SCL">Scl</A> weitergereicht
-;                               werden, um weitere Arrays so zu
-;                               skalieren, daß deren Farbwerte
-;                               direkt vergleichbar sind
-;                               (d.h. ein Wert w eines so
-;                               skalierten Arrays wird auf den
-;                               gleichen Farbindex abgebildet,
-;                               wie ein Wert w, der im
-;                               Originalarray enthalten war).
+; OPTIONAL OUTPUTS:
+;  GET_MAXCOL:: ShowWeights benutzt die Farben blau für 
+;                 <*>!NONE</*>-Verbindungen und orange für das
+;                 Liniengitter.
+;                 Daher stehen für die Bilddarstellung
+;                 nicht mehr alle Farbindizes zur
+;                 Verfügung. In <C>GET_MAXCOL</C> kann der
+;                 letzte verwendbare Index abgefragt werden.<BR>
+;<BR>
+;                 <I>The keyword <C>GET_MAXCOL</C> is obsolete, but
+;                 maintained for backwards compatibility.</I><BR>
+;                 The value returned is always:<BR>
+;                 <*>GET_MAXCOL = !TOPCOLOR</*>
+;  GET_COLORMODE:: Liefert als Ergebnis <*>+1</*>, falls der
+;                 schwarz/weiss-Modus zur Darstellung
+;                 benutzt wurde (DW-Matrix enthielt nur
+;                 positive Werte), und <*>-1</*>, falls der
+;                 rot/grün-Modus benutzt wurde (DW-Matrix
+;                 enthielt negative Werte).
+;  GET_RANGE_IN,
+;  GET_RANGE_OUT:: Diese Werte können direkt an den 
+;                 Befehl <A>Scl</A> weitergereicht
+;                 werden, um weitere Arrays so zu
+;                 skalieren, daß deren Farbwerte
+;                 direkt vergleichbar sind
+;                 (d.h. ein Wert <I>w</I> eines so
+;                 skalierten Arrays wird auf den
+;                 gleichen Farbindex abgebildet,
+;                 wie ein Wert <I>w</I>, der im
+;                 Originalarray enthalten war).<BR>
+;<BR>
+;                 <I>The keyword <C>GET_RANGE_OUT</C> is obsolete, but
+;                 maintained for backwards compatibility.</I><BR>
+;                 The value returned is always:
+;*                GET_RANGE_OUT = [0, !TOPCOLOR]
 ;
-;                Zur Information: Es gelten die Beziehungen
-;
-;                     GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,
-;                                   = [0, max(Array)]  sonst.
-;
-;                     GET_RANGE_OUT = [0, GET_MAXCOL]
+;<BR>
+;                 Zur Information: Es gilt die Beziehung<BR>
+;<BR>
+;                 <*>GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,</*><BR>
+;                 <*>              = [0, max(Array)]  sonst.</*><BR>
+;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*>
 ;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
-;        	    Außerdem setzt es !P.BACKGROUND stets auf den Farbindex für schwarz
-;               und initialisiert SET_SHADING geeignet, damit folgende Surface-Plots nicht
+;        	Außerdem setzt es <*>!P.BACKGROUND</*> stets auf den Farbindex für schwarz
+;               und initialisiert <C>SET_SHADING</C> geeignet, damit folgende Surface-Plots nicht
 ;               seltsam aussehen.
 ;
 ; PROCEDURE: Aus Showweights, Rev. 2.15 ausgelagert.
 ;
-; EXAMPLE: 1. NASETV, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), ZOOM=10
-;          2. Window, /FREE, TITLE="Membranpotential"
-;             LayerData, MyLayer, POTENTIAL=M
-;             NASETV, ShowWeights_Scale( M, /SETCOL), ZOOM=10
-;          3. a = gauss_2d(100,100)
-;             WINDOW, 0
-;             NASETV, ShowWeights_Scale( a, /SETCOL, $
-;                                        GET_RANGE_IN=ri, GET_RANGE_OUT=ro )
-;             WINDOW, 1
-;             NASETV, Scl( 0.5*a, ro, ri )
-;            Die Werte der Arrays in den beiden Fenstern können 
-;            nun direkt verglichen werden.
-;            Der letzte Befehl ist übrigens identisch mit
-;             NASETV, ShowWeights_Scale( 0.5*a, RANGE_IN=ri(1) )
+; EXAMPLE:
+;*  1. UTV, /NASE, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), ZOOM=10
+;*  2. Window, /FREE, TITLE="Membranpotential"
+;*     LayerData, MyLayer, POTENTIAL=M
+;*     UTV, /NASE, ShowWeights_Scale( M, /SETCOL), ZOOM=10
+;*  3. a = gauss_2d(100,100)
+;*     WINDOW, 0
+;*     UTV, /NASE, ShowWeights_Scale( a, /SETCOL, $
+;*                                GET_RANGE_IN=ri, GET_RANGE_OUT=ro )
+;*     WINDOW, 1
+;*     UTV, /NASE, Scl( 0.5*a, ro, ri )
+;*    Die Werte der Arrays in den beiden Fenstern können 
+;*    nun direkt verglichen werden.
+;*    Der letzte Befehl ist übrigens identisch mit
+;*     UTV, /NASE, ShowWeights_Scale( 0.5*a, RANGE_IN=ri(1) )
 ;
-; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights()</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.24  2003/08/18 13:43:27  kupper
-;        !NONEs are now passed untouched, are handled by UTv.
-;
-;        Revision 2.23  2001/02/08 18:31:59  kupper
-;        Packed NASE plotting related system variables into a struct names !NASEP.
-;
-;        Revision 2.22  2001/01/22 19:31:51  kupper
-;        Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
-;        shall not be used any longer (according to colormanagement guidelines
-;        formed during first NASE workshop, fall 2000).
-;
-;        Revision 2.21  2001/01/22 14:04:26  kupper
-;        Changed color management to meet guidelines formed during the first
-;        NASE workshop, fall 2000.
-;        Pre-Checkin due to technical reasons. Headers not yet englishified...
-;
-;        Revision 2.20  2000/10/01 14:51:09  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 2.19  2000/08/31 10:23:27  kupper
-;        Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
-;
-;        Revision 2.18  2000/04/04 12:57:46  saam
-;              fixed 2 bugs concerning changes of color
-;              management with true color displays and
-;              the decomposed method
-;
-;        Revision 2.17  1999/11/12 16:56:33  kupper
-;        Oops! Corrected some errors...
-;
-;        Revision 2.16  1999/11/12 16:39:35  kupper
-;        Updated Docu.
-;        Added SETCOL=2 - Mode.
-;
-;        Revision 2.15  1999/09/23 14:15:20  kupper
-;        Range_In=0 is now interpreted as not set, not as literal 0 as
-;        before.
-;        Removed false "Range=ABS(Range)".
-;
-;        Revision 2.14  1999/09/23 08:21:00  kupper
-;        Added some lines to docu.
-;
-;        Revision 2.13  1999/09/22 16:49:51  kupper
-;        Implemented Keywords RANGE_IN, GET_RANGE_IN and GET_RANGE_OUT.
-;
-;        Revision 2.12  1999/09/22 09:55:44  kupper
-;        Added a "Temporary" here and there to save memory.
-;
-;        Revision 2.11  1998/06/12 14:04:00  saam
-;              path for nase color tables had changed
-;
-;        Revision 2.10  1998/05/26 13:15:43  kupper
-;               1. Die Routinen benutzen die neuen NASE-Colortables
-;               2. Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
-;                  Änderungen an der Postcript-Sheet-Verarbeitung.
-;                  Hoffentlich funktioniert alles (war recht kompliziert, wie immer.)
-;
-;        Revision 2.9  1998/05/21 17:57:37  kupper
-;               ...noch immer...
-;
-;        Revision 2.8  1998/05/21 17:34:03  kupper
-;               Test wegen PS-Bug.
-;
-;        Revision 2.7  1998/05/19 12:38:01  kupper
-;               Hoffentlich noch alles heil nach einem CVS-Konflikt.
-;                Glaube, ich hatte das PRINTSTYLE-Keyword implementiert,
-;                und Mirko eine Änderung am !P.BACKGROUND gemacht.
-;
-;        Revision 2.6  1998/05/18 19:46:42  saam
-;              minor problem with colortable on true color displays fixed
-;
-;        Revision 2.5  1998/04/16 16:51:24  kupper
-;               Keyword PRINTSTYLE implementiert für TomWaits-Print-Output.
-;
-;        Revision 2.4  1998/02/27 13:09:03  saam
-;              benutzt nun UTvLCT
-;
-;        Revision 2.3  1998/02/26 17:28:54  kupper
-;               Benutzt jetzt die neue !TOPCOLOR-Systemvariable.
-;        	Außerdem setzt es die !P.BACKGROUND stets auf den Farbindex für schwarz
-;        	und initialisiert SET_SHADING geeignet, damit folgende Surface-Plots nicht
-;                seltsam aussehen.
-;
-;        Revision 2.2  1998/02/18 13:48:18  kupper
-;               Schlüsselworte COLORMODE,GET_COLORMODE,GET_MAXCOL zugefügt.
-;
-;        Revision 2.1  1998/02/11 15:36:32  kupper
-;               Schöpfung durch Auslagern.
-;
+; SEE ALSO: <A>ShowWeights()</A>, <A>UTvScl</A>, <A>PlotTvScl</A>.
 ;-
 
 Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
@@ -248,10 +168,9 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
                                 ;interpreted as not set (not as
                                 ;literal 0)
    Default, Range, max([max, -min]) ; for positive Arrays this equals max.
-   If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
-      message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
-      Range = Range(1)
-   End
+
+   assert, N_Elements(Range) eq 1, "Range_In must be a scalar value for this routine."
+
    ;;--------------------------------
    
    ;;------------------> Optional Outputs
