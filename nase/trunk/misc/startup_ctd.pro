@@ -164,11 +164,9 @@ common commonrandom, seed
    endelse
    ;; --------------------------------------------------------
    
-   ;;Initialise (and restore, if logo was displayed) color map,
-   ;;according to NASE color management:
-   ULoadCt, 0 ;;(This is nohup-protected itself)
-   Foreground, "black" ;;(so is this, as it uses UTvLct)
-   Background, "white" ;;(so is this, as it uses UTvLct)
+   ;;Initialisation (and restoring, if logo was displayed) of color map,
+   ;;according to NASE color management, is done in the remaining
+   ;;section of file misc/startup!
 
    ;;Initialise random seed, so that routines can expect it to be
    ;;defined:

@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.46  2002/08/02 15:13:26  kupper
+;       Initialisation (or resetting, if logo was displayed) now fully done in latter part of misc/startup.
+;
 ;       Revision 1.45  2002/04/11 14:46:22  kupper
 ;       added messageoftheday.
 ;
@@ -168,6 +171,8 @@ If not(nase_startup_executed) then startup_ctd
 ResetCM
 ;; This will select some plotting-defaults, and will initialize the
 ;; !NASEP system variable:
+;; (The following three calls are nohup-protected:)
+ULoadCT, 0
 Foreground, "white"          ; default foreground is white
 Background, "black"          ; default background is black
 !X.TICKLEN = 0.02            ; this is IDLs default value for the ticklen; in its IDL like  
