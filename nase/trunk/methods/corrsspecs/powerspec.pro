@@ -84,7 +84,7 @@ FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,
                     TRUNC_PHASE=TRUNC_PHASE, KERNEL=kernel, SAMPLEPERIOD=sampleperiod, COMPLEX=Complex
  
 
-   d = adims(series)
+   d = (SIZE(series))(1:(SIZE(series))(0))
    IF N_Elements(D) GT 1 THEN nsig = PRODUCT(d(1:N_Elements(d)-1)) ELSE nsig=1
    series = REFORM(series, d(0), nsig, /OVERWRITE)
    
