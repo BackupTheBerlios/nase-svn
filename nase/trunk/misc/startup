@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.45  2002/04/11 14:46:22  kupper
+;       added messageoftheday.
+;
 ;       Revision 1.44  2001/08/10 08:59:35  saam
 ;       added SaveGD call
 ;
@@ -185,3 +188,5 @@ SelectNASETable, /STANDARD   ; default NASE color table set
 !NASEP.INTERPOLATION=0       ; 0:none, 1:linear, 2:cubic, 3:none(polygons)
 
 !PROMPT="IDL/NASE> "
+
+MessageOfTheDay
