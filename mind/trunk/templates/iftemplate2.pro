@@ -35,8 +35,7 @@
 ;                     WIDTH     : width of the input to be created
 ;                     LOGIC     : logical operation :
 ;                                 NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
-;                                 allowed values are
-;                                 'AND', 'OR', 'ADD'
+;                                 valid values can be found <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#OPID>here</A>
 ;
 ;                     {various filter options}: to be added by the author
 ;
@@ -50,6 +49,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/22 19:04:23  saam
+;           updated doc header
+;
 ;     Revision 1.4  2000/01/21 12:46:25  saam
 ;           extracted the logic implementation to opID and operator
 ;
