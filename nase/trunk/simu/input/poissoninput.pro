@@ -56,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/02/17 19:30:07  saam
+;           now uses new fracRandom
+;
 ;     Revision 2.5  1999/02/17 16:57:57  saam
 ;           + new optional output PULSE
 ;           + bug fix: Frac_Random crashed for FRAC near 1
@@ -169,7 +172,7 @@ FUNCTION PoissonInput, PIS, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rate,
             message, 'dont know if its working...'
 ;            ja(frac_random(PIS.w*PIS.h,PIS.frac)) = (FIX(PIS.jitter*RandomU(seed, FIX(PIS.frac*PIS.w*PIS.h)))) ; jitter array for each neuron, new for each correlated spike
          END
-         IF PIS.frac GE 0.999 THEN neuronInd = LIndgen(PIS.w*PIS.h) ELSE neuronInd = Frac_Random(PIS.w*PIS.h, PIS.frac)
+         neuronInd = FracRandom(PIS.w*PIS.h, LONG(PIS.frac*PIS.w*PIS.h))
          FOR i=0,N_Elements(neuronInd)-1 DO PIS.ci((ja(neuronInd(i))+PIS.ciInd) MOD PIS.ciSize, neuronInd(i)) =  1 ; set spikes (distributed during following time steps)
       END ELSE PULSE = 0
       vec        = (sig_uncorr+PIS.ci(PIS.ciInd,*,*)) < 1      ; add un- and -correlated processes (only one spike at a time)
