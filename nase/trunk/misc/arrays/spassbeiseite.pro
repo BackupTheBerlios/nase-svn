@@ -19,18 +19,26 @@
 ;
 ; CATEGORY: MISCELLANEOUS / ARRAY OPERATIONS
 ;
-; CALLING SEQUENCE: vector = SpassBeiseite( sparse )
+; CALLING SEQUENCE: array = SpassBeiseite(sparse [,TYPE=type][,/DIMENSIONS] )
 ;
 ; INPUTS: sparse : ein zweidimensionales Sparse-Array
 ;
-; OUTPUT: vector : ein Float-Array
+; OPTIONAL INPUTS: type: Der Typ des erzeugten Arrays. Default: Typ 4 (Float)
+;                        Typ-Code: siehe IDL-Hilfe zu SIZE.
+;
+; KEYWORD PARAMETERS: 
+;    DIMENSIONS: Dieses Keyword benutzt die Information über die 
+;                ursprünglichen Dimensionen des Arrays am Ende des 
+;                Sparse-Arrays zur Rekonstruktion des Originals.
+;
+; OUTPUT: array : ein Float-Array
 ;
 ; EXAMPLE: --- Ohne Speichern der Dimension:
 ;  IDL> a=indgen(3,2)
 ;  IDL> print, a
 ;         0       1       2
 ;         3       4       5
-;  IDL> b=spassmacher(a, /SAME)
+;  IDL> b=spassmacher(a, TYPE=1) ; In diesem Fall reicht Type=1 (Byte)
 ;  IDL> print, b
 ;         5       6
 ;         1       1
@@ -38,13 +46,13 @@
 ;         3       3
 ;         4       4
 ;         5       5
-;  IDL> c=spassbeiseite(b, /SAME)
+;  IDL> c=spassbeiseite(b, TYPE=1 )
 ;  IDL> print, c
 ;         0       1       2       3       4       5 
 ;
 ; ----- Mit Dimension:
-;  IDL> b=spassmacher(a, /SAME, /DIM)
-;  IDL> c=spassbeiseite(b, /SAME, /DIM)
+;  IDL> b=spassmacher(a,  TYPE=1, /DIM)
+;  IDL> c=spassbeiseite(b,  TYPE=1, /DIM)
 ;  IDL> print, c
 ;         0       1       2
 ;         3       4       5  
@@ -55,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/12/04 12:14:41  thiel
+;            Stupid /SAMETYPE changed to TYPE.
+;
 ;        Revision 1.1  1999/12/03 16:21:28  thiel
 ;            Moved from simu/layers and added dimension support.
 ;
@@ -66,10 +77,10 @@
 ;
 ;-
 
-FUNCTION SpassBeiseite, sparse, DIMENSIONS=dimensions, SAMETYPE=sametype
+FUNCTION SpassBeiseite, sparse, DIMENSIONS=dimensions, TYPE=type
 
    Default, dimensions, 0
-   Default, sametype, 0
+   Default, type, 4
 
    s = Size(sparse)
    diminfoi = sparse(0,0)+1 ; index of array where dimension info starts
@@ -86,17 +97,11 @@ FUNCTION SpassBeiseite, sparse, DIMENSIONS=dimensions, SAMETYPE=sametype
          ; type is inherited from sparse, overall elements are in sparse(1,0)
          a = Make_Array(SIZE= $
           [Reform(sparse(0,diminfoi:diminfoi+sparse(0,diminfoi)),/OVERWRITE), $
-           s(s(0)+1), sparse(1,0)])
+           type, sparse(1,0)])
       ENDELSE
    ENDIF ELSE BEGIN
-      ; array that inherits sparse's type but has no dimensions
-      IF Keyword_Set(SAMETYPE) THEN $
-       a = Make_Array(sparse(1,0), TYPE=s(3)) $
-      ELSE BEGIN
       ; conventional:
-         a = Make_Array(sparse(1,0), /FLOAT)
-         Message, /INFO, 'Why not try the new SAMETYPE option???'
-      ENDELSE
+      a = Make_Array(sparse(1,0), TYPE=type)
    ENDELSE
 
    ; put values in array:

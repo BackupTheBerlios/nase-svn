@@ -18,17 +18,21 @@
 ;
 ; CATEGORY: MISCELLANEOUS / ARRAY OPERATIONS
 ;
-; CALLING SEQUENCE: sparse = Spassmacher(array [,/DIMENSIONS] [,/SAMETYPE])
+; CALLING SEQUENCE: sparse = Spassmacher(array [,TYPE=type][,/DIMENSIONS])
 ;
 ; INPUTS: array : ein Zahlen-Array
 ;
-; OUTPUTS: sparse : ein zweidimensionales Array.
-;                    Der Type des Arrays wird entweder vom Typ des 
-;                    Eingabearrays bestimmt, oder er ist immer Float.
+; OPTIONAL INPUTS: type: Der Typ des erzeugten Sparse-Arrays. Bei der 
+;                        Auswahl muß man darauf achten, einen Typ zu wählen, 
+;                        der sowohl Indizes als auch die Arraywerte selbst
+;                        aufnehmen kann. Default: Typ 4 (Float)
+;                        Typ-Code: siehe IDL-Hilfe zu SIZE.  
+;
+; OUTPUTS: sparse : ein zweidimensionales Array vom gewünschten Typ.
 ;                           
 ; KEYWORD PARAMETERS: 
 ;    DIMENSIONS: Dieses Keyword speichert die Information über die 
-;                ursprünglichen Dimensionen von vector am Ende des 
+;                ursprünglichen Dimensionen von array am Ende des 
 ;                Sparse-Arrays. Diese können dann zur Rekonstruktion des
 ;                Originalarrays verwendet werden.
 ;                   sparse(0,sparse(0,0)+1) : Zahl der Dimensionen
@@ -36,13 +40,6 @@
 ;                   sparse(1,sparse(0,0)+i) : unbenutzt (aber nicht Null, da
 ;                                              Sparse-Arrays mit /NOZERO
 ;                                              erzeugt werden.)
-;                Außerdem ist der Typ des erzeugten Sparse-Arrays immer
-;                gleich dem Typ des Eingabearrays. Siehe auch /SAMETYPE.
-;
-;    SAMETYPE: Ist SAMETYPE gesetzt, so wird der Type des Sparse-Arrays durch
-;              den des Eingabearrays bestimmt. Ansonsten gibt Spassmacher
-;              immer ein Float-Array zurück. (Das ist bis jetzt aus 
-;              Kompatibilitätsgründen noch die Defaulteinstellung.)
 ;
 ; EXAMPLE:  IDL> a=findgen(2,2)
 ;           IDL> print, spassmacher(a)
@@ -65,6 +62,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/12/04 12:14:41  thiel
+;            Stupid /SAMETYPE changed to TYPE.
+;
 ;        Revision 1.1  1999/12/03 16:21:28  thiel
 ;            Moved from simu/layers and added dimension support.
 ;
@@ -76,30 +76,24 @@
 ;
 ;-
 
-FUNCTION Spassmacher, a, DIMENSIONS=dimensions, SAMETYPE=sametype
+FUNCTION Spassmacher, a, DIMENSIONS=dimensions, TYPE=type
 
    Default, dimensions, 0
-   Default, sametype, 0
+   Default, type, 4
 
    s = Size(a)
    d = s(0) ; the number of dimensions of a
 
-   actindex = WHERE(a NE 0., count)
+   actindex = WHERE(a NE 0, count)
 
    IF Keyword_Set(DIMENSIONS) THEN BEGIN
       ; make longer array with space for size information at the end
-      sparse = Make_Array(2, count+d+2, TYPE=s(d+1), /NOZERO)
+      sparse = Make_Array(2, count+d+2, TYPE=type, /NOZERO)
       ; store size info at end of sparse array
       sparse(0,count+1:count+d+1) = s(0:d)
    ENDIF ELSE BEGIN
-      ; sparse array that inherits input's type
-      IF Keyword_Set(SAMETYPE) THEN $
-       sparse = Make_Array(2, count+1, TYPE=s(d+1), /NOZERO) $
-      ELSE BEGIN
       ; conventional sparse array
-         sparse = Make_Array(2, count+1, /FLOAT, /NOZERO)
-         Message, /INFO, 'Why not try the new SAMETYPE option???'
-      ENDELSE
+      sparse = Make_Array(2, count+1, TYPE=type, /NOZERO)
    ENDELSE
 
    sparse(0,0) = count ; active elements
