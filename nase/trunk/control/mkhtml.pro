@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.12  1998/01/22 11:52:31  saam
+;             Neues Directory alien
+;
 ;       Revision 1.11  1998/01/21 22:20:40  saam
 ;             HTML-Seiten haben nun einen NASE-Titel
 ;
@@ -46,7 +49,7 @@ PRO MkHTML
 Spawn, '/bin/pwd | sed "s/\/a\/ax1303//g"', MainDir
 SubDirs   = ['control','input','graphic','graphic/nonase','misc', $
              'misc/array', 'misc/structures', 'simu', 'simu/connections',$
-             'simu/layers', 'simu/plasticity', 'stat', 'video+tape']
+             'simu/layers', 'simu/plasticity', 'stat', 'video+tape', 'alien']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
