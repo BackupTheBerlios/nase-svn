@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.19  2001/02/08 18:32:15  kupper
+;     Packed NASE plotting related system variables into a struct names !NASEP.
+;
 ;     Revision 1.18  2001/01/22 19:32:04  kupper
 ;     Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
 ;     shall not be used any longer (according to colormanagement guidelines
@@ -98,13 +101,18 @@
 ;-
 PRO DefGlobVars
 
+;;;NASEMARK: simulation_variables ----------------------------------------------
+
 DefSysV, '!NONE' , -999999.0, 1
 DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
-DefSysV, '!REVERTPSCOLORS', 1
 
-DefSysV, '!MH', Handle_Create()
 
+
+;;;NASEMARK: constants ---------------------------------------------------------
+
+DefSysV, '!SIGMA2HWB', sqrt(alog(4d)), 1
+DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
 			DOWN	: string(27b)+'[B', $
 			RIGHT	: string(27b)+'[C', $
@@ -134,36 +142,60 @@ DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
 			ESC	: string(27b), $
 			BEL	: string(7b)}, 1
 
+
+
+;;;NASEMARK graphics_variables ------------------------------------------------
+
+DefSysV, '!REVERTPSCOLORS', 1
+
 DefSysV, '!TOPCOLOR', !D.Table_Size-11 ;;; protect some colors from being overwritten by uloadct (here: 10)
                                        ;;; maximal accetable value is
                                        ;;; !D.Table_Size-3 (to protect
                                        ;;; white and black)
-DefSysV, '!NASETABLE', {POS         : 0, $
-			NEGPOS      : 1, $
-			PAPER_POS   : 2, $
-			PAPER_NEGPOS: 3}
+
+DefSysV, '!NASEP', {!NASEPLT, $ ; according to !P, !PLT of standard IDL
+                    TABLESET: {!NASETABLESET, $
+                               SETNUMBER   : -1, $
+                               POS         : -1, $
+                               NEGPOS      : -1, $
+                               PAPER_POS   : -1, $
+                               PAPER_NEGPOS: -1}, $
+                    INTERPOLATION: -1l, $ ; 0:none, 1:linear, 2:cubic, 3:none(polygons)
+                    FOREGROUND: {!NASECOLOR, $
+                                 NAME: "uninitialized", $
+                                 R   : 0B, $
+                                 G   : 0B, $
+                                 B   : 0B}, $
+                    BACKGROUND: {!NASECOLOR}}
+;; the !NASEP variable will be corretly initialized at the end of "misc/startup".
 
 
-DefSysV, '!SIGMA2HWB', sqrt(alog(4d)), 1
-DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 
-; input buffer (history) erhoehen
-!EDIT_INPUT = 200
 
+
+;;;NASEMARK: filesystem_variables ----------------------------------------------
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
 DefSysV, '!NASE_LIB', !NASEPATH+'/shared/'+!VERSION.OS+'_'+!VERSION.ARCH+'/nasec.so', 0
 
-
 ; if set to 1, UOPENW will create directories if they dont exist
 DefSysV, '!CREATEDIR', 0, 0
 
+; os independent file separator
+DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
+
+
+
+
+; Master Handle
+DefSysV, '!MH', Handle_Create()
 
 ; defines a standard console
 DefSysV, '!CONSOLE', InitConsole(TITLE='Standard Output')
 
-; os independent file separator
-DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
+; input buffer (history) erhoehen
+!EDIT_INPUT = 200
+
 
 
 END

@@ -62,9 +62,19 @@ Pro Background, col, g, b
 
    If set(g) then begin ;; col argument is red parameter
       SetColorIndex, !D.TABLE_SIZE-2, col, g, b
+      ;; set plotting options:
+      !NASEP.BACKGROUND.NAME = "(custom)"
+      !NASEP.BACKGROUND.R    = col
+      !NASEP.BACKGROUND.G    = g
+      !NASEP.BACKGROUND.B    = b
    endif else begin
       color, col, red=red, gree=green, blue=blue, /exit
       SetColorIndex, !D.TABLE_SIZE-2, red, green, blue
+      ;; set plotting options:
+      !NASEP.BACKGROUND.NAME = col
+      !NASEP.BACKGROUND.R    = red
+      !NASEP.BACKGROUND.G    = green
+      !NASEP.BACKGROUND.B    = blue
    endelse
 
 End

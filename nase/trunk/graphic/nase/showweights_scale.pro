@@ -129,6 +129,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.23  2001/02/08 18:31:59  kupper
+;        Packed NASE plotting related system variables into a struct names !NASEP.
+;
 ;        Revision 2.22  2001/01/22 19:31:51  kupper
 ;        Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
 ;        shall not be used any longer (according to colormanagement guidelines
@@ -268,8 +271,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       If Keyword_Set(SETCOL) then begin
          If !D.NAME eq "PS" then begin
             ;;umgedrehte Graupalette laden:
-            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.PAPER_POS
-         endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.POS ;utvlct, g, g, g ;Grauwerte
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASEP.TABLESET.PAPER_POS
+         endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASEP.TABLESET.POS ;utvlct, g, g, g ;Grauwerte
       Endif
       
       If (SETCOL lt 2) then Scl, MatrixMatrix, [0, !TOPCOLOR], [0, Range]
@@ -279,9 +282,9 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
          If !D.Name eq "PS" then begin ;helle Farbpalette
-            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.PAPER_NEGPOS
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASEP.TABLESET.PAPER_NEGPOS
          endif else begin       ;dunkle Farbpalette
-            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.NEGPOS
+            uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASEP.TABLESET.NEGPOS
          endelse
          Set_Shading, VALUES=[!TOPCOLOR/2, !TOPCOLOR] ;Grüne Werte für Shading nehmen
       EndIf

@@ -91,9 +91,7 @@ Pro Startup_ctd
    check_NASE_LIB               ;Check NASE C-library, make it if it does'n exist.
 
 
-   ;; ----------- Are we running an interactive session? -----
-    
-   
+   ;;NASEMARK:--- Are_we_running_an_interactive_session? -----   
    stdout_fstat = fstat(-1)
    if fix(!version.release) lt 4 then $
     IsInteractiveSession = stdout_fstat.isatty $
@@ -103,33 +101,23 @@ Pro Startup_ctd
       Flush, -2
       Flush, -1
    endif
-
    ;; --------------------------------------------------------
 
    ;; --- in a nohup-session, don't connect to X-Server ------
    ;; --- but always connect to X-Server, if display of ------
    ;; --- the NASE logo was requested!                  ------
    uset_plot, !D.NAME  
-   ;; ----------- Show Logo on startup? ----------------------
+   ;;NASEMARK---- Show_Logo_on_startup? ----------------------
    WillShowLogo = (GetEnv("NASELOGO") eq "TRUE") 
    if IsInteractiveSession or  WillShowLogo then begin
       ;; try to get it, if available, but no DIRECT_COLOR!
       if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24
       DEVICE, DECOMPOSED=0
    endif
-   ;; --------------------------------------------------------
-   
-   ;; ----------- Show Logo on startup? ----------------------
    WillShowLogo = (WillShowLogo or IsInteractiveSession)
-   ;; if it is not explicitly wished
+   ;; if it is explicitly not wished:
    if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
    If WillShowLogo then ShowLogo, SECS=3
    ;; --------------------------------------------------------
   
-   ResetCM
-   Foreground, "white"          ; default foreground is white
-   Background, "black"          ; default background is black
-   !P.Title = "Graphics by NASE" ; default window title (bit of
-                                ; product placement... ;-) )
-   
 End

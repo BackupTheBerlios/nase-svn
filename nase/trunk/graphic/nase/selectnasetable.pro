@@ -113,26 +113,32 @@ Pro SelectNASETable, number, $
    Case number of
 
       0: begin ;;STANDARD
-         !NASETABLE.POS          =  0
-         !NASETABLE.NEGPOS       =  1
-         !NASETABLE.PAPER_POS    =  2
-         !NASETABLE.PAPER_NEGPOS =  3
+         !NASEP.TABLESET.SETNUMBER    =  0
+
+         !NASEP.TABLESET.POS          =  0
+         !NASEP.TABLESET.NEGPOS       =  1
+         !NASEP.TABLESET.PAPER_POS    =  2
+         !NASEP.TABLESET.PAPER_NEGPOS =  3
          Console, /MSG, "Selecting linear standard NASE tables."
       End
 
       1: begin ;;EXPONENTIAL
-         !NASETABLE.POS          =  4
-         !NASETABLE.NEGPOS       =  5
-         !NASETABLE.PAPER_POS    =  6
-         !NASETABLE.PAPER_NEGPOS =  7
+         !NASEP.TABLESET.SETNUMBER    =  1
+
+         !NASEP.TABLESET.POS          =  4
+         !NASEP.TABLESET.NEGPOS       =  5
+         !NASEP.TABLESET.PAPER_POS    =  6
+         !NASEP.TABLESET.PAPER_NEGPOS =  7
          Console, /MSG, "Selecting exponential NASE tables."
       End
       
       2: begin ;;MULTICOLOR
-         !NASETABLE.POS          =  8
-         !NASETABLE.NEGPOS       =  9
-         !NASETABLE.PAPER_POS    =  8
-         !NASETABLE.PAPER_NEGPOS =  9
+         !NASEP.TABLESET.SETNUMBER    =  2
+
+         !NASEP.TABLESET.POS          =  8
+         !NASEP.TABLESET.NEGPOS       =  9
+         !NASEP.TABLESET.PAPER_POS    =  8
+         !NASEP.TABLESET.PAPER_NEGPOS =  9
          Console, /MSG, "Selecting multicolor NASE tables."
       End
 
