@@ -6,7 +6,8 @@
 ;  $Id$
 ;
 ; AIM:
-;  Display a legend indicating color coding, compatible to TvScl routine.
+;  Display a legend indicating color coding, compatible to
+;  <*>TVScl</*> routine.
 ;
 ; PURPOSE:
 ;  Generate horizontal or vertical legend indicating the color coding
@@ -68,6 +69,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  2000/11/28 16:27:11  thiel
+;         Just minor change in header.
+;
 ;     Revision 2.14  2000/11/28 16:21:34  thiel
 ;         Header translation and debugging.
 ;
