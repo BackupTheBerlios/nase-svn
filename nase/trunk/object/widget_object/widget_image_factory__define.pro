@@ -1,6 +1,8 @@
 ;; ------------ Widget support routines ---------------------
 Pro WIF_Notify_Realize, showit_id
    Widget_Control, showit_id, Get_Uvalue=object
+   ;; make droplist selection consistent with object's image type:
+   object->type, object->type()
    object->initial_paint_
 End
 
@@ -76,8 +78,6 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
    ;; add a drop-list-widget to select the image type
    self.w_type = widget_droplist(self.widget, Value=self->types(), UValue=self, $
                                  Event_Pro="WIF_type_handler")
-   ;; make droplist selection consistent with object's image type:
-   self->type, self->type()
 
    subbase = widget_base(self.widget, /row)
    ;; add a slider to select image size
