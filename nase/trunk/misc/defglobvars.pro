@@ -123,7 +123,7 @@ DefSysV, '!NASEP', {!NASEPLT, $ ; according to !P, !PLT of standard IDL
 ;; the !NASEP variable will be corretly initialized at the end of "misc/startup".
 
 ;; Path to the COIL object image database:
-DefSysV, '!COILPATH', "/vol/data/simu/coil-database",1
+DefSysV, '!COILPATH', "/vol/data/simu/coil-database"
 
 
 
