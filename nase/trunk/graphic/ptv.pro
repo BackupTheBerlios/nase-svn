@@ -115,6 +115,7 @@ PRO PTv, Image, XNorm, YNorm, $
          GET_PIXELSIZE=Get_PixelSize, $
          _EXTRA=e
 
+   On_Error, 2
    CASE N_Params() OF
        0: Console, 'incorrect number of arguments', /FATAL
        1: PTvS, /NOSCALE, Image, GET_Position=Get_Position, GET_PIXELSIZE=Get_PixelSize, _EXTRA=e
