@@ -2,9 +2,12 @@
 ; NAME:
 ;  opID
 ;
+; AIM:
+;  assigns integers to various operator (used by <A>Operator</A>)
+;
 ; PURPOSE:
 ;  This routine assigns integer values to various Boolean &
-;  non-Boolean operators. It works together with <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#OPERATOR>Operator</A>.
+;  non-Boolean operators. It works together with <A>Operator</A>.
 ;
 ; CATEGORY: 
 ;  MIND / SIMULATION ROUTINES
@@ -29,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.3  2000/08/11 09:56:44  thiel
 ;         Added XOR support.
 ;

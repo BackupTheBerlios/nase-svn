@@ -1,7 +1,7 @@
 ;+
-; NAME:                 ValEach
+; NAME:                 ValEach()
 ;
-; AIM:                  receive parameter values used in loop
+; AIM:                  return parameter values used in loops
 ;  
 ; PURPOSE:              When variing parameters systematically via
 ;                       the ForEach mechanism, most times you want to
@@ -38,6 +38,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/29 08:10:28  saam
+;        added the AIM tag
+;
 ;        Revision 1.1  2000/06/21 09:01:36  saam
 ;              + used e.g., by AVG in explore
 ;

@@ -1,5 +1,7 @@
 ;+
-; NAME:               IFIVERT
+; NAME:               IFinvert
+;
+; AIM:                inverts a given input
 ;
 ; PURPOSE:            this filter inverts the given input
 ;                     it performs the following action :
@@ -41,6 +43,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.1  2000/01/20 11:01:33  alshaikh
 ;           initial version
 ;

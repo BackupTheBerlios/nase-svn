@@ -1,6 +1,7 @@
 ;+
-; NAME:    ifcsur.pro
+; NAME:    IFcsur
 ;
+; AIM:     convolutes input with a mexican hat
 ;
 ; PURPOSE:  simulates center-surround-RFs 
 ;
@@ -56,6 +57,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/09/29 08:10:34  saam
+;     added the AIM tag
+;
 ;     Revision 1.6  2000/02/25 15:06:10  alshaikh
 ;           new keyword /NORMALIZE
 ;

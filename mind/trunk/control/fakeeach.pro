@@ -1,6 +1,8 @@
 ;+
 ; NAME:               FakeEach
 ;
+; AIM:                fakes a loop, if you don't have one
+;
 ; PURPOSE:            Nearly all MIND-routines use the foreach-construction to allow
 ;                     the handling of loops. Sometimes you don't have loops but your 
 ;                     routines still rely on the foreach-construct to be properly initialized.
@@ -21,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/29 08:10:28  saam
+;     added the AIM tag
+;
 ;     Revision 1.3  2000/06/08 10:29:20  saam
 ;           + new keyword SKEL added
 ;

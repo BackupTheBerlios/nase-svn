@@ -1,6 +1,8 @@
 ;+
 ; NAME:                InitInput
 ;
+; AIM:                 prepares input to simulations (used by <A>Sim</A>)
+;
 ; PURPOSE:             Prepares data structures serving as input for sim. This routine
 ;                      is called from SIM. It makes nearly no sense to call it directly.
 ;
@@ -16,6 +18,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.12  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.11  2000/05/16 16:30:58  saam
 ;           changed flt to dbl
 ;

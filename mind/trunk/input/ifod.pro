@@ -1,10 +1,7 @@
 ;+
-; NAME:
-;  (Hint: Insert name in THIS line, if you want it to appear in the
-;  HTML-help. If you put it elsewhere, the HTML-help item will be 
-;  generated from the filename.)
+; NAME: IFOD
 ;
-; AIM: -please enter a short description of routine (a single line!)-
+; AIM: convolutes sinusoidal grating with Canny-Edge detectors
 ;  
 ; PURPOSE:
 ;  -please specify-
@@ -35,6 +32,7 @@
 ;  -please remove any sections that do not apply-
 ;  
 ; OPTIONAL OUTPUTS:
+
 ;  -please remove any sections that do not apply-
 ;  
 ; COMMON BLOCKS:
@@ -61,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/29 08:10:35  saam
+;        added the AIM tag
+;
 ;        Revision 1.3  2000/09/01 14:24:42  alshaikh
 ;              new keyword STIMSHIFT
 ;
@@ -88,7 +89,6 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
       ; INITIALIZE
       0: BEGIN      
 
-         print,'bla'
           Default, a, 500.
           Default, stimorient, 0
           Default, detectorient, 0

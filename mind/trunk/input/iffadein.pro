@@ -1,6 +1,7 @@
 ;+
-; NAME:   iffadein
+; NAME:   IFfadeIn
 ;
+; AIM:    linear fade-in of input
 ;
 ; PURPOSE: linear fade-in of whatever 
 ;
@@ -18,6 +19,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.6  2000/01/28 15:24:09  saam
 ;           console changes updates
 ;

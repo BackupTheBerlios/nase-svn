@@ -2,6 +2,9 @@
 ; NAME:
 ;  Operator
 ;
+; AIM:
+;  applies various operators to one or more arguments
+;
 ; PURPOSE:
 ;  This function applies an operator to some arguments. Its main
 ;  purpose is the simplify the writing of input filters.          
@@ -34,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.4  2000/09/01 14:14:41  saam
 ;          replaced size by nase typeof
 ;          to allow idl 3.6 compatibility

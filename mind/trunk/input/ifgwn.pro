@@ -1,6 +1,8 @@
 ;+
 ; NAME:               IFgwn
 ;
+; AIM:                creates pairwise-independent or partly correlated GWN for all neurons
+;
 ; PURPOSE:            Generates independent analog Gaussian white noise with a
 ;                     standard deviation of A for each neuron of the
 ;                     layer. The mean of the distribution is 0.
@@ -42,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.3  2000/06/29 14:46:14  saam
 ;           + _EXTRA added
 ;

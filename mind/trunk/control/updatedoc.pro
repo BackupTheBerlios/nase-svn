@@ -1,6 +1,8 @@
 ;+
 ;
-; NAME:                 UpdateDOC
+; NAME:                 UpdateDoc
+;
+; AIM:                  updates complete MIND documentation (superceded in near future)
 ;
 ; PURPOSE:              creates hypertext-documentation for MIND
 ;
@@ -11,6 +13,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/29 08:10:28  saam
+;       added the AIM tag
+;
 ;       Revision 1.4  2000/01/27 10:55:41  saam
 ;             added learn dir
 ;

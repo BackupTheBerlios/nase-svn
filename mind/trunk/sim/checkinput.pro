@@ -1,6 +1,7 @@
 ;+
-; NAME:   checkinput.pro
+; NAME:   CheckInput
 ;
+; AIM:    runs a simulation only generating and visualizing input
 ;
 ; PURPOSE: allows to simulate the generated input within one period
 ;          without simulating learning, connections...  
@@ -51,6 +52,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.13  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.12  2000/01/28 15:16:44  saam
 ;           changend console call by putting the console
 ;           data from the common block into the ap structure

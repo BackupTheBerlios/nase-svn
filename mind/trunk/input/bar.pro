@@ -1,5 +1,7 @@
 ;+
-; NAME:                BAR
+; NAME:                Bar
+;
+; AIM:                 creates a horizontal continuous/split bar
 ;
 ; PURPOSE:             Creates a horizontal bar centered in an array with a variable
 ;                      gap in the middle. The array elements containing a part of the
@@ -32,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.3  2000/09/29 08:10:34  saam
+;      added the AIM tag
+;
 ;      Revision 1.2  2000/01/05 13:49:10  saam
 ;            doc-minus was missing
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                InitLearn
 ;
+; AIM:                 prepares learning (used by <A>Sim</A>)
+;
 ; PURPOSE:             Prepares data structures for learning of connections. This routine
 ;                      is called from SIM. It makes nearly no sense to call it directly.
 ;
@@ -15,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.14  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.13  2000/08/11 14:11:29  thiel
 ;         Now shows delays on demand.
 ;

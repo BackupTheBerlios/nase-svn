@@ -1,7 +1,7 @@
 ;+
 ; NAME:               IFcannyEdge
 ;
-; AIM:                convolution of stimulus with orientation detector
+; AIM:                convolution of stimulus with an orientation detector
 ;
 ; PURPOSE:            Convolves the input given in STIMULUS with a Canny-Edge
 ;                     (orientation) detector
@@ -53,6 +53,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/29 08:10:34  saam
+;     added the AIM tag
+;
 ;     Revision 1.1  2000/07/04 14:23:36  saam
 ;           grrr
 ;

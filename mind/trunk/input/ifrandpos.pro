@@ -1,6 +1,8 @@
 ;+
 ; NAME:               IFRandPos
 ;
+; AIM:                shifts an arbitrary stimulus randomly to a set of positions (think of RFCine)
+;
 ; PURPOSE:            Shifts a given stimulus to specified positions
 ;                     in random order. Every call of this function
 ;                     changes the position. All positions will be
@@ -67,6 +69,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.1  2000/06/29 15:19:40  saam
 ;           huiiiii
 ;

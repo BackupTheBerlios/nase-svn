@@ -1,6 +1,8 @@
 ;+
 ; NAME:                FreeInput
 ;
+; AIM:                 cleans up memory and files used by the input (used by <A>Sim</A>)
+;
 ; PURPOSE:             Frees dynamic data structures used by INPUT, SIMP. This routine
 ;                      is called from SIM. It makes nearly no sense to call it directly.
 ;
@@ -11,6 +13,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.5  2000/05/16 16:28:15  saam
 ;           fixed two IDL3.6 problems
 ;

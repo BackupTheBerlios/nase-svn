@@ -1,6 +1,8 @@
 ;+
 ; NAME:               SIFpoissonC
 ;
+; AIM:                creates pulses with a poissonian interval distribution for a fraction of neurons
+;
 ; PURPOSE:            Generates poisson distributed pulses assigned to a fraction or all 
 ;                     neurons of a layer simultanously. The output is binary and by default
 ;                     'OR'ed with the provided input pattern.
@@ -45,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.4  2000/08/11 10:30:43  thiel
 ;         Added FILE and WRAP keywords.
 ;

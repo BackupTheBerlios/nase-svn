@@ -2,6 +2,9 @@
 ; NAME:
 ;  ForEach
 ;
+; AIM:
+;  iterates a procedure for several loops
+;
 ; PURPOSE: 
 ;  Performs a special action for various iterations and over several
 ;  loop variables.
@@ -15,6 +18,7 @@
 ; CALLING SEQUENCE:
 ;  iter = ForEach(procedure [,p1[,p2[,p3[,p4[,p5[,p6[,p7[p8[,p9]]]]]]]]] $
 ;                           [,LSKIP=lskip] [,LCONST=lconst]
+;                           [,SEP=sep]
 ;                           [,__XX (see below!)]
 ;                           [,ZZYY (see below!)]
 ;                           [,SKEL=skel]
@@ -77,6 +81,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2000/09/29 08:10:28  saam
+;     added the AIM tag
+;
 ;     Revision 1.10  2000/08/14 14:37:14  thiel
 ;         Added 'SEP'-Keyword to description in header.
 ;

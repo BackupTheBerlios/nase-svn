@@ -1,5 +1,8 @@
 ;+
-; NAME:               SIFuJitter
+; NAME:               SIFnJitter
+;
+; AIM:                jitters incoming spike with a Gaussian distribution
+;
 ;
 ; PURPOSE:            Jitters the incoming spikes randomly in time by a gaussian
 ;                     distribution (so each spike has an individual jitter).
@@ -48,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.7  2000/08/11 10:30:43  thiel
 ;         Added FILE and WRAP keywords.
 ;

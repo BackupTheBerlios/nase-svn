@@ -1,6 +1,7 @@
 ;+
-; NAME:   ifscale
+; NAME:   IFscale
 ;
+; AIM: multiplies input with a constant factor
 ;
 ; PURPOSE: input = input * factor 
 ;
@@ -44,6 +45,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.3  2000/08/11 10:30:43  thiel
 ;         Added FILE and WRAP keywords.
 ;

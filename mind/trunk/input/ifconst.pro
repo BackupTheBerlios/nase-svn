@@ -1,5 +1,7 @@
 ;+
-; NAME:               IFCONST
+; NAME:               IFconst
+;
+; AIM:                provides constant input from all neurons
 ;
 ; PURPOSE:            This filter generates a constant value for all neurons of the layer.
 ;                     This value is by default ADDED to the already existing input.
@@ -42,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/29 08:10:34  saam
+;     added the AIM tag
+;
 ;     Revision 1.4  2000/08/11 10:30:43  thiel
 ;         Added FILE and WRAP keywords.
 ;

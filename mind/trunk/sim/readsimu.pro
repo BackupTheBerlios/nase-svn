@@ -1,6 +1,8 @@
 ;+
 ; NAME:               ReadSimu
 ;
+; AIM:                restores all kind of neural actitvity from a simulation
+;
 ; PURPOSE:            This routine reads your simulation data. 
 ;
 ; CATEGORY:           MIND SIM
@@ -32,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  2000/09/29 08:10:38  saam
+;       added the AIM tag
+;
 ;       Revision 1.7  2000/06/20 13:16:16  saam
 ;             + new keyword SUFF
 ;

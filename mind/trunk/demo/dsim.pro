@@ -1,6 +1,8 @@
 ;+
 ; NAME:                 DSIM
 ;
+; AIM:                  demonstrates how to create simulations with MIND
+;
 ; PURPOSE:              A simple demo simulation. It implements two layer which are
 ;                       connected by a retinotopic Gaussian weight profile.
 ;
@@ -11,6 +13,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/29 08:10:31  saam
+;     added the AIM tag
+;
 ;     Revision 1.3  2000/01/28 17:43:51  saam
 ;           just for transfer
 ;

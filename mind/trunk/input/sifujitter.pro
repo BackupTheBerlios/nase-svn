@@ -1,6 +1,8 @@
 ;+
 ; NAME:               SIFuJitter
 ;
+; AIM:                jitters incoming spike with a uniform distribution
+;
 ; PURPOSE:            Jitters the incoming spikes randomly in time by a uniform
 ;                     distribution (so each spike has an individual jitter).
 ;                     If two input spikes of one neuron are accidentally
@@ -43,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.4  2000/01/31 09:19:18  saam
 ;           print, message -> console
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                Input
 ;
+; AIM:                 provides all input to simulations (used by <A>Sim</A>)
+;
 ; PURPOSE:             Generates various inputs for various Layers. This routine
 ;                      is called from SIM. It makes nearly no sense to call it directly.
 ;
@@ -17,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.12  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.11  2000/07/04 08:55:53  saam
 ;           + passes file skeleton to IFfilters via FILE keyword
 ;           + passes TOROID boundary conditions to LIFfilters via /WRAP

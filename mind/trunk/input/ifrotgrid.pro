@@ -1,6 +1,7 @@
 ;+
-; NAME:   ifrotgrid.pro
+; NAME:   IFrotGrid
 ;
+; AIM:    creates a rotating sinsoidal grating
 ;
 ; PURPOSE:  sine-grid with various orientation
 ;
@@ -33,6 +34,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.8  2000/09/29 08:10:35  saam
+;     added the AIM tag
+;
 ;     Revision 1.7  2000/01/28 15:24:09  saam
 ;           console changes updates
 ;

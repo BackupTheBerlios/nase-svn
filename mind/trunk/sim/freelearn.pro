@@ -1,6 +1,8 @@
 ;+
 ; NAME:                FreeLearn
 ;
+; AIM:                 cleans up after learning (used by <A>Sim</A>)
+;
 ; PURPOSE:             Frees dynamic memory used by LEARN. This routine
 ;                      is called from SIM. It makes nearly no sense to call it directly.
 ;
@@ -13,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/29 08:10:38  saam
+;     added the AIM tag
+;
 ;     Revision 1.2  2000/08/11 14:09:31  thiel
 ;         Now supports freeing for EXTERN rules.
 ;

@@ -2,6 +2,9 @@
 ; NAME:
 ;  DForEach
 ;
+; AIM:
+;  demo to demonstrate the basic use of the <A>ForEach</A>
+; 
 ; PURPOSE:
 ;  Demo for FOREACH-function. This illustrates how foreach is used to
 ;  vary two independent variables in the structure P.
@@ -29,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/29 08:10:31  saam
+;     added the AIM tag
+;
 ;     Revision 1.3  2000/08/14 14:38:12  thiel
 ;         Now also uses 'SEP'-keyword.
 ;

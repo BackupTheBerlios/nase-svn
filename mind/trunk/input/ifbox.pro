@@ -1,5 +1,7 @@
 ;+
-; NAME:               IFBOX
+; NAME:               IFbox
+;
+; AIM:               creates a filled box input
 ;
 ; PURPOSE:           generates a filled box or an inverted filled box (that is a frame) defined
 ;                    by the points (x1,y1) and (x2,y2)
@@ -42,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/29 08:10:34  saam
+;     added the AIM tag
+;
 ;     Revision 1.5  2000/05/02 12:08:27  saam
 ;           replaced a really silly loop
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               InitWeights
 ;
+; AIM:                initializes weight structures for simultion (used by <A>Sim</A>) 
+;
 ; PURPOSE:            Initializes weigth matrices for simulation. It is internally called
 ;                     by SIM.
 ;
@@ -15,6 +17,9 @@
 ; MODIFACTION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/29 08:10:38  saam
+;       added the AIM tag
+;
 ;       Revision 1.6  2000/08/31 09:45:53  saam
 ;             fixed broken RandomU support for non-delayed DW structures
 ;
