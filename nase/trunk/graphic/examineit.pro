@@ -88,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  1998/04/08 16:05:53  kupper
+;              kleiner Bug.
+;
 ;       Revision 2.7  1998/04/08 15:57:09  kupper
 ;              COLOR-Keyword hinzugefügt.
 ;
@@ -120,7 +123,7 @@
 
 pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
                  NOSCALE=noscale, GET_POSITION=get_position, GET_MINOR=get_minor, $
-                 _EXTRA=_extra
+                 COLOR = color;_EXTRA=_extra
 
    height = (size(w))(2)
    width  = (size(w))(1)
@@ -129,7 +132,7 @@ pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
    devpos = [xpos-zoom/2, ypos-zoom/2, xpos+zoom*(width+0.5), ypos+zoom*(height+0.5)]
 
    PrepareNASEPlot, height, width, /OFFSET, GET_OLD=oldplot, NONASE=nonase
-   plot, /NODATA, indgen(10), /DEVICE, POSITION=devpos
+   plot, /NODATA, indgen(10), /DEVICE, POSITION=devpos, COLOR=color
    PrepareNASEPlot, RESTORE_OLD=oldplot
    GET_POSITION = devpos
  
@@ -423,7 +426,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    WIDGET_CONTROL, text, GET_VALUE=text_win
 
    wset, tv_win
-   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, GET_POSITION=gp, GET_MINOR=gm
+   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, COLOR=color, GET_POSITION=gp, GET_MINOR=gm
    WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
    WIDGET_CONTROL, tv, SET_UVALUE={name    : "tv", $
                                    width   : w_width, $
