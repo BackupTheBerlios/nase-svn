@@ -9,7 +9,8 @@
 ; CALLING SEQUENCE: Der übliche Aufruf von RGB() geschieht in einer
 ;                    Graphikprozedur im COLOR-Schlüsselwort.
 ;                   
-;                    z.B. Plot, blablabla, COLOR= RGB( Rot, Grün, Blau, INDEX=Farbindex, START=Startindex )
+;                   COLOR= RGB( Rot, Grün, Blau [,INDEX=Farbindex] [,START=Startindex] 
+;                               [,/NOALLOC] )
 ;                    
 ; INPUTS: Rot, Grün, Blau: Werte im Bereich 0..255, die die gewünschte Farbe definieren.
 ;
@@ -30,9 +31,15 @@
 ;                          belegende) Farbindex angegeben werden, der
 ;                          dann von Aufruf zu Aufruf hochgezählt
 ;                          wird. (S.a. Erläuterung unten)
+;         NOALLOC         :Falls gesetzt, wird bei 8-bit-Displays keine Farbe allokiert,
+;                          sondern eine moeglichst aehnliche zurueckgegeben. Auf allen
+;                          anderen Displays wird diese Option ignoriert
+;
 ;                 
 ; OUTPUTS: Auf einem Echtfarb-Display  : Einfach die Nummer der Farbe (0..16777216)
-;          Auf einem ColorTable-Display: Der Farbindex, der mit der neuen Farbe belegt wurde.
+;          Auf einem ColorTable-Display: Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
+;                                        der Farbindex einer moeglichst aehnlichen Farbe bei
+;                                        Keyword NOALLOC
 ;
 ; COMMON BLOCKS: common_RGB, My_freier_Farbindex
 ;                (Wird bisher nur von dieser Funktion verwendet)
@@ -103,6 +110,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  1997/11/05 10:02:12  saam
+;              Keyword NOALLOC hinzugefuegt
+;              Schwarz-Weiss PS-Devices werden nun auch unterstuetzt
+;
 ;        Revision 1.6  1997/11/04 12:24:51  kupper
 ;               Nur Dokumentation in den Header geschrieben!
 ;
@@ -113,11 +124,27 @@ FUNCTION RGB_berechnen, R,G,B  ; je 0..255
 END   
    
 FUNCTION RGB, R,G,B, INDEX=index, $; je 0..255
-                      START=start
+                      START=start,$
+                      NOALLOC=noalloc
 Common common_RGB, My_freier_Farbindex   
   
-   
+
+   IF !D.Name EQ 'PS' THEN BEGIN
+      ; korrekte Behandlung nur fuer Grauwertpostscripts 
+      Color_Convert, R, G, B, h, s, v, /RGB_HSV
+      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(v*255) ELSE RETURN, LONG(v*255)
+   END
+
+
    if !D.N_Colors LE 256 then begin  ; 256-Farb-Display mit Color-Map   
+      IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefienieren, sondern aehnlichste zurueckgeben
+         myCM = bytarr(!D.Table_Size,3) 
+         TvLCT, myCM, /GET
+         differences = ABS(myCM(*,0)-R) + ABS(myCM(*,1)-G) + ABS(myCM(*,2)-B) 
+         lowestDiff = MIN(differences, bestMatch)
+         RETURN, bestMatch
+      END
+
        if Not(Keyword_Set(My_freier_Farbindex))or keyword_set(START) then begin
           Default, start, 1
           My_freier_Farbindex = start
