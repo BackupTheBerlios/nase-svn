@@ -15,6 +15,14 @@
 ;  + Device-independent display<BR>
 ;  + Positioning in normal coordinates<BR>
 ;  + Arbitrary size<BR>
+;  + Clipping at bounds of available colormap<BR>
+;  + Handling of the special NASE value !NONE<BR>
+;
+;  <I>Note on clipping:</I><BR>
+;          Clipping naturally only occurs when the /NOSCALE
+;          option is used. Clipped values will be indicated
+;          by dark yellow for the upper bound and very dark
+;          yellow for the lower bound.
 ;
 ; CATEGORY:
 ;  Array
@@ -81,7 +89,7 @@
 ;                            results in very large Postscript output
 ;                            files.
 ;
-; NASE:: Array is in NASE coodinates (array will be transposed before output).
+; NASE:: Array is in NASE coordinates (array will be transposed before output).
 ;
 ; OPTIONAL OUTPUTS:
 ; DIMENSIONS:: This keyword can be used to return the display
@@ -89,6 +97,11 @@
 ;              in normal coordinates. <*>xypos</*> always return the
 ;              coordinates of the lower left corner, even with
 ;              <*>CENTER</*> set.
+; Dimension:: This positional argument returns the exact same
+;             information as the <*>DIMENSIONS=...</*> keyword.
+;             The use of this positional argument is
+;             depricated. Use <*>DIMENSIONS=...</*> instead.
+; 
 ; 
 ; RESTRICTIONS:
 ;  Does not work completely correct with a shared 8bit color
@@ -119,34 +132,54 @@
 ; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top falls top gesetzt)
 ; skalierte Version eines Arrays A zurueck
 Function __ScaleArray, A, TOP=top
+   Default, top, !TOPCOLOR
+   _top = top < !TOPCOLOR
 
-   Default, top, !D.TABLE_SIZE-1
-   _top = top < (!D.TABLE_SIZE-1)
-   Return, long(Scl(A, [0, _top]))
+   ;; keep nones and NO-nones in mind:
+   nones   = where(A eq !NONE, nonecount)
+   nonones = where(A ne !NONE, nononecount)
 
+   if nononecount ne 0 then begin
+      ;; there is at least one value that is not !NONE
+
+      min = min(A[nonones])
+      max = max(A[nonones])
+      result = Scl(A, [0, _top], [min, max])
+   endif
+
+   ;; set nones to correct color:
+   if nonecount ne n_elements(A) then result[nones] = rgb("none")
+
+   Return, byte(result)
+End
+
+
+; This function clips all entries inside an array that lie above
+; !TRUECOLOR or below 0, or are !NONE, and replaces the, by the
+; special colors.
+Function __ClipArray, A
+   result = A
+
+   ;; keep nones in mind:
+   nones = where(result eq !NONE, nonecount)
+
+   clips = where(result gt !TOPCOLOR, count)
+   if (count gt 0) then result[clips] = rgb("dark yellow")
+
+   clips = where(result lt 0, count)
+   if (count gt 0) then result[clips] = rgb("very dark yellow")
+
+   ;; restore nones to the correct color:
+   if (nonecount gt 0) then result[nones] = rgb("none")
+
+   Return, result
 End
 
 
 
 
-; TvSCL-Version die das TOP-Keyword richtig behandelt
-PRO __HelpTvScl, A, p1, p2, _EXTRA=e
-
-;   IF ExtraSet(e, 'TOP') THEN _A = __ScaleArray(A, TOP=e.top) ELSE _A = __ScaleArray(A)
-;   DelTag, e, 'TOP'
-;_A = A
-; the lower routines then called tv, _a
-   CASE N_Params() OF
-      1: TVSCL, A, _EXTRA=e
-      2: TVSCL, A, p1, _EXTRA = e
-      3: TVSCL, A, p1, p2, _EXTRA=e
-      ELSE: Message, 'something wrong in UTVSCL'
-   END
-
-END
-
-
 ;; --- Plot polygons instead of pixels
+;; Note: This routine performs scaling and clipping by itself.
 PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
                      , NOSCALE=NOSCALE, DEVICE=device $
                      , TOP=TOP ,ORDER=ORDER, _EXTRA=extra
@@ -163,7 +196,7 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
    default,order,0
 
    IF (NOSCALE EQ 1) THEN BEGIN
-      ARRAY = A
+      ARRAY = __ClipArray(A)
    END ELSE BEGIN
       ARRAY = __ScaleArray(A, TOP=top)
       TVLCT,R,G,B,/GET   
@@ -218,7 +251,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    ;; else is specified
    IF Keyword_Set(TRUE) THEN BEGIN
        ;; TRUE color images also uses a color palette! Have to set it properly...later
-       IF ExtraSet(E, 'TOP') THEN Console, '/TRUE and TOP simultaneously set, hope you what you are doing!', /WARN
+      IF ExtraSet(E, 'TOP') THEN Console, '/TRUE and TOP simultaneously set, hope you know what you are doing!', /WARN
        SetTag, E, "TOP", 255
    END ELSE BEGIN
        IF NOT ExtraSet(E, 'TOP') THEN SetTag, E, "TOP", !TOPCOLOR
@@ -368,15 +401,15 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e 
+               TV, __ClipArray(Image), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e 
             END ELSE BEGIN
-               __HelpTVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ScaleArray(Image), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __HelpTVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ScaleArray(Image), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygons instead of pixels
@@ -405,15 +438,15 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image), xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __HelpTVScl, Image, xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ScaleArray(Image), xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, Image, xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image), xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
-               __HelpTVScl, Image, xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ScaleArray(Image), xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END
       END ELSE BEGIN ;; polygons instead of pixels
