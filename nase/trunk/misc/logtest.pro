@@ -15,7 +15,7 @@
 ;                            Für OnSigma<OffSigma erhält man On-Center/Off-Surround - DOGs,
 ;                            für umgekehrt - umgekehrt (was sonst?)
 ;
-; OPTIONAL INPUTS: x0, y0  : Position des Zentrums bzg. der Mitte des Arrays
+; OPTIONAL INPUTS: x0, y0  : Posi    tion des Zentrums bzg. der Mitte des Arrays
 ;
 ; KEYWORD PARAMETERS: ONHWB, OFFHWB: wie On/OffSigma nur in Halbwertsbreiten
 ;                     X0_ARR, Y0_ARR: wie x0/y0 nur bezügl. der linken oberen Arrayecke
@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;    $Log$
+;    Revision 1.7  1997/09/12 11:02:30  kupper
+;    Commit2
+;
 ;    Revision 1.6  1997/09/12 11:01:44  kupper
 ;    Commit1
 ;
