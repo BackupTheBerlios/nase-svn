@@ -23,7 +23,7 @@
 ;         Arrays with less than two dimensions will be
 ;         returned unchanged and cause a warning.
 ;  step:: The scalar shift parameter.
-;         This argument is passed to IDLs' <*>Shift<*>. Therefore the same
+;         This argument is passed to IDLs' <*>Shift</*>. Therefore the same
 ;         rules for the direction of the shift hold.<BR>
 ;         Also, shift specification as 0 results in no shift.
 ;
