@@ -10,6 +10,13 @@
 ; INPUTS:            CS   : eine mit InitCounter initialisiertes Zaehlwerk
 ;                    index: der Zaehler index wird um eins hochgezaehlt 
 ;
+; MODIFICATION HISTORY:
+;
+;     $Log$
+;     Revision 2.2  1997/12/01 11:44:19  saam
+;           Modification History ergaenzt
+;
+;
 FUNCTION _Count, CS, index
    
    IF index GE 0 THEN BEGIN
