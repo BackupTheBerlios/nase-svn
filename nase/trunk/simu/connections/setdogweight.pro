@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1998/02/10 14:26:46  kupper
+;              Tippfehler korrigiert.
+;
 ;       Revision 1.6  1998/02/05 13:16:06  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -88,10 +91,10 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
                   TRANSPARENT=transparent, _EXTRA=extra
 
 
-   tw = DWDim(DSW, /TW)
-   th = DWDim(DSW, /TH)
-   sw = DWDim(DSW, /SW)
-   sh = DWDim(DSW, /SH)
+   tw = DWDim(DWS, /TW)
+   th = DWDim(DWS, /TH)
+   sw = DWDim(DWS, /SW)
+   sh = DWDim(DWS, /SH)
    
 
    Default, Amp, 1
