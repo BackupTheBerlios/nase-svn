@@ -11,7 +11,8 @@
 ;                                       [, XDRAWSIZE=Virtuelle_Fenster_X_Größe] [, YDRAWSIZE=Virtuelle_Fenster_Y_Größe]
 ;                                       [, /PIXMAP ]
 ;                                       [, GET_BASE=Widget_ID] [, GROUP=Leader_Widget_ID ]
-;                                       [, KILL_NOTIFY=KillPro ] )
+;                                       [, KILL_NOTIFY=KillPro ]
+;                                       [, DELIVER_EVENTS=Array_of_Widget_IDs ] )
 ; 
 ; KEYWORD PARAMETERS: XPOS, YPOS, XSIZE, YSIZE: Parameter des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
@@ -33,6 +34,9 @@
 ;                                               {info      : 'DRAWWIDGET', $
 ;                                                Window_ID : Window_ID};
 ;                                               gesetzt, damit man auch erfährt, welches Fenster gestorben ist.
+;                     DELIVER_EVENTS          : Hier kann ein Array
+;                                               von Widget-Indizes übergeben werden, an die alle 
+;                                               ankommenden Events weitergereicht werden.
 ;
 ; OUTPUTS: Win_Nr: Ein  Window-Index für folgende Graphikbefehle.
 ;                  Das geöffnete Fenster wird aber auch zum aktuellen Fenster.

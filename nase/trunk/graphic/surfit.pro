@@ -36,6 +36,12 @@
 ;                               Wird es gesetzt, so wird das Surf-Widget nur angemeldet, aber noch nicht gemanaged.
 ;                               Das ermöglicht es, mehrere solche Widgets anzumelden und dann erst mit dem letzten
 ;                               auch den Manager zu starten, so daß alle gleichzeitig laufen. (Vgl. Beispiel unten.)
+;                     DELIVER_EVENTS: Hier kann ein Array
+;                                     von Widget-Indizes übergeben werden, an die alle 
+;                                     ankommenden Events
+;                                     weitergereicht werden.
+;                     TITLE:    Ein Titel für das Fenster. (Default:
+;                               "Scroll It!")
 ;
 ; OUTPUTS: ---
 ;
