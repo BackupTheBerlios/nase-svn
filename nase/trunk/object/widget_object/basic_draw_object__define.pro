@@ -31,6 +31,8 @@
 ;               [,YSIZE=ysize] 
 ;               [,X_SCROLL_SIZE=x_scroll_size]
 ;               [,Y_SCROLL_SIZE=y_scroll_size]
+;               [,FRAME=...]
+;               [,SUBFRAME=...]
 ;               [-keywords inherited from <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>-])
 ;
 ; DESTRUCTION:
@@ -44,6 +46,8 @@
 ; KEYWORD PARAMETERS: 
 ;
 ;   PAINT_INTERVAL   : enables auto-paint with interval secs.
+;   FRAME, SUBFRAME  : Frame thickness of the widget itself, and of
+;                      the included scrollit widget.
 ;
 ;   All remaining keywords are passed to <A HREF="../../graphic/widgets/#WIDGET_SHOWIT">Widget_Showit()</A>.
 ;
@@ -127,6 +131,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.15  2001/09/21 13:52:13  kupper
+;        Implemented FRAME und SUBFRAME keywords.
+;        Rü
+;
 ;        Revision 1.14  2001/08/02 14:18:09  kupper
 ;        replaced "MESSAGE" commands by "CONSOLE" calls.
 ;
@@ -228,7 +236,9 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                           XSIZE = xsize, $ 
                           YSIZE = ysize, $ 
                           X_SCROLL_SIZE = x_scroll_size, $ 
-                          Y_SCROLL_SIZE = y_scroll_size                          
+                          Y_SCROLL_SIZE = y_scroll_size, $
+                          FRAME=frame, $
+                          SUBFRAME=subframe
    ;;all other keywords are passed to the base
    ;;constructor through _ref_extra
 
@@ -236,7 +246,7 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, "basic_draw_object", _EXTRA=_ref_extra) then return, 0
+   If not Init_Superclasses(self, "basic_draw_object", FRAME=frame, _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -268,7 +278,8 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                                  XSIZE = xsize, $ 
                                  YSIZE = ysize, $ 
                                  X_SCROLL_SIZE = x_scroll_size, $ 
-                                 Y_SCROLL_SIZE = y_scroll_size)
+                                 Y_SCROLL_SIZE = y_scroll_size, $
+                                 FRAME=subframe)
 
    ;; note: adding widgets will never fail.
 

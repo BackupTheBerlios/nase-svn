@@ -24,6 +24,7 @@
 ;
 ;   o = Obj_New("widget_leaky_image_container"
 ;               IMAGE=..., MAX_IN=..., TAU=... [,/COLUMN]
+;               [,FRAME=...] [,SUBFRAME=...]
 ;               [-other keywords inherited from <A HREF="#CLASS MYSUPERCLASS">class widget_image_container</A>-]
 ;
 ; DESTRUCTION:
@@ -88,6 +89,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2001/09/21 13:52:13  kupper
+;        Implemented FRAME und SUBFRAME keywords.
+;        Rü
+;
 ;        Revision 1.4  2001/09/21 12:46:35  kupper
 ;        integrator display is now interpolated.
 ;
@@ -109,7 +114,10 @@
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_leaky_image_container::init, IMAGE=image, $
                                      Range_In=Range_In, $
-                                     COLUMN=column, _REF_EXTRA=_ref_extra
+                                     COLUMN=column, $
+                                     FRAME=frame, $
+                                     SUBFRAME=subframe, $
+                                     _REF_EXTRA=_ref_extra
    DMsg, "I am created."
 
    If keyword_set(Column) then row = 0 else row = 1
@@ -119,6 +127,7 @@ Function widget_leaky_image_container::init, IMAGE=image, $
    If not Init_Superclasses(self, "widget_leaky_image_container", $
                             COLUMN=column, ROW=row, $
                             Range_In=Range_In, $
+                            FRAME=frame, SUBFRAME=subframe, $
                             IMAGE=image, _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a widget_leaky_image_container object,
@@ -127,6 +136,7 @@ Function widget_leaky_image_container::init, IMAGE=image, $
    self.lia = Obj_New("widget_leaky_integrator_array", OParent=self, $
                       Dimensions=Size(IMAGE, /Dimensions), $
                       CUBIC=-0.5, /MINUS_ONE, $
+                      FRAME=subframe, $
                       _EXTRA=_ref_extra)
 
    ;; If we reach this point, initialization of the
