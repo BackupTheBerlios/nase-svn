@@ -32,6 +32,7 @@
 ;                       spikenoise  : mean spontanous activity in Hz (R.E. does not like this variant!! dunno why)
 ;                       fade        : um Anschalteffekte zu verringern generiert jedes Neuron Aktionspotentiale erst 
 ;                                     ab einem zufaelligen, individuellen Zeitpunkt im Bereich [0,fade], Default ist 250/OVERSAMPLING
+;                       sampleperiod ::   die Dauer eines Simulationszeitschritts, Default: 0.001s
 ;
 ; OUTPUTS:              Para : Struktur namens Para2, die alle Neuronen-Informationen enthaelt, s.u.
 ;
@@ -42,6 +43,15 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.7  2004/09/27 14:03:32  michler
+;
+;      Modified Files:
+;       	initpara_1.pro initpara_2.pro initpara_4.pro initpara_6.pro
+;       	initpara_7.pro initpara_11.pro initpara_12.pro initpara_14.pro
+;
+;      adapting time constants to temporal resolution,
+;      using parameter SAMPLEPERIOD as in initrecall.pro
+;
 ;      Revision 2.6  2000/09/28 13:05:26  thiel
 ;          Added types '9' and 'lif', also added AIMs.
 ;
@@ -64,8 +74,12 @@
 ;
 ;-
 FUNCTION InitPara_4, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, $
-                 NOISYSTART=noisystart, Oversampling=oversampling, REFPERIOD=RefPeriod, SPIKENOISE=spikenoise, FADE=fade
+                 NOISYSTART=noisystart, Oversampling=oversampling, REFPERIOD=RefPeriod, SPIKENOISE=spikenoise, FADE=fade, SAMPLEPERIOD=SamplePeriod
 
+   Default, SAMPLEPERIOD, 0.001
+   deltat = SAMPLEPERIOD*1000.
+
+   Default, OverSampling, round(1./deltat)
 
    Default, tauf        , 10.0
    Default, taul        , 10.0

@@ -27,6 +27,7 @@
 ;
 ; INPUT KEYWORDS:
 ;   taux :: Time-Constant of the Shunting-Potential
+;   sampleperiod ::   die Dauer eines Simulationszeitschritts, Default: 0.001s
 ;
 ;
 ; OUTPUTS:
@@ -44,7 +45,11 @@
 ;
 ;-
 
-FUNCTION InitPara_12, TAUF=tauf, TAUL=taul, TAUI=taui, TAUX=taux, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise
+FUNCTION InitPara_12, TAUF=tauf, TAUL=taul, TAUI=taui, TAUX=taux, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAPLEPERIOD=sampleperiod
+
+   Default, SAMPLEPERIOD, 0.001
+   deltat = SAMPLEPERIOD*1000.
+
 
    Default, tauf     , 10.0
    Default, taul      , 10.0
@@ -59,20 +64,20 @@ FUNCTION InitPara_12, TAUF=tauf, TAUL=taul, TAUI=taui, TAUX=taux, VS=vs, TAUS=ta
 
    Para = { info : 'PARA'         ,$
 	    type : '12'            ,$
-            df   : exp(-1./tauf)  ,$
-            dl   : exp(-1./taul)  ,$
-            di   : exp(-1./taui)  ,$
-            dx   : exp(-1./taux) ,$
+            df   : exp(-deltat/tauf)  ,$
+            dl   : exp(-deltat/taul)  ,$
+            di   : exp(-deltat/taui)  ,$
+            dx   : exp(-deltat/taux) ,$
             tauf : FLOAT(tauf)    ,$
             taul : FLOAT(taul)    ,$
             taui : FLOAT(taui)    ,$
             taux : FLOAT(taux)   ,$
             vs   : vs             ,$
-            ds   : exp(-1./taus)  ,$
+            ds   : exp(-deltat/taus)  ,$
             taus : FLOAT(taus)    ,$
             th0  : th0            ,$
             sigma: sigma          ,$
-            sn   : spikenoise/1000.,$
+            sn   : deltat*spikenoise/1000.,$
             ns   : noisystart*th0 }
 
    RETURN, Para

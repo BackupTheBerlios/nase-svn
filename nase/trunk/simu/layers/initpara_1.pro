@@ -26,6 +26,7 @@
 ;                                    zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
 ;                                    <*>th0</*> angegeben.
 ;                       spikenoise :: mean spontanous activity in Hz 
+;                       sampleperiod ::   die Dauer eines Simulationszeitschritts, Default: 0.001s
 ;
 ; OUTPUTS:              Para :: Struktur namens <*>Para1</*>, die alle Neuronen-Informationen enthaelt, s.u.
 ;
@@ -37,6 +38,15 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.9  2004/09/27 14:03:32  michler
+;
+;       Modified Files:
+;        	initpara_1.pro initpara_2.pro initpara_4.pro initpara_6.pro
+;        	initpara_7.pro initpara_11.pro initpara_12.pro initpara_14.pro
+;
+;       adapting time constants to temporal resolution,
+;       using parameter SAMPLEPERIOD as in initrecall.pro
+;
 ;       Revision 1.8  2004/03/16 16:09:17  zwickel
 ;            introduced new header layout, translated purpose
 ;
@@ -66,7 +76,11 @@
 ;                Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
 ;
 ;-
-FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise
+FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAMPLEPERIOD=sampleperiod
+
+   Default, SAMPLEPERIOD, 0.001
+   deltat = SAMPLEPERIOD*1000.
+
 
    Default, tauf      , 10.0
    Default, taul      , 10.0
@@ -80,18 +94,18 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
 
    Para = { info : 'PARA'         ,$
 	    type : '1'            ,$
-            df   : exp(-1./tauf)  ,$
-            dl   : exp(-1./taul)  ,$
-            di   : exp(-1./taui)  ,$
+            df   : exp(-deltat/tauf)  ,$
+            dl   : exp(-deltat/taul)  ,$
+            di   : exp(-deltat/taui)  ,$
             tauf : FLOAT(tauf)    ,$
             taul : FLOAT(taul)    ,$
             taui : FLOAT(taui)    ,$
             vs   : vs             ,$
-            ds   : exp(-1./taus)  ,$
+            ds   : exp(-deltat/taus)  ,$
             taus : FLOAT(taus)    ,$
             th0  : th0            ,$
             sigma: sigma          ,$
-            sn   : spikenoise/1000.,$
+            sn   : deltat*spikenoise/1000.,$
             ns   : noisystart*th0 }
 
    RETURN, Para

@@ -28,6 +28,7 @@
 ;                                    zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
 ;                                    th0 angegeben.
 ;                       spikenoise  : mean spontanous activity in Hz 
+;                       sampleperiod ::   die Dauer eines Simulationszeitschritts, Default: 0.001s
 ;
 ; OUTPUTS:              Para : Struktur namens Para14, die alle Neuronen-Informationen enthaelt, s.u.
 ;
@@ -36,7 +37,11 @@
 ; EXAMPLE:              para14 = InitPara_14(tauf1=10.0, vs=1.0)
 ;-
 
-FUNCTION InitPara_14, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=taui2, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise
+FUNCTION InitPara_14, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=taui2, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAPLEPERIOD=sampleperiod
+
+   Default, SAMPLEPERIOD, 0.001
+   deltat = SAMPLEPERIOD*1000.
+
 
 
    Default, tauf1     , 10.0
@@ -55,24 +60,24 @@ FUNCTION InitPara_14, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=ta
 
    Para = { info: "PARA"         ,$
 	    type: '14'             ,$		
-            df1 : exp(-1./tauf1)   ,$
-            df2 : exp(-1./tauf2)   ,$
-            dl : exp(-1./taul)   ,$
-            di1 : exp(-1./taui1)   ,$
-            di2 : exp(-1./taui2)   ,$
+            df1 : exp(-deltat/tauf1)   ,$
+            df2 : exp(-deltat/tauf2)   ,$
+            dl : exp(-deltat/taul)   ,$
+            di1 : exp(-deltat/taui1)   ,$
+            di2 : exp(-deltat/taui2)   ,$
             tauf1 : FLOAT(tauf1)    ,$
             tauf2 : FLOAT(tauf2)    ,$
             taul : FLOAT(taul)    ,$
             taui1 : FLOAT(taui1)    ,$
             taui2 : FLOAT(taui2)    ,$
             vr : vr              ,$
-            dr : exp(-1./taur)   ,$
+            dr : exp(-deltat/taur)   ,$
             vs : vs              ,$
-            ds : exp(-1./taus)   ,$
+            ds : exp(-deltat/taus)   ,$
             taus : FLOAT(taus)    ,$
             taur : FLOAT(taur)    ,$
             th0: th0             ,$
-            sn   : spikenoise/1000.,$
+            sn   : deltat*spikenoise/1000.,$
             sigma: sigma         ,$
             ns   : noisystart*th0}
 
