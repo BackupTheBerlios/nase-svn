@@ -9,7 +9,7 @@
 ;
 ;
 ; CALLING SEQUENCE:  ergstruct = slidcorr ( xdata , ydata , [taxis] ,[FBAND=fband], [WSIZE=wsize] ,$
-;                                  [STEPSIZE=stepsize], [NOPERIOD=noperiod], [HAMMING=hamming], [DOUBLE=double],$
+;                                  [STEPSIZE=stepsize], [HAMMING=hamming], [DOUBLE=double],$
 ;                                  [SAMPLPERIOD=samplperiod] , [PLOT=plot] , [NOSAMPLE = nosample], [NULLHYPO=nullhypo])
 ;
 ; 
@@ -24,8 +24,6 @@
 ; KEYWORD PARAMETERS:
 ;                        HAMMING:     vor der Berechnung der Kreuzkorrellation wird das Signal im Freqber. mit der 
 ;                                     Hamming-Funktion gefenstert (siehe IDL-Hilfe)
-;
-;                        NOPERIOD:    Nichtperiodische Kreuzkorrelation (Nullen Anhaengen)
 ;
 ;                        SAMPLPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
 ;
@@ -107,6 +105,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  1998/06/02 11:37:05  saam
+;           Keyword Noperiod eliminated, its default now
+;
 ;     Revision 1.5  1998/06/02 11:29:43  gabriel
 ;          Fehler im Common Block
 ;
@@ -125,7 +126,7 @@
 ;
 ;-
 
-function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=stepsize, NOPERIOD=noperiod,$
+function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=stepsize,$
                     HAMMING=hamming, DOUBLE=double, SAMPLPERIOD=samplperiod , PLOT=plot ,NOSAMPLE=nosample,$
                     SMOOTH=smooth,NULLHYPO=NULLHYPO
 
@@ -146,7 +147,8 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    DEFAULT,PlotPosition,0
    DEFAULT,PLOT,0
    DEFAULT,Plotflag,0
-   
+   Default,NoPeriod,1
+
    default,wsize,128
    default,stepsize,wsize/2
    _wsize =  wsize/(SAMPLPERIOD * 1000)
