@@ -8,6 +8,7 @@
 ;
 ; CALLING SEQUENCE:   Gemittelt = MiddleWeights ( Matrix [,sd] 
 ;                                                 {,/FROMS | ,/TOS |, PROJECTIVE |, /RECEPTIVE }
+;                                                 [,/NODW]
 ;                                                 [,/WRAP] [,/ROWS] [,/COLS] 
 ;                                                 [,/DEBUG] [,/DELAYS])
 ;
@@ -31,6 +32,9 @@
 ;                            das richtige funktionieren zu ueberpruefen. Mit Debug wird
 ;                            jeder einzelne Summand dargestellt...die RFs muessen exakt
 ;                            uebereinander liegen
+;                    NODW:   Die uebergebene Matrix kann mit diesem Argument eine 4-dimensionale
+;                            Matrix sein und muss kein DW-Struktur sein.
+;
 ;
 ; OUTPUTS:            Gemittelt: eine zweidimensionale Matrix (Source_H x
 ;                                Source_W bzw. Target_H x Target_W, je nachdem, ob TOS oder FROMS
@@ -66,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.12  1999/12/02 15:05:56  saam
+;             + keyword NODW added
+;
 ;       Revision 1.11  1998/12/15 13:01:14  saam
 ;             + new keywords DELAYS, DEBUG
 ;             + averaging across different target- and source-layer dimensions
@@ -103,7 +110,7 @@
 ;
 ;-
 
-FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
+FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, NODW=nodw, $
                         PROJECTIVE=projective, RECEPTIVE=receptive, $
                         ROWS=rows, COLS=cols, DEBUG=debug, STOP=stop, DELAYS=DELAYS
 
@@ -117,22 +124,29 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
 
    IF NOT keyword_set(PROJECTIVE) AND NOT keyword_set(RECEPTIVE) THEN message, 'Eins der Schlüsselwörter PROJECTIVE oder RECEPTIVE muß gesetzt sein!'
 
-   IF Keyword_Set(Delays) THEN W = Delays(DW) ELSE W = Weights(DW)
-
-   IF keyword_set(RECEPTIVE) THEN BEGIN ; Source- und Targetlayer vertauschen:
-      Matrix = {Weights: TRANSPOSE(W)          , $
-                sw     : DWDim(DW, /TW)        , $
-                sh     : DWDim(DW, /TH)        , $
-                tw     : DWDim(DW, /SW)        , $
-                th     : DWDim(DW, /SH)        }
-   ENDIF ELSE BEGIN
-      Matrix = {Weights: W                     , $
-                sw     : DWDim(DW, /SW)        , $
-                sh     : DWDim(DW, /SH)        , $
-                tw     : DWDim(DW, /TW)        , $
-                th     : DWDim(DW, /TH)        }
+   IF Keyword_Set(NODW) THEN BEGIN
+      Matrix = {Weights: DW           ,$
+                sw     : (SIZE(DW))(1),$
+                sh     : (SIZE(DW))(2),$
+                tw     : (SIZE(DW))(3),$
+                th     : (SIZE(DW))(4)}
+   END ELSE BEGIN
+      IF Keyword_Set(Delays) THEN W = Delays(DW) ELSE W = Weights(DW)
+      
+      IF keyword_set(RECEPTIVE) THEN BEGIN ; Source- und Targetlayer vertauschen:
+         Matrix = {Weights: TRANSPOSE(W)          , $
+                   sw     : DWDim(DW, /TW)        , $
+                   sh     : DWDim(DW, /TH)        , $
+                   tw     : DWDim(DW, /SW)        , $
+                   th     : DWDim(DW, /SH)        }
+      ENDIF ELSE BEGIN
+         Matrix = {Weights: W                     , $
+                   sw     : DWDim(DW, /SW)        , $
+                   sh     : DWDim(DW, /SH)        , $
+                   tw     : DWDim(DW, /TW)        , $
+                   th     : DWDim(DW, /TH)        }
+      END
    END
-   
 ;   IF (Matrix.sw NE Matrix.tw) OR (Matrix.sh NE Matrix.th) THEN Message, 'if you are sure the median makes sense in the case of different target & source layer dimensions THEN comment out this message or ask Mirko'
    
    
