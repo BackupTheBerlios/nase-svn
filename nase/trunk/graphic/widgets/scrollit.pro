@@ -276,9 +276,9 @@ Function ScrollIt, Parent, $
    Default, button_events, 0
 
    If Not(PseudoColor_Visual()) then begin
-  message, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
+;   console, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
   private_colors = 0
-   end
+endif else console, /WARNING, 'This does look like an 8-bit-display! - Will produce tracking-events!'
 
    button_events = button_events * Set(deliver_events)
    ; Tell DrawWidget to generate BUTTON_EVENTS which can then be
