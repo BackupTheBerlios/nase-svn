@@ -50,7 +50,11 @@
 ; INPUTS:
 ;  x::   An integer, float or complex array containing in the first dimension the signal epoch(s) of which the spectrum
 ;        (spectra) is (are) to be computed.
-;  fS::  An integer or float scalar giving the sample frequency (in Hertz) which was used in sampling the signal epoch(s).
+;
+; OPTIONAL INPUTS:
+;  fS::  An integer or float scalar giving the sample frequency (in Hertz) which was used in sampling the signal epoch(s)
+;        (default: 1 Hz). (Note that this positional argument <I>has</I> to be supplied if the optional outputs <*>f</*>
+;        or <*>phase</*> are desired.)
 ;
 ; INPUT KEYWORDS:
 ;  AMPLITUDE::            Set this keyword if you want to receive the amplitude density spectrum (default: complex Fourier
