@@ -1,32 +1,44 @@
 ;+
-; NAME: TomWaits
+; NAME:
+;  TomWaits
 ;
-; AIM: Interactively investigate contents of a DW matrix.
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  interactively investigate contents of a DW matrix
 ;
-; PURPOSE: Interaktive Darstellung einer NASE-DW-Matrix.
+; PURPOSE:
+;  Interaktive Darstellung einer NASE-DW-Matrix.
 ;
-; CATEGORY: Graphic, NASE, Widgets
+; CATEGORY:
+;  Graphic
+;  NASE
+;  Widgets
 ;
-; CALLING SEQUENCE: TomWaits, DW [,/DELAYS] [,/EFFICACY] 
-;                             [,(/FROMS|/PROJECTIVE) | ,(/TOS|/RECEPTIVE)]
-;                             [,(TITEL|TITLE)=Fenstertitel]
-;                             [,(GROESSE|ZOOM)=ZFaktor] [,MAGNIFY=MFaktor]
-;                             [,/COLORSCALING] [,/MAGINWIN]
-;                             [,GET_MAXCOL=weiß]
-;                             [,GROUP=GroupLeader] [,GET_BASE=BaseID]
-;                             [,/JUST_REG] [,NO_BLOCK=0]
+; CALLING SEQUENCE:
+;*TomWaits, DW [,/DELAYS] [,/EFFICACY] 
+;*       [,(/FROMS|/PROJECTIVE) | ,(/TOS|/RECEPTIVE)]
+;*       [,(TITEL|TITLE)=Fenstertitel]
+;*       [,(GROESSE|ZOOM)=ZFaktor] [,MAGNIFY=MFaktor]
+;*       [,/COLORSCALING] [,/MAGINWIN]
+;*       [,GET_MAXCOL=weiß]
+;*       [,GROUP=GroupLeader] [,GET_BASE=BaseID]
+;*       [,/JUST_REG] [,NO_BLOCK=0]
 ;
-; INPUTS: DW: Eine NASE DW- oder SDW-Struktur, mit oder ohne Delays.
+; INPUTS:
+;  DW:: Eine NASE DW- oder SDW-Struktur, mit oder ohne Delays.
 ;
-; KEYWORD PARAMETERS: TITEL/TITLE  : Ein Fenstertitel für's Widget
-;                    GROESSE/ZOOM  : Vergrößerungsfaktor für die
+; INPUT KEYWORDS:
+;                     TITEL/TITLE  :: Ein Fenstertitel für's Widget
+;                    GROESSE/ZOOM  :: Vergrößerungsfaktor für die
 ;                                    Darstellung mit ShowWeights (darf
 ;                                    gebrochen sein)
 ;                                    Default: 1
-;                         MAGNIFY  : Vergrößerungsfaktor für die
+;                         MAGNIFY  :: Vergrößerungsfaktor für die
 ;                                    Magnify-Option (linke Maustaste)
 ;                                    Default: 12
-;                    COLORSCALING  : Wenn gesetzt (Default), wird für
+;                    COLORSCALING  :: Wenn gesetzt (Default), wird für
 ;                                    Magnify und Examineit
 ;                                    individuelles ColorScaling
 ;                                    verwendet, d.h. das größte
@@ -38,7 +50,7 @@
 ;                                    wie bei ShowWeights auf das
 ;                                    Maximum der gesamten
 ;                                    Verbindungsmatrix normiert.
-;                        MAGINWIN  : Wenn gesetzt, wird für die
+;                        MAGINWIN  :: Wenn gesetzt, wird für die
 ;                                    Magnify-Option ein Fenster
 ;                                    verwendet, sonst ein Draw-Widget.
 ;                                    Dieses Schlüsselwort wird unter
@@ -46,63 +58,34 @@
 ;                                    betrachtet (Weil die
 ;                                    DrawWidget-Variante nicht
 ;                                    funktioniert)
-;                            GROUP : Ein GroupLeader für unser Widget.
-;                         JUST_REG : s. XMANAGER-Hilfe. Default 0
-;                         NO_BLOCK : ab
-;                                    IDL_5. s. XMANAGER-Hilfe. Default 1
-;                         EFFICACY : start mit der anzeige der 'syn. efficacies' u_se 
+;                            GROUP :: Ein GroupLeader für unser Widget.
+;                         JUST_REG :: s. XMANAGER-Hilfe. Default 0
+;                         NO_BLOCK :: The
+;                                    default is 1, if you call this
+;                                    routine from the main program
+;                                    execution level. However, if you are in a
+;                                    subroutine, turning this option
+;                                    on, would result in a
+;                                    disfunctional widget. Therefore
+;                                    the default will be 0 in this
+;                                    case. For additional information,
+;                                    search for <C>XMANAGER</C> in the
+;                                    IDL help.
+;                         EFFICACY :: start mit der anzeige der 'syn. efficacies' u_se 
 ;                 
 ;
-; OPTIONAL OUTPUTS:    GET_MAXCO  : Index der hellsten Farbe ("weiß")
-;                        GET_BASE : ID des Base-Widgets
+; OPTIONAL OUTPUTS:
+;                      GET_MAXCO  :: Index der hellsten Farbe ("weiß")
+;                        GET_BASE :: ID des Base-Widgets
 ;
-; SIDE EFFECTS: Farbrtabelle wird verändert.
+; SIDE EFFECTS:
+;  Farbrtabelle wird verändert.
 ;
-; PROCEDURE: Basiert auf <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="nonase/#SURFIT">Surfit</A>, <A HREF="nonase/#EXAMINEIT">Examineit</A>.
+; PROCEDURE:
+;  Basiert auf <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="nonase/#SURFIT">Surfit</A>, <A HREF="nonase/#EXAMINEIT">Examineit</A>.
 ;
-; EXAMPLE: Ausprobieren!
-;
-; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="nonase/#SURFIT">Surfit</A>, <A HREF="nonase/#EXAMINEIT">Examineit</A>.
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.18  2001/01/24 13:59:42  kupper
-;        Oops! Was still using greyscale-PS for grey images. Shall not be used
-;        any more!
-;
-;        Revision 1.17  2001/01/22 19:31:51  kupper
-;        Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
-;        shall not be used any longer (according to colormanagement guidelines
-;        formed during first NASE workshop, fall 2000).
-;
-;        Revision 1.16  2000/10/01 14:51:09  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 1.15  2000/09/07 10:30:48  kupper
-;        Added hourglass at longer operations.
-;
-;        Revision 1.14  2000/09/01 12:57:39  kupper
-;        Added hourglass cursor during SHowweights call.
-;
-;        Revision 1.13  1999/11/26 14:08:59  alshaikh
-;              bugfix
-;
-;        Revision 1.12  1999/11/17 09:51:01  alshaikh
-;              fehler beim umschalten zwischen weights und efficacy
-;              berichtigt...
-;
-;        Revision 1.11  1999/11/16 15:14:44  alshaikh
-;              kann jetzt auch Transmitterfreisetzungswarscheinlichkeiten
-;              (U_se) darstellen...
-;
-;        Revision 1.10  1998/04/16 16:53:22  kupper
-;               Der Print-Knopf geht jetzt.
-;        	Erzeugt zwar nur ein Standard-File mit Namen "TomWaits_Printed_Output" aber immerhin...
-;
-;        Revision 1.9  1998/04/08 16:30:17  kupper
-;               Beta 2
-;        	Sorry, hatte bisher keinen Header...
+; SEE ALSO:
+;  <A>ShowWeights</A>, <A>Surfit</A>, <A>Examineit</A>.
 ;
 ;-
 
@@ -354,7 +337,14 @@ PRO TomWaits, GROUP=Group, $
 
   Default, GROUP, 0
   Default, JUST_REG, 0
-  Default, NO_BLOCK, 1
+
+                                ; determine if i'm called from the main level. If not,
+                                ; the no_block operation doesn't work,
+                                ; but leaves a disfunctional
+                                ; widget. Therefore i set the default,
+                                ; to generate a blocking but working
+                                ; widget in this case.
+  Default, NO_BLOCK, SIZE(callstack()) LE 2 
   Default, TITLE, TITEL
   Default, TITLE, "Tom Waits"
   Default, ZOOM, GROESSE       ;Die Schlüsselworte können alternativ verwendet werden.
