@@ -4,9 +4,9 @@
 ; AIM:                center of gravtity (violates naming convention)
 ;
 ; PURPOSE:            Liefert die Koordinaten des (Masse-)Schwerpunktes in einem
-;                     Array beliebiger Dimension. 
+;                     Array beliebiger Dimension.
 ;
-; CATEGORY:           MISC ARRAYS
+; CATEGORY:           ARRAY
 ;
 ; CALLING SEQUENCE:   Ortsvektor = Schwerpunkt (Array [,SIG=sig])
 ;
@@ -24,7 +24,7 @@
 ;
 ; RESTRICTIONS:       Funktioniert auf allen Arrays, hat aber nicht mehr die
 ;                     Aussage eines Masseschwerpunktes, wenn das Array
-;                     negative Wrte enth‰lt... (Stichwort: Ladungsschwerpunkt) 
+;                     negative Wrte enth‰lt... (Stichwort: Ladungsschwerpunkt)
 ;
 ; PROCEDURE:          Definitionsgem‰ﬂ. Benutzt Subscript()
 ;
@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2001/03/19 16:03:26  gail
+;        obsolete, cf. CenterOfMass
+;
 ;        Revision 1.3  2000/09/25 09:12:55  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -51,21 +54,23 @@
 
 Function Schwerpunkt, A, SIG=sig
 
+   console, /MSG, 'Obsolete; cf. CenterOfMass
+
    s = size(A)
    dims = s(0)
    erg = fltarr(dims)
-   
-   
+
+
    IF Keyword_Set(SIG) THEN BEGIN
       m = UMoment(A, SDEV=sd)
-      significant = WHERE(A GE m(0)+FLOAT(sig)*sd, c) 
+      significant = WHERE(A GE m(0)+FLOAT(sig)*sd, c)
    END ELSE BEGIN
       c = N_Elements(A)
       significant = LIndGen(c)
    END
    IF c NE 0 THEN BEGIN
-      
-      FOR i=0, c-1 DO BEGIN 
+
+      FOR i=0L, c-1 DO BEGIN
          erg = erg + FLOAT(A(significant(i)))*SubScript(A, significant(i))
       end
 
