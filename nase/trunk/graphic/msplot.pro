@@ -6,10 +6,10 @@
 ;  $Id$
 ;
 ; AIM:
-;  Plot error values as a colored area around data.
+;  plots error values as a colored area around data.
 ;  
 ; PURPOSE:
-;  <*>MSPLot</*> plots onedimensional data and depicts supplied error values
+;  Plots onedimensional data and depicts supplied error values
 ;  by drawing a colored area around the data plot.
 ;  
 ; CATEGORY:
@@ -17,22 +17,36 @@
 ;  
 ; CALLING SEQUENCE:
 ;*  MSPlot [,x] ,mean ,sd 
-;*         [,MCOLOR=...] 
-;*         [,SDCOLOR=...]
+;*         [,/SDMEAN]
+;*         [{[,MCOLOR=...] [,SDCOLOR=...]} | /BW ]
+;*         [,/OPLOT]
 ;*         [,_EXTRA=...]
 ;
 ;  
 ; INPUTS:
-;  mean:: Onedimensional array containing data.
-;  sd:: Array containing corresponding error values.
+;  mean :: Onedimensional array containing n data values.
+;  sd   :: Either an array with n elements containing the corresponding
+;          error values, that are assumed to be symmetrically distributed
+;          around the <*>mean</*>; or a (2,n) array containing the lower and
+;          upper errors for each mean value. Also note the
+;          <*>/SDMEAN</*> keyword.
 ;  
 ; OPTIONAL INPUTS:
-;  x:: Abscissa values corresponding to mean/sd (equidistant, 0..n-1).
+;  x:: Abscissa values corresponding to <*>mean</*> and <*>sd</*>
+;      (default is equidistant ranging from 0 to n-1).
 ;
 ; INPUT KEYWORDS:
-;  MCOLOR:: Colorindex used for plotting the data (default: white).
-;  SDCOLOR:: Colorindex used to draw error area (default: darkblue).  
-;  _EXTRA:: Passed to the underlying <*>Plot</*> and <*>Axis</*> procedures.
+;  BW      :: Creates output for black/white devices. The errors are
+;             plotted as dotted lines. <*>MCOLOR</*> and
+;             <*>SDCOLOR</*> are ignored. 
+;  MCOLOR  :: Colorindex used for plotting the data (default:
+;             foreground color).
+;  OPLOT   :: plots data into an already existing window 
+;  SDCOLOR :: Colorindex used to draw error area (default: darkblue).  
+;  SDMEAN  :: <*>sd</*> entries are interpreted as absolute values
+;             (mean+-error). This kind of output is e.g. provided by <A>FZTmean</A>. 
+;  _EXTRA  :: All other unrecognized options are passed to the
+;             underlying <*>Plot</*> and <*>Axis</*> procedures.
 ;  
 ; RESTRICTIONS:
 ;  X-, YTITLE and X-, YTICKFORMAT can only used for left and bottom
@@ -53,19 +67,21 @@
 ;*   , MCOLOR=RGB(200,100,100), SDCOLOR=RGB(100,50,50)
 ;  
 ; SEE ALSO:
-;  Standard IDL routines: OPLOTERR, PLOT, PLOTERR
+;  <C>OPLOTERR</C>, <C>PLOT</C>, <C>PLOTERR</C>
 ;-
 
 
 
 PRO MSPLOT, z, zz, zzz $
             , MCOLOR=mcolor, SDCOLOR=sdcolor, XRANGE=xrange $
+            , SDMEAN=sdmean $
+            , BW=bw, OPLOT=oplot $
             , _EXTRA=e
 
    On_Error, 2
 
    Default, SDCOLOR, RGB(100,100,200)
-   Default, MCOLOR, RGB(255,255,255)
+   Default, MCOLOR, GetForeground()
 
    IF N_Params() LT 2 THEN Message, 'wrong number of arguments'
    n = N_Elements(z)
@@ -79,42 +95,59 @@ PRO MSPLOT, z, zz, zzz $
       sd = REFORM(zz)
    END
 
-   IF N_Elements(m) NE N_Elements(sd) THEN $
-    Message, 'Mean and deviation values are of different count.'
+   ; sd may be an (2,t) array containing lower and upper
+   ; if not it will be converted to be
+   IF (SIZE(sd))(0) LT 2 THEN sd = REBIN(REFORM(sd,1,N_Elements(sd)), 2, N_Elements(sd), /SAMPLE) 
+
+   IF 2*N_Elements(m) NE N_Elements(sd) THEN $
+    Console, 'Mean and deviation values are of different count.', /FATAL
    IF N_Elements(m) NE N_Elements(x)  THEN $
-    Message, 'Abszissa and ordinate values are of different count.'
-   
+    Console, 'Abszissa and ordinate values are of different count.', /FATAL
+
+   ; eg. fztmean returns sd as absolute values 
+   IF Keyword_Set(SDMEAN) THEN BEGIN
+       sd(0,*) = -sd(0,*)+m
+       sd(1,*) = sd(1,*)-m
+   END
+
    IF Set(XRANGE) THEN BEGIN
       xri = [(Where(x GE xrange(0)))(0), last((Where(x LE xrange(1))))] 
       xf = x > XRANGE(0) < XRANGE(1)
-      yr = [MIN(m(xri(0):xri(1))-sd(xri(0):xri(1))) $
-            , MAX(m(xri(0):xri(1))+sd(xri(0):xri(1)))]
+      yr = [MIN(m(xri(0):xri(1))-sd(0,xri(0):xri(1))) $
+            , MAX(m(xri(0):xri(1))+sd(1,xri(0):xri(1)))]
    ENDIF ELSE BEGIN
       xf = x
-      yr = [MIN(m-sd), MAX(m+sd)]
+      yr = [MIN(m-sd(0,*)), MAX(m+sd(1,*))]
    ENDELSE
 
 
-   Plot, x, m, YRANGE=yr, /NODATA, XRANGE=xrange, _EXTRA=e
+   IF NOT KEyword_Set(OPLOT) THEN  Plot, x, m, YRANGE=yr, /NODATA, XRANGE=xrange, _EXTRA=e
 
-   PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] $
-    , [m+sd, m(n-1)-sd(n-1), REVERSE(m-sd), m(0)+sd(0)] $
-    , COLOR=sdcolor
-
-   OPlot, x, m, COLOR=mcolor
+   IF Keyword_Set(BW) THEN BEGIN
+       OPlot, x, m+sd(1,*), LINESTYLE=1
+       OPlot, x, m-sd(0,*), LINESTYLE=1
+       OPlot, x, m
+   END ELSE BEGIN
+       PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] $
+         , [m+sd(1,*), m(n-1)-sd(0,n-1), REVERSE(m-sd(0,*)), m(0)+sd(1,0)] $
+         , COLOR=sdcolor
+       OPlot, x, m, COLOR=mcolor
+   END
 
    emptytickn = Make_Array(30, /STRING, VALUE=' ')
 
-   Axis, XRANGE=xrange, XAXIS=0, _EXTRA=e
-   Axis, YRANGE=yr, YAXIS=0, _EXTRA=e
-   IF set(e) THEN BEGIN
-      DelTag, e, 'xtitle'
-      DelTag, e, 'ytitle'
-      DelTag, e, 'xtickformat'
-      DelTag, e, 'ytickformat'
-   ENDIF
-
-   Axis, XRANGE=xrange, XAXIS=1, XTICKN=emptytickn, _EXTRA=e
-   Axis, YRANGE=yr, YAXIS=1, YTICKN=emptytickn, _EXTRA=e
+   IF NOT KEYWORD_Set(OPLOT) THEN BEGIN
+       Axis, XRANGE=xrange, XAXIS=0, _EXTRA=e
+       Axis, YRANGE=yr, YAXIS=0, _EXTRA=e
+       IF set(e) THEN BEGIN
+           DelTag, e, 'xtitle'
+           DelTag, e, 'ytitle'
+           DelTag, e, 'xtickformat'
+           DelTag, e, 'ytickformat'
+       ENDIF
+       
+       Axis, XRANGE=xrange, XAXIS=1, XTICKN=emptytickn, _EXTRA=e
+       Axis, YRANGE=yr, YAXIS=1, YTICKN=emptytickn, _EXTRA=e
+   END
 
 END
