@@ -134,10 +134,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
       END ELSE BEGIN            ;CASE: NASE
 ;         print, "NASE"
          ;; setting NASE in UTv does transpose array, nothing else. 
-         ;; ALLOWCOLORS must be set to have the !NONE displayed
-         ;; correctly, as ShowWeights_Scale replaces it by the color
-         ;; index for the blue color.
-         UTV, /NASE, /ALLOWCOLORS, $
+         UTV, /NASE, ALLOWCOLORS=allowcolors, $
           ShowWeights_Scale(W,SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -154,10 +151,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
       IF Keyword_Set(NEUTRAL) THEN BEGIN ;CASE: NEUTRAL: just scale like NASE
 ;         print, "NEUTRAL"
-         ;; ALLOWCOLORS must be set to have the !NONE displayed
-         ;; correctly, as ShowWeights_Scale replaces it by the color
-         ;; index for the blue color.
-         UTV, /ALLOWCOLORS, $
+         UTV, ALLOWCOLORS=allowcolors, $
           ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -182,13 +176,29 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 ;            print, "NONE"
             If Keyword_Set(INIT) then begin ;store array Range in info
 ;               PRINT, "INIT"
-               If Keyword_Set(RANGE_IN) then Info.Range_In = RANGE_IN else $
-                Info.Range_In = [min(W), max(W)]
+               If Keyword_Set(RANGE_IN) then begin
+                  Info.Range_In = RANGE_IN
+               endif else begin
+                  nonones         = where(W ne !NONE, nononecount)
+                  if nononecount ne 0 then begin
+                     ;; there is at least one entry that is not !NONE
+                     min = min(W[nonones])
+                     max = max(W[nonones])
+                     Info.Range_In = [min, max]
+                     if (min eq max) then console, /Warning, "/INIT: Unable to establish " + $
+                     "color scaling, because all entries are equal (value: "+str(min)+")."
+                  endif else begin
+                     ;; all entries are !NONE
+                     Info.Range_In = [-1.0, -1.0]
+                     console, /Warning, "/INIT: Unable to establish " + $
+                     "color scaling, because all entries are !NONE."
+                  endelse
+               endelse
             Endif               
             ;; If defined, RANGE_IN overrides the value stored in info:
             Default, Range_In, Info.Range_In
             ;;scale as stored in info 
-               UTV, Scl(W, [0, Info.Top], Range_In), ALLOWCOLORS=allowcolors, $
+               UTVScl, W, TOP=Info.Top, RANGE_IN=Range_In, ALLOWCOLORS=allowcolors, $
                 Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
                 Info.y00_norm, $
                 X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
