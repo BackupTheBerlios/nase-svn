@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.19  1999/04/06 14:26:23  kupper
+;       Tja, da ham ein paar Klammer bei der Berechnung von WillShowLogo gefehlt, sorry.
+;
 ;       Revision 1.18  1999/04/06 14:21:59  kupper
 ;       *** empty log message ***
 ;
@@ -57,8 +60,7 @@
 ;; ----------- Show Logo on startup? ----------------------
 WillShowLogo = (GetEnv("NASELOGO") eq "TRUE")
 stdout_fstat = fstat(-1)		
-;;if fix(!version.release) lt 4 then (WillShowLogo = WillShowLogo or stdout_fstat.isatty) else (WillShowLogo = WillShowLogo or stdout_fstat.interactive)
-;;if fix(!version.release) lt 4 then print,"if" else print,"else"
+if fix(!version.release) lt 4 then WillShowLogo = (WillShowLogo or stdout_fstat.isatty) else WillShowLogo = (WillShowLogo or stdout_fstat.interactive)
 ;; --------------------------------------------------------
 
 
