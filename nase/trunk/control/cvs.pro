@@ -9,12 +9,13 @@
 
 ;+
 ; NAME:
+;         CVS
 ;
-; PURPOSE:
+; PURPOSE: Einfacheres CVS-Handling
+;         
+; CATEGORY: Programmierung, NASE
 ;
-; CATEGORY:
-;
-; CALLING SEQUENCE:
+; CALLING SEQUENCE: CVS [,CVS_Name] [,NASPATH=Pfad]
 ; 
 ; INPUTS:
 ;
@@ -53,7 +54,7 @@ Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher ni
    Print
    Print, "----------- Mehr Spaß für N.A.S.E.n:"
    Print, "            Updating /usr/ax1303/neuroadm/nase ..."
-   CD, "/usr/ax1303/neuroadm", CURRENT=old_dir
+   CD, "/usr/ax1303/neuroadm/nase", CURRENT=old_dir
    Spawn, "cvs update nase"
    Print, "            Updating HTML-Help ..."
    MKHTML
