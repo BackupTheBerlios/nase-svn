@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1999/08/05 16:00:26  thiel
+;           Tried to speed it up.
+;
 ;       Revision 1.9  1999/08/05 12:20:51  thiel
 ;           Hyperlink...
 ;
@@ -118,13 +121,14 @@ PRO TotalPrecall, _PC, _DW, postL
       IF Set(preCON) THEN BEGIN ; there may be neurons not connected to any neuron
          ; look if the corresponding postsynaptic neuron was already active
          ; if yes, remember connection to be learned
-         atn = WHERE(PC.Post(DW.C2T(preCON),*) NE !NONEl, c)
+         targettimes = PC.Post(DW.C2T(preCON),*)
+         atn = WHERE(targettimes NE !NONEl, c)
          IF c NE 0 THEN BEGIN
             learnpre = precon(atn MOD N_Elements(precon))
             IF delay THEN $
-             list1 = [learnPre, (PC.Post(DW.C2T(preCON),*))(atn)-pc.time] $
+             list1 = [learnPre, targettimes(atn)-pc.time] $
             ELSE $
-             list1 = [learnPre, (PC.Post(DW.C2T(preCON),*))(atn)-pc.time]
+             list1 = [learnPre, targettimes(atn)-pc.time]
             list1 = REFORM(list1, N_Elements(list1)/2 ,2, /OVERWRITE)
          ENDIF
       ENDIF 
@@ -164,20 +168,22 @@ PRO TotalPrecall, _PC, _DW, postL
        ; if yes, remember connection to be learned
          IF NOT delay THEN BEGIN
             ; Delay=0
-            aci = WHERE(PC.Pre(DW.C2S(postCON),*) NE !NONEl, c)
+            sourcetimes = PC.pre(DW.C2S(postCON),*)
+            aci = WHERE(sourcetimes NE !NONEl, c)
             IF c NE 0 THEN BEGIN
                learnPost = postCon(aci MOD N_Elements(postcon))
 ;               PostNeurons = DW.C2T(learnPost)
-               list2 = [learnPost, PC.time-(PC.Pre(DW.C2S(postcon),*))(aci)]
+               list2 = [learnPost, PC.time-sourcetimes(aci)]
                list2 = REFORM(list2, N_Elements(list2)/2 ,2, /OVERWRITE)
             ENDIF ; c NE 0
          ENDIF ELSE BEGIN
             ; Delay=1
-            idx = WHERE(PC.pre(postCON,*) NE !NONEl, c)
+            sourcetimes = PC.pre(postCON,*)
+            idx = WHERE(sourcetimes NE !NONEl, c)
             IF c NE 0 THEN BEGIN
                learnPost = postCon(idx MOD N_Elements(postcon))
                                 ; complicated...
-               list2 = [learnPost, PC.time-(PC.Pre(postcon,*))(idx)]
+               list2 = [learnPost, PC.time-sourcetimes(idx)]
                list2 = REFORM(list2, N_Elements(list2)/2 ,2, /OVERWRITE)
             ENDIF ; c NE 0
          ENDELSE ; Delay=1
