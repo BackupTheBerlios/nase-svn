@@ -1,15 +1,11 @@
 ;+
 ; NAME: 		InitSpikeQueue
 ;
-; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 15 Zeitschritten
+; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 30 Zeitschritten
 ;
-; CATEGORY:		Neuro-Simulation
+; CATEGORY:		MISC/STRUCTURES
 ;
 ; CALLING SEQUENCE:	My_Queue = InitSpikeQueue ( INIT_DELAYS = Delay_Array )
-;
-; INPUTS:	        ---
-;
-; OPTIONAL PARAMETERS:  ---
 ;
 ; KEYWORD PARAMETERS:	INIT_DELAYS: Wird dieser Parameter angegeben, so wird ein leere Queue erzeugt.
 ;				     Die Dimension des Arrays gibt an, wieviele Spiketrains die Queue fassen soll.
@@ -18,22 +14,20 @@
 ;	
 ; OUTPUTS:		My_Queue: Eine leere Queue mit entsprechenden Delays
 ;
-; OPTIONAL OUTPUTS: -
-;
-; COMMON BLOCKS: -
-;
-; SIDE EFFECTS: -
-;
 ; RESTRICTIONS: 	Input darf nur 0 oder 1 enthalten und muß gleiche Dimension wie INIT_DELAYS haben.
-;			INIT_DELAYS darf nur Integer im Bereich 0..15 enthalten!		
+;			INIT_DELAYS darf nur Integer im Bereich 0..30 enthalten!		
 ;
-; PROCEDURE: -
-;
-; EXAMPLE: Ruedigers_Qeueu   = InitSpikeQueue( INIT_DELAYS=[0,5,7] )  ; erzeugt eine Queue für drei Spiketrains mit den Delays 0, 5 und 7		
+; EXAMPLE: Ruedigers_Qeueu   = InitSpikeQueue( INIT_DELAYS=[0,5,7] )  ; erzeugt eine Queue für drei Spiketrains mit den Delays 0, 5 und 7
 ;          Ankommende_Spikes = SpikeQueue( Ruedigers_Queue, [1,0,1] ) ; Steckt in die erste und dritte Queue einen Spike,
 ;									und liest am anderen Ende je einen Spike aus.
+; SEE ALSO:             <A HREF="#SPIKEQUEUE">SpikeQueue</A>
 ;
 ; MODIFICATION HISTORY: 
+;
+;       $Log$
+;       Revision 1.3  1997/12/01 11:38:20  saam
+;             Bearbeitet jetzt auch Delays bis maximal 30 Bins
+;
 ;
 ;       Mon Aug 18 16:33:26 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
@@ -47,12 +41,18 @@
 ;                       
 ;
 ;-
-
 FUNCTION InitSpikeQueue, INIT_DELAYS=init_delays
 
-   Queue={Q     : intarr(n_elements(init_delays)), $
-          starts: 2^round(init_delays)}
-   
+   IF MAX(init_delays) GT 30 THEN Message, 'maximal delay is 30'
+
+   IF MAX(init_delays) LE 15 THEN BEGIN
+      Queue={Q     : intarr(n_elements(init_delays)), $
+             starts: 2^round(init_delays)}
+   END ELSE BEGIN
+      Queue={Q     : lonarr(n_elements(init_delays)), $
+             starts: 2l^round(init_delays)}
+   END
+
    RETURN, Queue
 
 end
