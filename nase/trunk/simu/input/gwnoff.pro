@@ -1,12 +1,15 @@
 ;+
-; NAME:               GwnOff
+; NAME:
+;  GwnOff
+;
+; AIM: Generate constant analog input for layer, add GWN, return sparse array.
 ;
 ; PURPOSE:            Erzeugt fuer eine Layer einen konstanten, analogen Input, der  
 ;                     mit Gauss'schem Weissen Rauschen ueberlagert wird. Der Rueck- 
 ;                     gabewert ist ein Float-Array, das direkt an InputLayer_?
 ;                     uebergeben werden kann. 
 ;
-; CATEGORY:           INPUT
+; CATEGORY: Simulation / Input
 ;
 ; CALLING SEQUENCE:   Input = GwnOff( [Layer] { ,LAYER=Layer | ,WIDTH=width, HEIGHT=height }
 ;                                     [, OFFSET=offset] [,DEVIATION=deviation] [,NORM=norm])
@@ -30,9 +33,14 @@
 ; EXAMPLE:
 ;                     Input = GwnOff( WIDTH=10, HEIGHT=20, OFFSET=0.1, DEVIATION=0.01)
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/25 14:30:24  thiel
+;         Added AIMS.
+;
 ;     Revision 2.5  1998/03/03 17:09:38  saam
 ;           new Keyword NOSPASS
 ;
@@ -48,7 +56,7 @@
 ;     Revision 2.1  1997/11/03 11:34:51  saam
 ;           Gefunden, angepasst und dokumentiert
 ;
-;-
+
 
 FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset, DEVIATION=deviation,$
                  NORM=NORM, NOSPASS=NOSPASS

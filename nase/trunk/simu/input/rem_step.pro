@@ -1,5 +1,8 @@
 ;+
-; NAME: REM_Step
+; NAME:
+;  REM_Step
+;
+; AIM: Choose image parts in a saccade-like way.
 ;
 ; PURPOSE: Eine Funktion, die das Auswaehlen von Bildausschnitten 
 ;          auf hoffentlich etwas realistischere Weise ermoeglicht. 
@@ -7,7 +10,7 @@
 ;          ermittelt (nachempfundene Sakkaden), dazwischen findet 
 ;          nur eine kleine Verschiebung des Bildausschnittes statt. 
 ;
-; CATEGORY: INPUT
+; CATEGORY: Simulation / Input
 ;
 ; CALLING SEQUENCE: nextcut = REM_Step(remstructure)
 ;
@@ -38,9 +41,14 @@
 ;             dummy = get_kbrd(1)
 ;          ENDFOR
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/09/25 14:30:24  thiel
+;            Added AIMS.
+;
 ;        Revision 2.3  1998/06/24 13:12:20  thiel
 ;               Bugfix: Jetzt keine Positionen kleiner 0 mehr m"oglich.
 ;
@@ -50,7 +58,7 @@
 ;        Revision 2.1  1998/04/09 14:21:17  thiel
 ;               Michael Stipe laesst gruessen...
 ;
-;-
+
 
 FUNCTION REM_Step, REM_Structure
 

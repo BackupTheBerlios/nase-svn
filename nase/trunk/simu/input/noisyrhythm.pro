@@ -1,5 +1,8 @@
 ;+
-; NAME:               NoisyRhythm
+; NAME:
+;  NoisyRhythm
+;
+; AIM: Create rhythmic input pulses with noisy timing of single spikes.
 ;
 ; PURPOSE:            Erzeugt fuer eine Layer einen rhythmischen Input, der auf 
 ;                     unterschiedliche Arten verrauscht werden. Der erste Aufruf
@@ -9,7 +12,7 @@
 ;                     Das Rauschen ist nicht additiv, sondern verschiebt vielmehr
 ;                     die Feuerzeitpunkte individuell nach vorne oder hinten.
 ;
-; CATEGORY:           INPUT
+; CATEGORY: Simulation / Input
 ;
 ; CALLING SEQUENCE:   INITIALISIERUNG:    structure = NoisyRhythm([RATE=rate] 
 ;                                                     [,GAUSS=gauss] [,CONST=const]
@@ -50,9 +53,14 @@
 ;                        ;dann z.B.: InputLayer, L1, FEEDING=Input
 ;                     END
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/09/25 14:30:24  thiel
+;         Added AIMS.
+;
 ;     Revision 2.7  1998/02/05 13:32:22  saam
 ;           new syntax, check header
 ;
@@ -79,7 +87,7 @@
 ;           vom Himmel gefallen
 ;
 ;
-;-
+
 FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $ 
                       WIDTH=width, HEIGHT=height, RANDOM=random, V=v, OVERSAMP=oversamp, DW=dw
 

@@ -1,5 +1,8 @@
 ;+
-; NAME: REM_Init
+; NAME:
+;  REM_Init
+;
+; AIM: Init a structure that chooses image parts in a saccade-like way.
 ;
 ; PURPOSE: Vorbereiten einer Struktur, die das Auswaehlen von 
 ;          Bildausschnitten auf hoffentlich etwas realistischere
@@ -9,7 +12,7 @@
 ;          dazwischen findet nur eine kleine Verschiebung des 
 ;          Bildausschnittes statt. 
 ;
-; CATEGORY: INPUT
+; CATEGORY: Simulation / Input
 ;
 ; CALLING SEQUENCE: 
 ;         
@@ -99,16 +102,21 @@
 ;
 ; SEE ALSO: <A HREF="#REM_STEP">REM_Step</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/25 14:30:24  thiel
+;            Added AIMS.
+;
 ;        Revision 2.2  1998/05/11 13:32:21  thiel
 ;               Neues Schluesselwort FORCE
 ;
 ;        Revision 2.1  1998/04/09 14:02:45  thiel
 ;               Da wird sich der Mike Stipe freuen...
 ;
-;-
+
 
 FUNCTION REM_Init, PICARRAY=picarray, $
               CUTWIDTH=cutwidth, CUTHEIGHT=cutheight, $

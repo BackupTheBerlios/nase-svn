@@ -1,10 +1,13 @@
 ;+
-; NAME:               PoissonInput
+; NAME:
+;  PoissonInput
+;
+; AIM: Generate Poisson spiketrains of given average rate.
 ;
 ; PURPOSE:            Erzeugt poissonverteilte Spiketrains einer mittleren
 ;                     Rate als Input fuer eine Layer oder eine DW-Struktur.
 ;
-; CATEGORY:           INPUT STAT
+; CATEGORY: Simulation / Input
 ;
 ; CALLING SEQUENCE:   p = PoissonInput( {Layer, | LAYER=Layer | WIDTH=width, HEIGHT=height }
 ;                                     [,RATE=rate] [,OVERSAMP=oversamp] [,CORR=corr] [,PULSE=pulse])
@@ -53,9 +56,14 @@
 ;                     FOR i=0,t-1 DO d(*,i) = poissoninput(p)
 ;                     plottvscl, transpose(d), xrange=[0,t*1000.*0.0002], /FULLSHEET
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/09/25 14:30:24  thiel
+;         Added AIMS.
+;
 ;     Revision 2.6  1999/02/17 19:30:07  saam
 ;           now uses new fracRandom
 ;
@@ -76,7 +84,7 @@
 ;           schwere Geburt, simple Funktion
 ;
 ;
-;-
+
 FUNCTION PoissonInput, PIS, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rate, $
                        V=v, NOSPASS=nospass, CORR=corr, UNIFORM_JITTER=uniform_jitter, GAUSSIAN_JITTER=gaussian_jitter,$
                        FRAC=frac, SAMPLEPERIOD=sampleperiod, PULSE=pulse
