@@ -69,18 +69,23 @@ Pro assert, condition, text
    
    if not condition then begin
       assertionstring = currentline(1)
-      
-      posbegin = strpos(strupcase(assertionstring), "ASSERT")
-      assertionstring = (split(StrMid(assertionstring, posbegin), $
-                               ","))(1)
-      assertionstring = (split(assertionstring, ";"))(0)
-      assertionstring = str(assertionstring)
-      
+
+      if assertionstring ne "(main level code)" then begin
+         posbegin = strpos(strupcase(assertionstring), "ASSERT")
+         assertionstring = (split(StrMid(assertionstring, posbegin), $
+                                  ","))(1)
+         assertionstring = (split(assertionstring, ";"))(0)
+         assertionstring = str(assertionstring)
+      endif
+         
+
       If Set(text) then begin
-         message = ["FAILED ASSERTION: " + "'"+assertionstring+"'.", $
+         message = ["FAILED ASSERTION: " + "'"+assertionstring $
+                    +"' in line "+(callstack(1))(2)+".", $
                     "Reason: "+text]
       endif else begin
-         message = "FAILED ASSERTION: " + "'"+assertionstring+"'."         
+         message = "FAILED ASSERTION: " + "'"+assertionstring $
+         +"' in line "+(callstack(1))(2)+"."         
       endelse
       
       Console, /Fatal, PickCaller=1, message
