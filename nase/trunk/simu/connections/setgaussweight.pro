@@ -10,7 +10,8 @@
 ;                                   [,Maximum] [,Sigma | ,HWB=Halbwertsbreite]
 ;                                    ,S_ROW=Source_Row, S_COL=Source_Col
 ;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
-;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] )
+;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
+;                                   [,TRANSPARENT])
 ;
 ;
 ; 
@@ -24,7 +25,7 @@
 ;                  Sigma  : Standardabweichung in Gitterpunkten.
 ;                           alternativ kann in HWB die Halbwertsbreite angegeben werden.
 ;	
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY : s. SetWeight!
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT : s. SetWeight!
 ;
 ; OUTPUTS: ---
 ;
@@ -72,12 +73,14 @@
 
 Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
-                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+                       TRANSPARENT=transparent
 
    Default, Amp, 1
 
    SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
               Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row), $
-              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+              TRANSPARENT=transparent
 
 end

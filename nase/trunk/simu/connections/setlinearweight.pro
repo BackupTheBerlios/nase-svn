@@ -10,7 +10,8 @@
 ;                                   [,Maximum] [,Range=Reichweite]
 ;                                    ,S_ROW=Source_Row, S_COL=Source_Col
 ;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
-;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] )
+;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
+;                                   [,TRANSPARENT])
 ;
 ;
 ; 
@@ -23,7 +24,7 @@
 ; OPTIONAL INPUTS: Maximum: Stärke der stärksten Verbindung (Höhe der Kegelspitze)
 ;                  Range  : Reichweite in Gitterpunkten. (Radius der Kegelgrundfläche) (Default ist 1/6 der Targetlayerhöhe)
 ;	
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE : s. SetWeight!
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE, TRANSPARENT : s. SetWeight!
 ;
 ; OUTPUTS: ---
 ;
@@ -61,13 +62,15 @@
 
 Pro SetLinearWeight, DWS, Amp, Range, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
-                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+                       TRANSPARENT=transparent
 
    Default, Range, DWS.target_h/6  
    Default, Amp, 1
 
    SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
               Amp - Amp/double(Range)*(Range < Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
-              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+              TRANSPARENT=transparent
 
 end

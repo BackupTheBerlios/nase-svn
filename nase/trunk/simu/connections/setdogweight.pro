@@ -10,7 +10,8 @@
 ;                                   [,Maximum] [,On_Sigma | ,ON_HWB=Halbwertsbreite] [,Off_Sigma | ,OFF_HWB=Halbwertsbreite]
 ;                                    ,S_ROW=Source_Row, S_COL=Source_Col
 ;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
-;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] )
+;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
+;                                   [,TRANSPARENT] )
 ;
 ;
 ; 
@@ -27,7 +28,7 @@
 ;                                        Merke: Für On_Sigma < Off_Sigma erhält man ein ON-Center/OFF-Surround - Feld.
 ;                                               Für On_Sigma > Off_SIgma erhält man ein OFF-Center/ON-Surround - Feld.
 ;
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY : s. SetWeight!
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT : s. SetWeight!
 ;
 ; OUTPUTS: ---
 ;
@@ -66,7 +67,8 @@
 
 Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
-                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+                       TRANSPARENT=transparent
 
    Default, Amp, 1
 
@@ -79,7 +81,8 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
 
    SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
               dog, $
-              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+              TRANSPARENT=transparent
 
 end
 
