@@ -68,6 +68,8 @@
 ;      RECEPTIVE oder TOS  : Muß gesetzt werden, wenn man die
 ;                            Verbindungen ZU den Neuronen sehen will. (Rezeptive Felder)
 ;                     DELAYS: Falls gesetzt, werden nicht die Gewichte, sondern die Delays visualisiert
+;                    EFFICACY: Falls gesetzt, werden nicht Gewichte oder Delays visualisiert, sondern
+;                              die 'synaptic efficacy' 
 ;                     SLIDE: Ist dieses Keword ungleich null, so wird die Matrix in einem SLIDE_WINDOW angezeigt
 ;                            (nützlich, wenn sie nicht auf den
 ;                            Bildschirm paßt!)
@@ -171,6 +173,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.29  1999/11/16 15:15:51  alshaikh
+;             kann jetzt auch transmitterfreisetzungswahrscheinlichkeiten
+;             (U_se) darstellen...
+;
 ;       Revision 2.28  1999/08/18 09:56:25  thiel
 ;           New keyword: SETCOL to prevent color flickering in multi-sheet-
 ;           applications.
@@ -314,7 +320,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                  groesse=GROESSE, XGROESSE=xgroesse, YGROESSE=ygroesse, $
                  ZOOM=zoom, XZOOM=xzoom, YZOOM=yzoom, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
-                 FROMS=froms,  TOS=tos, DELAYS=delay, $
+                 FROMS=froms,  TOS=tos, DELAYS=delay, EFFICACY=efficacy, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin, GET_WIN=get_win, $
                  GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, COLORMODE=colormode, $
@@ -362,6 +368,9 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                    source_h: DWDim(__Matrix, /TH), $
                    target_w: DWDim(__Matrix, /SW), $
                    target_h: DWDim(__Matrix, /SH)}
+         IF keyword_set(EFFICACY) THEN $
+          settag,Matrix,'U_se', Transpose(Use(__Matrix))
+
       END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          Matrix = {Weights : Transpose(Weights(__Matrix)), $
                    Delays : Transpose(Delays(__Matrix)),$
@@ -369,6 +378,9 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                    source_h: DWDim(__Matrix, /TH), $
                    target_w: DWDim(__Matrix, /SW), $
                    target_h: DWDim(__Matrix, /SH)}
+         IF keyword_set(EFFICACY) THEN $
+          settag,Matrix,'U_se', Transpose(Use(__Matrix))
+
       END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
 
    ENDIF ELSE begin             ; Source- und Targetlayer NICHT vertauschen:
@@ -379,6 +391,10 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                    source_h: DWDim(__Matrix, /SH), $
                    target_w: DWDim(__Matrix, /TW), $
                    target_h: DWDim(__Matrix, /TH)}
+ IF keyword_set(EFFICACY) THEN $
+          settag,Matrix,'U_se', Transpose(Use(__Matrix))
+
+
       END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          Matrix = {Weights : Weights(__Matrix), $
                    Delays : Delays(__Matrix),$
@@ -386,6 +402,9 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                    source_h: DWDim(__Matrix, /SH), $
                    target_w: DWDim(__Matrix, /TW), $
                    target_h: DWDim(__Matrix, /TH)}
+ IF keyword_set(EFFICACY) THEN $
+          settag,Matrix,'U_se', Transpose(Use(__Matrix))
+
       END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
 
    Endelse
@@ -412,6 +431,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
    
    ;;------------------> Matrix umformen
       IF Keyword_Set(Delay) THEN MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w) $
+       ELSE IF Keyword_Set(Efficacy) THEN MatrixMatrix= reform(Matrix.U_se, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w) $
       ELSE MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
         ;;------------------> Farben setzen und Matrix skalieren:
       IF Keyword_Set(SETCOL) THEN BEGIN
@@ -436,7 +456,9 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
          If keyword_set(SUPERIMPOSE) then begin
             IF Keyword_Set(Delay) THEN begin
                OtherOther= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-            endif ELSE begin
+               END ELSE IF Keyword_Set(Efficacy) THEN BEGIN
+                  OtherOther= reform(Matrix.U_se, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+            end ELSE begin
                OtherOther= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
             endelse
             OtherOther = ShowWeights_Scale(OtherOther, SETCOL=setcol, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=printstyle)
