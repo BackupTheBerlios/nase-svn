@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.10  2000/05/23 08:21:36  gabriel
+;             COLOR problem fixed
+;
 ;        Revision 2.9  2000/03/01 16:20:30  gabriel
 ;                 there was a cut and paste bug
 ;
@@ -101,7 +104,7 @@ _winkelarray = winkelarray
 
 IF set(SDEV) THEN _sdev = sdev
 
-Default, MCOLOR , RGB(255,255,255,/NOALLOC)
+Default, MCOLOR , !P.COLOR
 Default, SDCOLOR, RGB(150,150,200,/NOALLOC)
 IF set(DELTA) THEN DEFAULT,CLOSE ,1
 
