@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/03/30 23:04:20  kupper
+;               X/Y-Range wird jetzt auch richtig gesetzt.
+;
 ;        Revision 2.2  1998/03/29 18:48:51  kupper
 ;               NONASE-Keyword hinzugefügt.
 ;
@@ -71,7 +74,10 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       !X.TICKS = round((Width-1) / float(!X.MINOR))
       !X.STYLE = 1
       !X.TICKV = findgen(!X.TICKS+1)*!X.MINOR
-      If Keyword_Set(CENTER) then !X.TICKV = !X.TICKV + 0.5
+      If Keyword_Set(CENTER) then begin
+         !X.TICKV = !X.TICKV + 0.5
+         !X.RANGE = [0, Width]
+      endif else !X.RANGE = [0, Width-1]
       !X.TICKNAME = str(indgen(!X.TICKS+1)*!X.MINOR)
    endif
    If not Keyword_Set(x_only) then begin
@@ -79,7 +85,10 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       !Y.TICKS = round((Height-1) / float(!Y.MINOR))
       !Y.STYLE = 1
       !Y.TICKV = findgen(!Y.TICKS+1)*!Y.MINOR
-      If Keyword_Set(CENTER) then !Y.TICKV = !Y.TICKV + 0.5
+      If Keyword_Set(CENTER) then begin
+         !Y.TICKV = !Y.TICKV + 0.5
+         !Y.RANGE = [0, Height]
+      endif else !Y.RANGE = [0, Height-1]
       If Keyword_Set(NONASE) then !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR) $
       else !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
    endif
