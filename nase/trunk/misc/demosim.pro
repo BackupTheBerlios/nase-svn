@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  1997/10/13 16:46:02  saam
+;       zeitliche Abfolge des Zeitschrittes korrigiert
+;
 ;       Revision 1.3  1997/09/20 17:44:25  thiel
 ;              TOTALRECALL muss jetzt in der Simulation
 ;       	   vor der Lernregel aufgerufen werden
@@ -108,6 +111,9 @@ Window, 2, XSIZE=800, YSIZE=400
       I_L1_I = DelayWeigh( CON_L2_L1, L2.O)
 
       
+;-------------> LEARN SOMETHING
+      TotalRecall, LP_L1_L1, CON_L1_L1.Learn
+      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
 
 
 ;-------------> PROCEED NEURONS
@@ -121,11 +127,6 @@ Window, 2, XSIZE=800, YSIZE=400
       O_L1(*,t MOD 500) = Out2Vector(L1.O)
       O_L2(*,t MOD 500) = Out2Vector(L2.O)
       
-
-;-------------> LEARN SOMETHING
-      TotalRecall, LP_L1_L1, CON_L1_L1.Learn
-      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
-
 
 ;-------------> DISPLAY RESULTS
       IF (t MOD 500 EQ 0 AND t GT 1) THEN BEGIN
