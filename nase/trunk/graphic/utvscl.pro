@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1997/11/07 16:08:11  saam
+;           das Pos-Argument scheint zu fktionieren
+;
 ;     Revision 2.4  1997/11/07 15:56:08  saam
 ;         Beginn des Einfuegens des Pos-Arguments
 ;
@@ -113,12 +116,16 @@ PRO UTvScl, _Image, XNorm, YNorm $
          MaxPix = MAX(Image)
          Image = MaxPix - Image 
       END
-      TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+      IF N_Params() EQ 2 THEN BEGIN; position implicitely
+         TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+      END ELSE BEGIN
+         TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+      END
 
    END ELSE BEGIN ; it is a WINDOW
       IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) THEN Image = Congrid(Image, xsize*!D.X_PX_CM, ysize*!D.Y_PX_CM)
       Device, BYPASS_TRANSLATION=0
-      IF N_Params EQ 2 THEN BEGIN; position implicitely
+      IF N_Params() EQ 2 THEN BEGIN; position implicitely
          TVScl, Image, xnorm, /CENTIMETERS, _EXTRA=e
       END ELSE BEGIN
          TVScl, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
