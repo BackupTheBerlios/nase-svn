@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2001/02/01 10:37:50  gabriel
+;           FLUSH for STDOUT inserted
+;
 ;     Revision 1.6  2000/11/17 12:57:59  gabriel
 ;          BUG fixed for stat.step GT stat.maxsteps
 ;
@@ -58,6 +61,7 @@ PRO SimTimeStop
       print, '  Iterations           : ', stat.step
       print, '  Total Time           : ', Seconds2String(Total(stat.tpi))
       print, '-----------------------------------------------'
+      FLUSH, -1
    END ELSE BEGIN
       if stat.step GT stat.maxsteps then begin
          CONSOLE, /warn, 'too many iterations...quitting'
@@ -72,7 +76,7 @@ PRO SimTimeStop
       print, '  Mean Time/Iteration  : ', Seconds2String(m)
       print, '  Standard Deviation   : ', Seconds2String(sd)
       print, '-----------------------------------------------'
-      
+      FLUSH, -1
       
       IF !D.Name EQ 'NULL' THEN RETURN
 

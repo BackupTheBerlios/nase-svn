@@ -15,16 +15,19 @@
 ; COMMON BLOCKS:         SimTime
 ;
 ; EXAMPLE:
-;                        SimTimeInit, GRAPHIC=5, /PRINT
-;                        FOR a=1,10 DO BEGIN
-;                           Wait, 5.*RandomU(seed)
-;                           SimTimeStep
-;                        END
-;                        SimTimeStop
-;             
+;*                        SimTimeInit, GRAPHIC=5, /PRINT
+;*                        FOR a=1,10 DO BEGIN
+;*                           Wait, 5.*RandomU(seed)
+;*                           SimTimeStep
+;*                        END
+;*                        SimTimeStop
+;-             
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2001/02/01 10:41:24  gabriel
+;           FLUSH for STDOUT inserted
+;
 ;     Revision 1.7  2000/09/28 13:25:36  alshaikh
 ;           added AIM
 ;
@@ -76,7 +79,7 @@ PRO SimTimeStep
       print, '  Mission completed in   : ', Seconds2String(estimation)
       print, '  Estim. total Time      : ', Seconds2String(Total(stat.tpi)+estimation)
       print, '-----------------------------------------------'
-
+      FLUSH, -1
    END
 
 END
