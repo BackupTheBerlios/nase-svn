@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, R¸diger Kupper
 ;
 ;       $Log$
+;       Revision 1.4  1998/11/08 17:34:02  saam
+;             adapted to new layer type
+;
 ;       Revision 1.3  1997/11/11 09:42:03  thiel
 ;              Syntax Error korrigiert.
 ;
@@ -60,26 +63,33 @@ Function LayerIndex, Layer, ROW=row, COL=col, $
    
    IF set(WIDTH) THEN return, col*height + row
 
-        if contains(Layer.info, 'LAYER', /IGNORECASE) then begin
-           if row ge Layer.h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groﬂ!'
-           if col ge Layer.w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groﬂ!'
-
-           return, col*Layer.h + row
-        endif
-
-	if contains(Layer.info, 'DW', /IGNORECASE) then begin
-           if Keyword_set(SOURCE) then begin
-              if row ge Layer.Source_h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groﬂ!'
-              if col ge Layer.Source_w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groﬂ!'
-              return, col * Layer.Source_h + row
-           endif
-           if Keyword_set(TARGET) then begin
-              if row ge Layer.Target_h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groﬂ!'
-              if col ge Layer.Target_w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groﬂ!'
-              return, col * Layer.Target_h + row
-           endif
-            message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
-        endif
-
+   
+   if contains(Info(Layer), 'LAYER', /IGNORECASE) then begin
+      h = LayerHeight(Layer)
+      w = LayerWidth(Layer)
+      if row ge h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groﬂ!'
+      if col ge w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groﬂ!'
+      
+      return, col*h + row
+   endif
+   
+   if contains(Info(Layer), 'DW', /IGNORECASE) then begin
+      if Keyword_set(SOURCE) then begin
+         h = LayerHeight(Layer, /SOURCE)
+         w = LayerWidth(Layer, /SOURCE)
+         if row ge h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groﬂ!'
+         if col ge w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groﬂ!'
+         return, col * h + row
+      endif
+      if Keyword_set(TARGET) then begin
+         h = LayerHeight(Layer, /TARGET)
+         w = LayerWidth(Layer, /TARGET)
+         if row ge h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groﬂ!'
+         if col ge w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groﬂ!'
+         return, col * h + row
+      endif
+      message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
+   endif
+   
 	
 end

@@ -25,6 +25,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  1998/11/08 17:34:02  saam
+;             adapted to new layer type
+;
 ;       Revision 2.2  1998/02/19 15:32:26  kupper
 ;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
 ;
@@ -32,15 +35,21 @@
 ;              Warjanuwohlschonlangeüberfällig...
 ;
 ;-
+FUNCTION LayerWidth, _L, SOURCE=source, TARGET=target
 
-Function LayerWidth, Layer, SOURCE=source, TARGET=target
+   ON_ERROR, 2
 
-        If contains(info(Layer), 'LAYER', /IGNORECASE) then return, Layer.w
+   Handle_Value, _L, L, /NO_COPY
 
-	If contains(info(Layer), 'DW', /IGNORECASE) then begin
-           if Keyword_set(SOURCE) then return, DWDim(Layer, /SW)
-           if Keyword_set(TARGET) then return, DWDim(Layer, /TW)
-           message, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
-        endif
+   IF Contains(info(L), 'LAYER', /IGNORECASE) THEN w = L.w
+   
+   IF Contains(info(L), 'DW', /IGNORECASE) THEN BEGIN
+      IF KEYWORD_SET(SOURCE) THEN w = DWDim(L, /SW)
+      IF KEYWORD_SET(TARGET) THEN w = DWDim(L, /TW)
+      MESSAGE, "Structure is Delay-Weigh - Please define Layer by setting Keyword /SOURCE or /TARGET!"
+   ENDIF
 
-end
+   Handle_Value, _L, L, /NO_COPY, /SET
+   RETURN, w
+
+END
