@@ -26,7 +26,7 @@
 ; CALLING SEQUENCE:
 ;*result = Gabor( size
 ;*                [,HMW=...] [,ORIENTATION=...] [,PHASE=...] [,WAVELENGTH=...]
-;*                [,/NORM] [,/POWERNORM] [,/MAXONE] [,/NICEDETECTOR] )
+;*                [,/NORM] [,/POWERNORM] [,/ABSNORM] [,/MAXONE] [,/NICEDETECTOR] )
 ;
 ; INPUTS:
 ;  size:: Size of the (square) array to be returned.
@@ -68,6 +68,16 @@
 ;                 gabor wavelet is scaled to a total power of
 ;                 <*>1.0</*>. I.e., <*>Total(Gabor(...)^2.0) eq
 ;                 1.0</*>.
+;
+;  ABSNORM     :: Normalize the gabor patch to its total absolute value.
+;                 This means that its response to the optimal stimulus
+;                 (which is a square grid of optimal frequency and of
+;                 range <*>[-1,1]</*>) is <*>1.0</*>.<BR>
+;                 Note that this means that if the input picture
+;                 values have mean <*>m</*> and max. amplitude <*>a</*>,
+;                 the filtering result will have mean <*>0</*> and
+;                 max. amplitude <*>a</*>. (Independent of wavelength
+;                 and patch size.) 
 ;
 ;  MAXONE      :: If <*>PHASE</*> is different from <*>0</*>, the
 ;                 maximum values of the cosine function and the gauss
@@ -149,7 +159,7 @@ End
 
 Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
                 WAVELENGTH=wavelength, $
-                HWB=hwb, HMW=hmw, NORM=norm, POWERNORM=powernorm, $
+                HWB=hwb, HMW=hmw, NORM=norm, POWERNORM=powernorm, ABSNORM=absnorm, $
                 MAXONE=maxone, NICEDETECTOR=nicedetector
 
    Default, WAVELENGTH, size
@@ -209,5 +219,10 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
       result = Temporary(result)/m 
    endif
 
+   If Keyword_Set(ABSNORM) then begin
+      fac = total(abs(result))
+      result = Temporary(result)/fac 
+   endif
+   
    return, result
 End
