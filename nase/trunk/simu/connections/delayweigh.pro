@@ -115,7 +115,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
    END
    
    IF N_Elements(init_delays) NE 0                 THEN Message, 'initializing without a weight matrix'
-   IF N_Elements(In) NE (Size(DelMat.Weights))(2)  THEN Message, 'input incompatible with definition of matrix' 
+   IF (N_Elements(In) NE (Size(DelMat.Weights))(2))  AND ((Size(DelMat.Weights))(0) EQ 2) THEN Message, 'input incompatible with definition of matrix' 
    
    IF (DelMat.Delays(0) EQ -1) THEN BEGIN
       RETURN, DelMat.Weights # In 
