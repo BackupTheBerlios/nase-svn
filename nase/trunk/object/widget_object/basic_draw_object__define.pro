@@ -127,6 +127,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.14  2001/08/02 14:18:09  kupper
+;        replaced "MESSAGE" commands by "CONSOLE" calls.
+;
 ;        Revision 1.13  2000/09/27 15:59:37  saam
 ;        service commit fixing several doc header violations
 ;
@@ -229,7 +232,7 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
    ;;all other keywords are passed to the base
    ;;constructor through _ref_extra
 
-   message, /Info, "I am created."
+   DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
@@ -288,7 +291,7 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
 End
 
 Pro basic_draw_object::cleanup, _REF_EXTRA = _ref_extra
-   message, /Informational, "I'm dying!"
+   DMsg, "I'm dying!"
    Cleanup_Superclasses, self, "basic_draw_object", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
@@ -308,7 +311,7 @@ Pro basic_draw_object::paint
          self->paint_hook_
          showit_close, self.w_showit, Save_Colors=self.save_colors
       Endif else begin
-         message, /Informational, "Warning: Ignored paint request for unrealized " + $
+         console, /Warning, "Warning: Ignored paint request for unrealized " + $
           "widget-object."
       endelse
    endelse
@@ -337,13 +340,13 @@ End
 Pro basic_draw_object::paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
    On_error, 2
-   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
+   console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
 End
 
 Pro basic_draw_object::initial_paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
    On_error, 2
-   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
+   console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
 End
 
 Function basic_draw_object::save_colors_
