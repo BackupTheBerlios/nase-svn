@@ -4,10 +4,12 @@
 ; PURPOSE: Diese Routine dient der Initialisierung eines Widgets, das ein 
 ;          einfaches IDL-Draw-Widget um die Fähigkeit der NASE-<A HREF="./SHEETS/#DEFINESHEET">Sheets</A>
 ;          erweitert, die Graphik-Systemvariablen und private Farbtabellen zu 
-;          speichern. Das ShowIt-Widget besitzt wie <A HREF="#SCROLLIT">ScrollIts</A> eine eigene
+;          speichern.
+;          Auf Pseudocolor-Displays erhält das ShowIt-Widget wie <A HREF="#SCROLLIT">ScrollIt()</A> eine eigene
 ;          Eventhandling-Funktion, die die private Farbtabelle setzt, falls
-;          der Mauszeiger das jeweilige Fenster "betritt".  Außerdem übernimmt
-;          die zugehörige Routine <A HREF="#SHOWIT_OPEN">ShowIt_Open</A> die Ermittlung der Window-ID und
+;          der Mauszeiger das jeweilige Fenster "betritt".
+;          Außerdem übernimmt die zugehörige Routine
+;          <A HREF="#SHOWIT_OPEN">ShowIt_Open</A> die Ermittlung der Window-ID und
 ;          bereitet das entsprechende Fenster für die Graphikausgabe vor. 
 ;
 ; CATEGORY: GRAPHIC /WIDGETS
@@ -25,9 +27,10 @@
 ;                           Hilfe über 'Widget_Draw'
 ;
 ; KEYWORD PARAMETERS: /PRIVATE_COLORS: Ist dieses Schlüsselwort gesetzt, so
-;                                      erhält das Widget eine eigene 
-;                                      Farbtabelle, die immer dann gesetzt 
-;                                      wird, wenn sich der Mauszeiger im 
+;                                      wird die private
+;                                      Farbtabelle des Widgets 
+;                                      immer dann gesetzt ,
+;                                      wenn sich der Mauszeiger im 
 ;                                      Bereich des Widgets befindet. Zum
 ;                                      Speichern der gewünschten Farbtabelle
 ;                                      siehe <A HREF="#SHOWIT_CLOSE">ShowIt_Close</A>. 
@@ -52,6 +55,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/11/16 17:05:13  kupper
+;        Incorporated changes previously made to the sheet/scrollit routines:
+;        Will not produce tracking events for TrueColor or DirectColor
+;        visuals, but will set colortable upon opening in that case.
+;
 ;        Revision 1.2  1999/09/06 14:04:56  thiel
 ;            Wrapped draw-widget inside base to provide free uservalue.
 ;
@@ -72,7 +80,9 @@ FUNCTION Widget_ShowIt_Event, Event
    Widget_Control, FirstChild, GET_UVALUE=uv
 ;   WIDGET_CONTROL, Event.Handler, GET_UVALUE=uv
 
-   IF TAG_NAMES(Event, /STRUCTURE_NAME) EQ  "WIDGET_TRACKING" THEN BEGIN  
+   IF (TAG_NAMES(Event, /STRUCTURE_NAME) EQ  "WIDGET_TRACKING") $
+    AND uv.private_colors THEN BEGIN ;possibly, the user requested tracking-events, but NOT private_colors!  
+
       ;Pointer entered or left the widget
 
       ;;-----------Check if pointer entered widget and set color table--------
@@ -116,6 +126,11 @@ FUNCTION Widget_ShowIt, Parent, $
 
    Default, private_colors, 0
    Default, tracking_events, 0
+
+   If Not(PseudoColor_Visual()) then begin
+	message, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
+	private_colors = 0
+   end
 
   ;;obtain current color table:
    UTVLCT, /GET, Red, Green, Blue

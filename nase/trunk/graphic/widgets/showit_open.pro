@@ -31,6 +31,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/11/16 17:05:13  kupper
+;        Incorporated changes previously made to the sheet/scrollit routines:
+;        Will not produce tracking events for TrueColor or DirectColor
+;        visuals, but will set colortable upon opening in that case.
+;
 ;        Revision 1.2  1999/09/06 14:04:56  thiel
 ;            Wrapped draw-widget inside base to provide free uservalue.
 ;
@@ -64,6 +69,12 @@ PRO ShowIt_Open, widid
    old = !Z
    !Z = uservalue.z
    uservalue.z = old
+
+   If keyword_set(SETCOL) and not(PseudoColor_Visual()) then begin
+                                ;we've got a True-Color-Display, so
+                                ;we have to set the private color table:
+      UTVLCT, uservalue.MyPalette.R, uservalue.MyPalette.G, uservalue.MyPalette.B 
+   End
 
    Widget_Control, firstchild, SET_UVALUE=uservalue, /NO_COPY
 
