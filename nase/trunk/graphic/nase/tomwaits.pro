@@ -10,28 +10,41 @@ PRO TomWaits_Event, Event
          Case uval.info of
             'TOMWAITS_WEIGHTS': begin
                data.delay = 0
-               ShowWeights, data.DW, ZOOM=data.zoom, WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode
+               ShowWeights, data.DW, ZOOM=data.zoom, WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode, GET_INFO=get_info, GET_COLORS=get_colors
                data.colormode = get_colormode
+               data.tvinfo = get_info
+               data.colors = get_colors
+               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_DELAYS': begin
                data.delay = 1
-               ShowWeights, data.DW, /DELAYS, ZOOM=data.zoom, WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode
+               ShowWeights, data.DW, /DELAYS, ZOOM=data.zoom, WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode, GET_INFO=get_info, GET_COLORS=get_colors
                data.colormode = get_colormode
+               data.tvinfo = get_info
+               data.colors = get_colors
+               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_PROJECTIVE': begin
                Widget_Control, uval.id_other, SET_BUTTON=0 ;explizit machen, da sie nicht in der gleichen Base sind!
                data.projective = 1
                data.receptive  = 0
-               ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /PROJECTIVE
+               ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /PROJECTIVE, GET_INFO=get_info, GET_COLORS=get_colors
+               data.tvinfo = get_info
+               data.colors = get_colors
+               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_RECEPTIVE': begin
                Widget_Control, uval.id_other, SET_BUTTON=0
                data.projective = 0
                data.receptive  = 1
-               ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /RECEPTIVE
+               ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /RECEPTIVE, GET_INFO=get_info, GET_COLORS=get_colors
+               data.tvinfo = get_info
+               data.colors = get_colors
+               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_PRINT': message, /INFO, "Print-Event not yet implemented!"
             'TOMWAITS_DONE': begin
+               !TOPCOLOR = data.old_topcolor
                Widget_Control, Event.Top, /DESTROY
                return
             end
@@ -40,8 +53,52 @@ PRO TomWaits_Event, Event
          Widget_Control, Event.Top, SET_UVALUE=data
       end
       
-      'WIDGET_DRAW': begin
+      'WIDGET_DRAW': begin   
+         !TopColor = data.my_TopColor
          If Event.Type eq 0 then begin ;Mouse Button Press
+            ;;------------------> Neuronennummer bestimmen:
+            col = fix((Event.X-data.tvinfo.x0)/data.tvinfo.subxsize)
+            row = fix((Event.Y-data.tvinfo.y00)/data.tvinfo.subysize)
+            If data.projective then begin
+               col = col > 0 < (DWDim(data.DW, /SW)-1)
+               row = row > 0 < (DWDim(data.DW, /SH)-1)
+               row = (DWDim(data.DW, /SH)-1) - row
+            endif else begin
+               col = col > 0 < (DWDim(data.DW, /TW)-1)
+               row = row > 0 < (DWDim(data.DW, /TH)-1)
+               row = (DWDim(data.DW, /TH)-1) - row
+            endelse
+            ;;--------------------------------
+            ;;------------------> Untermatrix auslesen:
+            If data.projective then begin ;Projective
+               If data.delay then begin ;Delays
+                  title="Projective Delay-Field of Source-Neuron ("+str(row)+","+str(col)+")"
+                  w = (Delays(data.dw, /DIMENSIONS))(*, *, row, col)
+                  If data.colorscaling eq 0 then $ ;global ColorScaling
+                   tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+               endif else begin ;Weights
+                  title="Projective Weight-Field of Source-Neuron ("+str(row)+","+str(col)+")"
+                  w = (Weights(data.dw, /DIMENSIONS))(*, *, row, col)
+                  If data.colorscaling eq 0 then $ ;global ColorScaling
+                   tv_w = (ShowWeights_Scale(Weights(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+               endelse
+            endif else begin    ;Receptive
+               If data.delay then begin ;Delays
+                  title="Receptive Delay-Field of Target-Neuron ("+str(row)+","+str(col)+")"
+                  w = (Delays(data.dw, /DIMENSIONS))(row, col, *, *)
+                  If data.colorscaling eq 0 then $ ;global ColorScaling
+                   tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
+               endif else begin ;Weights
+                  title="Receptive Weight-Field of Target-Neuron ("+str(row)+","+str(col)+")"
+                  w = (Weights(data.dw, /DIMENSIONS))(row, col, *, *)
+                  If data.colorscaling eq 0 then $ ;global ColorScaling
+                   tv_w = (ShowWeights_Scale(Weights(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
+               endelse
+            endelse
+            If data.colorscaling eq 1 then $ ;individual Colorscaling
+             tv_w = ShowWeights_Scale(w, COLORMODE=data.colormode)
+           ;;--------------------------------
+
 ;            If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
 ;               print, event.clicks
 ;               If data.projective then begin
@@ -58,35 +115,17 @@ PRO TomWaits_Event, Event
 ;            Endif               ;Left Button
             
             If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
-               If data.projective then begin
-                  col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
-                  row = DWDim(data.DW, /SH)-1-Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
-                  print,  row, col
-                  Surfit, /NASE, TITLE="Projective Field of Source-Neuron ("+str(row)+","+str(col)+")", $
-                   GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(row, col, *, *), /JUST_REG
-               Endif
-               If data.receptive then begin
-                  col = Event.X/(DWDim(data.DW, /TW)*data.zoom+1)
-                  row = DWDim(data.DW, /TH)-1-Event.Y/(DWDim(data.DW, /TH)*data.zoom+1)
-                  Surfit, /NASE, TITLE="Receptive Field of Target-Neuron ("+str(row)+","+str(col)+")", $
-                   GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(*, *, row, col), /JUST_REG
-               Endif
+                  Surfit, xsize=300, ysize=300, /NASE, w, $
+                   GROUP=Event.Top, TITLE=title, /JUST_REG
             Endif               ;Middle Button
 
             If (Event.Press and 4) eq 4 then begin ;Right Mouse Button
-               If data.projective then begin
-                  col = Event.X/(DWDim(data.DW, /SW)*data.zoom+1)
-                  row = DWDim(data.DW, /SH)-1-Event.Y/(DWDim(data.DW, /SH)*data.zoom+1)
-                  ExamineIt, GROUP=Event.Top, reform(/OVERWRITE, (Weights(data.dw, /DIMENSIONS))(row, col, *, *)), ZOOM=data.magnify, /JUST_REG
-               Endif
-               If data.receptive then begin
-                  col = Event.X/(DWDim(data.DW, /TW)*data.zoom+1)
-                  row = DWDim(data.DW, /TH)-1-Event.Y/(DWDim(data.DW, /TH)*data.zoom+1)
-                  ExamineIt, GROUP=Event.Top, (Weights(data.dw, /DIMENSIONS))(*, *, row, col), ZOOM=data.magnify, /JUST_REG
-               Endif
+                  ExamineIt, /NASE, TITLE=title, $
+                   GROUP=Event.Top, w, tv_w, ZOOM=data.magnify, /JUST_REG
             Endif               ;Middle Button
 
          endif                  ;Button Press
+         !TOPCOLOR = data.old_TopColor
       end                       ;WIDGET_DRAW event
       else: message, /INFO, "I don't know this Event!"
    endcase
@@ -98,6 +137,7 @@ PRO TomWaits, GROUP=Group, $
               GET_BASE=get_base, $
               FROMS=froms,  TOS=tos, DELAYS=delay, $
               PROJECTIVE=projective, RECEPTIVE=receptive, $
+              COLORSCALING=colorscaling, $
               GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
               JUST_REG=just_reg
 
@@ -115,7 +155,8 @@ PRO TomWaits, GROUP=Group, $
   Default, GET_MAXCOL, -99
   Default, GET_COLORMODE, -99
 
-  Default, MAGNIFY, 10
+  Default, MAGNIFY, 15
+  Default, COLORSCALING, 1;individual Colorscaling
 
   ;;------------------> Größe des Draw-Widgets:
   xsize = DWDim(DW, /SW)*DWDim(DW, /TW)*zoom
@@ -232,7 +273,15 @@ endelse
 
   WIDGET_CONTROL, Draw, GET_VALUE=DrawId
 
-  ShowWeights, DW, ZOOM=zoom, WINNR=DrawId, PROJECTIVE=projective, RECEPTIVE=receptive, DELAYS=delay, GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode
+  get_colors = 0
+  tvinfo = 0
+  get_colormode = 0
+  get_maxcol = 0
+
+  ShowWeights, DW, ZOOM=zoom, WINNR=DrawId, PROJECTIVE=projective, RECEPTIVE=receptive, DELAYS=delay, GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
+   GET_INFO=tvinfo, GET_COLORS=get_colors
+
+  old_TopColor = !TOPCOLOR
 
   Widget_Control, Base, SET_UVALUE={info    : 'TOMWAITS_BASE', $
                                     DW : DW, $ ;EinHandle...
@@ -242,7 +291,12 @@ endelse
                                     receptive: receptive, $
                                     delay: delay, $
                                     colormode: get_colormode, $
-                                    magnify: magnify}
+                                    magnify: magnify, $
+                                    tvinfo: tvinfo, $
+                                    colors:get_colors, $
+                                    old_TopColor:old_TopColor, $
+                                    my_TopColor: get_colors(4), $ ;preserve ShowWeights-Colors
+                                    colorscaling: colorscaling}
 
   If fix(!VERSION.Release) ge 5 then XMANAGER, 'TomWaits', Base, /NO_BLOCK, JUST_REG=just_reg $
   else XMANAGER, 'TomWaits', Base, JUST_REG=just_reg
