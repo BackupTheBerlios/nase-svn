@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.15  2000/10/05 16:24:31  saam
+;     decreased !TOPCOLOR to increase number
+;     of private colors
+;
 ;     Revision 1.14  2000/09/25 09:10:32  saam
 ;     * appended AIM tag
 ;     * some routines got a documentation update
@@ -119,7 +123,10 @@ DefSysV, '!KEY',       {UP	: string(27b)+'[A', $   ; ESC has ASCII 27
 			ESC	: string(27b), $
 			BEL	: string(7b)}, 1
 
-DefSysV, '!TOPCOLOR', !D.Table_Size-2
+DefSysV, '!TOPCOLOR', !D.Table_Size-11 ;;; protect some colors from being overwritten by uloadct (here: 10)
+                                       ;;; maximal accetable value is
+                                       ;;; !D.Table_Size-3 (to protect
+                                       ;;; white and black)
 DefSysV, '!NASETABLE', {POS         : 0, $
 			NEGPOS      : 1, $
 			PAPER_POS   : 2, $
