@@ -7,32 +7,18 @@
 ;
 ; CALLING SEQUENCE:   .run demosim
 ;
-; INPUTS:             ---
-;
-; OPTIONAL INPUTS:    ---
-;
-; KEYWORD PARAMETERS: ---
-;
-; OUTPUTS:            ---
-;
-; OPTIONAL OUTPUTS:   ---
-;
-; COMMON BLOCKS:      ---
-;
-; SIDE EFFECTS:       ---
-;
-; RESTRICTIONS:       ---
-;
-; PROCEDURE:          ---
-;
 ; EXAMPLE:            .run demosim
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.2  1997/09/18 08:09:14  saam
+;            Anpassung an veraenderte Syntax&Semantik
+;
+;
 ;       Thu Aug 28 17:55:32 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
-;		Urversion erstellt
+;	     Urversion erstellt
 ;
 ;
 ;-
@@ -51,24 +37,16 @@ Window, 2, XSIZE=800, YSIZE=400
    h = 10
 
 
-   ; initialize parameters for a cluster of type 1 neurons (first order leaky integrators for feeding, linking, inhibition and threshold; learning potential)
-   Layer1 = InitPara_3( TAUF=10.0, TAUL=5.0, TAUI=15.0, VS=30.0, TAUS=10.0, TH0=1.0, SIGMA=0.5)
+   ; initialize parameters for a cluster of type 1 neurons (first order leaky integrators for feeding, linking, inhibition and threshold, noise amplitude sigma=0.5)
+   Layer1 = InitPara_1( TAUF=10.0, TAUL=5.0, TAUI=15.0, VS=30.0, TAUS=10.0, TH0=1.0, SIGMA=0.5)
    ; initialize two dimensional layer (w*h neurons) with parameters defined above
-   L1 = InitLayer_3(WIDTH=w, HEIGHT=h, TYPE=Layer1)    
+   L1 = InitLayer_1(WIDTH=w, HEIGHT=h, TYPE=Layer1)    
 
-   ; initialize parameters for a cluster of type 2 neurons (first order leaky integrators for feeding, linking, inhibition and threshold)
+   ; initialize parameters for a cluster of type 1 neurons (first order leaky integrators for feeding, linking, inhibition and threshold, no noise(default) )
    Layer2 = InitPara_1( TAUF=10.0, TAUL=5.0, TAUI=10.0, VS=1.0, TAUS= 5.0, TH0=1.0, SIGMA=0.0)
    ; initialize layer consististing of 1 interneuron
    L2 = InitLayer_1(WIDTH=1, HEIGHT=1, TYPE=Layer2)
 
-   ; will contain feeding/linking/inhibition-inputs
-   I_L1_F = DblArr(w*h)
-   I_L1_L = DblArr(w*h)
-   I_L1_I = DblArr(w*h)
-
-   I_L2_F = DblArr(1)
-   I_L2_L = DblArr(1)
-   I_L2_I = DblArr(1)
 
    ; will contain cluster outputs
    O_L1    = BytArr(w*h, 500)
@@ -85,6 +63,8 @@ Window, 2, XSIZE=800, YSIZE=400
    ;   ++ connections exceeding the layer-dimensions are truncated and not cyclically continued (W_TRUNCATE)
    CON_L1_L1 = InitDW(S_LAYER=L1, T_LAYER=L1, $
                       W_CONST=[0.001, 4], /W_TRUNCATE, /W_NONSELF, W_NOCON=4)
+
+   LP_L1_L1 = InitRecall(CON_L1_L1, EXPO=[5.0,10.0])
 
    ; show the connections in a window
    ShowWeights, CON_L1_L1, /TOS, WINNR=1
@@ -112,10 +92,10 @@ Window, 2, XSIZE=800, YSIZE=400
 ;-------------> CREATE INPUT
       ; generate two static squares
       tmp = IntArr(w,h)
-      tmp(1:3,1:3) = 1.0
-      tmp(6:8,6:8) = 1.0
+      tmp(1:3,1:3) = 1
+      tmp(6:8,6:8) = 1
 
-      I_L1_F = REFORM(tmp, w*h)
+      I_L1_F = Vector2Spass(REFORM(tmp, w*h))
 
 
 ;-------------> PROCEED CONNECTIONS
@@ -128,12 +108,18 @@ Window, 2, XSIZE=800, YSIZE=400
 
 ;-------------> PROCEED NEURONS
       ; Input -> Layer -> Output
-      O_L1(*,t MOD 500)    = ProceedLayer_3(L1, I_L1_F, I_L1_L, I_L1_I)
-      O_L2(*,t MOD 500)    = ProceedLayer_1(L2, I_L2_F, I_L2_L, I_L2_I)
+      InputLayer_1, L1, FEEDING=I_L1_F, LINKING=I_L1_L, INHIBITION=I_L1_I
+      ProceedLayer_1, L1
+
+      InputLayer_1, L2, FEEDING=I_L2_F
+      ProceedLayer_1, L2
+
+      O_L1(*,t MOD 500) = Out2Vector(L1.O)
+      O_L2(*,t MOD 500) = Out2Vector(L2.O)
       
 
 ;-------------> LEARN SOMETHING
-      CON_L1_L1 = LearnHebbLP(CON_L1_L1, Source_CL=L1, Target_CL=L1, Rate=0.02, ALPHA=0.02)
+      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.02, ALPHA=0.02
 
 
 ;-------------> DISPLAY RESULTS
