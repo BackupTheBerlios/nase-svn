@@ -16,6 +16,8 @@
 ;                     Für T=0 ist das Ergebnis undefiniert.
 ;                     Default: T=1.0
 ;
+; OUTPUT: Wert aus dem Intervall (0, 1)
+;
 ; RESTRICTIONS: T ne 0
 ;
 ; PROCEDURE: straightforward: return, 1 / (1+exp(-x/float(T)))
@@ -28,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/11/19 16:27:28  kupper
+;        Completed header.
+;
 ;        Revision 2.1  1999/11/19 16:26:12  kupper
 ;        einfach und ergreifend.
 ;
