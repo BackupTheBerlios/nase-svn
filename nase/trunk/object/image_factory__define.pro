@@ -145,7 +145,9 @@ End
 
 ;; ------------ Protected --------------------
 Function image_factory::image_info_
-   return, *self.image_info
+   if self.image_info eq Ptr_New() then $
+    return, 0b else $
+    return, *self.image_info
 End
 
 
