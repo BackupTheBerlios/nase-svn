@@ -14,7 +14,7 @@
 ;
 ;
 ;
-; CALLING SEQUENCE: Spaltenindex = LayerCol( Layer, Index_1D )
+; CALLING SEQUENCE: Spaltenindex = LayerCol( Layer, Index_1D [,WIDTH ,HEIGHT] )
 ;
 ;
 ; 
@@ -22,7 +22,7 @@
 ;	  Index_1D: Der eindimensionale Index
 ;
 ;
-; OPTIONAL INPUTS: ---
+; OPTIONAL INPUTS: WIDTH, HEIGHT: Falls keine Layerstruktur vorliegt.
 ;
 ;
 ;	
@@ -64,12 +64,18 @@
 ;
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
+;       Sun Aug 3 23:38:48 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Optionale Keywords WIDTH,HEIGHT zugefügt.
+;
 ;-
 
-Function LayerCol, Layer, Index
+Function LayerCol, Layer, Index, WIDTH=width, HEIGHT=height
 
 	if Index ge LayerSize(Layer) then print, 'LayerCol WARNUNG: Layerindex ist zu groß!'
 	
+        if set(HEIGHT) then return,  fix(Index) / fix(height)
 	return, fix(Index) / fix(Layer.h)
 	
 end
