@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1998/01/05 14:49:54  saam
+;             Anpassung an neue DWDim-Routine
+;
 ;       Revision 1.6  1997/12/12 12:57:42  thiel
 ;              Middleweights arbeitet jetzt auch mit
 ;              Handles auf DW-Strukturen.
@@ -61,75 +64,64 @@
 ;
 ;-
 
-
-
-FUNCTION MiddleWeights, __Matrix, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
+FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
                         PROJECTIVE=projective, RECEPTIVE=receptive
-
-   Handle_Value, __Matrix, _Matrix, /NO_COPY 
 
 
    Default, FROMS, PROJECTIVE
    Default, TOS, RECEPTIVE
-
-   If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
-
-if keyword_set(TOS) then begin  ; Source- und Targetlayer vertauschen:
-   IF _Matrix.Info EQ 'DW_DELAY_WEIGHT' THEN BEGIN 
-    Matrix = {Weights: Transpose(_Matrix.Weights), $
-              Delays : Transpose(_Matrix.Delays),$
-              source_w: _Matrix.target_w, $
-              source_h: _Matrix.target_h, $
-              target_w: _Matrix.source_w, $
-              target_h: _Matrix.source_h}
-    ENDIF ELSE BEGIN 
-    Matrix = {Weights: Transpose(_Matrix.Weights), $
-              source_w: _Matrix.target_w, $
-              source_h: _Matrix.target_h, $
-              target_w: _Matrix.source_w, $
-              target_h: _Matrix.source_h}
-    ENDELSE 
-
-endif else Matrix = _Matrix
-
-
-
-no_connections = WHERE(Matrix.weights EQ !NONE, count)
-IF count NE 0 THEN Matrix.weights(no_connections) = 0 ;Damits bei der Berechnung nicht stört!
-
-MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-
-zentrumx = Matrix.source_w / 2
-zentrumy = Matrix.source_h / 2
-
-middle = fltarr(Matrix.target_h,Matrix.target_w)
-
-
-If Not Set(WRAP) Then Begin
-    sum = fltarr(Matrix.target_h,Matrix.target_w)
-    for YY= 0, Matrix.source_h-1 do begin
-        for XX= 0, Matrix.source_w-1 do begin  
+   
+   IF NOT keyword_set(FROMS) AND NOT keyword_set(TOS) THEN message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
+   
+   IF keyword_set(TOS) THEN BEGIN ; Source- und Targetlayer vertauschen:
+      Matrix = {Weights: Transpose(Weights(DW)), $
+                sw     : DWDim(DW, /TW)        , $
+                sh     : DWDim(DW, /TH)        , $
+                tw     : DWDim(DW, /SW)        , $
+                th     : DWDim(DW, /SH)        }
+   ENDIF ELSE BEGIN
+      Matrix = {Weights: Weights(DW)           , $
+                sw     : DWDim(DW, /SW)        , $
+                sh     : DWDim(DW, /SH)        , $
+                tw     : DWDim(DW, /TW)        , $
+                th     : DWDim(DW, /TH)        }
+   END
+   
+   
+   
+   no_connections = WHERE(Matrix.Weights EQ !NONE, count)
+   IF count NE 0 THEN Matrix.Weights(no_connections) = 0 ;Damits bei der Berechnung nicht stört!
+   
+   MatrixMatrix= reform(Matrix.Weights, Matrix.th, Matrix.tw, Matrix.sh, Matrix.sw)
+   
+   zentrumx = Matrix.sw / 2
+   zentrumy = Matrix.sh / 2
+   
+   middle = fltarr(Matrix.th,Matrix.tw)
+   
+   
+   If Not Set(WRAP) Then Begin
+      sum = fltarr(Matrix.th,Matrix.tw)
+      for YY= 0, Matrix.sh-1 do begin
+         for XX= 0, Matrix.sw-1 do begin  
             untermatrix = MatrixMatrix(*, *, YY, XX)
             geshiftet = norot_shift(untermatrix,zentrumy-YY,zentrumx-XX)
             middle = middle + geshiftet
-            sum = sum + norot_shift(bytarr(Matrix.target_h,Matrix.target_w)+1, zentrumy-YY,zentrumx-XX)
-        end
-    end
-Endif Else Begin
-    sum = Matrix.source_h*Matrix.source_w
-    for YY= 0, Matrix.source_h-1 do begin
-        for XX= 0, Matrix.source_w-1 do begin  
+            sum = sum + norot_shift(bytarr(Matrix.th,Matrix.tw)+1, zentrumy-YY,zentrumx-XX)
+         end
+      end
+   Endif Else Begin
+      sum = Matrix.sh*Matrix.sw
+      for YY= 0, Matrix.sh-1 do begin
+         for XX= 0, Matrix.sw-1 do begin  
             untermatrix = MatrixMatrix(*, *, YY, XX)
             geshiftet = shift(untermatrix,zentrumy-YY,zentrumx-XX)
             middle = middle + geshiftet
-        end
-    end
-    EndElse
-
-
-Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
-
-
-RETURN, middle/double(sum)
-
+         end
+      end
+   EndElse
+   
+   
+   RETURN, middle/double(sum)
+   
 END
