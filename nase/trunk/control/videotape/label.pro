@@ -13,11 +13,14 @@
 ;
 ; CATEGORY: Simulation
 ; 
-; CALLING SEQUENCE: Label [,Title | TITLE] [,FILE] [,TEMPLATE]
+; CALLING SEQUENCE: Label [,Title | TITLE] [LABEL=stringarr] [,FILE=filename] [,TEMPLATE=templatefile]
 ;
 ; OPTIONAL INPUTS: Title : hat dieselbe Fubktion wie TITLE! (s.u.)
 ;	
 ; KEYWORD PARAMETERS:         TITLE: Filename (und Titel) des Videos
+;                             LABEL: String oder Array von Strings,
+;                                    das das anzuhängende Label
+;                                    enthält. (Jedes Element eine Zeile.) 
 ;                              FILE: Ein Textfile, in dem das Label
 ;                                    gespeichert wurde (also keine
 ;                                    interaktive Eingabe!)
@@ -52,7 +55,7 @@
 ;
 ;-
 
-Pro Label, _Title, TITLE=title, FILE=file, TEMPLATE=template
+Pro Label, _Title, TITLE=title, FILE=file, TEMPLATE=template, LABEL=label
 
    Default, title, _Title
    Default, title, 'The Spiking Neuron'
@@ -60,11 +63,13 @@ Pro Label, _Title, TITLE=title, FILE=file, TEMPLATE=template
    tit = title
    title = title+'.vidinf'
 
-
-   If Keyword_Set(FILE) then begin
-      Spawn, "cp '"+file+"' LABEL_TEMP.label"
+   If Keyword_Set(FILE) then Spawn, "cp '"+file+"' LABEL_TEMP.label" else $
+    if Keyword_Set(LABEL) then begin
+      OpenW, /GET_LUN, unit, "LABEL_TEMP.label"
+      PrintF, Unit, LABEL, FORMAT='(A)'
+      Free_Lun, unit
    endif else begin
-
+      
       d = LoadVideo(tit, /INFO)
       print, '-------------- Press a Key to Enter a Label for this Video ---------------'
       d = GET_Kbrd(1)
