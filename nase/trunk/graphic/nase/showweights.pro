@@ -173,6 +173,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.30  1999/11/26 14:08:58  alshaikh
+;             bugfix
+;
 ;       Revision 2.29  1999/11/16 15:15:51  alshaikh
 ;             kann jetzt auch transmitterfreisetzungswahrscheinlichkeiten
 ;             (U_se) darstellen...
@@ -392,7 +395,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                    target_w: DWDim(__Matrix, /TW), $
                    target_h: DWDim(__Matrix, /TH)}
  IF keyword_set(EFFICACY) THEN $
-          settag,Matrix,'U_se', Transpose(Use(__Matrix))
+          settag,Matrix,'U_se', Use(__Matrix)
 
 
       END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
@@ -403,7 +406,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                    target_w: DWDim(__Matrix, /TW), $
                    target_h: DWDim(__Matrix, /TH)}
  IF keyword_set(EFFICACY) THEN $
-          settag,Matrix,'U_se', Transpose(Use(__Matrix))
+          settag,Matrix,'U_se', Use(__Matrix)
 
       END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
 

@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.13  1999/11/26 14:08:59  alshaikh
+;              bugfix
+;
 ;        Revision 1.12  1999/11/17 09:51:01  alshaikh
 ;              fehler beim umschalten zwischen weights und efficacy
 ;              berichtigt...
@@ -127,7 +130,7 @@ PRO TomWaits_Event, Event
                Widget_Control, uval.id_other, SET_BUTTON=0 ;explizit machen, da sie nicht in der gleichen Base sind!
                data.projective = 1
                data.receptive  = 0
-               ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /PROJECTIVE, GET_INFO=get_info, GET_COLORS=get_colors
+               ShowWeights, data.DW, DELAYS=data.delay, EFFICACY=data.uses,ZOOM=data.zoom, WINNR=data.win, /PROJECTIVE, GET_INFO=get_info, GET_COLORS=get_colors
                data.tvinfo = get_info
                data.colors = get_colors
                data.my_TopColor = get_colors(4)
@@ -136,7 +139,7 @@ PRO TomWaits_Event, Event
                Widget_Control, uval.id_other, SET_BUTTON=0
                data.projective = 0
                data.receptive  = 1
-               ShowWeights, data.DW, DELAYS=data.delay, ZOOM=data.zoom, WINNR=data.win, /RECEPTIVE, GET_INFO=get_info, GET_COLORS=get_colors
+               ShowWeights, data.DW, DELAYS=data.delay, EFFICACY=data.uses, ZOOM=data.zoom, WINNR=data.win, /RECEPTIVE, GET_INFO=get_info, GET_COLORS=get_colors
                data.tvinfo = get_info
                data.colors = get_colors
                data.my_TopColor = get_colors(4)
