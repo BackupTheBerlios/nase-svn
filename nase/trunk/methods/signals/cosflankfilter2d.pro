@@ -17,12 +17,12 @@
 ;  equivalent cos<SUP>2</SUP>-branch for the descending flank (hence the name of the routine). The filter function is
 ;  purely real and therefore causes no phase shifts of the contributing signal (e.g., image) components.<BR>
 ;  The two cut-off frequencies are set via the corresponding keywords. If neither keyword is set, the transfer function
-;  will be =1 everywhere and will have no filtering effect. The non-trivial possibilities are the following (<*>fS</*>
-;  denoting the sampling frequency):<BR>
-;  Lowpass:  0 < <*>FHIGH</*> < <*>fS</*>/2  (<*>FLOW </*> not set)<BR>
-;  Highpass: 0 < <*>FLOW </*> < <*>fS</*>/2, (<*>FHIGH</*> not set)<BR>
-;  Bandpass: 0 < <*>FLOW </*> < <*>FHIGH</*> < <*>fS</*>/2<BR>
-;  Bandstop: 0 < <*>FHIGH</*> < <*>FLOW </*> < <*>fS</*>/2<BR>
+;  will be =1 everywhere and will have no filtering effect. The non-trivial possibilities are the following (values
+;  denoting fractions of the Nyquist frequency):<BR>
+;  Lowpass:  0 < <*>FHIGH</*> < 1  (<*>FLOW </*> not set)<BR>
+;  Highpass: 0 < <*>FLOW </*> < 1, (<*>FHIGH</*> not set)<BR>
+;  Bandpass: 0 < <*>FLOW </*> < <*>FHIGH</*> < 1<BR>
+;  Bandstop: 0 < <*>FHIGH</*> < <*>FLOW </*> < 1<BR>
 ;  By default, the cut-off frequencies denote the 3-dB points of the filter (i.e., those points where the flanks reach
 ;  the 3-dB value (ca. 0.5). Thus, signal components at the specified cut-off frequency are already attenuated by 3 dB.
 ;  (Note that this attenuation refers to the signal <I>amplitude</I>; the attenuation of the signal <I>power</I> is
