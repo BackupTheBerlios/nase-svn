@@ -67,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.8  2000/06/06 15:02:33  alshaikh
+;              new layertype 11
+;
 ;        Revision 2.7  1999/03/08 10:04:51  thiel
 ;               Typ-8-Behandlung ergänzt.
 ;
@@ -97,7 +100,7 @@ PRO LayerData, _Layer, $
                TYPE=type, $
                WIDTH=width, HEIGHT=height, $
                PARAMETERS=parameters, $
-               FEEDING=feeding, FFEEDING1=ffeeding, SFEEDING=sfeeding, LINKING=linking, INHIBITION=inhibition, $
+               FEEDING=feeding, FFEEDING1=ffeeding, SFEEDING=sfeeding, LINKING=linking, ILINKING=ilinking, INHIBITION=inhibition, $
                FINHIBITION=finihibition, SINHIBITION=sinhibition,$
                POTENTIAL=potential, $
                SCHWELLE=schwelle, LSCHWELLE=lschwelle, $
@@ -144,6 +147,12 @@ PRO LayerData, _Layer, $
 
 ;--- handle LINKING
    CASE Layer.TYPE OF
+      '11': BEGIN 
+         IF n GT 1 THEN linking = REFORM(Layer.L1, Layer.H, Layer.W) ELSE linking = Layer.Layer.L1
+         IF n GT 1 THEN ilinking = REFORM(Layer.L2, Layer.H, Layer.W) ELSE ilinking = Layer.Layer.L2
+      END 
+
+
       '6' : IF n GT 1 THEN linking = REFORM(Layer.para.corrAmpL*(Layer.L2-Layer.L1), Layer.H, Layer.W) ELSE linking = Layer.para.corrAmpL*(Layer.L2-Layer.L1)
       '8' : linking = !NONE
       ELSE: IF n GT 1 THEN linking = REFORM(Layer.L, Layer.H, Layer.W) ELSE linking = Layer.L
