@@ -21,11 +21,14 @@
 ;                       IF Overflow THEN Print,'Ueberlauf'
 ;                    END
 ;
-; SEE ALSO:          <A HREF="#INITCOUNTER">InitCounter</A>, </A HREF="#COUNTVALUE">CountValue</A>, </A HREF="#COUNTVALUE">ResetCounter</A>
+; SEE ALSO:          <A HREF="#INITCOUNTER">InitCounter</A>, <A HREF="#COUNTVALUE">CountValue</A>, <A HREF="#COUNTVALUE">ResetCounter</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1997/11/25 10:39:37  saam
+;           yes another HTML-Bug
+;
 ;     Revision 2.5  1997/11/25 10:35:45  saam
 ;           another HTML-Bug
 ;
