@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1999/07/26 13:04:36  thiel
+;           Print-Statements removed.
+;
 ;       Revision 1.4  1999/07/26 12:49:44  thiel
 ;           Non-Delay version improved.
 ;
@@ -198,13 +201,6 @@ PRO TotalPrecall, _PC, _DW, postL
    oldSpikes = WHERE(PC.pre LE PC.time-PC.deltaMax,c)
    IF c NE 0 THEN PC.pre(oldSpikes) = !NONEl
    
-
-   Print, 'pc.pre: ',pc.pre
-   Print, 'pc.post: ',pc.post
-
-   Print, 'List: ',list
-
-
 
    PC.time = PC.time + 1
 
