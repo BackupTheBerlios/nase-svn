@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/11 09:54:24  kupper
+;        Changed to work with new double ended fixed queues.
+;
 ;        Revision 1.3  2000/09/25 09:13:13  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -68,7 +71,9 @@ Function Head, Queue, VALID=valid
    If not contains(Queue.info, 'QUEUE', /IGNORECASE) then message, 'Not a Queue!'
 
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
-      If Keyword_Set(VALID) then if Queue.valid lt Queue.length then return, Queue.Q(0)
+      If Keyword_Set(VALID) then begin
+         if Queue.valid lt Queue.length then return, Queue.Q(cyclic_value(Queue.Pointer-1, [0, Queue.Length]))
+      endif
       return, Queue.Q((Queue.Pointer+1) mod Queue.Length)
    endif
 
