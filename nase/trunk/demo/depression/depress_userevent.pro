@@ -1,6 +1,7 @@
 ;+
 ; NAME: depress_userevent
 ;
+; AIM: Module of depress.pro  (see also  <A>faceit</A>)
 ;
 ; PURPOSE: siehe depress.pro
 ;
@@ -9,6 +10,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/28 12:16:14  alshaikh
+;           added AIM
+;
 ;     Revision 1.1  1999/10/14 12:31:15  alshaikh
 ;           initial version
 ;
