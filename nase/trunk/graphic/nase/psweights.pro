@@ -41,7 +41,7 @@
 ;                     DELAYS      : siehe ShowWeights
 ;                     EPS         : erzeugt eine Encapsulated PostScript-Datei
 ;                     COLOR       : das PostScript-Bild ist farbig,
-;                                   aehnlich der ShowWeights-Darstellung
+;                                   aehnlich der <A HREF="#SHOWWEIGHTS">ShowWeights()</A>-Darstellung
 ;                                   (!none=blau, postiv=gruen)   
 ;
 ; OUTPUTS: Eine Postscript- (.ps) bzw Encapsulated PostScript- (.eps)
@@ -71,9 +71,15 @@
 ;          SetWeight, TestMatrix ,w ,S_ROW=6, S_COL=5
 ;	   PSWeights, TestMatrix, PSFILE='buntesbeispiel', /froms, /COLOR
 ;
+; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights()</A>
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  1998/03/04 15:17:48  thiel
+;              Wurde auch auf die neue Verwaltung der Gewichtsmatrizen
+;              umgestellt.
+;
 ;       Revision 2.6  1997/10/30 13:49:50  kupper
 ;              PROJECTIVE/RECEPTIVE
 ;
@@ -98,7 +104,7 @@
 
 
 
-PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, $
+PRO PSWeights, __Matrix, FROMS=froms, TOS=tos, DELAYS=delays, $
                XTITLE=XTitle, YTITLE=YTitle, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, $
                EPS=eps, BPP=bpp, COLOR=Color, $
                PROJECTIVE=projective, RECEPTIVE=receptive
@@ -108,15 +114,44 @@ PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, $
 
    If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
-if keyword_set(TOS) then begin                   ; Source- und Targetlayer vertauschen:
-   Matrix = {Weights: Transpose(_Matrix.Weights), $
-             Delays : Transpose(_Matrix.Delays),$
-             source_w: _Matrix.target_w, $
-             source_h: _Matrix.target_h, $
-             target_w: _Matrix.source_w, $
-             target_h: _Matrix.source_h}
-endif else Matrix = _Matrix
+   ;;------------------> Hier basteln wir uns eine DW-Struktur der ganz, ganz alten Form!
+   ;;                     (das hat natürlich historische Gründe...) 
+   if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
+      
+      IF info(__Matrix) EQ 'DW_WEIGHT' OR info(__Matrix) EQ 'SDW_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Transpose(Weights(__Matrix)), $
+                   source_w: DWDim(__Matrix, /TW), $
+                   source_h: DWDim(__Matrix, /TH), $
+                   target_w: DWDim(__Matrix, /SW), $
+                   target_h: DWDim(__Matrix, /SH)}
+      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Transpose(Weights(__Matrix)), $
+                   Delays : Transpose(Delays(__Matrix)),$
+                   source_w: DWDim(__Matrix, /TW), $
+                   source_h: DWDim(__Matrix, /TH), $
+                   target_w: DWDim(__Matrix, /SW), $
+                   target_h: DWDim(__Matrix, /SH)}
+      END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
 
+   ENDIF ELSE begin             ; Source- und Targetlayer NICHT vertauschen:
+      
+      IF info(__Matrix) EQ 'DW_WEIGHT' OR info(__Matrix) EQ 'SDW_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Weights(__Matrix), $
+                   source_w: DWDim(__Matrix, /SW), $
+                   source_h: DWDim(__Matrix, /SH), $
+                   target_w: DWDim(__Matrix, /TW), $
+                   target_h: DWDim(__Matrix, /TH)}
+      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Weights(__Matrix), $
+                   Delays : Delays(__Matrix),$
+                   source_w: DWDim(__Matrix, /SW), $
+                   source_h: DWDim(__Matrix, /SH), $
+                   target_w: DWDim(__Matrix, /TW), $
+                   target_h: DWDim(__Matrix, /TH)}
+      END ELSE Message, 'keine gueltige DelayWeigh-Struktur übergeben!'
+
+   Endelse
+   ;;--------------------------------
 
    
 If Not Set(PSFILE) Then PSFile = 'gewichtsmatrix'
