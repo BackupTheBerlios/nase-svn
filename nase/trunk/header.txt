@@ -3,6 +3,8 @@
 ;  (Hint: Insert name in THIS line, if you want it to appear in the
 ;  HTML-help. If you put it elsewhere, the HTML-help item will be 
 ;  generated from the filename.)
+;
+; AIM: -please enter a short description of routine (a single line!)-
 ;  
 ; PURPOSE:
 ;  -please specify-
