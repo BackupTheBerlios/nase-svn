@@ -30,9 +30,17 @@
 ;                       Layer = InitLayer_1(height=5, width=5, type=para1)
 ;
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
-;                       alternative Keyword-Parameter zugefügt, Rüdiger Kupper, 24.7.97
-;                       verbindliche Keyword-Parameter, Mirko Saam, 25.7.97
 ;
+;                       alternative Keyword-Parameter zugefügt,
+;                       Rüdiger Kupper, 24.7.97 verbindliche
+;                       Keyword-Parameter, Mirko Saam, 25.7.97
+;
+;       Wed Jul 30 15:14:07 1997, Ruediger Kupper
+;                       <kupper@sisko.physik.uni-marburg.de>
+;
+;               Strukturnamen "Layer_1" entfernt, da Srukturen für unterschiedliche Layer unterschiedliche Feldgrößen brauchen.		
+;
+
 ;-
 FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
 
@@ -40,8 +48,7 @@ FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   Layer = { Layer1                        ,$
-             w      : width                ,$
+   Layer = { w      : width                ,$
              h      : height               ,$
              para   : type                 ,$
              F      : DblArr(width*height) ,$
