@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.12  2000/05/18 12:56:52  saam
+;            saves initial weights only when learning
+;
 ;      Revision 1.11  2000/05/17 08:44:06  saam
 ;            marginal change
 ;
@@ -286,13 +289,14 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
 
    ;--------------> SAVE WEIGHTS BEFORE SIMULATION/LEARNING
-   FOR i=0, DWmax DO BEGIN
-      curDW = Handle_Val((P.DWW)(i)) 
-      lun = UOpenW(P.file+'.'+curDW.FILE+'.ini.dw', /ZIP)
-      SaveStruc, lun, SaveDW(CON(i))
-      UClose, lun
+   IF Learn THEN BEGIN
+       FOR i=0, DWmax DO BEGIN
+           curDW = Handle_Val((P.DWW)(i)) 
+           lun = UOpenW(P.file+'.'+curDW.FILE+'.ini.dw', /ZIP)
+           SaveStruc, lun, SaveDW(CON(i))
+           UClose, lun
+       END
    END
-
 
 
 ;------------->
