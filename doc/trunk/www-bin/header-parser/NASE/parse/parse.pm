@@ -117,7 +117,7 @@ BEGIN {
 sub createAim {
   my ($key, $count, %count, $fh);
 
-  (my $mydir) = @_;
+  my @mydir = @_;
 
   openHwrite();
 
@@ -126,15 +126,19 @@ sub createAim {
   $fh = select(NULL);
   parseAim(1); # just parse the aim
 
-  createDirHash($mydir);
-  createDirHash($mydir); # run twice to get MakeURL in AIM working
-  
+  foreach (@mydir){
+    createDirHash($_);
+    createDirHash($_); # run twice to get MakeURL in AIM working
+  }
+
   # restore STDOUT
   select($fh);
   close(NULL) || die "can't close /dev/null: $!\n";
 
   closeHwrite();
-  Aim2Html($mydir);
+  foreach (@mydir){
+    Aim2Html($_);
+  }
 }
 
 
