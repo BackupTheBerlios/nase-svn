@@ -7,15 +7,17 @@
 ;
 ; CATEGORY:            MISC ARRAY
 ;
-; CALLING SEQUENCE:    c = InsSubArray(a, b [,x] [,y] [,/CENTER])
+; CALLING SEQUENCE:    c = InsSubArray(a, b [,i1] [,i2] [,/CENTER])
 ;
 ; INPUTS:              a: array, in das eingefuegt werden soll
 ;                      b: array, das eingefuegt werden soll
 ;
-; OPTIONAL INPUTS:     x/y: relative Position zum Arrayursprung(0,0) bzw. zur Arraymitte,
-;                           falls Keyword CENTER gesetzt ist. Default: x=0,y=0
+; OPTIONAL INPUTS:     i1/i2: relative Position zum Arrayursprung(0,0) bzw. zur Arraymitte,
+;                             falls Keyword CENTER gesetzt ist. Default: i1=0,i2=0
+;                             i1 indiziert die erste Array-Dimension, i2 die zweite.
 ;
-; KEYWORD PARAMETERS: CENTER: das Array b wird zentriert mit Offset x,y in Array a eingesetzt
+; KEYWORD PARAMETERS: CENTER: das Array b wird zentriert mit Offset (i1,i2) in
+;                     Array a eingesetzt.
 ;
 ; OUTPUTS:            c: das resultierende Array
 ;
@@ -27,16 +29,29 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/02/29 12:55:31  kupper
+;     Corrected order of indexing which was confused,
+;     and added an informational message.
+;
 ;     Revision 1.1  1998/06/03 14:27:59  saam
 ;           Yeah Yeah Yeah
 ;
 ;
 ;-
-FUNCTION InsSubArray, _A, B, x, y, CENTER=CENTER
+FUNCTION InsSubArray, _A, B, y, x, CENTER=CENTER
 
    On_Error, 2
 
    IF N_Params() LT 2 OR N_Params() GT 4 THEN Message, 'wrong number of parameters, check syntax'
+
+   If n_Params() eq 4 then begin
+      Message, /Info, "Caution: The order of x/y-indexing in INSSUBARRAY had been confused."
+      Message, /Info, "         This was a bug and not a feature."
+      Message, /Info, "         It has been corrected in rev. 1.2 (Feb 29 2000)."
+      Message, /Info, "         To reflect the new behaviour, exchange 3rd and 4th parameter in the function call."
+      Message, /Info, "-- This warning may be removed in a coming revision. --"
+   Endif
+      
    Default, x, 0
    Default, y, 0
    
