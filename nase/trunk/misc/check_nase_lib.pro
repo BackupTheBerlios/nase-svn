@@ -1,4 +1,14 @@
 Pro Check_NASE_LIB
+
+   If IDLVersion() gt 3 then begin
+      ;; !Version.OS_Family doesn't exist on IDL3.6
+      If !Version.OS_Family eq "Windows" then $
+       console, /Warn, "Making of the NASE support library is curently " + $
+       "not supported for Windows. You will encounter problems " + $
+       "(crashes) when accesing routines form the support library."
+      return
+   end
+      
    ; ensure architecture dependent libdir exists
    LIBDIR = (File_Split(!NASE_LIB))(0)
    mkdir, LIBDIR
