@@ -50,6 +50,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/21 12:46:25  saam
+;           extracted the logic implementation to opID and operator
+;
 ;     Revision 1.3  2000/01/20 18:13:12  saam
 ;           doc header updated
 ;
@@ -64,26 +67,23 @@
 
 
 FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
-                      LOGIC=logic
+                      LOGIC=op
 
    ON_ERROR, 2
 
    Default, mode, 1          ; i.e. step
    Default, R   , !NONE
-   Default, logic, 'ADD'
+   Default, op  , 'ADD'
    
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      
       ; INITIALIZE
       0: BEGIN      
-         logiclist = ['AND','OR','ADD']
-         mylogic = WHERE(STRUPCASE(logic) EQ logiclist,c)
-
             
          TV =  {                      $
                 delta_t  : delta_t   ,$
                 sim_time : .0d       ,$
-                mylogic  : mylogic(0) $
+                myop     : opID(op)   $
                }
          print,'IFTEMPLATE2: initialized'         
       END
@@ -98,22 +98,7 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
          endfor 
          TV.sim_time =  TV.sim_time + TV.delta_t
          
-         CASE TV.mylogic OF
-
-            0 : BEGIN           ; AND
-               R = pattern AND R
-            END
-            
-            1 : BEGIN           ; OR
-               R = pattern OR R
-            END
-            
-            2 : BEGIN           ; ADD
-               R = pattern + R
-            END
-         ENDCASE
-
-
+         R = Operator(TV.myop, pattern, R)
       END
       
       ; FREE
