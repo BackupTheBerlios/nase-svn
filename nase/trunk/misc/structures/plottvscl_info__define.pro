@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/07 17:01:04  kupper
+;        Removed x0, yo tags from structure (have never been used!)
+;        Added "defined" tag.
+;
 ;        Revision 1.1  1999/11/16 16:58:47  kupper
 ;        For easier programming with IDL 5.
 ;
@@ -30,8 +34,7 @@
 Pro PLOTTVSCL_INFO__Define
 
    GET_INFO = {PLOTTVSCL_INFO, $
-               x0      : 0                ,$
-               y0      : 0                ,$
+               defined : 0b   ,$ ;used as checkmark for undefined structures
                x1      : long(0),$
                y1      : long(0),$
                x00     : long(0),$
