@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/11 09:30:41  kupper
+;        Added a Temporary().
+;
 ;        Revision 1.3  2000/10/10 14:27:13  kupper
 ;        Jetzt auch für Fixed Queues!
 ;
@@ -80,7 +83,7 @@ Function DeQueue, Queue
       List = Queue.List
       head = Retrieve(List, /first, /NO_COPY); bitte der naechste!
       kill, List, /first
-      Queue.List = List
+      Queue.List = Temporary(List)
       return, head
    endif
 End

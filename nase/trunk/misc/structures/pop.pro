@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/11 09:31:00  kupper
+;        Added a Temporary().
+;
 ;        Revision 1.2  2000/09/25 09:13:13  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -64,7 +67,7 @@ Function Pop, Stack
    List = Stack.List
    Top = Retrieve(List, /first, /NO_COPY) ;immer von oben runter!
    Kill, List, /first
-   Stack.List = List
+   Stack.List = Temporary(List)
    return, Top
 
 End
