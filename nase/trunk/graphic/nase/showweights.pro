@@ -128,6 +128,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.19  1998/02/26 15:45:56  kupper
+;              Get-ScreenSize() ersetzt durch Device-Befehl für Kompatibilität zu IDL 4
+;
 ;       Revision 2.18  1998/02/26 14:13:50  saam
 ;             kleine Aenderung fuer 32-Bit-Display
 ;             Max-Size noch falsch behandelt
@@ -225,14 +228,13 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin, GET_WIN=get_win, $
-                 MAXSIZE=maxsize, $
+;                 MAXSIZE=maxsize, $
                  GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode
 
    IF !D.Name EQ 'NULL' THEN RETURN
 
    Default, GROESSE, ZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
-;   MAXSIZE = Get_Screen_Size()  ;Wußte früher nicht, daß es diese Funktion gibt, sorry...
-   MAXSIZE = [1280,1024]
+   device, Get_screen_size=MAXSIZE ;Wußte früher nicht, daß es diese Funktion gibt, sorry...
 
 ;   Handle_Value, __Matrix, _Matrix, /NO_COPY 
 
@@ -385,9 +387,11 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
 ;   erase, rgb(255,100,0, INDEX=ts-1) ;Orange die für die Trennlinien
 
    MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, GET_MAXCOL=GET_MAXCOL, GET_COLORMODE=GET_COLORMODE)
-   erase, GET_MAXCOL+2
+   erase, RGB('orange',/NOALLOC) ;GET_MAXCOL+2
 
-   Device, BYPASS_TRANSLATION=0
+; Device, BYPASS_TRANSLATION=0   
+;Das würde nur die Farben auf einem
+;   shared Colormap durcheinanderbringern!
    for YY= 0, Matrix.source_h-1 do begin
       for XX= 0, Matrix.source_w-1 do begin  
          tv, rebin( /sample, $
@@ -397,7 +401,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
           XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
       end
    end
-   Device, /BYPASS_TRANSLATION
+;   Device, /BYPASS_TRANSLATION
 
    If Keyword_Set(SLIDE) then begin
       if (SLIDE eq 1) then begin
