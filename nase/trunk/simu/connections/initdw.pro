@@ -29,8 +29,8 @@
 ;                  D_NONSELF, W_NONSELF : Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
 ;                  LEARN_TAUP, LEARN_VP : Zeitkonstante und Verstaerkung f"ur das Lernpotential (Leckintegrator 1. Ordnung) 
 ;                                            LEARN_TAUP muss zur Initialisierung gesetzt werden, LEARN_VP hat Default 1.0 
-;
-;
+;                  NOCON                : Alle Verbindungen groesser NOCON werden auf nicht-vorhanden gesetzt
+;               
 ;
 ;                  Man beachte, daﬂ die Angabe mehrerer W_-
 ;                  bzw. mehrerer D_- Schl¸sselworte i.d.R. nicht
@@ -105,6 +105,13 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Mon Aug 18 16:39:12 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Behandlung von nicht vorhandenen Connections
+;               Bug bei Initialisierung von Delays korrigiert
+;               Schluesselwort NOCON zur Erstellung nicht vorhandener Cons
+;
 ;       Fri Aug 15 15:57:12 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -157,7 +164,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
-                 LEARN_TAUP=learn_taup,       LEARN_VP=learn_vp
+                 LEARN_TAUP=learn_taup,       LEARN_VP=learn_vp, $
+                 NOCON=nocon
 
 
 
@@ -174,7 +182,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
    Default, Weight, 0
 
 
-   HasDelay = set(DELAY) or set(D_RANDOM) or set(D_NRANDOM) or set(D_GAUSS) or set(D_LINEAR)
+   HasDelay = set(DELAY) or set(D_RANDOM) or set(D_NRANDOM) or set(D_GAUSS) or set(D_LINEAR) OR set(D_CONST) OR set(D_IDENT)
 
 ;konstante Belegungen:
    if HasDelay then begin
@@ -257,7 +265,35 @@ end
 
 
 
-return, DelMat
+
+IF keyword_set(NOCON) THEN BEGIN
+   SetConstWeight, DelMat, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE
+END
+
+
+
+
+
+
+
+
+IF HasDelay THEN BEGIN
+
+   RETURN, {  source_w: DelMat.source_w,$
+              source_h: DelMat.source_h,$
+              target_w: DelMat.target_w,$
+              target_h: DelMat.target_h,$
+              Weights : DelMat.Weights,$
+              Matrix  : DelMat.Matrix,$
+              Delays  : DelMat.Delays,$
+              Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
+              VP      : DelMat.VP,$
+              DP      : DelMat.DP,$
+              LP      : DelMat.LP }
+END ELSE BEGIN
+   RETURN, DelMat
+END
+
 
 end
 
