@@ -50,7 +50,7 @@ End
 
 
 ;; ------------ Constructor & Destructor --------------------
-Function widget_image_factory::init, _REF_EXTRA=_ref_extra
+Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA=_ref_extra
    message, /Info, "I am created."
 
    ;; Try to initialize the superclass-portion of the
@@ -85,6 +85,9 @@ Function widget_image_factory::init, _REF_EXTRA=_ref_extra
 
    ;; If we reach this point, initialization of the
    ;; whole object succeeded, and we can return true:
+
+   default, post_paint_hook, ""
+   self.post_paint_hook = post_paint_hook
    
    return, 1                    ;TRUE
 End
@@ -106,6 +109,8 @@ Pro widget_image_factory::paint_
    PlotTvScl_Update, $
     object->image(), object->plotinfo_()
    Showit_close, self.showit_id
+   
+   If self.post_paint_hook ne "" then Call_Procedure, self.post_paint_hook, self
 End
 
 Pro widget_image_factory::initial_paint_
@@ -145,7 +150,8 @@ Pro widget_image_factory__DEFINE
             inherits image_factory, $
             $
             showit_id: 0l, $
-            plotinfo: {PLOTTVSCL_INFO} $
+            plotinfo: {PLOTTVSCL_INFO}, $
+            post_paint_hook: "" $
            }
 End
 
