@@ -1,20 +1,21 @@
 ;+
-; NAME: ShowLogo
+; NAME: 
+;  ShowLogo
 ;
-; AIM: displays the well known NASE logo
+; AIM: 
+;  Display the well known NASE logo.
 ;
-; PURPOSE: Stellt das NASE-Logo auf dem Bildschirm dar.
-;          Außerdem wird im WINDOW-Command COLORS=256, also eine
-;          private Colormap  verlangt.
+; PURPOSE: 
+;  Display the NASE logo. Optionally wait for a specified amount of
+;  time and then delete it.
 ;
 ; CALLING SEQUENCE: ShowLogo [,SECS=secs]
 ;
 ; INPUT KEYWORDS: 
-;   SECS:: Wird SECS nicht angegeben, so kehrt die Routine
-;          sofort zurück. Das Logo bleibt stehen.
-;          Wird SECS angegeben, so wartet die Routinen die
-;          angegebene Zahl von Sekunden und löscht dann das
-;          Logo wieder.
+;   SECS:: If SECS is not specified, the routine returns immediately,
+;          leaving the logo on the screen. If SECS is specified, the
+;          routine waits for the given number of seconds, then deletes
+;          the logo from the screen and returns.
 ;
 ;-
 
@@ -28,7 +29,7 @@ Pro ShowLogo, SECS=secs
                           SUBDIRECTORY=["graphic"]), logo, r, g, b
    END
    device, get_screen_size=ss
-   window, /free, COLORS=256, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
+   window, /free, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
    win = !D.WINDOW
    
    Utvlct, r, g, b
@@ -41,6 +42,5 @@ Pro ShowLogo, SECS=secs
       ;;wait needed for refreshing the color table (KDE 2.1.x 8-bit Display)
       wait, 0.01
       wdelete, win
-      uloadct, 0
    endif
 end

@@ -104,8 +104,8 @@ Pro Startup_ctd
    ;;NASEMARK:--- Request_TRUECOLOR_device_if_allowed --------
    ;; --- Connect to X server only if allowed, which is    ---
    ;; --- determined by the XAllowed() function. If so, do ---
-   ;; --- request the TRUE_COLOR device and set DECOMPOSED ---
-   ;; --- to zero.                                         ---
+   ;; --- request the TRUE_COLOR device, set DECOMPOSED=0  ---
+   ;; --- and request a private color map.                 ---
    ;; --- XAllowed() returns TRUE also, if an X connection ---
    ;; --- was expicitely requested by setting the environ- ---
    ;; --- ment variable NASELOGO='TRUE'.                   ---
@@ -113,6 +113,9 @@ Pro Startup_ctd
       ;; try to get TRUE_COLOR, if available, but no DIRECT_COLOR!
       if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24
       DEVICE, DECOMPOSED=0
+      ;; request private color map:
+      Window, 0, COLORS=256, XSIZE=1, YSIZE=1, /PIXMAP
+      WDelete, 0
    endif
 
    uset_plot, !D.NAME  
@@ -129,5 +132,8 @@ Pro Startup_ctd
       print, "========================="
    endelse
    ;; --------------------------------------------------------
-  
+   
+   ;;Initialise (and restore, if logo was displayed) color map,
+   ;;according to NASE color management:
+   ULoadCt, 0 ;;(This is nohup-protected itself)
 End
