@@ -1,6 +1,6 @@
 ;+
 ; NAME: 
-;  WRITE_MPEG
+;  Write_MPEG
 ;
 ; VERSION:
 ;  $Id$
