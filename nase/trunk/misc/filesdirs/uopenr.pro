@@ -6,7 +6,7 @@
 ; PURPOSE:             Erweitert die Funktionalitaet von OpenR, um die 
 ;                      Faehigkeit auf gezippte Files zuzugreifen.
 ;
-; CATEGORY:            FILES+DIRS ZIP
+; CATEGORY:            FILES+DIRS
 ;
 ; CALLING SEQUENCE:    lun = UOpenR(file [,/VERBOSE])
 ;
@@ -21,10 +21,14 @@
 ; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 40 begrenzt
 ;
 ; SEE ALSO:            UClose            
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  2001/04/25 13:28:57  gabriel
+;           BugFix: RealFileName is a silly thing. Given filename is checked for existence and opened before changing
+;                   filename via realfilename ...
+;
 ;     Revision 2.8  2000/09/25 09:13:03  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -57,7 +61,7 @@
 ;     Revision 2.1  1998/10/12 10:32:02  saam
 ;           first version
 ;
-;-
+;
 FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
 
    COMMON UOPENR, llun
@@ -81,8 +85,24 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
        RETURN, !NONE
    END
    
-   rfile = RealFileName(file)
+   rfile = file
    exists = ZipStat(rfile, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
+   
+   IF NOT exists then begin
+      Console, ' '+rfile+ ' not exists', /warn
+      rfile = RealFileName(file)
+      Console, 'try to open '+rfile+' instead', /warn
+      exists = ZipStat(rfile, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
+      IF NOT exists then begin 
+         Console, 'UOpenR: '+rfile
+         Console, 'UOpenR: neither unzipped nor zipped version found!', /WARN
+         RETURN, !NONE
+      endif
+   ENDIF
+   
+
+   
+
    IF exists THEN BEGIN
        
       ; get a free entry
@@ -110,10 +130,5 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
        
        
        RETURN, lun
-   END ELSE BEGIN
-       Console, 'UOpenR: '+rfile
-       Console, 'UOpenR: neither unzipped nor zipped version found!', /WARN
-       RETURN, !NONE
    END
-   
 END
