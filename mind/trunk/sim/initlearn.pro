@@ -15,6 +15,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/26 09:58:24  alshaikh
+;           + now initlearn is only called ONCE by sim
+;           + allows multiple SHOWWEIGHTS-sheets
+;
 ;     Revision 1.4  2000/01/20 14:34:43  saam
 ;           forgot to erase a debugging stop
 ;
@@ -80,15 +84,38 @@
 ;               prop    : proportional control (REGLER)
 ;               change  : factor between correction calculated by REGLER and delearning change
 
-PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
 
+PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
+   
+   Default, MODE , 1
+   
    COMMON ATTENTION
    COMMON SH_LEARN, LEARNwins, LEARN_1, LEARN_2, LEARN_3, LEARN_4
    
    On_Error, 2
 
-   TestInfo, _LS, 'LEARN'
-   Handle_Value, _LS, LS, /NO_COPY
+   IF ExtraSet(e, 'NEWWIN') THEN LEARNwins = 0
+
+   IF (SIZE(LEARNwins))(1) EQ 0 THEN BEGIN
+      LEARN_2 = LonArr(MaxWin)
+      LEARN_2 = LEARN_2 - 1
+      
+      LEARN_3 = LonArr(MaxWin)
+      LEARN_3 = LEARN_3 - 1
+      
+      LEARN_4 = LonArr(MaxWin)
+      LEARN_4 = LEARN_4 - 1
+   END 
+   
+  
+
+  FOR LLoop=0, MaxWin-1 DO BEGIN   ; Layer-Loop
+  
+     Handle_Value, _LS(LLoop), LS, /NO_COPY
+     TestInfor,LS,'LEARN'
+  
+      
+            
    curDW = Handle_Val(P.DWW(LS.DW))
 
    IF NOT ExtraSet(LS, 'RULE')  THEN Message, 'tag RULE undefined!'
@@ -96,21 +123,14 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
    IF NOT ExtraSet(LS, 'INDEX') THEN Message, 'tag INDEX undefined!'
    Default, MaxWin, 1
 
+  
 
    ;----->
    ;-----> ORGANIZE THE SHEETS
    ;----->
-   IF ExtraSet(e, 'NEWWIN') THEN LEARNwins = 0
+  
    IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN
-      LEARN_2 = LonArr(MaxWin)
-      LEARN_2 = LEARN_2 - 1
-
-      LEARN_3 = LonArr(MaxWin)
-      LEARN_3 = LEARN_3 - 1
-
-      LEARN_4 = LonArr(MaxWin)
-      LEARN_4 = LEARN_4 - 1
-
+     
       LEARN_1 = DefineSheet(/NULL)
       IF (LS.SHOWW NE 0) THEN LEARN_2(LS.index) = DefineSheet(/NULL)
       LEARN_3(LS.index) = DefineSheet(/NULL)
@@ -124,29 +144,28 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
       LEARN_4(LS.index) = DefineSheet(/NULL)
       LEARNwins = 0
    END ELSE BEGIN
-   IF (SIZE(LEARNwins))(1) EQ 0 THEN BEGIN
-      LEARN_2 = LonArr(MaxWin)
-      LEARN_2 = LEARN_2 - 1
-
-      LEARN_3 = LonArr(MaxWin)
-      LEARN_3 = LEARN_3 - 1
-
-      LEARN_4 = LonArr(MaxWin)
-      LEARN_4 = LEARN_4 - 1
    
 
-         IF MaxWin GE 1 THEN LEARN_1 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200, MULTI=[MaxWin,MaxWin,1], TITLE='Weight Watchers')
-         IF (LS.SHOWW NE 0) THEN BEGIN
-            width  = LS.ZOOM*LayerWidth(_CON(LS.DW), /TARGET)*(LayerWidth(_CON(LS.DW), /SOURCE)) + 50
-            height = LS.ZOOM*LayerHeight(_CON(LS.DW), /TARGET)*(LayerHeight(_CON(LS.DW), /SOURCE)) + 50
-            print, width, height
-            
-            LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
+     IF (SIZE(LEARNwins))(1) EQ 0 THEN BEGIN
+
+; initialize weight-watchers    
+        IF LLoop EQ 0 THEN begin
+           IF MaxWin GE 1 THEN LEARN_1 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200, MULTI=[MaxWin,MaxWin,1], TITLE='Weight Watchers')
+        END 
+; --------------------------
+
+; initialize showweights-sheets
+        IF (LS.SHOWW NE 0) THEN BEGIN
+           width  = LS.ZOOM*LayerWidth(_CON(LS.DW), /TARGET)*(LayerWidth(_CON(LS.DW), /SOURCE)) + 50
+           height = LS.ZOOM*LayerHeight(_CON(LS.DW), /TARGET)*(LayerHeight(_CON(LS.DW), /SOURCE)) + 50
+           LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
                                             XSIZE=MIN([width,height]), YSIZE=MIN([width,height]), $
                                             TITLE=curDW.NAME)
-         END
-         LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=curDW.NAME)
-         LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+curDW.NAME)
+        END
+; ------------------------------
+
+        LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=curDW.NAME)
+        LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+curDW.NAME)
          LEARNwins = 1
       END
    END
@@ -154,7 +173,7 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
 
 
 
-   learningRule = ['NONE', 'LHLP2', 'ABS', 'BIPOO']
+   learningRule = ['NONE', 'LHLP2', 'ABS', 'BIPOO','EXTERN']
 ;                     0       1       2       3 
    learningWindow = ['NONE', 'ALPHA', 'EXPO']
 ;                       0       1        2 
@@ -180,8 +199,18 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
    ;determine if correpsonding DW is delayed or not, cause this changes the call of initrecall
    IF INFO(_CON(0)) EQ 'SDW_WEIGHT' THEN delay = 0 ELSE delay = 1
 
+;---------------------------------
+   IF lRule EQ 4 THEN BEGIN 
+      temp1 =  LS.INIT
+      name = temp1.NAME
+      params = temp1.PARAMS
+      win = CALL_FUNCTION(name,LW=P.LW(curDW.SOURCE),_EXTRA=params)
+      SetTag, LS, 'TYPE', lrule
+      SetTag, LS, '_WIN', win
+      END ELSE BEGIN 
 
-   IF lRule EQ 0 THEN BEGIN
+;---------------------------------
+  IF lRule EQ 0 THEN BEGIN
       IL = {TYPE : 0} ; do nothing at all
    END ELSE IF InSet(lRule, [1,2]) THEN BEGIN
       CASE lWin OF 
@@ -220,6 +249,7 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
       CloseSheet, LEARN_3(LS.index)
    END ELSE Message, 'unknown Learning Rule'
 
+ENDELSE  
 
    
 
@@ -239,7 +269,8 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
       END
       ELSE: dummy = 1 ;its only a dummy
    END
-     
+   
+   
    ;----->
    ;-----> INIT PLOTTING
    ;----->
@@ -258,5 +289,10 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
    distMat = Handle_Create(!MH, VALUE=Weights(_CON(LS.DW)))
    SetTag, LS, '_DISTMAT', distMat 
 
-   Handle_Value, _LS, LS, /NO_COPY, /SET
+
+   Handle_Value, _LS(LLoop),LS,/NO_COPY,/SET
+   ENDFOR ; LLoop
+
+   LEARNwins = 1
+  
 END
