@@ -1,52 +1,72 @@
 ;+
 ; NAME:               VCR
 ;
-; PURPOSE:            Darstellen einer ein- oder zweidimensionalen Sequenz mit Controls
-;                     aehnlich denen eines Videoplayers (nicht Recorder!). 
-;                     Eine aehnliche Routine bietet auch IDL (CW_ANIMATE zumindest fuer
-;                     2d Sequenzen). Diese hat aber Nachteile:
-;                        - lange Sequenzen brauchen ewig zum initialisieren
-;                        - bei langen Sequenzen kein genaues Anspringen von
-;                          Zeitpunkten moeglich
-;                        - Bei zoomen erheblicher Spiecherbedarf 
-;                     VCR stellt 2D-Sequenzen via TV (und Partner),
-;                     1D-Sequenzen mittels von Plot dar. 
-; 
+; PURPOSE:            Display of a 1- or 2-dimensional sequence with
+;                     controls similar to those of a videoplayer (not
+;                     recorder!).
+;                     One can find a similar routine in IDL
+;                     (CW_ANIMATE, at least suitable for 2D
+;                     sequences). Unfortunately this routine has the following
+;                     disadvantages:
+;                         - it takes an eternity to initialize for long
+;                           sequences
+;                         - at long sequences it is impossible to jump
+;                           to particular time steps
+;                         - if you may want to zoom it will engage a huge amount of memory 
+;                     VCR displays 2D-sequences via TV (and partners),
+;                     for 1D-sequences it uses the PLOT procedure.
+;                    
 ; CATEGORY:           GRAPHIC NONASE
 ;
-; CALLING SEQUENCE:   VCR, Sequence [,/NASE] [,/ZOOM] [,DELAY=delay] [,TITLE=title] [,/SCALE]
+; CALLING SEQUENCE:   VCR, Sequence [,/NASE] [,/ZOOM] [,DELAY=delay]
+;                     [,TITLE=title] [,/SCALE], [TAUMEMO=taumemo]
 ;
-; INPUTS:             Sequence: entweder ein 3d-Array der Form (x,y,t) oder ein 2d-Array
-;                               der Form (x,t)
+; INPUTS:             Sequence: either a 3d-Array of the form(x,y,t) or a 2d-Array
+;                               of the form (x,t) 
 ;
-; KEYWORD PARAMETERS: NASE : korrekte Darstellung von NASE-Layern
-;                     DELAY: minimale Verzoegerung in ms zwischen zwei Frames 
-;                             dies ist der Startwert, der tatsaechliche kann 
-;                             waehrend der Animation durch einen Slider
-;                             veraendert werden
-;                     TITLE: ein Titel
-;                  3d spezifisches Keywords:
-;                     SCALE: normalerweise wird das ganze Video so skaliert, dass
-;                            eine Farbintensitaet auch einem Arraywert entspricht.
-;                            SCALE bewirkt eine Skalierung jedes einzelnen Frames.
-;                     ZOOM : vergroesserte Darstellung um Faktor
-;                  2d spezifisches Keywords:
+; KEYWORD PARAMETERS: NASE : a correct display of NASE-Layers        
+;                     DELAY: the minimal delay in between 2 frames in
+;                            msec, this will fix just the startvalue,
+;                            you can still change the
+;                            delay by dragging a slider while the
+;                            simulation is running
+;                     TITLE: a titel
+;
+;                  3d specific keywords:
+;                     SCALE: Usually the whole video is scaled such
+;                            that one intensity of colour corresponds
+;                            to  one value of the array. SCALE can be used to scale
+;                            every single frame.
+;                   
+;                     ZOOM : One can enlarge the display by the chosen
+;                            zoomfactor.
+;                  TAUMEMO : Set this keyword to receive a decaying
+;                            impression of your video, corresponding to the
+;                            chosen value for the time constant.
+;                  2d specific keywords:
 ;                     XSIZE/
-;                     YSIZE: Gibt die Groesse des Plot-Bereichs vor (Default: 320x200)  
+;                     YSIZE: Determines the size of the plot
+;                            (Default: 320x200).  
 ;
 ;
 ; EXAMPLE:
 ;           l = RANDOMU(seed,40,10,100)
-;           VCR, l, ZOOM=5, DELAY=150, TITLE='TEST ME'
+;           VCR, l, ZOOM=5, DELAY=150, TITLE='TEST ME', TAUMEMO=2.0
 ;           l = RANDOMU(seed,10,2000)
 ;           VCR, l
 ;
 ; MODIFICATION HISTORY:
+;     ohjehohjeh
 ;
 ;     $Log$
-;     Revision 2.7  2000/05/31 13:56:59  saam
-;           hotfix to implement shadows; undocumented
+;     Revision 2.8  2000/06/09 09:58:22  ziemann
+;           added memory display by using new
+;           keyword TAUMEMO
 ;
+;     Revision 2.8  2000/06/07 17:41:00 ziemann    
+;           very hopefully a running decay impression, to be started
+;           by setting the time constant taumemo to a desired value  
+;   
 ;     Revision 2.6  1998/08/10 14:10:08  saam
 ;           problems with 8bit display hopefully corrected
 ;
@@ -74,21 +94,28 @@ PRO VCR_DISPLAY, UD
 
    Handle_Value, UD._a, a, /NO_COPY
 
-   oId = !D.Window
+ oId = !D.Window
    IF UD.modus EQ 0 THEN BEGIN
       WSet, UD.pm
       !P.Multi = [0,0,1]
       plot, a(*,UD.t), YRANGE=[UD.min, UD.max]
       WSet, UD.did
       Device, COPY=[0,0,UD.xsize-1, UD.ysize, 0, 0, UD.pm]
+
    END ELSE BEGIN
       WSet, UD.did
-      IF UD.isdecay THEN UD.mem = UD.mem*(exp(-float(UD.play)/UD.decay)) + a(*,*,UD.t) > 0 $ 
-        ELSE UD.mem = a(*,*,UD.t)      
+
+      IF UD.ismemory THEN BEGIN
+      faktor=EXP(-1.0/UD.taumemo)
+      UD.memo= reform(a(*,*,UD.t))+faktor*UD.memo
+      ENDIF ELSE BEGIN
+      UD.memo= reform(a(*,*,UD.t))
+      ENDELSE 
+
       IF UD.scale THEN BEGIN
-         IF  UD.nase THEN NaseTvScl, UD.mem, STRETCH=ud.zoom ELSE UTvScl, UD.mem, STRETCH=ud.zoom
+         IF  UD.nase THEN NaseTvScl, UD.memo, STRETCH=ud.zoom ELSE UTvScl, UD.memo, STRETCH=ud.zoom
       END ELSE BEGIN
-         IF  UD.nase THEN NaseTv, UD.mem, STRETCH=ud.zoom ELSE UTv, UD.mem, STRETCH=ud.zoom
+         IF  UD.nase THEN NaseTv, UD.memo, STRETCH=ud.zoom ELSE UTv, UD.memo, STRETCH=ud.zoom
       END
    END
    WSet, oId
@@ -233,9 +260,9 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, DECAY=decay
+PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo
 
-;   On_Error,2 
+   On_Error,2 
 
 
   ; COMPLETE COMMAND LINE SYNTAX
@@ -246,9 +273,8 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   Default, scale, 0
   Default, XSIZE, 320
   Default, YSIZE, 200
-  Default, DECAY, 0
-
-
+  Default, taumemo, 0.0
+  
   IF N_Params() NE 1 THEN Message, 'exactly one argument expected'
   IF ((SIZE(A))(0) LT 2) OR ((SIZE(A))(0) GT 3) THEN Message, 'array is neither 2d nor 3d!'
 
@@ -683,8 +709,8 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
      Window, /FREE, /PIXMAP, XSIZE=xsize, YSIZE=ysize 
      pm = !D.WINDOW
   END ELSE pm = 0
-
-  WIDGET_CONTROL, MAIN_VCR,$
+ 
+ WIDGET_CONTROL, MAIN_VCR,$
    SET_UVALUE={info  : 'VCR_BASE',$
                _A    : _A            ,$
                w     : w             ,$
@@ -694,22 +720,21 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
                max   : tmax          ,$
                xsize : xsize         ,$
                ysize : ysize         ,$
-               isdecay: decay GT 0   ,$
-               decay : decay         ,$
-               mem   : FltArr(xsize,ysize),$
                pm    : pm            ,$
                modus : modus         ,$
                t     : 0l            ,$
                zoom  : zoom          ,$
                did   : drawid        ,$ ;id of drawing area
-               timeid: FIELDTIME     ,$
+              timeid : FIELDTIME     ,$
                timer : LABEL44       ,$ ;its a trick, a label cant generate a timer event
                play  : 0             ,$
                nase  : nase          ,$
                scale : scale         ,$
                delay : delay         ,$
-               loop  : 0             }           
-
+               loop  : 0             ,$
+             taumemo : taumemo       ,$
+            ismemory : taumemo GT 0  ,$
+               memo  : FLTARR(w,h)          }
 
   XMANAGER, 'VCR', MAIN_VCR
 END
