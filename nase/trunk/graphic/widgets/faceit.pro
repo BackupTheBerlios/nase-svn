@@ -14,7 +14,7 @@
 ;          dann regelm‰ﬂig und entsprechend den auftretenden Ereignisse (zB 
 ;          Mausklicks auf die Buttons) auf.
 ;
-; CATEGORY: GRAPHICS / WIDGETS
+; CATEGORY: GRAPHIC / WIDGETS
 ;
 ; CALLING SEQUENCE: FaceIt, name [,/COMPILE]
 ;
@@ -139,6 +139,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.21  2003/01/21 16:54:05  alshaikh
+;        added nogif tag
+;
 ;        Revision 1.20  2000/10/03 12:39:43  kupper
 ;        Added INVISIBLE and GETBASE keywords.
 ;
@@ -235,7 +238,7 @@
 
 
 
-Function Faceit_NewUserbase, W_userbase, FLOATING=floating, _EXTRA=_extra
+Function Faceit_NewUserbase, W_userbase, FLOATING=floating,_EXTRA=_extra
    ;; W_userbase is the highest widget in hierarchy that the
    ;; user ever gets his hands on. So he can only give us that
    ;; information. We now need to get out W_Base from it. We
@@ -581,11 +584,12 @@ END ; faceit_EVENT
 
 
 PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch, $
-            INVISIBLE=invisible, GET_BASE=get_base
+            INVISIBLE=invisible, GET_BASE=get_base,NOGIF=NOGIF
 
    COMMON WidgetSimulation, MyFont, MySmallFont
 
    Default, NO_BLOCK, 1
+   Default, NO_GIF,0
    DEBUGMODE = 1; XMANAGER will terminate on error, if DEBUGMODE is set
    
    Default, BATCH, ""
@@ -764,12 +768,13 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch, $
    FaceIt_Set_Duration, userstruct, duration
 
    ;--- display nase-logo:
-   ShowIt_Open, userstruct.w_simlogo
-   Read_GIF, GETENV("NASEPATH")+"/graphic/naselogo2_small.gif", logo, r, g, b
-   Utvlct, r, g, b
-   Utv, logo
-   ShowIt_Close, userstruct.w_simlogo
-
+   if (nogif eq 0) then begin
+       ShowIt_Open, userstruct.w_simlogo
+       Read_GIF, GETENV("NASEPATH")+"/graphic/naselogo2_small.gif", logo, r, g, b
+       Utvlct, r, g, b
+       Utv, logo
+       ShowIt_Close, userstruct.w_simlogo
+   end
    loadct, 0                    ;don't leave that ugly logo-colortable...
 
 
