@@ -8,8 +8,8 @@
 ;
 ; CATEGORY:           INPUT
 ;
-; CALLING SEQUENCE:   Input = GwnOff( [Layer] ( ,LAYER=Layer | ,WIDTH=width, HEIGHT=height )
-;                                     [, OFFSET=offset] [,DEVIATION=deviation]
+; CALLING SEQUENCE:   Input = GwnOff( [Layer] { ,LAYER=Layer | ,WIDTH=width, HEIGHT=height }
+;                                     [, OFFSET=offset] [,DEVIATION=deviation] [,NORM=norm])
 ;
 ; OPTIONAL INPUTS:    Layer    : die Neuronenschicht, fuer die der Input erzeugt werden soll
 ;
@@ -19,6 +19,7 @@
 ;                                nicht angegeben wurde)
 ;                     OFFSET   : der kontinuierliche, konstante Offset 
 ;                     DEVIATION: die Standardabweichung des weissen Rauschens
+;                     NORM     : multipliziert das Ergebnis mit dem Faktor Norm
 ;
 ; OUTPUTS:            Input     : das Float-Array 
 ;
@@ -30,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/01/28 12:25:19  saam
+;           new keyword NORM
+;
 ;     Revision 2.3  1997/11/14 16:37:01  saam
 ;           Rueckgabewert nun SpassVector
 ;
@@ -41,10 +45,12 @@
 ;
 ;-
 
-FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset, DEVIATION=deviation
+FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset, DEVIATION=deviation,$
+                 NORM=NORM
 
    COMMON Common_Random, seed
 
+   Default, NORM, 1.0
 
    IF Keyword_Set(KLAYER) THEN BEGIN
       w = KLayer.w
@@ -63,8 +69,8 @@ FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset,
    
    Default, offset, 0.0
    Default, deviation, 0.0
-   
-   signal = offset + deviation*RandomN(seed, w, h)
+
+   signal = norm*(offset + deviation*RandomN(seed, w, h))
    
    RETURN, SpassMacher(signal)
    
