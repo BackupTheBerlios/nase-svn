@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  1998/04/10 12:17:16  saam
+;           now recursively removes local files/directories
+;
 ;     Revision 1.7  1998/04/06 16:04:15  saam
 ;           some // in filenames made problems -> fixed
 ;
@@ -105,7 +108,7 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
       IF NOT Keyword_Set(NOZIP) THEN spawn, 'rm -f '+LocalDir+'/'+TARFILE ELSE spawn, 'rm -f '+LocalDir+'/'+TARFILE+'.gz'
       spawn, 'rsh '+RemoteHost+' "cd '+RemoteDir+'; rm -f '+TARFILE+'"' 
       IF NOT Keyword_Set(NODEL) THEN BEGIN
-         spawn, 'rm -f '+LocalDir+'*'
+         spawn, 'rm -Rf '+LocalDir+'*'
          spawn, 'rmdir -p '+LocalDir
       ENDIF
 
