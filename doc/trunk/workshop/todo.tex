@@ -163,14 +163,6 @@ Rüdiger\\[2cm]
       \item In interactive palette selection, when ``function'' is
         selected, the next paint event plots into XLOADCT's window.
     \end{itemize}
-  \item \texttt{SHOWWEIGHTS_SCALE}: Breaks if called inside the FaceIt
-    widget and says:\\
-    (30)SHOWWEIGHTS_SCALE: FAILED ASSERTION: 'Range gt 0' in line
-    169.\\
-    (30)SHOWWEIGHTS_SCALE: Reason: Range_In must be a positive scalar
-    value for this routine.\\
-    Is this a general bug or only inside Faceit? Find out where the
-    bug is and kill it..
 \end{itemize}
 
 
@@ -277,6 +269,10 @@ compatibility need not be maintained in this case.
   Modify widgets to consisently use the new global font
   \texttt{!NASEWIDGETFONT}.[Apart from ExamineIt, only FaceIt used
   MyFont, which has been changed, AT.] 
+\item \texttt{SHOWWEIGHTS_SCALE}: Breaks if called inside the FaceIt
+    widget. [Scaling using empty spike arrays was the
+    problem. \texttt{SCL} gives a warning now, but does not halt, RK
+    and AT].
 \end{itemize}
 
 
