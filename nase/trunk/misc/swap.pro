@@ -35,7 +35,7 @@ PRO SWAP, a, b
 ;works for variables/array of the same type
 ;a=a+b
 ;b=a-b
-;a=a-a
+;a=a-b
 
 ;;this uses a temporary variable, but no temporary memory!
 tmp=Temporary(a)
