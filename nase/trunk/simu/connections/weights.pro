@@ -6,12 +6,22 @@
 ;
 ; CATEGORY:            SIMULATION CONNECTIONS
 ;
-; CALLING SEQUENCE:    W = Weights(DW)
+; CALLING SEQUENCE:    W = Weights(DW [,/DIMENSIONS])
 ;
 ; INPUTS:              DW: Eine mit InitDW initialisierte DelayWeigh-
-;                          Struktur
+;                          Struktur (SDW oder Oldstyle-DW)
 ;
-; OUTPUTS:             die Gewichtsmatrix
+; OUTPUTS:             W: die Gewichtsmatrix
+;                         Dies ist eine zweidimensionales Array der Form
+;                         W ( Target_Neuron, Source_Neuron ), wenn
+;                         nicht das Schlüsselwort /DIMENSIONS
+;                         angegeben wurde.
+;
+; KEYWORDS:            DIMENSIONS: Wird dieses Schlüsselwort
+;                                  angegeben, so ist W eine
+;                                  vierdimensionale Matrix (Matrix von 
+;                                  Matrizen) der Form
+;                                  W ( Target_Row,Target_Col, Source_Row,Source_Col )
 ;
 ; EXAMPLE:             DW = InitDW(S_WIDTH=10, S_HEIGHT=10, 
 ;                                  T_WIDTH=5, T_HEIGHT=5,
@@ -22,12 +32,21 @@
 ;                      Output:
 ;                               W               FLOAT     = Array(25, 100)  
 ;
+;                      W = Weights(DW, /DIMENSIONS)
+;                      help, W
+;
+;                      Output:
+;                               W               FLOAT     = Array(5, 5, 10, 10)  
+;
 ; SEE ALSO:            <A HREF="#INITDW">InitDW</A>
 ;                      <A HREF="#SETWEIGHTS"></A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/03/15 17:20:28  kupper
+;            DIMENSIONS-Schlüsselwort implementiert.
+;
 ;     Revision 2.5  1998/03/14 14:12:19  saam
 ;           handling of empty dw-structures now works
 ;
@@ -49,12 +68,13 @@
 ;
 ;
 ;-
-FUNCTION Weights, _DW
+FUNCTION Weights, _DW, DIMENSIONS=dimensions
    
    IF (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') THEN BEGIN
       Handle_Value, _DW, DW, /NO_COPY
       W = DW.Weights
       Handle_Value, _DW, DW, /NO_COPY, /SET
+      If Keyword_Set(DIMENSIONS) then W = Reform(W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
       RETURN, W
    END
 
@@ -71,5 +91,6 @@ FUNCTION Weights, _DW
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
+   If Keyword_Set(DIMENSIONS) then W = Reform(W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
    RETURN, W
 END
