@@ -91,6 +91,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/03/16 13:21:11  kupper
+;        Removed leftover keyword=keyword.
+;
 ;        Revision 1.2  2000/03/15 19:00:45  kupper
 ;        Looks perfect!
 ;        No Header yet.
@@ -130,7 +133,7 @@ Function widget_leaky_integrator_array::init, MAX_IN=max_in, _REF_EXTRA=_ref_ext
    return, 1                    ;TRUE
 End
 
-Pro widget_leaky_integrator_array::cleanup, KEYWORD = keyword, _REF_EXTRA = _ref_extra
+Pro widget_leaky_integrator_array::cleanup, _REF_EXTRA = _ref_extra
    message, /Info, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
