@@ -104,6 +104,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.45  1999/06/18 15:00:37  kupper
+;     Removed weird NOSCALE-Option to TvSclLegend.
+;     Why should the legend's colors scale with its inscription???
+;
 ;     Revision 2.44  1999/06/18 14:45:47  kupper
 ;     LEG_MIN and LEG_MAX did not work with /NASE. Fixed.
 ;     (What about /NEUTRAL? - Mirko?)
@@ -509,7 +513,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
              V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
              Max=LEG_MAX, Min=LEG_MIN, Mid=Mid,$
              CHARSIZE=Charsize, $
-             NOSCALE=NoScale, $
+             $;NOSCALE=NoScale, $
              /Vertical, /Center, COLOR=sc
          END ELSE BEGIN
             Default, LEG_MAX, MaxW
@@ -520,7 +524,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
              V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
              Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
              CHARSIZE=Charsize, $
-             NOSCALE=NoScale, $
+             $;NOSCALE=NoScale, $
              /Vertical, /Center, COLOR=sc
          END
       END  ELSE BEGIN; No-NASE
