@@ -9,6 +9,7 @@
 ;
 ; CALLING SEQUENCE:   Torus = CutTorus(array, outer_radius [,inner_radius] [X_CENTER=x_center] 
 ;                                             [,Y_CENTER=y_center] [,/TRUNCATE] [,CUT_VALUE=cut_value]
+;                                             [,/WHERE] [,COUNT=count])
 ;                         
 ;
 ; INPUTS:             array       : ein zweidimensionales Array
@@ -24,8 +25,15 @@
 ;                                wenn [XY]_Center zu gross sind.
 ;                     CUT_VALUE: Alle Werte ausserhalb des Torus werden auf CUT_VALUE gesetzt.
 ;                                Default ist Null.
+;                     WHERE    : falls gesetzt werden statt des modifizierten Arrays, die Indizes
+;                                der ueberlebenden Elemente zurueckgegeben. Falls keins ueberlebt 
+;                                ist der Rueckgabewert !NONE, siehe auch: COUNT
+; 
 ;                               
 ; OUTPUTS:            Torus: ein Array mit den array-Werten im definierten Torus und CUT_VALUE sonst.
+;
+; OPTIONAL OUTPUTS:   COUNT    : enthaelt die Zahl der ueberlebenden Elemente und zwar nur, wenn das
+;                                Keyword WHERE gesetzt wurde.
 ;
 ; EXAMPLE:            
 ;                     a = IntArr(100,100)
@@ -38,6 +46,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1999/01/18 21:24:59  saam
+;           + allows the return of the surviving indices instead
+;             of the whole array with new keyword WHERE
+;           + an optional output COUNT provides the count of
+;             these elements
+;
 ;     Revision 1.3  1999/01/01 14:00:09  saam
 ;           + the distance is now rounded, which provides a smoooother torus
 ;
@@ -49,7 +63,7 @@
 ;
 ;     
 ;-
-FUNCTION CutTorus, data, outer_radius, inner_radius, X_CENTER=x_center, Y_CENTER=y_center, TRUNCATE=truncate, CUT_VALUE=cut_value
+FUNCTION CutTorus, data, outer_radius, inner_radius, X_CENTER=x_center, Y_CENTER=y_center, TRUNCATE=truncate, CUT_VALUE=cut_value, COUNT=count, WHERE=where
 
    dataDims = SIZE(data) 
 
@@ -75,9 +89,20 @@ FUNCTION CutTorus, data, outer_radius, inner_radius, X_CENTER=x_center, Y_CENTER
       IF count NE 0 THEN distArr(innerRadius) = -1
    END
 
-   resArr = data
    cut_elements = WHERE(distArr EQ -1, count)
-   IF count NE 0 THEN resArr(cut_elements) = cut_value
-   RETURN, resArr
+   IF Keyword_Set(WHERE) THEN BEGIN
+      ; GET THE INVERSE SET OF INDICES AND SET COUNT
+      IF count NE 0 THEN BEGIN
+         resArr = DiffSet( LIndgen(dataDims(1)*dataDims(2)), cut_elements)
+      END ELSE BEGIN
+         resArr = LIndgen(dataDims(1)*dataDims(2))
+      END
+      IF resArr(0) EQ !NONE THEN count = 0 ELSE count = N_Elements(resArr)
+      RETURN, resArr
+   END ELSE BEGIN
+      resArr = data
+      IF count NE 0 THEN resArr(cut_elements) = cut_value
+      RETURN, resArr
+   END
 
 END
