@@ -123,6 +123,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.22  2000/04/03 13:23:48  kupper
+;        NOALLOC broke on non-Pseudocolor visuals.
+;        Fixed.
+;
 ;        Revision 1.21  2000/03/07 14:39:09  kupper
 ;        corrected hyperlink.
 ;
@@ -203,6 +207,31 @@ Common common_RGB, My_freier_Farbindex
   
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
+
+   ;; order of following cases matters:
+
+   ;; ---- PS, and !PSGREY set: -------------------------------------------------
+   IF (!D.Name EQ 'PS') and !PSGREY THEN BEGIN
+      ; korrekte Behandlung nur fuer Grauwertpostscripts 
+      New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
+      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)
+   END
+   ;; ---------------------------------------------------------------------------
+
+
+   ;; ---- NOALLOC --------------------------------------------------------------
+   IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
+      myCM = bytarr(!D.Table_Size,3) 
+      TvLCT, myCM, /GET
+      New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
+      New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
+      differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
+      lowestDiff = MIN(differences, bestMatch)
+      RETURN, bestMatch
+   END
+   ;; ---------------------------------------------------------------------------
+
+
    ;; ---- X or WIN, and not pseudocolor: ---------------------------------------
    IF ((!D.Name EQ 'X') or (!D.Name EQ 'WIN')) $
     and not Pseudocolor_Visual() then begin
@@ -214,25 +243,9 @@ Common common_RGB, My_freier_Farbindex
    ;; ---------------------------------------------------------------------------
 
 
-   ;; ---- PS, and !PSGREY set: -------------------------------------------------
-   IF (!D.Name EQ 'PS') and !PSGREY THEN BEGIN
-      ; korrekte Behandlung nur fuer Grauwertpostscripts 
-      New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
-      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)
-   END
-   ;; ---------------------------------------------------------------------------
 
 
    ;; ---- all other devices: -------------------------------------------------
-   IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
-      myCM = bytarr(!D.Table_Size,3) 
-      TvLCT, myCM, /GET
-      New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
-      New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
-      differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
-      lowestDiff = MIN(differences, bestMatch)
-      RETURN, bestMatch
-   END
 
    if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
       Default, start, 1
