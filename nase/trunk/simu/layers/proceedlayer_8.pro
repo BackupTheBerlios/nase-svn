@@ -3,7 +3,7 @@
 ;
 ;
 ; PURPOSE: Führt einen Simulationsschritt für eine Schicht aus Neuronen 
-;          des Typs 8 (4-Compartment-Neuron) durch. Dazu werden die 
+;          des Typs 8 (<A HREF="#INITPARA_8">4-Compartment-Neuron</A>) durch. Dazu werden die 
 ;          entsprechenden DGLn für die Compartments mit der IDL-
 ;          Runge-Kutta-Integrationsmethode gelöst. Input in die Neuronen
 ;          muß vor dem ProceedLayer_8-Aufruf mit <A HREF="#INPUTLAYER_8">InputLayer_8</A> 
@@ -83,6 +83,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 1.2  1999/03/05 14:32:53  thiel
+;             Header-Ergänzung.
+;
 ;      Revision 1.1  1999/03/05 13:10:19  thiel
 ;             Neuer Neuronentyp 8, ein Vier-Compartment-Modellneuron.
 ;
