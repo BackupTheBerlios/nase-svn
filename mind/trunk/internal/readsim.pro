@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.7  2000/05/17 09:46:40  saam
+;           removed the reminder cause time is ok now
+;
 ;      Revision 1.6  2000/05/16 16:16:20  saam
 ;            extended TIME syntax
 ;
@@ -127,7 +130,6 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
    IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
 
    TIME = LONG(TIME)
-   print, 'READSIM REMINDER!! TIME is somewhat corrupted'
    REWIND, Video, TIME(0), /SHUTUP
    IF Set(Select) THEN BEGIN
       FOR t=TIME(0), TIME(1) DO BEGIN
