@@ -41,15 +41,6 @@
 ;  result: Array filled with a linear ramp. The values are floats by default.
 ;          If one of the supplied values was a double, the result is double.
 ;  
-; OPTIONAL OUTPUTS:
-;  -please remove any sections that do not apply-
-;  
-; COMMON BLOCKS:
-;  -please remove any sections that do not apply-
-;  
-; SIDE EFFECTS:
-;  -please remove any sections that do not apply-
-;  
 ; RESTRICTIONS:
 ;  Only the documented combinations of keywords are supported. For
 ;  other combinations (even though possibly propperly defining a
@@ -59,7 +50,10 @@
 ;  Compute left and right value, then modify an INDGEN() accordingly.
 ;  
 ; EXAMPLE:
-;  -please specify-
+;  Plot, Ramp(100, LEFT=-10, RIGHT=100), /ISO
+;  Plot, Ramp(100, LEFT=-10, SLOPE=-1), /ISO
+;  Plot, Ramp(100, RIGHT=100, ANGLE=45), /ISO
+;  Plot, Ramp(100, MEAN=0, ANGLE=30), /ISO
 ;  
 ; SEE ALSO:
 ;  INDGEN(), Angle2Slope()
@@ -67,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/08/09 17:06:33  kupper
+;        Added some examples.
+;
 ;        Revision 1.3  2000/06/14 19:20:10  kupper
 ;        Now handling special case of len=1.
 ;
