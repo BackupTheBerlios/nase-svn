@@ -103,8 +103,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;
 ;     $Log$
+;     Revision 1.10  1998/07/01 08:53:55  gabriel
+;          CROSSCORR korrigiert !?!
+;
+;
 ;     Revision 1.9  1998/06/23 11:16:13  saam
 ;           + indgen -> lindgen
 ;           + fix -> long
@@ -112,6 +115,7 @@
 ;
 ;     Revision 1.8  1998/06/22 21:07:24  saam
 ;           loop variable in line 174 was only int :(
+;
 ;
 ;     Revision 1.7  1998/06/03 11:28:04  gabriel
 ;          PLOT Titel geaendert
@@ -139,7 +143,7 @@
 
 function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=stepsize,$
                     HAMMING=hamming, DOUBLE=double, SAMPLPERIOD=samplperiod , PLOT=plot ,NOSAMPLE=nosample,$
-                    SMOOTH=smooth,NULLHYPO=NULLHYPO, TITLE=title
+                    SMOOTH=smooth,NULLHYPO=NULLHYPO,FYRANGE=FYRANGE, TITLE=title
 
    IF N_Params() NE 3 THEN Message, 'wrong number of parameters'
 
@@ -163,31 +167,33 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
 
    default,wsize,128
    default,stepsize,wsize/2
-   _wsize =  wsize/(SAMPLPERIOD * 1000)
+   _wsize =  ROUND(wsize/(SAMPLPERIOD * 1000))
+   _stepsize = ROUND(stepsize/(SAMPLPERIOD * 1000))
    VERL = DBLARR(_wsize)
    dim = N_ELEMENTS(xdata)
    default,taxis, lindgen(dim) * SAMPLPERIOD * 1000
    steps = dim - _wsize
-   tdata = (lindgen(steps/stepsize+1)*stepsize ) *   SAMPLPERIOD * 1000 + MIN(taxis)
+   tdata = (lindgen(steps/_stepsize+1)*_stepsize ) *   SAMPLPERIOD * 1000 + MIN(taxis)
    ;;stop
    XSIZE = 600 &  YSIZE=320
    IF plot eq 1 AND PLOTFLAG EQ 0 THEN BEGIN
       
-      sheet_3 = definesheet(/WINDOW,XSIZE=XSIZE,YSIZE=YSIZE*2.5,TITLE=title)
+      sheet_3 = definesheet(/WINDOW,XSIZE=XSIZE,YSIZE=YSIZE*2.5,TITLE=TITLE)
       plotflag = 1
    ENDIF
 
-   FOR i=0l, steps - 1, stepsize DO BEGIN
+   FOR i=0l, steps - 1, _stepsize DO BEGIN
       xtmp = xdata(i:i+_wsize-1)
       ytmp = ydata(i:i+_wsize-1)
       
       IF NOPERIOD EQ 1  THEN BEGIN
-         xtmp = [ xtmp, VERL]
-         ytmp = [ ytmp, VERL]
+         xtmp = [ xtmp, xtmp*0.]
+         ytmp = [ ytmp, ytmp*0.]
          ;print,'hallo'
          ;stop
       ENDIF
-      
+       
+       
       fdata =  taxis
       spec = crosspower(xtmp , ytmp ,fdata , HAMMING=hamming, DOUBLE=double,SAMPLPERIOD=samplperiod,/COMPLEX,/NEGFREQ)
       
@@ -243,42 +249,33 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    
    
    ergsparr = transpose(ergsparr)
+   ergsparrdim = size(ergsparr)
    DEFAULT,fband,[0,abs(fdata(N_ELEMENTS(fdata)-1))]
+   plotfindex_R = where((fdata GE fband(0)) AND fdata LE fband(1),fcount) 
+   IF FCOUNT EQ 0 THEN message,"FBAND out of range"
+   plotfindex_L = where((fdata LE -fband(0)) AND fdata GE -fband(1),fcount)
+
+   fdata = shift(fdata,-ergsparrdim(2)/2)
    findex_R = where((fdata GE fband(0)) AND fdata LE fband(1),fcount) 
    IF FCOUNT EQ 0 THEN message,"FBAND out of range"
    findex_L = where((fdata LE -fband(0)) AND fdata GE -fband(1),fcount)
+
    ;stop
    fx =  findgen(N_ELEMENTS(findex_R))
    fhamming =0.54 - 0.46*Cos(2*!Pi*fx/(N_ELEMENTS(findex_R)-1))
    fdim = N_ELEMENTS(fdata)
    taudata = (lindgen(fdim) - fdim/2)*(SAMPLPERIOD*1000)
-   ergsparrdim = size(ergsparr)
+   fdata = shift(fdata,ergsparrdim(2)/2)
 
-;   IF set(setweight) THEN BEGIN
-      
-;      weightarr = transpose(weightarr)
-;      showarr = weightarr
-;      tmparr = weightarr * 0.
-
-;      wtmp1 = total(weightarr(*,[findex_L,findex_R]),2)
-;      wtmp2 = total(weightarr,2)
-;      weightarr = (wtmp1/wtmp2) 
-;      maxweight = max(weightarr)
-;      showweight = weightarr
-;      weightarr = weightarr GT 0.9*maxweight AND weightarr GT 0.5
-;      tmparr(*,[findex_L,findex_R]) = weightarr(*,[findex_L,findex_R])
-;      weightarr = tmparr
-;   ENDIF
-   ;stop
 
    FOR K=0l,ergsparrdim(1)-1 DO BEGIN
-      cspectmp = reform(ergsparr(k,*))
+      cspectmp = shift(reform(ergsparr(k,*)),-ergsparrdim(2)/2)
       ;IF set(setweight) THEN cspectmp = reform(ergsparr(k,*)*weightarr(k,*))
      
       cspectmpR = cspectmp(*) * 0 & cspectmpL = cspectmp(*) * 0  
       cspectmpR( findex_R ) = cspectmp(findex_R)*fhamming
       cspectmpL( findex_L ) = cspectmp(findex_L)*fhamming
-      VERL = FLTARR(N_ELEMENTS(cspectmpL))
+      
       
       
       ccorr = shift ( FFT( [cspectmpL + cspectmpR], 1) ,ergsparrdim(2)/2 ) 
@@ -286,8 +283,9 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
       
       chuell = shift ( FFT( [cspectmpR ], 1) , ergsparrdim(2)/2) 
       
-      chuell = ABS(chuell)
-      cspectmp = reform(ergsparr(k,*))
+      chuell = 2*ABS(chuell)
+      
+
       energie = total(abs(cspectmp([findex_R,findex_L])))/total(abs(cspectmp(1:*)))
       ;wset,0
       ;!P.MULTI = 0
@@ -358,14 +356,17 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
          tmparr = round(tmparr*1000)/1000.
          IF nosample THEN tmparr = REBIN(tmparr,(plotdim/FLOOR(ergsize(1)))*ergsize(1)*2,$
                                          (plotdim/FLOOR(ergsize(2)))*ergsize(2)*2)
+         default,FYRANGE,[0,MAX(fdata)]
          
-         PlotTvScl,tmparr,XRANGE=[MIN(taxis),MAX(taxis)],YRANGE=[0,MAX(fdata)],CHARSIZE=1.0,/LEGEND,$
-         YTITLE="Frequency [Hz]", TITLE="SlidPowSpec-Plot" ,/FULLSHEET, GET_POSITION=PlotPosition
+         findmax = where(fdata(N_ELEMENTS(fdata)/2:*) GE FYRANGE(1))
+         PlotTvScl,tmparr(*,0:findmax(0)),XRANGE=[MIN(taxis),MAX(taxis)],YRANGE=FYRANGE,CHARSIZE=1.0,/LEGEND,$
+          YTITLE="Frequency [Hz]", TITLE="SlidPowSpec-Plot" ,/FULLSHEET, GET_POSITION=PlotPosition
          fw = PlotPosition(2)-PlotPosition(0)
          fh = PlotPosition(3)-PlotPosition(1)
-         fytick = fh/(N_ELEMENTS(fdata)/2)                       ;stop
-         miny = (min(findex_R)-N_ELEMENTS(fdata)/2) * fytick + PlotPosition(1)
-         maxy = (max(findex_R)-N_ELEMENTS(fdata)/2) * fytick + PlotPosition(1)
+         fytick = (fh/FLOAT(findmax(0)+1))                       ;stop
+         miny = (min(plotfindex_R)-N_ELEMENTS(fdata)/2) * fytick + PlotPosition(1)
+         maxy = (max(plotfindex_R)-N_ELEMENTS(fdata)/2) * fytick + PlotPosition(1)
+ ;stop
          coords = [ PlotPosition(0), miny ,PlotPosition(2),miny]
          plots,coords(0),coords(1),/NORMAL
          plots,coords(2),coords(3),/CONTINUE,COLOR=RGB(255,0,0,/NOALLOC),NOCLIP=0,/NORMAL
