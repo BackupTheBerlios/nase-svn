@@ -10,7 +10,8 @@
 ;                              [,XRANGE=xrange] [,YRANGE=yrange]
 ;                              [,XSTYLE=xstyle] [,YSTYLE=ystyle]
 ;                              [,MINORANGLETICKS=minorangleticks]
-;                              [,THICK=thick],[CLOSE=CLOSE]
+;                              [,THICK=thick],[CLOSE=CLOSE],
+;                              [SDCOLOR=sdcolor],[MCOLOR=mcolor],[DELTA=DELTA]
 ;
 ; INPUTS: radiusarray: Die in diesem Array enthaltenen Werte werden als Abstaende
 ;                      gemessen vom Ursprung dargestellt.
@@ -35,7 +36,12 @@
 ;                                   n=1 Markierungen bei 45, 135, 225 und 315 Grad. 
 ;                  thick: Die Liniendicke, Normal: 1.0, Default: 3.0
 ;                  close: Endpunkt wird mit Anfangspunkt verbunden: 
-;                         Darstellung als geschlossene Kurve (default: 0) 
+;                         Darstellung als geschlossene Kurve (default: 0)
+;                  DELTA: Interpoliert zwischen den Stuetzpunkten (radius,winkel) mit sin(x)/x um 
+;                         den Faktor Delta (default: 1). Setzt Keyword CLOSE auf 1 wenn es gesetzt ist,
+;                         da eine Interpolation nur fuer geschlossene  Kurven sinnvoll ist.  
+;                  MCOLOR  : Farbindex fuer den Mittelwert         (Default: weiss)
+;                  SDCOLOR : Farbindex fuer die Standardabweichung (Default: dunkelblau) 
 ;
 ; OUTPUTS: Polardarstellung der Daten auf dem aktuellen Plot-Device.
 ;
@@ -51,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1999/04/28 17:10:41  gabriel
+;             Keyword DELTA neu
+;
 ;        Revision 2.4  1999/02/12 14:48:50  gabriel
 ;             Keyword CLOSE und Input SDEV neu
 ;
@@ -66,7 +75,7 @@
 ;-
 
 
-PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor, $
+PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor,DELTA=DELTA,$
                TITLE=title, $
                CHARSIZE=charsize, $
                XRANGE=xrange, YRANGE=yrange, $
@@ -78,10 +87,13 @@ PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor, $
 
 _radiusarray = radiusarray
 _winkelarray = winkelarray
+
 IF set(SDEV) THEN _sdev = sdev
 
 Default, MCOLOR , RGB(255,255,255,/NOALLOC)
-Default, SDCOLOR, RGB(100,100,200,/NOALLOC)
+Default, SDCOLOR, RGB(150,150,200,/NOALLOC)
+IF set(DELTA) THEN DEFAULT,CLOSE ,1
+
 DEFAULT,CLOSE ,0
 Default, xstyle, 4
 Default, ystyle, 4
@@ -90,25 +102,93 @@ Default, yrange, [-Max(_RadiusArray),Max(_RadiusArray)]
 Default, title, ''
 Default, charsize, 1.0
 Default, thick, 3.0
+default,delta,1
 
 
-IF CLOSE EQ 1 THEN BEGIN
-   _radiusarray = [_radiusarray,_radiusarray(0)]
-   _winkelarray = [_winkelarray,_winkelarray(0)]
-   IF set(SDEV) THEN _sdev = [_sdev,_sdev(0)]
-ENDIF
 
-Plot, _radiusarray, _winkelarray, /polar, THICK=thick, COLOR=MCOLOR,$
+IF DELTA GT 1 THEN BEGIN
+   index = 0
+   WHILE N_ELEMENTS(_radiusarray) LT 30 DO BEGIN 
+      index = N_ELEMENTS(_radiusarray) + index
+      _radiusarray = [_radiusarray,_radiusarray,_radiusarray]
+      IF set(_SDEV) THEN  _sdev=[_sdev,_sdev,_sdev]
+   ENDWHILE
+
+   IF set(_SDEV) THEN   _sdev =   Sincerpolate(_radiusarray + _sdev ,delta)
+
+   _radiusarray = Sincerpolate(_radiusarray,delta)
+   _radiusarray = _radiusarray(index*delta : (index+ N_ELEMENTS(radiusarray))*delta-1+close)
+
+   IF set(_SDEV) THEN BEGIN 
+      _sdev = _sdev(index*delta : (index+ N_ELEMENTS(radiusarray))*delta-1+close)
+      _sdev = _sdev - _radiusarray
+   ENDIF
+
+   _winkelarray = _winkelarray(0)+findgen(delta*(N_ELEMENTS(_winkelarray))+close)/FLOAT((N_ELEMENTS(_winkelarray))*DELTA-1+close)*(last(_winkelarray)+close*(_winkelarray(1)-_winkelarray(0)))
+END ELSE BEGIN
+
+   IF CLOSE EQ 1 THEN BEGIN
+      _radiusarray = [_radiusarray,_radiusarray(0)]
+      _winkelarray = [_winkelarray,last(_winkelarray)+_winkelarray(1)-_winkelarray(0)]
+      IF set(SDEV) THEN _sdev = [_sdev,_sdev(0)]
+   ENDIF
+
+ENDELSE
+
+
+
+
+
+
+plot,_radiusarray , _winkelarray,/POLAR, /NODATA, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
- TITLE=title , _EXTRA=e
+ TITLE=title,COLOR=!P.BACKGROUND,_EXTRA=e
+
+PTMP = !P.MULTI
+!P.MULTI(0) = 1
+
+plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
+plotregion_norm_center = [0.5,0.5]
+plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
+plotregion_device_center = convert_coord(plotregion_norm_center,/NORM,/TO_DEVICE)
+
+
+
+plotregion_device = plotregion_device(0:1,*)
+
+plotregion_device_center = plotregion_device_center(0:1)
+
+
+xsize_device = plotregion_device(0,1)-plotregion_device(0,0)
+ysize_device = plotregion_device(1,1)-plotregion_device(1,0)
+org_plotregion_device = [ plotregion_device(0,0) + xsize_device/2.,$
+                          plotregion_device(1,0) + ysize_device/2. ]
+shift_plotregion_device = org_plotregion_device-plotregion_device_center
+
+shift_plotregion_device(1) = 0.0
+xy_dim = [xsize_device,ysize_device]
+corr_fac = min(xy_dim,min_size_ind)/ FLOAT( max(xy_dim,max_size_ind))
+corr_fac = [corr_fac,corr_fac]
+corr_fac(min_size_ind) = 1.0
+plotregion_device_new = [[plotregion_device(*,0)]-shift_plotregion_device,$
+                         [plotregion_device(*,0)+xy_dim*corr_fac]-shift_plotregion_device]
+
+
+plot,_radiusarray , _winkelarray,/POLAR, $
+ XSTYLE=xstyle, YSTYLE=ystyle, $
+ XRANGE=xrange, YRANGE=yrange, $
+ TITLE=title ,POSITION=plotregion_device_new,/DEVICE,_EXTRA=e
+
 IF set(_SDEV) THEN BEGIN
    x1 = (_radiusarray(*)-_sdev(*))*cos(_winkelarray(*))
    m1 = (_radiusarray(*)-_sdev(*))*sin(_winkelarray(*))
    x2 = (_radiusarray(*)+_sdev(*))*cos(_winkelarray(*))
    m2 = (_radiusarray(*)+_sdev(*))*sin(_winkelarray(*))
    polyfill, [x1,last(x1),REVERSE(x2),x2(0)], [m1,last(m1), REVERSE(m2),m2(0)], COLOR=sdcolor
+   
 ENDIF
+
 oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
 
 Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
@@ -118,10 +198,12 @@ Axis, 0,0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
 
 Arcs, TickArray, LINESTYLE=1
 
-IF (Set(minorangleticks) AND minorangleticks NE 0) THEN BEGIN
-   rayarray = 90.0/(minorangleticks+1)*(1.0+findgen(4*(minorangleticks+1)))
-   Radii, 0.0, max(tickarray), rayarray, LINESTYLE=1, /DATA
+IF (Set(minorangleticks)) THEN BEGIN
+ IF minorangleticks NE 0 THEN BEGIN
+    rayarray = 90.0/(minorangleticks+1)*(1.0+findgen(4*(minorangleticks+1)))
+    Radii, 0.0, max(tickarray), rayarray, LINESTYLE=1, /DATA
+ ENDIF
 ENDIF 
-
+!P.MULTI = PTMP
 
 END 
