@@ -84,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.11  2000/09/28 14:25:03  gabriel
+;           Console command corrected
+;
 ;     Revision 1.10  2000/09/28 14:04:22  saam
 ;     service checkin: doc header violation
 ;
@@ -193,7 +196,7 @@ FOR i=0 ,sa(3)-1 DO BEGIN
    max_sdev = 1.
    steig = (last(delay_ax)-delay_ax(0))/(distance_ax(last(findex))-distance_ax(findex(0)))
    ;;max_moment = umoment(tmpmax(findex),SDEV=MAX_SDEV)
-   IF verbose EQ 1 THEN console,/info,"-------------------------------------------------------------"
+   IF verbose EQ 1 THEN console,/msg,"-------------------------------------------------------------"
 
    WHILE (MAX_SDEV GT CORRSTRENGTH_CRIT) OR (CHISQ GT CHISQ_CRIT) DO BEGIN
       ;;Verteilung der Maxima ohne autocorr
@@ -212,21 +215,21 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       regtmp = linfit(x_indtmp(findex),t_indtmp(findex),CHISQ=CHISQ)  
       CHISQ = CHISQ/FLOAT(N_ELEMENTS(findex))
       steig = (last(delay_ax)-delay_ax(0))/(distance_ax(last(findex))-distance_ax(findex(0)))
-      IF verbose EQ 1 THEN console,/info,"CHISQ:",CHISQ,'  MEDIAN:',max_moment(0),'  MAX_SDEV:',MAX_SDEV ,'  SUPPORTP:',N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
+      IF verbose EQ 1 THEN console,/msg,"CHISQ:",CHISQ,'  MEDIAN:',max_moment(0),'  MAX_SDEV:',MAX_SDEV ,'  SUPPORTP:',N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
       IF (MAX_SDEV GT CORRSTRENGTH_CRIT)  OR  (CHISQ GT CHISQ_CRIT) THEN findex = findex(1:N_ELEMENTS(findex)-2)
       
       IF N_ELEMENTS(findex) LT ((SUPPORTPOINTS_CRIT*N_ELEMENTS(DISTANCE_AX)) > 3) THEN BEGIN
          CHISQ = -1
          MAX_SDEV = 0
           
-         IF verbose EQ 1 THEN console,/info,'--------> TO THE TRUSH'
+         IF verbose EQ 1 THEN console,/msg,'--------> TO THE TRUSH'
       ENDIF
    ENDWHILE
    ;;steigungkriterium
    IF N_ELEMENTS(findex)+1 LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) LT abs(steig) THEN BEGIN
       CHISQ = -1
       MAX_SDEV = 0
-      IF verbose EQ 1 THEN console,/info,'Steigung --------> TO THE TRUSH'
+      IF verbose EQ 1 THEN console,/msg,'Steigung --------> TO THE TRUSH'
    ENDIf
    IF PLOT EQ 1 THEN BEGIN
       oplot,X_indtmp(findex),t_indtmp(findex),PSYM=1
