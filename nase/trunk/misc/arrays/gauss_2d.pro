@@ -172,6 +172,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.23  2000/09/08 22:51:35  kupper
+;        Result contained NaNs, if one of the sigmas was 0. Now this is checked
+;        and a array of zeros is returned instead.
+;
 ;        Revision 1.22  2000/09/08 16:38:02  kupper
 ;        Now ignoring floating underflows.
 ;
@@ -274,9 +278,9 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
    IF (set(XHWB) AND NOT set(YHWB)) OR (set(YHWB) AND NOT set(XHWB)) THEN $
     message,'Both XHWB and YHWB must be set'
    
-   If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
+   If set(HWB) then sigma=hwb/sqrt(alog(4))
  
-   If Keyword_Set(XHWB) then begin
+   If Set(XHWB) then begin
       sigmax = xhwb/sqrt(alog(4))
       sigmay = yhwb/sqrt(alog(4))
    End
@@ -296,6 +300,13 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
    Default, y0_arr, y0 + (ylen-1)/2d
    Default, sigma,xlen/6d
    Default, sigratio, 1d
+
+   ;; if sigma eq 0, computation would produce NaNs. Return all zero instead:
+   if (sigma eq 0.0) then return, dblarr(xlen, ylen)
+   if Set(XHWB) then begin
+      if (sigmax eq 0.0) or (sigmay eq 0.0) then $
+       return, dblarr(xlen, ylen)
+   endif
 
 
    ;; compute WARP ground value. This is the width of the gauss
