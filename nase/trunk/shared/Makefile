@@ -27,11 +27,11 @@ all :
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-shared" ;; \
 	   "SunOS" ) make libs \
-			"CC=gcc" \
-			"CXX=c++" \
+			"CC=/opt2/gcc/2.95.2/bin/gcc" \
+			"CXX=/opt2/gcc/2.95.2/bin/g++" \
 			"C_LD=/usr/ccs/bin/ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
-			"C_LD_FLAGS=-G -64" ;; \
+			"C_LD_FLAGS=-G -B dynamic -L/opt2/gcc/2.95.2/lib -R/opt2/gcc/2.95.2/lib" ;; \
 	   *) echo "This system is not supported" ;; \
        esac
 
