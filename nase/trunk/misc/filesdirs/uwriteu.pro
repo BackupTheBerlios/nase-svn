@@ -14,7 +14,7 @@
 ;  data with no processing of any kind being done to the data. This
 ;  causes several problems when saving strings or more complex data
 ;  like structures, arrays of structures or structures containing
-;  other structures. <C>UWriteU<C> is a wrapper for <C>WriteU</C> that
+;  other structures. <C>UWriteU</C> is a wrapper for <C>WriteU</C> that
 ;  cares for all these problems using a special format to save the
 ;  data. All data that is saved with this routine will have to be
 ;  restored using <A>UReadU</A>.<BR>
@@ -34,7 +34,7 @@
 ;  Structures
 ;
 ; CALLING SEQUENCE:
-;*UWriteU, lun, x
+;*UWriteU, lun, x, _EXTRA=...
 ;
 ; INPUTS:
 ;  lun :: a valid, writable <B>LUN</B> (see <A>UOpenW</A> how to
@@ -42,6 +42,9 @@
 ;         <C>UReadU</C> will manage opening and closing automatically. In
 ;         this case, only one data structure can be saved.
 ;  x   :: the data structure to saved into <*>lun</*>
+;
+; INPUT KEYWORDS:
+;  _EXTRA:: all keywords will be passed to <A>UOpenW</A>
 ;
 ; SIDE EFFECTS:
 ;  modifies the file attached to <*>lun</*>
