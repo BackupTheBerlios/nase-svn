@@ -15,7 +15,8 @@
 ;                                       [, KILL_NOTIFY=KillPro ]
 ;                                       [, DELIVER_EVENTS=Array_of_Widget_IDs ]
 ;                                       [, MULTI=Multi-Array ]
-;                                       [, GET_DRAWID=Array_of_Draw-Widget-IDs] )
+;                                       [, GET_DRAWID=Array_of_Draw-Widget-IDs]
+;                                       [, /PRIVATE_COLORS] )
 ; 
 ; KEYWORD PARAMETERS: XPOS, YPOS              : Position des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
@@ -62,6 +63,15 @@
 ;                                               Wird MULTI gesetzt, so ist das Ergebnis von ScrollIt()
 ;                                               ein ARRAY VON FENSTERNUMMERN.
 ;                                               Nach dem Aufruf aktiv ist das linke obere Fenster.
+;                     PRIVATE_COLORS          : Diese Option ist für den Gebrauch durch die Sheet-Routinen gedacht.
+;                                               Sie ist sinnvoll bei 8-bit-Displays.
+;                                               Wenn gesetzt, verarbeiten die Draw-Widgets Tracking-events, und setzen jedesmal,
+;                                               wenn der Cursor in das Widget kommt, die Farbtabelle auf einen Wert, der im User-
+;                                               value des Draw-Widgets gespeichert ist. Wenn der Cursor das Widget wieder verläßt,
+;                                               wird der vorherige Wert restauriert.
+;                                               Wird diese Option benutzt, sollte man sich mit GET_DRAWID die IDs der Widgets liefern
+;                                               lassen, um Zugriff auf die User-Values der DrawWidgets zu haben. Die Werte der
+;                                               privaten Colormap finden sich in uvalue.MyPalette.[R|G|B]
 ;
 ;
 ; OUTPUTS: Win_Nr: Ein  Window-Index für folgende Graphikbefehle,
@@ -71,6 +81,10 @@
 ; OPTIONAL OUTPUTS: GET_BASE: ID des erstellten Base-Widgets.
 ;                   GET_DRAWID: ID des Draw-Widgets, bzw. ein Array
 ;                    von IDs im Fall von MULTI.
+;                    Dieses Schlüsselwort ist für den Gebrauch mit den 
+;                    Sheets gedacht, die eine private Colormap in
+;                    jedem Widget speichern, sofern die
+;                    /PRIVATE_COLORS-Option gesetzt ist.
 ;
 ; SIDE EFFECTS: Wenn IDL V4.0 oder höher verwendet wird, wird das Widget beim XMANAGER registriert.
 ;               Dann werden nach aufruf von XMANAGER auch Resize-Events richtig verarbeitet.
@@ -100,6 +114,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.19  1999/06/01 13:41:28  kupper
+;       Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
+;       Definesheet, opensheet und closesheet unterstützen nun das abspeichern
+;       privater Colormaps.
+;
 ;       Revision 2.18  1999/06/01 13:20:15  kupper
 ;       *** empty log message ***
 ;
@@ -200,8 +219,10 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                    PIXMAP=pixmap, $
                    RETAIN=retain, COLORS=colors, $
                    GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify, $
-                   DELIVER_EVENTS=deliver_events, MULTI=multi, GET_DRAWID=get_drawid
+                   DELIVER_EVENTS=deliver_events, MULTI=multi, GET_DRAWID=get_drawid, $
+                   PRIVATE_COLORS=private_colors
 
+   Default, private_colors, 0
    Default,  xsize, 300
    Default,  ysize, 300
    Default,  xpos,  200
@@ -276,7 +297,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                                        X_SCROLL_SIZE=xsize, Y_SCROLL_SIZE=ysize, $
                                        FRAME=2, $
                                        RETAIN=retain, COLORS=colors, KILL_NOTIFY=kill_notify, $
-                                       /TRACKING_EVENTS)
+                                       TRACKING_EVENTS=private_colors)
             count = count+1
          EndIf
       Endfor

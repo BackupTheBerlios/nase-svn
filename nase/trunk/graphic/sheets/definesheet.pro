@@ -13,7 +13,9 @@
 ; CATEGORY:           GRAPHIC
 ;
 ; CALLING SEQUENCE:   Sheet = DefineSheet( [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
-;                                          [,/INCREMENTAL] [,/VERBOSE] (,OPTIONS)*
+;                                          [,/INCREMENTAL] [,/VERBOSE]
+;                                          [,/PRIVATE_COLORS]
+;                                          (,OPTIONS)*
 ;
 ; KEYWORD PARAMETERS: WINDOW     : Das Sheet wird auf dem Bildschirm dargestellt
 ;                     PS         : Das Sheet wird als PS in ein File gespeichert.
@@ -28,6 +30,11 @@
 ;                                  wird angelegt. Dies macht die Option INCREMENTAL; der Filename
 ;                                  wird dabei um einen laufenden Index erweitert.
 ;                     VERBOSE    : DefineSheet wird gespraechig...
+;                  PRIVATE_COLORS: Nur sinnvoll bei Window und auf 8-bit-Displays.
+;                                  Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
+;                                  jedes Sheetchen, erhält eine private Colormap, die stets gesetzt
+;                                  wird, wenn der Mauszeiger in das Widget weist. Das speichern der
+;                                  privaten Colormap wird von closesheet erledigt.
 ;                     OPTIONS    : Alle Optionen die das jeweilige Device versteht sind erlaubt.
 ;                                  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
 ;                                              [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
@@ -56,6 +63,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  1999/06/01 13:41:29  kupper
+;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
+;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
+;     privater Colormaps.
+;
 ;     Revision 2.12  1999/02/12 15:22:52  saam
 ;           sheets are mutated to handles
 ;
@@ -99,12 +111,13 @@
 ;
 ;-
 FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
-                      ,VERBOSE=verbose, MULTI=multi, _EXTRA=e
+                      ,VERBOSE=verbose, MULTI=multi, PRIVATE_COLORS=private_colors, _EXTRA=e
 
    COMMON Random_Seed, seed
    COMMON ___SHEET_KILLS, sk
 
    Default, multi, 0
+   Default, private_colors, 0
 
    IF NOT SET(sk) THEN BEGIN
       sk = BytArr(128)
@@ -120,6 +133,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       sheet = { type  : 'X'   ,$
                 winid : -2l    ,$
                 widid : -2l    ,$
+                drawid: 0l     ,$  ;The id of the draw widget for saving of palette!
                 p     : !P    ,$
                 x     : !X    ,$
                 y     : !Y    ,$
@@ -154,8 +168,9 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 y        : !Y           ,$
                 z        : !Z           ,$
                 multi    : multi        ,$
-                extra    : e            ,$                
-                open     : 0            }
+                extra    : e            ,$
+                open     : 0            ,$
+                private_colors : private_colors }
       Set_Plot, 'X'
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN

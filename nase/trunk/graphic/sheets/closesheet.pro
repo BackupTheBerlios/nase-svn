@@ -2,7 +2,13 @@
 ; NAME:              CloseSheet
 ;
 ; PURPOSE:           Schliesst ein mit OpenSheet geoeffnetes Sheet. Das bedeutet,
-;                    dass das PS-File geschlossen wird.
+;                    dass das PS-File geschlossen wird. Außerdem
+;                    werden alle aktiven Graphik-Settings in der
+;                    Sheet-Struktur gespeichert. Sofern bei
+;                    definesheet auch /PRIVATE_COLORS angegeben wurde, 
+;                    wird die aktuelle Farbtabelle ebenfalls
+;                    gespeichert (und zwar im User-Value des
+;                    Draw-Widgets, s. <A HREF="../#SCROLLIT">ScrollIt()</A>).
 ;
 ; CATEGORY:          GRAPHIC
 ;
@@ -27,6 +33,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1999/06/01 13:41:29  kupper
+;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
+;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
+;     privater Colormaps.
+;
 ;     Revision 2.6  1999/02/12 15:22:52  saam
 ;           sheets are mutated to handles
 ;
@@ -68,6 +79,13 @@ PRO CloseSheet, __sheet, multi_nr
       new = !Z
       !Z =  sheet.z
       sheet.z = new
+      ;get current palette and Save it in Draw-Widget's UVAL:
+      WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
+      UTVLCT, /GET, Red, Green, Blue
+      draw_uval.MyPalette.R = Red
+      draw_uval.MyPalette.G = Green
+      draw_uval.MyPalette.B = Blue
+      WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
    END
 
    IF sheet.type EQ 'ps' THEN BEGIN

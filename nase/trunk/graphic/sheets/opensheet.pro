@@ -29,6 +29,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  1999/06/01 13:41:29  kupper
+;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
+;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
+;     privater Colormaps.
+;
 ;     Revision 2.14  1999/02/12 15:22:52  saam
 ;           sheets are mutated to handles
 ;
@@ -117,22 +122,24 @@ PRO OpenSheet, __sheet, multi_nr
          tid = 23               ;muss fuer IDL 3.6 vor dem GET_BASE-Aufruf definiert werden, Wert ist egal.
          If not set(multi_nr) then begin
             IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-               sheet.winid = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled')
+               sheet.winid = ScrollIt(GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled')
             END ELSE BEGIN
-               sheet.winid = ScrollIt(Get_BASE=tid, KILL_NOTIFY='_sheetkilled', _EXTRA=sheet.extra)
+               sheet.winid = ScrollIt(Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled', _EXTRA=sheet.extra)
             END
             sheet.widid = tid
+            sheet.DrawID = did
             sk(sheet.winid) = 0
          Endif else begin       ;multi
             IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-               winids = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi)
+               winids = ScrollIt(GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi)
             END ELSE BEGIN
-               winids = ScrollIt(Get_BASE=tid, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi, _EXTRA=sheet.extra)
+               winids = ScrollIt(Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi, _EXTRA=sheet.extra)
             END
             for i=1, sheet.multi(0) do begin
                _sheet(i-1).widid = tid
                _sheet(i-1).winid = winids(i-1)
                sk(winids(i-1)) = 0
+               _sheet(i-1).drawid = did(i-1)
             Endfor
             sheet = _sheet(multi_nr)
          Endelse                ;multi
@@ -194,7 +201,6 @@ PRO OpenSheet, __sheet, multi_nr
    END ELSE Message, 'no initialized sheet???'
 
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
-
 
    Handle_Value, __sheet, _sheet, /NO_COPY, /SET
 
