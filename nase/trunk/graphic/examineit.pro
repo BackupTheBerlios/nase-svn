@@ -86,6 +86,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  1998/04/07 15:20:08  kupper
+;              Kleiner Darstellungsbug.
+;
 ;       Revision 2.5  1998/04/06 17:12:27  kupper
 ;              NASE, XPOS,YPOS hinzugefügt.
 ;               Sorry für den NASE-Verarbeitungwust...
@@ -247,15 +250,8 @@ Pro ExamineIt_Event, Event
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
              yrange=[rowplotmin, rowplotmax]
           endelse
-;         If keyword_set(info.nase) then begin
-;            plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
-;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-;             yrange=[rowplotmin, rowplotmax], MAX_VALUE=999998
-;            endif else begin
-;             plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
-;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-;             yrange=[rowplotmin, rowplotmax]
-;          endelse
+         rowplotmin = !Y.CRANGE(0)
+         rowplotmax = !Y.CRANGE(1)
          rowrange = rowplotmax-rowplotmin
          plots, [1+x_arr,1+x_arr], [rowplotmin-rowrange, rowplotmax+rowrange] ;ein (aber nicht zu langer!) Strich
 
@@ -266,11 +262,8 @@ Pro ExamineIt_Event, Event
                       colpos(0), $
                       info.win_height-colpos(1), $
                       colpos(2)]
-;         t3d, /reset, translate=[-0.5, -0.5, -0.5], rotate=[0, 0, -90]
-;         t3d, translate=[0.5, 0.5, 0.5]
-;         t3d, translate=[colpos, rowpos, 0]
          PrepareNASEPlot, info.width, info.height, /OFFSET, NONASE=1-info.nase, /X_ONLY
-         !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
+         If not info.nase then !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
          If keyword_set(info.nase) then begin
             plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
@@ -280,12 +273,14 @@ Pro ExamineIt_Event, Event
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
              yrange=[colplotmin, colplotmax]
          endelse
+         colplotmin = !Y.CRANGE(0)
+         colplotmax = !Y.CRANGE(1)
          colrange = colplotmax-colplotmin
          plots, [info.Height-y_arr, info.Height-y_arr], [colplotmin-colrange, colplotmax+colrange]
+         PrepareNASEPlot, RESTORE_OLD=oldplot
          tv = tvrd()
          wset, info.col_win           ;copy and rotate
          tv, rotate(tv, 3)
-         PrepareNASEPlot, RESTORE_OLD=oldplot
          wset, Actwin
                                 ;end
                                 ;       endcase
