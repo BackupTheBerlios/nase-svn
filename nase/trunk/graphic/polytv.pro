@@ -79,7 +79,7 @@ PRO PolyTV, image $
             , DEVICE=device $
             , ORDER=order
 
-   Debugging, MESSAGES=0
+   ;Debugging, MESSAGES=0
 
    Default, device, 0
    Default, order, 0
@@ -105,9 +105,9 @@ PRO PolyTV, image $
    nyp = (Size(image))(2)
 
    ;; Info messages
-   DMsg, 'Number of x pixels: '+String(nxp)
-   DMsg, 'Number of y pixels: '+String(nyp)
-   DMsg, 'Size of picture: '+String(si)
+   ;DMsg, 'Number of x pixels: '+String(nxp)
+   ;DMsg, 'Number of y pixels: '+String(nyp)
+   ;DMsg, 'Size of picture: '+String(si)
 
    ;; Size of a single pixel (eg a rectangle)
    xpsize = si(0)/nxp
