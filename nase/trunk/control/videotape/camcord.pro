@@ -1,5 +1,5 @@
 ;+
-; NAME: CamCord()
+; NAME: CamCord() TEST!
 ;
 ; PURPOSE: Aufnehmen eines "Array-Videos"
 ;
