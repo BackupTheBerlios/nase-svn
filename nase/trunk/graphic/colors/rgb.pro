@@ -40,7 +40,11 @@
 ;                          anderen Displays wird diese Option ignoriert
 ;
 ;                 
-; OUTPUTS: Auf einem Echtfarb-Display  : Einfach die Nummer der Farbe (0..16777216)
+; OUTPUTS: Auf einem Echtfarb-Display  : Seit der standardmäßigen Verwendung von DECOMPOSED=0
+;                                        wird hier stets der Farbindex !TOPCOLOR, also
+;                                        der höchste der Farbindices, die NASE-Routinen für
+;                                        eigene Zwecke verändern dürfen, mit der entsprechenden 
+;                                        Farbe belegt und zurückgegeben.
 ;          Auf einem ColorTable-Display: Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
 ;                                        der Farbindex einer moeglichst aehnlichen Farbe bei
 ;                                        Keyword NOALLOC
@@ -48,22 +52,7 @@
 ; COMMON BLOCKS: common_RGB, My_freier_Farbindex
 ;                (Wird bisher nur von dieser Funktion verwendet)
 ;
-; SIDE EFFECTS: Die Farbtabelle wird (evtl.) verändert.
-;
-;               Folgendes betrifft nur die IDL version 5.0:
-;               Für die IDL Version 5.0 und True-Color-Displays
-;               ist ein Workaround für einen Bug im
-;               Color-Management eingebaut. IDL 5.0 schickt den
-;               Farbindex bei nromalen Plot-Befehlen
-;               fälschlicherweise durch den Translation
-;               Table. Dies tat IDL 4 nicht, und tut auch IDL
-;               5.2 nicht mehr. Der Bug wird umgangen, indem die 
-;               lineare Farbtabelle (Nr. 0) geladen wird.
-;               Man beachte, daß das laden von Farbtabellen auf
-;               True-Color-Displays, insgesondere bei
-;               Verbindungen über das Netzwerk, sehr langsam
-;               sein kann!
-;
+; SIDE EFFECTS: Die Farbtabelle wird verändert.
 ;
 ; RESTRICTIONS: Auf einem ColorTable-Display liefert diese Funktion i.d.R. spätestens
 ;                nach dem 256. Aufruf den Fehler "!Farbpalette voll!".
@@ -75,7 +64,8 @@
 ;                        etabliert sein. D.h. es muß vorher mindestens
 ;                        einmal ein Fenster geöffnet worden sein!
 ;
-; PROCEDURE: Echtfarb-Display  : Einfaches Kombinieren der drei 8-bit-Werte zu einem 24-bit-Wert.
+; PROCEDURE: Echtfarb-Display  : Belegen des Farbindex !TOPCOLOR und Rückgabe desselben.
+;
 ;            Colortable-Display: 1. bestimmen des nächsten freien Farbindex I:
 ;                                     
 ;                                  Ist INDEX=Farbindex gesetzt?
@@ -129,6 +119,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.19  2000/01/17 14:14:14  kupper
+;        Changed to reflect new DECOMPOSED=0 standard.
+;        Always returnes !TOPCOLOR on True-Color-Displays.
+;
 ;        Revision 1.18  1999/12/02 15:24:25  kupper
 ;        Removed the Workaround for IDL 5.
 ;        for it corrupted the work of PlotTvScl, as it always
@@ -208,9 +202,9 @@ Common common_RGB, My_freier_Farbindex
       IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
          myCM = bytarr(!D.Table_Size,3) 
          TvLCT, myCM, /GET
-	 New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
-	 New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
-	 differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
+         New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
+         New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
+         differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
          lowestDiff = MIN(differences, bestMatch)
          RETURN, bestMatch
       END
@@ -226,7 +220,7 @@ Common common_RGB, My_freier_Farbindex
        if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
 
        My_Color_Map (SetIndex,*) = [R,G,B]  
-       TvLCT, My_Color_Map  
+       TvLCT, Temporary(My_Color_Map)
        
        if not set(index) then begin
           My_freier_Farbindex = (My_freier_Farbindex+1) mod !D.Table_Size  
@@ -252,7 +246,12 @@ Common common_RGB, My_freier_Farbindex
 ;       loadct, 0             ;load linear ramp into translation table
 ;       message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
 ;       endif
-       Return, RGB_berechnen(R,G,B)
+
+;Changed to reflect new usage of DECOMPOSED=0, R Kupper Jan 17 2000
+;       Return, RGB_berechnen(R,G,B)
+       SetColorIndex, !TOPCOLOR, R, G, B
+       Return, !TOPCOLOR
+
     endelse
 END      
 
