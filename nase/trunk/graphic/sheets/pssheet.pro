@@ -23,8 +23,8 @@
 ;*                  [,XOMARGIN=...][,YOMARGIN=...]
 ;*                  [,XSIZE=...][,YSIZE=...]
 ;*                  [,CHARSIZE=...][,FONTTYPE=...]
-;*                  [,PRODUCER=...] 
-;*                  [,/VERBOSE] )
+;*                  [,PRODUCER=...]
+;*                  [,/PDF][,/VERBOSE] )
 ;
 ; INPUT KEYWORDS:
 ;  filename:: String that contains the name of the output file. Ending
@@ -57,6 +57,9 @@
 ;            is <*>'/CALLER'</*> which prints the name of the routine that
 ;            called the subsequent <A>CloseSheet</A> together with
 ;            systime. Default: <*>/CALLER</*>.
+; /PDF:: Convert the resulting EPS into PDF format after closing. This
+;        switch is passed to the underlying <A>DefineSheet()</A>
+;        function, see documentation of this routine.
 ; /VERBOSE:: Print information into the console.
 ; 
 ; OUTPUTS:
@@ -87,7 +90,7 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
                   , XOMARGIN=xomargin, YOMARGIN=yomargin $
                   , XSIZE=xsize, YSIZE=ysize $
                   , CHARSIZE=charsize, FONTTYPE=fonttype $
-                  , PRODUCER=producer $ 
+                  , PRODUCER=producer, PDF=PDF $ 
                   , VERBOSE=verbose
 
    Default, filename, 'printsheet'
@@ -131,7 +134,7 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
    IF Keyword_Set(VERBOSE) THEN $
     Console, /MSG, 'Sheetsize: '+Str(xsize)+', '+Str(ysize)
 
-   __sheet = DefineSheet(/PS, FILE=filename, /ENCAPS $
+   __sheet = DefineSheet(/PS, FILE=filename, /ENCAPS, PDF=pdf $
                         , XSIZE=xsize, YSIZE=ysize, PRODUCER=producer $
                         , VERBOSE=verbose)
 
