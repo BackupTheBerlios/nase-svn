@@ -76,6 +76,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.16  1998/01/29 15:55:18  saam
+;     *** empty log message ***
+;
 ;     Revision 2.15  1997/12/31 11:49:58  thiel
 ;            Kombination von XNorm/YNorm-Parametern und
 ;            /FULLSHEET-Schluesselwort von Bugs befreit.
@@ -129,6 +132,7 @@
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
+               XRANGE=xrange, YRANGE=yrange, $
                GET_Position=Get_Position, $
                GET_COLOR=Get_Color, $
                GET_XTICKS=Get_XTicks, $
@@ -137,142 +141,158 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                _EXTRA=_extra
 
 
-;-----Sichern der urspruenglichen Device-Parameter
-oldRegion   = !P.Region
-oldXTicklen = !X.TickLen 
-oldYTicklen = !Y.TickLen 
-oldXMinor   = !X.Minor
-oldYMinor   = !Y.Minor
+   IF !D.Name EQ 'NULL' THEN RETURN
 
 
-;-----Optimale Farbe fuer die Achsen ermitteln:
-bg = GetBGColor()
-; if device is PS and REVERTPS is on 
-save_rpsc = !REVERTPSCOLORS
-!REVERTPSCOLORS = 0
-sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-!REVERTPSCOLORS = save_rpsc
+   ;-----Sichern der urspruenglichen Device-Parameter
+   oldRegion   = !P.Region
+   oldXTicklen = !X.TickLen 
+   oldYTicklen = !Y.TickLen 
+   oldXMinor   = !X.Minor
+   oldYMinor   = !Y.Minor
+   
 
-Get_Color = sc
+   ;-----Optimale Farbe fuer die Achsen ermitteln:
+   bg = GetBGColor()
+   ; if device is PS and REVERTPS is on 
+   save_rpsc = !REVERTPSCOLORS
+   !REVERTPSCOLORS = 0
+   sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
+   !REVERTPSCOLORS = save_rpsc
+   
+   Get_Color = sc
+   
+   Default, Charsize, 1.0
+   Default, NOSCALE, 0
+   Default, ORDER, 0
+   Default, LEGEND, 0
+   
+   W = _W
+   IF (Keyword_Set(NASE)) THEN W = Transpose(W)
+   
+   
+   ArrayHeight = (size(w))(2)
+   ArrayWidth  = (size(w))(1)
+   
+   VisualWidth = !D.X_VSIZE
+   VisualHeight = !D.Y_VSIZE
+   
 
-Default, Charsize, 1.0
-Default, NOSCALE, 0
-Default, ORDER, 0
-Default, LEGEND, 0
+   Default, XRANGE, [0, ArrayWidth-1]
+   Default, YRANGE, [0, ArrayHeight-1]
 
-W = _W
-IF (Keyword_Set(NASE)) THEN W = Transpose(W)
-
-
-ArrayHeight = (size(w))(2)
-ArrayWidth  = (size(w))(1)
-
-VisualWidth = !D.X_VSIZE
-VisualHeight = !D.Y_VSIZE
-
-
-;-----Behandlung der NASE und ORDER-Keywords:
-XBeschriftung = [-1, ArrayWidth]
-IF keyword_set(ORDER) THEN BEGIN
-   UpSideDown = 1
-   YBeschriftung = [ArrayHeight,-1] 
+   IF N_Elements(XRANGE) NE 2 THEN Message, 'wrong XRANGE argument'
+   IF N_Elements(YRANGE) NE 2 THEN Message, 'wrong YRANGE argument'
+   
+   XRANGE(0) = XRANGE(0)-1
+   XRANGE(1) = XRANGE(1)+1
+   YRANGE(0) = YRANGE(0)-1
+   YRANGE(1) = YRANGE(1)+1
+   
+   ;-----Behandlung der NASE und ORDER-Keywords:
+   XBeschriftung = XRANGE
+   IF keyword_set(ORDER) THEN BEGIN
+      UpSideDown = 1
+      YBeschriftung = REVERSE(YRANGE)
    ENDIF ELSE BEGIN
       UpSideDown = 0
-      YBeschriftung = [-1, ArrayHeight]
-      ENDELSE
-IF (Keyword_Set(NASE)) AND (Keyword_Set(ORDER)) THEN BEGIN
+      YBeschriftung = YRANGE
+   ENDELSE
+   IF (Keyword_Set(NASE)) AND (Keyword_Set(ORDER)) THEN BEGIN
       UpsideDown = 0 
-      YBeschriftung = [-1,Arrayheight]
-ENDIF
-IF (Keyword_Set(NASE)) AND (NOT(Keyword_Set(ORDER)))THEN BEGIN
-   YBeschriftung = [Arrayheight, -1]
-   UpSideDown = 1 
-ENDIF 
+      YBeschriftung = YRANGE
+   ENDIF
+   IF (Keyword_Set(NASE)) AND (NOT(Keyword_Set(ORDER)))THEN BEGIN
+      YBeschriftung = REVERSE(YRANGE)
+      UpSideDown = 1 
+   ENDIF 
+   
 
+   ;-----Laenge und Anzahl der Ticks:
+   !Y.TickLen = Max([1.0/(ArrayWidth+1)/2.0,0.01])
+   !X.TickLen = Max([1.0/(ArrayHeight+1)/2.0,0.01])
+   
+   IF ArrayHeight GE 15 THEN !Y.Minor = 0 ELSE $
+    IF ArrayHeight GE 7 THEN !Y.Minor = 2 ELSE !Y.Minor=-1
+   
+   IF ArrayWidth GE 15 THEN !X.Minor = 0 ELSE $
+    IF ArrayWidth GE 7 THEN !X.Minor = 2 ELSE !X.Minor=-1
+   
 
-;-----Laenge und Anzahl der Ticks:
-!Y.TickLen = Max([1.0/(ArrayWidth+1)/2.0,0.01])
-!X.TickLen = Max([1.0/(ArrayHeight+1)/2.0,0.01])
+   ;-----Raender und Koordinaten des Ursprungs:
+   IF Keyword_Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
+   
+   IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
+   ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
+   
+   UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
+   
+   OriginNormal = Convert_Coord(OriginDevice, /Device, /To_Normal)
+   UpRightNormal = Convert_Coord(UpRightDevice, /Device, /To_Normal)
+   
+   RandNormal = OriginNormal + UpRightNormal
+   
+   PlotPositionDevice = FltArr(4)
+   PlotPositionDevice(0) = OriginDevice(0)
+   PlotPositionDevice(1) = OriginDevice(1)
+   
+   PixelSizeNormal = [(1.0-RandNormal(0))/float(ArrayWidth+1),(1.0-RandNormal(1))/float(ArrayHeight+1)]
+   PixelSizeDevice = convert_coord(PixelSizeNormal, /normal, /to_device)
+   
 
-IF ArrayHeight GE 15 THEN !Y.Minor = 0 ELSE $
- IF ArrayHeight GE 7 THEN !Y.Minor = 2 ELSE !Y.Minor=-1
-
-IF ArrayWidth GE 15 THEN !X.Minor = 0 ELSE $
- IF ArrayWidth GE 7 THEN !X.Minor = 2 ELSE !X.Minor=-1
-
-
-;-----Raender und Koordinaten des Ursprungs:
-IF Keyword_Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
-
-IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
- ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
-
-UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
-
-OriginNormal = Convert_Coord(OriginDevice, /Device, /To_Normal)
-UpRightNormal = Convert_Coord(UpRightDevice, /Device, /To_Normal)
-
-RandNormal = OriginNormal + UpRightNormal
-
-PlotPositionDevice = FltArr(4)
-PlotPositionDevice(0) = OriginDevice(0)
-PlotPositionDevice(1) = OriginDevice(1)
-
-PixelSizeNormal = [(1.0-RandNormal(0))/float(ArrayWidth+1),(1.0-RandNormal(1))/float(ArrayHeight+1)]
-PixelSizeDevice = convert_coord(PixelSizeNormal, /normal, /to_device)
-
-
-;-----Plotten des Koodinatensystems:
-IF NOT Set(FullSheet) THEN BEGIN 
- IF PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)+UpRightDevice(0) LT VisualWidth THEN BEGIN
-       PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
-       PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
+   ;-----Plotten des Koodinatensystems:
+   IF XRANGE(0) LT 0 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
+   IF YRANGE(0) LT 0 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
+   IF NOT Set(FullSheet) THEN BEGIN 
+      IF PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)+UpRightDevice(0) LT VisualWidth THEN BEGIN
+         PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
+         PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
+      ENDIF ELSE BEGIN
+         PlotPositionDevice(3) = PixelSizeDevice(0)*(ArrayHeight+1)+OriginDevice(1)
+         PlotPositionDevice(2) = VisualWidth - UpRightDevice(0)
+      ENDELSE 
+      Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
+       xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
+       yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
+       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
    ENDIF ELSE BEGIN
-       PlotPositionDevice(3) = PixelSizeDevice(0)*(ArrayHeight+1)+OriginDevice(1)
-       PlotPositionDevice(2) = VisualWidth - UpRightDevice(0)
-     ENDELSE 
-     Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
-      xrange=XBeschriftung, /xstyle, xtickformat='KeineNegativenUndGebrochenenTicks', $
-      yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', $
-      XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
-ENDIF ELSE BEGIN
-   Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),0.95-(LEGEND*0.2*Charsize),0.95], $
-      xrange=XBeschriftung, /xstyle, xtickformat='KeineNegativenUndGebrochenenTicks', $
-      yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', $
-      XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
-ENDELSE
+      Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),0.95-(LEGEND*0.2*Charsize),0.95], $
+       xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
+       yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
+       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
+   ENDELSE
+   
+   Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
+   
+   TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
+   TotalPlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
+   
+   PlotWidthNormal = TotalPlotWidthNormal - TotalPlotWidthNormal*2*!Y.Ticklen
+   PlotHeightNormal = TotalPlotHeightNormal - TotalPlotHeightNormal*2*!X.Ticklen
+   
+   PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
 
-Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
+   ;-----Plotten der UTVScl-Graphik:
+   UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
+   
+   Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
-TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
-TotalPlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
-
-PlotWidthNormal = TotalPlotWidthNormal - TotalPlotWidthNormal*2*!Y.Ticklen
-PlotHeightNormal = TotalPlotHeightNormal - TotalPlotHeightNormal*2*!X.Ticklen
-
-PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
-
-;-----Plotten der UTVScl-Graphik:
-UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
-
-Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
-
-;-----Legende, falls erwuenscht:
-IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
- H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
- V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
- Max=Max(W), Min=Min(W), $
- CHARSIZE=Charsize, $
- NOSCALE=NoScale, $
- /Vertical, /Center 
+   ;-----Legende, falls erwuenscht:
+   IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+    H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+    V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+    Max=Max(W), Min=Min(W), $
+    CHARSIZE=Charsize, $
+    NOSCALE=NoScale, $
+    /Vertical, /Center 
 
 
-;-----Restauration der urspruenglichen Device-Parameter
-!P.Region  = oldRegion 
-!X.TickLen = oldXTicklen 
-!Y.TickLen = oldYTicklen 
-!X.Minor   = oldXMinor  
-!Y.Minor   = oldYMinor   
+   ;-----Restauration der urspruenglichen Device-Parameter
+   !P.Region  = oldRegion 
+   !X.TickLen = oldXTicklen 
+   !Y.TickLen = oldYTicklen 
+   !X.Minor   = oldXMinor  
+   !Y.Minor   = oldYMinor   
 
 
 ;-----ENDE:
