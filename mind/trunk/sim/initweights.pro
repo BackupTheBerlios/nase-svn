@@ -15,6 +15,9 @@
 ; MODIFACTION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/08/31 09:45:53  saam
+;             fixed broken RandomU support for non-delayed DW structures
+;
 ;       Revision 1.5  2000/08/11 14:07:27  thiel
 ;           Now supports RandomU initialization of weights and delays.
 ;
@@ -97,9 +100,9 @@ FUNCTION InitWeights, DWW
          END ELSE IF Contains(DWW.DINIT.TYPE, 'DELAY') THEN BEGIN
             OPT = Create_Struct(OPT, 'DELAY', DWW.DINIT.C)
          END                    ;ELSE Message, 'unknown value for delays'
+         IF ExtraSet(DWW.DINIT, "RandomU") THEN $
+           OPT = Create_Struct(OPT, 'D_RANDOM', DWW.DINIT.randomu)
       END
-      IF ExtraSet(DWW.DINIT, "RandomU") THEN $
-       OPT = Create_Struct(OPT, 'D_RANDOM', DWW.DINIT.randomu)
 
       ; COMPLETE WIDTH LAYER DIMENSIONS
       OPT = Create_Struct(OPT, 'S_WIDTH', SW, 'S_HEIGHT', SH, 'T_WIDTH', TW, 'T_HEIGHT', TH)
