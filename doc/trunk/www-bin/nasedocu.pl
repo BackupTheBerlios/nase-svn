@@ -5,7 +5,7 @@
 
 
 # CGI module
-use CGI qw/:standard :html3 :netscape -no_debug/;
+use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp qw(fatalsToBrowser);
 use File::Find;
 use File::Basename;
@@ -19,14 +19,14 @@ import_names('P');
 chop ($hostname = `uname -a`);
 {
   $hostname =~ /SMP/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-			     $DOCDIR="/vol/neuro/nase"; 
+			     $DOCDIR="/vol/neuro/nase/nasedocu"; 
 			     $CGIROOT="/vol/neuro/www";
 			     last;};
   $DOCDIR="/mhome/saam/sim"; 
   $CGIROOT="/usr/lib"; 
 }
 
-$INDEX="/tmp/nase-routineindex";
+$INDEX="$DOCDIR/index.routines";
 
 
 
@@ -93,7 +93,7 @@ sub createRoutineIdx {
 
 
 sub updatedoc {
-  local @projects;
+  my (@projects,@stat);
 
   print h1("updating documentation...");
   print "<PRE>\n";
@@ -101,22 +101,24 @@ sub updatedoc {
   if ($CVSROOT){ 
     print "CVSROOT is set to    ... $CVSROOT\n";
 
-    find(\&projectDirs, $CVSROOT);
-    sub projectDirs {
-      if (-d && ! /(CVS)|(RCS)/){
-	push(@projects, $File::Find::name);
-      }
-    }
+    opendir(DIR, $CVSROOT) || print "can't opendir $CVSROOT: $!\n";
+    @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i } readdir(DIR);
+    closedir DIR;      
     print "looking for projects ... ", join(" ",@projects), "\n";
+    print "DOCDIR is set to     ... $DOCDIR\n";
+    
+    `rm -Rf $DOCDIR/*`;
+    foreach (@projects){
+      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_`;
+      print "checking out $_ ... done\n";
+    }
+        
   } else {print "CVSROOT: not set   ... ignoring checkout\n"; };
 
 
-  print h2("generating routine index...");
+  print "generating routine index...";
   createRoutineIdx();
-  print h2("updating hyperlinks...");
-  print h1("...done <FONT SIZE=-1><A HREF=$myurl>start over</A></FONT>");
-
-
+  print "...done</PRE>";
 }
 
 sub showheader {
@@ -147,6 +149,12 @@ sub showheader {
 
 sub showsource {
 
+my @keywords = qw (AND BEGIN CASE COMMON DO ELSE END ENDCASE ENDELSE ENDFOR
+		   ENDIF ENDREP ENDWHILE EQ FOR FUNCTION GE GOTO GT IF INHERITS
+		   LE LT MOD NE NOT OF ON_IOERROR OR PRO REPEAT THEN UNTIL WHILE XOR
+		   RETURN);
+
+
   my $file = shift(@_);
   $file .= ".pro" unless $file =~ /\.pro$/i;
   
@@ -160,9 +168,20 @@ sub showsource {
     last if ($line =~ /^[PRO|FUNCTION]/i);
   }
   print $line;
-  while (<IN>){print;}
-  print "</PRE>";
-  close(IN) || die "can't close $file";
+  {
+    local $/;
+    $_ = <IN>;
+#    s/\"([^\"]*)\"/\"<FONT COLOR=green>$1<\/FONT>\"/gi;
+#    s/\'([^\']*)\'/\'<FONT COLOR=green>$1<\/FONT>\'/gi;
+    foreach my $keyword (@keywords){
+      s/(\s)$keyword(\s)/$1<FONT COLOR="red">$keyword<\/FONT>$2/gi;
+    }
+#    s/;(.*)\n/<FONT COLOR="blue">;$1<\/FONT>\n/gi;
+    print;
+  }
+
+    print "</PRE>";
+    close(IN) || die "can't close $file";
   
 }
 
@@ -179,7 +198,7 @@ sub ddot {
 sub showdirs {
   my ($reldir, $fulldir, @ndir);
   ($reldir) = @_;
-  $fulldir = "$DOCDIR$reldir";
+  $fulldir = "$DOCDIR/$reldir";
 
   # display non-dot dirs 
   opendir(DIR, $fulldir) || print "can't opendir $fulldir: $!\n";
@@ -187,17 +206,15 @@ sub showdirs {
   closedir DIR;      
 
 
-#  print img({src=>"/icons/back.gif",alt=>"[DIR]"});
-
+  
   if ($reldir ne '/'){ 
-    print h2($reldir);
-#    print img({src=>"/icons/back.gif",alt=>"[DIR]",href=>"http://"});
-    print a({href=>$myurl.ddot($reldir)."?mode=list"}, img({src=>"/icons/back.gif",alt=>"[DIR]"})."  parent dir"), br;
+    $reldir =~ s/^\/+//g;
+    print font({size=>"+1"},$reldir),br;
+    print a({href=>$myurl.ddot($reldir)."?mode=list"}, img({src=>"/icons/back.gif",alt=>"[DIR]",border=>"0"})."  parent dir"), br;
   }
   foreach $ndir (sort @ndir) {
     if (($ndir ne "CVS") && ($ndir ne "RCS")){
-#      print img({target=>"list", src=>"/icons/folder.gif",alt=>"[DIR]"});
-      print a({href=>"$fullurl/$ndir?mode=list",target=>"list"}, img({src=>"/icons/folder.gif",alt=>"[DIR]"})."  $ndir"), br;
+      print a({href=>"$fullurl/$ndir?mode=list",target=>"list"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."  $ndir"), br;
     }
   }
 }
@@ -206,7 +223,7 @@ sub showdirs {
 sub showfiles {
   my ($reldir, $fulldir, $fif, @fif, @ndir);
   ($reldir) = @_;
-  $fulldir = "$DOCDIR$reldir";
+  $fulldir = "$DOCDIR/$reldir";
 
   # scan for pro files
   opendir(DIR, $fulldir) || die "can't opendir $fulldir: $!";
@@ -216,16 +233,15 @@ sub showfiles {
   foreach $file (sort @file) {
     $file =~ s/\.pro//i;
     ($base) = split(/\./,$file);
-#    print img({src=>"/icons/text.gif",alt=>"[DIR]"});
-    print a({href=>"$fullurl?file=$file&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]"})."  $base"), br;
+    print a({href=>"$fullurl?file=$file&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]",border=>"0"})."  $base"), br;
   }
 }
 
 
 
 print header;
-print start_html('NASE/MIND Documentation System');
-
+#print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
+print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE></HEAD>";
 
 if (! -r $INDEX){
   createRoutineIdx();
@@ -237,12 +253,16 @@ if ($P::mode){
  TRUNK: {
     /update/i && do { updatedoc();
 		      last TRUNK;};
-    /list/i   && do { showdirs($sub);
+    /list/i   && do { print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
+                      showdirs($sub);
 		      showfiles($sub);
 		      $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
-		      print "<FONT SIZE=-1>last update: ".localtime($lastmod).", <A HREF=$myurl?mode=update>initiate update</A></FONT>";
-		      print hr;
-		      print '<FONT SIZE=-1>$Id$</FONT>';
+		      print font({size=>"-2"}, 
+				 hr,
+				 "last update: ".localtime($lastmod).", ",
+				 a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), br,
+		      font({size=>"-2"}, 
+			   '$Id$ ');
 		      last TRUNK;};
     /text/i   && do { if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); }
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); }
@@ -250,11 +270,11 @@ if ($P::mode){
 		      last TRUNK;};
   }
 } else {
-  print '<frameset cols="25%,75%">';
+  print '<frameset cols="180,*">';
   print frame({src=>"$fullurl?mode=list", name=>"list"});
   print frame({src=>"$fullurl?mode=text", name=>"text"});
   print '</frameset>';
-  print "i cant handle frames!!";
+  print "<BODY>i cant handle frames!!";
 };
 
 
