@@ -16,11 +16,14 @@ import_names('P');
 
 
 # NASE/MIND Settings
-chop ($hostname = `hostname`);
+chop ($hostname = `uname -a`);
 {
-  $hostname =~ /bert/i && do {$DOCDIR="/mhome/saam/sim"; $CGIROOT="/usr/lib"; last;};
-  $hostname =~ /neuro/i && do {$DOCDIR="/vol/neuro/nase"; $CGIROOT="/vol/neuro/www"; last;};
-  die "unconfigured host $hostname";
+  $hostname =~ /SMP/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
+			     $DOCDIR="/vol/neuro/nase"; 
+			     $CGIROOT="/vol/neuro/www";
+			     last;};
+  $DOCDIR="/mhome/saam/sim"; 
+  $CGIROOT="/usr/lib"; 
 }
 
 $INDEX="/tmp/nase-routineindex";
@@ -90,8 +93,24 @@ sub createRoutineIdx {
 
 
 sub updatedoc {
+  local @projects;
+
   print h1("updating documentation...");
-  print h2("checking out sources...");
+  print "<PRE>\n";
+  
+  if ($CVSROOT){ 
+    print "CVSROOT is set to    ... $CVSROOT\n";
+
+    find(\&projectDirs, $CVSROOT);
+    sub projectDirs {
+      if (-d && ! /(CVS)|(RCS)/){
+	push(@projects, $File::Find::name);
+      }
+    }
+    print "looking for projects ... ", join(" ",@projects), "\n";
+  } else {print "CVSROOT: not set   ... ignoring checkout\n"; };
+
+
   print h2("generating routine index...");
   createRoutineIdx();
   print h2("updating hyperlinks...");
