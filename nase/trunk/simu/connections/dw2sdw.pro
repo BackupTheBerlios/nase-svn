@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/02/11 15:46:23  saam
+;           Bug korrigiert
+;
 ;     Revision 2.4  1998/02/11 15:43:11  saam
 ;           Geschwindigkeitsoptimierung durch eine neue Liste
 ;           die source- auf target-Neuronen abbildet
@@ -126,7 +129,6 @@ PRO DW2SDW, _DW
               t2c     : t2c        ,$
               c2t     : c2t        ,$              
               s2t     : s2t        ,$
-              c2t     : c2t        ,$              
               W       : W          ,$
               Learn   : -1l         }
    END
