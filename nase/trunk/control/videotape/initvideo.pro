@@ -118,14 +118,15 @@ Function InitVideo, Frame, TITLE=title, $
    lyear = leer80 & strput, lyear, year
 
 
-
-   openw, infounit, /GET_LUN, infoname
+   Get_Lun, infounit
+   openw, infounit, infoname
    
    writeu, infounit, size(Frame)   ; Das SIZE-Array eines Frames
    writeu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
    ;später wird noch die FrameAnzahl angehängt.
    
-   openw, unit, /GET_LUN, filename
+   Get_Lun, unit
+   openw, unit, filename
 
   
    return, {VideoMode   : 'RECORD', $
