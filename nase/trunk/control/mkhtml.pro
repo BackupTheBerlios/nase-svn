@@ -43,7 +43,7 @@
 PRO MkHTML
 
 Spawn, 'pwd', MainDir
-SubDirs   = ['graphic', 'misc', 'simu', 'stat']
+SubDirs   = ['control','input','graphic','graphic/nonase','misc', 'misc/array', 'misc/structures', 'simu', 'simu/connections', 'simu/layers', 'simu/plasticity', 'stat', 'video+tape']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
