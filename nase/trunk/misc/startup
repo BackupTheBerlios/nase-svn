@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.17  1999/03/16 13:14:54  kupper
+;       NASE-Logo jetzt auch endlich mit IDL 3!
+;
 ;       Revision 1.16  1999/03/14 11:21:16  saam
 ;             corrected idl3/4-incompatible structure reference
 ;
@@ -49,11 +52,9 @@
 ;-
 
 ;; ----------- Show Logo on startup? ----------------------
-tmp = fstat(-1)
-WillShowLogo = (GetEnv("NASELOGO") ne "FALSE") $
-		   AND tmp.interactive $
-			OR (GetEnv("NASELOGO") eq "TRUE" $
-			)
+WillShowLogo = (GetEnv("NASELOGO") ne "FALSE") OR (GetEnv("NASELOGO") eq "TRUE")
+stdout_fstat = fstat(-1)		
+if fix(!version.release) lt 4 then WillShowLogo = WillShowLogo or stdout_fstat.isatty else WillShowLogo = WillShowLogo or stdout_fstat.interactive
 ;; --------------------------------------------------------
 
 
