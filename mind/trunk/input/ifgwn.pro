@@ -10,40 +10,42 @@
 ; CATEGORY:           MIND INPUT 
 ;
 ; CALLING SEQUENCE:   
-;                     ignore_me  = IFgwn( MODE=0, 
-;                                              TEMP_VALS=temp_vals
-;                                              [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
-;                                              [,CORR=corr] [,A=a] )
-;
-;                     newPattern = IFgwn( [MODE=1], PATTERN=pattern )
-;                     ignore_me  = IFgwn( MODE=[2|3] )
+;* ignore_me  = IFgwn( MODE=0, TEMP_VALS=temp_vals
+;*                     [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
+;*                     [,CORR=corr] [,A=a] )
+;*
+;* newPattern = IFgwn( [MODE=1], PATTERN=pattern )
+;* ignore_me  = IFgwn( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: A         : amplitude of noise process (Default:1)
-;                     CORR      : all input receive fraction CORR of a
+; KEYWORD PARAMETERS: A         :: amplitude of noise process (Default:1)
+;                     CORR      :: all input receive fraction <*>CORR</*> of a
 ;                                 correlated GWN process
-;                     DELTA_T   : passing time in ms between two sucessive calls of this filter function
-;                     HEIGHT    : height of the input to be created
-;                     MODE      : determines the performed action of the filter. 
-;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
-;                     PATTERN   : filter input
-;                     TEMP_VALS : internal structure that reflects the filter function/status. This
-;                                 is initialized when MODE=0, read/modified for MODE=1 and freed for
-;                                 MODE=2
-;                     WIDTH     : width of the input to be created
+;                     DELTA_T   :: passing time in ms between two sucessive calls of this filter function
+;                     HEIGHT    :: height of the input to be created
+;                     MODE      :: determines the performed action of the filter. 
+;                                  <*>0</*>: INIT, <*>1</*>: STEP (Default), <*>2</*>: FREE, <*>3</*>: PLOT (filter characteristics (if useful))
+;                     PATTERN   :: filter input
+;                     TEMP_VALS :: internal structure that reflects the filter function/status. This
+;                                 is initialized when <*>MODE=0</*>, read/modified for <*>MODE=1</*> and freed for
+;                                 <*>MODE=2</*>
+;                     WIDTH     :: width of the input to be created
 ;
-; OUTPUTS:            newPattern: the filtered version of PATTERN
-;                     ignore_me : just ignore it
+; OUTPUTS:            newPattern:: the filtered version of <*>PATTERN</*>
+;                     ignore_me :: just ignore it
 ;
-; SIDE EFFECTS:       TEMP_VALS is changed by the function call!
+; SIDE EFFECTS:       <*>TEMP_VALS</*> is changed by the function call!
 ;
-; COMMON BLOCKS:      ATTENTION    : for output to console 
-;                     COMMON_RANDOM: for correct handling of pseudo randoms
+; COMMON BLOCKS:      ATTENTION    :: for output to console 
+;                     COMMON_RANDOM:: for correct handling of pseudo randoms
 ; 
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2004/03/16 10:44:10  zwickel
+;     introduced new header style
+;
 ;     Revision 1.4  2000/09/29 08:10:35  saam
 ;     added the AIM tag
 ;
