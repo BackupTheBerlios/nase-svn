@@ -1,54 +1,75 @@
 ;+
-; NAME:               UPeakPicker
+; NAME:
+;  UPeakPicker 
 ;
-; AIM:                identifying maximas and minimas in noisy data (math. method)
-;      
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            identifying maximas and minimas in noisy data
+; AIM:
+;  Identifying maxima and minima in noisy data (math. method).
 ;
-; CATEGORY:           STAT
+; PURPOSE:
+;  Identifying maxima and minima in noisy data. 
 ;
-; CALLING SEQUENCE:   UPeakPicker, ydata,tdata, ymax,tmax,maxnumber [,ymin, tmin, minnumber] $
-;                                   [, RelativCrit=RelativeCrit] [, DataCrit=DataCrit] $
-;                                   [, DELTA=delta][, MaxIndex=MaxIndex][, MinIndex=MinIndex]
+; CATEGORY:
+;  Math
+;  Statistics
+;  Signals
 ;
-; INPUTS:             ydata: Vector of data values.
-;                     tdata: Vector of corresponding times (,or whatever)
+; CALLING SEQUENCE:
+;* UPeakPicker, ydata, tdata, ymax, tmax, maxnumber 
+;*              [, ymin, tmin, minnumber]
+;*              [, RELATIVCRIT=...] [, DATACRIT=...]
+;*              [, DELTA=...][, MAXINDEX=...][, MININDEX=...]
 ;
-; KEYWORD PARAMETERS:     
+; INPUTS: ydata:: Vector of data values.
+;         tdata:: Vector of corresponding times (,or whatever)
 ;
+; INPUT KEYWORDS:
+;  RELATIVCRIT:: An optional criterion for peak/noise discrimination
+;                given in fraction of maximal data range (Def.: 5%).
+;  DATACRIT:: An optional criterion for peak/noise discrimination
+;             given in absolute data coordinates. 
+;  DELTA:: Width for smoothing the 1. deviation of ydata (default 5).
+;  MAXINDEX:: Vector subscript to select maxima of ydata, tdata.
+;  MININDEX:: Vector subscript to select minima of ydata, tdata.  
 ;
-;                     RelativeCrit:   An optional criterion for peak/noise discrimination
-;                                     given in fraction of maximal data range (Def.: 5%)
-;                     DataCrit:       An optional criterion for peak/noise discrimination
-;                                     given in absolute data coordinates.
-;                     Delta:          width for smoothing the  1. deviation of ydata
-;                                     (default 5)
-;                     MaxIndex:       vector subscript to select maximas of ydata, tdata                                                                            
-;                     MinIndex:       vector subscript to select minimas of ydata, tdata
-;
-; OUTPUTS:            If no significant extremas are found, -1 is returned in 
-;                     'maxnumber', otherwise the number of maximas found. If no information about 
-;                     minimas is required,keywords 'ymin' and 'tmin' needn't be given when 
-;                     calling the upeakpicker function.
-; 
-;                     ymax:          Vector of peaks heights found.
-;                     tmax:          Vector of corresponding peak times.
-;                     maxnumber:     See above.
-;
-;                     The lengths of the resulting vectors are according to the number of
-;                     peaks and valleys found.
+; OUTPUTS:
+;  ymax:: Vector of peaks heights found.
+;  tmax::  Vector of corresponding peak times.
+;  maxnumber:: If no significant extrema are found, -1 is returned in
+;              <C>maxnumber</C>, otherwise the number of maxima found. The
+;              lengths of the resulting vectors are according to the
+;              number of peaks and valleys found. 
 ;
 ; OPTIONAL OUTPUTS:
-;                     ymin:           Like ymax for minimas.
-;                     tmin:           Like tmax for minimas.
-;                     minnumber:      Like maxnumber for minimas.
+;  ymin:: Like <C>ymax</C> for minima.
+;  tmin:: Like <C>tmax</C> for minima.
+;  minnumber:: Like <C>maxnumber</C> for minima. If no information
+;              about minima is required, keywords <C>ymin</C> and <C>tmin</C>
+;              needn't be given when calling the <C>UPeakPicker</C>
+;              function.
 ;
-; AUHTOR:             A.Gabriel
-; -
+; PROCEDURE:
+;  Mathematics.
+;
+; EXAMPLE:
+;* x=RandomN(s,100)
+;* Plot, x
+;* UPeakPicker, x, indgen(100), yp, tp, RELATIVCRIT=0.1
+;* OPlot, tp, yp, COLOR=RGB("red")
+;
+; SEE ALSO:
+;  <A>PeakPicker</A>
+; 
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2001/03/09 16:27:46  thiel
+;        Just fixed the header.
+;
 ;     Revision 1.3  2000/09/28 09:22:03  gabriel
 ;           AIM tag added
 ;
@@ -58,8 +79,9 @@
 ;     Revision 1.1  1998/02/27 11:20:29  gabriel
 ;          ein PeakPicker mit Methoden aus der Analysis
 ;
-;
-;
+
+
+
 PRO UPeakPicker, ydata,tdata, ymax,tmax,maxnumber,ymin,tmin,minnumber,$
              RelativCrit=RelativeCrit,DataCrit=DataCrit,DELTA=delta,MAXINDEX=maxIndex,MININDEX=minIndex
 
