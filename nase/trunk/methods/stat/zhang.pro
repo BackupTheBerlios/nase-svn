@@ -29,7 +29,7 @@
 ;
 ; CALLING SEQUENCE:
 ;* estimate = Zhang( s, r, [,EXTPRIOR=...][,PROBE=...]
-;*                         [,SNBINS=...][,TAU=...][MEMORYSAVE=...]
+;*                         [,SNBINS=...][,TAU=...][/SPASS]
 ;*                         [,/OPTIMAL][,/CENTER][,/VERBOSE]
 ;*                         [,GET_MEAN=...][,GET_PRIOR=...] )
 ;
@@ -70,25 +70,16 @@
 ;        firing rate. Furthermore,
 ;        extra large <*>tau</*> may result in mathematical overflows
 ;        because of the computation of <*>rate^(no. of spikes)</*>.
-; memorysave:: The setting of this keyword influences the setting of
-;              the corresponding keywords of the two internal
-;              <A>InstantRate()</A> routines. See also documentation
-;              of this routine.<BR>
-;              <*>memorysave='none'</*>
-;              computes both training and probing firing rates without
-;              the memorysave option.<BR> 
-;              <*>memorysave='train'</*>
-;              sets the memorysave option for computation of the
-;              training firing rates, but not for computation of
-;              probing rates. This may be useful if the training data
-;              is much larger than the probe data.<BR>
-;              <*>memorysave='probe'</*>
-;              vice versa.<BR> 
-;              <*>memorysave='both'</*>
-;              computes both training and probing firing rates with
-;              the memorysave option, suitable for equally large
-;              sets of training and probe data.<BR>
-;              Default: <*>memorysave='none'</*>.  
+;  /SPASS:: Indicates that the <*>r</*> and <*>probe</*> input is in 
+;           <A NREF=SPASSMACHER>sparse</A> or
+;           <A NREF=SSPASSMACHER>binary</A> sparse format. The setting
+;           of this keyword is passed to the <A>InstantRate()</A>
+;           routine, which works with both 
+;           formats. Note that the sparse array has to be generated
+;           with the <*>/DIMENSIONS</*> option of <A>Spassmacher()</A> and
+;           <A>SSpassmacher()</A> set. Supplying sparse inputs may save some
+;           memory, since the input has not to be kept in a nearly
+;           empty array.
 ;  /OPTIMAL:: As the final estimate, <C>Zhang()</C> may either use the
 ;             maximum (MAP method) or
 ;             the average of the <I>a posteriori</I> distribution (optimal
@@ -223,7 +214,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
                 , PROBE=probe, SNBINS=snbins, TAU=tau $
 ;                , SMEARTUNING=smeartuning $
                 , OPTIMAL=optimal, CENTER=center $
-                , MEMORYSAVE=memorysave $
+                , SPASS=spass $
                 , VERBOSE=verbose $
                 , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
@@ -233,27 +224,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    Default, center, 0
    Default, optimal, 0
    Default, verbose, 0
-   Default, memorysave, 'none'
-
-   CASE memorysave OF 
-      'none': BEGIN
-         memsavetrain = 0
-         memsaveprobe = 0
-      END
-      'train': BEGIN
-         memsavetrain = 1
-         memsaveprobe = 0
-      END
-      'probe': BEGIN
-         memsavetrain = 0
-         memsaveprobe = 1
-      END
-      'both': BEGIN
-         memsavetrain = 1
-         memsaveprobe = 1
-      END
-      ELSE: Console, /FATAL, 'Unknown MEMORYSAVE option.'
-   ENDCASE
+   Default, spass, 1
 
    ssize = Size(s)
    sdur = ssize(1)
@@ -312,15 +283,23 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
 
    IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Computing likelihoods.'
 
-   sr = Size(r)
-   lr = sr[1] ;; length of response
-   
+   IF Keyword_Set(SPASS) THEN BEGIN
+      IF (Size(r))[0] EQ 1 THEN BEGIN
+         ;; SSPASS
+         sr = [r[r[0]+2], r[r[0]+3:*], 1, r[1]]
+      ENDIF ELSE BEGIN
+         ;; SPASS
+         sr = [r[0, r[0, 0]+1], r[0, r[0, 0]+2], r[0, r[0, 0]+3], 4, r[1, 0]]
+      ENDELSE
+   ENDIF ELSE BEGIN
+      sr = Size(r)
+   ENDELSE
+
    IF sr[0] GT 1 THEN $
     nr = sr[2] $ ;; number of responses
    ELSE $
     nr = 1 ;; number of responses
  
-      
    ;; no longer needed, Instantrate defines rate array anyway
    ;; srate = sr
    ;;   srate[srate[0]+1] = 4 ;; make rate array float type
@@ -335,9 +314,9 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
     Console, /WARN, 'Width of window in rate computing is actually ' $
      +Str(realtau)
 
-   rate = InstantRate(r, SSHIFT=1, SSIZE=tau/2, MEMORYSAVE=memsavetrain $
-    , CENTER=center)
-   
+   rate = InstantRate(r, SSHIFT=1, SSIZE=realtau  $
+    , CENTER=center, SPASS=spass)
+ 
    ;; f is DOUBLE to avoid overflows when potentiation is done later
    ;; sf = [sp[0]+1, sp[1:sp[0]], nr, 5, nelemprior*nr]
    ;; f is no longer DOUBLE since log version. Hopefully works...
@@ -402,11 +381,14 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    ;; contained in the variable "ni". To save memory, non-integer rates
    ;; are now overwritten, because they are no longer needed.
    IF Set(probe) THEN BEGIN
-      rate = InstantRate(probe, SSHIFT=1, SSIZE=tau/2 $
-       , MEMORYSAVE=memsaveprobe, CENTER=center)*realtau*0.001
+      rate = InstantRate(probe, SSHIFT=1, SSIZE=realtau $
+       , CENTER=center, SPASS=spass)*realtau*0.001
    ENDIF ELSE $
     rate = Temporary(rate)*realtau*0.001
 
+   ;; use length of probe response instead of length of training
+   ;; response 
+   lr = (Size(rate))[1] 
 
    ;; Avoid empty
    ;; and therefore zero tuning bins that cannot be evaluated when
@@ -425,13 +407,9 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    bias = ALog(prior)-tau*0.001*sum
    lnf = ALog(f)
 
-   ;; use length of probe response instead of length of training
-   ;; response 
-   IF Set(probe) THEN lr = (Size(probe))[1] 
-
    ;; Start estimation
    IF Keyword_Set(VERBOSE) THEN BEGIN
-      Console, /MSG, 'Estimate stimuli.'
+      Console, /MSG, 'Estimating stimuli.'
       SimTimeInit, MAXSTEPS=10, /PRINT, CONSOLE=!CONSOLE
    ENDIF
 
