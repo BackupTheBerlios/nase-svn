@@ -38,10 +38,10 @@
 ;  X- and YTITLE can only be plotted at left and bottom margins.
 ;
 ; PROCEDURE:
-;  + plot empty coordinate system
-;  + error area via PolyFill
-;  + mean via oplot
-;  + plot axes again to overwrite error area
+;  + plot empty coordinate system<BR>
+;  + error area via PolyFill<BR>
+;  + mean via oplot<BR>
+;  + plot axes again to overwrite error area<BR>
 ;  
 ; EXAMPLE:
 ;*  x  = Indgen(30)/10.
