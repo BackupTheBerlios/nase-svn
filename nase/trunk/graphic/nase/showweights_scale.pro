@@ -122,10 +122,10 @@
 ; PROCEDURE: Aus Showweights, Rev. 2.15 ausgelagert.
 ;
 ; EXAMPLE:
-;*  1. UTV, /NORDER, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), ZOOM=10
+;*  1. UTV, /NORDER, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), STRETCH=10
 ;*  2. Window, /FREE, TITLE="Membranpotential"
 ;*     LayerData, MyLayer, POTENTIAL=M
-;*     UTV, /NORDER, ShowWeights_Scale( M, /SETCOL), ZOOM=10
+;*     UTV, /NORDER, ShowWeights_Scale( M, /SETCOL), STRETCH=10
 ;*  3. a = gauss_2d(100,100)
 ;*     WINDOW, 0
 ;*     UTV, ShowWeights_Scale( a, /SETCOL, $
