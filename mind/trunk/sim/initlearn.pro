@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/20 14:34:43  saam
+;           forgot to erase a debugging stop
+;
 ;     Revision 1.3  2000/01/19 17:16:12  saam
 ;           + handles learning of non-delay weight matrices
 ;             for alpha learning (all other cases should be
@@ -184,7 +187,6 @@ PRO InitLearn, _CON, _LS, MaxWin, _EXTRA=e
       CASE lWin OF 
          1: BEGIN; ALPHA
             Print, 'LEARNWIN: ALPHA, ', STR(LS.tau_inc), ' ms, ', STR(LS.tau_dec),' ms' 
-            stop
             IF delay THEN win = InitRecall(_CON(LS.DW), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE) $
              ELSE win = InitRecall(P.LW(curDW.SOURCE), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
