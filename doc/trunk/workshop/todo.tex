@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.12  2001/03/07 16:57:01  thiel
+%          2 new entries, and one fulfilled.
+%
 %       Revision 1.11  2000/11/30 18:14:50  thiel
 %           Fake/ForEach: SKEL and SEP no longer documeneted.
 %
@@ -133,7 +136,7 @@
 \begin{document}
 
 \begin{center}
-{\Huge\textbf{Bugs, ToDos and Feature Reqests}}\\[2cm]
+{\Huge\textbf{Bugs, ToDos and Feature Requests}}\\[2cm]
 Version: \$Id$ $\$ 
 \end{center}
 
@@ -148,7 +151,9 @@ Version: \$Id$ $\$
 \item \texttt{WhoUses} doesn't work and its wrapper calls routine with wrong path.
 \item remove headerdoc.pro and create link on mainpage to doc/header.pro
 \item title for doc/header.pro is distorted
-\item let user parse arbitrary headers before checkin
+\item Parser confuses occasional \texttt{NAME::}--keywords with name
+  of the routine given by the \texttt{NAME:} statement in the header.
+\item The To Do--list displayed on the WWW page is too old.
 \end{itemize}
 
 
@@ -233,6 +238,7 @@ Version: \$Id$ $\$
 \item Help System: show path to file in header display [MS]
 \item Help System: header view also with currently edited [MS]
 \item \texttt{FakeEach}: omit the skel keyword, or delete from documentation [done, AT]
+\item let user parse arbitrary headers before checkin [done, MS]
 \end{itemize}
 
 
