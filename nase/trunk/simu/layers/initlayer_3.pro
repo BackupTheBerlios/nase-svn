@@ -8,29 +8,23 @@
 ;
 ; CALLING SEQUENCE:     Layer = InitLayer_3( WIDTH=width, HEIGHT=height, TYPE=type )
 ;
-; INPUTS:               ---
-;
-; OPTIONAL INPUTS:      ---
-;
 ; KEYWORD PARAMETERS:   WIDTH, HEIGHT : Breite und Hoehe des Layers
 ;                       TYPE          : Struktur, die neuronenspezifische Parameter enthaelt; definiert in InitPara_3.pro
 ;
 ; OUTPUTS:              Layer : Struktur namens Layer3, die alle Informationen enthaelt, s.u.
 ;
-; OPTIONAL OUTPUTS:     ---
-;
-; COMMON BLOCKS:        ---
-;
-; SIDE EFFECTS:         ---
-;
-; RESTRICTIONS:         ---
-;
-; PROCEDURE:            ---
-;
 ; EXAMPLE:              para3 = InitPara_3(tauf=10.0, vs=1.0, taup=30.0)     
 ;                       Layer = InitLayer_3(height=5, width=5, type=para3)
 ;
-; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
+; MODIFICATION HISTORY: 
+;
+;       $Log$
+;       Revision 1.6  1998/11/08 15:53:17  saam
+;             neuron type disabled cause it out of date, use type 1
+;             with a Recall-Structure instead
+;
+;
+;                       initial version, Mirko Saam, 22.7.97
 ;                       alternative Keyword-Parameter zugefügt, Rüdiger Kupper, 24.7.97
 ;                       verbindliche Keyword-Parameter, Mirko Saam, 25.7.97
 ;                       Ergaenzung um Lernpotential-Parameter,Andreas, 29. Juli 97
@@ -41,23 +35,25 @@
 ;-
 FUNCTION InitLayer_3, WIDTH=width, HEIGHT=height, TYPE=type
 
-   IF (NOT Keyword_Set(width))  THEN Message, 'Keyword WIDTH expected'
-   IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
-   IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
+   Message, "NeuronType3 is not needed any more"
 
-   Layer = { info   : 'LAYER', $
-             Type   : '3'                  ,$ 
-             w      : width                ,$
-             h      : height               ,$
-             para   : type                 ,$
-             F      : DblArr(width*height) ,$
-             L      : DblArr(width*height) ,$
-             I      : DblArr(width*height) ,$
-             M      : DblArr(width*height) ,$
-             S      : DblArr(width*height) ,$
-             P      : DblArr(width*height) ,$
-             O      : BytArr(width*height)  }
+;   IF (NOT Keyword_Set(width))  THEN Message, 'Keyword WIDTH expected'
+;   IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
+;   IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   RETURN, Layer
+;   Layer = { info   : 'LAYER', $
+;             Type   : '3'                  ,$ 
+;             w      : width                ,$
+;             h      : height               ,$
+;             para   : type                 ,$
+;             F      : DblArr(width*height) ,$
+;             L      : DblArr(width*height) ,$
+;             I      : DblArr(width*height) ,$
+;             M      : DblArr(width*height) ,$
+;             S      : DblArr(width*height) ,$
+;             P      : DblArr(width*height) ,$
+;             O      : BytArr(width*height)  }
+
+;   RETURN, Layer
 
 END 

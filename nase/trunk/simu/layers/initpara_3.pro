@@ -10,10 +10,6 @@
 ;                                          [, VP=Vp] [,TAUP=taup]
 ;                                          [, SIGMA=sigma] [,SPIKENOISE=spikenoise])
 ;
-; INPUTS:               ---
-;
-; OPTIONAL INPUTS:      ---
-;
 ; KEYWORD PARAMETERS:   tauf  : Feeding-Zeitkonstante
 ;                       taul  : Linking-Zeitkonstante
 ;                       taui  : Inihibition-Zeitkonstante
@@ -27,21 +23,17 @@
 ;
 ; OUTPUTS:              Para : Struktur namens Para3, die alle Neuronen-Informationen enthaelt, s.u.
 ;
-; OPTIONAL OUTPUTS:     ---
-;
-; COMMON BLOCKS:        ---
-;
-; SIDE EFFECTS:         ---
-;
 ; RESTRICTIONS:         tau? muss > 0.0 sein
-;
-; PROCEDURE:            ---
 ;
 ; EXAMPLE:              para3 = InitPara_3(tauf=10.0, vs=1.0, taup=30.0)
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1998/11/08 15:53:17  saam
+;             neuron type disabled cause it out of date, use type 1
+;             with a Recall-Structure instead
+;
 ;       Revision 1.5  1998/11/04 16:26:53  thiel
 ;              Struktur enthaelt jetzt info='PARA'
 ;              und type='Neuronentyp' getrennt.
@@ -59,32 +51,34 @@
 ;-
 FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, VP=Vp, TAUP=taup, SIGMA=sigma, SPIKENOISE=spikenoise
 
-   Default, tauf , 10.0
-   Default, taul , 10.0
-   Default, taui , 10.0
-   Default, vs   , 10.0
-   Default, taus , 10.0
-   Default, th0  ,  1.0
-   Default, Vp   , 1.0
-   Default, taup , 10.0
-   Default, spikenoise  ,  0.0
+   Message, "NeuronType3 is not needed any more"
+
+;   Default, tauf , 10.0
+;   Default, taul , 10.0
+;   Default, taui , 10.0
+;   Default, vs   , 10.0
+;   Default, taus , 10.0
+;   Default, th0  ,  1.0
+;   Default, Vp   , 1.0
+;   Default, taup , 10.0
+;   Default, spikenoise  ,  0.0
    
-   Default, sigma,  0.0
+;   Default, sigma,  0.0
 
 
-   Para = { info : "PARA"         ,$
-	    type ; '3'            ,$
-            df   : exp(-1./tauf)  ,$
-            dl   : exp(-1./taul)  ,$
-            di   : exp(-1./taui)  ,$
-            vs   : vs             ,$
-            ds   : exp(-1./taus)  ,$
-            th0  : th0            ,$
-            Vp   : Vp             ,$
-            dp   : exp(-1./taup)  ,$
-            sn   : spikenoise/1000.,$
-            sigma: sigma          }
+;   Para = { info : "PARA"         ,$
+;	    type : '3'            ,$
+;            df   : exp(-1./tauf)  ,$
+;            dl   : exp(-1./taul)  ,$
+;            di   : exp(-1./taui)  ,$
+;            vs   : vs             ,$
+;            ds   : exp(-1./taus)  ,$
+;            th0  : th0            ,$
+;            Vp   : Vp             ,$
+;            dp   : exp(-1./taup)  ,$
+;            sn   : spikenoise/1000.,$
+;            sigma: sigma          }
 
-   RETURN, Para
+;   RETURN, Para
 
 END 
