@@ -88,6 +88,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2001/09/17 15:34:41  kupper
+;        Range_In is now only passed to the widget_image-container-part, not to
+;        the widget_leaky_intergrator_array, as there it is computed from
+;        max_in.
+;
 ;        Revision 1.2  2001/09/17 14:56:17  kupper
 ;        added no_copy option to input method.
 ;
@@ -100,6 +105,7 @@
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_leaky_image_container::init, IMAGE=image, $
+                                     Range_In=Range_In, $
                                      COLUMN=column, _REF_EXTRA=_ref_extra
    DMsg, "I am created."
 
@@ -109,11 +115,12 @@ Function widget_leaky_image_container::init, IMAGE=image, $
    ;; object. If it fails, exit returning false:
    If not Init_Superclasses(self, "widget_leaky_image_container", $
                             COLUMN=column, ROW=row, $
+                            Range_In=Range_In, $
                             IMAGE=image, _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a widget_leaky_image_container object,
    ;; IN ADDITION to the initialization of the superclasses:
-   
+  
    self.lia = Obj_New("widget_leaky_integrator_array", OParent=self, $
                       Dimensions=Size(IMAGE, /Dimensions), _EXTRA=_ref_extra)
 
