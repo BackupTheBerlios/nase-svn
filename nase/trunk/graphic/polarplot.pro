@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.12  2000/06/23 10:22:12  gabriel
+;             !P.MULTI bug fixed
+;
 ;        Revision 2.11  2000/06/08 10:11:34  gabriel
 ;               BGCOLOR BUG fixed
 ;
@@ -102,6 +105,7 @@ PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor,DELTA
                THICK=thick , CLOSE=CLOSE,radiusinterpol=radiusinterpol,winkelinterpol=winkelinterpol, _EXTRA=e
 
 
+   On_Error, 2
 _radiusarray = radiusarray
 _winkelarray = winkelarray
 
@@ -156,8 +160,6 @@ ENDELSE
 
 
 
-
-
 plot,_radiusarray , _winkelarray,/POLAR, /NODATA, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
@@ -175,7 +177,7 @@ plotregion_device_center = convert_coord(plotregion_norm_center,/NORM,/TO_DEVICE
 
 plotregion_device = plotregion_device(0:1,*)
 
-plotregion_device_center = plotregion_device_center(0:1)
+plotregion_device_center(0) = plotregion_device_center(0)
 
 
 xsize_device = plotregion_device(0,1)-plotregion_device(0,0)
@@ -184,7 +186,12 @@ org_plotregion_device = [ plotregion_device(0,0) + xsize_device/2.,$
                           plotregion_device(1,0) + ysize_device/2. ]
 shift_plotregion_device = org_plotregion_device-plotregion_device_center
 
-shift_plotregion_device(1) = 0.0
+if !P.MULTI(1) eq 0 OR !P.MULTI(2) eq 0 then begin 
+   shift_plotregion_device(1) = 0.0
+end else begin
+   shift_plotregion_device(*) = 0.0
+endelse
+
 xy_dim = [xsize_device,ysize_device]
 corr_fac = min(xy_dim,min_size_ind)/ FLOAT( max(xy_dim,max_size_ind))
 corr_fac = [corr_fac,corr_fac]
@@ -197,6 +204,7 @@ plot,_radiusarray , _winkelarray,/POLAR, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
  TITLE=title ,POSITION=plotregion_device_new,/DEVICE,_EXTRA=e
+
 
 IF set(_SDEV) THEN BEGIN
    x1 = (_radiusarray(*)-_sdev(*))*cos(_winkelarray(*))
