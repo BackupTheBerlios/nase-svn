@@ -1,63 +1,58 @@
 ;+
-; NAME:                Plot3D
+; NAME:
+;  Plot3D
+;
+; VERSION:
+;  $Id$
 ;
 ; AIM:
 ;  Imitate surface plot by overlaying several simple plots.
 ;
-; PURPOSE:             Malt mehrere, sich verdeckende Plots in ein drei-
-;                      dimensionales Koordinatensystem. Im Prinzip koennte
-;                      das gleicher auch die Surface-Routine, wenn sie das
-;                      Schluesselwort VERTICAL unterstuetzen wuerde. 
+; PURPOSE:
+;  Draw several plots behind one another into a three dimensional
+;  coordinate system. Each plot hides those lying behind it. The
+;  result is similar to the output of IDL's <C>Surface</C> with the
+;  <C>/HORIZONTAL</C>-keyword set and the <C>AZ</C>-parameter less
+;  than 45 degrees.  
 ;
-; CATEGORY:            NASE GRAPHIC
+; CATEGORY:
+;  Graphic
 ;
-; CALLING SEQUENCE:    Plot3d, data [,x [,y]] [,AX=ax] [,AZ=az] [,/NOAXIS]
+; CALLING SEQUENCE:
+;*Plot3d, data [,x [,y]] [,AX=...] [,AZ=...] [,/NOAXIS]
 ;
-; INPUTS:              data: a two-dimensional array to be plotted
+; INPUTS:
+;  data:: A two-dimensional array to be plotted.
 ;
-; OPTIONAL INPUTS:     x,y: Vektoren, die die X/Y-Koordinaten des
-;                           Grids spezifizieren
+; OPTIONAL INPUTS:
+;  x, y:: Vectors specifying the x/y-coordinates of the grid This
+;        influences the coordinates themselves, not only the
+;        annotation of the axis (see second example).
 ;
-; KEYWORD PARAMETERS:  AX    : Rotation der Ansicht um die x-Achse (Default: 10)
-;                      AZ    : Rotation der Ansicht um die z-Achse (Default:  4)
-;                      NOAXIS: Verhindert die Ausgabe der Achsen
+; INPUT KEYWORDS:
+;  AX:: Rotation of the viewpoint around the x-axis (Default: 10).
+;  AZ:: Rotation of the viewpoint around the z-axis (Default:  4)
+;  /NOAXIS:: Supress axis output.
+;
+; RESTRICTIONS:
+;  AX/AZ should not be chosen too large, since the hiding of the plots
+;  may fail then.
 ;
 ; PROCEDURE:
-;                      + aktiviert z-buffer
-;                      + definiert 3d-koordinaten-system
-;                      + hinterlegt oplot-Befehle mit schwarzer Flaeche fuer
-;                        Verdeckung
+; + activate z-buffer<BR>
+; + define 3d coordinate system<BR>
+; + hide plots behing others by adding polyfills in background color.
 ;
-; RESTRICTIONS:        man sollte AX,AZ nicht zu gross waehlen, sonst geht
-;                      das mit der Verdeckung in die Hose
-;    
-; EXAMPLE:             
-;                      a = Gauss_2D(15,15)
-;                      Plot3D, a,ax=30 ,az=10
-;                      Plot3D, a, [0,2,3,5,7,10,16,17,18,19,19.5,20,21,22,24], Indgen(15)-7, ax=30 ,az=10
-;                       
-; MODIFICATION HISTORY:
+; EXAMPLE:
+;*a = Gauss_2D(15,15)
+;*Plot3D, a,ax=30 ,az=10
+;*Plot3D, a, [0,2,3,5,7,10,16,17,18,19,19.5,20,21,22,24] $
+;* , Indgen(15)-7, ax=30 ,az=10
 ;
-;     $Log$
-;     Revision 2.5  2000/11/02 13:42:06  gabriel
-;          set_plot replaced with uset_plot
-;
-;     Revision 2.4  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.3  2000/08/31 10:07:41  kupper
-;     Changed to use UTV instead of TV. Should work with other devices than
-;     X now.
-;
-;     Revision 2.2  1998/11/10 14:50:02  saam
-;           changed plotting details
-;
-;     Revision 2.1  1998/07/07 13:17:39  saam
-;           + first version
-;           + may be a bit buggy, especially the hidden lines
-;
-;
+; SEE ALSO:
+;  IDL's <C>Surface</C>.
 ;-
+
 
 PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
 
@@ -97,13 +92,16 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    T3D, /YZEXCH
    Erase, 0
 
+   ;; color indices
+   back = GetBackground()
+   fore = GetForeground()
 
-   polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,0)), miny, miny], /T3D, Z=z(0)+0.0001, COLOR=0 ; a black surface for hidden lines slightly behind ...
-   plot, x, data(*,0), ZVALUE=z(0), /T3D, YRANGE=[MIN(data),MAX(data)], XSTYLE=5, YSTYLE=4, color=0; ... the normal plot  
+   polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,0)), miny, miny], /T3D, Z=z(0)+0.0001, COLOR=back ; a black surface for hidden lines slightly behind ...
+   plot, x, data(*,0), ZVALUE=z(0), /T3D, YRANGE=[MIN(data),MAX(data)], XSTYLE=5, YSTYLE=4, COLOR=fore ;; ... the normal plot  
    FOR i=1,nz-1 DO BEGIN
-      polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,i)), miny, miny], /T3D, Z=z(i)+0.0001, COLOR=RGB(255,255,255,/NOALLOC)
+      polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,i)), miny, miny], /T3D, Z=z(i)+0.0001, COLOR=back ;; old version: RGB(255,255,255,/NOALLOC)
 ;      polyfill, [minx, x, maxx, minx], [miny, REFORM(data(*,i)), miny, miny], /T3D, Z=z(i)+0.0001, COLOR=30+FIX((i/FLOAT(nz))*180)
-      oplot, x, data(*,i), /T3D, ZVALUE=z(i)
+      oplot, x, data(*,i), /T3D, ZVALUE=z(i), COLOR=fore
    END
 
 ;   polyfill,[[n/2,MIN(data)-ABS(MIN(data)/10.),0],[n/2,MAX(data)+MAX(data)/10.,0],[n/2,MAX(data)+MAX(data)/10.,1],[n/2,MIN(data)-ABS(MIN(data)/10.),1],[n/2,MIN(data)-ABS(MIN(data)/10.),0]], /T3D, COLOR=150
@@ -124,5 +122,6 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    b=TVRD()	        ; Read image.
    uSET_PLOT, current_device	; Select previous output device.
    UTV, b	        ; Output the image.
+
 END
 
