@@ -12,6 +12,7 @@
 ;  writes a sequence of images as an mpeg movie
 ;
 ; CATEGORY:
+;  Animation
 ;  Graphic
 ;
 ; CALLING SEQUENCE: 
