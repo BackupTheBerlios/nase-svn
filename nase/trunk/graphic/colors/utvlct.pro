@@ -35,7 +35,7 @@
 ;  NASE
 ;  
 ; CALLING SEQUENCE:
-;* UTvLCt, v1 [,v2] [,v3] [,start] [,/sclct] [,/GET] [,/HLS | ,/HSV]
+;* UTvLCt, v1 [,v2] [,v3] [,start] [, {/SCLCT | /OVER} ] [,/GET] [,/HLS | ,/HSV]
 ;
 ; INPUTS:
 ;  v1::    see IDL Help for tvlct
@@ -49,6 +49,9 @@
 ;              SCLCT::  scales a given color table with respect to
 ;                       !TOPCOLOR without overwriting the color entries
 ;                       from !TOPCOLOR to 255
+;              OVER::   Allows to overwrite the color map entries from <*>!TOPCOLOR+1...!D.TABLE_SIZE-1</*>.<BR>
+;                       <B>WARNING!!</B> This option breaks compatibility with
+;                       NASE color management and is for <B>internal use only</B>.
 ;
 ;              GET::    see IDL Help for tvlct
 ;              HLS::    see IDL Help for tvlct
@@ -58,7 +61,7 @@
 ;
 ;-
 
-PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT , _EXTRA=extra
+PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
    default, sclct, 0
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
       if not extraset(extra,'get') then begin
@@ -79,19 +82,21 @@ PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT , _EXTRA=extra
                                 ; cut table if required, because it
                                 ; MUST NOT overwrite !TOPCOLOR+1...
 
-              CASE N_Params() OF 
-                     1: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
-                     2: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v2]),*)
-                     3: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
-                     4: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v4]),*)
-              END
+             IF NOT KEYWORD_SET(OVER) THEN BEGIN
+                CASE N_Params() OF 
+                   1: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
+                   2: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v2]),*)
+                   3: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
+                   4: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v4]),*)
+                END
+             END ELSE _V =  V
           end
 
           CASE N_Params() OF
-              1 : TvLCt, _v,     _EXTRA=extra
-              2 : TvLCt, _v, v2, _EXTRA=extra
-              3 : TvLCt, _v,     _EXTRA=extra
-              4 : TvLCt, _v, v4, _EXTRA=extra
+             1 : TvLCt, _v,     _EXTRA=extra
+             2 : TvLCt, _v, v2, _EXTRA=extra
+             3 : TvLCt, _v,     _EXTRA=extra
+             4 : TvLCt, _v, v4, _EXTRA=extra
           ENDCASE
          
       END ELSE BEGIN
