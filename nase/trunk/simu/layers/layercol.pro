@@ -14,12 +14,12 @@
 ;
 ;
 ;
-; CALLING SEQUENCE: Spaltenindex = LayerCol( Layer, Index_1D [,WIDTH ,HEIGHT] )
+; CALLING SEQUENCE: Spaltenindex = LayerCol( {Layer | WIDTH ,HEIGHT} ,INDEX=Index_1D  )
 ;
 ;
 ; 
 ; INPUTS: Layer   : eine mit InitLayer_? initialisierte Layer-Struktur
-;	  Index_1D: Der eindimensionale Index
+;	INDEX   : Der eindimensionale Index
 ;
 ;
 ; OPTIONAL INPUTS: WIDTH, HEIGHT: Falls keine Layerstruktur vorliegt.
@@ -54,10 +54,10 @@
 ;
 ;
 ;
-; EXAMPLE: Bspl 1:	Print, LayerCol ( My_Layer, 5 )
-;	   Bspl 2:	Print, LayerCol ( My_Layer, Layerindex( My_Layer, ROW=23, COL=17) )
+; EXAMPLE: Bspl 1:	Print, LayerCol ( My_Layer, INDEX=5 )
+;	   Bspl 2:	Print, LayerCol ( My_Layer, INDEX=Layerindex( My_Layer, ROW=23, COL=17) )
 ;				-> Ausgabe: 17
-;	   Bspl 3:	Print, LayerIndex ( My_Layer, ROW=LayerRow(My_Layer, My_Neuron), COL= 1 + LayerCol(My_Layer, My_Neuron) )
+;	   Bspl 3:	Print, LayerIndex ( My_Layer, ROW=LayerRow(My_Layer, INDEX=My_Neuron), COL= 1 + LayerCol(My_Layer, INDEX=My_Neuron) )
 ;				-> Liefert Index des "rechten Nachbarn" von My_Neuron.
 ;
 ;
@@ -71,9 +71,10 @@
 ;
 ;-
 
-Function LayerCol, Layer, Index, WIDTH=width, HEIGHT=height
+Function LayerCol, Layer, _Index, INDEX=index, WIDTH=width, HEIGHT=height
 
-	if Index ge LayerSize(Layer) then print, 'LayerCol WARNUNG: Layerindex ist zu groﬂ!'
+        Default,  index,  _Index
+	if Index ge LayerSize(Layer, WIDTH=width, HEIGHT=height) then message, 'Layerindex ist zu groﬂ!'
 	
         if set(HEIGHT) then return,  fix(Index) / fix(height)
 	return, fix(Index) / fix(Layer.h)

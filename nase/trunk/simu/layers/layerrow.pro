@@ -14,15 +14,15 @@
 ;
 ;
 ;
-; CALLING SEQUENCE: Zeilenindex = LayerCol( Layer, Index_1D )
+; CALLING SEQUENCE: Zeilenindex = LayerCol( {Layer | WIDTH ,HEIGHT} ,INDEX=Index_1D )
 ;
 ;
 ; 
 ; INPUTS: Layer   : eine mit InitLayer_? initialisierte Layer-Struktur
-;	  Index_1D: Der eindimensionale Index
+;	INDEX   : Der eindimensionale Index
 ;
 ;
-; OPTIONAL INPUTS: ---
+; OPTIONAL INPUTS: WIDTH, HEIGHT, falls keine Layer-Struktur vorliegt
 ;
 ;
 ;	
@@ -54,22 +54,29 @@
 ;
 ;
 ;
-; EXAMPLE: Bspl 1:	Print, LayerRow ( My_Layer, 5 )
-;	   Bspl 2:	Print, LayerRow ( My_Layer, Layerindex( My_Layer, ROW=23, COL=17) )
+; EXAMPLE: Bspl 1:	Print, LayerRow ( My_Layer, INDEX=5 )
+;	   Bspl 2:	Print, LayerRow ( My_Layer, INDEX=Layerindex( My_Layer, ROW=23, COL=17) )
 ;				-> Ausgabe: 23
-;	   Bspl 3:	Print, LayerIndex ( My_Layer, ROW= 1 + LayerRow(My_Layer, My_Neuron), COL=LayerCol(My_Layer, My_Neuron) )
+;	   Bspl 3:	Print, LayerIndex ( My_Layer, ROW= 1 + LayerRow(My_Layer, INDEX=My_Neuron), COL=LayerCol(My_Layer, INDEX=My_Neuron) )
 ;				-> Liefert Index des Neurons "unterhalb" von My_Neuron.
 ;
 ;
 ;
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
+;       Sun Aug 3 23:49:06 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		WIDTH, HEIGHT zugefügt.
+;
 ;-
 
-Function LayerRow, Layer, Index
-
-	if Index ge LayerSize(Layer) then print, 'LayerRow WARNUNG: Layerindex ist zu groß!'
+Function LayerRow, Layer, _Index, INDEX=index, WIDTH=width, HEIGHT=height
+   
+        Default,  index, _Index
+	if Index ge LayerSize(Layer, WIDTH=width, HEIGHT=height) then print, 'LayerRow WARNUNG: Layerindex ist zu groß!'
 	
+        if set(HEIGHT) then return, Index mod height
 	return, Index mod Layer.h
 	
 end
