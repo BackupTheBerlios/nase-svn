@@ -14,7 +14,8 @@
 ;                                       [, GET_BASE=Widget_ID] [, GROUP=Leader_Widget_ID ]
 ;                                       [, KILL_NOTIFY=KillPro ]
 ;                                       [, DELIVER_EVENTS=Array_of_Widget_IDs ]
-;                                       [, MULTI=Multi-Array ] )
+;                                       [, MULTI=Multi-Array ]
+;                                       [, GET_DRAWID=Array_of_Draw-Widget-IDs] )
 ; 
 ; KEYWORD PARAMETERS: XPOS, YPOS              : Position des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
@@ -63,10 +64,13 @@
 ;                                               Nach dem Aufruf aktiv ist das linke obere Fenster.
 ;
 ;
-; OUTPUTS: Win_Nr: Ein  Window-Index für folgende Graphikbefehle.
+; OUTPUTS: Win_Nr: Ein  Window-Index für folgende Graphikbefehle,
+;                   bzw. ein Array von Indizes im Fall von MULIT.
 ;                  Das geöffnete Fenster wird aber auch zum aktuellen Fenster.
 ;
 ; OPTIONAL OUTPUTS: GET_BASE: ID des erstellten Base-Widgets.
+;                   GET_DRAWID: ID des Draw-Widgets, bzw. ein Array
+;                    von IDs im Fall von MULTI.
 ;
 ; SIDE EFFECTS: Wenn IDL V4.0 oder höher verwendet wird, wird das Widget beim XMANAGER registriert.
 ;               Dann werden nach aufruf von XMANAGER auch Resize-Events richtig verarbeitet.
@@ -96,6 +100,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.18  1999/06/01 13:20:15  kupper
+;       *** empty log message ***
+;
 ;       Revision 2.17  1999/03/08 10:38:40  thiel
 ;              Größe des Plotbereichs ein klein wenig verändert,
 ;              um unnötige Scrollbars zu vermeiden.
@@ -142,26 +149,47 @@ Pro ScrollIt_Event, Event
          EndWhile
          WIDGET_CONTROL, Event.Top, UPDATE=1 ;Allow Screen-Update
       Endelse                     ;resize all draw-widgets
-   EndIf
-   
-   ;;-----------Deliver Events to other Widgets?-------------------------
-   if base_uval.deliver_events(0) ne -1 then begin
-      valid = WIDGET_INFO(base_uval.deliver_events, /VALID_ID)
-      For wid=1, n_elements(base_uval.deliver_events) do $
-       If valid(wid-1) then begin
-         sendevent = Event
-         sendevent.ID = base_uval.deliver_events(wid-1)
-         next = base_uval.deliver_events(wid-1)
-         repeat begin
-            top = next
-            next = WIDGET_INFO(top, /PARENT)
-         endrep until next eq 0
-         sendevent.TOP = top
-         sendevent.HANDLER = 0
-         WIDGET_CONTROL, base_uval.deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
-      EndIf
-   endif
-   ;;-----------End: Deliver Events to other Widgets?-------------------------
+   Endif
+
+   If TAG_NAMES(Event, /STRUCTURE_NAME) eq "WIDGET_TRACKING" then begin ;Pointer entered or left a (sub)-widget
+      ;;-----------Check if pointer entered widget and set color table----------
+      WIDGET_CONTROL, Event.ID, GET_UVALUE=draw_uval
+      If (Event.ENTER eq 1) then begin ;It's an ENTRY-event!
+         ;save current palette:
+         UTVLCT, /GET, Red, Green, Blue
+         draw_uval.YourPalette.R = Red
+         draw_uval.YourPalette.G = Green
+         draw_uval.YourPalette.B = Blue
+         WIDGET_CONTROL, Event.ID, SET_UVALUE=draw_uval
+         ;set private palette:
+         UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
+         message, /INFO, "Setting private palette"
+      Endif else begin ;It's an LEAVE-event
+         ;reset old palette:
+         UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B 
+         message, /INFO, "Resetting private palette"
+      EndElse
+      ;;-----------End: Check if pointer entered widget and set color table-----
+   EndIf Else begin; Tracking events shall not be delivered!
+      ;;-----------Deliver Events to other Widgets?-------------------------
+      if base_uval.deliver_events(0) ne -1 then begin
+         valid = WIDGET_INFO(base_uval.deliver_events, /VALID_ID)
+         For wid=1, n_elements(base_uval.deliver_events) do $
+          If valid(wid-1) then begin
+            sendevent = Event
+            sendevent.ID = base_uval.deliver_events(wid-1)
+            next = base_uval.deliver_events(wid-1)
+            repeat begin
+               top = next
+               next = WIDGET_INFO(top, /PARENT)
+            endrep until next eq 0
+            sendevent.TOP = top
+            sendevent.HANDLER = 0
+            WIDGET_CONTROL, base_uval.deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
+         EndIf
+      endif
+      ;;-----------End: Deliver Events to other Widgets?-------------------------
+   EndElse
   
 End
 
@@ -172,7 +200,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                    PIXMAP=pixmap, $
                    RETAIN=retain, COLORS=colors, $
                    GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify, $
-                   DELIVER_EVENTS=deliver_events, MULTI=multi
+                   DELIVER_EVENTS=deliver_events, MULTI=multi, GET_DRAWID=get_drawid
 
    Default,  xsize, 300
    Default,  ysize, 300
@@ -247,17 +275,25 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                                        XSIZE=xdrawsize, YSIZE=ydrawsize, $
                                        X_SCROLL_SIZE=xsize, Y_SCROLL_SIZE=ysize, $
                                        FRAME=2, $
-                                       RETAIN=retain, COLORS=colors, KILL_NOTIFY=kill_notify)
+                                       RETAIN=retain, COLORS=colors, KILL_NOTIFY=kill_notify, $
+                                       /TRACKING_EVENTS)
             count = count+1
          EndIf
       Endfor
    EndFor
 
+   
+   ;;obtain current color table:
+   UTVLCT, /GET, Red, Green, Blue
+
    Widget_Control, /REALIZE, Base
    For i=1, multi(0) do begin
       Widget_Control, GET_VALUE=WinID, Draws(i-1)
       Widget_Control, Draws(i-1), SET_UVALUE={info      : 'DRAWWIDGET', $
-                                              Window_ID : WinID}
+                                              Window_ID : WinID, $
+                                              MyPalette   : {R: Red, G: Green, B: Blue}, $
+                                              YourPalette : {R: Red, G: Green, B: Blue} $
+                                             }
       WinIDs(i-1) = WinID
    EndFor
    
@@ -270,7 +306,16 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    get_base = Base
 
    WSet, WinIDs(0)
-   If n_elements(WinIDs) eq 1 then Window_ID = WinIDs(0) else Window_ID = WinIDs ;Do not return an array of one!
+   If n_elements(WinIDs) eq 1 then begin
+      Window_ID = WinIDs(0)     ;Do not return an array of one!
+      Draw_ID   = Draws(0)
+   endif else begin
+      Window_ID = WinIDs
+      Draw_ID   = Draws
+   endelse             
+
+   ;return values:
+   GET_DRAWID = Draw_ID
    return, Window_ID
 end
 
