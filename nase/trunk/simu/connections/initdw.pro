@@ -40,10 +40,10 @@
 ;                  D_INIT,    W_INIT    : Array vom Ausmaß (Target_Height,Taget_Width, Source_Height,Source_Width), der die Werte für die Initialisierung enthält. Die Ausmaße werden aus diesem Array abgeleitet und brauchen nicht explizit angegeben zu werden. Werden beide Arrays angegeben, müssen die Ausmaße natürlich gleich sein.                                        
 ;                  D_RANDOM,  W_RANDOM  : Array [Min,Max]. Die Gewichte/Delays werden gleichverteilt zufällig belegt im Bereich Min..Max. Diese Belegung wirkt additiv, wenn zusätzlich zu diesem Schlüsselwort noch ein anderes angegeben wird.
 ;                  D_NRANDOM, W_NRANDOM : Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zufällig belegt mit Mittelwert MW und Standardabweichung sigma. Diese Belegung wirkt additiv, wenn zusätzlich zu diesem Schlüsselwort noch ein anderes angegeben wird.
-;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
-;                  D_CONST              : Array [Value,Range]. Die Delays werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Source-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Wert value und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                  D_CONST              : Array [Value,Range]. Die Delays werden von jedem Source-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Wert value und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_IDENT   : fuehrt eine 1:1 Verknüpfung von Source- und Targetlayer mit Wert W_IDENT durch, wenn diese gleiche Dimensionen haben
-;                             W_LINEAR  : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelförmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                             W_LINEAR  : Array [Max,Range]. Die Gewichte werden von jedem Source-Neuron kegelförmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_IDENT              : setzt die 1:1-Verbindungen von Source- zu Targetlayer auf die Verzoegerung D_IDENT, wenn diese gleiche Dimensionen haben
 ;                  D_LINEAR             : Array [min,max,Range]. Die Delays werden von jedem Soure-Neuron umgekehrt kegelförmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_GAUSS   : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gaußförmig in den Targetlayer gesetzt (mit Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
@@ -169,6 +169,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.23  2000/08/29 10:09:08  kupper
+;       Corrected typing errors.
+;
 ;       Revision 2.22  2000/08/08 13:59:24  thiel
 ;           Now "SUM" is REALLY the default for the conjunction method.
 ;
