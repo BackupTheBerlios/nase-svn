@@ -1,0 +1,141 @@
+;+
+; NAME:
+;  UReadU()
+;
+; VERSION:
+;  $Id$
+;
+; AIM:
+;  restores unformatted/binary data structures saved by <A>UWriteU</A>
+;
+; PURPOSE:
+;  Restores data structures saved by <A>UWriteU</A>. Remember that
+;  this data is saved in an architecture dependent format, unless you
+;  specified <*>/XDR</*> when opening the file. So be sure, that you
+;  use compatible calls for read and write.
+;
+; CATEGORY:
+;  DataStorage
+;  DataStructures
+;  Files
+;  IO
+;  Structures
+;
+; CALLING SEQUENCE:
+;*r = UReadU(lun)
+;
+; INPUTS:
+;  lun :: a valid, readable <B>LUN</B> (see <A>UOpenR</A>,<A>UOpenW</A> how to
+;         get one) to a file that contains data saved by
+;         <A>UWriteU</A>. Alternatively you may specify a <B>filename</B> and
+;         <C>UReadU</C> will manage opening and closing automatically. In
+;         this case, only the first data structure in the file can be restored.
+;
+; INPUT KEYWORDS:
+;  _EXTRA:: all keywords will be passed to <A>UOpenR</A>
+;
+; OUTPUTS:
+;  r :: restored data structure  
+;
+; SIDE EFFECTS:
+;* modifies the position index of the <*>lun</*>
+;
+; EXAMPLE:
+;*a={a:1,b:2.,c:"3",d:intarr(4),e:{e:dblarr(1,2,3,4)}}
+;*uwriteu, 'test.sav', a
+;*b=ureadu('test.sav')
+;*help, b, /str
+;*help, b.e, /str
+;
+; SEE ALSO:
+;  <A>UWriteU</A>, <A>UOpenR</A>, <A>UOpenW</A>, <A>UClose</A>,
+;  <C>OpenW</C> and <*>XDR</*> description of the IDL help
+;
+;-
+
+FUNCTION UReadU, _lun, _EXTRA=e
+  ON_Error, 2
+
+  IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenR(_lun,_EXTRA=e) ELSE lun=_lun
+
+  ; write version and ID
+  version = ''
+  readf, lun, version
+  
+
+
+  ; read the size structure of the data to be read
+  nsx=0l
+  ReadU, lun, nsx
+  sx=LonArr(nsx)
+  ReadU, lun, sx
+
+  
+  IF ((sx(N_Elements(sx)-2) EQ 8) AND (sx(N_Elements(sx)-1) EQ 1)) THEN BEGIN
+      ; we have a scalar structure
+      nTags = 0l
+      ReadU, lun, nTags
+
+      ; name of the structure, empty string if anonymous
+      sName = UReadU(lun)
+      
+
+      FOR tag=0, nTags-1 DO BEGIN
+          tagName = UReadU(lun)
+          IF TypeOF(tagName) NE "STRING" THEN Console, 'error in file (no tag name string)'
+
+          tagVal = UReadU(lun)
+          
+          IF tag EQ 0 THEN BEGIN
+              x = Create_Struct(tagName, tagVal)
+          END ELSE BEGIN
+              x = Create_Struct(x, tagName, tagVal)
+          END
+      END
+      x = Create_Struct(NAME=sName, x) ;;; i have to do this here, because sName might exist and would produce a
+                                       ;;; conflicting structure type error
+
+
+  END ELSE BEGIN
+
+
+      ;; create an appropriate data structure
+      IF sx(N_Elements(sx)-2) NE 8 THEN BEGIN ; structures need different init
+          IF N_Elements(sx) LT 4 THEN BEGIN
+              ;; we have to restore a scalar
+              x = Make_Array(SIZE=[1,1,sx(1), sx(2)])
+              x = x(0)
+          END ELSE BEGIN
+              ;; it's an array
+              x = Make_Array(SIZE=sx)
+          END
+      END
+      
+      ;; finally read the scalar or array
+      CASE sx(N_Elements(sx)-2) OF
+          7 : BEGIN             ; string
+              FOR i=0,N_Elements(x)-1 DO BEGIN
+                  ;; read the actual string length and create an appropriate string
+                  sl = 0l
+                  ReadU, lun, sl
+                  tmp = StrRepeat(" ",sl)
+                  ;; read string
+                  ReadU, lun, tmp
+                  x(i)=TEMPORARY(tmp)
+              END
+          END
+          8 : BEGIN             ; struct
+              x = UReadU(lun)   ; read first struc
+              
+              x = Replicate(x, Product(sx(1:sx(0)))) ; fucking REPLICATE doesn't accept a vector of dimensions!
+              x = REFORM(x, sx(1:sx(0)), /OVERWRITE) 
+              
+              FOR i=1,N_Elements(x)-1 DO x(i)=UReadU(lun)
+          END
+          ELSE: ReadU, lun, x
+      END
+  END
+  
+  IF TypeOf(_lun) EQ 'STRING' THEN UClose, lun ELSE _lun=lun
+  RETURN, x
+END
