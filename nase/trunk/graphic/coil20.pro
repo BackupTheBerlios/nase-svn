@@ -60,7 +60,7 @@
 ;  The <*>!COILPATH</*> system variable is initialized to a value
 ;  suitable for use at location in Marburg, but can be user-adjusted.<BR>
 ;  The COIL-20 and COIL-100 databases can be obtained from
-;  <A HREF=http://www.cs.columbia.edu/CAVE/>http://www.cs.columbia.edu/CAVE/</A>. 
+;  <I>http://www.cs.columbia.edu/CAVE/</I>.
 ;  See [1] for further details.
 ;
 ; PROCEDURE:
