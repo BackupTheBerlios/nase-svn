@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/07/24 10:28:11  saam
+;              + added _EXTRA tag for oplot
+;
 ;        Revision 2.1  2000/07/18 12:56:51  saam
 ;              + split into plot and oplot part
 ;              + code cleanup
@@ -75,7 +78,8 @@ PRO OPolarPlot, radiusarray, anglearray, sdevarray,    $
                 THICK=thick, CLOSE=CLOSE,              $
                 ORIGPT=ORIGPT,                         $
                 radiusinterpol=radiusinterpol,         $
-                winkelinterpol=winkelinterpol
+                winkelinterpol=winkelinterpol,         $
+                _EXTRA=e
 
 
 On_Error, 2
@@ -145,7 +149,7 @@ IF set(_SDEVARRAY) THEN BEGIN
 ENDIF
 
 ; overplot (optional) standard deviation with the mean data
-oplot, _radiusarray, _anglearray, /POLAR, THICK=thick, COLOR=mcolor
+oplot, _radiusarray, _anglearray, /POLAR, THICK=thick, COLOR=mcolor, _EXTRA=e
 
 ; plot the original data points as dots (optional)
 IF ORIGPT GT 0 THEN BEGIN
