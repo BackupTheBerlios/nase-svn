@@ -71,6 +71,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.8  2001/10/18 14:19:24  gabriel
+;      bug fix for keyword phase
+;
 ; Revision 1.7  2000/09/28 13:58:57  gabriel
 ;      AIM, console <> message
 ;
@@ -114,7 +117,7 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
    IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN console,/fatal, 'wrong number of arguments'
    IF (Size(xseries))(0) NE 1                 THEN console,/fatal, 'wrong format for x-signal'
    IF (Size(yseries))(0) NE 1                 THEN console,/fatal, 'wrong format for y-signal'
-   IF set(TRUNC_PHASE) AND NOT set(PHASE)   THEN console,/fatal, 'Keyword TRUNC_PHASE must be set with Keyword PPHASE'
+   
    IF N_Elements(xseries) NE N_Elements(yseries) THEN console,/fatal, 'x-signal and y-signal must have same length'
    N = N_Elements(xseries)
    IF (N LT 10) THEN BEGIN
@@ -172,19 +175,18 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
 
 
    
-   IF SET(Phase) THEN BEGIN
-      IF DOUBLE THEN RE_CPower = DOUBLE(CPower) $
-      ELSE RE_CPower =   FLOAT(CPower)
-      IM_CPower =IMAGINARY(CPower)
+  
       IF SET(KERNEL) THEN BEGIN 
          CPower = convol(CPower,kernel,/EDGE_TRUNCATE,/CENTER)
       ENDIF
+      IF DOUBLE THEN RE_CPower = DOUBLE(CPower) $
+      ELSE RE_CPower =   FLOAT(CPower)
+      IM_CPower =IMAGINARY(CPower)
       Phase = ATAN(-IM_CPower, RE_CPower)
       
    
        
 
-   ENDIF
 
    IF NOT Set(COMPLEX) THEN CPOWER = ABS(CPOWER)
 
