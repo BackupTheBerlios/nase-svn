@@ -9,7 +9,7 @@
 ; CALLING SEQUENCE:       OutVector = DelayWeigh( Matrix, InHandle)
 ;
 ; INPUTS:                 Matrix       : eine zuvor mit InitDW initialisierte Struktur 
-;                         InHandle     : Handle auf eine SSparse-Liste, i.a Layer.O
+;                         InHandle     : Handle auf SSparse-Liste, i.a. LayerOut(Layer)
 ;
 ; OUTPUTS:                OutVector: Sparse-Vektor, der den gewichteten (verzoegerten) Output aus der Verbindungsstruktur darstellt
 ;
@@ -23,15 +23,19 @@
 ;                                           WEIGHT=3.0,$
 ;                                           D_CONST=[4,2])
 ;
-;                         InHandle = Handle_Create(SSpassmacher([1,1,1,1,1,1,1]))
-;                         OutVector = DelayWeigh ( MyDelMat, InHandle)
+;                         In        = Handle_Create(!MH, VALUE=SSpassmacher([1,1,1,1,1,1,1]))
+;                         OutVector = DelayWeigh ( MyDelMat, In)
 ;                         print, SpassBeiseite(OutVector)
 ;
-;                         FOR z=0,6 DO print, SpassBeiseite(DelayWeigh( MyDelMat, Create_Handle(Spassmacher([0,0,0,0,0,0,0])) ))
+;                         FOR z=0,6 DO print, SpassBeiseite(DelayWeigh( MyDelMat, Handle_Create(!MH, VALUE=Spassmacher([0,0,0,0,0,0,0]))) )
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.37  1998/11/08 17:48:31  saam
+;             + documentation update
+;             + new layer type update
+;
 ;       Revision 1.36  1998/03/14 14:12:19  saam
 ;             handling of empty dw-structures now works
 ;
@@ -166,7 +170,6 @@ FUNCTION DelayWeigh, _DW, InHandle
 
    Handle_Value, _DW, DW, /NO_COPY 
    Handle_Value, InHandle, In
-
  
 ;----- Der Teil ohne Delays:   
    IF (DW.Info EQ 'SDW_WEIGHT') THEN BEGIN
