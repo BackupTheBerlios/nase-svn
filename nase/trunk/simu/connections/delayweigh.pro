@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.32  1998/02/11 16:17:14  saam
+;             HandleOperationen mit NO_COPY
+;
 ;       Revision 1.31  1998/02/11 15:43:10  saam
 ;             Geschwindigkeitsoptimierung durch eine neue Liste
 ;             die source- auf target-Neuronen abbildet
@@ -178,12 +181,14 @@ FUNCTION DelayWeigh, _DW, InHandle
       FOR asi=2l,In(0)+1 DO BEGIN
          asn = In(asi)
          IF DW.S2T(asn) NE -1 THEN BEGIN
-            Handle_Value, DW.S2C(asn), wi 
-            Handle_Value, DW.S2T(asn), tN 
+            Handle_Value, DW.S2C(asn), wi, /NO_COPY
+            Handle_Value, DW.S2T(asn), tN, /NO_COPY
             ; C2T(wi) has each target neuron only once,
             ; because there is only one connection between
             ; source and target; therefore next assignment is ok
             vector(tN) = vector(tn) + DW.W(wi)
+            Handle_Value, DW.S2C(asn), wi, /NO_COPY, /SET
+            Handle_Value, DW.S2T(asn), tN, /NO_COPY, /SET
          END
       END
 
