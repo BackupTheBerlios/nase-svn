@@ -1,45 +1,51 @@
 ;+
-; NAME: Gauss_2D()
+; NAME:
+;  Gauss_2D()
 ;
-; AIM: constructs array containing a two dimensional Gaussian
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gaussverteilung mit Maximum 1.
+; AIM:
+;  Constructs array containing a two dimensional Gaussian.
+;
+; PURPOSE:
+;  Erzeugt ein Array mit einer zweidimensionalen Gaussverteilung mit Maximum 1.
 ;
 ; CATEGORY:
 ;  Array
 ;  Math
 ;
-; CALLING SEQUENCE: 
-;   Array = Gauss_2D ( {
-;                       /AUTOSIZE,
-;                       { {sigma|HWB=..} | {XHWB=..,YHWB=..} }
-;                       [,PHI=..] 
-;                      |
-;                       x_Laenge, y_Laenge 
-;                       [(,sigma|,HWB=..)|,XHWB=..,YHWB=..] 
-;                       [,x0|,X0_ARR=..] [,y0|,Y0_ARR=..]
-;                       [,PHI=..]
-;                      }
-;                      [,/NORM]
-;                      [,WARP=.. [,/ABSWARP] [,/GROUNDWIDTH]])
+; CALLING SEQUENCE:
+;*   Array = Gauss_2D ( {
+;*                       /AUTOSIZE,
+;*                       { {sigma|HWB=..} | {XHWB=..,YHWB=..} }
+;*                       [,PHI=..] 
+;*                      |
+;*                       xlen, ylen 
+;*                       [(,sigma|,HWB=..)|,XHWB=..,YHWB=..] 
+;*                       [,x0|,X0_ARR=..] [,y0|,Y0_ARR=..]
+;*                       [,PHI=..]
+;*                      }
+;*                      [,/NORM]
+;*                      [,WARP=.. [,/ABSWARP] [,/GROUNDWIDTH]])
 ;
 ; OPTIONAL INPUTS:
-;   x_Lange/y_Laenge : Dimensionen des gewuenschten Arrays.  Fuer
-;                      y_Laenge=1 wird ein eindimensionales Array
+;   xlen/ylen:: Dimensionen des gewuenschten Arrays.  Fuer
+;                      ylen=1 wird ein eindimensionales Array
 ;                      erzeugt.  Diese Parameter entfallen bei
 ;                      Gebrauch des AUTOSIZE-Schluesselwortes (s.u.)
-;
-;   sigma: Die Standardabweichung in Gitterpunkten. (Default =
+;  
+;   sigma:: Die Standardabweichung in Gitterpunkten. (Default =
 ;          X_Laenge/6)
 ;
-;   x0, y0: Die Position der Bergspitze(relativ zum
+;   x0, y0:: Die Position der Bergspitze(relativ zum
 ;           Arraymittelpunkt). Fuer x0=0, y0=0 (Default) liegt der Berg
 ;           in der Mitte des Feldes. (Genauer: bei Laenge/2.0).
 ;
-; KEYWORD PARAMETERS:
-;   X0_ARR, Y0_ARR: wie x0,y0, aber relativ zur linken oberen Arrayecke.
+; INPUT KEYWORDS:
+;   X0_ARR, Y0_ARR:: wie x0,y0, aber relativ zur linken oberen Arrayecke.
 ;
-;   AUTOSIZE: Wenn gesetzt, werden die Ausmasse des zurueckgelieferten
+;   AUTOSIZE:: Wenn gesetzt, werden die Ausmasse des zurueckgelieferten
 ;             Arrays auf die sechsfache Standardabweichung
 ;             eingestellt. (D.h. dreifache Standardabweichung in beide
 ;             Richtungen.)  Die Parameter x_Laenge und y_Laenge
@@ -49,15 +55,15 @@
 ;             anderen Faellen ist das Verhalten der Routine
 ;             undefiniert!
 ;
-;   NORM: Volumen der Gaussmaske wird auf eins normiert.
+;   NORM:: Volumen der Gaussmaske wird auf eins normiert.
 ;
-;   HWB: Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu
+;   HWB:: Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu
 ;        sigma angegeben werden.
 ;
-;   XHWB, YHWB: Die Halbwertsbreite in Gitterpunkten bzgl. x und y
+;   XHWB, YHWB:: Die Halbwertsbreite in Gitterpunkten bzgl. x und y
 ;               (alternativ zu sigma und HWB)
 ;
-;  PHI: The result will be rotated by the angle specified by that
+;  PHI:: The result will be rotated by the angle specified by that
 ;       keyword. Please note that rotation is the last operation,
 ;       i.e. this angle adds to the value specified as the warping
 ;       direction. Please note also that this value is measured in the
@@ -76,7 +82,7 @@
 ;       Please see Documentation of the Distance() function for
 ;       further information.
 ;
-;  WARP: Set this keyword to a three element floating array
+;  WARP:: Set this keyword to a three element floating array
 ;        [angle,strength,ground].
 ;        The three values specify warping of the returned gaussian
 ;        profile: dissections of the profile are displaced in proportion
@@ -126,11 +132,14 @@
 ;        Please see the examples for a demonstration of the WARP
 ;        keyword.
 ;
-;  ABSWARP: (see keyword WARP, component "strength".)
+;  ABSWARP:: (see keyword WARP, component "strength".)
 ;
-; OUTPUTS: Array: Ein ein- oder zweidimensionales Array vom Typ Double und der angegebenen Dimension mit Maximum 1.
+; OUTPUTS:
+;  Array:: Ein ein- oder zweidimensionales Array vom Typ Double und
+;          der angegebenen Dimension mit Maximum 1.
 ;
-; RESTRICTIONS: Man beachte, dass die Arraydimensionen ungerade sein müssen,
+; RESTRICTIONS:
+;   Man beachte, dass die Arraydimensionen ungerade sein müssen,
 ;               wenn der Berg symmetrisch im Array liegen soll!
 ;
 ;               Für XHWB != YHWB liefert die Funktion das Produkt zweier
@@ -139,144 +148,38 @@
 ;
 ;               Es ist zu beachten, dass bei gesetztem AUTOSIZE maximal 
 ;               ein Positionsparameter (sigma) uebergeben werden
-;               kann. In anderen Faellen ist das Verhalten der Routine undefiniert!
+;               kann. In anderen Faellen ist das Verhalten der Routine
+;               undefiniert! 
 ;
 ;
-; PROCEDURE: Put a Distance() cone through a Gaussian function.
+; PROCEDURE:
+;  Put a Distance() cone through a Gaussian function.
 ;
-; EXAMPLE: 
-;  SurfIt, /NASE, Gauss_2D (31,31)
-;  SurfIt, /NASE, Gauss_2D (31,21, HWB=2, 5, 5)
+; EXAMPLE:
+;* SurfIt, /NASE, Gauss_2D (31,31)
+;*  SurfIt, /NASE, Gauss_2D (31,21, HWB=2, 5, 5)
+;*
+;*  Surfit, /NASE, Gauss_2D(100, 100, 10, -50, 0)
+;*  Surfit, /NASE, Gauss_2D(100, 100, 10, -50, 0, PHI=45)
 ;
-;  Surfit, /NASE, Gauss_2D(100, 100, 10, -50, 0)
-;  Surfit, /NASE, Gauss_2D(100, 100, 10, -50, 0, PHI=45)
-;
-;  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0])
-;  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,0.01])
-;  ;; central shearing plane at width sigma:
-;  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
-;  ;; see it better here:
-;  for i=-0.99,0.99,0.01 do surface, exp(-0.5)<Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
+;*  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0])
+;*  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,0.01])
+;*  ;; central shearing plane at width sigma:
+;*  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
+;*  ;; see it better here:
+;*  for i=-0.99,0.99,0.01 do surface, exp(-0.5)<Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
 ;  
-;  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,1.0])
-;  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.01])
-;  ;; central shearing plane at height 0.5:
-;  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.5])
-;  ;; see it better here:
-;  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, WARP=[i,0.6,0.5])
+;*  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,1.0])
+;*  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.01])
+;*  ;; central shearing plane at height 0.5:
+;*  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.5])
+;*  ;; see it better here:
+;*  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, WARP=[i,0.6,0.5])
 ;  
-;  ;; The difference of the two angles:
-;  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[i,0.99,0.01]), zrange=[0,1] 
-;  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[0,0.99,0.01], PHI=-i), zrange=[0,1] 
+;*  ;; The difference of the two angles:
+;*  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[i,0.99,0.01]), zrange=[0,1] 
+;*  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[0,0.99,0.01], PHI=-i), zrange=[0,1] 
 ;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.32  2001/09/20 11:48:14  alshaikh
-;        another rotation-of-asymmetric-gaussians bug fixed
-;        (determination of the center of rotation was buggy)
-;
-;        Revision 1.31  2001/09/12 15:34:54  kupper
-;        removed compile_opt hiddens.
-;
-;        Revision 1.30  2001/09/04 09:24:25  alshaikh
-;              improvements concerning rotated gaussians... seems to work now.
-;
-;        Revision 1.29  2001/09/03 13:44:59  alshaikh
-;         can now handle rotated asymmetric gaussians on non-quadratic grids
-;
-;        Revision 1.28  2001/05/23 13:42:37  kupper
-;        Protected sigma from being changed.
-;        Added COMPILE_OPT HIDDEN in service routines.
-;
-;        Revision 1.27  2001/03/26 15:43:36  kupper
-;        /NORM did not work for 1-dim arrays. Corrected.
-;
-;        Revision 1.26  2001/01/23 16:16:06  kupper
-;        Replaced manual check for floating underflow errors by call to new
-;        IgnoreUnderflows procedure (which is platform independent).
-;
-;        Revision 1.25  2000/09/27 15:59:32  saam
-;        service commit fixing several doc header violations
-;
-;        Revision 1.24  2000/09/25 09:12:54  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.23  2000/09/08 22:51:35  kupper
-;        Result contained NaNs, if one of the sigmas was 0. Now this is checked
-;        and a array of zeros is returned instead.
-;
-;        Revision 1.22  2000/09/08 16:38:02  kupper
-;        Now ignoring floating underflows.
-;
-;        Revision 1.21  2000/09/01 14:17:36  saam
-;              replaced [] by () array indexing
-;
-;        Revision 1.20  2000/08/11 14:38:44  kupper
-;        Polished Header. (Not translated, sorry...)
-;        Now using extended form of Distance() to scale to standard
-;        deviation. Warping also supported.
-;        Added documentation for new features, and a lot of examples.
-;
-;        Revision 1.19  2000/07/19 14:21:48  kupper
-;        Added auxiliary functions.
-;        Will be used later :-)
-;
-;        Revision 1.18  2000/07/19 14:00:49  kupper
-;        Now making use of Distanc()s quick /QUADRATIC oprion!
-;
-;        Revision 1.17  2000/07/19 13:54:44  kupper
-;        Added comment on order of shifting/roztation.
-;
-;        Revision 1.16  2000/07/19 13:36:47  kupper
-;        Now using non-cyclic Distance() instead of dist().
-;        Hence, for non-centered tip-locations, mask is not cyclic shifted but
-;        properly computed. Tip locations my now be outside the array, too.
-;
-;        Revision 1.15  2000/07/18 13:32:02  kupper
-;        Changed /CUBIC to CUBIC=-0.5 in ROT() call.
-;
-;        Revision 1.14  2000/06/19 13:25:15  saam
-;              + new keyword PHI to rotate assymmetric distributions
-;
-;        Revision 1.13  2000/02/29 18:53:10  kupper
-;        Removed stupid ABS in normalization (gaussians are always positive!)
-;        Corrected use of Temporary() in normalization.
-;
-;        Revision 1.12  2000/02/29 17:44:01  kupper
-;        Added 1 to the sizes computed by AUTOSIZE. Thus, the array has odd size again.
-;
-;        Revision 1.11  2000/02/29 17:29:33  kupper
-;        Added AUTOSIZE Keyword.
-;
-;        Revision 1.10  2000/02/29 15:03:05  kupper
-;        Added comment on case XHWB != YHWB.
-;
-;        Revision 1.9  2000/02/29 14:56:10  kupper
-;        Added a "Temporary" here and there.
-;
-;        Revision 1.8  1999/04/13 17:10:30  thiel
-;               Noch ein Bugfix bei XHWB/YHWB und NORM-Zusammenarbeit.
-;
-;        Revision 1.7  1999/04/13 14:39:19  thiel
-;               'Set' bei der NORM-Abfrage durch 'Keyword_Set' ersetzt.
-;
-;        Revision 1.6  1997/11/25 18:07:14  gabriel
-;              Blow geloescht, Halbwertsbreiten fuer x und y hinzugefuegt
-;
-;        Revision 1.5  1997/11/25 17:03:32  gabriel
-;              Blow Keyword eingesetzt
-;
-;        Revision 1.4  1997/11/10 19:08:44  gabriel
-;             Option: /NORM fuer Volumennormierte Gaussmaske
-;
-;
-;        Urversion irgendwann 1995 (?), Rüdiger Kupper
-;        Keyword HWB zugefügt am 21.7.1997, Rüdiger Kupper
-;        Standard-Arbeitsgruppen-Header angefügt am 25.7.1997, Rüdiger Kupper
-;        Keywords X0_ARR und Y0_ARR zugefügt, 30.7.1997, Rüdiger Kupper
 ;-
 
 ;; The normal gauss function:
