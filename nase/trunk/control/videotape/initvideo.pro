@@ -1,0 +1,110 @@
+;+
+; NAME: InitVideo()
+;
+; PURPOSE: Initialisierung eines Array-Videos
+;
+;          Zur Video-Familie gehören: InitVideo()
+;                                     CamCord()
+;                                     Eject
+;                                     LoadVideo()
+;                                     Replay()
+;                                     Rewind
+;
+; CATEGORY: Simulation
+;
+; CALLING SEQUENCE: MyVideo = InitVideo ( MusterFrame [,TITLE] [,SYSTEM] [,STARRING]
+;                                                     [,COMPANY] [,PRODUCER] [,YEAR]
+;                                                     [,/VERBOSE] )
+; 
+; INPUTS: MusterFrame: Ein Array des Typs und der Größe, die aufgezeichnet werden sollen.
+;                      Leider sind StringArrays nicht erlaubt.
+;
+; OPTIONAL INPUTS: ---
+;	
+; KEYWORD PARAMETERS: TITLE, SYSTEM, STARRING, COMPANY, PRODUCER, YEAR:
+;                            Für mehr Freude an der Simulation...
+;                            Alle diese Schlüsselworte können auf Strings gesetzt werden (max. 80 Zeichen)
+;                            Für alle sind auch Defaults definiert.
+;                            HABEN KEINE WEITERE FUNKTION, AUßER DER ERHEITERUNG UND MUßE!
+;
+;                     Doch: TITLE legt auch den Filenamen fest!
+;
+; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
+;
+; OPTIONAL OUTPUTS:
+;
+; COMMON BLOCKS: ---
+;
+; SIDE EFFECTS:  Öffnet ein .vid- und .vidinf-File
+;
+; RESTRICTIONS: ---
+;
+; PROCEDURE: Ein Infofile erzeugen (.vidinf)
+;            Ein DatenFile erzeugen (.vid), in das später geschrieben wird.
+;
+; EXAMPLE: 1. MusterFrame = intarr(3)
+;             MyVideo = InitVideo( MusterFrame )
+;          
+;          2. MusterFrame = dblarr(20,20)
+;             MyVideo = InitVideo (MusterFrame, TITLE='The quiet Neuron', /VERBOSE)
+;
+; MODIFICATION HISTORY:
+;
+;       Wed Aug 27 17:20:58 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Urversion
+;
+;-
+
+Function InitVideo, Frame, TITLE=title, $
+                    SYSTEM=system, STARRING=starring, COMPANY=company, PRODUCER=producer, YEAR=year, $
+                    VERBOSE=verbose
+
+   If not(set(Frame)) then message, 'Bitte Musterframe angeben!'
+
+   Default, title, "The Spiking Neuron"   
+   Default, system, "CVS"
+   Default, starring, "Joe ""NASE"" Neuron"
+   Default, company, "AG Neurophysik"
+   Default, producer, GETENV("USER")
+   Default, year, strmid(systime(), 20, 24)
+
+   If Keyword_set(VERBOSE) then begin
+      print
+      print, "Welcome to the recording of """+title+"""!"
+      print, "This is a "+producer+" film on "+system+"."
+   endif else begin
+      print, "Initializing Video """+title+"""."
+   endelse
+   
+   leer80 = "                                                                                "
+   ltitle = leer80 & strput, ltitle, title
+   lsystem = leer80 & strput, lsystem, system
+   lstarring = leer80 & strput, lstarring, starring
+   lcompany = leer80 & strput, lcompany, company
+   lproducer = leer80 & strput, lproducer, producer
+   lyear = leer80 & strput, lyear, year
+
+
+   filename = title+".vid"
+   infoname = title+".vidinf"
+
+
+   openw, infounit, /GET_LUN, infoname
+   
+   writeu, infounit, size(Frame)   ; Das SIZE-Array eines Frames
+   writeu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
+   ;später wird noch die FrameAnzahl angehängt.
+   
+   openw, unit, /GET_LUN, filename
+
+  
+   return, {VideoMode   : 'RECORD', $
+            title       : title, $
+            unit        : unit, $
+            infounit    : infounit, $
+            FrameSize   : size(Frame), $
+            FramePointer: 0l}
+            
+End
