@@ -88,7 +88,6 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
 
    if level eq -1 then begin 
       IF msg     THEN level = 10
-
       IF debug   THEN level = 5
       IF warning THEN level = 20 
       IF fatal   THEN level = 30
@@ -103,12 +102,10 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
       _console = __console
    END
 
-   Handle_Value,_console,status,/no_copy
+;   Handle_Value,_console,status,/no_copy
+ 
 
-   IF level LT status.threshold THEN begin
-      Handle_Value,_console,status,/no_copy, /Set
-      return
-   endif
+   IF level LT GetHTag(_console, 'threshold') THEN return
    
 
 
@@ -125,27 +122,26 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    yell = '('+str(level)+')'+strupcase(_called_by)+':'+_message
    
 
-   viz = status.viz
+   viz = getHTag(_console, 'viz')
 
    IF Keyword_Set(UP) THEN dummy = DeTail(viz)
+   mlogfile = GetHTag(_console, 'logfile')
    For i=0, n_elements(yell)-1 do BEGIN
-       IF status.logfile NE !NONE THEN PrintF, status.logfile, yell(i)
+       IF mlogfile NE !NONE THEN PrintF, mlogfile, yell(i)
        EnQueue, viz, yell(i)
    END
 
-   CASE status.mode OF
+   mmode = GetHTag(_console, 'mode')
+   CASE mmode OF
       0: for i=0, n_elements(yell)-1 do print, yell(i)
-      1: Widget_Control,status.cons,set_value=queue(viz, /valid), $
+      1: Widget_Control,GetHTag(_console, 'cons'),set_value=queue(viz, /valid), $
        SET_TEXT_TOP_LINE=MAX([0,ContainedElements(viz, /VALID)-10])
    END
    
 
-   status.viz = Temporary(viz)
+   SetHTag, _console, "viz", Temporary(viz)
 
-   fatal = status.tolerance
-   Handle_Value,_console,status,/no_copy,/set
-
-   IF level GE fatal THEN message, "dummy", /NoPrint
+   IF level GE GetHTag(_console, 'tolerance') THEN message, "dummy", /NoPrint
                              ;;; in conjunction with on_error,2
                              ;;; this stops at the position of the
                              ;;; Console call
