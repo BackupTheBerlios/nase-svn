@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/08/10 14:10:08  saam
+;           problems with 8bit display hopefully corrected
+;
 ;     Revision 2.5  1998/07/21 08:55:48  saam
 ;           + corrected wrong maxtime display for (x,t) displaying
 ;           + DocHeader for (x,t) arrays
@@ -249,7 +252,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   TMP = A
   tmin = MIN(TMP)
   tmax = MAX(TMP)
-  IF ((SIZE(A))(0) EQ 3) AND (NOT Keyword_Set(SCALE)) THEN TMP = BYTE((TMP-tmin)/(tmax-tmin)*255)
+  IF ((SIZE(A))(0) EQ 3) AND (NOT Keyword_Set(SCALE)) THEN TMP = BYTE((TMP-tmin)/(tmax-tmin)*(!D.TABLE_SIZE-1))
   _A = Handle_Create(!MH, VALUE=TMP, /NO_COPY)
 
   
