@@ -1,65 +1,57 @@
 ;+
 ; NAME:               IFcannyEdge
 ;
-; AIM:                convolution of stimulus with an orientation detector
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:            Convolves the input given in STIMULUS with a Canny-Edge
+; AIM:               convolution of stimulus with an orientation detector
+;
+; PURPOSE:           Convolves the input given in STIMULUS with a Canny-Edge
 ;                     (orientation) detector
 ;
-; CATEGORY:           MIND INPUT 
+; CATEGORY:          MIND INPUT 
 ;
 ; CALLING SEQUENCE:   
-;                     ignore_me  = Ifcannyedge( MODE=0, 
-;                                              TEMP_VALS=temp_vals
-;                                              [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
-;                                              [,/WRAP]
-;                                              [,FILE=file]
-;                                              [,A=a]
-;                                              [,ORIENT=orient]
-;                                              [,SIZE=size] )
-;
-;                     newPattern = Ifcannyedge( [MODE=1], PATTERN=pattern )
-;                     ignore_me  = Ifcannyedge( MODE=[2|3] )
+;*ignore_me  = Ifcannyedge( MODE=0, 
+;*                          TEMP_VALS=temp_vals
+;*                          [,WIDTH=width] [,HEIGHT=height] 
+;*                          [,DELTA_T=delta_t] 
+;*                          [,/WRAP]
+;*                          [,FILE=file]
+;*                          [,A=a]
+;*                          [,ORIENT=orient]
+;*                          [,SIZE=size] )
+;*
+;*newPattern = Ifcannyedge( [MODE=1], PATTERN=pattern )
+;*ignore_me  = Ifcannyedge( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: A         : amplification of canny-edge detector
+; INPUT KEYWORDS:    A         :: amplification of canny-edge detector
 ;                                 (Default: 1)
-;                     DELTA_T   : passing time in ms between two sucessive calls of this filter function
-;                     FILE      : provides a file skeleton (string) to save
+;                    DELTA_T   :: passing time in ms between two sucessive calls of this filter function
+;                    FILE      :: provides a file skeleton (string) to save
 ;                                 data in an ordered way. 
-;                     HEIGHT    : height of the input to be created
-;                     MODE      : determines the performed action of the filter. 
+;                    HEIGHT    :: height of the input to be created
+;                    MODE      :: determines the performed action of the filter. 
 ;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
-;                     ORIENT    : orientation of the detector in DG
+;                    ORIENT    :: orientation of the detector in DG
 ;                                 (0..360, Default: 0)
-;                     PATTERN   : filter input
-;                     SIZE      : quadratic size of the orientation
+;                    PATTERN   :: filter input
+;                    SIZE      :: quadratic size of the orientation
 ;                                 detector (Default: 25)
-;                     TEMP_VALS : internal structure that reflects the filter function/status. This
+;                    TEMP_VALS :: internal structure that reflects the filter function/status. This
 ;                                 is initialized when MODE=0, read/modified for MODE=1 and freed for
 ;                                 MODE=2
-;                     WIDTH     : width of the input to be created
-;                     WRAP      : set, if the underlying layer has
+;                    WIDTH     :: width of the input to be created
+;                    WRAP      :: set, if the underlying layer has
 ;                                 toroidal boundary conditions
 ;                                 (default: no)
 ;
-; OUTPUTS:            newPattern: the filtered version of PATTERN
-;                     ignore_me : just ignore it
+; OUTPUTS:           newPattern :: the filtered version of PATTERN
+;                    ignore_me  :: just ignore it
 ;
-; SIDE EFFECTS:       TEMP_VALS is changed by the function call!
+; SIDE EFFECTS:      TEMP_VALS is changed by the function call!
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 1.2  2000/09/29 08:10:34  saam
-;     added the AIM tag
-;
-;     Revision 1.1  2000/07/04 14:23:36  saam
-;           grrr
-;
-;
 ;
 
 FUNCTION IFcannyEdge, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, WRAP=wrap, TEMP_VALS=_TV, DELTA_T=delta_t, $
@@ -97,7 +89,7 @@ FUNCTION IFcannyEdge, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, WRAP=wrap, 
       ; STEP
       1: BEGIN                             
           IF TV.WRAP THEN R = TV.a*((convol(pattern, TV.detect, /EDGE_WRAP))) ELSE R = TV.a*((convol(pattern, TV.detect)))
-          TV.sim_time =  TV.sim_time + TV.delta_tA/2:YS-A/2-1
+          TV.sim_time =  TV.sim_time + TV.delta_t ;A/2:YS-A/2-1; this code must have gotten here in error, it's left here just to be safe
       END
       
       ; FREE
@@ -117,3 +109,19 @@ FUNCTION IFcannyEdge, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, WRAP=wrap, 
 
    RETURN, R
 END
+
+; MODIFICATION HISTORY:
+;
+;
+;     $Log$
+;     Revision 1.3  2001/10/31 18:22:57  zwickel
+;     *** empty log message ***
+;
+;     Revision 1.2  2000/09/29 08:10:34  saam
+;     added the AIM tag
+;
+;     Revision 1.1  2000/07/04 14:23:36  saam
+;           grrr
+;
+;
+;
