@@ -396,7 +396,7 @@ unless the optional second argument NOINDENT is non-nil."
   ;; --End: set location of the document header template--
 
   ;; --relax idl prompt matching--
-  (setq idlwave-shell-prompt-pattern "^.*> ")
+  (setq idlwave-shell-prompt-pattern "^ ?\\(IDL\\|NASE\\|IDL/NASE\\)> ")
   ;; this allows for anything, followed by "> ".
   ;; --End: relax idl prompt matching--
 
