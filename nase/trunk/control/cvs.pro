@@ -1,12 +1,3 @@
-;
-; Auto Save File For /.amd/sisko/home/sisko/kupper/IDL/Allerlei/cvs.pro
-;
-
-
-
-; CODE MODIFICATIONS MADE ABOVE THIS COMMENT WILL BE LOST.
-; DO NOT REMOVE THIS COMMENT: BEGIN HEADER
-
 ;+
 ; NAME:
 ;         CVS
@@ -23,10 +14,6 @@
 ;	 
 ; KEYWORD PARAMETERS: NASPATH: Der Pfad, in dem sich das CVS-Directory befindet. Default ist "~/IDL".
 ;                              Die Defaults verweisen somit auf das CVS-Directory "~/IDL/nase"
-;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
 ;
 ; COMMON BLOCKS: common_cvs
 ;                           Dieser Block enthaelt die Variable name, die auf den CVS-Projektnamen gesetzt wird.
@@ -49,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.16  1998/11/04 15:14:16  saam
+;             the standard nase path is now taken from the
+;             environment variable NASEPATH
+;
 ;       Revision 1.15  1998/04/08 16:48:16  kupper
 ;              paar gnudoits hinzugefügt (Revert-Buffer und so...)
 ;
@@ -72,15 +63,6 @@
 ;		Urversion fertiggestellt. Sollte voll funktionieren...
 ;
 ;-
-
-
-; DO NOT REMOVE THIS COMMENT: END HEADER
-; CODE MODIFICATIONS MADE BELOW THIS COMMENT WILL BE LOST.
-
-
-; CODE MODIFICATIONS MADE ABOVE THIS COMMENT WILL BE LOST.
-; DO NOT REMOVE THIS COMMENT: BEGIN MAIN13
-
 
 Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher nicht viele...)
    Print
@@ -188,7 +170,7 @@ PRO cvs, CVS_Name, NASPATH=naspath, GROUP=Group
 common common_cvs, name, npath
 
   default, CVS_Name, "nase"
-  default, naspath, "~/IDL"
+  default, naspath, getenv("NASEPATH")+'/../'
   name = CVS_Name
   npath = naspath+'/'+CVS_Name
 
