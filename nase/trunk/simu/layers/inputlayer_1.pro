@@ -2,67 +2,81 @@
 ; NAME:
 ;  InputLayer_1
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM:
-;  Transfer input to Standard Marburg Model Neuron synapses of given layer. 
+;  Transfer input to Standard Marburg Model Neuron synapses of given layer.
 ;
-; PURPOSE:             Addiert Input vom Typ Sparse (siehe <A HREF="#SPASSMACHER">Spassmacher</A>) 
-;                      auf die Neuronenpotentiale und klingt diese vorher ab. 
-;                      Ein mehrmaliger Aufruf von InputLayer_1 ist möglich.
-;                      Danach sollte man auf jeden Fall <A HREF="#PROCEEDLAYER_1">ProceedLayer_1</A>
-;                      aufrufen.
+; PURPOSE:
+;  By calling <C>InputLayer_1</C>, input currents can be transferred
+;  to the synapses of neurons constituting a layer of Standard Marburg
+;  Model Neurons. Different types of synapses (feeding, linking, and
+;  inhibitory) are specified using appropriate keywords. To add
+;  multiple inputs to the same synapse type, call <C>InputLayer_1</C>
+;  several times.<BR>
+;  Input has to be in <A NREF=spassmacher>sparse</A> format, the
+;  synaptic potentials are decreased before adding the specified input.
 ;
-; CATEGORY:            SIMULATION / LAYERS
+; CATEGORY:
+;  Input
+;  Layers
+;  Simulation
 ;
-; CALLING SEQUENCE:    InputLayer_1, Layer [,FEEDING=feeding] [,LINKING=linking] [,INHIBITION=inhibition]
-;                                          [,/CORRECT]  
+; CALLING SEQUENCE:
+;* InputLayer_1, layer [,FEEDING=...] [,LINKING=...] 
+;*                     [,INHIBITION=...]
+;*                     [,/CORRECT]
 ;
-; INPUTS:              Layer : eine mit <A HREF="#INITLAYER_1">InitLayer_1</A> erzeugte Struktur
+; INPUTS:
+;  layer:: A layer structure of Standard Marburg Model Neurons,
+;          initialized by <A>InitLayer_1()</A>.
 ;
-; KEYWORD PARAMETERS:  feeding, linking, inhibition : Sparse-Vektor, der auf 
-;                          das entsprechende Potential addiert wird
-;                      CORRECT: Die Iterationsformel fuer einen Leckintegrator
-;                               erster Ordnung lautet korrekterweise: 
-;                                  F(t+dt)=F(t)*exp(-dt/tau)+Input*V*(1-exp(-dt/tau))
-;                               Die Multiplikation des Inputs mit dem Faktor
-;                               (1-exp(-1/tau)) wird aber in der gängigen
-;                               algorithmischen Formulierung des MMN weg-
-;                               gelassen. Dies kann störend sein, denn
-;                               diese Formulierung ist nicht invariant
-;                               gegenüber einer Änderung der Zeitauflösung.
-;                               Das Keyword CORRECT führt die Multiplikation
-;                               mit (1-exp(-1/tau)) explizit aus.
-;                                
-; SIDE EFFECTS:        wie so oft wird die Layer-Struktur verändert
+; INPUT KEYWORDS:
+;  FEEDING, LINKING, INHIBITION:: <A NREF=spassmacher>Sparse</A>
+;                                 vectors intended to be added
+;                                 to the respective potentials of
+;                                 feeding, linking and inhibitory
+;                                 synapses.
+;  /CORRECT:: Solving the differential equation for a leaky integrator
+;             numerically using the Exponetial Euler method yields the
+;             iteration formula 
+;*             F(t+dt)=F(t)*exp(-dt/tau)+Input*V*(1-exp(-dt/tau))
+;             In the standard algorithm for computation of Marburg
+;             Model Neuron potentials, the factor (1-exp(-dt/tau)) is
+;             omitted. When changing the integration step size dt or
+;             the time constant tau, the standard method yields
+;             different behavior of the potetials which is sometimes
+;             undesirable. Therefore, setting <C>CORRECT=1</C>
+;             explicitely multiplies the input with (1-exp(-dt/tau)). 
 ;
-; RESTRICTIONS:        keine Überpuefung der Gültigkeit des Inputs (Effizienz!)
+; RESTRICTIONS:
+;  The validity of the input is not checked due to efficiency
+;  considerations.
+;
+; PROCEDURE:
+;  Check if potentials have already been decreased by preceeding call
+;  to <C>InputLayer_1</C>. If not, decrease, then add new feedning,
+;  linking, inhibition. 
 ;
 ; EXAMPLE:
-;                       para1         = InitPara_1(tauf=10.0, vs=1.0)
-;                       InputLayer    = InitLayer_1(WIDTH=5,HEIGHT=5, TYPE=para1)
-;                       FeedingIn     = Spassmacher( 10.0 + RandomN(seed, InputLayer.w*InputLayer.h))
-;                       InputLayer_1, InputLayer, FEEDING=FeedingIn
-;                       ProceedLayer_1, InputLayer
+;* para1 = InitPara_1(TAUF=10.0, VS=1.0)
+;* layer = InitLayer_1(WIDTH=5, HEIGHT=5, TYPE=para1)
+;* feedinginput = Spassmacher(10.0 + RandomN(seed, LayerSize(layer)))
+;* InputLayer_1, layer, FEEDING=feedinginput
+;* ProceedLayer_1, layer
+;*>
 ;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 2.6  2000/09/28 13:05:26  thiel
-;           Added types '9' and 'lif', also added AIMs.
-;
-;       Revision 2.5  1999/04/20 12:51:38  thiel
-;              /CORRECT-Behandlung correctiert.
-;
-;       Revision 2.4  1998/11/08 17:27:18  saam
-;             the layer-structure is now a handle
-;
-;
-;       Thu Sep 11 18:36:59 1997, Mirko Saam
-;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;		Schoepfung und Tests
-;               Entstanden aus einem Teil von ProceedLayer_1
-;
+; SEE ALSO:
+;  <A>InputLayer</A>, <A>InitPara_1()</A>, <A>InitLayer_1()</A>,
+;  <A>ProceedLayer_1</A>, <A>FreeLayer</A>, <A>Spassmacher()</A>.
 ;-
-PRO InputLayer_1, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition, CORRECT=correct
+
+
+
+PRO InputLayer_1, _Layer $
+                  , FEEDING=feeding, LINKING=linking $
+                  , INHIBITION=inhibition, CORRECT=correct
 
    Handle_Value, _Layer, Layer, /NO_COPY
 
