@@ -131,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.12  2000/03/17 11:40:41  kupper
+;        Now displays also average steptime over last 100 steps.
+;
 ;        Revision 1.11  1999/11/29 16:07:02  kupper
 ;        Implemented service function "FACEIT_NewUserbase".
 ;
@@ -277,12 +280,14 @@ END ; FaceIt_RESET
 
 
 
-FUNCTION FaceIt_KILL_REQUEST, name, dataptr, displayptr, base
-
-   IF Call_FUNCTION(name+'_KILL_REQUEST', dataptr, displayptr) THEN BEGIN
-      Ptr_Free, dataptr 
-      Ptr_Free, displayptr
-      WIDGET_CONTROL, base, /DESTROY
+FUNCTION FaceIt_KILL_REQUEST, UV
+   
+   IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr) THEN $
+    BEGIN
+      Ptr_Free, UV.SimStepTimeQ
+      Ptr_Free, UV.dataptr 
+      Ptr_Free, UV.displayptr
+      WIDGET_CONTROL, UV.w_base, /DESTROY
       Return, 1
    ENDIF ELSE Return, 0
 
@@ -327,10 +332,14 @@ PRO FaceIt_EVENT, Event
                IF (uv.duration GT 0) AND uv.stepcounter GT uv.duration THEN $
                 UV.continue_simulation = 0
                
-               ; Display duration of last cycle:
+               ; Display duration of last cycle(s):
                CurrentTime = SysTime(1)
-               Widget_Control, UV.W_SimStepTime, SET_VALUE='Last: '+ $
-                str(round((CurrentTime-UV.SimAbsTime)*1000))
+               LastDuration = round((CurrentTime-UV.SimAbsTime)*1000)
+               EnQueue, *UV.SimStepTimeQ, LastDuration
+               Widget_Control, UV.W_SimStepTime, SET_VALUE='Last : '+ $
+                str(LastDuration)
+               Widget_Control, UV.W_SimStepTimeInt, SET_VALUE='L.100: '+ $
+                str(fix(Total(Queue(*UV.SimStepTimeQ)))/100)
                UV.SimAbsTime = CurrentTime
 
                ; If display-flag is set call DISPLAY-Routine to show results:
@@ -341,9 +350,7 @@ PRO FaceIt_EVENT, Event
          END ; WIDGET_TIMER
                                               
          "WIDGET_KILL_REQUEST" : $
-             widget_killed = $
-             FaceIt_KILL_REQUEST(UV.simname, UV.dataptr, UV.displayptr, $
-                                 UV.w_base)
+             widget_killed = FaceIt_KILL_REQUEST(UV)
   
          "SIMULATION_START" : $
           IF NOT UV.continue_simulation THEN BEGIN
@@ -518,7 +525,9 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
                                    VALUE='Step: -----')
 
    W_SimStepTime = Widget_Label(W_simtimes, FONT=MySmallFont, $
-                                VALUE='Last: ----')
+                                VALUE='Last : ----')
+   W_SimStepTimeInt = Widget_Label(W_simtimes, FONT=MySmallFont, $
+                                VALUE='L.100: ----')
 
    simprogress = Widget_Slider(W_SimControl, MINIMUM=0, MAXIMUM=1, $
                               XSIZE=125, TITLE="Simulation Progress", $
@@ -562,6 +571,8 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
       'stepcounter', 0l, $
       'simprogress', simprogress, $
       'W_SimStepTime', W_SimStepTime, $
+      'W_SimStepTimeInt', W_SimStepTimeInt, $
+      'SimStepTimeQ', Ptr_New(InitFQueue(100, 0)), $
       'SimAbsTime', SysTime(1), $
       'W_SimStart', W_SimStart, $
       'W_SimStop', W_SimStop, $
