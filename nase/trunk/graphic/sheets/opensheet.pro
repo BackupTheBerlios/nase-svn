@@ -29,6 +29,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.20  1999/10/29 11:49:16  kupper
+;     Setting Colortables using UTVSCL is VERY SLOW over the net, when
+;     a TRUE_COLOR-Display is used.
+;     Reason? (The DEVICE, BYPASS_TRANLATION-Commands???)
+;
 ;     Revision 2.19  1999/10/28 16:16:03  kupper
 ;     Color-Management with sheets was not correct on a
 ;     true-color-display.
@@ -128,11 +133,12 @@
 ;END
 
 
-PRO OpenSheet, __sheet, multi_nr
+PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
 
    COMMON ___SHEET_KILLS, sk
 
    On_Error, 2
+   Default, setcol, 1
 
    Handle_Value, __sheet, _sheet, /NO_COPY
 
@@ -209,7 +215,7 @@ PRO OpenSheet, __sheet, multi_nr
       !Z = sheet.z
       sheet.z = old
 
-      If not(PseudoColor_Visual()) then begin
+      If keyword_set(SETCOL) and not(PseudoColor_Visual()) then begin
                                 ;we've got a True-Color-Display, so
                                 ;we have to set the private color table:
          WIDGET_CONTROL, sheet.DrawId, GET_UVALUE=draw_uval
