@@ -3,7 +3,7 @@
 ;  InstantRate
 ;
 ; PURPOSE: 
-;  Calculation of the momentary firing rate from a train of action
+;  Calculation of the instantaneous firing rate from a train of action
 ;  potentials. Computation is done either by counting the spikes
 ;  inside a given time window sliding over the train or by convolving
 ;  the spike train with a Gaussian window of given width. Averaging
@@ -26,7 +26,7 @@
 ;
 ; OPTIONAL INPUTS: 
 ;  sampleperiod: Length of a BIN in seconds, default: 0.001s
-;  ssize: Width of window used to calculating the firing rate. If
+;  ssize: Width of window used to calculate the firing rate. If
 ;         keyword /GAUSS is set, ssize sets the standard deviation of
 ;         the Gaussian filter. Default: GAUSS=0: 128ms, GAUSS=1: 20ms
 ;  sshift: Shift of positions where firing rate is to be
@@ -37,7 +37,7 @@
 ;         Gaussian filter, resembling a probabilistic interpretation.
 ;         Computation takes longer, but gives a smoother result. Note
 ;         that defaults for ssize and sshift are different when
-;         setting this keyword. 
+;         setting this keyword.
 ;
 ; OUTPUTS: 
 ;  rate: Twodimensional array, containing the firing rates at the
@@ -81,6 +81,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/08/01 15:04:13  thiel
+;            Now handles 1-dim spiketrains with /GAUSS correctly.
+;
 ;        Revision 1.3  2000/04/11 12:11:13  thiel
 ;            Rates may also be computed by convolution with Gaussian.
 ;
@@ -110,9 +113,15 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
       gausslength = 8*__ssize
       gaussx = FIndGen(gausslength)-gausslength/2
       gaussarr= Exp(-gaussx^2/2/__ssize^2)/__ssize/sqrt(2*!PI)
-      result = Convol(Float(nt), Transpose(gaussarr), /EDGE_TRUNC) $
-       /sampleperiod
-      result = (Temporary(result))(*,tindices)
+
+      IF (Size(nt))(1) NE 1 THEN $
+       result = Convol(Float(nt), Transpose(gaussarr), /EDGE_TRUNC) $
+       /sampleperiod $
+      ELSE $
+       result = Transpose(Convol(Transpose(Float(nt)), gaussarr, /EDGE_TRUNC) $
+       /sampleperiod)
+     result = (Temporary(result))(*,tindices)
+
    ENDIF ELSE BEGIN
       sli = Slices(nt, SSIZE=ssize, SSHIFT=sshift, TVALUES=tvalues $
                    , TINDICES=tindices, SAMPLEPERIOD=sampleperiod)
