@@ -91,6 +91,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2003/10/27 14:08:13  kupper
+;        fixed bug that must have been there since the beginning:
+;        write L_INTERP instead of L_MINUS_ONE in default. Made no sense, and
+;        one row in display was lost!
+;
 ;        Revision 1.6  2003/07/04 14:04:21  kupper
 ;        added L_CUBIC, L_INTERP, L_MINUS_ONE keywords.
 ;
@@ -127,7 +132,7 @@ Function widget_leaky_image_container::init, IMAGE=image, $
    DMsg, "I am created."
 
    Default, L_CUBIC, -0.5
-   Default, L_INTERP, 1
+   Default, L_MINUS_ONE, 1
 
    If keyword_set(Column) then row = 0 else row = 1
 
