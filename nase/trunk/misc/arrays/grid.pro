@@ -65,22 +65,20 @@ IF Set(_size) THEN dims=_size(1:_size(0))
 ndim=N_Elements(dims)
 IF ndim NE 2 THEN Console, 'sorry, just works for two dimensions', /FATAL
 
-Default, count , REPLICATE(!NONE, ndim)
+Default, count , REPLICATE(!NONEl, ndim)
 Default, step  , REPLICATE(1    , ndim)
 Default, cshift, REPLICATE(0    , ndim)
-
+count = LONG(count)
 
 if Set(uniform) then step = fix(dims/count)
 
 
 ;check grid method
 FOR d=ndim-1,0,-1 DO BEGIN
-    IF count(d) EQ !NONE THEN ccount = (dims(d))/step(d) ELSE ccount = MAX([1,count(d)])
+    IF count(d) EQ !NONEl THEN ccount = (dims(d))/step(d) ELSE ccount = MAX([1,count(d)])
     t = REVERSE((LindGen(ccount)*step(d)))
     t=t - (MAX(t)-MIN(t)+1)/2 - cshift(d)
     pos = (dims(d))/2 - t - even(ccount)*even(dims(d))
-    print,t
-    print, pos
     ok = WHERE((pos GE 0) AND (pos LT dims(d)),c) 
     IF (c NE ccount) THEN BEGIN
         Console, "Grid doesn't fit into the array...", /WARN
