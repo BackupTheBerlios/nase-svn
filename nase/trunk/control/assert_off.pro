@@ -1,3 +1,18 @@
+;+
+; NAME: 
+;   Assert_Off
+;
+; VERSION:
+;   $Id$
+;
+; AIM:
+;   Internal use
+;   
+; CATEGORY:
+;  Internal
+;
+;-
+
 ; This module is needed for the "Debugging" command.
 
 Pro assert, conditionstring, text
