@@ -11,7 +11,7 @@
 ;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ]
-;                                   [,TRANSPARENT] [,INVERSE] )
+;                                   [,TRANSPARENT] [,INVERSE][,INITSDW] )
 ;
 ; INPUTS: DWS     : Eine (initialisierte!) Delay-Weight-Struktur
 ;
@@ -28,7 +28,7 @@
 ; OPTIONAL INPUTS: Wert   : Stärke der Verbindungen
 ;                  Range  : Reichweite in Gitterpunkten. (Reichweite (Radius) des Kreises) (Default ist 1/6 der Targetlayerhöhe)
 ;	
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE, TRANSPARENT : s. SetWeight!
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE, TRANSPARENT, INITSDW : s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
 ;                     INVERSE : Setzt Verbindungen ab einer minimalen Reichweite
 ;
 ; SIDE EFFECTS: Die Delays der Delay-Weight-Struktur werden entsprechend geändert.
@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1997/11/17 17:44:38  gabriel
+;             INITSDW Keyword eingesetzt
+;
 ;       Revision 1.5  1997/10/20 14:14:09  kupper
 ;       Kann jetzt auch Target->Source-Verbindungen.
 ;
@@ -71,7 +74,7 @@ Pro SetConstWeight, DWS, Amp, Range, $
                     S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                     T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                     ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                    INVERSE=inverse, TRANSPARENT=transparent
+                    INVERSE=inverse, TRANSPARENT=transparent, _EXTRA=extra
 
    Default, Range, DWS.target_h/6  
    Default, Amp, 1
@@ -84,11 +87,11 @@ Pro SetConstWeight, DWS, Amp, Range, $
       IF Keyword_Set(inverse) THEN BEGIN
          SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
           Amp*((Range LE Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col))), $
-          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent, _EXTRA=extra
       END ELSE BEGIN
          SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
           Amp*(Range GT Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
-          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent, _EXTRA=extra
       END
 
    endif else begin             ; Wir definieren FROMS:
@@ -99,11 +102,11 @@ Pro SetConstWeight, DWS, Amp, Range, $
       IF Keyword_Set(inverse) THEN BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
           Amp*((Range LE Shift(Dist(DWS.source_h, DWS.source_w), s_hs_row, s_hs_col))), $
-          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent, _EXTRA=extra
       END ELSE BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
           Amp*(Range GT Shift(Dist(DWS.source_h, DWS.source_w), s_hs_row, s_hs_col)), $
-          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent, _EXTRA=extra
       END
       
    endelse
