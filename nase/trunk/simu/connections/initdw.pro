@@ -7,8 +7,8 @@
 ;
 ; CALLING SEQUENCE: My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
 ;                                   [,/SOURCE_TO_TARGET | /TARGET_TO_SOURCE]
-;                                   [,DELAY  | ,D_RANDOM | ,D_NRANDOM | ,D_CONST | ,D_LINEAR | ,D_GAUSS] 
-;                                   [,WEIGHT | ,W_RANDOM | ,W_NRANDOM | ,W_CONST | ,W_LINEAR | ,W_GAUSS, W_DOG]
+;                                   [,DELAY  | ,D_INIT | ,D_RANDOM | ,D_NRANDOM | ,D_CONST | ,D_LINEAR | ,D_GAUSS] 
+;                                   [,WEIGHT | ,W_INIT | ,W_RANDOM | ,W_NRANDOM | ,W_CONST | ,W_LINEAR | ,W_GAUSS, W_DOG]
 ;                                   [,/D_NONSELF] [,/W_NONSELF] 
 ;                                   [,/W_TRUNCATE [,W_TRUNC_VALUE]]
 ;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
@@ -16,6 +16,7 @@
 ;                                   [,/OLDSTYLE] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
+;                                                oder implizit int W_INIT/D_INIT
 ;
 ; OPTIONAL INPUTS: SOURCE_TO_TARGET     : Dies ist der Default: Die folgenden Verbindungs- und Delay-Schlüsselworte
 ;                                         definieren Verbindungen vom Source- in den Targetlayer.
@@ -23,6 +24,7 @@
 ;                                         vom Target- in den Source-Layer. 
 ;
 ;                  DELAY,     WEIGHT    : Konstanter Wert, mit dem die Gewichte/Delays initialisiert werden. Default für WEIGHT ist 0.
+;                  D_INIT,    W_INIT    : Array vom Ausmaß (Target_Height,Taget_Width, Source_Height,Source_Width), der die Werte für die Initialisierung enthält. Die Ausmaße werden aus diesem Array abgeleitet und brauchen nicht explizit angegeben zu werden. Werden beide Arrays angegeben, müssen die Ausmaße natürlich gleich sein.                                        
 ;                  D_RANDOM,  W_RANDOM  : Array [Min,Max]. Die Gewichte/Delays werden gleichverteilt zufällig belegt im Bereich Min..Max. Diese Belegung wirkt additiv, wenn zusätzlich zu diesem Schlüsselwort noch ein anderes angegeben wird.
 ;                  D_NRANDOM, W_NRANDOM : Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zufällig belegt mit Mittelwert MW und Standardabweichung sigma. Diese Belegung wirkt additiv, wenn zusätzlich zu diesem Schlüsselwort noch ein anderes angegeben wird.
 ;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
@@ -114,6 +116,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.13  1998/03/24 11:32:21  kupper
+;              ?_Init implementiert.
+;
 ;       Revision 2.12  1998/02/26 17:24:18  kupper
 ;              OLDSTYLE-Schlüsselwort hinzugefügt.
 ;
@@ -240,6 +245,7 @@
 Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  S_WIDTH=s_width, S_HEIGHT=s_height, T_WIDTH=t_width, T_HEIGHT=t_height, $
                  DELAY=delay,                 WEIGHT=weight, $
+                 D_INIT=d_init,               W_INIT=w_init, $
                  D_RANDOM=d_random,           W_RANDOM=w_random, $
                  D_NRANDOM=d_nrandom,         W_NRANDOM=w_nrandom, $
                  D_GAUSS=d_gauss,             W_GAUSS=w_gauss, $
@@ -267,33 +273,52 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
       t_height = t_layer.h
    END
    
-   
+   If keyword_Set(D_INIT) then begin
+      s = size(D_INIT)
+      if s(0) ne 4 then message, "D_INIT erwartet ein vierdimensionales Array der Form (target_height,target_width, source_height,source_width)!"
+      t_height = s(1)
+      t_width  = s(2)
+      s_height = s(3)
+      s_width  = s(4)
+   endif
+   If keyword_Set(W_INIT) then begin
+      s = size(W_INIT)
+      if s(0) ne 4 then message, "W_INIT erwartet ein vierdimensionales Array der Form (target_height,target_width, source_height,source_width)!"
+      t_height = s(1)
+      t_width  = s(2)
+      s_height = s(3)
+      s_width  = s(4)
+   endif
+
    Default, Weight, 0
+   
 
+   HasDelay = set(DELAY) or set(D_INIT) or set(D_RANDOM) or set(D_NRANDOM) or set(D_GAUSS) or set(D_LINEAR) OR set(D_CONST) OR set(D_IDENT)
 
-   HasDelay = set(DELAY) or set(D_RANDOM) or set(D_NRANDOM) or set(D_GAUSS) or set(D_LINEAR) OR set(D_CONST) OR set(D_IDENT)
 
 ;konstante Belegungen:
    if HasDelay then begin
       
       Default, delay, 0
+      Default, W_INIT, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
+      Default, D_INIT, Replicate( FLOAT(delay),  t_width*t_height, s_width*s_height )
       
       _DW = Handle_Create(!MH, VALUE={ info    : 'DW_DELAY_WEIGHT',$
-                                  source_w: s_width,$
-                                  source_h: s_height,$
-                                  target_w: t_width,$
-                                  target_h: t_height,$
-                                  Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
-                                  Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height )$
-                                }, /NO_COPY)
+                                       source_w: s_width,$
+                                       source_h: s_height,$
+                                       target_w: t_width,$
+                                       target_h: t_height,$
+                                       Weights : reform(w_init, t_height*t_width, s_height*s_width), $
+                                       Delays  : reform(d_init, t_height*t_width, s_height*s_width) }, /NO_COPY)
    END ELSE BEGIN         
+      Default, W_INIT, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
+      
       _DW = Handle_Create(!MH, VALUE={info    : 'DW_WEIGHT', $
-                                 source_w: s_width,$
-                                 source_h: s_height,$
-                                 target_w: t_width,$
-                                 target_h: t_height,$
-                                 Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )$
-                                }, /NO_COPY)
+                                      source_w: s_width,$
+                                      source_h: s_height,$
+                                      target_w: t_width,$
+                                      target_h: t_height,$
+                                      Weights : reform(w_init, t_height*t_width, s_height*s_width) }, /NO_COPY)
    END
    
 
