@@ -44,6 +44,7 @@ FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
    actDir = MainDir(0) + '/' + SubDirs(i)
 
    cd, actDir
+   Spawn, 'rm -f '+HTMLFile
    Mk_HTML_Help, actDir, actDir + '/' + HTMLFile
    
    ;Spawn, 'chmod g+w '+HTMLFile
