@@ -56,6 +56,9 @@
 ;  
 ;
 ; OPTIONAL INPUTS:
+;   PICTURE:: If this argument ist present, semi-automatic input
+;             generation is selected (see <I>Method 2</I> below).
+;
 ;         VISUALIZE:: Ist dieses Schlüsselwort benutzt, wird der
 ;                    Scanvorgang in einem Fenster dargestellt.
 ;                    In VISUALIZE muß dazu ein vierelementiges
@@ -98,9 +101,9 @@
 ;         Dabei werden drei mögliche Inputmethoden unterschieden:<BR>
 ;
 ;         <I>1. Die manuelle Methode:</I><BR>
-;                                  Wird keins der Input-Schlüsselworte 
+;                                  Wird keins der <*>AUTO_*</*>-Schlüsselworte 
 ;                                  angegeben und fehlt auch das
-;                                  "Picture"-Argument, so muß bei
+;                                  <*>Picture</*>-Argument, so muß bei
 ;                                  jedem folgenden Aufruf von
 ;                                  <A>RFScan_Zeigmal</A> das zu
 ;                                  präsentierende Bild manuell
@@ -113,7 +116,7 @@
 ;                                  ausgegeben.<BR>
 ;         <I>2. Die halbautomatische</I><BR>
 ;                         Methode: Wird bei der Initialisierung ein
-;                                  Bild als "Picture"-Argument
+;                                  Bild als <*>Picture</*>-Argument
 ;                                  übergeben (auf richtige Ausmaße
 ;                                  achten!), so sorgt <A>RFScan_Zeigmal</A>
 ;                                  automatisch dafür, daß dieses Bild
