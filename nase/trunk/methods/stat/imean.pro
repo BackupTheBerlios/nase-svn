@@ -155,7 +155,7 @@ FUNCTION  IMean,   X_, SD, SDM,  $
          ; If nothing scary has happened during the rebinning => everything all right:
          ELSE  MX = Transpose(MX, Sort(DM))
        ; Now M and X are of equal size and can be used within the same arithmetic expression:
-       IF  N GE 2  THEN  SD = Sqrt(Total((X_-MX)^2,Dim) / (N-1))  ELSE  SD = Total((X_-MX)^2,Dim)
+       IF  N GE 2  THEN  SD = Sqrt(Total((X_-MX)^2,Dim) / (N-1))  ELSE  SD = 0*Total(X_,Dim)
        SDM = SD / Sqrt(N)
      ENDIF
      Return, M
