@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.20  1998/11/08 17:52:41  saam
+;             changed to new layer type
+;
 ;       Revision 1.19  1998/05/12 10:25:33  thiel
 ;              Bugfix im Delay-Teil, da fehlte ein DW.
 ;
@@ -156,7 +159,7 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
    If Not Set(RATE) Then Rate = Entlernrate
    If Not Set(ALPHA) Then Alpha = Lernrate/Entlernrate
  
-   Handle_Value, Target_Cl.O, Post
+   Post = Handle_Val(LayerOut(Target_CL))
    If Post(0) EQ 0 Then Return
 
    Handle_Value, _DW, DW, /NO_COPY

@@ -11,7 +11,7 @@
 ; CALLING SEQUENCE:  TrainspottingScope, TSC, O
 ;
 ; INPUTS:            TSC: mit <A HREF=/nase/graphic/plotcilloscope/#INITTRAINSPOTTINGSCOPE>InitTrainspottingScope</A> initialisierte Struktur
-;                    O  : der Output einer Neuronengruppe im SSpass-Format
+;                    O  : der Output einer Neuronengruppe als Handle auf SSpass-Format
 ;
 ; EXAMPLE:               
 ;                    LP = InitPara1()
@@ -23,14 +23,16 @@
 ;                    END
 ;                    FreeTrainspottingScope, TSC
 ;
-; RESTRICTIONS:      Im Moment gibt es aus Effizienzgruenden keine Gedaechtnisfunktion,
-;                    daher kann die Abszissen-Beschirftung nicht aktualisiert werden.
+; RESTRICTIONS:      Im Moment gibt es aus Effizienzgruenden keine Gedaechtnisfunktion
 ;
 ; SEE ALSO:          <A HREF="#INITTRAINSPOTTINGSCOPE">InitTrainspottingScope</A>, <A HREF="#FREETRAINSPOTTINGSCOPE">FreeTrainspottingScope</A>
 ;
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.3  1998/11/08 17:53:35  saam
+;           changed to new layer type
+;
 ;     Revision 2.2  1998/11/08 14:25:07  saam
 ;           hyperlink malfunction corrected
 ;
@@ -39,23 +41,30 @@
 ;
 ;
 ;-
-PRO TrainspottingScope, _SR, y, $
+PRO TrainspottingScope, _SR, _y, $
                         XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
                         XTITLE=xtitle
 
    Handle_Value, _SR, SR, /NO_COPY
+   y = Handle_Val(_y)
    IF y(0) NE 0 THEN BEGIN
       xsc = SR.xsc
       ysc = SR.ysc
       UserSym, [-xsc, xsc, xsc, -xsc, -xsc], [-ysc,-ysc,ysc,ysc,-ysc], FILL=SR.Fill
       
       neuronC = LIndGen(SR.neurons)
-      vertLine = Make_Array(SR.neurons, VALUE=SR.t MOD SR.time)
+      vertLine = Make_Array(SR.neurons, VALUE=SR.t)
 
       PlotS, vertLine, neuronC, PSYM=8, SYMSIZE=1, COLOR=!P.BACKGROUND
       PlotS, vertLine(0:y(0)), y(2:y(0)+1), PSYM=8, SYMSIZE=1.0
    END
    SR.t = SR.t + 1
+
+   IF (SR.T MOD SR.TIME) EQ 0 THEN BEGIN
+      plot, FltArr(10), /NODATA, YRANGE=[-2, SR.neurons+2], XRANGE=[-2+SR.T,SR.T+SR.time/SR.os+2], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
+   END
+
+
    Handle_Value, _SR, SR, /NO_COPY, /SET
       
 END

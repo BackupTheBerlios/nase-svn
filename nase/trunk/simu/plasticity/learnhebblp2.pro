@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.5  1998/11/08 17:52:42  saam
+;             changed to new layer type
+;
 ;       Revision 2.4  1998/08/23 13:03:02  saam
 ;             new keyword DELEARN for temporal, coincidence independent learning
 ;
@@ -80,14 +83,11 @@
 PRO LearnHebbLP2, _DW, LP, TARGET_CL=Target_CL,SELF=Self,NONSELF=NonSelf, $
                 ALPHA=alpha, GAMMA=gamma, DELEARN=delearn
   
+
+   Post = Handle_Val(LayerOut(Target_CL))
+   If Post(0) EQ 0 Then RETURN
    Handle_Value, _DW, DW, /NO_COPY
    
-
-   Handle_Value, Target_Cl.O, Post
-   If Post(0) EQ 0 Then BEGIN
-      Handle_Value, _DW, DW, /NO_COPY, /SET
-      RETURN
-   END
 
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
