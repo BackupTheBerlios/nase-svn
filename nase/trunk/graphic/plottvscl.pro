@@ -199,6 +199,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.69  2000/11/02 17:53:53  gabriel
+;          fractional labels are now supported
+;
 ;     Revision 2.68  2000/11/02 16:19:25  gabriel
 ;          doc header bug killed; perl doesn't like cambered brackets ...
 ;
@@ -438,6 +441,12 @@
 ;
 ;
 ;
+
+function __isfloat, value
+   type =  last(size(value),pos=-1)
+   return, (type eq 4) or (type eq 5)     
+end 
+
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
                XRANGE=xrange, YRANGE=yrange, $
@@ -565,12 +574,16 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
       IF N_Elements(XRANGE) NE 2 THEN Message, 'wrong XRANGE argument'
       IF N_Elements(YRANGE) NE 2 THEN Message, 'wrong YRANGE argument'
-      
-      XRANGE(0) = XRANGE(0)-1+2*(XRANGE(0) GT XRANGE(1))
-      XRANGE(1) = XRANGE(1)-1+2*(XRANGE(0) LE XRANGE(1))
-      YRANGE(0) = YRANGE(0)-1+2*(YRANGE(0) GT YRANGE(1))
-      YRANGE(1) = YRANGE(1)-1+2*(YRANGE(0) LE YRANGE(1))
-      
+
+      ;;for fractional xrange or yrange we need another labeling 
+
+      if __isfloat(XRANGE) then x_corr = abs(XRANGE(0)-XRANGE(1))/FLOAT(ArrayWidth-1) else x_corr = 1l
+      if __isfloat(YRANGE) then y_corr = abs(YRANGE(0)-YRANGE(1))/FLOAT(ArrayHeight-1) else   y_corr = 1l
+
+      XRANGE(0) = XRANGE(0)-1*x_corr+2*x_corr*(XRANGE(0) GT XRANGE(1))
+      XRANGE(1) = XRANGE(1)-1*x_corr+2*x_corr*(XRANGE(0) LE XRANGE(1))
+      YRANGE(0) = YRANGE(0)-1*y_corr+2*y_corr*(YRANGE(0) GT YRANGE(1))
+      YRANGE(1) = YRANGE(1)-1*y_corr+2*y_corr*(YRANGE(0) LE YRANGE(1))   
       ;;-----Behandlung der NASE und ORDER-Keywords:
       XBeschriftung = XRANGE
       IF keyword_set(ORDER) THEN BEGIN
@@ -632,6 +645,9 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;-----Plotten des Koodinatensystems:
       IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
       IF Min(YRANGE) LT -1 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
+      if __isfloat(XRANGE) then xtf = ''
+      if __isfloat(YRANGE) then ytf = ''
+
       PTMP = !P.MULTI
       !P.MULTI(0) = 1
       IF NOT Keyword_Set(FullSheet) THEN BEGIN 
