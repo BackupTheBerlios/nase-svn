@@ -17,7 +17,20 @@
 ;          routine waits for the given number of seconds, then deletes
 ;          the logo from the screen and returns.
 ;
+; RESTRICTIONS:
+;  <B>Warning:</B> In its current form, the logo uses a full 256-entry
+;  palette. The full logo-specific palette is loaded, breaking the
+;  NASE colortable conventions! Note that after a call to
+;  <C>ShowLogo</C>, your private NASE plotting colors will be
+;  overwritten, and have to be restored by calling <A>Foreground</A>,
+;  <A>Background</A> and <A>RGB</A> respectively.<BR>
+;  <B>Todo:</B> We should really transformthe logo not to use the
+;  upper 10 color entries, which are by default protected (as
+;  specified in <A>DefGlobVars</A>).
 ;-
+
+
+
 
 Pro ShowLogo, SECS=secs
 
@@ -32,7 +45,8 @@ Pro ShowLogo, SECS=secs
    window, /free, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
    win = !D.WINDOW
    
-   Utvlct, r, g, b
+   Utvlct, r, g, b, /OVER;; this is a bitmap using all 256 colors!! It
+                         ;; breaks NASE color conventions!!
    Utv, logo
 
    if Keyword_Set(SECS) then begin
