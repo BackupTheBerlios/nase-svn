@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/11/07 18:43:44  saam
+;        another test
+;
 ;        Revision 1.1  2000/11/07 15:49:01  saam
 ;        test of loginfo
 ;
@@ -56,7 +59,7 @@ Common XMAT_Widgets, Matrix, Felder, MSize
  WIDGET_CONTROL,Event.Id,GET_UVALUE=Ev          
           
   CASE Ev OF           
-          
+         kjwfhkejhfjkerfh 
   'BUTTON79': BEGIN ; Event for ACCEPT        
       for y=0,MSize(2)-1 do begin         
         for x=0,MSize(1)-1 do begin         
