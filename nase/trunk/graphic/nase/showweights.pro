@@ -2,12 +2,14 @@
 ; NAME: ShowWeights
 ;
 ; PURPOSE: formt eine Gewichtsmatrix um und stellt diese auf dem Bildschirm dar.
-;          dabei werden die Gewichte der Verbindungen NACH Neuron#0 in der linken
+;          dabei werden die Gewichte der Verbindungen NACH Neuron#0
+;          (also dessen rezeptives Feld) in der linken
 ;          oberen Ecke des Fensters als grau-schattierte Kaestchen
-;          gezeigt (Keyword /Tos), die Gewichte der Verbindungen NACH Neuron#1 rechts
+;          gezeigt (Keyword /Tos oder /RECEPTIVE), die Gewichte der Verbindungen NACH Neuron#1 rechts
 ;          daneben usw.
 ;          Seit Version 1.5 können alternativ auch die Verbindungen VON
-;          den Neuronen dargestellt werden (Keyword, /FROMS).
+;          den Neuronen dargestellt werden, also deren projektives
+;          Feld (Keyword, /FROMS oder /PROJECTIVE).
 ;          Set Version 1.13 werden auch Matrizen mit negativen Werten
 ;          verarbeitet. Sie werden in grün/rot-Schattierungen für
 ;          positive/negative Werte angezeigt.
@@ -20,8 +22,9 @@
 ; CATEGORY: GRAPHIC
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
-;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr][,/DELAYS]
-;                               [/SLIDE [,XVISIBLE] [,YVISIBLE] ]
+;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr | ,/NOWIN]
+;                               [,/DELAYS]
+;                               [/SLIDE [,XVISIBLE=Fensterbreite] [,YVISIBLE=Fensterhöhe] [,GET_BASE=Base_ID] ]
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
 ;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
@@ -34,14 +37,26 @@
 ;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
 ;                            Titel und Groessen unwirksam (klar,
 ;                            Fenster war ja schon vorher offen).
+;                     NOWIN: Wie WINNR, nur daß das gerade aktive
+;                            Fenster benutzt wird, dessen Nummer man
+;                            dann nicht unbedingt zu wissen braucht.
 ;     PROJECTIVE oder FROMS: Muß gesetzt werden, wenn man in den
 ;                            Untermatrizen die Verbindungen VON den
 ;                            Neuronen sehen will. (Projektive Felder)
 ;      RECEPTIVE oder TOS  : Muß gesetzt werden, wenn man die
 ;                            Verbindungen ZU den Neuronen sehen will. (Rezeptive Felder)
 ;                     DELAYS: Falls gesetzt, werden nicht die Gewichte, sondern die Delays visualisiert
-;                     SLIDE: Ist dieses Keword gesetzt, so wird die Matrix in einem SLIDE_WINDOW angezeigt
-;                            (nützlich, wenn sie nicht auf den Bildschirm paßt!)
+;                     SLIDE: Ist dieses Keword ungleich null, so wird die Matrix in einem SLIDE_WINDOW angezeigt
+;                            (nützlich, wenn sie nicht auf den
+;                            Bildschirm paßt!)
+;                            Für SLIDE=1 wird die
+;                              IDL-Slide_Window-Routine benutzt, die
+;                              zwei Fenster (eins mit dem verkleinerten
+;                              Bild der Matrix und eins mit Rollbalken)
+;                              darstellt.
+;                            Für SLIDE=2 wird meine ScrollIt-Routine
+;                              benutzt, die nur ein einziges Fenster
+;                              mit Rollbalken darstellt.
 ;                     XVISIBLE,YVISIBLE: Größe des sichtbaren Ausschnitts, wenn SLIDE gesetzt ist.
 ;
 ; OUTPUTS: Gewichtsmatrix, an die Fenstergroesse angepasst.
@@ -49,22 +64,44 @@
 ; OPTIONAL OUTPUTS: separates Fenster, das die Darstellung der Gewichtmatrix enthaelt.
 ;                   Wird WinNr UND SLIDE angegeben, so wird die Matrix wie gewohnt im angegebenen Fenster dargestellt.
 ;                       Ein Slide-WIndow wird außerdem geöffnet.
+;                   
+;                   GET_BASE: Wird SLIDE angegeben, so kann hier die
+;                             ID des erstellten Base-Widgets
+;                             zurückgegeben werden, um das Fenster
+;                             später mit einem
+;                               WIDGET_CONTROL, Base_ID, /DESTROY
+;                             schließen zu können.
 ;
-; EXAMPLE: weights = IntArr(4,12)
-;          weights(2,5) = 1.0  ; connection from 5 --> 2
-;          weights(0,6) = 2.0  ; connection from 6 --> 0
+; EXAMPLE:
+;          MyMatrix = InitDW( S_WIDTH=4, S_HEIGHT=3, T_WIDTH=2, T_HEIGHT=2 )
+;          SetWeight, MyMatrix, 1.0, S_INDEX=5, T_INDEX=2 ; connection from 5 --> 2
+;          SetWeight, MyMatrix, 2.0, S_INDEX=6, T_INDEX=0 ; connection from 6 --> 0
 ;
-;          MyMatrix =  DelayWeigh( INIT_WEIGHTS=weights, SOURCE_W=4, SOURCE_H=3, TARGET_W=2, TARGET_H=2)
-;          ShowWeights, MyMatrix, Titel='wunderschoene Matrix', Groesse=50
+;          ShowWeights, MyMatrix, Titel='wunderschoene Matrix', /PROJECTIVE, Groesse=50
+;
+;          FreeDW, MyMatrix
 ;
 ;          stellt die zuvor definierte MyMatrix zwischen dem Source-Layer der Breite 4 und
 ;          Hoehe 3 und dem Target-Layer der Breite und Hoehe 2 50-fach
 ;          vergroessert in einem Fenster mit Titel 'wunderschoene
 ;          Matrix' dar.
 ;
+;
+; SEE ALSO: <A HREF="#INITDW">InitDW()</A>, <A HREF="#FREEDW">FreeDW</A>, <A HREF="#RESTOREDW">RestoreDW</A>,
+;           <A HREF="#SETWEIGHT">SetWeight</A>, <A HREF="#SETDELAY">SetDelay</A>,
+;           <A HREF="#SETCONSTWEIGHT">SetConstWeight</A>, <A HREF="#SETCONSTDELAY">SetConstDelay</A>,
+;           <A HREF="#SETLINEARWEIGHT">SetLinearWeight</A>, <A HREF="#SETLINEARDELAY">SetLinearDelay</A>,
+;           <A HREF="#SETGAUSSWEIGHT">SetGaussWeight</A>, <A HREF="#SETGAUSSDELAY">SetGaussDelay</A>,
+;           <A HREF="#SETDOGWEIGHT">SetDogWeight</A>,
+;           <A HREF="#DELAYWEIGH">DelayWeigh()</A>
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.6  1997/12/01 15:32:28  kupper
+;              SLIDE-Keyword hat jetzt zwei mögliche Optionen.
+;              GET_BASE implementiert.
+;
 ;       Revision 2.5  1997/11/13 13:24:14  saam
 ;             Device Null wird uenterstuetzt
 ;
@@ -114,7 +151,7 @@
 
 
 PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
-                 SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, $
+                 SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin
@@ -162,8 +199,14 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
    Default, yvisible, 256
 
       If Not Set(WINNR) Then Begin
-         If keyword_set(SLIDE) then pix = 1 else pix = 0
-         Window, PIXMAP=pix, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
+         If keyword_set(SLIDE) then begin
+            case SLIDE of 1: Window, /PIXMAP, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
+               else: SlideWin = Scrollit (XDRAWSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YDRAWSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
+                                          XSIZE=xvisible, YSIZE=yvisible, TITLE=titel, GET_BASE=get_base)
+            endcase
+         endif else begin
+            Window, PIXMAP=pix, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
+         endelse
       Endif Else Begin 
          WSet, WinNr
          XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
@@ -226,14 +269,19 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
    end
 
    If Keyword_Set(SLIDE) then begin
-      Image = TVRd()
-      If not set(WINNR) then wdelete 
-      Slide_Image, Image, /RETAIN, $
-                         XSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
-                         XVISIBLE=xvisible, YVISIBLE=yvisible, $
-                         Title=titel
+      if (SLIDE eq 1) then begin
+         Image = TVRd()
+         If not set(WINNR) then wdelete
+         
+         ;; Ein zweifenstriges IDL-Slide-Window:
+         Slide_Image, Image, /RETAIN, $
+          XSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
+          XVISIBLE=xvisible, YVISIBLE=yvisible, $
+          Title=titel, TOP_ID=Base
+         Default, get_base, Base ;Base-ID-zurückgeben, falls ein Widget mit SLIDE erstellt wurde.
+      endif
    endif
-
+   
 END        
         
 
