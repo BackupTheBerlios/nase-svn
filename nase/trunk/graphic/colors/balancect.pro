@@ -74,8 +74,8 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
 
    cid = maci-mici+1             ;number of color indices used
 
-   mid = MIN(data)
-   mad = MAX(data)
+   mid = FLOAT(MIN(data))
+   mad = FLOAT(MAX(data))
    
    ; nuf : negative upstroke flank
    ; puf : positive upstroke flank
