@@ -37,6 +37,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1999/02/18 09:43:21  gabriel
+;          Korrektur bzgl. umoment und deren Varianzberechng.
+;
 ;     Revision 1.1  1999/02/02 14:32:14  gabriel
 ;          was neues
 ;
@@ -63,56 +66,57 @@ FUNCTION spatiotempcorr,A,distance_ax,delay_ax,time_ax,xpshift=xpshift,tpshift=_
    distance_ax = (lindgen(xpshift*2+1)-xpshift)*FLOAT(xsample*1000)
    delay_ax = (lindgen(tpshift*2+1)-tpshift)/FLOAT(tpshift)*_tpshift
    time_ax = (tpshift/2.+findgen(tsize)*sshift)*SAMPLEPERIOD*1000
-
+   var_c1 = FLOAT(ssize-1)
+   var_c2 = FLOAT((ssize*sa(1))-1)
    j = 0
    FOR i=tpshift ,FLOOR((tsize*sshift+tpshift)/sshift)*sshift-1 , sshift DO BEGIN
       
-      data1 = A(*,i:i+ssize-1)
+      data1 = (A(*,i:i+ssize-1))
       ;;zeilenweise
-    
+      
       FOR ss=0,sa(1)-1 DO BEGIN
-         m1 = umoment(data1(ss,*),SDEV=SDEV1)
-         data1(ss,*) = (data1(ss,*)-m1(0))/SDEV1
+         m1 = umoment(data1(ss,*))
+         data1(ss,*) = (data1(ss,*)-m1(0))/sqrt((m1(1)*var_c1))
       ENDFOR
       ;;total
-      m1 = umoment(data1(*),SDEV=sdev1)
-      data1 = data1-m1(0)   
-
+       m1 = umoment(data1(*))
+       data1 = data1-m1(0)   
+       var1 = sqrt(m1(1) * var_c2)
+      ;m1 = total(data1)/FLOAT(N_ELEMENTS(data1))
+      ;ar1 = sqrt(total((data1(*)-m1)^2))
+      ;ata1 = data1(*,*)-m1
       FOR tshift=-tpshift , tpshift DO BEGIN
 
  
-         data2 = A(*,i+tshift:i+tshift+ssize-1)
+         data2 = (A(*,i+tshift:i+tshift+ssize-1))
          ;;zeilenweise
-         FOR ss=0,sa(1)-1 DO BEGIN
-            m2 = umoment(data2(ss,*),SDEV=SDEV2)
-            data2(ss,*) = (data2(ss,*)-m1(0))/SDEV2
+         FOR ss=0,sa(1)-1 DO BEGIN 
+            m2 = umoment(data2(ss,*))
+            data2(ss,*) = (data2(ss,*)-m2(0))/sqrt(m2(1)*var_c1)
          ENDFOR
       
       
       
          ;;total
-         m2 = umoment(data2(*),SDEV=sdev2)
-         data2 = data2-m2(0)
-         
- 
-         testzero = total(sdev1 EQ 0 + (sdev2 EQ 0)) 
+          m2 = umoment(data2(*))
+          data2 = data2-m2(0)
+          var2 = sqrt(m2(1) * var_c2)
+;        m2 = total(data2)/FLOAT(N_ELEMENTS(data2))
+;        var2 = sqrt(total((data2(*)-m2)^2))
+;        data2 = data2(*,*)-m2
+         testzero = total(var1 EQ 0 + (var2 EQ 0)) 
          IF testzero GT 0 THEN erg(*,tshift+tpshift,j) = 0 $
          ELSE BEGIN
             FOR xshift=-xpshift,xpshift DO BEGIN
-              ;print,FLOAT(2*xpshift+1)^2,abs(xshift)
-               ;;plottvscl, data1,/full
-              ;stop
+           
+           
                tmpdata2 = norot_shift(data2,xshift,0)
-               ;index = where(tmpdata2 NE 0)
-               ;m2 = umoment(tmpdata2(index),SDEV=sdev2)
-               ;tmpdata2 = tmpdata2-m2(0)
+     
                erg(xpshift+xshift,tshift+tpshift,j) = total(data1*tmpdata2)*sa(1)/$
-                (sdev1*sdev2*ssize*sa(1))/(FLOAT(sa(1)-abs(xshift)))
-               ;;wait,0.1
-               ;;plottvscl,norot_shift(data2,shift,0),/FULL
-               ;;wait,0.1
+                (var1*var2*(FLOAT(sa(1)-abs(xshift))))
+               ;IF xshift EQ 0 AND tshift EQ 0 THEN print,total(data1(*)*tmpdata2(*)),DOUBLE(var1*var2)
+
             ENDFOR
-            ;;erg(*,i) = smooth(reform(erg(*,i)),2)
          ENDELSE
       ENDFOR 
       j = j+1
