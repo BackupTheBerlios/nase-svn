@@ -1,20 +1,23 @@
 ;+
 ; NAME: RoofArray
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM: 
-;  Generates 2-dim array with values resembling shape of a roof.
+;  generates 2-dim array with values resembling shape of a roof
 ;  
 ; PURPOSE:
 ;  Assigns stepwise decreasing values (seen from the center) to a two
 ;  dimensional array. In case of a square-sized array it looks like a
-;  pyramid.<BR>  It is the two dimensional version of <C>Hill</C>, though more
+;  pyramid.<BR>  It is the two dimensional version of <A>Hill</A>, though more
 ;  restricted.  
 ;
 ; CATEGORY: 
 ;  Array
 ;
 ; CALLING SEQUENCE: 
-;*  array = RoofArray(n [,m] [/INVERSE])
+;*array = RoofArray(n [,m] [/INVERSE])
 ;
 ; INPUTS: 
 ;  n:: Number of columns in resulting object. If optional input
@@ -27,7 +30,7 @@
 ;      <*>n</*>.
 ;
 ; INPUT KEYWORDS: 
-;  INVERSE:: Is <*>INVERSE</*> set, the border of the array
+;  INVERSE:: If set, the border of the array
 ;            has the highest value, otherwise the center is
 ;            highest in value.
 ;
@@ -42,15 +45,15 @@
 ;            rectangular array
 ;
 ; EXAMPLE: 
-;* print, RoofArray(5,7) <BR>
-;  ergibt: <BR>
+;*print, RoofArray(5,7) <BR>
+;  results in: <BR>
 ;> 0.00000      0.00000      0.00000      0.00000      0.00000 <BR>
-;  0.00000      1.00000      1.00000      1.00000      0.00000 <BR>
-;  0.00000      1.00000      2.00000      1.00000      0.00000 <BR>
-;  0.00000      1.00000      2.00000      1.00000      0.00000 <BR> 
-;  0.00000      1.00000      2.00000      1.00000      0.00000 <BR> 
-;  0.00000      1.00000      1.00000      1.00000      0.00000 <BR>
-;  0.00000      0.00000      0.00000      0.00000      0.00000 <BR>
+;> 0.00000      1.00000      1.00000      1.00000      0.00000 <BR>
+;> 0.00000      1.00000      2.00000      1.00000      0.00000 <BR>
+;> 0.00000      1.00000      2.00000      1.00000      0.00000 <BR> 
+;> 0.00000      1.00000      2.00000      1.00000      0.00000 <BR> 
+;> 0.00000      1.00000      1.00000      1.00000      0.00000 <BR>
+;> 0.00000      0.00000      0.00000      0.00000      0.00000 <BR>
 ;
 ; SEE ALSO:
 ;  <A>Hill</A>
