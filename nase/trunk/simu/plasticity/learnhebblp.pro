@@ -17,23 +17,40 @@
 ;          (Subtraktion des alten Gewichts),falls der letzte praesynaptische Spike schon zu lange
 ;          zurueckliegt (das resultiert dann naemlich in kleinem Wert des Lernpotentials) 
 ;
+;    Eine andere Sicht der oben angegebenen Lernregel lautet:
+;        neuW(post,prae)= altW
+;                          - ENTLERNRATE*Aktivität(post)*altW(post,prae)
+;                          + LERNRATE   *Aktivität(post)*Lernpotential(prae) 
+;       
+;             mit: ENTLERNRATE=Rate,  LERNRATE=Rate*alpha
 ;          
 ;
 ; CATEGORY: SIMULATION
 ;
 ; CALLING SEQUENCE:     LearnHebbLP, G, LP, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
-;                                    RATE=Rate, ALPHA=Alpha
+;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
 ;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G  : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
 ;         LP : Eine mit InitDW initialisierte Lernpotential-Struktur
 ;
-; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend aus
-;                                           Neuronen, die ein Lernpotential besitzen. (z.B. Typ 3)
+; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend
+;                                           aus beliebigen Neuronen.
+;
 ;                     RATE                : die Lernrate
 ;                     ALPHA               : Parameter, der den Grenzwert
 ;                                           beeinflusst, gegen den die
 ;                                           Gewichte konvergieren.
+;
+;                                           Die tatsächliche obere
+;                                           Grenze für die Gewichte                  V_lern
+;                                           berechnet sich zu:           alpha * -----------------
+;                                                                                      -1/tau_lern
+;                                                                                 1 - e
+;
+;        alternativ:  LERNRATE            : die Rate, mit der bei korrelierter Aktivität gelernt wird
+;                     ENTLERNRATE         :       "   "    "   "  unkorrelierter    "     entlernt  "
+;
 ;                     SELF                : Verbindungen zwischen Neuronen mit gleichen Index 
 ;                                           werden gelernt. Dies ist die Default-Einstellung,  
 ;                                           /SELF muss also nicht angegeben werden
@@ -52,10 +69,15 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
+;       Sun Sep 7 16:14:37 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		LERNRATE,ENTLERNRATE zugefügt.
+;
 ;       Thu Sep 4 17:03:51 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
-;		Fktioniert nun auch mit verzoegerten Verbindungen
+;		Funktioniert nun auch mit verzoegerten Verbindungen
 ;               Lernpotentiale nun nicht mehr in den Neuronen sondern in separater
 ;                  Struktur
 ;
@@ -77,7 +99,11 @@
 ;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
 ;-
 
-PRO LearnHebbLP, Matrix, LP, SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
+PRO LearnHebbLP, Matrix, LP, SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
+                    LERNRATE=lernrate, ENTLERNRATE=entlernrate
+
+   Default, rate, entlernrate
+   Default, alpha, lernrate/entlernrate
 
 
    ; update learning potentials

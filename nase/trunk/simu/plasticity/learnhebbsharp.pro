@@ -20,18 +20,21 @@
 ; CATEGORY: SIMULATION
 ;
 ; CALLING SEQUENCE:   LearnHebbSharp, G, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
-;                                    RATE=Rate, ALPHA=Alpha
+;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
 ;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
 ;
 ; OPTIONAL INPUTS:
 ;
-; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend aus
-;                                           Neuronen, die ein Lernpotential besitzen. (z.B. Typ 3)
+; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend aus beliebigen Neuronen
+;
 ;                     RATE                : die Lernrate
 ;                     ALPHA               : der Grenzwert, gegen den die
 ;                                           Gewichte konvergieren.
+;        alternativ:  LERNRATE            : die Rate, mit der bei korrelierter Aktivität gelernt wird
+;                     ENTLERNRATE         :       "   "    "   "  unkorrelierter    "     entlernt  "
+;
 ;                     SELF                : Verbindungen zwischen Neuronen mit gleichen Index 
 ;                                           werden gelernt. Dies ist die Default-Einstellung,  
 ;                                           /SELF muss also nicht angegeben werden
@@ -39,16 +42,8 @@
 ;                                           werden nicht veraendert,
 ;                                           aber auch nicht Null-gesetzt.
 ;                                           (Siehe InitDW)
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Die Matrix G, die als Parameter G uebergeben wird,
 ;               wird entsprechend der Lernregel geaendert.
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: LayerSize()
 ;
@@ -59,6 +54,11 @@
 ;          bleiben aber unveraendert.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       Sun Sep 7 16:10:55 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		LERNRATE, ENTLERNRATE zugefügt.
 ;
 ;       Wed Sep 3 15:52:19 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -76,7 +76,11 @@
 ;
 ;-
 
-PRO LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
+PRO LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
+                        LERNRATE=lernrate, ENTLERNRATE=entlernrate
+
+   Default, rate, entlernrate
+   Default, alpha, lernrate/entlernrate
 
    spaltenindex = where(Target_CL.O,count)
    If count EQ 0 Then Return, Matrix
@@ -99,3 +103,5 @@ PRO LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALP
    IF count NE 0 THEN Matrix.Weights(connections) = Matrix.Weights(connections) + Rate*dw(connections)
    
 END
+
+
