@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/03/16 15:31:29  kupper
+;        Changed to restore old active window.
+;
 ;        Revision 1.2  1999/09/06 14:04:56  thiel
 ;            Wrapped draw-widget inside base to provide free uservalue.
 ;
@@ -54,6 +57,8 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
 
    Widget_Control, firstchild, GET_UVALUE=uservalue, /NO_COPY
    
+   UWset, uservalue.oldwin
+
    new = !P
    !P =  uservalue.p
    uservalue.p = new
@@ -66,7 +71,6 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
    new = !Z
    !Z =  uservalue.z
    uservalue.z = new
- 
 
    IF keyword_set(SAVE_COLORS) THEN BEGIN 
    ;get current palette and Save it in Draw-Widget's UVAL:
