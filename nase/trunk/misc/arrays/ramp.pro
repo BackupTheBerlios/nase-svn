@@ -67,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/06/14 19:20:10  kupper
+;        Now handling special case of len=1.
+;
 ;        Revision 1.2  2000/06/14 18:55:28  kupper
 ;        Oops! +/-1 error!
 ;
@@ -119,6 +122,9 @@ Function Ramp, len, LEFT=left, RIGHT=right, MIN=min, MAX=max, $
    EndIf
    
    ;; At this point, left & right are defined.
+
+   ;; handle special case:
+   if len eq 1 then return, float(left)
 
    return, left + indgen(len)/(len-1.0) * (right-left)
 
