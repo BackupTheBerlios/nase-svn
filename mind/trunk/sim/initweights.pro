@@ -15,6 +15,9 @@
 ; MODIFACTION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  2000/08/11 14:07:27  thiel
+;           Now supports RandomU initialization of weights and delays.
+;
 ;       Revision 1.4  2000/05/16 16:32:30  saam
 ;             + new weight type INIT
 ;             + fixed bug with undefined W_RANDOM
@@ -62,7 +65,7 @@ FUNCTION InitWeights, DWW
 
       
       ; INIT THE WEIGHTS
-      IF Contains(DWW.WINIT.TYPE, 'CONST') THEN BEGIN      
+      IF Contains(DWW.WINIT.TYPE, 'CONST') THEN BEGIN  
          OPT = Create_Struct('W_CONST',[DWW.WINIT.A, DWW.WINIT.R], 'W_TRUNCATE', truncate, 'NOCON', DWW.WINIT.R)
       END ELSE IF Contains(DWW.WINIT.TYPE, 'INIT') THEN BEGIN
           OPT = Create_Struct( 'W_INIT',[DWW.WINIT.W])
@@ -79,6 +82,8 @@ FUNCTION InitWeights, DWW
       END ELSE Message, 'unknown option for weights'
 
       IF ExtraSet(DWW.WINIT, "N") THEN OPT = Create_Struct(OPT, 'W_RANDOM', [0,DWW.WINIT.N])
+      IF ExtraSet(DWW.WINIT, "RandomU") THEN $
+       OPT = Create_Struct(OPT, 'W_RANDOM', DWW.WINIT.randomu)
 
 
       ; INIT THE DELAYS
@@ -93,6 +98,8 @@ FUNCTION InitWeights, DWW
             OPT = Create_Struct(OPT, 'DELAY', DWW.DINIT.C)
          END                    ;ELSE Message, 'unknown value for delays'
       END
+      IF ExtraSet(DWW.DINIT, "RandomU") THEN $
+       OPT = Create_Struct(OPT, 'D_RANDOM', DWW.DINIT.randomu)
 
       ; COMPLETE WIDTH LAYER DIMENSIONS
       OPT = Create_Struct(OPT, 'S_WIDTH', SW, 'S_HEIGHT', SH, 'T_WIDTH', TW, 'T_HEIGHT', TH)
