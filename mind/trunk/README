@@ -1,0 +1,11 @@
+There are some keywords nearly every routine does understand:
+
+STOP : stops at neuralgic points of execution
+WAIT : waits for keyword interaction at important points
+
+NOGRAPHIC : suppresses graphics
+PS        : saves graphics as postscript
+EPS       : saves graphics as encapsualted postscript
+NEWWIN    : forgets old windows (eg. leaving them untouched)
+            and opens everything new (useful if the sheet 
+            stuff is confused)
