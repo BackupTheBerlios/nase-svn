@@ -31,10 +31,11 @@
 ; KEYWORD PARAMETERS: CENTER    : Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
 ;                     X_SIZE    ,
 ;                     Y_SIZE    : Es kann die gewuenschte Groesse des Bildes in CM angegeben werden,
-;                                 wobei 1cm 40 Pixeln entspricht. Wird nur einer der beiden Parameter
-;                                 angegeben, so wird der andere so gewaehlt, dass keine Verzerrungen
-;                                 auftreten. Achtung, die Stretch-Keywords koennen die endgueltige
-;                                 Groesse noch veraendern, daher besser nicht zusammen verwenden.
+;                                 wobei 1cm !D.PX_CM Pixeln entspricht. (40 für das X-Device.) Wird
+;                                 nur einer der beiden Parameter angegeben, so wird der andere so
+;                                 gewaehlt, dass keine Verzerrungen auftreten. Achtung, die
+;                                 Stretch-Keywords koennen die endgueltige Groesse noch veraendern,
+;                                 daher besser nicht zusammen verwenden.
 ;                     NORM_X/Y_SIZE : Wie X/Y_SIZE nur in Normalkoordinaten.
 ;                     STRETCH   : Vergroessert bzw. verkleinert das Originalbild um Faktor
 ;                     H_STRETCH ,
@@ -77,6 +78,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.35  2000/08/30 22:33:49  kupper
+;     Chaged to use !D.{X|Y}_PX_CM instead of hardcoding 40.0, as it has
+;     different value on WIN device!
+;
 ;     Revision 2.34  1999/11/04 17:31:40  kupper
 ;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;     -extremely- slow down performance on True-Color-Displays when
@@ -357,7 +362,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
   IF (Size(Image))(0) EQ 1 THEN Image = Reform(/OVERWRITE, Image, N_Elements(Image), 1)
 
-   ; 40 Pixels are One-Centimeter
+   ; !D.X_PX_CM Pixels are One Centimeter (40 for the X Device)
    ; size in Centimeters
    IF Keyword_Set(X_SIZE) AND Keyword_Set(Y_SIZE) THEN BEGIN
       xsize = FLOAT(x_size)
@@ -370,8 +375,8 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          ysize = FLOAT(y_size)
          xsize = y_size*(((SIZE(Image))(1))/FLOAT((SIZE(Image))(2)))
       END ELSE BEGIN
-         xsize = (SIZE(Image))(1)/40.
-         ysize = (SIZE(Image))(2)/40.
+         xsize = (SIZE(Image))(1)/!D.X_PX_CM
+         ysize = (SIZE(Image))(2)/!D.Y_PX_CM
       END
    END
    xsize = xsize*stretch*h_stretch
