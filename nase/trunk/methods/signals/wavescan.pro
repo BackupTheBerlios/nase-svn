@@ -136,6 +136,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  1998/07/13 19:41:53  gabriel
+;          Arrays widerspiegeln die Zeitentwicklung
+;
 ;     Revision 1.5  1998/07/10 10:21:45  gabriel
 ;          Falsches Keyword in Doku Statt WAVECRIT heisst es VELCRIT
 ;
@@ -394,7 +397,7 @@ FUNCTION wavescan, array,timearr,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,VELCR
          IF testcount GT 0 THEN BEGIN
             sigvel(testindex) = -1
             IF KEYWORD_SET(VERBOSE) THEN print,"Vorzeichenwechsel bei paarweisen Geschw. gefunden!"
-           
+            ;stop
          ENDIF
 
 
@@ -508,16 +511,18 @@ FUNCTION wavescan, array,timearr,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,VELCR
          IF vel_crit_count GT 0 THEN BEGIN
             MED_VEL_CRIT_tmpdistvel = medvel(vel_crit_index)
             MED_VEL_CRIT_tmpamplitude = medampl(vel_crit_index)
-            VEL_CRIT_tmpdistvel = selectvel(vel_crit_index,*)
-            VEL_CRIT_tmpamplitude = selectampl(vel_crit_index,*)
+            VEL_CRIT_tmpdistvel = transpose(selectvel(vel_crit_index,*))
+            VEL_CRIT_tmpamplitude = transpose(selectampl(vel_crit_index,*))
+            
             VEL_CRIT_tmpdistvel = VEL_CRIT_tmpdistvel(*)
             VEL_CRIT_tmpamplitude = VEL_CRIT_tmpamplitude(*)
             
          ENDIF
 
          IF ampl_crit_count GT 0  THEN BEGIN    
-            AMPL_CRIT_tmpdistvel = selectvel(ampl_crit_index,*)
-            AMPL_CRIT_tmpamplitude = selectampl(ampl_crit_index,*)
+            AMPL_CRIT_tmpdistvel = transpose(selectvel(ampl_crit_index,*))
+            AMPL_CRIT_tmpamplitude = transpose(selectampl(ampl_crit_index,*))
+
             AMPL_CRIT_tmpdistvel = AMPL_CRIT_tmpdistvel(*)
             AMPL_CRIT_tmpamplitude = AMPL_CRIT_tmpamplitude(*)
             
