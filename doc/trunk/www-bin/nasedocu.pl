@@ -72,7 +72,7 @@ sub updatedoc {
 #  createRoutineIdx();
   print "...done\n";
   print "generating directory indices...";
-  createAim(@projects)
+  createAim(@projects);
 
   print "generating keyword lists...";
   keylista();
