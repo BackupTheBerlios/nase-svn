@@ -13,7 +13,7 @@
 ;
 ; INPUTS:              filepattern: die zu fixenden Files
 ;
-; KEYWORD PARAMETERS:  VERBOSE   : Routine wird geschwaetzig
+; KEYWORD PARAMETERS:  VERBOSE   : Routine wird geschwaetzig...naja ein bisschen
 ;                      ZIPFILES  : enthaelt die gefunden, nur gezippten Files als StrArr, -1 falls
 ;                                   nix gefunden wurde
 ;                      NOZIPFILES: enthaelt die gefundenen, nur nicht gezippten Files, -1 falls
@@ -30,8 +30,11 @@
 ; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPFIX">ZipFix</A>
 ;
 ; MODIFICATION HISTORY:
-;
+; 
 ;     $Log$
+;     Revision 2.3  1998/03/14 13:28:31  saam
+;           corrected some nasty bugs
+;
 ;     Revision 2.2  1998/03/13 14:46:11  saam
 ;           more tolerant, now uses zipstat
 ;
@@ -45,6 +48,9 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
    Default, suffix, 'gz'
    IF suffix NE '' THEN suffix = '.'+suffix
    
+
+   tnozipfiles = -1
+   tzipfiles = -1
 
    ; try the file pattern...this may get zipped/nonzipped versions
    ; depending on a final * for example
@@ -69,8 +75,12 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
       FOR i=0,tzc-1 DO tzipfiles(i) = StrMid(tzipfiles(i),0,STRLEN(tzipfiles(i))-STRLEN(SUFFIX))
    ENDIF
 
-   IF tnzc EQ 0 AND tzc EQ 0 THEN RETURN, 0 ; no files exist
-
+   IF tnzc EQ 0 AND tzc EQ 0 THEN BEGIN
+      zipfiles = '-1'
+      nozipfiles = '-1'
+      bothfiles = '-1'
+      RETURN, 0                 ; no files exist
+   END
    zc = 0
    nzc = 0
    bc = 0
@@ -120,8 +130,8 @@ FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=no
    END
    
    IF Keyword_Set(VERBOSE) THEN BEGIN
-      print, 'ZIPSTAT: found '+STRCOMPRESS(nzc,/REMOVE_ALL)+' unzipped and '+STRCOMPRESS(zc,/REMOVE_ALL)+' zipped files'
-      print, 'ZIPSTAT: and '+STRCOMPRESS(bc,/REMOVE_ALL)+' with both for '+filepattern
+      print, 'ZIPSTAT: found '+STRCOMPRESS(nzc,/REMOVE_ALL)+' unzipped and '+STRCOMPRESS(zc,/REMOVE_ALL)+' zipped files and '+STRCOMPRESS(bc,/REMOVE_ALL)+' with both'
+      print, 'ZIPSTAT: for '+filepattern
    END
 
    IF nzc EQ 0 THEN nozipfiles = '-1'

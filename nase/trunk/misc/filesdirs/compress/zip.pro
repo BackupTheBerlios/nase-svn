@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/03/14 13:28:31  saam
+;           corrected some nasty bugs
+;
 ;     Revision 2.3  1998/03/13 14:46:11  saam
 ;           more tolerant, now uses zipstat
 ;
@@ -55,7 +58,7 @@ PRO Zip, filepattern, KEEPORG=keeporg
    zip = 'gzip'
    
    
-   c = ZipStat(filepattern, NOZIPFILE=nzf, BOTHFILES=bf, /VERBOSE) 
+   c = ZipStat(filepattern, NOZIPFILES=nzf, BOTHFILES=bf) 
    files = ''
    IF nzf(0) NE '-1' THEN files = [files, nzf]
    IF bf(0)  NE '-1' THEN files = [files, bf]
@@ -79,6 +82,5 @@ PRO Zip, filepattern, KEEPORG=keeporg
       Print,' ZIP: there are no files matching '+filepattern
       Print, 'ZIP: hoping that anybody else can handle that...'
    ENDELSE   
-   stop
 
 END
