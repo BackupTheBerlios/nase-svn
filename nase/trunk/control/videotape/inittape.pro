@@ -50,9 +50,12 @@
 ;
 ; SEE ALSO: <A HREF="#RECORD">Record</A>
 ;
-;
-;
 ; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 2.5  1998/06/24 14:45:15  thiel
+;              Kein .Log im Header!
+;
 ;
 ;       Thu Aug 21 18:02:12 1997, Andreas Thiel
 ;		.t ist jetzt ein Long-Integer
