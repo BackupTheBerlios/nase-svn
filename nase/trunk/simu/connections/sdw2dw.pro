@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/04/06 15:40:53  thiel
+;            Kontroll-Ausgabe wieder entfernt.
+;
 ;     Revision 2.3  1998/04/06 15:35:54  thiel
 ;            Tippfehler korrigiert.
 ;
@@ -45,7 +48,6 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
    IF (Info(_SDW) NE 'SDW_DELAY_WEIGHT') AND (Info(_SDW) NE 'SDW_WEIGHT') THEN Message, 'SDW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_SDW))+' !'
 
    dims = DWDim(_SDW, /ALL)
-   print, info(_sdw)
 
    IF Info(_SDW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN            
       DW = {  info    : 'DW_DELAY_WEIGHT',$
