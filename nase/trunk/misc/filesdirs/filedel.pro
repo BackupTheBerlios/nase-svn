@@ -47,6 +47,6 @@ CASE OS_FAMILY OF
     ELSE     : Console, [OS_FAMILY, " not supported...yet"], /FATAL
 END
 
-Spawn, c+" "+str(src), r
+Spawn, c+' "'+str(src)+'"', r
 
 END
