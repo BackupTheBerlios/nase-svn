@@ -73,7 +73,7 @@ FUNCTION LoadStruc, lun
    formatted = ''
    ReadF, lun, formatted
    Point_Lun, lun, pos
-   if STRCMP(formatted, 'UWriteU/', 8) THEN BEGIN
+   if STRMID(formatted, 0, 8) EQ 'UWriteU/' THEN BEGIN
 
        RETURN, UReadU(lun)
 
