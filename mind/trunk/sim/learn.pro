@@ -15,6 +15,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/28 15:16:45  saam
+;           changend console call by putting the console
+;           data from the common block into the ap structure
+;
 ;     Revision 1.4  2000/01/26 16:19:51  alshaikh
 ;           print,message -> console
 ;
@@ -110,7 +114,6 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
 
    COMMON ATTENTION
    COMMON SH_LEARN
-   COMMON terminal,output
    
    Handle_Value, _LS, LS, /NO_COPY
    curDW = Handle_Val(P.DWW(LS.DW))

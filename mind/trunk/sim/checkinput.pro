@@ -51,6 +51,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.12  2000/01/28 15:16:44  saam
+;           changend console call by putting the console
+;           data from the common block into the ap structure
+;
 ;     Revision 1.11  2000/01/28 14:28:53  alshaikh
 ;           some console-bugs were left
 ;
@@ -95,12 +99,10 @@
 PRO _CHECKINP, WSTOP=WSTOP, _EXTRA=e,NUMBER=number,viz_mode=viz_mode
 
 
-COMMON terminal,output
 
 Default, viz_mode, [1,1,1,1,1,1,1,1,1]
 Default, NUMBER, 0
 
-output =  initconsole(mode='win',length=200, threshold=0, tolerance=30)
 
    COMMON SH_SIM, SIMwins, CSIM_1, CSIM_2, CSIM_3, CSIM_4, CSIM_5, CSIM_6, CSIM_7, CSIM_8
    COMMON COMMON_Random, seed
@@ -135,10 +137,10 @@ output =  initconsole(mode='win',length=200, threshold=0, tolerance=30)
 
 
       L(i) = InitLayer(WIDTH=curLayer.w, HEIGHT=curLayer.h, TYPE = tmp2)
-      console,output, 'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h),/msg
+      console,P.CON, 'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h),/msg
    END
    
-   console,output, 'Initializing simulation...',/msg
+   console,P.CON, 'Initializing simulation...',/msg
 
    ;--------------> INIT INPUT
    INmax = N_Elements(P.INPUT)-1
@@ -179,7 +181,7 @@ output =  initconsole(mode='win',length=200, threshold=0, tolerance=30)
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
 
-   console, output, 'Starting main simulation loop...',/msg
+   console, P.CON, 'Starting main simulation loop...',/msg
    
 
 
@@ -218,7 +220,7 @@ output =  initconsole(mode='win',length=200, threshold=0, tolerance=30)
                 pattern = CALL_FUNCTION(act_filter.NAME,$
                                         PATTERN=pattern, temp_vals=INn.temps(i)) 
                
-               IF act_time/1000.0 eq act_filter.stop THEN console, output,'INPUT:filter '''+act_filter.NAME+''' inactive',/msg
+               IF act_time/1000.0 eq act_filter.stop THEN console, P.CON,'INPUT:filter '''+act_filter.NAME+''' inactive',/msg
                
                INn.pattern = pattern ; store for future use
                

@@ -16,6 +16,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/01/28 15:16:44  saam
+;           changend console call by putting the console
+;           data from the common block into the ap structure
+;
 ;     Revision 1.8  2000/01/27 17:45:24  alshaikh
 ;           new console-syntax
 ;
@@ -146,17 +150,16 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
    COMMON PlotInput, PC_Input
    COMMON SH_INPUT, INPUTwins, INPUT_1
    COMMON NINPUT, typelist
-   COMMON terminal,output
 ;   On_Error, 2
 
-   IF NOT Handle_Info(_IN) THEN console,output, 'invalid input handle','initinput',/fatal
+   IF NOT Handle_Info(_IN) THEN console,P.CON, 'invalid input handle','initinput',/fatal
    Handle_Value, _IN, IN
 
 
-   IF NOT ExtraSet(IN, 'INDEX')   THEN console,output, 'tag INDEX undefined!','initinput',/fatal
-   IF NOT ExtraSet(IN, 'LAYER')   THEN console,output, 'tag LAYER undefined!','initinput',/fatal
-   IF NOT ExtraSet(IN, 'SYNAPSE') THEN console,output, 'tag SYNAPSE undefined!','initinput',/fatal
-   IF NOT ExtraSet(IN, 'TYPE')    THEN console,output, 'tag TYPE undefined!','initinput',/fatal
+   IF NOT ExtraSet(IN, 'INDEX')   THEN console,P.CON, 'tag INDEX undefined!','initinput',/fatal
+   IF NOT ExtraSet(IN, 'LAYER')   THEN console,P.CON, 'tag LAYER undefined!','initinput',/fatal
+   IF NOT ExtraSet(IN, 'SYNAPSE') THEN console,P.CON, 'tag SYNAPSE undefined!','initinput',/fatal
+   IF NOT ExtraSet(IN, 'TYPE')    THEN console,P.CON, 'tag TYPE undefined!','initinput',/fatal
 
 
    typelist = ['SPIKES', 'GWN', 'POISSON', 'PCC', 'BAR', 'FADEBAR', 'FADEIN', 'NONE', 'STATIC', 'BURST', 'AF','EXTERN']
@@ -216,10 +219,10 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
 ;      END
       3: BEGIN; PCC
          IF IN.decay THEN BEGIN
-            IF h NE w THEN console, output, 'PCC with DECAY and non-quadratic layers is not defined...',/fatal
+            IF h NE w THEN console, P.CON, 'PCC with DECAY and non-quadratic layers is not defined...',/fatal
             sigma = sqrt(-IN.r^2/2./alog(0.1)) ; okay, amplitude is at 0.1 at the circle border
             mask = Gauss_2D(h,w,sigma)
-            console, output, 'INPUT: PCC, R='+Str(IN.r)+' => sigma='+Str(sigma),/msg
+            console, P.CON, 'INPUT: PCC, R='+Str(IN.r)+' => sigma='+Str(sigma),/msg
          END ELSE BEGIN
             mask = CutTorus(Make_Array(h,w,/BYTE, VALUE=1),IN.r,-1)
          END
@@ -231,7 +234,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          END ELSE IF N_Elements(IN.F) EQ 1 THEN BEGIN
             f_corr = (IN.F)(0)
             f_uncorr = (IN.F)(0)
-         END ELSE console,output, 'Wrong Declaration of INPUT.v',/fatal
+         END ELSE console,P.CON, 'Wrong Declaration of INPUT.v',/fatal
             
          IF ExtraSet(IN, 'WRAP') THEN WRAP = 1 ELSE WRAP = 0
 
@@ -274,7 +277,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
                t     : 0l                                                       ,$
                In    : (Rt*IN.V)*(1.-LP.df(0))*(1.-LP.df(1))/(LP.df(1)-LP.df(0)),$
                index : IN.INDEX}
-         console,output, 'INPUT: BAR, '+STR(w)+'x'+STR(h)+', GAP='+STR(IN.gap)+ ' -> '+curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
+         console,P.CON, 'INPUT: BAR, '+STR(w)+'x'+STR(h)+', GAP='+STR(IN.gap)+ ' -> '+curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
       END
       5: R = { type : 5        ,$
                t    : 0l       ,$
@@ -371,7 +374,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
                 pattern         : pattern }                 ; generated input-pattern
       END 
 
-      ELSE: console,output, 'dont know that kind of input: '+STRING(IN.TYPE),/fatal
+      ELSE: console,P.CON, 'dont know that kind of input: '+STRING(IN.TYPE),/fatal
    ENDCASE
 
    ;----->
@@ -400,7 +403,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
       IF R.REC(1) EQ -1 THEN R.REC(1) = P.SIMULATION.TIME+1
       IF ((R.REC(1) GT R.REC(0)) AND (R.REC(0) LT P.SIMULATION.TIME)) THEN BEGIN
          SetTag, R, 'RECLUN', InitVideo(sampleframe, TITLE=P.File+'.'+STR(curLayer.FILE)+'.'+STR(IN.INDEX)+'.in.sim', /SHUTUP, /ZIPPED )
-         console, output, 'RECORDING: '+curLayer.NAME+' Input ('+STR(IN.INDEX)+') from '+STR(R.REC(0))+' to '+STR(R.REC(1))+' ms',/msg  
+         console, P.CON, 'RECORDING: '+curLayer.NAME+' Input ('+STR(IN.INDEX)+') from '+STR(R.REC(0))+' to '+STR(R.REC(1))+' ms',/msg  
       END
    END ELSE SetTag, R, 'REC', [-1,-1]
 

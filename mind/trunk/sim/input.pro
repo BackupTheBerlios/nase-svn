@@ -17,6 +17,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/01/28 15:16:45  saam
+;           changend console call by putting the console
+;           data from the common block into the ap structure
+;
 ;     Revision 1.7  2000/01/28 14:28:53  alshaikh
 ;           some console-bugs were left
 ;
@@ -127,7 +131,6 @@
 FUNCTION Input, L, _IN
 
    COMMON ATTENTION
-   COMMON terminal,output
 
    COMMON PlotInput, PC_Input
    COMMON SH_INPUT, INPUTwins, INPUT_1
