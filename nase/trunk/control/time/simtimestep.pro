@@ -7,7 +7,7 @@
 ;
 ; CATEGORY:              ORGANISATION
 ;
-; CALLING SEQUENCE:      SimTimeStep,[CLEAR=CLEAR]
+; CALLING SEQUENCE:      SimTimeStep
 ;             
 ;
 ; COMMON BLOCKS:         SimTime
@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  1998/06/29 13:10:38  gabriel
+;          CALLING SEQUENCE korrigiert
+;
 ;     Revision 1.5  1998/06/19 09:22:08  gabriel
 ;          Ausfuehrliche Ausgabe, CLEAR Keyword
 ;
