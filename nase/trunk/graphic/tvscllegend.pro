@@ -12,7 +12,7 @@
 ;                                  [,/HORIZONTAL] [,/VERTICAL] 
 ;                                  [,/LEFT] [,/RIGHT] [,/CEILING] [,/BOTTOM]
 ;                                  [,MAX=max] [,MID=mid] [,MIN=min]
-;                                  [,/NOSCALE]
+;                                  [,/NOSCALE] [,COLOR=color]
 ;
 ;                     alle Argumente von UTvScl werden ebenfalls akzeptiert, i.w.
 ;                                  [,/CENTER]
@@ -37,6 +37,9 @@
 ;                     NOSCALE    : die Legende wird analog zu Tv nicht skaliert; fuer
 ;                                  eine korrekte Darstellung MUESSEN(!!!!) die Keywords
 ;                                  MIN und MAX uebergeben werden.
+;                     COLOR      : Farbe des Rahmens. Wenn nicht
+;                                  angegeben, wird eine moeglichst
+;                                  passende Farbe ermittelt.
 ;
 ; EXAMPLE:
 ;           TvSclLegend, 0.5, 0.5, /CENTER
@@ -46,6 +49,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1999/06/06 14:44:33  kupper
+;     Added documentation for COLOR-Keyword.
+;
 ;     Revision 2.9  1998/06/10 13:44:49  kupper
 ;            Mal wieder Postscript-Farbverwirrung
 ;
