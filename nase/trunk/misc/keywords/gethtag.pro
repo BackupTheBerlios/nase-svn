@@ -1,6 +1,9 @@
 ;+
 ; NAME:                 GetHTag
 ;  
+; VERSION:
+;   $Id$
+; 
 ; AIM:                  retrieves tag from a linked list of structures and handles
 ;
 ; PURPOSE:              This Routine provides a rather comfortable
@@ -9,19 +12,25 @@
 ;                       often in the MIND environment. Please see the
 ;                       example.
 ;
-; CATEGORY:             NASE STRUCTURES 
+; CATEGORY:
+;   Structure
+;   Type
 ;
-; CALLING SEQUENCE:     GetHTag, struc, htag, value
+; CALLING SEQUENCE:
+;*    GetHTag, struc, htag, value
+;   or alternatively
+;*    value = GetHTag(struc, htag)
 ;
 ; INPUTS:
-;                       struc: structure that is the root of the
-;                              linked handle list
-;                       htag : string, that describes how to de-
-;                              reference the list. It is separated
-;                              by slashes, where each slash stands
-;                              for dereferencing a handle.
-;                              "TARGET_TAG/TAG_IN_Z/.../TAG_IN_A"
-;                       value: the value, to be assigned to TARGET_TAG
+;                       struc:: structure (or handle to a structure)
+;                               that is the root of the 
+;                               linked handle list
+;                       htag :: string, that describes how to de-
+;                               reference the list. It is separated
+;                               by slashes, where each slash stands
+;                               for dereferencing a handle.
+;                               "TARGET_TAG/TAG_IN_Z/.../TAG_IN_A"
+;                       value :: the value, to be assigned to TARGET_TAG
 ;
 ; EXAMPLE:
 ;                       Assume the following construct
@@ -37,34 +46,20 @@
 ;*  GetHTag, e, "HI/a/b/c/d", value
 ;
 ; SEE ALSO:             <A>SetHTag</A>, <A>SetTag</A>
+;
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.3  2000/09/27 15:59:35  saam
-;        service commit fixing several doc header violations
-;
-;        Revision 1.2  2000/09/25 09:13:08  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.1  2000/04/04 12:50:53  saam
-;              it finally works
-;
-;
-;
 PRO GetHTag, struc, htag, val
 
 IF N_Params() NE 3 THEN Console, 'wrong argument count', /FATAL
-IF TypeOF(struc) NE 'STRUCT' THEN Console, '1st arg ist no structure', /FATAL
 IF TypeOF(htag)  NE 'STRING' THEN Console, '2nd arg ist no string', /FATAL
 
 
 deref = Str_Sep(htag, '/')
 ntag = N_Elements(deref)
 
-_s = struc
+IF TypeOf(struc) EQ "STRUCT" THEN _s = struc ELSE BEGIN
+    IF Handle_Info(struc) THEN _s = Handle_Val(struc) ELSE Console, 'secong arg no struct or handle', /FATAL
+END
 FOR pos = ntag-1, 1, -1 DO BEGIN
     command = "_h = _s."+STR(deref(pos))
     IF NOT Execute(command) THEN Console, 'Excution failed: '+command, /FATAL
@@ -73,5 +68,31 @@ END
 
 command = "val = _s."+STR(deref(0))                   
 IF NOT Execute(command) THEN Console, 'Excution failed: '+command, /FATAL
+
+END
+
+
+FUNCTION GetHTag, struc, htag
+
+IF N_Params() NE 2 THEN Console, 'wrong argument count', /FATAL
+IF TypeOF(htag)  NE 'STRING' THEN Console, '2nd arg ist no string', /FATAL
+
+
+deref = Str_Sep(htag, '/')
+ntag = N_Elements(deref)
+
+IF TypeOf(struc) EQ "STRUCT" THEN _s = struc ELSE BEGIN
+    IF Handle_Info(struc) THEN _s = Handle_Val(struc) ELSE Console, 'secong arg no struct or handle', /FATAL
+END
+FOR pos = ntag-1, 1, -1 DO BEGIN
+    command = "_h = _s."+STR(deref(pos))
+    IF NOT Execute(command) THEN Console, 'Excution failed: '+command, /FATAL
+    Handle_Value, _h, _s
+END
+
+command = "val = _s."+STR(deref(0))                   
+IF NOT Execute(command) THEN Console, 'Excution failed: '+command, /FATAL
+
+RETURN, val
 
 END
