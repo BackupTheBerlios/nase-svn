@@ -25,17 +25,17 @@
 ;           or speciy SIZE instead
 ;  
 ; INPUT KEYWORDS:
-;   SIZE::   array determining the array's size as
+;   SIZE ::  array determining the array's size as
 ;            returned by IDLs size
 ;            function. Alternatively, you can use the
 ;            dims input
-;   COUNT::  array containing the number of grid
+;   COUNT :: array containing the number of grid
 ;            points in each direction. If !NONE is
 ;            specified for a dimension, it is filled
 ;            to the arrays edges.
-;   STEP::   array containing the step width for each
+;   STEP ::  array containing the step width for each
 ;            dimension (default: 1)
-;   CSHIFT:: array containing the shift of the grid
+;   CSHIFT :: array containing the shift of the grid
 ;            relative to the array's center for each
 ;            dimension (default: 0)
 ;           
