@@ -74,11 +74,14 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A><A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:../index.html#NASETVSCL">NaseTVScl</A>, 
+; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A>, <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:../#NASETVSCL">NaseTVScl</A> 
 ;      
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.19  1998/02/19 13:25:24  thiel
+;            anderer Hyperlink
+;
 ;     Revision 2.18  1998/02/19 13:12:27  thiel
 ;            Neuer Hyperlink.
 ;
