@@ -63,136 +63,138 @@
 
 PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
-   On_Error, 2
+;;;   On_Error, 2
    IF NOT Set(W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
    
    ;;These Keywords are needed in both cases, init and update:
    Default, ORDER, Info.order
-   Default, NASE, Info.nase
    Default, NSCALE, Info.nscale
    Default, NORDER, Info.norder
    Default, POLYGON, Info.polygon
    Default, CUBIC, Info.cubic
    Default, INTERP, Info.interp
    Default, MINUS_ONE, Info.minus_one
-   Default, NEUTRAL, Info.neutral
    Default, NOSCALE, Info.noscale
    Default, COLORMODE, Info.colormode
    Default, SETCOL, Info.setcol
    Default, ALLOWCOLORS, Info.allowcolors
 
-   If Keyword_Set(RANGE_IN) then Showweights_Scale_Range_In = max(abs(RANGE_IN))
-   ;;If RANGE_IN was specified, use that value for scaling, in both cases (INT
-   ;;and not).
+   ;; ---------- handling of incoming RANGE_IN keyword --------------
+   ;; ------- outgoing value will be handled according to -----------
+   ;; ------- different cases (see below) ---------------------------
+   ;;If RANGE_IN was explicitely specified, it shall override the
+   ;;value stored in the Info struct, but only for this call. We will
+   ;;use that value for scaling, in both cases (INT and not).
+   ;; a value of Info.RANGE_IN=[-1d,-1d] indicates uninitialized
+   ;; color-scaling.
+   Default, RANGE_IN, Info.Range_In
 
-;Note that while info.Range_In and the value passed in the keyword are arrays of two
-;elements, the local variable Showweights_Scale_Range_In is scalar.
+   If a_eq(RANGE_IN, [-1d, -1d]) then begin
+      ;; colorscaling is uninitialized and unspecified, so we force INIT:
+      INIT = 1
+      ;; Showweights_Scale_Range_In is left undefined,
+      ;; showweights_scale() will chose a value.
+   endif else begin
+      ;; colorscaling is explicitely specified, or already
+      ;; established, so we want to tell Showweights_Scale what to do:
+      Showweights_Scale_Range_In = max(abs(RANGE_IN))
+      ;;Note that while info.Range_In and the value passed in the keyword
+      ;;are arrays of two elements, the local variable
+      ;;Showweights_Scale_Range_In is scalar.
+   endelse
 
    If not Keyword_Set(INIT) then begin ;Just plot in new image
-      Default, Showweights_Scale_Range_In, max(abs(Info.Range_In))
-                                ;use given scaling, let not
-                                ;choose showweights_scale.
-                                ;(If RANGE_IN was specified, use that value. If
-                                ;not, use the value in Info.Range_In.)
-      
-      SETCOL    = 0             ;We never want to have the colortable set at an update.
+      SETCOL = 0  ; We never want to have the colortable set at an update.
    Endif
-;Note that the above does not cover the non-NSCALE, non-NEUTRAL,
-;non-NOSCALE case (As it relies on ShowWeights_Scale). 
-;The INIT/update of this case is therefore
-;handled in special in the Plotting part below.    
+   ;; Note that the above does not cover the non-NSCALE, non-NEUTRAL,
+   ;; non-NOSCALE case (As it relies on ShowWeights_Scale). 
+   ;; The INIT/update of this case is therefore
+   ;; handled in special in the Plotting part below.    
+
+   ;; --------- end: handling of incoming RANGE_IN keyword ----------
 
 
-   ;-----Plotten der UTVScl-Graphik:
-   IF Keyword_Set(NSCALE) THEN BEGIN   ;NSCALE set
 
-      If Keyword_Set(NOSCALE) then BEGIN ;CASE: NSCALE, but do not scale
-;         print, "NSCALE, NOSCALE"
-         UTV, NORDER=NORDER, W, Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          Info.y00_norm, ALLOWCOLORS=allowcolors, $
-          X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM,$
-          ORDER=order, POLYGON=POLYGON
-         If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]
+   ;;-----Zeichnen der Graphik:
+   If keyword_set(NOSCALE) then begin
 
-      END ELSE BEGIN            ;CASE: NSCALE
-;         print, "NSCALE"
-         UTV, NORDER=NORDER, ALLOWCOLORS=allowcolors, $
-          ShowWeights_Scale(W,SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
-                            RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
-          Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM,$
-          Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=Order , POLYGON=POLYGON
+      ;; case: NOSCALE
+      ;;       utv-call
+      UTV, NORDER=NORDER, W, Info.x00_norm, CUBIC=cubic, $
+           INTERP=interp, MINUS_ONE=minus_one, $
+           Info.y00_norm, ALLOWCOLORS=allowcolors, $
+           X_SIZE=float(Info.x1)/!D.X_PX_CM, $
+           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+           ORDER=order, POLYGON=POLYGON
+      If Keyword_Set(INIT) then Info.Range_In = [-1d, -1d]
+      ;;(colorscaling uninitialized)
+
+   Endif else begin   
+      
+      IF Keyword_Set(NSCALE) THEN BEGIN
+         ;;case: NSCALE only
+         ;;      utv-call mit showweights_scale()
+         UTV, NORDER=NORDER, ALLOWCOLORS=allowcolors, $ $
+              ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, $
+                                GET_COLORMODE=get_colormode, $
+                                RANGE_IN=Showweights_Scale_Range_In, $
+                                GET_RANGE_IN=get_range_in), $
+              Info.x00_norm, CUBIC=cubic, INTERP=interp, $
+              MINUS_ONE=minus_one, $
+              Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM, $
+              Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=Order, POLYGON=POLYGON
          If Keyword_Set(INIT) then begin 
             Info.Range_In = get_range_in
             Info.colormode = get_colormode ;store for update
          EndIf
-
-      ENDELSE
-
-   END ELSE BEGIN               ;NSCALE not set
-
-      IF Keyword_Set(NEUTRAL) THEN BEGIN ;CASE: NEUTRAL: just scale like NSCALE
-;         print, "NEUTRAL"
-         UTV, NORDER=NORDER, ALLOWCOLORS=allowcolors, $
-          ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
-                            RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
-          Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM, $
-          Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=Order , POLYGON=POLYGON
-         If Keyword_Set(INIT) then begin 
-            Info.Range_In = get_range_in
-            Info.colormode = get_colormode ;store for update
-         EndIf
-
-      END ELSE BEGIN
          
-         If Keyword_Set(NOSCALE) then begin ;CASE: No NSCALE, Noscale
-;            print, "simple NOSCALE"
-            UTV, NORDER=NORDER, W, ALLOWCOLORS=allowcolors, $
-             Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-             Info.y00_norm, $
-             X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-             ORDER=Order, POLYGON=POLYGON
-            If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]            
-         endif else begin       ;CASE: None of NSCALE, NEUTRAL, NOSCALE set
-;            print, "NONE"
-            If Keyword_Set(INIT) then begin ;store array Range in info
-;               PRINT, "INIT"
-               If Keyword_Set(RANGE_IN) then begin
-                  Info.Range_In = RANGE_IN
-               endif else begin
-                  nonones         = where(W ne !NONE, nononecount)
-                  if nononecount ne 0 then begin
-                     ;; there is at least one entry that is not !NONE
-                     min = min(W[nonones])
-                     max = max(W[nonones])
-                     Info.Range_In = [min, max]
-                     if (min eq max) then console, /Warning, "/INIT: Unable to establish " + $
-                     "color scaling, because all entries are equal (value: "+str(min)+")."
-                  endif else begin
-                     ;; all entries are !NONE
-                     Info.Range_In = [-1.0, -1.0]
-                     console, /Warning, "/INIT: Unable to establish " + $
-                     "color scaling, because all entries are !NONE."
-                  endelse
-               endelse
-            Endif               
-            ;; If defined, RANGE_IN overrides the value stored in info:
-            Default, Range_In, Info.Range_In
-            ;;scale as stored in info 
-               UTVScl, NORDER=NORDER, W, TOP=Info.Top, RANGE_IN=Range_In, ALLOWCOLORS=allowcolors, $
-                Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-                Info.y00_norm, $
-                X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-                ORDER=Order, POLYGON=POLYGON
-                           
-         EndElse
-
-     END
-   END
-
-
+      ENDIF else begin
+         
+         
+         ;;case: None of NSCALE, NOSCALE set:
+         ;;      utvscl-call
+         If Keyword_Set(INIT) then begin ;store array Range in info
+            ;;               PRINT, "INIT"
+            nonones = where(W ne !NONE, nononecount)
+            if nononecount ne 0 then begin
+               ;; there is at least one entry that is not !NONE
+               min = min(W[nonones])
+               max = max(W[nonones])
+               Info.Range_In = [min, max]
+               ;; if RANGE_IN was originally not passed and
+               ;; colorscaling is uninitialized, we want to use
+               ;; this scaling.
+               if a_eq(RANGE_IN, [-1d, -1d]) then RANGE_IN = [min, max]
+               if (min eq max) then begin
+                  console, /Warning, "/INIT: Unable to establish " + $
+                           "color scaling, because all entries " + $
+                           "are equal (value: "+str(min)+")."
+                  ;; we want to indicate this by setting Info.Range_In to
+                  ;; "uninitialized":
+                  Info.Range_In = [-1d, -1d]
+               endif
+            endif  else begin
+               ;; all entries are !NONE
+               Info.Range_In = [-1d, -1d]
+               console, /Warning, "/INIT: Unable to establish " + $
+                        "color scaling, because all entries are !NONE."
+            endelse
+         Endif               
+         
+         
+         ;;scale as stored in info
+         UTVScl, NORDER=NORDER, W, TOP=Info.Top, RANGE_IN=Range_In, $
+                 ALLOWCOLORS=allowcolors, $
+                 Info.x00_norm, CUBIC=cubic, INTERP=interp, $
+                 MINUS_ONE=minus_one, $
+                 Info.y00_norm, $
+                 X_SIZE=float(Info.x1)/!D.X_PX_CM, $
+                 Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+                 ORDER=Order, POLYGON=POLYGON
+         
+      ENDELSE
+   endelse
 
 ;-----ENDE:
 END

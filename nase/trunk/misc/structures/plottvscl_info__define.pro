@@ -40,10 +40,8 @@ Pro PLOTTVSCL_INFO__Define
 ;
 ; Keywords to be passed to PlotTvScl_update:
                order   : 0, $
-               nase    : 0, $
                norder  : 0b, $
                nscale  : 0b, $
-               neutral : 0, $
                noscale : 0, $
                polygon : 0, $
                top     : 0l, $

@@ -72,7 +72,14 @@
 ;                an. 
 ;     ORDER::    der gleiche Effekt wie bei Original-TVScl
 ;     NASE::     Setting this keyword is equivalent to setting
-;                <C>NORDER</C> and <C>NSCALE</C> (see below). It is
+;                <C>/NORDER</C> and <C>/NSCALE</C> (see below). It is
+;                maintained for backwards compatibility.<BR>
+;                <I>Note: In general, newer applications sould use the
+;                         <C>NORDER</C> and <C>NSCALE</C> keywords to
+;                         indicate array ordering and color scaling
+;                         according to NASE conventions.</I>
+;     NEUTRAL::  Setting this keyword is equivalent to setting
+;                <C>NORDER=0</C> and <C>/NSCALE</C> (see below). It is
 ;                maintained for backwards compatibility.<BR>
 ;                <I>Note: In general, newer applications sould use the
 ;                         <C>NORDER</C> and <C>NSCALE</C> keywords to
@@ -97,8 +104,6 @@
 ;                das zweite das Maximum der Achse an 
 ;     LEGMARGIN:: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
 ;     leg_(max|min):: alternative Beschriftung der Legende 
-;     NEUTRAL::   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
-;                !NONE, ohne den ganzen anderen NASE-Schnickschnack
 ;     POLYGON:: Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;                 /POLYGON setzt /CUBIC, /INTERP
 ;                 und /MINUS_ONE auﬂer Kraft.
@@ -296,6 +301,12 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       Default, NORDER, NASE
       Default, NSCALE, NASE
 
+      ;;NEUTRAL is identical to /NSCALE, NORDER=0
+      If keyword_Set(NEUTRAL) then begin
+         NSCALE = 1
+         NORDER = 0
+      EndIf
+
       Default, SETCOL, 1
       Default, Charsize, 1.0
       Default, NOSCALE, 0
@@ -310,7 +321,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       default, INTERP, 0
       default, MINUS_ONE, 0
       default, COLORMODE, 0
-      default, NEUTRAL, 0
       default, ALLOWCOLORS, 0
 
       ;; copying of _W is no longer necessary (it is done by
@@ -362,7 +372,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       XRANGE(1) = XRANGE(1)-1*x_corr+2*x_corr*(XRANGE(0) LE XRANGE(1))
       YRANGE(0) = YRANGE(0)-1*y_corr+2*y_corr*(YRANGE(0) GT YRANGE(1))
       YRANGE(1) = YRANGE(1)-1*y_corr+2*y_corr*(YRANGE(0) LE YRANGE(1))   
-      ;;-----Behandlung der NASE und ORDER-Keywords:
+      ;;-----Behandlung der ORDER-Keywords:
       XBeschriftung = XRANGE
       IF keyword_set(ORDER) THEN BEGIN
          UpSideDown = 1
@@ -490,10 +500,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                      $;;
                      $;; Keywords to be passed to PlotTvScl_update:
                      order   : ORDER, $
-                     nase    : NASE, $
                      norder  : NORDER, $
                      nscale  : NSCALE, $
-                     neutral : NEUTRAL, $
                      noscale : NOSCALE, $
                      polygon : POLYGON, $
                      top     : TOP, $
@@ -505,7 +513,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                      allowcolors : ALLOWCOLORS, $
                      $;;
                      $;; Scaling Information to be stored by PlotTvScl_update:
-                     range_in: [-1.0d, -1.0d], $
+                       range_in: [-1d, -1d], $ ; indicates uninitialized color scaling
                        $;;
                        $;;Data needed to (re)produce the legend:
                        leg_x: OriginNormal[0]+TotalPlotWidthNormal*1.15, $
