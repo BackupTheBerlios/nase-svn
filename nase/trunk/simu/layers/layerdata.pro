@@ -42,20 +42,18 @@
 ;  width, height:: Dimensions of layer (integer).
 ;  parameters:: Parameters as described by the InitPara function used
 ;               to create the layer.
-;  feeding:: State of corresponding 
-;  ffeeding1, sfeeding:: leaky integrators
-;  linking, ilinking:: (doublearray[HeightxWidth]) 
-;  inhibition, sinhibition, finhibition::
-; 
-;  potential:: Membrane potentials (doublearray[HeightxWidth])
+;  feeding, ffeeding1, sfeeding, linking,inhibition, sinhibition,
+;  finhibition:: State of corresponding leaky integrators
+;                (doublearray[HeightxWidth]).
+;  potential:: Membrane potentials (doublearray[HeightxWidth])<BR>
 ;              In case the layer is of type '8' (four compartment) neurons,
 ;              potential returns a FltArr(width,height,5) of the
-;              following structure:
-;              Potential(*,*,0) = n  (Recovery) 
-;              Potential(*,*,1) = Vs  (Soma)
-;              Potential(*,*,2) = V3  (Dendrite 3) 
-;              Potential(*,*,3) = V2  (Dendrite 2)
-;              Potential(*,*,4) = V1  (Dendrit 1)
+;              following structure:<BR>
+;              Potential(*,*,0) = n  (Recovery)<BR> 
+;              Potential(*,*,1) = Vs  (Soma)<BR>
+;              Potential(*,*,2) = V3  (Dendrite 3)<BR> 
+;              Potential(*,*,3) = V2  (Dendrite 2)<BR>
+;              Potential(*,*,4) = V1  (Dendrite 1)<BR>
 ;
 ;  threshold:: State of threshold. This is the sum of offset and
 ;              one or two dynamic parts (DoubleArray[HeightxWidth]).
@@ -170,13 +168,15 @@ PRO LayerData, _Layer, $
       '12' : BEGIN
          IF n GT 1 THEN shunting = REFORM(Layer.X, Layer.H, Layer.W) $
          ELSE shunting = Layer.Layer.X
-         IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
-      end 
+         IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) $
+         ELSE inhibition = Layer.I
+      END 
 
       '8' : inhibition = !NONE
       '9' : inhibition = !NONE
       'GRN' : inhibition = !NONE
-     ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
+      ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) $
+      ELSE inhibition = Layer.I
    ENDCASE
    
 
@@ -186,6 +186,9 @@ PRO LayerData, _Layer, $
        THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
        ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
       '6' : IF n GT 1 $
+       THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+       ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+      '7' : IF n GT 1 $
        THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
        ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
       '8' : threshold = !NONE
@@ -201,7 +204,9 @@ PRO LayerData, _Layer, $
 
 
    ; handle SPECIAL TAGS
-   IF (Layer.Type EQ '2') OR (Layer.Type EQ '6') THEN BEGIN
+   IF (Layer.Type EQ '2') $
+    OR (Layer.Type EQ '6') $
+    OR (Layer.Type EQ '7') THEN BEGIN
       IF n GT 1 THEN $
        sthreshold = Reform(Layer.R, Layer.H, Layer.W) $
       ELSE sthreshold = Layer.R
