@@ -6,7 +6,10 @@
 ;
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    version = IDLVERSION()
+; CALLING SEQUENCE:    version = IDLVERSION([/FULL])
+;
+; KEYWORDS: FULL:      Liefert die Haupt- und alle
+;                      Minor-Versionen als LONG-Array zurück.
 ;
 ; OUTPUTS:             version: die IDL-Version als LONG, (momentan also 3,4 oder 5)
 ;
@@ -15,14 +18,22 @@
 ;                      5
 ;                            ; hey, i'm running idl 5 :)
 ;
+;                      print, IDLVERSION(/FULL)
+;                      5 0 2
+;                            ; I'm running IDL 5.0.2
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1999/11/04 16:24:03  kupper
+;     Added FULL keyword.
+;
 ;     Revision 1.1  1998/10/28 17:41:38  saam
 ;           short...
 ;
 ;
 ;-
-FUNCTION IDLVERSION
-   RETURN, ((LONG(strmid(!VERSION.release,0,1)))(0)-LONG('0'))
+FUNCTION IDLVERSION, FULL=full
+   if Keyword_set(FULL) then return, long(str_sep(!version.release, "."))
+   RETURN, long(!version.release)
 END
