@@ -3,5 +3,8 @@ PushD, GetEnv("NASEPATH"); cd to nase
 .run misc/arrays/scl
 .run simu/connections/nonone
 .run graphic/widgets/dummy_eventhandler
+.run graphic/widgets/swallow_events
+.run graphic/widgets/value
+.run graphic/widgets/uvalue
 
 PopD ;Return to old dir
