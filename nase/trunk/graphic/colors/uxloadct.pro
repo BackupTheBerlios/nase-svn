@@ -14,7 +14,12 @@
 ;  protected. Care is taken, that these entries will not be
 ;  overwritten. In addition, a <*>/NASE</*> keyword is supplied for
 ;  easy access to the special NASE colortables. Furthermore, a bug in
-;  IDL's <C>XLOADCT</C> is worked around.
+;  IDL's <C>XLOADCT</C> is worked around.<BR>
+;  Unlike IDL's <C>XLOADCT</C>, <C>UXLoadCT</C> does not break if it is
+;  called on the NULL device. The call is simply skipped.
+;  The call is skipped also, if the current device is the X device,
+;  and connecting to the X server is not allowed during this session
+;  (see <A>XAllowed()</A> for details).
 ;
 ; CATEGORY:
 ;  Color
@@ -57,7 +62,17 @@
 Pro UXLoadCt, NCOLORS=ncolors, BOTTOM=bottom, FILE=file, $
               _EXTRA=_extra, NASE=nase
 
-   If not XAllowed() then begin
+   ;; ----------------------------
+   ;; Do absolutely nothing in the following cases, as code will break
+   ;; otherwise:
+   ;;
+   ;; Device is the NULL device:
+   If Contains(!D.Name, 'NULL', /IGNORECASE) then begin
+      console, /Warning, "Skipping call on NULL-device."
+      return
+   endif
+   ;; Device is the X device, but connecting to the X-Server is forbidden:
+   If (!D.Name eq 'X') and not XAllowed() then begin
       console, /Warning, "No X-connection allowed. Skipping."
       return
    endif
