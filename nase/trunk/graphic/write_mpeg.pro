@@ -132,6 +132,7 @@ default,close,0
 default,rep,1
 default,delaft,0
 default,TMPDIR , TmpNam()
+console, "Using "+TMPDIR+"as temporary directory."
 default,mpegfilename,'test.mpg'
 default,framenum,0
 default,nFrames,0
