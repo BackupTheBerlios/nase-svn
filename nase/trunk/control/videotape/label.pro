@@ -3,6 +3,8 @@
 ;
 ; PURPOSE: Anfügen eines Label-Textes an ein erstelltes und
 ;          geschlossenes Array-Video.
+;          Besitzt das Video bereits ein Label, so wird dieses
+;          entsprechend erweiter.
 ;
 ; CATEGORY: Simulation
 ; 
@@ -27,6 +29,9 @@
 ;               Man beachte, daß '~' als Abkürzung für das
 ;               Homeverzeichnis nicht funktioniert, da die Strings in
 ;               Anführungszeichen übergeben werden.
+;
+;               Das Videofile muß auf jeden fall mit Eject geschlossen
+;               sein, bevor man Label aufruft!
 ;
 ; PROCEDURE: Die ganze Prozedur ist rein UNIX-basiert (lauter
 ;            Spawn-Befehle), auf dieser Basis aber straightforward.
