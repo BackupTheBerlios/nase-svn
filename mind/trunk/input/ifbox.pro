@@ -42,6 +42,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/05/02 12:08:27  saam
+;           replaced a really silly loop
+;
 ;     Revision 1.4  2000/01/28 15:24:09  saam
 ;           console changes updates
 ;
@@ -115,11 +118,7 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
       ; STEP
       1: BEGIN                             
          R = fltarr(TV.h,TV.w)
-         FOR x=TV.x1,TV.x2 DO BEGIN
-            FOR y=TV.y1,TV.y2 DO BEGIN 
-               R(y,x) = TV.value
-            ENDFOR
-         endfor 
+         R(y1:y2,x1:x2) = TV.value
          IF TV.invert NE 0 THEN R = TV.value - R
          TV.sim_time =  TV.sim_time + TV.delta_t
 
