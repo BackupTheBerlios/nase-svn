@@ -86,6 +86,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.35  1998/08/04 16:14:11  gabriel
+;          Charsizes !P.MULTI angepasst
+;
 ;     Revision 2.34  1998/08/04 15:02:42  gabriel
 ;          Print kommandos auskommentiert
 ;
@@ -263,18 +266,21 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    END
 
    PTMP = !P.MULTI
+   charcor = 1.
+   IF !P.MULTI(1) GT 0 AND !P.MULTI(2) GT 0 THEN charcor = SQRT(FLOAT((!P.MULTI(2))/FLOAT(!P.MULTI(1))))
    xcoord = lindgen(ArrayWidth)
    ycoord = lindgen(ArrayHeight)
-   PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize,_EXTRA=e
+   PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize*charcor,_EXTRA=e
    
    
 
    plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
+   plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
    ;; convert_coord macht bei !P.MULTI Fehler Y Koordinate muss korregiert werden
-   IF FLOAT(!P.MULTI(2)) GT 0 AND (ArrayHeight GT ArrayWidth) THEN BEGIN
-      plotregion_norm(1,1) = !Y.S(0)+ !Y.S(1)*ycoord(N_ELEMENTS(ycoord)-1)*  ArrayWidth/FLOAT(ArrayHeight)
+;   IF FLOAT(!P.MULTI(2)) GT 0 AND (ArrayHeight GT ArrayWidth) THEN BEGIN
+;      plotregion_norm(1,1) = !Y.S(0)+ !Y.S(1)*ycoord(N_ELEMENTS(ycoord)-1)*  ArrayWidth/FLOAT(ArrayHeight)
       ;print,"hallo",plotregion_norm(1,1)
-   ENDIF
+;   ENDIF
    plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
   
    !P.MULTI = PTMP
@@ -375,20 +381,22 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
        xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
-       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
+       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
    ENDIF ELSE BEGIN
      ;print,LEGEND*0.2*Charsize,LegendRandNorm(0),"Hallo legende"
       Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-LegendRandNorm(0),plotregion_norm(1,1)], $
        xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
-       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
+       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
    ENDELSE
    
    Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
    
    TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
    TotalPlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
-   
+   ;TotalPlotWidthNormal = (plotregion_norm(0,1)-plotregion_norm(0,0)-LegendRandNorm(0,0))
+   ;TotalPlotHeightNormal = (plotregion_norm(1,1)-plotregion_norm(1,0))
+
    PlotWidthNormal = TotalPlotWidthNormal - TotalPlotWidthNormal*2*!Y.Ticklen
    PlotHeightNormal = TotalPlotHeightNormal - TotalPlotHeightNormal*2*!X.Ticklen
    
@@ -428,7 +436,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
             Mid = 0
             TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
              H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
              Max=MaxW, Min=MinW, Mid='0',$
              CHARSIZE=Charsize, $
              NOSCALE=NoScale, $
@@ -437,7 +445,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
             MinW = 0
             TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
              H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
              Max=MaxW, Min=MinW,$
              CHARSIZE=Charsize, $
              NOSCALE=NoScale, $
@@ -454,8 +462,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          END
          
          TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-          H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-          V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+          H_Stretch=TotalPlotWidthNormal/15.*VisualWidth/(0.5*!D.X_PX_CM), $
+          V_Stretch=TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
           Max=LEG_MAX, Min=LEG_MIN, $
           CHARSIZE=Charsize, $
           /Vertical, /Center 
