@@ -127,6 +127,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.12  2000/03/15 19:07:10  kupper
+;        Hm, postponing solution of the added-to-realized-widget-problem to future...
+;        Changed update_info method not to break on unrealized objects.
+;
 ;        Revision 1.11  2000/03/14 15:42:53  kupper
 ;        Paint requests for unrealized widgets are now ignored.
 ;
@@ -190,7 +194,8 @@ End
 
 Pro basic_draw_object::paint_interval, value
    self.paint_interval = value
-   widget_control, self.w_showit, Timer=value
+   If Widget_Info(self->widget(), /Realized) then $
+    widget_control, self.w_showit, Timer=value
 End
 Function basic_draw_object::paint_interval
    return, self.paint_interval
@@ -267,6 +272,12 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
       self.paint_interval = -1
    Endelse
       
+   ;; In case we were added to an already realized widget hierarchy, we have to
+   ;; call the notify_realize procedure ourselves:
+   ;If Widget_Info(self->widget(), /Realized) then BDO_Notify_realize, self->showit()
+   ;; NOTE: The above causes problems, as the obejct is not properly initiallized at
+   ;; this moment. Solution is postponed to future.
+
 
    ;; If we reach this point, initialization of the
    ;; whole object succeeded, and we can return true:   
