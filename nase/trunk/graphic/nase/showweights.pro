@@ -22,22 +22,29 @@
 ; CATEGORY: GRAPHIC
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix { ,/FROMS | ,/PROJECTIVE | ,/TOS | /RECEPTIVE }
-;                               [,TITEL='Titel'][,GROESSE=ZOOM=Fenstergroesse]
+;                               [,TITEL='Titel'][,GROESSE=ZOOM=Vergrößerungsfaktor]
+;                               [,XGROESSE=XZOOM=XFaktor] [,YGROESSE=YZOOM=YFaktor]
 ;                               [,MAXSIZE=(Xmax,ymax)]
 ;                               [,WINNR=FensterNr | ,/NOWIN] [,GET_WIN=FensterNr]
 ;                               [,/DELAYS]
 ;                               [,SLIDE={1,2}
 ;                               [,XVISIBLE=Fensterbreite]
-;                               [,YVISIBLE=Fensterhöhe]
+;                               [,YVISIBLE=Fensterhöhe] ]
+;                               [,/SURF [,/GRID] [,/SUPERIMPOSE]]
+;                               [ weitere Surface-/Shade_Surf-Parameter ]
+;                               [,COLORMODE=colormode]
 ;                               [,GET_BASE=Base_ID] 
-;                               [,GET_MAXCOL=Farbindex] [,GET_COLORMODE=cm] ]
+;                               [,GET_MAXCOL=Farbindex] [,GET_COLORMODE=cm]
+;                             ( [,GET_INFO=positioninfo] [,GET_COLORS=usedcolors] )
+;                               
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
 ;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
 ; 
 ; KEYWORD PARAMETERS: TITEL: Titel des Fensters, das die Darstellung
 ;                            enthalten soll 
-;         ZOOM oder GROESSE: Faktor fuer die Vergroesserung der Darstellung
+;         ZOOM oder GROESSE: Faktor fuer die Vergroesserung der Darstellung oder:
+;   X/YZOOM oder X/YGROESSE: Die Faktoren können auch getrennt angegeben werden.
 ;                   MAXSIZE: Ein zweielementiges Array, das die
 ;                            maximalen Abmessungen enthält, die ein
 ;                            von ShowWeights geöffnetes Fenster haben
@@ -49,7 +56,7 @@
 ;                     WINNR: Nr des Fensters, in dem die Darstellung
 ;                            erfolgen soll (muss natuerlich offen
 ;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
-;                            Titel und Groessen unwirksam (klar,
+;                            Titel und Groessen,Zoomfaktoren unwirksam (klar,
 ;                            Fenster war ja schon vorher offen).
 ;                     NOWIN: Wie WINNR, nur daß das gerade aktive
 ;                            Fenster benutzt wird, dessen Nummer man
@@ -72,6 +79,23 @@
 ;                              benutzt, die nur ein einziges Fenster
 ;                              mit Rollbalken darstellt.
 ;                     XVISIBLE,YVISIBLE: Größe des sichtbaren Ausschnitts, wenn SLIDE gesetzt ist.
+;                  COLORMODE: Mit diesem Schlüsselwort kann unabhängig 
+;                             von den Werten im Array die
+;                             schwarz/weiss-Darstellung (COLORMODE=+1) 
+;                             oder die rot/grün-Darstellung
+;                             (COLORMODE=-1) erzwungen werden.
+;                       SURF: Wenn gesetzt, werden die
+;                             rezeptiven/projektiven Felder als
+;                             Surface-Plots dargestellt.
+;                       GRID: Wenn zusätzlich zu SURF gesetzt, wird
+;                             "Surface" statt "Shade_Surf" als
+;                             Darstellungsprozedur benutzt.
+;                SUPERIMPOSE: Wenn zusätzlich zu SURF gesetzt, wird
+;                             die jeweils "andere" Information (also
+;                             Delays, wenn Weights dargestellt werden
+;                             und umgekehrt) als Farbinformation auf
+;                             den Surface-Plot gemapped.
+;    weitere Surface-/Shade_Surf-Parameter: insbes. /LEGO, AX, AZ...        
 ;
 ; OUTPUTS: Gewichtsmatrix, an die Fenstergroesse angepasst.
 ;
@@ -101,6 +125,15 @@
 ;                             positive Werte), und -1, falls der
 ;                             rot/grün-Modus benutzt wurde (DW-Matrix
 ;                             enthielt negative Werte).
+;              ( GET_COLORS:  Array [black, back, fore, white,used_!TOPCOLOR]
+;                             für internen Gebrauch gedacht (TomWaits) )
+;              ( GET_INFO:    { x0:xoffset, y0:yoffset, x1:flaechex-xoffset, y1:flaechey-yoffset, $
+;                               tvxsize: flaechex, tvysize: flaechey, subxsize:bildxsize, subysize:bildysize}
+;                             Koordinaten der
+;                             linken unteren und rechten oberen Ecke
+;                             des TV-Ausschnits,dessen Größe und die
+;                             der Untermatrizen in DEVICE-Koordinaten.
+;                             für internen Gebrauch gedacht (TomWaits) )
 ;
 ; EXAMPLE:
 ;          MyMatrix = InitDW( S_WIDTH=4, S_HEIGHT=3, T_WIDTH=2, T_HEIGHT=2 )
@@ -128,6 +161,17 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.24  1998/04/02 11:40:52  kupper
+;              Umfangreiche Änderungen an der Darstellung (Achsen, Verwendung von
+;       	NASETv, Surface-Plots)
+;       	SURF, GRID, SUPERIMPOSE, GET_COLORS, GET_INFO-Schlüselworte hinzugefügt.
+;       	Jetzt können gebrochene Zoomfaktoren angegeben werden, auch getrennt
+;       	für X und Y. Daher fügen sich Darstellungen nun auch ohne "Ränder" in bestehende
+;       	Fenster ein...
+;       	Hab hoffentlich nichts vergessen.
+;       	Achja: Der Output kann nun (mit /NOWIN) auch in ein aktives Postcript-Sheet
+;       		gemacht werden. Allerdings funktionieren hier die SURF-Darstellungen (noch) nicht.
+;
 ;       Revision 2.23  1998/03/22 14:07:59  kupper
 ;              ?size sind jetzt longs, daher auch sehr grosse fenster moeglich.
 ;               Scheint aber das Retain nicht mehr zu funktionieren, dann..
@@ -240,25 +284,43 @@
 ;-
 
 
-PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR, $
+PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
+                 groesse=GROESSE, XGROESSE=xgroesse, YGROESSE=ygroesse, $
+                 ZOOM=zoom, XZOOM=xzoom, YZOOM=yzoom, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
                  FROMS=froms,  TOS=tos, DELAYS=delay, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin, GET_WIN=get_win, $
-;                 MAXSIZE=maxsize, $
-                 GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode
+                 GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, COLORMODE=colormode, $
+                 SURF=surf, GRID=grid, SUPERIMPOSE=superimpose, $
+                 GET_INFO=get_info, GET_COLORS=get_colors$
+                 _EXTRA=_extra
 
    IF !D.Name EQ 'NULL' THEN RETURN
 
    Default, GROESSE, ZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
-   device, Get_screen_size=MAXSIZE ;Wußte früher nicht, daß es diese Funktion gibt, sorry...
+   Default, XGROESSE, XZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
+   Default, YGROESSE, YZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
+   Default, titel, 'Gewichtsmatrix'
+   Default, Groesse, 1l
+   Default, XGroesse, Groesse
+   default, YGroesse, Groesse
+   default, _extra, {title:''}  ;Title wird eh nich benutzt
 
-;   Handle_Value, __Matrix, _Matrix, /NO_COPY 
+   If !D.Name ne "PS" then begin
+      device, Get_screen_size=MAXSIZE
+      xrand = 25
+      yrand = 25                ;25 Pixel Rand zum Ursprung des Plots
+   endif else begin
+      xrand = !D.X_PX_CM*3      ;3 cm Rand zum Ursprung des Plots
+      yrand = !D.Y_PX_CM*3
+   endelse
+   Default, COLORMODE, 0        ;Keine bestimmte Darstellung erzwingen
 
    Default, FROMS, PROJECTIVE
    Default, TOS, RECEPTIVE
 
-   IF Keyword_Set(NOWIN) THEN Winnr = !D.Window
+;   IF Keyword_Set(NOWIN) THEN Winnr = !D.Window
    If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter PROJECTIVE/FROMS oder RECEPTIVE/TOS muß gesetzt sein!'
 
    ;;------------------> Hier basteln wir uns eine DW-Struktur der ganz, ganz alten Form!
@@ -319,19 +381,59 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
 ;no_connections = WHERE(Matrix.Weights EQ !NONE, count)
 ;IF count NE 0 THEN Matrix.Weights(no_connections) = 0.0
    
-   If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
-   If Not Set(GROESSE) Then Begin 
-      XGroesse = 1l
-      YGroesse = 1l 
-   Endif Else Begin 
-      XGroesse = long(Groesse)
-      YGroesse = long(Groesse)
-   Endelse
+   ;;------------------> Matrix umformen
+      IF Keyword_Set(Delay) THEN MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w) $
+      ELSE MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+        ;;------------------> Farben setzen und Matrix skalieren:
+      back = RGB("very dark yellow", INDEX=!TOPCOLOR)
+      fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
+      !TOPCOLOR = !TOPCOLOR-2
+      If Keyword_Set(SURF) then begin
+         If keyword_set(SUPERIMPOSE) then begin
+            IF Keyword_Set(Delay) THEN begin
+               OtherOther= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+            endif ELSE begin
+               OtherOther= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+            endelse
+            OtherOther = ShowWeights_Scale(OtherOther, /SETCOL, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white)
+         endif else begin 
+            dummy = ShowWeights_Scale(0, /SETCOL, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white) ;Grautabelle laden
+            nones = where(data eq !NONE, count)
+            If count ne 0 then data(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
+         endelse
+      endif else MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE)
+;   erase, RGB('orange',/NOALLOC) ;GET_MAXCOL+2
+      black = !P.Background
+      GET_MAXCOL = white
+      GET_COLORS = [black, back, fore, white, !TOPCOLOR]
+      !TOPCOLOR = !TOPCOLOR+2
+      ;;--------------------------------
+   ;;--------------------------------
 
+
+If Set(WinNr) then WSet, WinNr
+If Set(WinNr) or keyword_Set(NOWIN) then Begin 
+      XGroesse = (!D.X_Size-Matrix.source_w-50)/float(Matrix.target_W*(Matrix.source_W+1))
+      YGroesse = (!D.Y_Size-Matrix.source_h-50)/float(Matrix.target_H*(Matrix.source_H+1))
+EndIf    
+
+   bildxsize = (1+Matrix.target_w*xGroesse) ;Groesse einer Untermatrix
+   bildysize = (1+Matrix.target_h*yGroesse)
+   xoffset = bildxsize/2+xrand
+   yoffset = bildysize/2+yrand
+ 
+   ;;------------------> Benötigte Zeichenfläche:
+   flaechex = bildxsize*Matrix.source_w + 2*xoffset
+   flaechey = bildysize*Matrix.source_h + 2*yoffset
+   GET_INFO = { SHOWWEIGHTS_INFO, $
+                x0:long(xoffset), y0:long(yoffset), x1:long(flaechex-xoffset), y1:long(flaechey-yoffset), $
+                x00:long(xoffset), y00:long(yoffset), $
+                tvxsize: long(flaechex), tvysize: long(flaechey), subxsize:long(bildxsize), subysize:long(bildysize)}
+   ;;--------------------------------
    ;;------------------> Auto-Slide ?
-   If not keyword_set(SLIDE) then begin ;Eventuell doch ein SLIDE Fenster öffnen
-      XS=(XGroesse*Matrix.target_w +1)*Matrix.source_w
-      YS=(YGroesse*Matrix.target_h +1)*Matrix.source_h
+   If !D.Name ne "PS" and (not keyword_set(SLIDE)) then begin ;Eventuell doch ein SLIDE Fenster öffnen
+      XS=flaechex
+      YS=flaechey
       If (XS+8 gt MAXSIZE(0)) or (YS+20 gt MAXSIZE(1)) then begin ;Fensterränder+Schieber ca. 20, 55 Pixel...
          ;;Window would not fit an Screen - so make it a SLIDE-Window
          SLIDE = 2
@@ -342,83 +444,98 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    ;;--------------------------------
 
 
+   ;;------------------> Fenster öffnen:
    Default, xvisible, 256
    Default, yvisible, 256
-
-      If Not Set(WINNR) Then Begin
-         If keyword_set(SLIDE) then begin
-            case SLIDE of 1: Window, /PIXMAP, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
-               else: GET_WIN = Scrollit (XDRAWSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YDRAWSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
-                                         XSIZE=xvisible, YSIZE=yvisible, TITLE=titel, GET_BASE=get_base, $
-                                         XPOS=0, YPOS=0)
-            endcase
-         endif else begin
-            Window, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
-         endelse
-      Endif Else Begin 
-         WSet, WinNr
-         XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
-         YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
-
-         IF XGroesse EQ 0 THEN BEGIN
-            XGroesse = 1
-            Print, 'ShowWeights: ACHTUNG, horizontale Darstellung unvollständig !!'
-         END
-         IF YGroesse EQ 0 THEN BEGIN
-            YGroesse = 1
-            Print, 'ShowWeights: ACHTUNG, vertikale Darstellung unvollständig !!'
-         END
-      EndElse    
+   
+   If (Not Set(WINNR)) and (not Keyword_Set(NOWIN)) Then Begin
+      If keyword_set(SLIDE) then begin
+         case SLIDE of 1: Window, /PIXMAP, /FREE , XSize=flaechex, YSize=flaechey, Title=titel
+            else: GET_WIN = Scrollit (XDRAWSIZE=flaechex, YDRAWSIZE=flaechey, $
+                                      XSIZE=xvisible, YSIZE=yvisible, TITLE=titel, GET_BASE=get_base, $
+                                      XPOS=0, YPOS=0)
+         endcase
+      endif else begin
+         Window, /FREE , XSize=flaechex, YSize=flaechey, Title=titel
+      endelse
+   Endif
+   ;;--------------------------------
 
 
-   IF Keyword_Set(Delay) THEN BEGIN
-      MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-   END ELSE BEGIN
-      MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-   END
 
+   ;;------------------> Koordinatensystem malen:
+   PrepareNASEPlot, Matrix.source_h, Matrix.source_w, /OFFSET, GET_OLD=oldplot
+   !x.Ticklen = 0.02
+   !y.ticklen = 0.02            ;Damit da nichts schiefgeht
+   !x.gridstyle = 0
+   !y.gridstyle = 0
+   !x.thick = 2
+   !y.thick = 2
+   Plot, indgen(1), /NODATA, POSITION=[xoffset-bildxsize/2, yoffset-bildysize/2, flaechex-xoffset+bildxsize/2, flaechey-yoffset+bildysize/2], /DEVICE, color=fore;rgb("orange", /NOALLOC)
+   PrepareNASEPlot, RESTORE_OLD=oldplot
+   ;;--------------------------------
 
-;   no_connections = WHERE(MatrixMatrix EQ !NONE, count)
-;   IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
+   ;;------------------> Bild malen:
+   If Keyword_Set(SURF) then begin
+      oldP = !P
+      !P.Background = back      ;von nun an dunkelgelber Hintergrund     
+      !P.Multi = 0
+      !P.Position = [0, 0, 0, 0] ;Damit da nichts schiefgeht
+      !P.Region = [0, 0, 0, 0]
+      !P.T3d = 0
 
-;   min = min(MatrixMatrix)
-;   max = max(MatrixMatrix)
-;   ts = !D.Table_Size;-1
-
-;   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
-
-;   if min ge 0 then begin
-;      g = indgen(ts)/double(ts-1)*255
-;      tvlct, g, g, g            ;Grauwerte
-;      MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
-;   endif else begin
-;      g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
-;      tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
-;      MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-;      MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
-;   endelse
-
-;   IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
-
-;   SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
-;   erase, rgb(255,100,0, INDEX=ts-1) ;Orange die für die Trennlinien
-
-   MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, GET_MAXCOL=GET_MAXCOL, GET_COLORMODE=GET_COLORMODE)
-   erase, RGB('orange',/NOALLOC) ;GET_MAXCOL+2
-
-; Device, BYPASS_TRANSLATION=0   
-;Das würde nur die Farben auf einem
-;   shared Colormap durcheinanderbringern!
-   for YY= 0, Matrix.source_h-1 do begin
-      for XX= 0, Matrix.source_w-1 do begin  
-         utv, rebin( /sample, $
-                    transpose(MatrixMatrix(*, *, YY, XX)), $
-                    xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
-          /Order, /DEVICE, $
-          XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
+      nonone = where(MatrixMatrix ne !NONE, count)
+      If count ne 0 then begin
+         zmax = max(MatrixMatrix(nonone))
+         zmin = min(MatrixMatrix(nonone))
+      endif else begin
+         zmax = max(MatrixMatrix)
+         zmin = min(MatrixMatrix)
+      endelse
+      If zmin ge 0 then zmin = 0 else begin
+         maxmax = max([zmax, -zmin])
+         zmax = maxmax
+         zmin = -maxmax
+      endelse
+      weightwin = !D.window
+      window, /free, xsize=bildxsize, ysize=bildysize, /PIXMAP
+      pixwin = !D.window
+      for YY= Matrix.source_h-1, 0, -1 do begin
+         for XX= 0, Matrix.source_w-1 do begin  
+            If Keyword_Set(GRID) then surfproc = "SURFACE" else surfproc = "SHADE_SURF"
+            wset, pixwin
+            If Keyword_Set(SUPERIMPOSE) then Call_Procedure, surfproc, COLOR=white, SHADES=rotate(OtherOther(*, *, YY, XX), 3), rotate(MatrixMatrix(*, *, YY, XX), 3), MAX_VALUE=999998, xstyle=5, ystyle=5, zstyle=5, ZRANGE=[zmin, zmax], XMARGIN=[0, 0], YMARGIN=[0, 0], _EXTRA=_extra $
+            else Call_Procedure, surfproc, COLOR=white, rotate(MatrixMatrix(*, *, YY, XX), 3), MAX_VALUE=999998, xstyle=5, ystyle=5, zstyle=5, ZRANGE=[zmin, zmax], XMARGIN=[0, 0], YMARGIN=[0, 0], _EXTRA=_extra
+            Wset, weightwin
+            DEVICE, COPY=[0, 0, bildxsize, bildysize, xoffset+XX*bildxsize, yoffset+(Matrix.source_h-YY-1)*bildysize, pixwin]
+         end
       end
+      wdelete, pixwin
+      !P = OldP
+   endif else begin
+      for YY= 0, Matrix.source_h-1 do begin
+         for XX= 0, Matrix.source_w-1 do begin  
+;            utv, rebin( /sample, $
+;                        transpose(MatrixMatrix(*, *, YY, XX)), $
+;                        xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
+;             /Order, /DEVICE, $
+;             XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
+            NaseTv, MatrixMatrix(*, *, YY, XX), $
+             h_stretch=xGroesse,  v_stretch=yGroesse, $
+             /DEVICE, XSIZE=bildxsize, YSIZE=bildysize, $
+             xoffset+XX*(1+Matrix.target_w*xGroesse), yoffset+(Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
+         end
+      end
+   endelse
+   col = RGB('orange',/NOALLOC)
+   for XX= 0, Matrix.source_w do begin  
+      PLOTS, COLOR=col, /DEVICE, xoffset+[XX*bildxsize-1, XX*bildxsize-1], yoffset+[0, bildysize*Matrix.source_h-1]
    end
-;   Device, /BYPASS_TRANSLATION
+   for YY= 0, Matrix.source_h do begin
+      PLOTS, COLOR=col, /DEVICE, xoffset+[0, bildxsize*Matrix.source_w-1], yoffset+[YY*bildysize-1, YY*bildysize-1]
+   end
+   ;;--------------------------------
+
 
    If Keyword_Set(SLIDE) then begin
       if (SLIDE eq 1) then begin
