@@ -123,7 +123,11 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
       RETURN, DelMat.Weights # In 
    END ELSE BEGIN
-      DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
+     IF (count NE 0) THEN BEGIN
+         DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
+      END ELSE BEGIN
+         DelMat.Matrix = 0  ; geht nur, weil Matrix in Struktur steht; sonst waere Matrix keine Matrix mehr
+      END
       tmp = DelMat.Matrix AND Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
       tmp = REFORM(tmp, N_Elements(tmp))
       
