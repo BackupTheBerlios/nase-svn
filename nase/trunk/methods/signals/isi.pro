@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/12/15 13:09:49  saam
+;           performance improvements
+;
 ;     Revision 1.2  1998/03/31 11:36:01  saam
 ;           now histo is an optional output
 ;
@@ -61,26 +64,13 @@ FUNCTION MYISI, trial, histo
    histo   = LonArr( (Size(trial))(1) )
    max_isi = 0
    
-   times = WHERE(trial GE 1)
-   IF times(0) EQ -1 THEN BEGIN
+   times = WHERE(trial GE 1, c)
+   IF c LE 1 THEN BEGIN
       histo = 0
       RETURN, -2
    ENDIF
 
-   nr_spikes = (Size(times))(1)
-   IF nr_spikes LE 1 THEN BEGIN
-      histo = 0
-      RETURN, -2
-   ENDIF
-   
-   
-   FOR i = 1, nr_spikes-1 DO BEGIN
-      isi_p = times(i) - times(i-1)
-      histo(isi_p) = histo(isi_p) + 1
-      IF isi_p GT max_isi THEN max_isi = isi_p
-   ENDFOR
-
-   histo = histo(0:max_isi)
+   histo = HISTOGRAM((Shift(times,-1)-times)(0:c-2))
    RETURN, 0
 END
 
