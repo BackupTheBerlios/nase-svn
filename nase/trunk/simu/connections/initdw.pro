@@ -17,11 +17,12 @@
 ;                  D_RANDOM, W_RANDOM  : Array [Min,Max]. Die Gewichte/Delays werden gleichverteilt zuf‰llig belegt im Bereich Min..Max.
 ;                  D_NRANDOM, W_NRANDOM: Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zuf‰llig belegt mit Mittelwert MW und Standardabweichung sigma.
 ;                  D_LINEAR, W_LINEAR  : (noch nicht implementiert!)
-;                  D_GAUSS             : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gauﬂfˆrmig in den Targetlayer gesetzt, und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
-;                            W_GAUSS   : (noch nicht implementiert!)
-;                  D_NONSELF, W_NONSELF: Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.
-;	
+;                            W_GAUSS   : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gauﬂfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                  D_GAUSS             : (noch nicht implementiert!)
+;                  D_NONSELF, W_NONSELF: Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
+;
 ; KEYWORD PARAMETERS: s.o.
+;                     TRUNCATE, TRUNC_VALUE: s. SetWeight.
 ;
 ; OUTPUTS: Eine Initialisiert Delay-Weight-Struktur. Wird keines der Delay-Schl¸sselwˆrter angegeben, so enth‰lt die Struktur keine Delays.
 ;
