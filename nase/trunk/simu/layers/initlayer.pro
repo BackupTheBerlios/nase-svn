@@ -3,14 +3,12 @@
 ;
 ; PURPOSE:              Initialisiert eine Schicht aus Neuronen vom Typ i.
 ;                       Der Neuronentyp wird in der Parameterstruktur
-;                       festgelegt, diese muß mit
-;                       <A HREF="../simu/layers/#INITPARA_1">InitPara_i</A> 
+;                       festgelegt, diese muß mit <A HREF="#INITPARA_1">InitPara_i</A> 
 ;                       erzeugt werden.
 ;          
 ;                       InitLayer ist lediglich eine Rahmenfunktion, die
 ;                       selbständig die für den jeweiligen Neuronentyp
-;                       spezifische <A HREF="../simu/layers/#INITLAYER_1">
-;                       InitLayer_i</A>-Funktion aufruft.
+;                       spezifische <A HREF="#INITLAYER_1">InitLayer_i</A>-Funktion aufruft.
 ;
 ; CATEGORY:             SIMULATION / LAYERS
 ;
@@ -47,6 +45,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  1998/11/06 14:28:38  thiel
+;              Hyperlinks.
+;
 ;       Revision 2.2  1998/11/06 14:14:30  thiel
 ;              Hyperlink-Fehler
 ;

@@ -3,19 +3,17 @@
 ;
 ; PURPOSE:              Führt einen Simulationszeitschritt durch (Schwellenvergleich), 
 ;                       der Input fuer die Layer muß vorher mit
-;                       Prozeduren  <A HREF="../simu/layers/#INPUTLAYER">InputLayer</A> übergeben werden.
+;                       Prozeduren  <A HREF="#INPUTLAYER">InputLayer</A> übergeben werden.
 ;
 ;                       ProceddLayer ist lediglich eine Rahmenprozedur, die
 ;                       selbständig die für den jeweiligen Neuronentyp
-;                       spezifische <A HREF="../simu/layers/#PROCEEDLAYER_1">
-;                       ProceedLayer_i</A>-Prozdeur aufruft.
+;                       spezifische <A HREF="#PROCEEDLAYER_1">ProceedLayer_i</A>-Prozdeur aufruft.
 ;                       
 ; CATEGORY:             SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:     ProceedLayer, Layer [,_EXTRA=_extra]  
 ;
-; INPUTS:               Layer : eine mit  <A HREF="../simu/layers/#INITLAYER">
-;                       InitLayer</A> erzeugte Struktur
+; INPUTS:               Layer : eine mit  <A HREF="#INITLAYER">InitLayer</A> erzeugte Struktur
 ;
 ; OPTIONAL INPUTS &
 ; KEYWORD PARAMETERS:   _extra: alle übrigen Parameter werden an die jeweilige
@@ -39,6 +37,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.5  1998/11/06 14:28:00  thiel
+;              Hyperlinks.
+;
 ;       Revision 2.4  1998/11/06 14:16:00  thiel
 ;              Hyperlink defekt
 ;

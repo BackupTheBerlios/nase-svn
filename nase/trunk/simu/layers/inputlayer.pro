@@ -2,22 +2,20 @@
 ; NAME:               InputLayer
 ;
 ; PURPOSE:            Addiert Input vom Typ Sparse (siehe 
-;		      <A HREF="../simu/layers/#SPASSMACHER">Spassmacher</A>) auf die 
+;		      <A HREF="#SPASSMACHER">Spassmacher</A>) auf die 
 ;                     Neuronenpotentiale und klingt diese vorher ab. Ein
 ;                     mehrmaliger Aufruf von InputLayer ist moeglich.
 ;                     Danach sollte man auf jeden Fall ProceedLayer aufrufen.
 ;
 ;                     InputLayer ist lediglich eine Rahmenprozedur, die
 ;                     selbständig die für den jeweiligen Neuronentyp
-;                     spezifische <A HREF="../simu/layers/#INPUTLAYER_1">
-;                     InputLayer_i</A>-Prozdeur aufruft.
+;                     spezifische <A HREF="#INPUTLAYER_1">InputLayer_i</A>-Prozdeur aufruft.
 ;
 ; CATEGORY:           SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:   InputLayer, Layer [,_EXTRA=_extra]
 ;
-; INPUTS:             Layer : eine mit  <A HREF="../simu/layers/#INITLAYER">
-;                     InitLayer</A> erzeugte Struktur
+; INPUTS:             Layer : eine mit  <A HREF="#INITLAYER">InitLayer</A> erzeugte Struktur
 ;
 ; OPTIONAL INPUTS &
 ; KEYWORD PARAMETERS:   _extra: alle übrigen Parameter werden an die jeweilige
@@ -42,8 +40,8 @@
 ; MODIFICATION HISTORY:
 ;
 ;  $Log$
-;  Revision 2.2  1998/11/06 14:14:50  thiel
-;         Hyperlinks falsch!
+;  Revision 2.3  1998/11/06 14:28:18  thiel
+;         Hyperlinks.
 ;
 ;  Revision 2.1  1998/11/04 16:32:19  thiel
 ;         Rahmenprozedur fuer InputLayer_i-Prozeduren.

@@ -5,15 +5,13 @@
 ;
 ;                     FreeLayer ist lediglich eine Rahmenfunktion, die
 ;                     selbständig die für den jeweiligen Neuronentyp
-;                     spezifische <A HREF="../simu/layers/#FREELAYER_1">
-;                     FreeLayer_i</A>-Funktion aufruft.
+;                     spezifische <A HREF="#FREELAYER_1">FreeLayer_i</A>-Funktion aufruft.
 ;
 ; CATEGORY:           SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:   FreeLayer, L
 ;
-; INPUTS:             L: eine mit <A HREF="../simu/layers/#INITLAYER">
-;		      InitLayer</A> initialisierte Layer-Struktur
+; INPUTS:             L: eine mit <A HREF="#INITLAYER">InitLayer</A> initialisierte Layer-Struktur
 ;
 ; PROCEDURE:          FreeLayer schaut nach dem Typ der übergebenen Parameter
 ;                     (aus dem type.type-String) und ruft mit CALL_PRCEDURE die
@@ -26,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  1998/11/06 14:27:41  thiel
+;              Hyperlinks.
+;
 ;       Revision 2.2  1998/11/06 14:16:46  thiel
 ;            Kaputte Hyperlinks.
 ;
