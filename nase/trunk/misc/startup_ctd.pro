@@ -6,19 +6,24 @@
 ;
 ; AIM: central NASE startup routine
 ;  
-; PURPOSE: Does nearly everything that is needed to run NASE.
-;   * NASE search paths
-;   * calls several satellite routines like <A>Check_Nase_Lib</A>, <A>DefGlobVars</A>
-;   * sets graphics device properly, and initializes NASE color management 
-;   * shows the NASE logo via <A>ShowLogo</A>
+; PURPOSE: Does nearly everything that is needed to run NASE.<BR> 
+;   * NASE search paths<BR> 
+;   * calls several satellite routines like <A>Check_Nase_Lib</A>, <A>DefGlobVars</A><BR> 
+;   * sets graphics device properly, and initializes NASE color management<BR> 
+;   * shows the NASE logo via <A>ShowLogo</A><BR>
 ;   You probably do not want to call this routine, because it is only used during NASE's startup 
 ;   process.
 ;    
 ; CATEGORY:
-;   NASE/MIND Startup
+;   NASE
+;   MIND
+;   Startup
 ;
 ; CALLING SEQUENCE:
-;   Startup_Ctd
+;*  Startup_Ctd
+;
+; COMMON BLOCKS:
+;  COMMON_RANDOM
 ;
 ; SEE ALSO:
 ;   <A>Check_Nase_Lib</A>, <A>DefGlobVars</A>, <A>ShowLogo</A>,
