@@ -90,6 +90,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/07 16:43:12  kupper
+;       confused x and y.
+;
 ;       Revision 1.6  2000/09/05 16:44:49  kupper
 ;       min/max output is now also read if BOUND is set.
 ;
@@ -560,8 +563,8 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
          ysize   : win_height, $
          nase    : nase, $
          color   : color, $
-         last_x_arr: w_height/2, $
-         last_y_arr: w_width/2}
+         last_y_arr: w_height/2, $
+         last_x_arr: w_width/2}
 
    WIDGET_CONTROL, tv, SET_UVALUE=info
 
