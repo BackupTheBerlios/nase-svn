@@ -22,12 +22,10 @@
 ;* Debugging [,MESSAGES=(0|1)] [,ASSERTIONS=(0|1)]
 ;  
 ; INPUT KEYWORDS:
-;  MESSAGES:: Set this keyword to turn on <A
-;             NREF=DMSG>debugging messages</A>.
+;  MESSAGES:: Set this keyword to turn on <A NREF=DMSG>debugging_messages</A>.
 ;             Set this keyword explicitely to 0 to turn them off.
 ;
-;  ASSERTIONS:: Set this keyword to turn on <A
-;               NREF=ASSERT>assertions</A>.
+;  ASSERTIONS:: Set this keyword to turn on <A NREF=ASSERT>assertions</A>.
 ;               Set this keyword explicitely to 0 to turn them off.
 ;
 ; SIDE EFFECTS:
@@ -58,6 +56,7 @@
 ;  
 ; SEE ALSO:
 ;  <A>DMsg</A>, <A>assert</A>
+;
 ;-
 
 Pro Debugging, MESSAGES=messages, ASSERTIONS=assertions
