@@ -154,7 +154,19 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    endif
 
    CASE mmode OF
-      0: for i=0, n_elements(yell)-1 do print, yell(i)
+      0: begin 
+         for i=0, n_elements(yell)-1 do begin 
+            print, yell(i)
+
+         endfor
+         ;;since idlversion 5.4 output is buffered within a nohup session
+         if idlversion(/float) ge 5.4 and NOT interactive() then begin
+            ;;flush stderr
+            FLUSH, -2
+            ;;flush stdout
+            FLUSH, -1
+         endif
+      end
       1: Widget_Control,GetHTag(_console, 'cons'),set_value=queue(viz, /valid), $
        SET_TEXT_TOP_LINE=MAX([0,ContainedElements(viz, /VALID)-15+1])
    END
