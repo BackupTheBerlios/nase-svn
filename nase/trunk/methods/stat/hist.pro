@@ -6,10 +6,13 @@
 ;  $Id$
 ;
 ; AIM:
-;   computes histogram and corresponding x values, allowing weighting
+;  Computes histogram and corresponding bin values, allowing weighting.
 ;
 ; PURPOSE:
-;  Compute histogram and corresponding x values. Allows weights.
+;  Compute histogram and corresponding bin values. In contrast to the
+;  standard IDL routine <C>Histogram()</C>, <C>Hist()</C> allows
+;  weighting of different entries. Furthermore, it adjusts its binsize
+;  automatically using <A>NiceNumber</A> if not otherwise specified.<BR>
 ;  This routine was originally written by R. Sterner,
 ;  Johns Hopkins University Applied Physics Laboratory.
 ;   
@@ -18,9 +21,9 @@
 ;  Statistics
 ;
 ; CALLING SEQUENCE:
-;*  h = hist(a, [,x [,bin]] [,MINH=...] [,MAXH=...]
+;*  h = Hist(a, [,x [,bin]] [,MINH=...] [,MAXH=...]
 ;*              [,/EXACT] [,/BIN_START] [,MAXBINS=...] [NBINS=...]
-;*              [,WEIGHT=...]  [,/REVERSE_INDICES]
+;*              [,WEIGHT=...]  [,REVERSE_INDICES...]
 ;
 ; INPUTS:
 ;  a   :: input array
@@ -48,16 +51,29 @@
 ;       h :: resulting histogram
 ;
 ; OPTIONAL OUTPUTS:
-;       x          :: optionally returned array of <*>x</*> values
+;       x          :: Optionally returned array of data values
+;                     corresponding to the histogram bins,
+;                     like the data returned in the
+;                     <*>LOCATIONS</*> keyword in 
+;                     IDL's <C>Histogram()</C>.
 ;  REVERSE_INDICES :: Set this keyword to a named variable 
-;                     in which the list of reverse indices is returned
+;                     in which the list of reverse indices is
+;                     returned. See the documentation of IDL's
+;                     <C>Histogram()</C> for an example.
 ;
+; EXAMPLE:
+;* y=0.5*randomn(s,1000)+3.
+;* h=hist(y,axis)
+;* plot, axis, h, PSYM=10
+;
+; SEE ALSO:
+;  IDL's <C>Histogram()</C>.
 ;-
  
  
-function hist, arr, x, bin, maxbins=mxb, nbins=nb, $
-               minh=minv, maxh=maxv,exact=exact, bin_start=bin_start, weight=wt ,$
-               REVERSE_INDICES=R_I
+FUNCTION Hist, arr, x, bin, maxbins=mxbins, nbins=nb $
+                , minh=minv, maxh=maxv, exact=exact, bin_start=bin_start $
+                , weight=wt, REVERSE_INDICES=r_i
    
    if set(nb) then nb_flag = 1
    if set(nb) and set(bin) then $
@@ -78,10 +94,12 @@ function hist, arr, x, bin, maxbins=mxb, nbins=nb, $
       if exact eq 1 then bin = ((double(maxv)-double(minv))/float(__nb)) $
       else bin = nicenumber((double(maxv)-double(minv))/float(__nb))
    end
-   if bin eq 0 then Console, /fatal, " Only equal values in data, keywords MINH and MAXH needed"
+   if bin eq 0 then Console, /fatal $
+    , "Only equal values in data, keywords MINH and MAXH needed"
     
    ;;warn if nicenumber changes nbins
-   if bin ne  ((double(maxv)-double(minv))/float(__nb)) and nb_flag EQ 1 then begin
+   if bin ne ((double(maxv)-double(minv))/float(__nb)) $
+    and nb_flag EQ 1 then begin
       Console, /Warn, " BIN changed from "+ $
        str((double(maxv)-double(minv))/float(__nb)) +" to "+str(bin)
       Console, /warn, " resp. NBINS changed from "+str(nb)+" to "+str(round((double(maxv)-double(minv))/float(bin)+1))
@@ -89,27 +107,45 @@ function hist, arr, x, bin, maxbins=mxb, nbins=nb, $
    endif
 
    ;;------  Get max number of bins allowed  --------
-   mxbins = 1000                ;; Def max # of histogram bins.
-   if set(mxb) then mxbins = mxb ; Over-ride max bins.
+   Default, mxbins, 1000                ;; Def max # of histogram bins.
+;   if set(mxb) then mxbins = mxb ; Over-ride max bins.
    n = round((double(maxv)-double(minv))/float(bin)+1)
    
    ;;------  Test if too many bins  --------
    if n gt mxbins then begin
-      Console, /Fatal,' Error in HIST: bin size too small, histogram requires '+$
-       strtrim(n,2)+' bins.'
-      Console, /Fatal,' Def.max # of bins = 1000.  May over-ride with NBINS keyword.'
+      Console, /Fatal,'Bin size too small, histogram requires '+$
+       strtrim(n,2)+' bins.'+$
+       ' Def.max # of bins = 1000. May over-ride with NBINS keyword.'
    endif
    ;;make histogram
    if set(wt) then h = fltarr(n) else h = lonarr(n)
    
-   for i=0l, n-2 do begin
-      index = where( (arr-minv)  GE i*bin and (arr-minv) LT (i+1) * bin, count)
-      if set(wt) and count GT 0 then h(i) = total(wt(index)) $
-      else h(i) = count
-   endfor
-   ;;compute x-axis
-   x = minv+findgen(n_elements(h))*bin
-   if bin_start NE 1 then x = x + bin/2.
+   ;; array for reverse indices
+   r_i = LonArr(n+N_Elements(arr)+1)
+   ricount = n+1
 
-   return, h
-end
+   ;; CHANGE from previous version: loop now runs up to the last bin
+   ;; (n-1), not (n-2) like before
+   FOR i=0l, n-1 DO BEGIN 
+      index = Where((arr-minv) GE i*bin AND (arr-minv) LT (i+1)*bin, count)
+      IF set(wt) AND count GT 0 THEN h(i) = total(wt(index)) $
+      ELSE h(i) = count
+      IF count NE 0 THEN BEGIN
+         r_i(i) = ricount
+         r_i(ricount:ricount+count-1) = index
+         ricount = ricount+count
+      ENDIF ELSE BEGIN
+         r_i(i) = ricount
+      ENDELSE ;; count NE 0
+   ENDFOR ;; i
+
+   r_i(i) = ricount
+   
+   ;; compute x-axis for optional output
+   x = minv+findgen(n_elements(h))*bin
+   IF NOT Keyword_Set(bin_start) THEN x = x + bin/2.
+
+   Return, h
+
+END
+
