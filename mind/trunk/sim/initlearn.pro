@@ -15,6 +15,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/01/26 10:42:29  alshaikh
+;          + new learning rule : EXTERN
+;          + EXTERN still doesn't work with delayed connections
+;
 ;     Revision 1.6  2000/01/26 10:02:26  alshaikh
 ;           bugfix
 ;
@@ -71,6 +75,26 @@
 ;               v_post   : amplification &
 ;               tau_post : time constant for presynaptic spike precedes postsynaptic spike (learn)
 ;             
+; RULE='EXTERN':
+; --------------
+;        Definition-Syntax :
+;                 RULE  : 'EXTERN'  ,$
+;                 INIT  : {$
+;                          NAME   :'e.g. lrinithebblp2' ,$
+;                          PARAMS : {EXPO : [1.0,10.0] } }, $   ; directly passed to lrinithebblp2
+;                 STEP   : { $
+;                          NAME : 'e.g. lrprochebblp2' ,$
+;                          PARAMS: {void : 0} },$               ; directly passed to lrprochebblp2
+;                 EXEC   : { $
+;                          NAME : 'e.g. lrhebblp2' ,$           ;   "         "
+;                          PARAMS : { $
+;                                     ALPHA : 0.25 ,$
+;                                     GAMMA : 0.0001, $
+;                                     MAXIMUM : 0.003 $
+;                                    } $
+;                          } ,$
+;                         ...
+;  
 ; WIN='ALPHA':
 ; ------------
 ;               tau_inc : time constant for increase in ms

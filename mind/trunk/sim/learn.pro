@@ -15,6 +15,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/26 10:42:29  alshaikh
+;          + new learning rule : EXTERN
+;          + EXTERN still doesn't work with delayed connections
+;
 ;     Revision 1.2  2000/01/14 11:02:02  saam
 ;           changed dw structures to anonymous/handles
 ;
@@ -55,6 +59,33 @@
 ;               tau_pre  : time constant for postsynaptic spike precedes presynaptic spike (delearn)
 ;               v_post   : amplification &
 ;               tau_post : time constant for presynaptic spike precedes postsynaptic spike (learn)
+;
+; RULE='EXTERN':
+; --------------
+;        Definition-Syntax :
+;                 RULE  : 'EXTERN'  ,$
+;                 INIT  : {$
+;                          NAME   :'e.g. lrinithebblp2' ,$
+;                          PARAMS : {EXPO : [1.0,10.0] } }, $   ; directly passed to lrinithebblp2
+;                 STEP   : { $
+;                          NAME : 'e.g. lrprochebblp2' ,$
+;                          PARAMS: {void : 0} },$               ; directly passed to lrprochebblp2
+;                 EXEC   : { $
+;                          NAME : 'e.g. lrhebblp2' ,$           ;   "         "
+;                          PARAMS : { $
+;                                     ALPHA : 0.25 ,$
+;                                     GAMMA : 0.0001, $
+;                                     MAXIMUM : 0.003 $
+;                                    } $
+;                          } ,$
+;                         ...
+;  
+
+
+
+
+
+
 ;             
 ; WIN='ALPHA':
 ; ------------
@@ -94,6 +125,19 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
          TotalPrecall, LS._win, CON(LS.DW), L(curDW.TARGET)
          LearnBiPoo, CON(LS.DW), LS._win, LS._win2
       END
+
+      4 : BEGIN 
+         name_of_step = LS.step.name
+         step_params = LS.step.params
+         name_of_exec = LS.exec.name
+         exec_params = LS.exec.params
+         CALL_PROCEDURE,name_of_step,win=LS._win,con=CON(LS.DW),target_l=L(curDW.TARGET),_EXTRA=step_params
+         CALL_PROCEDURE,name_of_exec,CON=CON(LS.DW),WIN=LS._win,TARGET_CL=L(curDW.TARGET) ,_EXTRA=exec_params
+
+
+         END 
+
+
       ELSE: Message, 'this shouldnt happen'
    END
 
