@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/26 14:36:39  saam
+;           expanded the log message
+;
 ;     Revision 1.1  2000/01/24 10:09:52  saam
 ;           xtracted from poissoninput.pro
 ;
@@ -72,7 +75,7 @@ FUNCTION SIFujitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
                 delta_t  : delta_t           ,$
                 sim_time : .0d                $
                }
-         print,'SIFuJitter: '+STR(TV.jitter*TV.delta_t)+' ms'
+         print,'SIFuJitter: '+STR(TV.jitter*TV.delta_t)+' ms, average signal shift: '+STR(TV.jitter*TV.delta_t/2)+' ms'
       END
       
       ; STEP
