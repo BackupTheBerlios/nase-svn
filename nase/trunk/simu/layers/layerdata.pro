@@ -56,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  1999/01/14 14:20:39  saam
+;              + works now for one-neuron-layers, too
+;
 ;        Revision 2.5  1998/11/08 17:33:27  saam
 ;              + wrong procedure name LAYERDATATEST in last revision
 ;              + keywords INHIBITION[12], FEEDING[12] renamed to [FS]INHIBITITON,
@@ -95,46 +98,60 @@ PRO LayerData, _Layer, $
    type       = Layer.Type
    width      = Layer.W
    height     = Layer.H
+   n = width*height
    parameters = Layer.Para
-   potential  = REFORM(Layer.M, Layer.H, Layer.W)
+   IF n GT 1 THEN potential  = REFORM(Layer.M, Layer.H, Layer.W) ELSE potential = Layer.M
 
 
    ; handle FEEDING
    CASE Layer.TYPE OF
-      '6' : feeding  = REFORM(Layer.para.corrAmpF*(Layer.F2-Layer.F1), Layer.H, Layer.W)
+      '6' : IF n GT 1 THEN feeding  = REFORM(Layer.para.corrAmpF*(Layer.F2-Layer.F1), Layer.H, Layer.W) ELSE  feeding  = Layer.para.corrAmpF*(Layer.F2-Layer.F1)
       '7' : BEGIN
-               ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
-               sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
+               IF n GT 1 THEN BEGIN
+                  ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
+                  sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
+               END ELSE BEGIN
+                  ffeeding = Layer.F1
+                  sfeeding = Layer.F2
+               END
             END
-      ELSE: feeding = REFORM(Layer.F, Layer.H, Layer.W)
+      ELSE: IF n GT 1 THEN feeding = REFORM(Layer.F, Layer.H, Layer.W) ELSE feeding = Layer.F
    END   
 
    ; handle LINKING
    CASE Layer.TYPE OF
-      '6' : linking = REFORM(Layer.para.corrAmpL*(Layer.L2-Layer.L1), Layer.H, Layer.W)
-      ELSE: linking = REFORM(Layer.L, Layer.H, Layer.W)
+      '6' : IF n GT 1 THEN linking = REFORM(Layer.para.corrAmpL*(Layer.L2-Layer.L1), Layer.H, Layer.W) ELSE linking = Layer.para.corrAmpL*(Layer.L2-Layer.L1)
+      ELSE: IF n GT 1 THEN linking = REFORM(Layer.L, Layer.H, Layer.W) ELSE linking = Layer.L
    END   
 
    ; handle INHIBITION
    CASE Layer.TYPE OF
       '7' : BEGIN
-               finhibition = REFORM(Layer.I1, Layer.H, Layer.W)
-               sinhibition = REFORM(Layer.I2, Layer.H, Layer.W)
+               IF n GT 1 THEN BEGIN 
+                  finhibition = REFORM(Layer.I1, Layer.H, Layer.W) 
+                  sinhibition = REFORM(Layer.I2, Layer.H, Layer.W)
+               END ELSE BEGIN
+                  finhibition = Layer.I1 
+                  sinhibition = Layer.I2
+               END
             END
-      ELSE: inhibition = REFORM(Layer.I, Layer.H, Layer.W)
+      ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
    END   
 
 
    ; handle THRESHOLD
    CASE Layer.TYPE OF
-      '6' : schwelle = REFORM(Layer.R + Layer.S + Layer.Para.th0, Layer.H, Layer.W)
-      ELSE: schwelle = REFORM(Layer.S, Layer.H, Layer.W)
+      '6' : IF n GT 1 THEN schwelle = REFORM(Layer.R + Layer.S + Layer.Para.th0, Layer.H, Layer.W) ELSE schwelle = Layer.R + Layer.S + Layer.Para.th0
+      ELSE: IF n GT 1 THEN schwelle = REFORM(Layer.S, Layer.H, Layer.W) ELSE schwelle = Layer.S
    END
 
    ; handle SPECIAL TAGS
-   IF Layer.Type EQ '2' THEN lschwelle     = Reform(Layer.R, Layer.H, Layer.W)
-   IF Layer.Type EQ '3' THEN lernpotential = Reform(Layer.P, Layer.H, Layer.W)
-
+   IF Layer.Type EQ '2' THEN BEGIN
+      IF n GT 1 THEN lschwelle = Reform(Layer.R, Layer.H, Layer.W) ELSE lschwelle = Layer.R
+   END
+   IF Layer.Type EQ '3' THEN BEGIN
+      IF n GT 1 THEN lernpotential = Reform(Layer.P, Layer.H, Layer.W) ELSE lernpotential = Layer.P
+   END
 
    Handle_Value, _Layer, Layer, /NO_COPY, /SET
    output = LayerSpikes(_Layer, /DIMENSIONS)
