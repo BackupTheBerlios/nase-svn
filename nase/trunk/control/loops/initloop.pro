@@ -52,11 +52,14 @@
 ;                           C               INT              2
 ;                           D               STRING    'C'
 ;      
-; SEE ALSO:          </A HREF="#LOOPING>Looping</A>
+; SEE ALSO:          <A HREF="#LOOPING>Looping</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/11/25 10:27:49  saam
+;           HRef-Syntax war falsch
+;
 ;     Revision 1.1  1997/11/25 10:11:26  saam
 ;           IDL ist toll
 ;
