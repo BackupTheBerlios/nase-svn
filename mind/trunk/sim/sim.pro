@@ -19,6 +19,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.13  2000/07/14 12:46:40  saam
+;            performance improvement by replacing
+;            a handle copy operation
+;
 ;      Revision 1.12  2000/05/18 12:56:52  saam
 ;            saves initial weights only when learning
 ;
@@ -313,9 +317,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          InputLayer, L(AIN2(i)), _EXTRA=tmp
       END
       FOR i=0, DWmax DO BEGIN
-         curDW = Handle_Val((P.DWW)(i))  
+         Handle_Value, (P.DWW)(i), curDW, /NO_COPY
          tmp = Create_Struct(curDW.SYNAPSE, DelayWeigh(CON(i), LayerOut(L(curDW.SOURCE))))
          InputLayer, L(curDW.TARGET), _EXTRA=tmp
+         Handle_Value, (P.DWW)(i), curDW, /NO_COPY, /SET
       END
       
       ;-------------> LEARN SOMETHING
