@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.5  2000/09/21 10:09:17  saam
+%             updated doc section
+%
 %       Revision 1.4  2000/09/09 16:09:47  saam
 %            dunno whats changed
 %
@@ -110,6 +113,27 @@
 \section{Documentation}
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%
+\subsection{General}
+\begin{itemize}
+\item The only accepted documentation language is English. There are lots of old routines documented in German. This has to be changed! If such a routine is modified, it has to be translated. 
+\item Documentation is not only for others, it is for you as well. Remember lots of routines you wrote to finish that paper last summer, and now you can only guess what they are doing. And you will probably code them completely new to get them working with a new set of data. Or you forgot, that they exist. This does not only count for the usage, but also for the implementation of your code. So once again: \textbf{Document everything, for you and others.}
+\end{itemize}
+
+\subsection{Documentation Header}
+A current version of the documentation header can always be found in the main directory of nase call \texttt{header.txt}.
+\begin{verbatim}
+
+\end{verbatim}
+
+\begin{itemize}
+\item How to use Hyperlinks.
+\end{itemize}
+
+\subsection{CVS Logs}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%
@@ -117,6 +141,14 @@
 %%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%
 \subsection{Naming}
+\begin{itemize}
+\item Names of routines must not contain any special character like language specific extension, underscores. To keep problems between different operation systems small, just use lower case letters \texttt{a-z}. Names are not restricted in length, but the shorter a name, the better it is to type.  
+\item Routine names are expected to describe, what they are supposed to do. Names like \texttt{eval.pro} are not acceptable.
+\item Check that the name you like to chose is free for use.
+\item If there is a bundle of routines (perhaps handling a special data structure), compound words in increasing specifity should be used. E.g., if you have routines handling a list, they can be called like \texttt{listinsert}, \texttt{listsort}.
+\end{itemize}
+
+
 \subsection{Compatibility between IDL versions}
 Different types of compatilibity problems are known between IDL versions. First (the harmless one), higher version include routines, which formerly had to be implemented by hand. Furthermore, already existing routines are extended in their functionality, making several hand-written wrappers obsolete. Last, but most problematic are undocumented (silent) changes in the behaviour of routines, i.e. color management, handling of the \texttt{\_EXTRA} keyword, passing of undefined arguments. The following guidelines are a compromise between functionality and compatability:
 \begin{itemize}
@@ -164,6 +196,10 @@ END
 \item The syntax and semantics of the passed arguments should be checked as strict/extensive as possible. If the routine is time critical (called many times), the checking can be skipped by the keyword \texttt{/FAST}. You also may omit the syntax check, if documented in the \texttt{Restrictions} section. 
 \end{itemize}
 \subsection{Calling Conventions}
+\begin{itemize}
+\item The time should be the first index in all array operations.
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
@@ -177,6 +213,7 @@ END
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{itemize}
+\item The first index of an array is processed fastest.
 \item Use array operations rather than loops wherever possible. Try to avoid loops with high repetition counts.
 %
 \item Use IDL system functions and procedures wherever possible. A common operation is to find the sum of the elements in an array or subarray. The \texttt{TOTAL} function directly and efficiently evaluates this sum at least 10 times faster than directly coding the sum.

@@ -15,6 +15,9 @@
 # MODIFICATION HISTORY:
 #
 #       $Log$
+#       Revision 1.2  2000/09/21 10:09:16  saam
+#             updated doc section
+#
 #       Revision 1.1  2000/08/24 10:01:32  saam
 #             first version
 #
@@ -40,7 +43,7 @@ PS_PICS =
 
 # location of your original bibfile; this script will just generate a local copy
 # full path, with ".bib"-ending
-ORGBIB = /neuro/neuro/saam/mytex/bibstyles/test.bib 
+ORGBIB =  ~/pub/lit/complit.bib
 
 
 # path where your bibstyles reside (no function, yet)
