@@ -84,6 +84,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.30  1998/07/21 15:37:33  saam
+;           modifications of last revision made changes in rev. 2.27
+;           wrong and these lines are therfore kicked off again
+;
 ;     Revision 2.29  1998/07/21 15:31:25  saam
 ;           bug with /NASE , without /FULLSHEET and rectangular arrays
 ;
@@ -245,13 +249,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    VisualWidth = !D.X_VSIZE
    VisualHeight = !D.Y_VSIZE
    
-   IF Keyword_Set(NASE) THEN BEGIN
-      Default, YRANGE, [0, ArrayWidth-1]
-      Default, XRANGE, [0, ArrayHeight-1]
-   END ELSE BEGIN
-      Default, XRANGE, [0, ArrayWidth-1]
-      Default, YRANGE, [0, ArrayHeight-1]
-   END
+   Default, XRANGE, [0, ArrayWidth-1]
+   Default, YRANGE, [0, ArrayHeight-1]
 
    IF N_Elements(XRANGE) NE 2 THEN Message, 'wrong XRANGE argument'
    IF N_Elements(YRANGE) NE 2 THEN Message, 'wrong YRANGE argument'
