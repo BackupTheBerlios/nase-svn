@@ -16,7 +16,7 @@
 ;
 ; INPUTS: PC: Eine mit <A HREF="#INITPRECALL">InitPrecall</A> erzeugte Struktur.
 ;         DW: Die zugehörige DW-Struktur. Diese liefert NACH dem Aufruf von
-;              <A HREF="#INITPRECALL">DelayWeigh</A> die präsynaptischen Aktionspotentiale.
+;              <A HREF="../connections/'DELAYWEIGH">DelayWeigh</A> die präsynaptischen Aktionspotentiale.
 ;         postL: Die postsynaptische Neuronenschicht.
 ;
 ; SIDE EFFECTS: PC wird beim Aufruf verändert.
@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1999/08/05 11:58:23  thiel
+;           Hyperlkinkcorrection.
+;
 ;       Revision 1.7  1999/08/05 11:49:39  thiel
 ;           Now computes time differences between ALL spikes until they are
 ;           too old. No more resetting of learned connections.
