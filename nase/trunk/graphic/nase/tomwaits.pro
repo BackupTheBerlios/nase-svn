@@ -148,17 +148,18 @@ PRO TomWaits_Event, Event
 ;               data.my_TopColor = get_colors(4)
             end
             'TOMWAITS_PRINT': begin
+               Widget_Control, /Hourglass
                ;message, /INFO, "Print-Event not yet implemented!"
 ;               oldtopcolor = !TOPCOLOR
                If data.colormode eq -1 then color = 1 else color = 0
 ;               If color then !TOPCOLOR = !D.Table_Size-1 ;use full color range!
                s1 = DefineSheet(/PS, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
                OpenSheet, s1
-               ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
+               ShowWeights, /Polygon, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
                CloseSheet, s1
                s2 = DefineSheet(/PS, /ENCAPS, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
                OpenSheet, s2
-               ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
+               ShowWeights, /Polygon, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
                CloseSheet, s2
 ;               !TOPCOLOR = oldtopcolor
                print, "--->   Output saved to File 'TomWaits_printed_Output'."
