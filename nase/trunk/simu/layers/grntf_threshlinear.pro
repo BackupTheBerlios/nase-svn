@@ -11,8 +11,8 @@
 ; PURPOSE:
 ;  <C>GRNTF_ThreshLinear()</C> can be used as a transfer function for
 ;  graded response neurons. It results in a linear transfer as long as
-;  the input to the neuron is above a given threshold. Otherwise, the 
-;  constant threshold value is returned. Graded response neurons generate
+;  the input to the neuron is above a given threshold. Otherwise, a
+;  value of 0 is returned. Graded response neurons generate
 ;  a continuous output activation as opposed to pulse coding
 ;  neurons. The way in which their membrane potentials are transformed
 ;  into their output is determined by a so called transfer
@@ -39,13 +39,14 @@
 ;  tfpara.slope:: Factor by which <*>m</*> is multiplied to obtain the
 ;                 output that is above threshold.
 ;  tfpara.threshold:: Values of <*>m*slope</*> below <*>threshold</*>
-;                     are clipped to <*>threshold</*>.
-;
+;                     are clipped to <*>0</*>.
+;-
 ; OUTPUTS:
-;  result:: <*>tfpara.slope*m > tfpara.threshold</*>
+;  result:: <*>tfpara.slope*(m-tfpara.threshold) > 0</*>, or in other
+;           words <*>tfpara.slope*[(m-tfpara.threshold)*Heaviside(m-tfpara.threshold)]</*>.
 ;  
 ; PROCEDURE:
-;  Multiply input by slope and cut off lower part.
+;  Cut off part of input that is below threshold, then multiply by slope.
 ;
 ; EXAMPLE:
 ;  The example shows a neuron whose output is twice its
@@ -80,6 +81,6 @@
 
 FUNCTION grntf_threshlinear, m, tfpara
 
-   Return, tfpara.slope*m > tfpara.threshold
+   Return, tfpara.slope*(m-tfpara.threshold) > 0
 
 END
