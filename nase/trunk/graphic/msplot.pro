@@ -73,10 +73,12 @@
 
 
 PRO MSPLOT, z, zz, zzz $
-            , MCOLOR=mcolor, SDCOLOR=sdcolor, XRANGE=xrange, YRANGE=yrange $
+            , MCOLOR=mcolor, SDCOLOR=sdcolor $
+            , XRANGE=xrange, YRANGE=yrange $
             , SDMEAN=sdmean $
             , BW=bw, OPLOT=oplot $
-            , XSTYLE=xstyle, YSTYLE=ystyle $ 
+            , XSTYLE=xstyle, YSTYLE=ystyle $
+            , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
             , _EXTRA=extra
 
    On_Error, 2
@@ -107,7 +109,7 @@ PRO MSPLOT, z, zz, zzz $
    IF 2*N_Elements(m) NE N_Elements(sd) THEN $
     Console, 'Mean and deviation values are of different count.', /FATAL
    IF N_Elements(m) NE N_Elements(x)  THEN $
-    Console, 'Abszissa and ordinate values are of different count.', /FATAL
+    Console, 'Abscissa and ordinate values are of different count.', /FATAL
 
    ; eg. fztmean returns sd as absolute values 
    IF Keyword_Set(SDMEAN) THEN BEGIN
@@ -173,11 +175,11 @@ PRO MSPLOT, z, zz, zzz $
    ; plot coordinate system only
    IF NOT Keyword_Set(OPLOT) THEN BEGIN 
       Axis, XAXIS=0, XRANGE=xrange, XSTYLE=xstyle, XTITLE=xtitle $
-       , _EXTRA=extra
+       , XTICKFORMAT=xtickformat, _EXTRA=extra
       Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks' $
        , _EXTRA=extra
       Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, YTITLE=ytitle $
-       , _EXTRA=extra
+       , YTICKFORMAT=ytickformat, _EXTRA=extra
       Axis, YAXIS=1, YRANGE=yrange, YSTYLE=ystyle, YTICKFORMAT='noticks' $
        , _EXTRA=extra
    ENDIF
