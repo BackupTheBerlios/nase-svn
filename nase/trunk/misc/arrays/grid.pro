@@ -38,6 +38,9 @@
 ;   CSHIFT :: array containing the shift of the grid
 ;            relative to the array's center for each
 ;            dimension (default: 0)
+;   UNIFORM :: step is automatically set to dims/count, which means
+;              uniform distribution of the count points on the grid.
+;
 ;           
 ;  
 ; OUTPUTS:
@@ -51,7 +54,7 @@
 ;* plottvscl, a
 ;  
 ;-
-FUNCTION GRID, _dims, STEP=step, COUNT=count, SIZE=_size, CSHIFT=cshift
+FUNCTION GRID, _dims, STEP=step, COUNT=count, SIZE=_size, CSHIFT=cshift, UNIFORM=uniform
 
 ; check dimensions
 IF Set(_dims)+Set(_size) NE 1 THEN Console, 'either dims or size must be set', /FATAL
@@ -63,6 +66,8 @@ IF ndim NE 2 THEN Console, 'sorry, just works for two dimensions', /FATAL
 Default, count , REPLICATE(!NONE, ndim)
 Default, step  , REPLICATE(1    , ndim)
 Default, cshift, REPLICATE(0    , ndim)
+
+if Set(uniform) then step = (dims+0.)/count
 
 
 ;check grid method
