@@ -6,10 +6,13 @@
 ;  $Id$
 ;
 ; AIM:
-;  writes a sequence of images as an mpeg movie
+;  Write a sequence of images as an mpeg movie.
 ;
 ; PURPOSE: 
-;  writes a sequence of images as an mpeg movie
+;  Writes a sequence of images as an mpeg movie. Either truecolor or
+;  pseudocolor images may be written. Since the MPEG format consists
+;  of a sequence of truecolor-images, pseudocolor images are passed
+;  through the currently loaded colortable before writing.
 ;
 ; CATEGORY:
 ;  Animation
@@ -18,20 +21,26 @@
 ; CALLING SEQUENCE: 
 ;  If you have the whole movie sequence in a three dimensional array,
 ;  just call 
-;* WRITE_MPEG, ims [,mpegFileName=mpegFileName] [,TMPDIR=...] [,/DELAFT] [,REP=REP]
+;* WRITE_MPEG, ims [,MPEGFILENAME=...] [,/TRUE]
+;                  [,TMPDIR=...] [,/DELAFT] [,REP=REP] 
 ;
 ;  <BR>If the data is a sequence of image frames  (perhaps because the
 ;  whole movie would be too large for your working memory) use:
 ;
 ;* WRITE_MPEG,INIT=nims,[,mpegFileName=mpegFileName] [,TMPDIR=...]
 ;*                      [,/DELAFT] [,REP=..] 
-;* WRITE_MPEG,image,/WRITE
+;* WRITE_MPEG,image,/WRITE [,/TRUE]
 ;* WRITE_MPEG,/CLOSE
 ;
 ; INPUTS:
-;  ims:: sequence of images as a 3D array with dimensions [xsize,
-;        ysize, #frames]
-;  image:: image as a 2D array with dimensions [xsize, ysize]    
+;  ims:: sequence of images. For pseudocolor-images, this is a 3D array
+;        with dimensions [xsize, ysize, #frames]. For
+;        truecolor-images, this is a 4D array
+;        with dimensions [3, xsize, ysize, #frames].
+;  image:: image. For pseudocolor-images, this is a 2D array
+;        with dimensions [xsize, ysize]. For
+;        truecolor-images, this is a 3D array
+;        with dimensions [3, xsize, ysize].    
 ;
 ; INPUT KEYWORDS:
 ;  CLOSE::        calls write_mpeg to produce a mpeg
@@ -110,7 +119,8 @@ RETURN, image24
 END
 
 
-PRO WRITE_MPEG, image_array,mpegFileName=mpegFileName,delaft=delaft, rep=rep,TMPDIR=TMPDIR,INIT=INIT,WRITE=WRITE,CLOSE=CLOSE
+PRO WRITE_MPEG, image_array,mpegFileName=mpegFileName,delaft=delaft, $
+                rep=rep,TMPDIR=TMPDIR,INIT=INIT,WRITE=WRITE,CLOSE=CLOSE, TRUE=TRUE
 COMMON WRITE_MPEG_BLOCK,info
 
 
@@ -149,8 +159,15 @@ IF (info.init EQ 0 AND write EQ 1) OR (info.init EQ 0 AND close EQ 1) THEN $
 
 IF info.STATUS_FLAG EQ 0 OR  info.STATUS_FLAG EQ 2 THEN BEGIN
    movieSize = SIZE(image_array)
-   xSize = movieSize(1)
-   ySize = movieSize(2)
+   If Keyword_Set(TRUE) then begin
+      assert, movieSize(1) eq 3, $
+              "True color images must have first dimension=3 !"
+      xSize = movieSize(2)
+      ySize = movieSize(3)
+   endif else begin
+      xSize = movieSize(1)
+      ySize = movieSize(2)
+   endelse
 ENDIF
 
 
@@ -182,7 +199,9 @@ formatString = STRCOMPRESS('(i'+STRING(nDigits)+'.'+STRING(nDigits)$
 CASE 1  OF
 
    info.status_flag EQ 2: BEGIN
-      image = pseudo_to_true(image_array(*,*)) 
+      If Keyword_Set(TRUE) then $
+        image = image_array else $
+        image = pseudo_to_true(image_array(*,*)) 
       for j=0,info.rep-1 do begin
          fileName = info.TMPDIR + '/frame.' + STRING(info.frameNum,FORMAT=formatString)$
           + '.ppm'
@@ -213,8 +232,12 @@ CASE 1  OF
       IF  info.status_flag EQ 0 THEN BEGIN
          ;; Write each frame into TMPDIR as a 24-bit .ppm image file
          info.framenum=0
-         FOR ino = 0, movieSize(3)-1 DO BEGIN
-            image = pseudo_to_true(image_array(*,*,ino))
+         ;; get number of frames:
+         If Keyword_Set(TRUE) then length = movieSize(4) else length = movieSize(3)
+         FOR ino = 0, length-1 DO BEGIN
+            If Keyword_Set(TRUE) then $
+              image = image_array(*, *, *, ino) else $
+              image = pseudo_to_true(image_array(*,*,ino))
             for j=0,info.rep-1 do begin
                fileName = info.TMPDIR + '/frame.' + STRING(info.frameNum,FORMAT=formatString)$
                 + '.ppm'
