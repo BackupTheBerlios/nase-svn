@@ -79,6 +79,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2001/09/25 07:13:41  kupper
+;        added /column, which is not set any more by basic_widget_object.
+;        added TLB_ALIGN_CENTER to have widget in center.
+;
 ;        Revision 1.2  2001/08/02 14:28:52  kupper
 ;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
 ;
@@ -116,7 +120,10 @@ Function widget_gabor_factory::init, WIDTH = width, _REF_EXTRA=_ref_extra
    ;; object. If it fails, exit returning false:
    If not self->widget_image_container::INIT(IMAGE = Gabor(WIDTH, HWB=HWB, Orientation=ORIENT, Phase=PHASE,$
                                                            Wavelength=WAVE, Nicedetector=NICE, MAXONE=MAXONE), $
-                                             /NASE, Range_In=[-1.1,1.1], $
+                                             /NASE, $
+                                             Range_In=[-1.1,1.1], $
+                                             /column, $
+                                             /BASE_ALIGN_CENTER, $
                                              _EXTRA=_ref_extra) then return, 0
 
    gf_base = Widget_Base(self->widget(), /Column,$
