@@ -75,8 +75,12 @@
 ;  TOP       :: uses the colormap entries from 0 up to TOP (default:
 ;               <*>!TOPCOLOR</*>). This does't do anything, if
 ;               <*>/NOSCALE</*> is set. 
-;  [XY]RANGE :: array containing two elements (minimum, maximum value)
-;               for an alternative [XY]-axis labeling. 
+;  [XY]RANGE :: array containing values for an alternative [XY]-axis
+;               labeling. This have to be at least two elements
+;               (minimum and  maximum value) but can also contain more
+;               data points in between. <C>PTVS</C> will take the
+;               first and last element of the array and will
+;               interpolate all other point equidistant.
 ;  ZRANGE    :: Minimum and maximum value to scale the
 ;               <*>data</*>. The minimum will be scaled to color index
 ;               0, the maximum to <*>TOP</*> or <*>!TOPCOLOR</*>. If
@@ -125,7 +129,7 @@ PRO PTvS, data, XPos, YPos, $
           NOSCALE=NoScale, TOP=top, $
           ORDER=Order, $
           Color=color, CHARSIZE=_Charsize, $
-          XRANGE=_xrange, YRANGE=_yrange, ZRANGE=_zrange, $
+          XRANGE=__xrange, YRANGE=__yrange, ZRANGE=_zrange, $
           LEGEND=Legend, LEGMARGIN=LEGMARGIN, $
           POLYGON=POLYGON, $
           CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -173,8 +177,14 @@ PRO PTvS, data, XPos, YPos, $
 
 
 
-   Default, _XRANGE, [0, wdata-1]
-   Default, _YRANGE, [0, hdata-1]
+   ; _XYRANGE contain the original scaling of the axes
+   Default, __XRANGE, [0, wdata-1]
+   IF N_Elements(__XRANGE) LT 2 THEN Console, /FATAL, 'you have to specify at least 2 elements for XRANGE'
+   _XRANGE = [__XRANGE(0), last(__XRANGE)]
+   Default, __YRANGE, [0, hdata-1]
+   IF N_Elements(__YRANGE) LT 2 THEN Console, /FATAL, 'you have to specify at least 2 elements for YRANGE'
+   _YRANGE = [__YRANGE(0), last(__YRANGE)]
+
 
    Default, COLOR, GetForeground()
 
@@ -225,16 +235,14 @@ PRO PTvS, data, XPos, YPos, $
               ;;; NOTE: xyrange_??? = ([x,y,z],[lower_left_corner,upper_right_corner])
    
 
-   ;; Visual is the total place available for the plot including labels...(device coordinates)
-   Visual = DOUBLE([!D.X_VSIZE, !D.Y_VSIZE])
-   IF ((!P.MULTI(1) GT 1) AND (!P.MULTI(2) GT 1)) THEN BEGIN
-       Visual(0) = Visual(0)/DOUBLE(!P.MULTI(1))
-       Visual(1) = Visual(1)/DOUBLE(!P.MULTI(2))
-   ENDIF
+
+   ;; regionssize: total place available for the plot including labels...(device coordinates)
+   Rs_Dev = RegionSize(/DEVICE)
+   
 
 
    ;; legwidth: width that is reserved for the legend (may be zero)
-   legwidth_dev = LEGMARGIN*Visual(0) 
+   legwidth_dev = LEGMARGIN*Rs_Dev(0) 
    legwidth_norm = UConvert_Coord([legwidth_dev,0], /Device, /To_Normal)
    
 
@@ -248,8 +256,8 @@ PRO PTvS, data, XPos, YPos, $
    
    ;; upright : margin between the upper right corner of the coordinate
    ;;           system and the allowed region 
-   UpRight_dev = ([VISUAL(0) -(xyrange_dev(0,1)- xyrange_dev(0,0)), $
-                     VISUAL(1)-(xyrange_dev(1,1)-xyrange_dev(1,0))]+[legwidth_dev,0])
+   UpRight_dev = ([RS_DEV(0) -(xyrange_dev(0,1)- xyrange_dev(0,0)), $
+                     RS_DEV(1)-(xyrange_dev(1,1)-xyrange_dev(1,0))]+[legwidth_dev,0])
    UpRight_norm = uConvert_Coord(UpRight_dev, /Device, /To_Normal)
    
    RandNormal = Origin_norm + UpRight_Norm
@@ -487,8 +495,8 @@ PRO PTvS, data, XPos, YPos, $
        
        ; these values are a bit empirical, however they seem be quite ok
        TVSclLegend, Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.])+0.05*legwidth_norm(0),Origin_norm(1)+Hbitmap_Norm/2.0, $
-         V_Stretch=hbitmap_Norm/4.*Visual(1)/(!D.Y_PX_CM), $
-         H_Stretch=wbitmap_Norm/20.*Visual(0)/(!D.X_PX_CM), $
+         V_Stretch=hbitmap_Norm/4.*Rs_Dev(1)/(!D.Y_PX_CM), $
+         H_Stretch=wbitmap_Norm/20.*Rs_Dev(0)/(!D.X_PX_CM), $
          Max=LEGMAX, Min=LEGMIN, $
          CHARSIZE=Charsize, $
          /Vertical, /YCenter, TOP=top, COLOR=color, _EXTRA=LEGEXTRA
