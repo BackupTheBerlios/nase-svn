@@ -2,6 +2,7 @@
 #include <cassert>
 
 extern "C" {
+#include <memory.h> // needed for select() to compile on SUN OS.
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>
