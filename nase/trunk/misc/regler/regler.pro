@@ -15,9 +15,18 @@
 ;                                         [,I=integrativer_Faktor]
 ;                                         [,D=differentieller_Faktor] )
 ;
-; INPUTS: MeinRegler : Eine mit InitRegler() initialisierte Regler-Struktur.
+; INPUTS: MeinRegler : Eine mit InitRegler() initialisierte
+;                      Regler-Struktur, oder eine undefinierte
+;                      Variable (dann wird sie automatisch initialisiert.)
 ;         Ist        : Ist-Wert der Regelgröße.
 ;         Soll       : Soll-Wert der Regelgröße.
+;
+;                      Die Regelgröße ist dabei eine beliebige, nicht
+;                      notwendigerweise bekannte Funktion einer direkt
+;                      beeinflußbaren Variablen.
+;
+;                      Beispiel: Regelgröße = Raumtemperatur
+;                                Variable   = Winkel des Thermostat-Drehknopfes
 ;
 ; KEYWORD PARAMETERS: proportionaler_Faktor, integrativer_Faktor
 ;                     und differentieller_Faktor:
@@ -28,12 +37,21 @@
 ;                     Defaults sind  P=-0.1 ; I=0 ; D=0 .
 ;
 ; OUTPUTS: Korrektur : Ein Korrekturwert, der (nach der bescheidenen
-;                      Meinung dieser Routine) zur Regelgröße ADDIERT
-;                      werden sollte, um sie möglichst effektiv in
+;                      Meinung dieser Routine) zu der beeinflußbaren Variablen
+;                      addiert werden sollte, um sie möglichst effektiv in
 ;                      Richtung des Sollwertes zu modifizieren.
 ;
+;                      Beispiel: Korrektur = Winkel, um den der Thermostat-Drehknopf
+;                                            bewegt werden soll.
+;
 ; SIDE EFFECTS: Regler() merkt sich bei jedem Aufruf den aktuellen
-;               Wert der Regelgröße für den integrativen Teil der Korrektur.
+;               Wert der Regelgröße für den integrativen Teil der
+;               Korrektur.
+;
+;               Wird Regler() mit einer nicht initialisierten
+;               Reglerstruktur aufgerufen, so wird InitRegler() mit
+;               den Defaulteinstellungen aufgerufen. Daher ist eine
+;               explizierte Initialisierung nicht unbedingt nötig.
 ;
 ; PROCEDURE: Regler() berechnet die Korrektur aus drei additiven
 ;            Teilen, welche jeder auf eine bestimmte Weise von der
@@ -73,6 +91,43 @@
 ;
 ;                        K(n) = K_p(n)+K_d(n)+K_i(n).
 ;
+;            P sollte stets ungleich 0 sein, da ein Regler nur mit
+;            einem Integal- oder Differentialteil nicht
+;            zufriedenstellend arbeitet.            
+;            Der Intergalteil realisiert ein gewisse Trägheit des
+;            Reglers. Er ist zu empfehlen, wenn in der Regelgröße
+;            schnellere Fluktuationen (Ausreißer)
+;            auftreten. Andererseits treten aufgrund der trägen
+;            Reaktion wahrscheinlich Oszillationen auf (s. Beispiel).
+;            Größere Gedächtnislängen bzw. größere I machen den Regler
+;            träger.
+;            Wofür der Differentialteil gut sein kann, ist mir nicht
+;            ganz klar. Er scheint mir meist zu einer Verschlechterung
+;            des Ergebnisses und zu Aufschaukelungseffekten zu
+;            führen. Es mag jedoch durchaus sinnvolle Anwendungen
+;            dafür geben, die mir bisher nicht untergekommen
+;            sind. Wenn jemand eine findet, kann er mir bitte
+;            bescheidsagen...
+;
+;            
+;
+; RESTRICTIONS: Man beachte, daß die Regelgröße -zumindest lokal-
+;               monoton von der beeinflußbaren Variablen abhängen muß,
+;               wenn eine Regelung (negative Rückkopplung) erfolgreich
+;               funktionieren soll.
+;
+;               Man beachte weiterhin das Vorzeichen der Faktoren P,D
+;               und I: Steigt die Regelgröße R (z.B. Raumtemperatur) mit
+;                      steigender Variablengröße V
+;                      (z.B. Thermostatstellung), so müssen P,D und I
+;                      negatives Vorzeichen haben, damit bei
+;                      entsprechender Abweichung von R vom Sollwert
+;                      V auch in die richtige Richtung korrigiert
+;                      wird!
+;
+;               P sollte stets ungleich 0 sein, da ein Regler nur mit
+;               einem Integal- oder Differentialteil nicht
+;               zufriedenstellend arbeitet.            
 ;
 ; EXAMPLE: Ergebnisse = InitFQueue (100)            ;Eine Simulation mit 100 Zeitschritten
 ;
@@ -92,6 +147,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1997/11/13 18:42:21  kupper
+;               Ergänzungen zum Header.
+;
 ;        Revision 2.1  1997/11/13 17:41:06  kupper
 ;               Schöpfung.
 ;
