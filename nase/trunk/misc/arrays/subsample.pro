@@ -91,7 +91,7 @@ Function Subsample, A, frac, $
    return, $
     Congrid( Convol( Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate, $
                      A, $
-                     Gauss_2d(/Autosize, HMW=hmw, /Norm) $
+                     Gauss_2d(/Autosize, HWB=hmw, /Norm) $
                    ), $
              samples_per_row, samples_per_col, $
              Cubic=-0.5, /Minus_One $
