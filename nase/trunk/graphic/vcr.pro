@@ -33,7 +33,7 @@
 ;
 ; dim(seq) eq 3:
 ;* VCR, seq [,TITLE=...] [,DELAY=...]
-;*          [,ZOOM=...] [,/SCALE], [TAUMEMO=...]
+;*          [,ZOOM=...] [,/SMOOTH] [,TOP=...] [,/SCALE], [TAUMEMO=...]
 ;*
 ; dim(seq) eq 2:
 ;* VCR, seq [,TITLE=...] [,DELAY=...]
@@ -58,11 +58,15 @@
 ;  ZOOM :: One can enlarge the display by the chosen zoomfactor.
 ;  SMOOTH:: smoothes the plot, using congrid with <*>CUBIC=-0.5</*>
 ;           and <*>/MINUS_ONE</*>, only in combination with <*>/ZOOM</*>
+;  TOP  :: Top color index to be used (see TAUMEMO for comment).
+;          Default: !TOPCOLOR
 ;           
 ;
 ;  TAUMEMO :: Set this keyword to receive a decaying
 ;             impression of your video, corresponding to the
 ;             chosen value for the time constant.
+;             Note that when TAUMEMO is used, the color index given in
+;             TOP may be exceeded.
 ;   XSIZE, YSIZE:: Determines the size of the plot
 ;                  (Default: 320x200).  
 ;
@@ -256,7 +260,9 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo, smooth=smooth
+PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, $
+         SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo, $
+         smooth=smooth, TOP = top
 
    On_Error,2 
 
@@ -270,6 +276,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE
   Default, XSIZE, 320
   Default, YSIZE, 200
   Default, taumemo, 0.0
+  Default, top, !TOPCOLOR
   
   IF N_Params() NE 1 THEN Message, 'exactly one argument expected'
   IF ((SIZE(A))(0) LT 2) OR ((SIZE(A))(0) GT 3) THEN Message, 'array is neither 2d nor 3d!'
@@ -280,7 +287,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE
   TMP = A
   tmin = MIN(TMP)
   tmax = MAX(TMP)
-  IF ((SIZE(A))(0) EQ 3) AND (NOT Keyword_Set(SCALE)) THEN TMP = BYTE((TMP-tmin)/(tmax-tmin)*(!D.TABLE_SIZE-1))
+  IF ((SIZE(A))(0) EQ 3) AND (NOT Keyword_Set(SCALE)) THEN TMP = BYTE((TMP-tmin)/(tmax-tmin)*TOP)
   _A = Handle_Create(!MH, VALUE=TMP, /NO_COPY)
 
   
