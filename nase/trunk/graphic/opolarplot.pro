@@ -1,91 +1,74 @@
 ;+
-; NAME:               OPolarPlot
+; NAME:
+;  OPolarPlot
 ;
-; AIM:                Overplot a polar diagram.
+; AIM:
+;  overplot a polar diagram
 ;
-; PURPOSE:            Overplots the current plot with a polar diagram.
+; PURPOSE:
+;  Overplots the current plot with a polar diagram.
 ;
-; CATEGORY:           GRAPHICS
+; CATEGORY:
+;  Graphic
 ;
-; CALLING SEQUENCE:   PolarPlot, radiusarray, anglearray [,sdevarray]
-;                                [,THICK=thick]   [,/CLOSE],
-;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor]
-;                                [,SMOOTH=smooth]
-;                                [,ORIGPT=ORIGPT [,DCOLOR=dcolor] ]
+; CALLING SEQUENCE:
+;*OPolarPlot, radiusarray, anglearray [,sdevarray]
+;*           [,THICK=...]   [,/CLOSE],
+;*           [,MCOLOR=...] [,SDCOLOR=...]
+;*           [,SMOOTH=...]
+;*           [,ORIGPT=... [,DCOLOR=...] ]
 ;
-; INPUTS:             radiusarray: array containing the values, that
+; INPUTS:
+;                     radiusarray:: array containing the values, that
 ;                                  are plotted as distances from the
 ;                                  orgin of the coordinate system 
-;                     anglearray : the angles corresponding to
+;                     anglearray :: the angles corresponding to
 ;                                  radiusarray in rad (0..2*!Pi)
 ;
-; OPTIONAL INPUTS:    sdevarray  : array containing the standard
+; OPTIONAL INPUTS:
+;                     sdevarray  :: array containing the standard
 ;                                  deviation for each value of
 ;                                  radiusarray 
 ;
-; KEYWORD PARAMETERS:
-;                           thick: Indicates the line thickness
+; INPUT KEYWORDS:
+;                           thick:: Indicates the line thickness
 ;                                  (normal: 1.0, default: 3.0) 
-;                           close: the endpoint of the plot is
+;                           close:: the endpoint of the plot is
 ;                                  connected to the initial data point.
-;                          smooth: Interpolated the plot between data
+;                          smooth:: Interpolated the plot between data
 ;                                  points (radius,angle) with a
 ;                                  sin(x)/x function. 
 ;                                  Smooth specifies the degree of
 ;                                  interpolation (1 means NO
 ;                                  interpolation). Only works if angle
 ;                                  array ranges over 360 degree.
-;                          mcolor: Color index for the mean data
+;                          mcolor:: Color index for the mean data
 ;                                  points (default: white) 
-;                          dcolor: Color index for the original data
+;                          dcolor:: Color index for the original data
 ;                                  points. This option only works, if
 ;                                  you plot the original data points
 ;                                  using keyword origpt (Default: mcolor).
-;                         sdcolor: Color index for the standard
+;                         sdcolor:: Color index for the standard
 ;                                  deviation (if set, default: dark blue) 
-;                          origpt: original data points are emphasized
+;                          origpt:: original data points are emphasized
 ;                                  by bold dots with a radius of
 ;                                  origpt (default: 0)
 ;
-; PROCEDURE: 0. determines useful plot area
-;            1. scale the plot area appropriate
-;            2. plot mean and standard deviation using opolarplot
-;            3. plot axes
-;            4. plot circle at any tickmarks position (uses ARCS in alien)
-;            5. plot intermediate axes (uses RADII in alien)  
+; PROCEDURE: 
+;            0. determines useful plot area<BR>
+;            1. scale the plot area appropriate<BR>
+;            2. plot mean and standard deviation using opolarplot<BR>
+;            3. plot axes<BR>
+;            4. plot circle at any tickmarks position (uses ARCS in alien)<BR>
+;            5. plot intermediate axes (uses RADII in alien)<BR>
 ;
-; EXAMPLE: radius = findgen(8)
-;          angle = findgen(8)*2.0*!PI/7.0
-;          PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
-;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50), SMOOTH=5
+; EXAMPLE:
+;*radius = findgen(8)
+;*angle = findgen(8)*2.0*!PI/7.0
+;*PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
+;*OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50), SMOOTH=5
 ;
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.5  2000/10/01 14:50:42  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 2.4  2000/09/01 19:51:45  saam
-;              fixed several confusions with SMOOTH,
-;              CLOSE und arrays larger 30 elements
-;
-;        Revision 2.3  2000/07/24 13:18:40  saam
-;              + added keyword DPLOT
-;
-;        Revision 2.2  2000/07/24 10:28:11  saam
-;              + added _EXTRA tag for oplot
-;
-;        Revision 2.1  2000/07/18 12:56:51  saam
-;              + split into plot and oplot part
-;              + code cleanup
-;              + translated doc header
-;              + cut unneccessary plot elements
-;
-;
-;
-
-
 PRO OPolarPlot, radiusarray, anglearray, sdevarray,           $
                 MCOLOR=mcolor, DCOLOR=dcolor, SDCOLOR=sdcolor,$
                 DELTA=DELTA, SMOOTH=smooth,                   $
@@ -110,7 +93,7 @@ _radiusarray = radiusarray
 _anglearray = anglearray
 
 IF set(SDEVARRAY) THEN _sdevarray = sdevarray
-BGCOLOR = GetBgColor()
+BGCOLOR = CIndex2RGB(GetBackground())
 BGCOLOR = RGB(BGCOLOR(0), BGCOLOR(1), BGCOLOR(2),/NOALLOC)
 Default, MCOLOR , !P.COLOR
 Default, DCOLOR , MCOLOR

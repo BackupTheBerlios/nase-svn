@@ -1,49 +1,49 @@
 ;+
-; NAME: PlotTVScl
+; NAME:
+;  PlotTVScl
 ;
-; VERSION: $Id$
+; VERSION:
+;  $Id$
 ;
 ; AIM:
 ;  Color coded display of a two-dimensional array in a coordinate
 ;  system.
 ;
-; PURPOSE: TVScl-Darstellung eines Arrays zusammen mit einem
+; PURPOSE:
+;  TVScl-Darstellung eines Arrays zusammen mit einem
 ;          Koordinatensystem, Achsenbeschriftung und Legende
 ;
 ; CATEGORY: 
-;
-; Graphics
-; General
+;  Graphic
 ;
 ; CALLING SEQUENCE: 
-;*                     PlotTvScl, Array 
-;*                             [, XNorm] [, YNorm]
-;*                             [, CHARSIZE=Schriftgroesse]
-;*                             [, /FULLSHEET]
-;*                             [, /NOSCALE]
-;*                             [, /LEGEND]
-;*                             [, /ORDER]
-;*                             [, /NASE]
-;*                             [, XRANGE=xrange] [, YRANGE=yrange]
-;*                             [, GET_POSITION=PlotPosition]
-;*                             [, GET_COLOR=Farbe]
-;*                             [, GET_XTICKS=XTicks]
-;*                             [, GET_YTICKS=YTicks]
-;*                             [, GET_PIXELSIZE=Pixelgroesse]
-;*                             [, GET_INFO=PlotDaten]
-;*                             [, LAGMARGIN=LEGMARGIN]
-;*                             [, /NEUTRAL]
-;*                             [, /POLYGON]
-;*                             [, CUBIC=cubic] [, /INTERP] [, /MINUS_ONE]
-;*                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
-;*                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
-;*                             [, TOP=Farbindex]
-;*                             [, RANGE_IN=[a,b] ]
-;*                             [, UPDATE_INFO=Update_struct [, /INIT ] ]
+;*PlotTvScl, Array 
+;*           [, XNorm] [, YNorm]
+;*           [, CHARSIZE=Schriftgroesse]
+;*           [, /FULLSHEET]
+;*           [, /NOSCALE]
+;*           [, /LEGEND]
+;*           [, /ORDER]
+;*           [, /NASE]
+;*           [, XRANGE=...] [, YRANGE=...]
+;*           [, GET_POSITION=...]
+;*           [, GET_COLOR=...]
+;*           [, GET_XTICKS=...] [, GET_YTICKS=...]
+;*           [, GET_PIXELSIZE=...]
+;*           [, GET_INFO=...]
+;*           [, LAGMARGIN=...]
+;*           [, /NEUTRAL]
+;*           [, /POLYGON]
+;*           [, CUBIC=...] [, /INTERP] [, /MINUS_ONE]
+;*           [, LEG_MAX=...] [, LEG_MIN=...]
+;*           [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=...]
+;*           [, TOP=...]
+;*           [, RANGE_IN=[a,b] ]
+;*           [, UPDATE_INFO=... [, /INIT ] ]
 ;*
-;*                            - all other Keywords are passed to the PLOT -
-;*                            - command, using the _REF_EXTRA mechanism,  -
-;*                            - for example: [X|Y]TITLE, SUBTITLE, ...    -
+;*           - all other Keywords are passed to the PLOT -
+;*           - command, using the _REF_EXTRA mechanism,  -
+;*           - for example: [X|Y]TITLE, SUBTITLE, ...    -
 ;
 ; INPUTS: 
 ;           Array:: klar!
@@ -196,251 +196,6 @@
 ; SEE ALSO: <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>, <A>NaseTVScl</A>,
 ;           <A>PlotTVScl_update</A>            
 ;-
-; MODIFICATION HISTORY:
-;     
-;     $Log$
-;     Revision 2.69  2000/11/02 17:53:53  gabriel
-;          fractional labels are now supported
-;
-;     Revision 2.68  2000/11/02 16:19:25  gabriel
-;          doc header bug killed; perl doesn't like cambered brackets ...
-;
-;     Revision 2.67  2000/11/02 15:48:43  gabriel
-;          many bugs fixed: fg color , arry origin positioning , doc header
-;
-;     Revision 2.66  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.65  2000/03/14 13:33:27  kupper
-;     Updated header to inform user that keywords are passed to PLOT.
-;     Changed use of _EXTRA to _REF_EXTRA => Keywords are also passed FROM PLOT now!
-;
-;     Revision 2.64  2000/03/07 17:08:52  kupper
-;     Didn't know that structures can not be compared. Now using new "defined" tag to
-;     indentify an undefined PLOTTVSCL_INFO struct.
-;
-;     Revision 2.63  2000/03/07 16:28:28  kupper
-;     Now treating zeroed PLOTTVSCL_INFO as undefined.
-;
-;     Revision 2.62  2000/03/06 16:06:06  kupper
-;     Added Keywords RANGE_IN, UPDATE_INFO and INIT.
-;
-;     Revision 2.61  2000/03/06 14:20:18  kupper
-;     Default for TOP now is !D.TableSize-1, not !D.Tablesize as before. Think that
-;     was a bug. However, it occured only, when none of NASE, NOSCALE or NEUTRAL was
-;     set.
-;
-;     Revision 2.60  1999/11/22 13:09:43  kupper
-;     Another error with !P.-Background-bug: Did not pass "COLORMODE"
-;     to Showweights_Scale.
-;
-;     Revision 2.59  1999/11/15 16:21:33  kupper
-;     Corrected (hope so) handling of XNorm, YNorm positional
-;     parameters.
-;
-;     Revision 2.58  1999/11/15 15:52:30  kupper
-;     Sorry, didn't handle the case SETCOL=0 correctly when I
-;     corrected the !P.Background-Bug. Fixed.
-;
-;     Revision 2.57  1999/11/12 17:06:12  kupper
-;     Small error.
-;
-;     Revision 2.56  1999/11/12 16:56:04  kupper
-;     Now calls ShowWeights_Scale with SETCOL=2 at the beginning.
-;     This corrects the !P.Background-Bug, which caused wrong
-;     background_color with the Pos/Neg-ColorTable.
-;
-;     Revision 2.55  1999/10/12 14:17:32  kupper
-;     Bug: Keyword CUBIC was passed as an integer. Fixed.
-;
-;     Revision 2.54  1999/09/23 14:12:39  kupper
-;     Corrected Legend colorscaling (now uses TOP).
-;     Updating should work now, behaviour of plottvscl should even be
-;     faster.
-;     Case /NOSCALE, NASE=0 was broken(!). Fixed.
-;
-;     Revision 2.53  1999/09/22 09:08:31  kupper
-;     Added NEUTRAL Keyword in PlotTvScl_update (forgotten).
-;     Corrected minor bug in legend scaling.
-;
-;     Revision 2.52  1999/09/22 08:54:07  kupper
-;     Added hyperling.
-;
-;     Revision 2.51  1999/09/22 08:48:48  kupper
-;     Removed unnecessary copying of _W. This is now done by
-;     PlotTvScl_update.
-;
-;     Revision 2.50  1999/09/22 08:43:37  kupper
-;     *** empty log message ***
-;
-;     Revision 2.49  1999/09/22 08:15:05  kupper
-;     Corrected typo.
-;
-;     Revision 2.48  1999/09/21 16:18:58  kupper
-;     Changed something looking like copy&paste error in GET_INFO
-;     struct. If we encounter strange behaviour of any related
-;     routine, this should be re-changed. (If so, adjust
-;     PlotTvScl_update as well!)
-;     GET_INFO struct is now named.
-;
-;     Revision 2.47  1999/09/21 15:53:41  kupper
-;     Added documentation of GET_INFO and GET_COLOR that was missing.
-;
-;     Revision 2.46  1999/08/12 10:11:11  thiel
-;         Replaced 'NoNone' with 'NoNone_Func', because 'NoNone' is no longer in use.
-;
-;     Revision 2.45  1999/06/18 15:00:37  kupper
-;     Removed weird NOSCALE-Option to TvSclLegend.
-;     Why should the legend's colors scale with its inscription???
-;
-;     Revision 2.44  1999/06/18 14:45:47  kupper
-;     LEG_MIN and LEG_MAX did not work with /NASE. Fixed.
-;     (What about /NEUTRAL? - Mirko?)
-;
-;     Revision 2.43  1999/06/07 14:40:44  kupper
-;     Added CUBIC,INTERP,MINUS_ONE-Keywords for ConGrid.
-;
-;     Revision 2.42  1999/06/07 14:03:09  kupper
-;     Added COLORMODE Keyword.
-;
-;     Revision 2.41  1999/06/06 14:52:54  kupper
-;     Added PLOTCOL-Keyword.
-;
-;     Revision 2.40  1999/06/06 14:24:48  kupper
-;     Added SETCOL KeyWord.
-;
-;     Revision 2.39  1999/03/17 16:37:16  saam
-;           TOP keyword implemented
-;
-;     Revision 2.38  1999/02/12 15:26:04  saam
-;           tests for an unset argument
-;
-;     Revision 2.37  1998/10/28 13:50:38  gabriel
-;          !P.Multi fuer Postscript verbessert
-;
-;     Revision 2.36  1998/08/10 08:38:04  gabriel
-;           Keyword POLYGON neu
-;
-;     Revision 2.35  1998/08/04 16:14:11  gabriel
-;          Charsizes !P.MULTI angepasst
-;
-;     Revision 2.34  1998/08/04 15:02:42  gabriel
-;          Print kommandos auskommentiert
-;
-;     Revision 2.33  1998/08/04 14:57:06  gabriel
-;          LEGMARGIN KEYWORD eingefuehrt
-;
-;     Revision 2.32  1998/08/04 14:28:38  gabriel
-;          Bug bei Convert_Coord nochmals verbessert/korrigiert
-;
-;     Revision 2.31  1998/08/04 13:23:32  gabriel
-;          Jetzt mit !P.MULTI Funktionalitaet. (Convert_Coord korrigiert, kann
-;          bei hoeheren (>4.0)  IDL Versionen wieder falsch sein)
-;
-;     Revision 2.30  1998/07/21 15:37:33  saam
-;           modifications of last revision made changes in rev. 2.27
-;           wrong and these lines are therfore kicked off again
-;
-;     Revision 2.29  1998/07/21 15:31:25  saam
-;           bug with /NASE , without /FULLSHEET and rectangular arrays
-;
-;     Revision 2.28  1998/07/11 20:21:25  saam
-;           added NEUTRAL keyword
-;
-;     Revision 2.27  1998/07/09 12:42:52  saam
-;           the axis labelling for keyword nase was swapped (X/Y)
-;
-;     Revision 2.26  1998/05/26 13:16:08  kupper
-;            Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
-;               Änderungen an der Postcript-Sheet-Verarbeitung.
-;               Hoffentlich funktioniert alles (war recht kompliziert, wie immer.)
-;
-;     Revision 2.25  1998/05/18 19:43:30  saam
-;           alternative legend by new keywords LEG_(MIN|MAX)
-;           new get_position keyword for procedure plot2plus1 (internal)
-;
-;     Revision 2.24  1998/05/13 15:03:35  kupper
-;            Farbskalierungs-Bug behoben.
-;
-;     Revision 2.23  1998/05/04 18:33:02  saam
-;           nase-matrices were handled correctly now
-;           (include legend)
-;
-;     Revision 2.22  1998/03/16 14:33:16  saam
-;           PS-Output always had a legend even if
-;           unwanted
-;           there is still a bug with COLOR-PS because
-;           of a bug in IDLs TV with the centimeter option
-;
-;     Revision 2.21  1998/03/13 15:59:48  thiel
-;            Bugfix: Beschriftung der Achsen funktioniert jetzt
-;            auch, wenn XRANGE=[A,B] und A > B ist.
-;
-;     Revision 2.20  1998/02/19 13:31:34  thiel
-;            Dritter Versuch.
-;
-;     Revision 2.19  1998/02/19 13:25:24  thiel
-;            anderer Hyperlink
-;
-;     Revision 2.18  1998/02/19 13:12:27  thiel
-;            Neuer Hyperlink.
-;
-;     Revision 2.17  1998/01/29 16:13:52  saam
-;           new keywords [XY]Range for variable
-;           axis-labelling
-;
-;     Revision 2.16  1998/01/29 15:55:18  saam
-;           *** empty log message ***
-;
-;     Revision 2.15  1997/12/31 11:49:58  thiel
-;            Kombination von XNorm/YNorm-Parametern und
-;            /FULLSHEET-Schluesselwort von Bugs befreit.
-;
-;     Revision 2.14  1997/12/19 15:58:08  thiel
-;            XNorm-, YNorm-Parameter beziehen sich jetzt auf
-;            auf die linke untere Ecke des Plotkastens.
-;
-;     Revision 2.13  1997/12/18 18:39:37  thiel
-;            Liefert jetzt auf Wunsch Informationen ueber PlotPosition,
-;            verwendete Farbe usw.
-;
-;     Revision 2.12  1997/12/17 15:43:55  thiel
-;            Weitere Verbesserung der /NOSCALE-Behandlung.
-;
-;     Revision 2.11  1997/12/17 14:45:19  thiel
-;            Jetzt neu: NOSCALE-Schluesselwort
-;
-;     Revision 2.10  1997/12/10 15:24:28  thiel
-;            Hilfsfunktion
-;              'KeineNegativenUndGebrochenenTicks'
-;            ausgelagert.
-;
-;     Revision 2.9  1997/12/08 16:24:13  thiel
-;            Fehler im Hyperdings korrigiert.
-;
-;     Revision 2.8  1997/12/08 15:02:18  thiel
-;            Jetzt auf vielfachen Wunsch mit Hyperdings.
-;
-;     Revision 2.7  1997/12/02 11:27:30  saam
-;           auch [XY]Minor und [XY]TickLen werden nun gesichert
-;
-;     Revision 2.6  1997/12/02 11:03:22  saam
-;           BUG: !P.Region wurde umdefiniert, damit veraendern
-;                sich alle nachfolgenden Plots...
-;           Daher wird jetzt die Region gesichert und am Ende
-;            wieder restauriert
-;
-;     Revision 2.5  1997/11/30 17:56:50  thiel
-;            Ich dacht, da waer ein Fehler drin, war aber nich...
-;
-;     Revision 2.4  1997/11/28 12:56:15  thiel
-;           Eine sinnlose Aenderung, damit das CVS-WATCH funktioniert.
-;
-;     Revision 2.3  1997/11/28 12:50:10  thiel
-;            Die erste scheinbar fertige Version.
-;
-;
-;
 
 function __isfloat, value
    type =  last(size(value),pos=-1)
@@ -505,7 +260,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
       If set(PLOTCOL) then sc = plotcol else begin
          ;;-----Optimale Farbe fuer die Achsen ermitteln:
-         bg = GetBGColor()
+         bg = CIndex2RGB(GetBackground())
          ;; if device is !PSGREY and !REVERTPS is on 
          If !PSGREY then begin
             save_rpsc = !REVERTPSCOLORS

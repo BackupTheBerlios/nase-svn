@@ -69,6 +69,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.16  2000/12/04 10:40:06  saam
+;     replaced outdate getbgcolor call
+;     updated doc header
+;
 ;     Revision 2.15  2000/11/28 16:27:11  thiel
 ;         Just minor change in header.
 ;
@@ -139,16 +143,10 @@ PRO TvSclLegend, xnorm, ynorm $
    Default, Charsize, 1.0
 
    
-;   bg = GetBGColor()
-;   ; if device is PS and REVERTPS is on 
-;   save_rpsc = !REVERTPSCOLORS
-;   !REVERTPSCOLORS = 0
-;   sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-;   !REVERTPSCOLORS = save_rpsc
 
    If Keyword_Set(COLOR) then sc = COLOR else begin
                                 ;-----Optimale Farbe fuer die Achsen ermitteln:
-      bg = GetBGColor()
+      bg = CIndex2RGB(GetBackground())
                                 ; if device is !PSGREY and !REVERTPS is on 
       If !PSGREY then begin
          save_rpsc = !REVERTPSCOLORS
