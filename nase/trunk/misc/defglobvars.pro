@@ -14,6 +14,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.12  2000/08/31 17:20:44  saam
+;           !NASE_LIB now points to an architecture
+;            dependent directory and fixes the
+;            broken support for multiple architecture.
+;            Confusion with object files of different
+;            systems is avoided.
+;
 ;     Revision 1.11  2000/08/25 16:54:22  kupper
 ;     Split startup procedure to protect from double execution of startup.
 ;
@@ -113,7 +120,7 @@ DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', '/usr/X11R6/bin', '/usr/bin/X11', '/vol/bin', '~/bin'], 1
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
-DefSysV, '!NASE_LIB', !NASEPATH+'/shared/nasec.so', 0
+DefSysV, '!NASE_LIB', !NASEPATH+'/shared/'+!VERSION.OS+'_'+!VERSION.ARCH+'/nasec.so', 0
 
 
 ; if set to 1, UOPENW will create directories if they dont exist

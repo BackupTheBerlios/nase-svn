@@ -1,17 +1,23 @@
 Pro Check_NASE_LIB
-   If Fileexists(!NASE_LIB) then begin
-      dummy = MTime(!NASE_LIB, Date=d)
-      Print
-      Print, "NASE support library: "+!NASE_LIB
-      Print, "compiled on " + d + "."
-      Print
-   Endif Else begin
-      Print
-      Print, "Making NASE support library: "+!NASE_LIB
-      PushD, !NASEPATH+"/shared"
-      Spawn, ["make"], /Noshell
-      Print, "done."
-      Print
-      PopD
-   Endelse
+   ; ensure architecture dependent libdir exists
+   LIBDIR = (FileSplit(!NASE_LIB))(0)
+   mkdir, LIBDIR
+   
+   PushD, !NASEPATH+"/shared"
+   If NOT Fileexists(!NASE_LIB) THEN $
+     Spawn, Command('cp')+' -p * '+LIBDIR ; -p doesn't change time stamp when copying from 
+                                          ; shared to LIBDIR and therefore
+                                          ; doesn't confuse make
+   PopD
+   PushD, LIBDIR
+   Spawn, ["make"], /Noshell              ; create or update library if necessary
+   
+   If NOT Fileexists(!NASE_LIB) THEN Console, !NASE_LIB+" doesn't exist. Somethings going wrong here", /FATAL
+
+   dummy = MTime(!NASE_LIB, Date=d)
+   Print
+   Print, "NASE support library: "+!NASE_LIB
+   Print, "compiled on " + d + "."
+   Print
+   PopD
 End
