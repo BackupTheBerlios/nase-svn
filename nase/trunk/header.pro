@@ -86,5 +86,5 @@
 ;
 ;-
 
-;;; look in ../doc/header.pro for explanations and syntax,
+;;; look in headerdoc.pro for explanations and syntax,
 ;;; or view the NASE Standards Document
