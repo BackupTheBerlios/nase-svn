@@ -19,6 +19,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.10  2000/04/06 09:43:27  saam
+;            enhanced robustness if paramaters (like DWW
+;            structures) are missing
+;
 ;      Revision 1.9  2000/02/01 18:06:49  saam
 ;            analayer -> mind
 ;            closeanalayer -> freeanalayer
@@ -67,8 +71,8 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    IF ExtraSet(e, 'NOGRAPHIC') THEN graphic = 0 ELSE graphic = 1
 
    Lmax  = N_Elements(P.LW)-1
-   DWmax = N_Elements(P.DWW)-1
-   NWmax = N_Elements(P.NWATCH)-1
+   IF ExtraSet(P, "DWW")    THEN DWmax = N_Elements(P.DWW)-1    ELSE DWmax=-1
+   IF ExtraSet(P, "NWATCH") THEN NWmax = N_Elements(P.NWATCH)-1 ELSE NWmax=-1
 
 
    ;----->
@@ -128,13 +132,12 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
 
    ;-------------> INIT WEIGHTS
-   CON = LonArr(DWmax+1)
+   IF DWmax GE 0 THEN CON = LonArr(DWmax+1)
    FOR i=0, DWmax DO BEGIN
-      curDW = Handle_Val((P.DWW)(i))
-      CON(i) = InitWeights(curDW)
+       curDW = Handle_Val((P.DWW)(i))
+       CON(i) = InitWeights(curDW)
    END
    IF Keyword_Set(WSTOP) THEN stop
-
 
    console,P.CON,'Initializing simulation...'
 
@@ -162,16 +165,16 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
 
    IF graphic THEN BEGIN
-      ;---------------> INIT WATCHING OF NEURONS
-      PCWN = LonArr(NWmax+1)
-      FOR i=0, NWmax DO BEGIN
-         OpenSheet, CSIM_6, i
-         !P.Multi = [0,0,1,0,0]
-         WN = Handle_Val(P.NWATCH(i))
-         curLayer = Handle_Val(P.LW(WN.L))
-         PCWN(i) = InitPlotcilloscope(TIME=200, /NOSCALEYMIN, RAYS=3, OVERSAMPLING=os, TITLE='Watch '+curLayer.NAME+' ('+Str(WN.w)+','+Str(WN.h)+')')
-         CloseSheet, CSIM_6, i
-      END
+       ;---------------> INIT WATCHING OF NEURONS
+       IF NWmax GE 0 THEN PCWN = LonArr(NWmax+1)
+       FOR i=0, NWmax DO BEGIN
+           OpenSheet, CSIM_6, i
+           !P.Multi = [0,0,1,0,0]
+           WN = Handle_Val(P.NWATCH(i))
+           curLayer = Handle_Val(P.LW(WN.L))
+           PCWN(i) = InitPlotcilloscope(TIME=200, /NOSCALEYMIN, RAYS=3, OVERSAMPLING=os, TITLE='Watch '+curLayer.NAME+' ('+Str(WN.w)+','+Str(WN.h)+')')
+           CloseSheet, CSIM_6, i
+       END
 
       ;-------------> INIT WATCHING OF LAYERS
       FOR i=0, TSSCloutMax DO BEGIN
@@ -264,18 +267,18 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
 
    ;--------------> INIT LEARNING
-   InitLearn,LDWmax+1, CON, P.LearnW, _EXTRA=e
+   IF Learn THEN InitLearn, LDWmax+1, CON, P.LearnW, _EXTRA=e
 
  
    ;--------------> INIT CONNECTION STRUCTURE 
-   ADW = StrArr(DWmax+1) ; automatic DW
+   IF DWmax GE 0 THEN ADW = StrArr(DWmax+1)    ; automatic DW
    FOR i=0, DWmax DO BEGIN
-      curDW = Handle_Val((P.DWW)(i))
-      ADW(i) = 'InputLayer, '+STR(L(curDW.TARGET))+', '+STR(curDW.SYNAPSE)+'=DelayWeigh(CON('+STR(i)+'), LayerOut(L('+STR(curDW.SOURCE)+')))'
-
-      curSLayer = Handle_Val(P.LW(curDW.SOURCE))
-      curTLayer = Handle_Val(P.LW(curDW.TARGET))
-      console,P.CON,  'CONNECTIONS:  '+ curSLayer.NAME+ ' -> '+ curTLayer.NAME+' via '+ curDW.SYNAPSE+', '+curDW.NAME
+       curDW = Handle_Val((P.DWW)(i))
+       ADW(i) = 'InputLayer, '+STR(L(curDW.TARGET))+', '+STR(curDW.SYNAPSE)+'=DelayWeigh(CON('+STR(i)+'), LayerOut(L('+STR(curDW.SOURCE)+')))'
+       
+       curSLayer = Handle_Val(P.LW(curDW.SOURCE))
+       curTLayer = Handle_Val(P.LW(curDW.TARGET))
+       console,P.CON,  'CONNECTIONS:  '+ curSLayer.NAME+ ' -> '+ curTLayer.NAME+' via '+ curDW.SYNAPSE+', '+curDW.NAME
    END
 
 
