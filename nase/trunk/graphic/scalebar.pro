@@ -57,7 +57,7 @@ Default, v, 1.
 Default, _x, 0.1
 Default, _y, 0.1
 Default, vw, 0.05  ; width of limiting bars (percent of bar length)
-Default, CHARSIZE, 1.
+Default, CHARSIZE, !P.CHARSIZE
 Default, text, string(format="(G0)", v) 
 IF Keyword_Set(TOP)+Keyword_Set(VCENTER)+Keyword_Set(BOTTOM) LT 1 THEN VCENTER=1
 IF Keyword_Set(TOP)+Keyword_Set(VCENTER)+Keyword_Set(BOTTOM) GT 1 THEN Console, 'please use only one option BOTTOM/VCENTER/TOP', /FATAL 
