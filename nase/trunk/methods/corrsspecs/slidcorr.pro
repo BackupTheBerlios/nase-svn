@@ -105,6 +105,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.8  1998/06/22 21:07:24  saam
+;           loop variable in line 174 was only int :(
+;
 ;     Revision 1.7  1998/06/03 11:28:04  gabriel
 ;          PLOT Titel geaendert
 ;
@@ -168,7 +171,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
       plotflag = 1
    ENDIF
 
-   FOR i=0, steps - 1, stepsize DO BEGIN
+   FOR i=0l, steps - 1, stepsize DO BEGIN
       xtmp = xdata(i:i+_wsize-1)
       ytmp = ydata(i:i+_wsize-1)
       
