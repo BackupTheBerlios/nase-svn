@@ -40,6 +40,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/10/06 12:55:24  saam
+;     now accepts undefined structures, and defines them
+;     with the given tag
+;
 ;     Revision 1.6  2000/09/25 09:13:08  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -68,10 +72,12 @@ PRO SetTag, S, TN, TV
 
    ON_Error, 2
 
-   IF NOT Set(S)  THEN Message, 'first argument undefined'
    IF NOT Set(TN) THEN Message, 'second argument undefined'
    IF NOT Set(TV) THEN Message, 'third argument undefined'
-
+   IF NOT Set(S)  THEN BEGIN
+       S = Create_Struct(TN, TV)
+       RETURN
+   END
    IF TypeOf(S)  NE 'STRUCT' THEN Message, 'first argument has to be a structure'
    IF TypeOf(TN) NE 'STRING' THEN message, 'second argument has to be a string'
 
