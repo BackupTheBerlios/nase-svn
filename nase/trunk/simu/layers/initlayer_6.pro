@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.2  1998/08/23 12:36:27  saam
+;            new Keyword FADE
+;
 ;      Revision 2.1  1998/08/23 12:19:18  saam
 ;            is there anything to say?
 ;
@@ -49,7 +52,7 @@ FUNCTION InitLayer_6, WIDTH=width, HEIGHT=height, TYPE=type
              S      : type.ns*Double(1+RandomU(seed,width*height)) ,$
              R      : type.ns*Double(1+RandomU(seed,width*height)) ,$
              O      : handle               ,$
-             AR     : Byte(250*RANDOMU(seed,width*height))  }  ; for the absolute refractory period
+             AR     : Byte(type.fade*RANDOMU(seed,width*height))  }  ; for the absolute refractory period
 
    RETURN, Layer
 

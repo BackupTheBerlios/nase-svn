@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.2  1998/08/23 12:36:27  saam
+;            new Keyword FADE
+;
 ;      Revision 2.1  1998/02/05 13:47:32  saam
 ;            Cool
 ;
@@ -45,10 +48,10 @@ FUNCTION InitLayer_4, WIDTH=width, HEIGHT=height, TYPE=type
              L      : type.ns*Double(RandomU(seed,width*height)) ,$
              I      : type.ns*Double(RandomU(seed,width*height)) ,$
              M      : DblArr(width*height) ,$
-             S      : DblArr(width*height) ,$
-             R      : DblArr(width*height) ,$
+             S      : type.ns*Double(1+RandomU(seed,width*height)) ,$
+             R      : type.ns*Double(1+RandomU(seed,width*height)) ,$
              O      : handle               ,$
-             AR     : BytArr(width*height)  }  ; for the absolute refractory period
+             AR     : Byte(type.fade*RANDOMU(seed,width*height))  }  ; for the absolute refractory period
 
    RETURN, Layer
 

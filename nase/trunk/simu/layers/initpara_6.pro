@@ -9,7 +9,7 @@
 ;
 ; CALLING SEQUENCE:     Para = InitPara_6( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VR=vr] [, TAUR=taur] $
 ;                                          [, VS=vs] [, TAUS=taus] [, TH0=th0] [, SIGMA=sigma] [NOISYSTART=noisystart] $
-;                                          [OVERSAMPLING=oversampling] [,REFPERIOD=refperiod] [,SPIKENOISE=spikenoise] )
+;                                          [OVERSAMPLING=oversampling] [,REFPERIOD=refperiod] [,SPIKENOISE=spikenoise] [,FADE=fade])
 ;
 ; KEYWORD PARAMETERS:   tauf        : [tauf1, tauf2]; Feeding-Zeitkonstanten, Default:0.5,10
 ;                       taul        : [taul1, taul2]; Linking-Zeitkonstante , Default:0.5,10
@@ -22,10 +22,12 @@
 ;                       sigma       : Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
 ;                       oversampling: 1ms wird jetzt OVERSAMPLING-fach abgetastet
 ;                       refperiod   : die absolute Refraktaerzeit in ms (inclusive der AP-Generierung von einem BIN)
-;                       noisystart  : alle Input-Potential (F,L,I) werden mit gleichverteilten Zufalls-
+;                       noisystart  : alle Input-Potential sowie die Schwellen (F,L,I,S,R) werden mit gleichverteilten Zufalls-
 ;                                     zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
 ;                                     th0 angegeben.
-;                       spikenoise  : mean spontanous activity in Hz 
+;                       spikenoise  : mean spontanous activity in Hz (R.E. does not like this variant!! dunno why)
+;                       fade        : um Anschalteffekte zu verringern generiert jedes Neuron Aktionspotentiale erst 
+;                                     ab einem zufaelligen, individuellen Zeitpunkt im Bereich [0,fade], Default ist 250/OVERSAMPLING
 ;
 ; OUTPUTS:              Para : Struktur namens Para2, die alle Neuronen-Informationen enthaelt, s.u.
 ;
@@ -36,6 +38,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.2  1998/08/23 12:36:28  saam
+;            new Keyword FADE
+;
 ;      Revision 2.1  1998/08/23 12:19:18  saam
 ;            is there anything to say?
 ;
@@ -51,7 +56,7 @@
 ;
 ;-
 FUNCTION InitPara_6, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, $
-                 NOISYSTART=noisystart, Oversampling=oversampling, REFPERIOD=RefPeriod, SPIKENOISE=spikenoise
+                 NOISYSTART=noisystart, Oversampling=oversampling, REFPERIOD=RefPeriod, SPIKENOISE=spikenoise, FADE=fade
 
 
    Default, tauf        , [0.2,10.0]
@@ -69,6 +74,7 @@ FUNCTION InitPara_6, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, T
    oversampling = ROUND(oversampling)
    Default, deltat      ,    1./ROUND(oversampling)
    Default, refPeriod   ,    1.
+   Default, fade        ,  250
    DeltaT = Double(DeltaT)
 
    ; this is the correction factor to norm the maximal amplitude of 
@@ -96,6 +102,7 @@ FUNCTION InitPara_6, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, T
             ns   : noisystart*th0    ,$
             sn   : spikenoise/(1000.*FLOAT(oversampling)),$
             dt   : deltat            ,$
+            fade : fade              ,$
             rp   : FIX(refPeriod*oversampling)}
 
    RETURN, Para

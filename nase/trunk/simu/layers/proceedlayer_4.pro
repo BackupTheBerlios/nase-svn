@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.4  1998/08/23 12:36:28  saam
+;            new Keyword FADE
+;
 ;      Revision 2.3  1998/06/01 15:10:48  saam
 ;            spontanous activity with keyword spikenoise implemented
 ;
@@ -65,14 +68,12 @@ common common_random, seed
    ; absolute refractory period if needed
    refN = WHERE(Layer.AR GT 0, count)
    IF count NE 0 THEN BEGIN
-      Layer.M(refN) = 0
+;      Layer.M(refN) = 0
       Layer.AR(refN) = Layer.AR(refN)-1
    END
 
 
-   
-   result  = WHERE(Layer.M GE (Layer.R + Layer.S + Layer.Para.th0), count) 
-
+   result  = WHERE(Layer.M GE (Layer.R + Layer.S + Layer.Para.th0 + 100d*Layer.AR), count) 
 
    newOut = [count, Layer.w * Layer.h]
    IF count NE 0 THEN BEGIN
