@@ -8,13 +8,16 @@
 ; CATEGORY: MIND GRAPHIC
 ;
 ;
-; CALLING SEQUENCE:  MyCons = InitConsole([MODE=mode],[LENGTH=length])
+; CALLING SEQUENCE:  MyCons = InitConsole([MODE=mode],[LENGTH=length],[THRESHOLD=threshold] 
+;                                          [TOLERANCE = tolerance])
 ;
 ; 
 ; INPUTS:            MODE    :  specifies display :
 ;                               MODE = 'nowin'  ... console=print  (Default)
 ;                               MODE = 'win'    ... opens text-widget 
-;                    LENGTH  :  Length of remembered lines       (Default=200)    
+;                    LENGTH  :  Length of remembered lines       (Default=200)  
+;                    THRESHOLD: Messages with priority lt THRESHOLD are supressed
+;                    TOLERANCE: Messages with priority ge TOLERANCE cause STOP  
 ;
 ; OPTIONAL INPUTS:
 ;
@@ -50,6 +53,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/01/27 15:38:09  alshaikh
+;           keywords LEVEL,THRESHOLD,TOLERANCE
+;
 ;     Revision 2.1  2000/01/26 17:03:35  alshaikh
 ;           initial version
 ;
@@ -58,10 +64,12 @@
 ;-
 
 
-FUNCTION initconsole,MODE=_mode,LENGTH=length
+FUNCTION initconsole,MODE=_mode,LENGTH=length,THRESHOLD=threshold,TOLERANCE=tolerance
 
 Default, _mode, 'nowin'
 Default, length, 200
+Default, tolerance,30
+Default, threshold,0
 
 IF _mode EQ 'nowin' THEN mode = 0
 IF _mode EQ 'win' THEN mode = 1
@@ -87,6 +95,8 @@ h = { $
      act   : 0 ,$
      mode : mode ,$
      length : length, $
+     threshold: threshold ,$
+     tolerance: tolerance, $
      viz   : viz $
     }
  result = Handle_Create(!MH, VALUE=h,/no_copy)
