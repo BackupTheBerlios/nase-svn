@@ -336,7 +336,6 @@ Pro widget_image_container::examineit, xpos=xpos, ypos=ypos, _EXTRA=_extra
               SETCOL=0, $
               RANGE_IN=(*self.update_info).range_in, $
               _EXTRA=_extra
-stop
    showit_close, self->showit()
 End
 
