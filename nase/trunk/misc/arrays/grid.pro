@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;   Grid
+;   Grid()
 ;
 ; VERSION:
 ;   $Id$
@@ -70,7 +70,7 @@ FOR d=ndim-1,0,-1 DO BEGIN
     IF count(d) EQ !NONE THEN ccount = (dims(d)+1)/step(d) ELSE ccount = MAX([1,count(d)])
 
     t = REVERSE((LindGen(ccount)*step(d)))
-    t=t - (MAX(t)-MIN(t))/2 + cshift(d)
+    t=t - (MAX(t)-MIN(t))/2 - cshift(d)
     pos = (dims(d)-1)/2 - t 
     ok = WHERE((pos GE 0) AND (pos LT dims(d)),c) 
     IF (c NE ccount) THEN BEGIN
