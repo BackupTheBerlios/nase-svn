@@ -60,7 +60,7 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
    If not self->image_factory::init(_EXTRA=_ref_extra) then return, 0
    If not $
     self->widget_image_container::init(IMAGE=self->image_factory::imageptr(), $
-                                       /NASE, $                                    
+                                       /NASE, Range_In=[0, 1], $                                    
                                        _EXTRA=_ref_extra) then begin
       self->image_factory::cleanup
       return, 0
