@@ -172,6 +172,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.30  2001/09/04 09:24:25  alshaikh
+;              improvements concerning rotated gaussians... seems to work now.
+;
 ;        Revision 1.29  2001/09/03 13:44:59  alshaikh
 ;         can now handle rotated asymmetric gaussians on non-quadratic grids
 ;
@@ -353,37 +356,19 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
 
    ;; 2-d result, xsigma != ysigma
    IF set(XHWB) THEN BEGIN   
-      if (xlen ne ylen) then begin
-         if xlen gt ylen then begin ; to prevent surface effects: compute gauss for quadratic grid.
-            len = xlen          
-            offset = (xlen-ylen)/2
-            dist = Distance(/Quadratic, $
-                            len,len,x0_arr,y0_arr+offset, $
-                            scale=[sigmax, sigmay], $
-                            phi=phi, $
-                            WARP=WARP, ABSWARP=ABSWARP)
-            ERG = (Gauss_function_x_sigma_quad(dist))[*, offset:offset+ylen-1]
-         end else begin         ; ylen gt xlen
-            len = ylen
-            offset = (ylen-xlen)/2
-            dist = Distance(/Quadratic, $
-                            len,len,x0_arr+offset,y0_arr, $
-                            scale=[sigmax, sigmay], $
-                            phi=phi, $
-                            WARP=WARP, ABSWARP=ABSWARP)
-            ERG = (Gauss_function_x_sigma_quad(dist))[offset:offset+xlen-1, *]
-         end
-         
-         
-      end else begin
-         dist = Distance(/Quadratic, $
-                         xlen,ylen,x0_arr,y0_arr, $
-                         scale=[sigmax, sigmay], $
-                         phi=phi, $
-                         WARP=WARP, ABSWARP=ABSWARP)
-         
-         ERG = Gauss_function_x_sigma_quad(dist)
-      end
+      if xlen gt ylen then len = xlen*sqrt(2) $ ; to prevent surface-effects paint on a grid with width and height
+      else len = ylen*sqrt(2)                   ; equal to diagonal of the initial grid...
+      
+      yoffset = (len-ylen)/2
+      xoffset = (len-xlen)/2
+      dist = Distance(/Quadratic, $
+                      len,len,x0_arr+xoffset,y0_arr+yoffset, $
+                      scale=[sigmax, sigmay], $
+                      phi=phi, $
+                      WARP=WARP, ABSWARP=ABSWARP)
+      ERG = (Gauss_function_x_sigma_quad(dist))[xoffset:xoffset+xlen-1, yoffset:yoffset+ylen-1]
+      
+      
       
       If Keyword_Set(NORM) then begin
          i = TOTAL(ERG)
