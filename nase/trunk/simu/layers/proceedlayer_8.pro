@@ -78,11 +78,14 @@
 ;  END
 ;
 ;
-; SEE ALSO: <A HREF="#INITPARA_8">InitPara_8</A>, <A HREF="#IINTLAYER_8">InitLayer_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>
+; SEE ALSO: <A HREF="#INITPARA_8">InitPara_8</A>, <A HREF="#INITLAYER_8">InitLayer_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 1.3  1999/03/08 09:54:59  thiel
+;             Hyperlink-Korrektur.
+;
 ;      Revision 1.2  1999/03/05 14:32:53  thiel
 ;             Header-Ergänzung.
 ;
