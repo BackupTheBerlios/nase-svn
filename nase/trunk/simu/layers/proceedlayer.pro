@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.7  2000/09/08 16:11:53  kupper
+;       Now catching floating underflows, as already done in InputLayer().
+;
 ;       Revision 2.6  1998/11/08 17:27:22  saam
 ;             the layer-structure is now a handle
 ;
@@ -67,4 +70,6 @@ PRO ProceedLayer, _Layer, _EXTRA=_extra
    
    Call_Procedure, 'ProceedLayer_'+Type, _Layer,_EXTRA=_extra
 
+   ;; Ignore any floating underflows:
+   IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
 END
