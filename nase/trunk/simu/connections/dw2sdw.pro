@@ -24,6 +24,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1998/03/19 11:38:52  thiel
+;            Der .W-Tag ist jetzt immer ein Array, auch wenn er
+;            nur ein Element enthaelt.
+;
 ;     Revision 2.7  1998/03/14 14:12:19  saam
 ;           handling of empty dw-structures now works
 ;
@@ -110,8 +114,8 @@ PRO DW2SDW, _DW
               c2s     : c2s        ,$
               t2c     : t2c        ,$
               c2t     : c2t        ,$              
-              W       : W          ,$
-              D       : D          ,$
+              W       : [W]          ,$
+              D       : [D]          ,$
               Queue   : InitSpikeQueue( INIT_DELAYS=D ),$
               Learn   : -1l         }
    END ELSE BEGIN
@@ -124,7 +128,7 @@ PRO DW2SDW, _DW
               c2s     : c2s        ,$
               t2c     : t2c        ,$
               c2t     : c2t        ,$              
-              W       : W          ,$
+              W       : [W]          ,$
               Learn   : -1l         }
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
