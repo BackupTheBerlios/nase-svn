@@ -9,7 +9,7 @@
 ;
 ; CATEGORY: SIMULATION / PLASTICITY
 ;
-; CALLING SEQUENCE: LearnDelays, dw, pc, lw
+; CALLING SEQUENCE: LearnDelays, dw, pc, lw, [,/SHUTUP]
 ;
 ; INPUTS: dw: Die bisherige Gewichts/Delaymatrix (eine mit <A HREF="../CONNECTIONS/#INITDW">InitDW</A> erzeugte 
 ;             Struktur). 
@@ -30,6 +30,9 @@
 ;                        Spike auftritt.
 ;             Siehe dazu auch <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>.
 ;
+; KEYWORD PARAMETERS: SHUTUP: Verhindert die Ausgabe der Queue Reset-Warnung.
+;                             (Siehe dazu ein paar Zeilen weiter unten.)
+;
 ; (SIDE) EFFECTS: DW.D und DW.queuehdl werden geändert. Die Änderung von DW.D
 ;                 erfolgt in Schritten von beliebiger Genauigkeit, die 
 ;                 tatsächlichen Queue-Delays dagegen können nur ganzzahlige
@@ -41,7 +44,8 @@
 ;                 Queue gelöscht und eine größere oder kleinere (aber leere) 
 ;                 erzeugt. Es sollte darauf geachtet werden, daß dies nicht ZU
 ;                 HÄUFIG passiert, da sonst evtl. keine Spikes mehr übertragen 
-;                 werden.
+;                 werden. Damit man das nicht vergißt, wird eine Warnung 
+;                 ausgegeben, wenn die Queues neu initialisiert werden.
 ;     
 ; PROCEDURE: 1. In 'pc' sind die zu lernende Verbindungen und die zugehörigen
 ;               Zeitdifferenzen enthalten. 
@@ -80,6 +84,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.3  1999/08/09 15:45:32  thiel
+;           Now prints warning when spikes are lost due to queue-resets.
+;
 ;       Revision 1.2  1999/08/05 14:15:54  thiel
 ;           Works correct with multiple changes of the same connection.
 ;
@@ -88,7 +95,7 @@
 ;
 ;
 ;-
-PRO LearnDelays, _DW, _PC, LW;, SELF=Self, NONSELF=NonSelf;, DELEARN=delearn
+PRO LearnDelays, _DW, _PC, LW, SHUTUP=shutup;, SELF=Self, NONSELF=NonSelf;, DELEARN=delearn
   
 
    Handle_Value, _PC, PC, /NO_COPY
@@ -166,7 +173,8 @@ PRO LearnDelays, _DW, _PC, LW;, SELF=Self, NONSELF=NonSelf;, DELEARN=delearn
       newstarts = IShft(tmpqu.starts(wi(diffidx)),Round(diff(diffidx)))
       overunderflow = Where(newstarts LE 0, c)
       IF c NE 0 THEN BEGIN
-;         Print, 'Queue-Init!!!'
+         IF NOT Keyword_Set(SHUTUP) THEN $
+          Print, 'LEARNDELAYS: Warning: Queue-reset.'
          FreeSpikeQueue, queue
          queue = InitSpikeQueue(INIT_DELAYS=DW.D)
       ENDIF ELSE BEGIN
