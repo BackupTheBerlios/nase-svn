@@ -1,6 +1,8 @@
 ;+
 ; NAME: schuelerwuergshop_SIMULATE
 ;
+; AIM: Module of <A>schuelerwuergshop</A>  (see also  <A>faceit</A>)
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="#FACEIT">FaceIt</A>.
 ;          *_SIMULATE sollte den Simulationskern enthalten: Inputbestimmung, 
 ;          Lernen, Berechnen des neuen Netwerkzustands usw werden hier 
@@ -44,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/28 12:29:38  alshaikh
+;              added AIM
+;
 ;        Revision 1.1  2000/02/17 17:41:46  kupper
 ;        Fuer die lieben Schueler.
 ;

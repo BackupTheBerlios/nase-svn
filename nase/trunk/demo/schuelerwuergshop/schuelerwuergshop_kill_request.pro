@@ -1,6 +1,8 @@
 ;+
 ; NAME: schuelerwuergshop_KILL_REQUEST
 ;
+; AIM: Module of <A>schuelerwuergshop</A>  (see also  <A>faceit</A>)
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>.
 ;          Die hierin enthaltenen Befehle werden vor der Zerstörung des
 ;          FaceIt-Widgets ausgeführt, zB kann hier mit den NASE-Routinen 
@@ -43,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/28 12:29:38  alshaikh
+;              added AIM
+;
 ;        Revision 1.1  2000/02/17 17:41:46  kupper
 ;        Fuer die lieben Schueler.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: schuelerwuergshop_FREEDATA
 ;
+; AIM: Module of <A>schuelerwuergshop</A>  (see also  <A>faceit</A>)
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="..#FACEIT">FaceIt</A>. 
 ;          schuelerwuergshop_FREEDATA gibt die von der Simulation benötigten NASE-
 ;          Strukturen frei.
@@ -31,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/28 12:29:37  alshaikh
+;              added AIM
+;
 ;        Revision 1.1  2000/02/17 17:41:46  kupper
 ;        Fuer die lieben Schueler.
 ;

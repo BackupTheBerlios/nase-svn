@@ -1,6 +1,8 @@
 ;+
 ; NAME: schuelerwuergshop_FILEOPEN
 ;
+; AIM: Module of <A>schuelerwuergshop</A>  (see also  <A>faceit</A>)
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>. 
 ;          Diese Routine wird vom Menüpunkt 'File.Open' aufgerufen. Hier
 ;          können zuvor gespeicherte Simulationsdaten eingelesen werden.
@@ -43,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/28 12:29:37  alshaikh
+;              added AIM
+;
 ;        Revision 1.1  2000/02/17 17:41:46  kupper
 ;        Fuer die lieben Schueler.
 ;
