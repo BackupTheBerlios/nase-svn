@@ -2,7 +2,7 @@
 ; NAME:               IFgwn
 ;
 ; PURPOSE:            Generates independent analog Gaussian white noise with a
-;                     standard deviation of 1 for each neuron of the
+;                     standard deviation of A for each neuron of the
 ;                     layer. The mean of the distribution is 0.
 ;
 ; CATEGORY:           MIND INPUT 
@@ -11,12 +11,13 @@
 ;                     ignore_me  = IFgwn( MODE=0, 
 ;                                              TEMP_VALS=temp_vals
 ;                                              [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
-;                                              {various filter options} )
+;                                              [,CORR=corr] [,A=a] )
 ;
 ;                     newPattern = IFgwn( [MODE=1], PATTERN=pattern )
 ;                     ignore_me  = IFgwn( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: CORR      : all input receive fraction CORR of a
+; KEYWORD PARAMETERS: A         : amplitude of noise process (Default:1)
+;                     CORR      : all input receive fraction CORR of a
 ;                                 correlated GWN process
 ;                     DELTA_T   : passing time in ms between two sucessive calls of this filter function
 ;                     HEIGHT    : height of the input to be created
@@ -41,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/06/20 13:20:07  saam
+;          + new keyword A to specify amplitude
+;
 ;     Revision 1.1  2000/04/06 09:35:43  saam
 ;           added CORR keyword
 ;
@@ -48,7 +52,7 @@
 ;
 
 
-FUNCTION IFgwn, MODE=mode, PATTERN=pattern, CORR=corr, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t
+FUNCTION IFgwn, MODE=mode, PATTERN=pattern, CORR=corr, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, A=a
 
  COMMON ATTENTION
  Common COMMON_RANDOM, seed
@@ -62,20 +66,22 @@ FUNCTION IFgwn, MODE=mode, PATTERN=pattern, CORR=corr, WIDTH=w, HEIGHT=h, TEMP_V
    CASE mode OF      
       ; INITIALIZE
       0: BEGIN                  
+          Default, a   , 1.
           Default, corr, 0.0
           TV =  {                     $
                   h        : h       ,$
                   w        : w       ,$
+                  a        : a       ,$
                   corr     : corr    ,$
                   delta_t  : delta_t ,$
                   sim_time : .0d      $
                 }
-          console, P.CON, 'sigma=1, corr='+STR(TV.corr),/msg         
+          console, P.CON, 'sigma=1, a='+STR(TV.a)+', corr='+STR(TV.corr),/msg         
       END
       
       ; STEP
       1: BEGIN                             
-         R = pattern + (1-TV.corr)*RandomN(seed, TV.h, TV.w) + TV.corr*Rebin(RandomN(seed,1), TV.h, TV.w)
+         R = pattern + TV.a*((1-TV.corr)*RandomN(seed, TV.h, TV.w) + TV.corr*Rebin(RandomN(seed,1), TV.h, TV.w))
          TV.sim_time =  TV.sim_time + TV.delta_t
       END
       
