@@ -67,12 +67,13 @@ Default, count , REPLICATE(!NONE, ndim)
 Default, step  , REPLICATE(1    , ndim)
 Default, cshift, REPLICATE(0    , ndim)
 
+
 if Set(uniform) then step = fix(dims/count)
 
 
 ;check grid method
 FOR d=ndim-1,0,-1 DO BEGIN
-    IF count(d) EQ !NONE THEN ccount = (dims(d)+1)/step(d) ELSE ccount = MAX([1,count(d)])
+    IF count(d) EQ !NONE THEN ccount = (dims(d))/step(d) ELSE ccount = MAX([1,count(d)])
 
     t = REVERSE((LindGen(ccount)*step(d)))
     t=t - (MAX(t)-MIN(t))/2 - cshift(d)
