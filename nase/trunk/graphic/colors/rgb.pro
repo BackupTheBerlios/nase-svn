@@ -110,6 +110,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  1998/02/19 14:28:03  saam
+;             NOALLOC ermittelt aehnliche Farbe nach HSV-Farbmodell
+;
 ;        Revision 1.9  1998/02/19 14:00:58  saam
 ;              Bug korrigiert
 ;
@@ -146,7 +149,9 @@ Common common_RGB, My_freier_Farbindex
       IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefienieren, sondern aehnlichste zurueckgeben
          myCM = bytarr(!D.Table_Size,3) 
          TvLCT, myCM, /GET
-         differences = MAX([ABS(myCM(*,0)-R),ABS(myCM(*,1)-G),ABS(myCM(*,2)-B)])
+	 Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myH, myS, myV, /RGB_HSV
+	 Color_Convert, R, G, B, H, S, V, /RGB_HSV
+	 differences = (myH - H)^2 + (myS - S)^2 + (myV - V)^2
          lowestDiff = MIN(differences, bestMatch)
          RETURN, bestMatch
       END
