@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1998/02/19 17:13:29  kupper
+;               Fiese Skalar/Array-Seltsamkeit von IDL...
+;
 ;        Revision 2.3  1998/02/19 16:15:58  kupper
 ;               Fehlerchen...
 ;
@@ -54,18 +57,32 @@ Pro New_Color_Convert, I0, I1, I2, O0, O1, O2, $
    YIC2RGB = Invert (RGB2YIC)
 
    If Keyword_Set(RGB_YIC) then begin
-      YIC = [[I0], [I1], [I2]] # RGB2YIC
-      O0  = YIC(*, 0)
-      O1  = YIC(*, 1)
-      O2  = YIC(*, 2)
+      If (Size(I0))(0) eq 0 then begin ;Skalare übergeben!
+         YIC = [I0, I1, I2] # RGB2YIC
+         O0  = YIC(0)
+         O1  = YIC(1)
+         O2  = YIC(2)
+      Endif Else Begin          ;Arrays übergeben!
+         YIC = [[I0], [I1], [I2]] # RGB2YIC
+         O0  = YIC(*, 0)
+         O1  = YIC(*, 1)
+         O2  = YIC(*, 2)
+      EndElse
       Return
    endif
       
    If Keyword_Set(YIC_RGB) then begin
-      MyRGB = [[I0], [I1], [I2]] # YIC2RGB
-      O0  = MyRGB(*, 0)
-      O1  = MyRGB(*, 1)
-      O2  = MyRGB(*, 2)
+      If (Size(I0))(0) eq 0 then begin ;Skalare übergeben!
+         MyRGB = [I0, I1, I2] # YIC2RGB
+         O0  = MyRGB(0)
+         O1  = MyRGB(1)
+         O2  = MyRGB(2)
+      Endif Else Begin          ;Arrays übergeben!
+         MyRGB = [[I0], [I1], [I2]] # YIC2RGB
+         O0  = MyRGB(*, 0)
+         O1  = MyRGB(*, 1)
+         O2  = MyRGB(*, 2)
+      EndElse
       Return
    endif
 
