@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/11/26 09:28:48  saam
+;           Weiss leider nicht mehr, was veraendert wurde
+;
 ;     Revision 2.1  1997/11/13 13:03:30  saam
 ;           Creation
 ;
@@ -58,7 +61,7 @@ PRO OpenSheet, sheet
          END
          IF sheet.eps THEN file = file+'.eps' ELSE file = file+'.ps'
 
-         IF sheet.extra EQ -1 THEN BEGIN
+         IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
             Device, FILENAME=file, ENCAPSULATED=sheet.eps
          END ELSE BEGIN
             Device, FILENAME=file, ENCAPSULATED=sheet.eps, _EXTRA=sheet.extra
