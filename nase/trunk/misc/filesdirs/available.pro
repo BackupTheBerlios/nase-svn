@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/09/10 13:00:54  kupper
+;        Re-corrected some names in the Header after renaming the file.
+;
 ;        Revision 2.1  1999/09/10 12:55:59  kupper
 ;        Changed Name from "non_block_readable()" to "available()".
 ;
@@ -54,10 +57,10 @@
 ;
 ;        Revision 2.2  1999/03/05 20:25:40  kupper
 ;        Also:
-;        1) Get_fd() und available() können jetzt wie "brave" IDL-Routinen
+;        1) Get_fd() und non_block_readable() können jetzt wie "brave" IDL-Routinen
 ;        auch Arrays verarbeiten.
 ;        2) Wait_for_data() kann in BOOL_MASK optional die Maske der lesbaren LUNs zurückliefern.
-;        3) available() kann mit /USE_SELECT angewiesen werden, die UNIX select()
+;        3) non_block_readablee() kann mit /USE_SELECT angewiesen werden, die UNIX select()
 ;           Funktion zu benutzen, anstatt wild drauflos Leseversuche zu starten.
 ;           Auf Systemen, die das unterstützen (SVR4 und 4.3+BSD und ?), ist das die Methode der Wahl.
 ;           (Man könnte drüber nachdenken, eine Systemvariable zu machen, die das anzeigt...)
