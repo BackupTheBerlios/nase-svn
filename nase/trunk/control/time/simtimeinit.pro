@@ -7,13 +7,14 @@
 ;
 ; CATEGORY:              ORGANISATION
 ;
-; CALLING SEQUENCE:      SimTimeInit [,/GRAPHIC] [,/PRINT], [MAXSTEPS=maxsteps]
+; CALLING SEQUENCE:      SimTimeInit [,/GRAPHIC] [,/PRINT], [MAXSTEPS=maxsteps],[/CLEAR]
 ;
 ; KEYWORD PARAMETERS:    graphic : falls angegeben, wird werden ins aktuelle Device die
 ;                                  Zeiten inklusive Mittelwert und Standardabweichung angezeigt
 ;                        print   : nach jeder Iteration werden benoetigte Zeit/Iteration und Gesamtzeit 
 ;                                  ausgegeben (im Stunde/Minute/Sekunde-Format)
 ;                        maxsteps: maximale Zahl der Iterationen (default 100)
+;                        Clear:    setzt vor jedem Print den Curser auf Pos1 und loescht die vorherige Ausgabe
 ;
 ; COMMON BLOCKS:         SimTime
 ;
@@ -28,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1998/06/19 09:22:30  gabriel
+;          Keyword CLEAR eingefuehrt
+;
 ;     Revision 1.3  1998/03/13 09:49:26  saam
 ;           set maximum simtimesteps to 1000
 ;
@@ -39,7 +43,7 @@
 ;
 ;
 ;-
-PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps
+PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps ,CLEAR=CLEAR
    
    COMMON SimTime, stat
    
@@ -47,13 +51,15 @@ PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps
    Default, maxsteps, 1000
    Default, print   ,   0
    Default, graphic ,   0
-   
+   Default, clear, 0
+  
    stat = { tpi     : DblArr(maxsteps+1),$ ; time per iteration i
             lst     : 0d                ,$ ; last system time (internal)
             ast     : 0d                ,$ ; latest system time (internal)
             step    : 0                 ,$ 
             maxsteps: maxsteps          ,$ ; maximal number of iterations
             print   : print             ,$ ; print time after each step
+            clear   : clear             ,$ ; clear term after each step
             graphic : graphic            } ; plot diagram at the end
 
    stat.lst = SysTime(1)
