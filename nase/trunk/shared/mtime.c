@@ -14,6 +14,9 @@
 ** MODIFICATION HISTORY:
 **
 **       $Log$
+**       Revision 1.3  2000/08/04 15:04:34  kupper
+**       Removed fprints.
+**
 **       Revision 1.2  1999/03/04 16:30:26  saam
 **            + works for alpha, problems with i386 architecture
 **
@@ -35,7 +38,7 @@
 #include <errno.h>
 #include <string.h>
 #include <time.h>
-#include "/vol/graphic/idl_5/external/export.h"
+#include "export.h"
 
 
 #define ERROR -1
@@ -80,9 +83,9 @@ IDL_LONG mtime(int   argc  ,
     return(ERROR);
   } 
 
-  fprintf(stderr, "timezone: %i\n", timezone);
+  /* fprintf(stderr, "timezone: %i\n", timezone); */
   time=mystat.st_mtime+timezone+3600;
-  fprintf(stderr, "mm: %i\n", time);
+  /* fprintf(stderr, "mm: %i\n", time); */
 
   if (argc == 2){
     arg1str = (IDL_STRING *) argv[1];
