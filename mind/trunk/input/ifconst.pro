@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/05/04 09:13:45  saam
+;           forgot the ATTENTION block
+;
 ;     Revision 1.2  2000/01/31 09:19:17  saam
 ;           print, message -> console
 ;
@@ -53,6 +56,7 @@
 FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                   LOGIC=op, VALUE=value
 
+   COMMON ATTENTION
    ON_ERROR, 2
 
    Default, mode , 1          ; i.e. step
