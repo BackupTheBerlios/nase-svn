@@ -402,9 +402,20 @@ unless the optional second argument NOINDENT is non-nil."
   ;; this allows for anything, followed by "> ".
   ;; --End: relax idl prompt matching--
 
+
+;(defun idlwave-prev-index-position ()
+;  "Search for the previous procedure or function.
+;Return nil if not found.  For use with imenu.el."
+;  (save-match-data
+;    (cond
+;     ((idlwave-find-key "\\(\\<\\(pro\\|function\\|\\(mark\\)\\)\\>\\)" -1 'nomark))
+;     ;;   ((idlwave-find-key idlwave-begin-unit-reg 1 'nomark)
+;     (t nil))))
+
   (message "NASE idlwave extention ($Revision$).")
 
   )
+
 
 ;; -- add nase hook to the idlwave hooklist--
 (add-hook 'idlwave-mode-hook 'install-nase)
