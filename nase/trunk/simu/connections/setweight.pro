@@ -76,6 +76,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.19  1999/08/17 13:36:57  thiel
+;           Fast bugfix. Temporal use of old Setweights.
+;
 ;       Revision 1.18  1998/12/15 13:02:21  saam
 ;             multiple bugfixes
 ;
@@ -264,7 +267,7 @@ Pro SetWeight, DW, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  
 
    end
 
-   SetWeights, DW, W
+   SetWeights, DW, W, NO_INIT=0
 
 end   
 
