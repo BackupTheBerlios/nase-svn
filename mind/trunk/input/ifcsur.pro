@@ -55,6 +55,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/26 16:20:38  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.2  2000/01/19 14:50:59  alshaikh
 ;           now EVERY parameter is stored in temp_vals
 ;
@@ -68,6 +71,7 @@
 FUNCTION ifcsur, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_temp_vals, DELTA_T=delta_t, $
                  S1=s1,S2=s2,K2=k2,K1=k1,OFF_RATE=off_rate,ONCENTER=oncenter
 
+ COMMON terminal,output
 
    Default, mode   , 1          ; i.e. step
    Default, pattern, !NONE
@@ -104,7 +108,7 @@ convol_range_h = h-1
                        delta_t  : delta_t $ 
                       }
          
-         print,'INPUT:filter ''ifcsur'' initialized'         
+          console,output,'initialized','ifcsur',/msg         
       END
       
 
@@ -140,11 +144,11 @@ convol_range_h = h-1
 ;
       2:BEGIN
          
-         print,'INPUT:filter ''ifcsur'' stopped'
+          console,output,'stopped','ifcsur',/msg
          
       END 
       ELSE: BEGIN
-         Message, 'unknown mode'
+          console,output, 'unknown mode','ifcsur',/fatal
       END
       
    ENDCASE 

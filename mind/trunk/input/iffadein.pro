@@ -24,6 +24,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/26 16:20:39  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.3  2000/01/19 14:51:00  alshaikh
 ;           now EVERY parameter is stored in temp_vals
 ;
@@ -38,6 +41,8 @@
 
 
 FUNCTION iffadein,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_vals,DELTA_t=delta_t,TIME=time
+
+   COMMON terminal, output
 
 DEFAULT, mode, 1      ; i.e. step
 DEFAULT, time,10.0
@@ -57,7 +62,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
                        delta_t  : delta_t $
                       }
      
-          print,'INPUT:filter ''iffadein'' initialized'         
+          console,output,'initialized','iffadein',/msg         
       END 
 
       
@@ -76,7 +81,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 
       2: BEGIN
          pattern = 0.0  
-         print,'INPUT:filter ''iffadein'' stopped'
+         console,output,'stopped','iffadein',/msg
 
          END
 

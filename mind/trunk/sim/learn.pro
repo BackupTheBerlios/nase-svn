@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/26 16:19:51  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.3  2000/01/26 10:42:29  alshaikh
 ;          + new learning rule : EXTERN
 ;          + EXTERN still doesn't work with delayed connections
@@ -107,6 +110,7 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
 
    COMMON ATTENTION
    COMMON SH_LEARN
+   COMMON terminal,output
    
    Handle_Value, _LS, LS, /NO_COPY
    curDW = Handle_Val(P.DWW(LS.DW))
@@ -144,7 +148,7 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
 
    ;----------> SHOWWEIGHTS IF WANTED
    IF (t MOD LS.SHOWW) EQ 0 THEN BEGIN
-      OpenSheet, LEARN_2(LS.index)
+       OpenSheet, LEARN_2(LS.index)
       ShowWeights, CON(LS.DW), /TOS, /NOWIN, ZOOM=LS.ZOOM
       CloseSheet, LEARN_2(LS.index)
    END

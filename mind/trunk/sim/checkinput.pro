@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.9  2000/01/26 16:19:49  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.8  2000/01/25 11:00:50  alshaikh
 ;           new layer-initialization
 ;
@@ -164,6 +167,7 @@ Default, NUMBER, 0
 ;------------->
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
+
    Print, 'Starting main simulation loop...'
    Print, '  '
 
@@ -231,8 +235,7 @@ Default, NUMBER, 0
             ENDIF  
          ENDFOR 
       ENDIF 
-      
-      
+
  
       handle_value,in(number),inn,/set
       ;INn.t = INn.t + 1

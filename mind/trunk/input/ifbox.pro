@@ -42,6 +42,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/26 16:20:38  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.1  2000/01/20 11:01:33  alshaikh
 ;           initial version
 ;
@@ -56,6 +59,8 @@
 FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                 LOGIC=logic, $
                 X1=x1,Y1=y1,X2=x2,Y2=y2,INVERT=invert, VALUE=value
+
+   COMMON terminal,output
 
    ON_ERROR, 2
 
@@ -98,7 +103,7 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
                 invert : invert    $
          }
          
-         print,'IFBOX: initialized'         
+         console,output,'initialized','ifbox',/msg         
       END
       
       ; STEP
@@ -136,15 +141,15 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
       
       ; FREE
       2: BEGIN
-         print,'IFBOX: done'
+         console, output,'done','IFBOX',/msg
       END 
 
       ; PLOT
       3: BEGIN
-         print, 'IFBOX: display mode not implemented, yet'
+         console, output, 'display mode not implemented, yet','ifbox',/warning
       END
       ELSE: BEGIN
-         Message, 'IFBOX: unknown mode'
+         console, output, 'unknown mode','ifbox',/warning
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET

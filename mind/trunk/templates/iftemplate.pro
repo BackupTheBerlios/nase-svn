@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/26 16:21:08  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.5  2000/01/19 09:10:38  saam
 ;           + returns on error now
 ;           + removed redundant references to keywords during step (MODE=1)
@@ -67,6 +70,8 @@
 
 FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t
 
+ COMMON terminal, output
+
    ON_ERROR, 2
 
    Default, mode, 1          ; i.e. step
@@ -80,7 +85,7 @@ FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
                 delta_t  : delta_t ,$
                 sim_time : .0d      $
                }
-         print,'IFTEMPLATE: initialized'         
+         console,output,'initialized','iftemplate',/msg         
       END
       
       ; STEP
@@ -96,15 +101,15 @@ FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
       
       ; FREE
       2: BEGIN
-         print,'IFTEMPLATE: done'
+         console,output,'done','iftemplate',/msg
       END 
 
       ; PLOT
       3: BEGIN
-         print, 'IFTEMPLATE: display mode not implemented, yet'
+         console,output, 'display mode not implemented, yet','iftemplate',/warning
       END
       ELSE: BEGIN
-         Message, 'IFTEMPLATE: unknown mode'
+         console,output, 'unknown mode','iftemplate',/fatal
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET

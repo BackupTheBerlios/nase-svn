@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/01/26 16:19:50  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.7  2000/01/26 10:42:29  alshaikh
 ;          + new learning rule : EXTERN
 ;          + EXTERN still doesn't work with delayed connections
@@ -118,7 +121,8 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    
    COMMON ATTENTION
    COMMON SH_LEARN, LEARNwins, LEARN_1, LEARN_2, LEARN_3, LEARN_4
-   
+   COMMON terminal,output
+
    On_Error, 2
 
    IF ExtraSet(e, 'NEWWIN') THEN LEARNwins = 0
@@ -135,7 +139,6 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    END 
    
   
-
   FOR LLoop=0, MaxWin-1 DO BEGIN   ; Layer-Loop
   
      Handle_Value, _LS(LLoop), LS, /NO_COPY
@@ -145,10 +148,10 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
             
    curDW = Handle_Val(P.DWW(LS.DW))
 
-   IF NOT ExtraSet(LS, 'RULE')  THEN Message, 'tag RULE undefined!'
-   IF NOT ExtraSet(LS, 'DW')    THEN Message, 'tag DW undefined!'
-   IF NOT ExtraSet(LS, 'INDEX') THEN Message, 'tag INDEX undefined!'
-   Default, MaxWin, 1
+   IF NOT ExtraSet(LS, 'RULE')  THEN console,output, 'tag RULE undefined!','initlearn',/fatal
+   IF NOT ExtraSet(LS, 'DW')    THEN console,output, 'tag DW undefined!','initlearn',/fatal
+   IF NOT ExtraSet(LS, 'INDEX') THEN console,output, 'tag INDEX undefined!','initlearn',/fatal
+   ;Default, MaxWin, 1
 
   
 
@@ -188,12 +191,12 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
            LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
                                             XSIZE=MIN([width,height]), YSIZE=MIN([width,height]), $
                                             TITLE=curDW.NAME)
+
         END
 ; ------------------------------
 
         LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=curDW.NAME)
         LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+curDW.NAME)
-         LEARNwins = 1
       END
    END
 
@@ -220,7 +223,7 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    ;----->
    curSLayer = Handle_Val(P.LW(curDW.SOURCE))
    curTLayer = Handle_Val(P.LW(curDW.TARGET))
-   Print, 'LEARNING: ',curSLayer.NAME, ' -> ', curTLayer.NAME,' with ', LS.RULE
+   console, output, 'LEARNING: '+curSLayer.NAME+' -> '+curTLayer.NAME+' with '+ LS.RULE,'initlearn',/msg
 
 
    ;determine if correpsonding DW is delayed or not, cause this changes the call of initrecall
@@ -242,28 +245,28 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    END ELSE IF InSet(lRule, [1,2]) THEN BEGIN
       CASE lWin OF 
          1: BEGIN; ALPHA
-            Print, 'LEARNWIN: ALPHA, ', STR(LS.tau_inc), ' ms, ', STR(LS.tau_dec),' ms' 
+            console, output, 'LEARNWIN: ALPHA, '+ STR(LS.tau_inc)+ ' ms, '+ STR(LS.tau_dec)+' ms','initlearn',/message 
             IF delay THEN win = InitRecall(_CON(LS.DW), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE) $
              ELSE win = InitRecall(P.LW(curDW.SOURCE), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
          2: BEGIN; EXPO
-            Print, 'LEARNWIN: EXPO, ', STR(LS.tau), ' ms'
+            console,output, 'LEARNWIN: EXPO, '+ STR(LS.tau)+ ' ms','initlearn',/message
             win = InitRecall(_CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
-         ELSE: Message, 'Learning Window for these learning rule expected!'
+         ELSE: console,output, 'Learning Window for these learning rule expected!','initlearn',/fatal
       END
       SetTag, LS, 'TYPE', lrule
       SetTag, LS, '_WIN', win
    END ELSE IF lRule EQ 3 THEN BEGIN
       IF NOT ExtraSet(LS, 'V_PRE') THEN BEGIN
          LW = InitLearnBiPoo(postv=LS.v_post, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE, /PREBAL)
-         Print, 'LEARN: BIPOO, delearn, tau=', STR(LS.tau_pre), ' ms, learn, ', STR(LS.v_post), '  ', STR(LS.tau_post), ', balanced'
+         console, output, 'LEARN: BIPOO, delearn, tau='+ STR(LS.tau_pre)+ ' ms, learn, '+ STR(LS.v_post)+ '  '+ STR(LS.tau_post)+ ', balanced','initlearn',/msg
       END ELSE IF NOT ExtraSet(LS, 'V_POST') THEN BEGIN
          LW = InitLearnBiPoo(prev=LS.v_pre, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE, /POSTBAL)
-         Print, 'LEARN: BIPOO, delearn, ', STR(LS.v_pre), ',  tau=', STR(LS.tau_pre), ' ms, learn, tau=', STR(LS.tau_post), ', balanced'
+         console, output, 'LEARN: BIPOO, delearn, '+ STR(LS.v_pre)+ ',  tau='+ STR(LS.tau_pre)+ ' ms, learn, tau='+ STR(LS.tau_post)+ ', balanced','initlearn',/msg
       END ELSE BEGIN
          LW = InitLearnBiPoo(postv=LS.v_post, prev=LS.v_pre, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE)
-         Print, 'LEARN: BIPOO, delearn, ', STR(LS.v_pre), '  ', STR(LS.tau_pre), ' ms, learn, ', STR(LS.v_post), '  ', STR(LS.tau_post)
+         console, output, 'LEARN: BIPOO, delearn, '+ STR(LS.v_pre)+'  '+STR(LS.tau_pre)+' ms, learn, '+ STR(LS.v_post)+ '  '+ STR(LS.tau_post),'initlearn',/msg
       END
       win = InitPrecall(_CON(LS.DW), LW)
       SetTag, LS, 'TYPE', lrule

@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/26 16:19:51  alshaikh
+;           print,message -> console
+;
 ;     Revision 1.5  2000/01/20 16:28:07  alshaikh
 ;          SOME bugfixes
 ;
@@ -121,6 +124,7 @@
 FUNCTION Input, L, _IN
 
    COMMON ATTENTION
+   COMMON terminal,output
 
    COMMON PlotInput, PC_Input
    COMMON SH_INPUT, INPUTwins, INPUT_1
@@ -275,8 +279,8 @@ FUNCTION Input, L, _IN
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
                                              temp_vals=IN.temps(i),DELTA_T=delta_t) 
                      END
-                     print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
-                     print,''
+                     ;print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
+                     ;print,''
                   END 
                   
                   pattern = CALL_FUNCTION(act_filter.NAME,$
