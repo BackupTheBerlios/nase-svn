@@ -7,12 +7,12 @@
 ; CATEGORY: SIMUALTION / CONNECTIONS
 ;
 ; CALLING SEQUENCE: Entweder als Funktion:
-;                      W_neu = NoNone_Func(W_alt
+;                      W_neu = <A HREF="#NONONE_FUNC">NoNone_Func</A>(W_alt
 ;                                          [,VALUE=wert]
 ;                                          [,NONES=Indices]
 ;                                          [,COUNT=occurrences])
 ;                   oder als Prozedur:
-;                      <A HREF="#NONONE_PROC">NoNone_Proc</A>, W_alt 
+;                      NoNone_Proc, W_alt 
 ;                                   [,VALUE=wert]
 ;                                   [,NONES=Indices]
 ;                                   [,COUNT=occurrences]
@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1999/09/22 14:44:02  kupper
+;        Updated Hyperling...
+;
 ;        Revision 2.2  1999/09/22 10:16:41  kupper
 ;        Added COUNT Keyword.
 ;
