@@ -86,7 +86,8 @@ PRO OPlotMaximumFirst, z, zz $
                        , _EXTRA=_extra
 
    ;; Fallback to normal PLOT routine for oinedimensional arrays:
-   If size(z, /N_Dimensions) eq 1 then begin
+   If set(zz) then dims = size(zz, /N_Dimensions) else dims = size(z, /N_Dimensions)
+   If dims eq 1 then begin
       Console, /Msg, "Passed onedimensional data. Fallback to normal " + $
         "PLOT routine."
       if set(color) then color_ = color[0]
