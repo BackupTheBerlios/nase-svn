@@ -54,7 +54,7 @@
 PRO ULoadCt, nr, NCOLORS=ncolors, BOTTOM=bottom, REVERT=revert, $
              GAMMA=gamma, FILE=file, NASE=nase, _Extra=e
 
-   common colors
+   common colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
 
    ;; ----------------------------
    ;; Do absolutely nothing in the following cases, as code will break
@@ -101,9 +101,13 @@ PRO ULoadCt, nr, NCOLORS=ncolors, BOTTOM=bottom, REVERT=revert, $
 
   ;; gamma scaling:
   if set(GAMMA) then begin
-     R_CURR[0:!TOPCOLOR] = (R_CURR[0:!TOPCOLOR]/255.0)^gamma * 255 > 0 < 255
-     G_CURR[0:!TOPCOLOR] = (G_CURR[0:!TOPCOLOR]/255.0)^gamma * 255 > 0 < 255
-     B_CURR[0:!TOPCOLOR] = (B_CURR[0:!TOPCOLOR]/255.0)^gamma * 255 > 0 < 255
+;     R_CURR[BOTTOM:BOTTOM+NCOLORS-1] = (R_CURR[BOTTOM:BOTTOM+NCOLORS-1]/255.0)^gamma * 255 > 0 < 255
+;     G_CURR[BOTTOM:BOTTOM+NCOLORS-1] = (G_CURR[BOTTOM:BOTTOM+NCOLORS-1]/255.0)^gamma * 255 > 0 < 255
+;     B_CURR[BOTTOM:BOTTOM+NCOLORS-1] = (B_CURR[BOTTOM:BOTTOM+NCOLORS-1]/255.0)^gamma * 255 > 0 < 255
+     i = ramp(NCOLORS, left=0.0, right=1.0) ^ gamma > 0.0 < 1.0
+     R_CURR[BOTTOM:BOTTOM+NCOLORS-1] = R_CURR[BOTTOM+(NCOLORS-1)*i]
+     G_CURR[BOTTOM:BOTTOM+NCOLORS-1] = G_CURR[BOTTOM+(NCOLORS-1)*i]
+     B_CURR[BOTTOM:BOTTOM+NCOLORS-1] = B_CURR[BOTTOM+(NCOLORS-1)*i]
      utvlct, R_CURR, G_CURR, B_CURR
   endif
 END
