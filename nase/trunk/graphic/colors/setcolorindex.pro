@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1998/03/20 16:11:52  thiel
+;              Inkompatibilitaet IDL 3.6 vs 4.0 beseitigt.
+;
 ;       Revision 1.7  1998/02/27 13:08:18  saam
 ;             benutzt nun UTvLCT fuer korrekte Farbauswahl
 ;
@@ -61,10 +64,14 @@ Pro SetColorIndex, Nr, R, G, B
 
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
-;    My_Color_Map = intarr(!D.Table_Size,3) 
-    My_Color_Map = [0]
+   My_Color_Map = intarr(!D.Table_Size,3) ;IDL 3.6
+    ;My_Color_Map = [0]                   ;IDL 4
  
-    UTvLCT, My_Color_Map, /GET  
+   UTvLCT, My_Color_Map, /GET   ;Das /GET-Keyword belegt in IDL 3.6 nur
+                                ;die schon bestehende Variable My_Color_Map,
+                                ;deshalb muss sie mit der richtigen Groesse
+                                ;initialisiert werden
+
     My_Color_Map (Nr,*) = [R,G,B]
     UTvLCT,  My_Color_Map
 
