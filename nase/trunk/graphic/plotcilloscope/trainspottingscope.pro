@@ -10,7 +10,7 @@
 ;
 ; CALLING SEQUENCE:  TrainspottingScope, TSC, O
 ;
-; INPUTS:            TSC: mit <A HREF=/nase/graphic/plotcilloscope/#INITTRAINSPOTTINGSCOPE>TrainspottingScope</A> initialisierte Struktur
+; INPUTS:            TSC: mit <A HREF=/nase/graphic/plotcilloscope/#INITTRAINSPOTTINGSCOPE>InitTrainspottingScope</A> initialisierte Struktur
 ;                    O  : der Output einer Neuronengruppe im SSpass-Format
 ;
 ; EXAMPLE:               
@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.2  1998/11/08 14:25:07  saam
+;           hyperlink malfunction corrected
+;
 ;     Revision 2.1  1998/11/08 14:20:10  saam
 ;           the marriage of trainspotting and plotcilloscope
 ;
