@@ -5,7 +5,8 @@
 ;
 ; CATEGORY: Graphic, Darstellung, Auswertung
 ;
-; CALLING SEQUENCE: TomWaits, DW [,/DELAYS] [,(/FROMS|/PROJECTIVE) | ,(/TOS|/RECEPTIVE)]
+; CALLING SEQUENCE: TomWaits, DW [,/DELAYS] [,/EFFICACY] 
+;                             [,(/FROMS|/PROJECTIVE) | ,(/TOS|/RECEPTIVE)]
 ;                             [,(TITEL|TITLE)=Fenstertitel]
 ;                             [,(GROESSE|ZOOM)=ZFaktor] [,MAGNIFY=MFaktor]
 ;                             [,/COLORSCALING] [,/MAGINWIN]
@@ -47,6 +48,7 @@
 ;                         JUST_REG : s. XMANAGER-Hilfe. Default 0
 ;                         NO_BLOCK : ab
 ;                                    IDL_5. s. XMANAGER-Hilfe. Default 1
+;                         EFFICACY : start mit der anzeige der 'syn. efficacies' u_se 
 ;                 
 ;
 ; OPTIONAL OUTPUTS:    GET_MAXCO  : Index der hellsten Farbe ("weiﬂ")
@@ -63,6 +65,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  1999/11/16 15:14:44  alshaikh
+;              kann jetzt auch Transmitterfreisetzungswarscheinlichkeiten
+;              (U_se) darstellen...
+;
 ;        Revision 1.10  1998/04/16 16:53:22  kupper
 ;               Der Print-Knopf geht jetzt.
 ;        	Erzeugt zwar nur ein Standard-File mit Namen "TomWaits_Printed_Output" aber immerhin...
@@ -91,8 +97,21 @@ PRO TomWaits_Event, Event
                data.colors = get_colors
                data.my_TopColor = get_colors(4)
             end
+
+            'TOMWAITS_USES': begin
+               data.delay = 0
+               data.uses = 1
+               ShowWeights, data.DW, ZOOM=data.zoom, /EFFICACY,WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode, GET_INFO=get_info, GET_COLORS=get_colors
+               data.colormode = get_colormode
+               data.tvinfo = get_info
+               data.colors = get_colors
+               data.my_TopColor = get_colors(4)
+            end
+
+
             'TOMWAITS_DELAYS': begin
                data.delay = 1
+               data.uses = 0
                ShowWeights, data.DW, /DELAYS, ZOOM=data.zoom, WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode, GET_INFO=get_info, GET_COLORS=get_colors
                data.colormode = get_colormode
                data.tvinfo = get_info
@@ -196,7 +215,17 @@ PRO TomWaits_Event, Event
                   If data.colorscaling eq 0 then begin ;global ColorScaling
                      tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
                      tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
-                  endif
+                  ENDIF
+
+               END ELSE IF data.uses THEN BEGIN ; synaptic efficacies
+                  title="Projective Efficacy-Field of Source-Neuron ("+str(row)+","+str(col)+")"
+                  w = (Use(data.dw, /DIMENSIONS))(*, *, row, col)
+                  w = reform(/OverWrite, w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
+                  If data.colorscaling eq 0 then begin ;global ColorScaling
+                     tv_w = (ShowWeights_Scale(Use(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(*, *, row, col) 
+                     tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /TH), DwDim(data.dw, /TW))
+                  ENDIF
+                  
                endif else begin ;Weights
                   title="Projective Weight-Field of Source-Neuron ("+str(row)+","+str(col)+")"
                   w = (Weights(data.dw, /DIMENSIONS))(*, *, row, col)
@@ -212,10 +241,19 @@ PRO TomWaits_Event, Event
                   w = (Delays(data.dw, /DIMENSIONS))(row, col, *, *)
                   w = reform(/OverWrite, w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
                   If data.colorscaling eq 0 then begin ;global ColorScaling
-                   tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
+                     tv_w = (ShowWeights_Scale(Delays(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
+                     tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
+                  endif
+                END ELSE IF data.uses THEN BEGIN ; synaptic efficacies
+                   title="Receptive Efficacy-Field of Target-Neuron ("+str(row)+","+str(col)+")"
+                   w = (Use(data.dw, /DIMENSIONS))(row, col, *, *)
+                   w = reform(/OverWrite, w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
+                   If data.colorscaling eq 0 then begin ;global ColorScaling
+                   tv_w = (ShowWeights_Scale(Use(data.dw, /DIMENSIONS), COLORMODE=data.colormode))(row, col, *, *) 
                    tv_w = reform(/OverWrite, tv_w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
-                endif
-               endif else begin ;Weights
+                   ENDIF
+
+              end else begin ;Weights
                   title="Receptive Weight-Field of Target-Neuron ("+str(row)+","+str(col)+")"
                   w = (Weights(data.dw, /DIMENSIONS))(row, col, *, *)
                   w = reform(/OverWrite, w, DwDim(data.dw, /SH), DwDim(data.dw, /SW))
@@ -277,7 +315,7 @@ END
 PRO TomWaits, GROUP=Group, $
               DW, titel=TITEL, TITLE=title, groesse=GROESSE, ZOOM=zoom, $
               GET_BASE=get_base, $
-              FROMS=froms,  TOS=tos, DELAYS=delay, $
+              FROMS=froms,  TOS=tos, DELAYS=delay, EFFICACY=Uses,$
               PROJECTIVE=projective, RECEPTIVE=receptive, $
               MAGNIFY=magnify, $
               COLORSCALING=colorscaling, MAGINWIN=maginwin, $
@@ -297,6 +335,7 @@ PRO TomWaits, GROUP=Group, $
   Default, PROJECTIVE, 0
   Default, RECEPTIVE, 1-PROJECTIVE               ;By Default show Receptive Fields
   Default, Delay, 0
+  Default, Uses,0
   Default, GET_MAXCOL, -99
 
   Default, MAGNIFY, 12
@@ -411,14 +450,30 @@ endelse
       VALUE='Weights', $
       XSIZE=100, /NO_RELEASE)
 
+ Button_Uses = WIDGET_BUTTON( Base_Buttons_Mid, $
+      FONT='-adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1', $
+      UVALUE={info: 'TOMWAITS_USES'}, $
+      VALUE='Efficacy', $
+      XSIZE=100, /NO_RELEASE)
+
+
   Button_Delays = WIDGET_BUTTON( Base_Buttons_Mid, $
       FONT='-adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1', $
       UVALUE={info: 'TOMWAITS_DELAYS'}, $
       VALUE='Delays', $
       XSIZE=100, /NO_RELEASE)
 
-      If not contains(info(DW), "DELAY") then Widget_Control, Button_Delays, SENSITIVE=0
-      If Keyword_Set(DELAY) then Widget_Control, Button_Delays, SET_BUTTON=1 else Widget_Control, Button_Weights, SET_BUTTON=1
+Handle_Value, DW, TEMP, /NO_COPY ; this one is just for the depression check
+
+      If not contains(info(TEMP), "DELAY") then Widget_Control, Button_Delays, SENSITIVE=0
+      If Keyword_Set(DELAY) then Widget_Control, Button_Delays, SET_BUTTON=1 
+      IF (TEMP.depress EQ 0) THEN  Widget_Control, Button_USES, SENSITIVE=0 
+      IF Keyword_Set(Uses) THEN Widget_Control, Button_USES,SET_BUTTON=1
+      IF (NOT Keyword_set(DELAY) AND NOT Keyword_set(Uses)) THEN  Widget_Control, $
+       Button_Weights, SET_BUTTON=1
+
+Handle_Value, DW, TEMP, /NO_COPY,/SET
+
       If Keyword_Set(PROJECTIVE) then Widget_Control, Button_Projective, SET_BUTTON=1 else Widget_Control, Button_Receptive, SET_BUTTON=1
 
 
@@ -443,7 +498,7 @@ endelse
   get_colormode = 0
   get_maxcol = 0
 
-  ShowWeights, DW, ZOOM=zoom, WINNR=DrawId, PROJECTIVE=projective, RECEPTIVE=receptive, DELAYS=delay, GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
+  ShowWeights, DW, ZOOM=zoom, WINNR=DrawId, PROJECTIVE=projective, RECEPTIVE=receptive, EFFICACY=uses, DELAYS=delay, GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
    GET_INFO=tvinfo, GET_COLORS=get_colors
 
   old_TopColor = !TOPCOLOR
@@ -459,6 +514,7 @@ endelse
                                     projective: projective, $
                                     receptive: receptive, $
                                     delay: delay, $
+                                    uses : uses, $
                                     colormode: get_colormode, $
                                     magnify: magnify, $
                                     tvinfo: tvinfo, $
