@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/08/31 10:07:41  kupper
+;     Changed to use UTV instead of TV. Should work with other devices than
+;     X now.
+;
 ;     Revision 2.2  1998/11/10 14:50:02  saam
 ;           changed plotting details
 ;
@@ -77,6 +81,7 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    ;-----> 
    ;-----> PLOT IN Z-BUFFER
    ;-----> 
+   current_device = !D.Name
    SET_PLOT, 'Z'
 
    SCALE3, XRANGE=[minx,maxx], YRANGE=[miny,maxy], ZRANGE=[0,1], AX=ax, AZ=az
@@ -108,7 +113,7 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    ;-----> OUTPUT RESULT
    ;----->    
    b=TVRD()	        ; Read image.
-   SET_PLOT, 'X'	; Select X output.
-   TV, b	        ; Output the image.
+   SET_PLOT, current_device	; Select previous output device.
+   UTV, b	        ; Output the image.
 END
 
