@@ -129,6 +129,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.18  1999/12/02 15:24:25  kupper
+;        Removed the Workaround for IDL 5.
+;        for it corrupted the work of PlotTvScl, as it always
+;        loaded the linear colortable, reuslting in a black and
+;        white display of the array!
+;
 ;        Revision 1.17  1999/11/23 13:37:14  kupper
 ;        exchanged Keyword_Set(START) by Set(START) to allow start-value
 ;        0.
@@ -230,16 +236,22 @@ Common common_RGB, My_freier_Farbindex
        return,  SetIndex
 
     endif else begin
-       v = IDLVersion(/FULL) ; True-Color- od Direct-Color-Visual.
-       If ( v(0) eq 5 and v(1) eq 0 ) then begin ;workaround for versions IDL 5.1 
-                                ;which does pass the normal
-                                ;Plot-colors through the
-                                ;translation table on
-                                ;TrueColor-displays!  
+       ;; the following workaround removed on Dec 02 1999, for
+       ;; it corrupted the work of PlotTvScl, as it always
+       ;; loaded the linear colortable, reuslting in a black and 
+       ;; white display of the array!
+       ;; R Kupper
 
-       loadct, 0             ;load linear ramp into translation table
-       message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
-       endif
+;       v = IDLVersion(/FULL) ; True-Color- od Direct-Color-Visual.
+;       If ( v(0) eq 5 and v(1) eq 0 ) then begin ;workaround for versions IDL 5.1 
+;                                ;which does pass the normal
+;                                ;Plot-colors through the
+;                                ;translation table on
+;                                ;TrueColor-displays!  
+
+;       loadct, 0             ;load linear ramp into translation table
+;       message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
+;       endif
        Return, RGB_berechnen(R,G,B)
     endelse
 END      
