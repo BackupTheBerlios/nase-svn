@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/02/05 14:17:40  saam
+;          loop variables now long
+;
 ;     Revision 2.1  1998/02/05 11:36:17  saam
 ;           Cool
 ;
@@ -52,14 +55,14 @@ PRO DW2SDW, _DW
 
    ; create  SourceNr->Cons
    s2c = Make_Array(sS, /LONG, VALUE=-1)
-   FOR s=0, sS-1 DO BEGIN
+   FOR s=0l, sS-1 DO BEGIN
       wtn = WHERE(DW.Weights(*,s) NE !NONE, c)
       IF c NE 0 THEN s2c(s) = Handle_Create(_DW, VALUE=iW(wtn,s))
    ENDFOR 
    
    ; create  TargetNr->Cons
    t2c = Make_Array(tS, /LONG, VALUE=-1)
-   FOR t=0, tS-1 DO BEGIN
+   FOR t=0l, tS-1 DO BEGIN
       wsn = WHERE(DW.Weights(t,*) NE !NONE, c)
       IF c NE 0 THEN t2c(t) = Handle_Create(_DW, VALUE=iW(t,wsn))
    ENDFOR 
