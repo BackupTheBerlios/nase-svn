@@ -112,6 +112,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.32  2000/10/06 12:53:18  saam
+;        rgb now always allocates private colors even if there
+;        are matching entries in the lower part of the palette
+;
 ;        Revision 1.31  2000/10/05 17:31:10  saam
 ;        just sets new color index if needed
 ;
@@ -271,7 +275,7 @@ if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
    currentColorMap = bytarr(!D.Table_Size,3) 
    TvLCT, currentColorMap, /GET
    matchIdx = MAX(CutSet(CutSet(WHERE(currentColorMap(*,0) EQ R), WHERE(currentColorMap(*,1) EQ G)), WHERE(currentColorMap(*,2) EQ B)))
-   IF (matchIdx GT -1) THEN RETURN, MAX(matchIdx)
+   IF (matchIdx GT !TOPCOLOR) THEN RETURN, MAX(matchIdx)
 
 
    ;;; ok, we have to set a new index
