@@ -18,8 +18,8 @@
 ;   Signals
 ;
 ; CALLING SEQUENCE:
-;*   result = subsample (A, fraction            [,/EDGE_WRAP|,/EDGE_TRUNCATE])
-;*   result = subsample (A, [SIGMA=...|HMW=...] [,/EDGE_WRAP|,/EDGE_TRUNCATE])
+;*   result = subsample (A, fraction               [,/EDGE_WRAP|,/EDGE_TRUNCATE])
+;*   result = subsample (A [,SIGMA=...|,HMW=...]   [,/EDGE_WRAP|,/EDGE_TRUNCATE])
 ;
 ; INPUTS:
 ;  A       :: The array to subsample. This must be two-dimensional, squareness
@@ -27,7 +27,9 @@
 ;  fraction:: The distance of sampling points (= the factor by which to reduce
 ;             the array size). This is not required to be an integer value.
 ;             The dimenions of A are not required to be integer
-;             multiples of fraction.<BR>
+;             multiples of fraction. To determine the width and height of the
+;             result array, the width and height of A will be
+;             multiplied by fraction and then converted to integer.<BR>
 ;             Example: a fraction of 3 reduces the size of the array
 ;                      by factor 3.<BR>
 ;             This parameter is ignored and need not be specified, if
@@ -46,7 +48,10 @@
 ;                   Only one of SIGMA, HMW, or the fraction parameter
 ;                   shall be specified.
 ;
-; OUTPUTS: result:: The resampled array. The supplied array A stays unchanged.
+; OUTPUTS: result:: The resampled array. The supplied array A stays unchanged.<BR>
+;                   To determine the width and height of the result
+;                   array, the width and height of A will be multiplied by
+;                   fraction and then converted to integer.
 ;
 ; RESTRICTIONS: A has to be two-dimensional.
 ;               fraction is the same for x and y dimensions. (Feel free to
@@ -71,6 +76,7 @@ Function Subsample, A, frac, $
                     Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate, $
                     HMW=hmw, SIGMA=sigma
 
+
    ;; first handle HMW and SIGMA: derive frac
    ;; SIGMA overrides HMW overrides frac.
    If Keyword_Set(SIGMA) then hmw  = !Sigma2HMW*sigma
@@ -79,8 +85,8 @@ Function Subsample, A, frac, $
 
    frac = float(temporary(frac))
 
-   samples_per_row = (size(A))[1]/frac
-   samples_per_col = (size(A))[2]/frac
+   samples_per_row = Fix((size(A))[1]/frac)
+   samples_per_col = Fix((size(A))[2]/frac)
 
    return, $
     Congrid( Convol( Edge_Wrap=edge_wrap, Edge_truncate=edge_truncate, $
