@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2004/03/09 14:50:42  zwickel
+;     minor bugfix: removed 'stop' in code
+;
 ;     Revision 1.2  2000/02/16 13:37:06  saam
 ;           now works with new dww system
 ;
@@ -75,7 +78,7 @@ PRO _MeanWeights, WAIT=wait, DWIndex, CENTER=CENTER, STOP=stop, _EXTRA=e
       PROJECTIVE = 1
       RECEPTIVE = 0
    END
-stop
+
    Matrix = MiddleWeights(DW, sd, PROJECTIVE=PROJECTIVE, RECEPTIVE=RECEPTIVE, WRAP=WRAP)
 
    IF keyword_set(CENTER) THEN Matrix = Shift(Matrix, P.LW((P.DWW(DWindex).SOURCE)).h/2+1, P.LW((P.DWW(DWindex).SOURCE)).w/2+1)
