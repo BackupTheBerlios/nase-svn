@@ -221,7 +221,7 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          wset, info.row_win     ;Reihe darstellen
          PrepareNASEPlot, info.height, info.width, /OFFSET, GET_OLD=oldplot, NONASE=1-info.nase, /X_ONLY
          rowpos = info.position
-         rowpos(3) = 15*info.zoom-rowpos(1)
+         rowpos(3) = info.win_height/3-rowpos(1);15*info.zoom-rowpos(1)
          If keyword_set(info.nase) then begin
             plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
@@ -245,7 +245,7 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
 
          wset, info.pixcol_win     ;Spalte darstellen
          colpos = info.position
-         colpos(2) = 15*info.zoom-colpos(0)
+         colpos(2) = info.win_width/3-colpos(1);15*info.zoom-colpos(0)
          pixcolpos = [info.win_height-colpos(3), $
                       colpos(0), $
                       info.win_height-colpos(1), $
@@ -440,11 +440,11 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                             UVALUE={name:"lower_base"})
 
    plot_row = WIDGET_DRAW(upper_base, $
-                          XSIZE=win_width, YSIZE=15*zoom, $ ;win_height/2, $
+                          XSIZE=win_width, YSIZE=win_height/3, $
                           UVALUE={name:"plot_row"})
 
    text     = WIDGET_DRAW(upper_base, $
-                          XSIZE=15*zoom, YSIZE=15*zoom, $ ; Pixel
+                          XSIZE=win_width/3, YSIZE=win_height/3, $ ; Pixel
                           UVALUE={name:"text"})
    
    tv = WIDGET_DRAW(lower_base, $
@@ -453,7 +453,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                     /BUTTON_EVENTS)
 
    plot_col = WIDGET_DRAW(lower_base, $
-                          XSIZE=15*zoom, $ ;win_width/2, $
+                          XSIZE=win_width/3, $
                           YSIZE=win_height, $
                           UVALUE={name:"plot_col"})
 
@@ -470,7 +470,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
 
    WINDOW, /pixmap, /free, $
     XSIZE=win_height, $
-    YSIZE=15*zoom
+    YSIZE=win_width/3
    pixcol_win = !D.Window
 
    WIDGET_CONTROL, base, /REALIZE
