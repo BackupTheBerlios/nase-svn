@@ -5,10 +5,10 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: Remaster, Title [   ,SCALE=Faktor
+; CALLING SEQUENCE: Remaster, Title  [   ,SCALE=Faktor
 ;                                     | ,PROCESS=FuncName [,p1 .. ,pn] [,KEY1 .. ,KEYx]    (n < = 3)
 ;                                   ]
-;
+;                                    [/NOLABEL] 
 ; INPUTS: Title: Filename, der auch der Videotitel ist.
 ;                 Bei Nichtangabe wird der Defaulttitel "The Spiking Neuron"
 ;                 benutzt.
@@ -28,6 +28,8 @@
 ;                              Parameter und beliebig viele
 ;                              Keyword-Parameter können zusätzlich
 ;                              angegeben werden.
+;                     NOLABEL: Erspart dem Benutzer die leidige Label-Eingabe
+;                              beim Video-<A HREF="#EJECT">Eject</A>.
 ;
 ; SIDE EFFECTS: Der Videoinhalt wird entsprechend verändert.
 ;
@@ -76,6 +78,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1999/02/16 15:46:33  thiel
+;               Jetzt auch mit NOLABEL-Keyword.
+;
 ;        Revision 2.4  1998/11/08 14:51:39  saam
 ;              + video-structure made a handle
 ;              + ZIP-handling replaced by UOpen[RW]
@@ -91,7 +96,7 @@
 ;
 ;-
 
-Pro Remaster, Title, SCALE=scale, $
+Pro Remaster, Title, SCALE=scale, NOLABEL=nolabel, $
                 PROCESS=process, p1, p2, p3, _EXTRA=_extra
 
    ON_Error, 2
@@ -134,7 +139,7 @@ Pro Remaster, Title, SCALE=scale, $
       endelse
    endif                        ;PROCESS
          
-   Eject, Video
+   Eject, Video, NOLABEL=nolabel
 
    print
    print, 'Now out: Video "'+VideoTitle+'" in a new DIGITALLY REMASTERED Version!' 
