@@ -2,6 +2,9 @@
 ; NAME:
 ;  ForEach
 ;
+; VERSION:
+;  $Id$
+; 
 ; AIM:
 ;  iterates a procedure for several loops
 ;
@@ -13,55 +16,56 @@
 ;  string.
 ;
 ; CATEGORY:
-;  MIND / CONTROL ROUTINES
+;  ExecutionControl
+;  MIND
 ;
 ; CALLING SEQUENCE:
-;  iter = ForEach(procedure [,p1[,p2[,p3[,p4[,p5[,p6[,p7[p8[,p9]]]]]]]]] $
-;                           [,LSKIP=lskip] [,LCONST=lconst]
-;                           [,SEP=sep]
-;                           [,__XX (see below!)]
-;                           [,ZZYY (see below!)]
-;                           [,SKEL=skel]
-;                           [,/W] [,VALUES=values]
-;                           [,/FAKE] [,/QUIET] [,_EXTRA=E] )
+;*  iter = ForEach(procedure [,p1[,p2[,p3[,p4[,p5[,p6[,p7[p8[,p9]]]]]]]]] $
+;*                           [,LSKIP=...] [,LCONST=...]
+;*                           [,SEP=...]
+;*                           [,__XX (see below!)]
+;*                           [,ZZYY (see below!)]
+;*                           [,SKEL=...]
+;*                           [,/W] [,VALUES=...]
+;*                           [,/FAKE] [,/QUIET] [,_EXTRA=E] )
 ;
 ; INPUTS:
-;  procedure: the string of the procedure to be performed for each
-;             iteration
+;  procedure:: the string of the procedure to be performed for each
+;              iteration
 ;
 ; OPTIONAL INPUTS:
-;  p[1-9]: optional arguments for procedure
+;  p[1-9]:: optional arguments for procedure
 ;
 ; KEYWORD PARAMETERS:
-;  W     : wait for a keystroke after each iteration
-;  VALUES: return the index of the tag where the loopcondition resides
-;          (does not work at the moment)
-;  QUIET : supresses the output of the latest iteration
-;  FAKE  : simulates the routine without actually calling procedure
-;  LSKIP : various loops in a hierarchie can be skipped, this is
-;          especially useful for metaroutines that evaluate data
-;          accross multiple iterations. You can specify a scalar or an
-;          array of loop indices to be skipped (1 denotes the
-;          innermost loop). negative values mean: skip all but this
-;          index. Note that the loop is completely omitted (including
-;          the filename). See also LCONST.
-;  LCONST: While LSKIP skips various loops, LCONST just assumes a
-;          constant value for them (the one they currently have). The
-;          syntax is the same as for LSKIP.  
-;  SEP   : iteration separator for filenames (default '_')
-;  SKEL  : string added to filename after iteration info (default '_')
-;  __XX  : Loop Variables may be modified/set as keywords. If you have
-;          a loop variable ITER, you can change the default value by passing
-;          __ITER={whatever_you_like}. ForEach will then use your
-;          KeywordOptions.
-;  ZZYY  : Keyword values to the client procedure can be dependent on
-;          the current value of the loop. IF you want the Keyword
-;          MYPARA to have the value of loop PARA, you simply call
-;          foreach ZZMYPARA='PARA'. 
-;  E     : all other keywords are passed to procedure
+;  W     :: wait for a keystroke after each iteration
+;  VALUES:: return the index of the tag where the loopcondition resides
+;           (does not work at the moment)
+;  QUIET :: supresses the output of the latest iteration
+;  FAKE  :: simulates the routine without actually calling procedure
+;  LSKIP :: various loops in a hierarchie can be skipped, this is
+;           especially useful for metaroutines that evaluate data
+;           accross multiple iterations. You can specify a scalar or an
+;           array of loop indices to be skipped (1 denotes the
+;           innermost loop). negative values mean: skip all but this
+;           index. Note that the loop is completely omitted (including
+;           the filename). See also LCONST.
+;  LCONST:: While LSKIP skips various loops, LCONST just assumes a
+;           constant value for them (the one they currently have). The
+;           syntax is the same as for LSKIP.  
+;  SEP   :: iteration separator for filenames (default '_')
+;  SKEL  :: string added to filename after iteration info (default '_')
+;  __XX  :: Loop Variables may be modified/set as keywords. If you have
+;           a loop variable ITER, you can change the default value by passing
+;           __ITER={whatever_you_like}. ForEach will then use your
+;           KeywordOptions.
+;  ZZYY  :: Keyword values to the client procedure can be dependent on
+;           the current value of the loop. IF you want the Keyword
+;           MYPARA to have the value of loop PARA, you simply call
+;           foreach ZZMYPARA='PARA'. 
+;  E     :: all other keywords are passed to procedure
 ;         
 ; OUTPUTS:
-;  iter  : the number of performed iterations 
+;  iter  :: the number of performed iterations 
 ;
 ; COMMON BLOCKS:
 ;  ATTENTION
@@ -71,60 +75,12 @@
 ;  PROCEDURE
 ; 
 ; EXAMPLE:
-;  see <A HREF=http://neuro.physik.uni-marburg.de/mind/demo#DFOREACH>dforeach</A>
+;  see <A>dforeach</A>
 ;
 ; SEE ALSO:
-;  <A HREF=http://neuro.physik.uni-marburg.de/mind/control#FAKEEACH>fakeeach</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#INITLOOP>initloop</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPVALUE>loopvalue</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPTAGS>looptags</A>
+;  <A>fakeeach</A>, <A>initloop</A>, <A>loopvalue</A>, <A>looptags</A>
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.12  2000/10/03 13:29:57  saam
-;     + extended to process several parameters, simultaneously
-;     + still undocumented
-;
-;     Revision 1.11  2000/09/29 08:10:28  saam
-;     added the AIM tag
-;
-;     Revision 1.10  2000/08/14 14:37:14  thiel
-;         Added 'SEP'-Keyword to description in header.
-;
-;     Revision 1.9  2000/08/11 10:24:52  thiel
-;         Now it really WAITS for keypress if wanted.
-;
-;     Revision 1.8  2000/06/08 10:32:13  saam
-;           + keyword SKEL added
-;
-;     Revision 1.7  2000/04/12 13:28:41  saam
-;           modified the undocumented I- and OSKIP
-;           thing to the more flexible and easier to
-;           implement LSKIP/LCONST mechanims
-;
-;     Revision 1.6  2000/04/06 09:32:13  saam
-;           new keyword setting system
-;
-;     Revision 1.5  2000/04/04 15:05:18  saam
-;           added the Commandline modification tool
-;           by keywords __
-;
-;     Revision 1.4  2000/04/04 13:35:44  saam
-;           + ISKIP and OSKIP now takes negative values
-;           + handle/struct story now works and is put to NASE
-;             routines [G|S]etHTag
-;           + pname keyword eliminated
-;
-;     Revision 1.3  2000/04/03 12:50:57  saam
-;           added ISKIP and OSKIP to skip loop hierarchies
-;
-;     Revision 1.2  1999/12/21 09:42:03  saam
-;           docheader now includes fakeeach
-;
-;     Revision 1.1  1999/12/08 14:38:32  saam
-;           not fully documented YET (handle/value missing)
-;
-
 FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9 $
                   , W=w, values=values, ltags=ltags, fake=fake, quiet=quiet $
                   , LSKIP=_lskip, LCONST=_lconst, SKEL=skel, SEP=sep, _EXTRA=e
