@@ -95,6 +95,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  2000/03/16 15:13:04  kupper
+;        Added oldwin tag to xtra struct.
+;
 ;        Revision 1.9  2000/03/10 20:38:52  kupper
 ;        some header formatting.
 ;
@@ -207,7 +210,8 @@ FUNCTION Widget_ShowIt, Parent, $
                   private_colors : private_colors, $
                   tracking_events : tracking_events, $
                   MyPalette   : {R: Red, G: Green, B: Blue}, $
-                  YourPalette : {R: Red, G: Green, B: Blue} $
+                  YourPalette : {R: Red, G: Green, B: Blue}, $
+                  oldwin : 0l $
                 }
 
    ; create outer base to have free uservalue:
