@@ -109,11 +109,7 @@ Pro SurfIt_Event, Event
  WIDGET_CONTROL, Event.Top, GET_UVALUE=info, /NO_COPY
  If Event.Top eq Event.Id then Ev = info else WIDGET_CONTROL, Event.Id, GET_UVALUE=Ev
 
- ;;------------------> NASE-Array:
- If Keyword_Set(info.NASE) then begin
     PrepareNasePlot, (size(info.surface))(2), (size(info.surface))(1), get_old=oldplot, NONASE=1-info.nase, CENTER=info.center
- endif
- ;;-------------------------------- 
 
     CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
      "WIDGET_BASE": Begin ;Unser Main-Widget wird resized
@@ -161,11 +157,7 @@ Pro SurfIt_Event, Event
      End
   Endcase
 
-  ;;------------------> NASE-Array:
-  If Keyword_Set(info.NASE) then begin
-     PrepareNasePlot, restore_old=oldplot
-  EndIf
-   ;;------------------
+  PrepareNasePlot, restore_old=oldplot
 
    ;;-----------Deliver Events to other Widgets?-------------------------
    deliver_events = info.deliver_events
@@ -314,10 +306,6 @@ PRO SurfIt, _data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
    If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, NO_BLOCK=no_block $
    else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, MODAL=modal
    
-   ;;------------------> NASE-Array:
-   If Keyword_Set(NASE) then begin
-      PrepareNasePlot, restore_old=oldplot
-   EndIf
-   ;;------------------
+   PrepareNasePlot, restore_old=oldplot
    
 END
