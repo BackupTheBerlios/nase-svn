@@ -42,7 +42,10 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;       $Doc$
+;       $Log$
+;       Revision 1.4  1997/09/30 11:37:23  thiel
+;       *** empty log message ***
+;
 ;
 ;       Wed Sep 3 16:54:06 1997, Andreas Thiel
 ;		Normierung im WRAP-Fall korrigiert.
