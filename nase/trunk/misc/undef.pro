@@ -1,36 +1,40 @@
 ;+
-; NAME:               UNDEF
+; NAME:
+;   Undef
 ;
-; AIM:                erases an IDL variable
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:            Loescht eine Variable. Der von der Variable benutzte Speicher
-;                     wird freigegeben und die Variable ist undefiniert.
+; AIM:
+;   erases an IDL variable
+;
+; PURPOSE:
+;   Erases an arbitrary variable. If The variable is a handle, the
+;   dynamic memory is also erased. After the call of <C>Undef</C>,
+;   the variable is undefined. IDL provides a procedure called
+;   <C>DelVar</C> that also delete variables, but it is restricted
+;   to the main program level.
 ;    
-; CATEGORY:           MISC
+; CATEGORY:
+;  DataStorage
+;  DataStructures
+;  Structures
 ;
-; CALLING SEQUENCE:   UNDEF, x
+; CALLING SEQUENCE:
+;* Undef, x
 ;
-; INPUTS:             x : eine zu loechende Variable
+; INPUTS:
+;* x :: variable to be deleted
 ;
-; PROCEDURE:          transferiert die Variable via /NO_COPY in einen
-;                     Handle und gibt diesen dann frei
+; PROCEDURE:
+;   transfers variable via <C>/NO_COPY</C> to a handle
+;   and frees it
 ;
-; EXAMPLE:            IDL> x =827637
-;                     IDL> undef, x
-;                     IDL> help, x
-;                     X               UNDEFINED = <Undefined> 
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.2  2000/09/25 09:10:32  saam
-;     * appended AIM tag
-;     * some routines got a documentation update
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  1998/08/14 11:12:56  saam
-;           thanks to Ruediger for the idea
-;
+; EXAMPLE:
+;* x =827637
+;* undef, x
+;* help, x
+;* >X               UNDEFINED = <Undefined> 
 ;
 ;-
 PRO UNDEF, var
