@@ -48,6 +48,13 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.13  1998/02/18 14:12:23  kupper
+;              Verzeichnis hat sich mal wieder geändert...
+;
+;
+;     ------------------------------------------------
+;
 ;       Mon Aug 18 04:49:35 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -73,7 +80,7 @@ Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher ni
    Print
    Print, "=========== Mehr Spaß für N.A.S.E.n:"
    Print, "============= Updating /vol/neuro/nase ..."
-   CD, "/vol/neuro", CURRENT=old_dir
+   CD, "/vol/neuro/nase", CURRENT=old_dir
    Spawn, "cvs update nase"
    Print, "============= Updating HTML-Help ..."
    CD, "nase"
