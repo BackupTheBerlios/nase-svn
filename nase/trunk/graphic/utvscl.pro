@@ -1,6 +1,8 @@
 ;+
 ; NAME:               UTvScl
 ;
+; VERSION: $Id$
+;
 ; AIM:
 ;  Device independent, color coded display of two-dimensional array
 ;  contents.
@@ -14,53 +16,51 @@
 ;
 ; CATEGORY:           GRAPHIC
 ;
-; CALLING SEQUENCE:   UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
-;                             [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
-;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
-;                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
-;                             [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
+; CALLING SEQUENCE:   
+;*                     UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
+;*                             [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
+;*                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
+;*                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
+;*                             [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
 ;
-; INPUTS:             image: ein ein- oder zweidimensionales Array
+; INPUTS:             image:: ein ein- oder zweidimensionales Array
 ;
-; OPTIONAL INPUTS:    XNorm, YNORM: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
-;                                   bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
-;                                   ;wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
-;                                   von XNorm nebeneinander positioniert, siehe Docu von TV
-; OPTIONAL OUTPUTS:   Dimension : die Darstellungsparameter werden in Normal-Koordinaten zurueckgegeben: 
-;                                 (xpos, ypos, xsize, ysize)
-;                                 Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
-;                                 gesetztem CENTER-Keyword)
+; OPTIONAL INPUTS:    XNorm, YNORM:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
+;                                    bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
+;                                    ;wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
+;                                    von XNorm nebeneinander positioniert, siehe Docu von TV
+; OPTIONAL OUTPUTS:   Dimension::    die Darstellungsparameter werden in Normal-Koordinaten zurueckgegeben: 
+;                                    (xpos, ypos, xsize, ysize)
+;                                    Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
+;                                    gesetztem CENTER-Keyword)
 ;                         
 ;
-; KEYWORD PARAMETERS: CENTER    : Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
-;                     X_SIZE    ,
-;                     Y_SIZE    : Es kann die gewuenschte Groesse des Bildes in CM angegeben werden,
-;                                 wobei 1cm !D.PX_CM Pixeln entspricht. (40 für das X-Device.) Wird
-;                                 nur einer der beiden Parameter angegeben, so wird der andere so
-;                                 gewaehlt, dass keine Verzerrungen auftreten. Achtung, die
-;                                 Stretch-Keywords koennen die endgueltige Groesse noch veraendern,
-;                                 daher besser nicht zusammen verwenden.
-;                     NORM_X/Y_SIZE : Wie X/Y_SIZE nur in Normalkoordinaten.
-;                     STRETCH   : Vergroessert bzw. verkleinert das Originalbild um Faktor
-;                     H_STRETCH ,
-;                     V_STRETCH : Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
-;                                 Parameter koennen gleichzeitig angegeben werden
-;                     NOSCALE   : Das Bild wird analog zu TV nicht skaliert
-;                     DIMENSIONS: wird dem Keyword Dimensions eine definierte Variable uebergeben
-;                                 (egal welchen Typs), werden die Darstellungsparameter in Normal-
-;                                 Koordinaten zurueckgegeben: (xpos, ypos, xsize, ysize)
-;                                 Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
-;                                 gesetztem CENTER-Keyword)
-;                     DEVICE    : falls gesetzt werden [XY]Norm als Device-Koordinaten ausgewertet. Eigentlich
-;                                 sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
-;                                 die Deviceunabhaegigkeit ist.
-;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
-;                     TOP       : es werden nur die Farbindices von 0..TOP belegt (siehe IDL5 Hilfe von TvSCL)
-;                     CUBIC,
-;                     INTERP,
-;                     MINUS_ONE : werden an ConGrid uebergeben (s. IDL_Hilfe)
-;                                 Man beachte, daß die Interpolation eines Arrays, das !NONE-Elemente enthält,
-;                                 nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
+; KEYWORD PARAMETERS: 
+;              CENTER::              Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
+;              X_SIZE, Y_SIZE::      Es kann die gewuenschte Groesse des Bildes in CM angegeben werden,
+;                                    wobei 1cm !D.PX_CM Pixeln entspricht. (40 für das X-Device.) Wird
+;                                    nur einer der beiden Parameter angegeben, so wird der andere so
+;                                    gewaehlt, dass keine Verzerrungen auftreten. Achtung, die
+;                                    Stretch-Keywords koennen die endgueltige Groesse noch veraendern,
+;                                    daher besser nicht zusammen verwenden.
+;              NORM_X/Y_SIZE::       Wie X/Y_SIZE nur in Normalkoordinaten.
+;              STRETCH::             Vergroessert bzw. verkleinert das Originalbild um Faktor
+;              H_STRETCH,V_STRETCH:: Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
+;                                    Parameter koennen gleichzeitig angegeben werden
+;              NOSCALE::             Das Bild wird analog zu TV nicht skaliert
+;              DIMENSIONS::          wird dem Keyword Dimensions eine definierte Variable uebergeben
+;                                    (egal welchen Typs), werden die Darstellungsparameter in Normal-
+;                                    Koordinaten zurueckgegeben: (xpos, ypos, xsize, ysize)
+;                                    Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
+;                                    gesetztem CENTER-Keyword)
+;                     DEVICE::       falls gesetzt werden [XY]Norm als Device-Koordinaten ausgewertet. Eigentlich
+;                                    sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
+;                                    die Deviceunabhaegigkeit ist.
+;                     POLYGON::      Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
+;                     TOP::          es werden nur die Farbindices von 0..TOP belegt (siehe IDL5 Hilfe von TvSCL)
+;       CUBIC, INTERP, MINUS_ONE::   werden an ConGrid uebergeben (s. IDL_Hilfe)
+;                                    Man beachte, daß die Interpolation eines Arrays, das !NONE-Elemente enthält,
+;                                    nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
 ;
 ;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
@@ -70,12 +70,12 @@
 ;                     nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
 ;                
 ; EXAMPLE:
-;          bild = FIndgen(100,100)
-;          ULoadCt, 5
-;          UTvScl, bild
-;          UTVScl, bild, /CENTER, STRETCH=2.0
-;          UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
-;          UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
+;*          bild = FIndgen(100,100)
+;*          ULoadCt, 5
+;*          UTvScl, bild
+;*          UTVScl, bild, /CENTER, STRETCH=2.0
+;*          UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
+;*          UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
 ; SEE ALSO:           <A HREF="#UTV">UTv</A>
 ; 
@@ -245,8 +245,9 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             ENDELSE
       END
    END
-   xsize = xsize*stretch*h_stretch
-   ysize = ysize*stretch*v_stretch
+   ;;only hole pixels or points are allowed
+   xsize = floor(xsize*stretch*h_stretch*!D.X_PX_CM)/!D.X_PX_CM
+   ysize = floor(ysize*stretch*v_stretch*!D.Y_PX_CM)/!D.Y_PX_CM
 
    ; pos in Centimeters
    IF Keyword_Set(DEVICE) THEN BEGIN
@@ -261,7 +262,29 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       xpos = xpos - xsize/2.
       ypos = ypos - ysize/2.
    END
+   
+   IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
+      im_max = max(Image)
+      im_min = min(Image)
+      IF !D.NAME EQ "PS" THEN begin
+         Image = Congrid(Image, (xsize*40.) > 1, (ysize*40.) > 1, $
+                         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
+      end else begin
+         Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, $
+                         CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
+      endelse
 
+     ;;If CUBIC was used, the maximum or
+      ;;minimum may have been changed by
+      ;;congrid. This may produce color
+      ;;artefacts. So rescale to have the
+      ;;same min and max as before:
+      If Keyword_Set(CUBIC) then begin
+         Image = Image-min(Image)
+         Image = Image/float(max(Image))*(im_max-im_min)
+         Image = Image+im_min
+      EndIf
+   EndIf
    IF !D.Name EQ 'PS' THEN BEGIN ; a Postscript-Device
       ; flip array-values if wanted because B/W-Postcript doesn't use colortables
       IF !REVERTPSCOLORS THEN BEGIN
@@ -301,21 +324,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       ENDELSE
    END ELSE BEGIN   ;; it is a WINDOW
       IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
-         IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
-            im_max = max(Image)
-            im_min = min(Image)
-            Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one)
-                                ;If CUBIC was used, the maximum or
-                                ;minimum may have been changed by
-                                ;congrid. This may produce color
-                                ;artefacts. So rescale to have the
-                                ;same min and max as before:
-            If Keyword_Set(CUBIC) then begin
-               Image = Image-min(Image)
-               Image = Image/float(max(Image))*(im_max-im_min)
-               Image = Image+im_min
-            EndIf
-         EndIf
+      
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
                TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
@@ -347,10 +356,23 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       ENDELSE
    END
 
-   IF Set(Dimensions) THEN dimensions = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $
-                                         xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
-   IF N_Params() EQ 4 THEN dimension = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $
-                                         xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
+   IF Set(Dimensions) OR N_Params() EQ 4 THEN BEGIN 
+      ;; raw dimensions
+      dimension = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $
+                    xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
+
+      ;;only hole pixels or points are allowed
+      dim_dev = floor(uconvert_coord([dimension(0),dimension(0)+dimension(2)],$
+                               [dimension(1),dimension(1)+dimension(3)], $
+                               /normal, /to_device))
+      dim_norm = uconvert_coord(dim_dev, /device, /to_normal)
+      ;; cleaned dimensions
+      dimensions = [dim_norm(0, 0), dim_norm(1, 0), dim_norm(0, 1)-dim_norm(0, 0), dim_norm(1, 1)-dim_norm(1, 0)]
+      dimension = dimensions 
+      
+   endif   
+ 
+
 
 
 END
