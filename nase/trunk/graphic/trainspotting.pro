@@ -218,19 +218,17 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
        IF KEYWORD_SET(clean) THEN BEGIN
            Plot, nt, /NODATA, $
              XRANGE=xr+offset, YRANGE=yr, $
-             XSTYLE=5, YSTYLE=5, YTICKFORMAT=noticks, XTICKFORMAT=noticks, $
-             XMINOR=1, YMINOR=1, $
-             XTICKLEN=!X.TICKLEN*0.4, YTICKLEN=!Y.TICKLEN*0.4, $
+             XSTYLE=4, YSTYLE=5, YTICKFORMAT=noticks, XTICKFORMAT=noticks, $
+             YMINOR=1, $
              XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize, $
              _EXTRA=_extra
        END ELSE BEGIN
            Plot, nt, /NODATA, CHARSIZE=Charsize , $
              XRANGE=xr+offset, $ 
              YRANGE=yr, $
-             XSTYLE=1, YSTYLE=1, $
+             YSTYLE=1, $
              XTITLE=xtitle, YTITLE=ytitle, TITLE=title, $
-             XMINOR=1, YMINOR=1, $
-             XTICKLEN=!X.TICKLEN*0.4, YTICKLEN=!Y.TICKLEN*0.4, $
+             YMINOR=1, $
              YTICKFORMAT='KeineNegativenUndGebrochenenTicks', $
              _EXTRA=_extra
        ENDELSE 
