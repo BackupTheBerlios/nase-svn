@@ -7,16 +7,21 @@
 ;
 ; CATEGORY:           GRAPHIC
 ;
-; CALLING SEQUENCE:   TvSclLegend, xnorm, ynorm [,/HORIZONTAL] [,/VERTICAL] 
-;                     [,/LEFT] [,/RIGHT] [,/TOP] [,/BOTTOM]
-;                     [,MAX=max] [,MID=mid] [,MIN=min]
+; CALLING SEQUENCE:   TvSclLegend, xnorm, ynorm 
+;                                  [, CHARSIZE=Schriftgroesse]
+;                                  [,/HORIZONTAL] [,/VERTICAL] 
+;                                  [,/LEFT] [,/RIGHT] [,/TOP] [,/BOTTOM]
+;                                  [,MAX=max] [,MID=mid] [,MIN=min]
 ;
 ;                     alle Argumente von UTvScl werden ebenfalls akzeptiert, i.w.
-;                     [,/CENTER]
-;                     [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
+;                                  [,/CENTER]
+;                                  [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;
 ; INPUTS:             xnorm: x-Position des Zentrums der Legende in Normalkoordinaten
 ;                     ynorm: y-Position des Zentrums der Legende in Normalkoordinaten
+;
+; OPTIONAL INPUTS: Schriftgroesse: Faktor, der die Schriftgroesse in Bezug auf die
+;                                  Standardgroesse (1.0) angibt
 ;
 ; KEYWORD PARAMETERS: HORIZONTAL ,
 ;                     VERTICAL   : horizontale oder vertikale Legende
@@ -37,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1997/11/27 13:28:05  thiel
+;            Option CHARSIZE hinzugefuegt.
+;
 ;     Revision 2.5  1997/11/13 13:15:16  saam
 ;           Device Null wird nun unterstuetzt
 ;
@@ -61,6 +69,7 @@ PRO TvSclLegend, xnorm, ynorm $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
                  ,MAX=max, MID=mid, MIN=min $
                  ,LEFT=left, RIGHT=right, TOP=top, BOTTOM=bottom $
+                 ,CHARSIZE=Charsize $
                  ,_EXTRA = e
    
    
@@ -71,7 +80,8 @@ PRO TvSclLegend, xnorm, ynorm $
    Default,   max, 1.0
    Default,   mid, ''
    Default,   min, 0.0
-   
+   Default, Charsize, 1.0
+
    type = Size(max)
    IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(max, FORMAT='(G0.0)'), /REMOVE_ALL)
    type = Size(mid)
@@ -110,8 +120,8 @@ PRO TvSclLegend, xnorm, ynorm $
    ypos  = legend_dims(1)
    xsize = legend_dims(2)
    ysize = legend_dims(3)
-   x_ch_size = !D.X_CH_SIZE / FLOAT(!D.X_SIZE)
-   y_ch_size = !D.Y_CH_SIZE / FLOAT(!D.Y_SIZE)
+   x_ch_size = !D.X_CH_SIZE*Charsize / FLOAT(!D.X_SIZE)
+   y_ch_size = !D.Y_CH_SIZE*Charsize / FLOAT(!D.Y_SIZE)
    
    
    ; draw a frame around the colors
@@ -119,23 +129,23 @@ PRO TvSclLegend, xnorm, ynorm $
    
    IF Keyword_Set(VERTICAL) THEN BEGIN
       IF Keyword_Set(LEFT) THEN BEGIN
-         XYOuts, xpos-X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0
-         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0
-         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0
+         XYOuts, xpos-X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0, CHARSIZE=Charsize
       END ELSE BEGIN
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, CHARSIZE=Charsize
       END         
    END ELSE BEGIN
       IF Keyword_Set(TOP) THEN BEGIN
-         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
       END ELSE BEGIN
-         XYOuts, xpos        , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos        , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5, CHARSIZE=Charsize
       END
    END
 END
