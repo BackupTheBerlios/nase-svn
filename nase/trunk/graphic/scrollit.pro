@@ -91,7 +91,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    Default,  group, 0
    Default,  pixmap, 0
    Default,  colors, 0
-   Default,  retain, 0
+   Default,  retain, 1
    Default,  kill_notify, ''
 
    If not Keyword_Set(XDRAWSIZE) then begin
