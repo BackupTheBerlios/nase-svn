@@ -15,7 +15,7 @@
 ;
 ; OUTPUTS:             lun : die lun des Files bzw. !NONE falls die Aktion fehlschlug
 ;
-; COMMON BLOCKS:       UOPENW: enthaelt Filename und Zipstati der geoeffneten Files
+; COMMON BLOCKS:       UOPENR: enthaelt Filename und Zipstati der geoeffneten Files
 ;
 ; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 40 begrenzt
 ;
@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1999/02/16 17:23:45  thiel
+;            Bloﬂ ein kleiner Druckfehler im Header.
+;
 ;     Revision 2.2  1998/11/08 15:01:45  saam
 ;           maximum file number is now 40
 ;
