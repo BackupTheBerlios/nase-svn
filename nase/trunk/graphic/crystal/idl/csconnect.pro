@@ -30,7 +30,7 @@
 ;  HOST:: host name to which to connect; default is 'localhost'
 ;  READ_TIMEOUT:: this keyword is set to the number of seconds to wait
 ;  for data to arrive before giving up and issuing an error (see
-;  idlhelp for "socket"
+;  idlhelp for "socket")
 ;
 ; OUTPUTS:
 ;  
