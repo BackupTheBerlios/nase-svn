@@ -83,6 +83,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.8  2000/09/01 14:52:06  gabriel
+;           Bug fixed: SUPPORTPOINTS_CRIT for small electrode arrays
+;
 ;     Revision 1.7  2000/07/04 17:48:28  saam
 ;           + defaults in docheader didn't match
 ;             implementation
@@ -187,6 +190,7 @@ FOR i=0 ,sa(3)-1 DO BEGIN
 
    WHILE (MAX_SDEV GT CORRSTRENGTH_CRIT) OR (CHISQ GT CHISQ_CRIT) DO BEGIN
       ;;Verteilung der Maxima ohne autocorr
+      ;;if (N_ELEMENTS(findex)-1)-1*interpol LT 0 then stop
       tmpfindex = (shift(findex,-N_ELEMENTS(findex)/2))(1*interpol:*) 
       ;stop
       ;tmp_max_moment = umoment(FZT(tmpmax(tmpfindex),-1))
@@ -201,12 +205,12 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       IF verbose EQ 1 THEN print,"CHISQ:",CHISQ,'  MEDIAN:',max_moment(0),'  MAX_SDEV:',MAX_SDEV ,'  SUPPORTP:',N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
       IF (MAX_SDEV GT CORRSTRENGTH_CRIT)  OR  (CHISQ GT CHISQ_CRIT) THEN findex = findex(1:N_ELEMENTS(findex)-2)
       
-      IF N_ELEMENTS(findex) LT (SUPPORTPOINTS_CRIT*N_ELEMENTS(DISTANCE_AX)) THEN BEGIN
+      IF N_ELEMENTS(findex) LT ((SUPPORTPOINTS_CRIT*N_ELEMENTS(DISTANCE_AX)) > 3) THEN BEGIN
          CHISQ = -1
          MAX_SDEV = 0
           
          IF verbose EQ 1 THEN print,'--------> TO THE TRUSH'
-         ENDIF
+      ENDIF
    ENDWHILE
    ;;steigungkriterium
    IF N_ELEMENTS(findex)+1 LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) LT abs(steig) THEN BEGIN
