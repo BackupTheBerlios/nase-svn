@@ -3,7 +3,7 @@
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para5, die Neuronenparameter fuer Neuronentyp 5 enthaelt
 ;
-; CATEGORY:             SIMULATION
+; CATEGORY:             SIMULATION /LAYERS
 ;
 ; CALLING SEQUENCE:     Para = InitPara_5( [TAUF=tauf] [, TAUL=taul] [, TAUN=taun] [, TAUI=taui] [, VS=vs] [, TAUS=taus] [, TH0=th0] [SIGMA=sigma] )
 ;
@@ -37,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  1998/11/04 16:26:54  thiel
+;              Struktur enthaelt jetzt info='PARA'
+;              und type='Neuronentyp' getrennt.
+;
 ;       Revision 2.2  1998/02/18 15:46:39  kupper
 ;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
 ;
@@ -57,7 +61,8 @@ FUNCTION InitPara_5, TAUF=tauf, TAUL=taul,TAUN=taun, TAUI=taui, VS=vs, TAUS=taus
    Default, sigma,  0.0
 
 
-   Para = { info : "PARA5"         ,$
+   Para = { info : "PARA"         ,$
+	    type : '5'            ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             dn   : exp(-1./taun)  ,$

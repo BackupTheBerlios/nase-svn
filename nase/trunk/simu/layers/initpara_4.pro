@@ -5,7 +5,7 @@
 ;                            (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 2 additive ZK 1.Ordnung,
 ;                             erhoehte Zeitaufloesung, waehlbare absolute Refraktaerzeit)
 ;
-; CATEGORY:             SIMULATION
+; CATEGORY:             SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:     Para = InitPara_4( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VR=vr] [, TAUR=taur] $
 ;                                          [, VS=vs] [, TAUS=taus] [, TH0=th0] [, SIGMA=sigma] [NOISYSTART=noisystart] $
@@ -38,6 +38,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.5  1998/11/04 16:26:53  thiel
+;             Struktur enthaelt jetzt info='PARA'
+;             und type='Neuronentyp' getrennt.
+;
 ;      Revision 2.4  1998/08/23 12:36:28  saam
 ;            new Keyword FADE
 ;
@@ -74,7 +78,8 @@ FUNCTION InitPara_4, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, T
    Default, fade        ,  250
    DeltaT = Double(DeltaT)
 
-   Para = { info : "PARA4"            ,$
+   Para = { info : "PARA"            ,$
+	    type : '4'               ,$
             df   : exp(-deltat/tauf) ,$
             dl   : exp(-deltat/taul) ,$
             di   : exp(-deltat/taui) ,$

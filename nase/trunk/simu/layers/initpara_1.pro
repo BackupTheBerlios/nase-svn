@@ -3,7 +3,7 @@
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 1 enthaelt
 ;
-; CATEGORY:             SIMULATION
+; CATEGORY:             SIMULATION /LAYERS
 ;
 ; CALLING SEQUENCE:     Para = InitPara_1( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VS=vs] [, TAUS=taus] $
 ;                       [, TH0=th0] [SIGMA=sigma] [NOISYSTART=noisystart] [,SPIKENOISE=spikenoise] )
@@ -29,6 +29,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.6  1998/11/04 16:26:52  thiel
+;              Struktur enthaelt jetzt info='PARA'
+;              und type='Neuronentyp' getrennt.
+;
 ;       Revision 1.5  1998/06/01 15:10:46  saam
 ;             spontanous activity with keyword spikenoise implemented
 ;
@@ -60,7 +64,8 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
    Default, noisystart,  0.0
    Default, spikenoise  ,  0.0
 
-   Para = { info : "PARA1"         ,$
+   Para = { info : 'PARA'         ,$
+	    type : '1'            ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             di   : exp(-1./taui)  ,$

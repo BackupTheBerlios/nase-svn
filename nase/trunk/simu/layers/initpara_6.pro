@@ -5,7 +5,7 @@
 ;                            (1 Feeding 2ZK, 1 Linking 2ZK, 1 Inihibition 1ZK, Schwelle 2 additive ZK 1.Ordnung,
 ;                             erhoehte Zeitaufloesung, waehlbare absolute Refraktaerzeit)
 ;
-; CATEGORY:             SIMULATION
+; CATEGORY:             SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:     Para = InitPara_6( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VR=vr] [, TAUR=taur] $
 ;                                          [, VS=vs] [, TAUS=taus] [, TH0=th0] [, SIGMA=sigma] [NOISYSTART=noisystart] $
@@ -38,6 +38,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.3  1998/11/04 16:26:54  thiel
+;             Struktur enthaelt jetzt info='PARA'
+;             und type='Neuronentyp' getrennt.
+;
 ;      Revision 2.2  1998/08/23 12:36:28  saam
 ;            new Keyword FADE
 ;
@@ -82,7 +86,8 @@ FUNCTION InitPara_6, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, T
    corrAmpF = 1./(exp(-alog(tauf(1)/tauf(0))*tauf(0)/(tauf(1)-tauf(0)))-exp(-alog(tauf(1)/tauf(0))*tauf(1)/(tauf(1)-tauf(0))))
    corrAmpL = 1./(exp(-alog(taul(1)/taul(0))*taul(0)/(taul(1)-taul(0)))-exp(-alog(taul(1)/taul(0))*taul(1)/(tauf(1)-taul(0))))
 
-   Para = { info : "PARA6"           ,$
+   Para = { info : "PARA"            ,$
+	    type : '6'               ,$		
             df   : exp(-deltat/tauf) ,$
             dl   : exp(-deltat/taul) ,$
             di   : exp(-deltat/taui) ,$

@@ -4,7 +4,7 @@
 ; PURPOSE:              initialisiert Parameterstruktur Para7, die Neuronenparameter fuer Neuronentyp 7 enthaelt
 ;                            (2 Feeding 2ZK, 1 Linking 1ZK, 2 Inihibition 2ZK, Schwelle 2 additive ZK 1.Ordnung)
 ;
-; CATEGORY:             SIMULATION
+; CATEGORY:             SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:     Para = InitPara_7( [TAUF1=tauf1] [, TAUF2=tauf2] [, TAUL=taul] [, TAUI1=taui1] [, TAUI2=taui2] [, VR=vr] [, TAUR=taur] $
 ;                                          [, VS=vs] [, TAUS=taus] [, TH0=th0] [, SIGMA=sigma] [NOISYSTART=noisystart] [,SPIKENOISE=spikenoise]  )
@@ -34,6 +34,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.2  1998/11/04 16:26:55  thiel
+;              Struktur enthaelt jetzt info='PARA'
+;              und type='Neuronentyp' getrennt.
+;
 ;       Revision 2.1  1998/10/30 17:41:58  niederha
 ;        	initpara_7.pro
 ;
@@ -64,7 +68,8 @@ FUNCTION InitPara_7, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=tau
    Default, noisystart,  0.0
    Default, spikenoise  ,  0.0
 
-   Para = { info: "PARA2"         ,$
+   Para = { info: "PARA"         ,$
+	    type: '7'             ,$		
             df1 : exp(-1./tauf1)   ,$
             df2 : exp(-1./tauf2)   ,$
             dl : exp(-1./taul)   ,$
