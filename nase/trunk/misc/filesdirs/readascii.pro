@@ -81,7 +81,7 @@ FUNCTION  ReadASCII, FName
 
    ; Each line of the file is read into the Lines array:
    Lines = StrArr(NLines)
-   FOR  l = 0, NLines-1  DO  BEGIN
+   FOR  l = 0L, NLines-1  DO  BEGIN
      ReadF, File, Line
      Lines[l] = Line
    ENDFOR
