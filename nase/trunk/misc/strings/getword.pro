@@ -9,7 +9,7 @@
 ;  Return the n'th word from a text string.
 ;
 ; PURPOSE:
-;   Return the n'th word from a text string.
+;  Return the n'th word from a text string.
 ;  This routine was originally written by R. Sterner,
 ;  Johns Hopkins University Applied Physics Laboratory.
 ;
@@ -18,128 +18,54 @@
 ;  Strings
 ;
 ; CALLING SEQUENCE:
-;*
+;*  word = GetWord(text, n [,m] [,DELIMITER=...] [,/LAST] [,/NOTRIM]
+;*                  [,LOCATION=...] [,NWORDS=...])
 ;
 ; INPUTS:
-;
+;       text :: text string to extract from
+;       n    :: word number to get (first:0, default)
 ;
 ; OPTIONAL INPUTS:
-;
+;       m    :: optional last word number to get
 ;
 ; INPUT KEYWORDS:
-;
+;  DELIMITER :: set word delimiter as string or array of strings (default: space & tab).
+;  LAST      :: means n is offset from last word.  So n=0 gives
+;               last word, n=-1 gives next to last, ...
+;               If n=-2 and m=0 then last 3 words are returned.
+;  NOTRIM    :: suppresses whitespace trimming on ends
 ;
 ; OUTPUTS:
-;
+;       word :: returned word or words
 ;
 ; OPTIONAL OUTPUTS:
+;  LOCATION  :: return word n string location
+;  NWORDS    :: returns number of words in string
 ;
-;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
+; COMMON BLOCKS: 
+;  GetWord_Com
 ;
 ; RESTRICTIONS:
-;
-;
-; PROCEDURE:
-;
+;  If a NULL string is given (text="") then the last string
+;  given is used.  This saves finding the words again.
+;  If m > n, word will be a string of words from word n to
+;  word m.  If no m is given, word will be a single word.
+;  n<0 returns text starting at word abs(n) to string end
+;  If n is out of range then a null string is returned.
 ;
 ; EXAMPLE:
-;*
-;* >
+;* print, getword("hello mr foo bar", 2)
+;* > foo
 ;
-; SEE ALSO:
+;* print, getword("hello mr foo bar", 1, 3)
+;* > mr foo bar
 ;
 ;-
 
-;;; look in ../doc/header.pro for explanations and syntax,
-;;; or view the NASE Standards Document
-;-------------------------------------------------------------
-;+
-; NAME:
-;       GETWRD
-; PURPOSE:
-;       Return the n'th word from a text string.
-; CATEGORY:
-; CALLING SEQUENCE:
-;       wrd = getwrd(txt, n, [m])
-; INPUTS:
-;       txt = text string to extract from.         in
-;       n = word number to get (first = 0 = def).  in
-;       m = optional last word number to get.      in
-; KEYWORD PARAMETERS:
-;       Keywords:
-;         LOCATION = l.  Return word n string location.
-;         DELIMITER = d. Set word delimiter (def = space & tab).
-;         /LAST means n is offset from last word.  So n=0 gives
-;           last word, n=-1 gives next to last, ...
-;           If n=-2 and m=0 then last 3 words are returned.
-;         /NOTRIM suppresses whitespace trimming on ends.
-;         NWORDS=n.  Returns number of words in string.
-; OUTPUTS:
-;       wrd = returned word or words.              out
-; COMMON BLOCKS:
-;       getwrd_com
-; NOTES:
-;       Note: If a NULL string is given (txt="") then the last string
-;             given is used.  This saves finding the words again.
-;             If m > n wrd will be a string of words from word n to
-;             word m.  If no m is given wrd will be a single word.
-;             n<0 returns text starting at word abs(n) to string end
-;             If n is out of range then a null string is returned.
-;             See also nwrds.
-; MODIFICATION HISTORY:
-;       Ray Sterner,  6 Jan, 1985.
-;       R. Sterner, Fall 1989 --- converted to SUN.
-;       R. Sterner, Jan 1990 --- added delimiter.
-;       R. Sterner, 18 Mar, 1990 --- added /LAST.
-;       R. Sterner, 31 Jan, 1991 --- added /NOTRIM.
-;       R. Sterner, 20 May, 1991 --- Added common and NULL string.
-;       R. Sterner, 13 Dec, 1992 --- Made tabs equivalent to spaces.
-;       R. Sterner,  4 Jan, 1993 --- Added NWORDS keyword.
-;       Johns Hopkins University Applied Physics Laboratory.
-;
-; Copyright (C) 1985, Johns Hopkins University/Applied Physics Laboratory
-; This software may be used, copied, or redistributed as long as it is not
-; sold and this copyright notice is reproduced on each copy made.  This
-; routine is provided as is without any express or implied warranties
-; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
-;-
-;-------------------------------------------------------------
- 
- 
-	FUNCTION GETWORD, TXTSTR, NTH, MTH, help=hlp, location=ll,$
+	FUNCTION GETWORD, TXTSTR, NTH, MTH, location=ll,$
 	   delimiter=delim, notrim=notrim, last=last, nwords=nwords
  
 	common getword_com, txtstr0, nwds, loc, len
- 
-	if (n_params(0) lt 1) or keyword_set(hlp) then begin
-	  print," Return the n'th word from a text string."
-	  print,' wrd = getwrd(txt, n, [m])'
-	  print,'   txt = text string to extract from.         in'
-	  print,'   n = word number to get (first = 0 = def).  in'
-	  print,'   m = optional last word number to get.      in'
-	  print,'   wrd = returned word or words.              out'
-	  print,' Keywords:'
-	  print,'   LOCATION = l.  Return word n string location.'
-	  print,'   DELIMITER = d. Set word delimiter (def = space & tab).'
-	  print,'   /LAST means n is offset from last word.  So n=0 gives'
-	  print,'     last word, n=-1 gives next to last, ...'
-	  print,'     If n=-2 and m=0 then last 3 words are returned.'
-	  print,'   /NOTRIM suppresses whitespace trimming on ends.'
-	  print,'   NWORDS=n.  Returns number of words in string.'
-	  print,'Note: If a NULL string is given (txt="") then the last string'
-	  print,'      given is used.  This saves finding the words again.'
-	  print,'      If m > n wrd will be a string of words from word n to'
-	  print,'      word m.  If no m is given wrd will be a single word.'
-	  print,'      n<0 returns text starting at word abs(n) to string end'
-	  print,'      If n is out of range then a null string is returned.'
-	  print,'      See also nwrds.'
-	  return, -1
-	endif
  
 	if n_params(0) lt 2 then nth = 0		; Def is first word.
 	IF N_PARAMS(0) LT 3 THEN MTH = NTH		; Def is one word.
