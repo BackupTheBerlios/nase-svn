@@ -21,7 +21,7 @@ cd $CVSWORK
 cvs -d $CVSROOT checkout doc
 
 cd $CVSWORK/doc/standards
-ln -s $CVSWORK/doc/header.pro $CVSWORK/doc/header.pro.tex
+ln -sf $CVSWORK/nase/header.pro $CVSWORK/doc/header.pro.tex
 $MAKEDOC standards
 $MAKEDOC cvs
 
