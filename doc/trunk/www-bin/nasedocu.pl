@@ -263,7 +263,8 @@ if ($P::mode){
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
 				  } else {
-				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") || open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
+				    `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout doc/www-doc`;
+				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") ||	open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
 				    while(<IDX>){print;};
 				    close(IDX) || die "can't close index: $!\n";
 				    last TRUNK;};
