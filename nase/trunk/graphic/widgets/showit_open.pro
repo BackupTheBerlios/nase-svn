@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/03/16 15:31:54  kupper
+;        Changed to store old active window.
+;
 ;        Revision 1.4  1999/11/23 14:03:27  kupper
 ;        corrected copy-and-paste-error.
 ;
@@ -58,6 +61,8 @@ PRO ShowIt_Open, widid
 
    firstchild = Widget_Info(widid, /CHILD)
    Widget_Control, firstchild, GET_VALUE=winid, GET_UVALUE=uservalue, /NO_COPY
+
+   uservalue.oldwin = !D.window
    UWSet, winid
 
    old = !P
