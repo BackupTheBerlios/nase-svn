@@ -12,6 +12,7 @@ use NASE::globals;
 use NASE::xref;
 use Parse::YYLex;
 use NASE::IDLparser;
+use locale;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
@@ -21,7 +22,7 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw( parseHeader createAim showHeader showSource showLog);
+@EXPORT = qw( parseHeader createAim showHeader showSource showLog quickSearch);
 $VERSION = '1.2';
 
 
@@ -70,6 +71,8 @@ BEGIN {
 	    "TTEND"    => '<\/\*>',
 	    "BSTART"  => '<B>',
 	    "BEND"    => '<\/B>',
+	    "CSTART"  => '<C>',
+	    "CEND"    => '<\/C>',
 	    "ISTART"  => '<I>',
 	    "IEND"    => '<\/I>',
 	    "SUPSTART"  => '<SUP>',
@@ -117,7 +120,7 @@ BEGIN {
 sub createAim {
   my ($key, $count, %count, $fh);
 
-  my @mydir = @_;
+  (my $mydir) = @_;
 
   openHwrite();
 
@@ -126,19 +129,15 @@ sub createAim {
   $fh = select(NULL);
   parseAim(1); # just parse the aim
 
-  foreach (@mydir){
-    createDirHash($_);
-    createDirHash($_); # run twice to get MakeURL in AIM working
-  }
-
+  createDirHash($mydir);
+  createDirHash($mydir); # run twice to get MakeURL in AIM working
+  
   # restore STDOUT
   select($fh);
   close(NULL) || die "can't close /dev/null: $!\n";
 
   closeHwrite();
-  foreach (@mydir){
-    Aim2Html($_);
-  }
+  Aim2Html($mydir);
 }
 
 
@@ -148,7 +147,7 @@ sub createAim {
 ###################################
 sub Aim2Html {
   my ($mydir) = @_;
-  my ($dir, $key, @data, @subdir);
+  my ($dir, $key, @data, @subdir, $fh);
   my $DOCDIR = getDocDir();
 
   
@@ -167,14 +166,17 @@ sub Aim2Html {
     @data = ();
     while (defined ($key = each %hdata)){
       if (@{$hdata{$key}}[0] eq $dir){
-	push(@data, '<TR><TD CLASS="xmpcode" VALIGN=TOP>'.makeURL($key).'</TD><TD CLASS="xplcode" VALIGN=TOP>'.@{$hdata{$key}}[2]."</TD></TR>");
+	push(@data, $key);
       }
     }
     
     if (open (AIM, ">$DOCDIR/$dir/index.html")){
-      print AIM start_html('NASE/MIND Documentation System'), h1($dir), "<TABLE COLS=2>\n";
-      print AIM join("\n", sort @data);
-      print AIM "\n</TABLE>", end_html;
+      $fh = select(AIM);
+      print 
+	start_html('NASE/MIND Documentation System'),
+	h1($dir);
+      R2HTML(@data);
+      select($fh);
       close (AIM);
     } else {
       print STDERR "can't open $DOCDIR/$dir/index.html for write: $!\n";
@@ -182,30 +184,66 @@ sub Aim2Html {
   }
   closeHread();  
 }
-#  if ($mydir eq "/"){
-    #
-    # write Keywords-By-Name index file
-    #
-#    open(FILE, ">".KeyByName()) || die "can't open ".KeyByName()." for write: $!\n";
-#    foreach $key (sort keys %keywords){
-#      print FILE "$key $keywords{$key}$routines{$key}\n";
-#    }
-#    close(FILE);
 
-    #
-    # write Keywords-By-Count index file
-    #
-#    open(FILE, ">".KeyByCount()) || die "can't open ".KeyByCount()." for write: $!\n";
-#    foreach (values %keywords) {
-#      $count{$_} = "dummy";
-#    }
-#    foreach $key (sort {$b <=> $a} keys %count) {
-#      foreach (sort grep {$key == $keywords{$_}} keys %keywords){
-#	print FILE "$_ $key$routines{$_}\n";
-#      }
-#    }
-#    close(FILE);
-#  }
+
+###################################################################################
+###################################################################################
+###################################################################################
+# give him a list of routines and he will display it as  NAME:AIM 
+#
+# assumes that openHread is already called
+sub R2HTML {
+
+  print "<TABLE COLS=2>\n";
+  foreach (@_){
+    print 
+      '<TR>',
+      '<TD CLASS="xmpcode" VALIGN=TOP>', makeURL($_), '</TD>',
+      '<TD CLASS="xplcode" VALIGN=TOP>', @{$hdata{$_}}[2], '</TD>',
+      "</TR>\n";
+  }
+  print "</TABLE>\n", end_html;
+
+}
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
+sub quickSearch {
+  # just searches the routine names
+  my $sstr = shift;
+  my @results = ();
+  my $key;
+
+  openHread();
+  while (defined ($key = each %hdata)){
+    if ((grep (/name/, @_)) && (@{$hdata{$key}}[1] =~ /$sstr/i)){push (@results, $key); next};
+    if ((grep (/aim/, @_)) && (@{$hdata{$key}}[2] =~ /$sstr/i)){push (@results, $key); next};
+  }
+ SWITCH: {
+    if ($#results == -1){
+      closeHread();
+      print h2("Search Results");
+      print h4("sorry, nothing found");
+      print h4("try to refine your search");      
+      last SWITCH;
+    }
+    if ($#results == 0){
+      closeHread();
+      showHeader(key=>$results[0]);
+      last SWITCH;
+    }
+    print h2("Search Results");
+    R2HTML(sort(@results));
+    closeHread();
+  }
+}
+
+
+
+
 
 
 
@@ -236,14 +274,14 @@ sub createDirHash {
     closedir DIR;      
     
     foreach (sort @sdir){
-      if (($_ ne "alien") && ($_ ne "object")){ createDirHash("$mydir/$_"); }
+      createDirHash("$mydir/$_");
     }
 
     foreach $file (sort @file) {
-      @hentry = ();
       print STDERR "$mydir/$file\n";
+      @hentry = ();
       parseHeader("$DOCDIR/$mydir/$file"); # will modify @hentry
-      unshift(@hentry, $mydir);
+      $hentry[0] = $mydir;
       $hdata{$file} = \@hentry;
     }
   } else { print STDERR "error processing $DOCDIR/$mydir: $!\n"; }
@@ -332,32 +370,45 @@ sub showSource {
 ###################################################################################
 ###################################################################################
 sub showHeader {
-
+  my %params = @_;
   my ($file, $key, @entry);
 
-  $key = lc(shift(@_));
-  $key .= ".pro" unless $key =~ /\.pro$/i;
-
   openHread();
-  @entry = @{$hdata{$key}};
-  $file = getDocDir()."/".$entry[0]."/".$key;
 
-  print h1( $entry[1], 
-	    "<FONT SIZE=-1>",
-	    makeURL($entry[1], "source", undef,"source"),
-	    ", ", 
-	    makeURL($entry[1], "modifications", undef,"log"),
-	    showedit($file),
-	    "</FONT>"), 
-            "\n".'<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">'."\n";  
+  if (defined $params{"key"}){
+    $key = lc($params{"key"});
+    $key .= ".pro" unless $key =~ /\.pro$/i;
 
-  print '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
-        "LOCATION:",
-        '</TD><TD CLASS="xplcode" VALIGN=TOP>',
-        '<A TARGET="_top" HREF="'.getBaseURL()."/".@{$hdata{$key}}[0].'?mode=dir">',
-        @{$hdata{$key}}[0],
-        "</A></TD></TR>\n";
-  
+    @entry = @{$hdata{$key}};
+    
+    $file = getDocDir()."/".$entry[0]."/".$key;
+
+    print 
+      h1( $entry[1], 
+	  "<FONT SIZE=-1>",
+	  makeURL($entry[1], "source", undef,"source"),
+	  ", ", 
+	  makeURL($entry[1], "modifications", undef,"log"),
+	  showedit($file),
+	  "</FONT>"), 
+      "\n".'<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">'."\n";  
+    
+    print 
+      '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
+      "LOCATION:",
+      '</TD><TD CLASS="xplcode" VALIGN=TOP>',
+      '<A TARGET="_top" HREF="'.getBaseURL()."/".@{$hdata{$key}}[0].'?mode=dir">',
+      @{$hdata{$key}}[0],
+      "</A></TD></TR>\n";
+  } else {    
+    $file = $params{"file"};
+
+    print 
+      h1("RoutineName (will be resoved later)"), 
+      "\n".'<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">'."\n";  
+  }    
+
+
   parseAim(0); # parse the full header
   parseHeader($file);
   closeHread();

@@ -32,6 +32,8 @@
 %token TTEND
 %left BSTART
 %token BEND
+%left CSTART
+%token CEND
 %left ISTART
 %token IEND
 %left SUPSTART
@@ -72,9 +74,12 @@
   my $name   = 0;  # are we in the NAME tag?
   my $aim    = 3;  # we are in the aim tag, 1:yes 2:just left >2:no
   my $aimstr = '';
+  my $cat    = 3;  # we are in the cat tag, 1:yes 2:just left >2:no
+  my @cat    = ();
+  my $str    = '';
 
   sub endpre {
-    if ($pre) { push(@lines, "</PRE>") ; };
+    if ($pre) { push(@line, "</PRE>") ; };
     $pre = 0; $prestr='';
   }
 
@@ -106,15 +111,29 @@
       $line =~ s,^($prestr),,; 
       $pre++;
     }
+
     if ($aim == 1) {
                     $aimstr .= $line;
                    }
     if ($aim == 2) {
                     $aimstr =~ s,(^\s+|\s+$),,gi;
                     $aimstr =~ s,\s\s+, ,gi;
-		    push(@hentry, $aimstr);
+		    $hentry[2] = $aimstr;
 		    $aimstr = '';
                     $aim++}
+    if ($cat == 1) {
+                    ($str = $line) =~ s,(^\s+|\s+$),,gi;
+                    $str =~ s,\s\s+, ,gi;
+		    split (/[^_a-zA-Z0-9]/, $str);
+		    foreach $str (@_){
+		      if (($str ne '') && ($str ne ' ')){ push(@cat, $str); }
+		    }
+                   }
+    if ($cat == 2) {
+                    $hentry[3] =  join(",",@cat);
+		    @cat = ();
+                    $cat++;}
+
     push(@lines, $line); @line=();
   }
 
@@ -148,7 +167,7 @@ WORDS : WORD WORDS
 
 WORD : CVSTAG                           { push(@line, "<PRE>".$1."</PRE>"); }
      | TEXT                             { if ($name) {
-                                            push(@hentry, $1);
+                                            $hentry[1] =  $1;
                                             $name=0;
                                           } else {
                                             push(@line, $1); 
@@ -161,6 +180,8 @@ WORD : CVSTAG                           { push(@line, "<PRE>".$1."</PRE>"); }
      | TTEND                            { push(@line, "</TT>"); }
      | BSTART                           { push(@line, "<B>"); }
      | BEND                             { push(@line, "</B>"); }
+     | CSTART                           { push(@line, '<TT CLASS="command">'); }
+     | CEND                             { push(@line, "</TT>"); }
      | ISTART                           { push(@line, "<I>"); }
      | IEND                             { push(@line, "</I>"); }
      | SUPSTART                         { push(@line, "<SUP>"); }
@@ -193,8 +214,8 @@ LINE : COMMENT EOL                      { line2lines; }
      | COMMENT WORDS EOL                { line2lines; }
      | COMMENT WORDS ID EOL             { line2lines; }
      | COMMENT WORDS ID WORDS EOL       { line2lines; }
-     | PRE { beginpre; } EOL            { line2lines; endpre; }
-     | PRE { beginpre; } WORDS EOL      { line2lines; endpre; }
+     | PRE { beginpre; } EOL            { endpre; line2lines;  }
+     | PRE { beginpre; } WORDS EOL      { endpre; line2lines;  }
      ;
 
 
@@ -204,29 +225,29 @@ LINES : LINE LINES
 
 
 
-ID   : EXAMP                           { $aim++; tagentry($1); }
-     | VER                             { $aim++; tagentry($1); }
-     | NAME                            { $aim++; $name = 1; }
-     | AIM                             { $aim=1; tagentry($1); }
-     | PURP                            { $aim++; if (parseAim()) { PrintAll(); return 0; } else { tagentry($1);}; }
-     | CAT                             { $aim++; tagentry($1); }
-     | CALLSEQ                         { $aim++; tagentry($1); }
-     | COMBLO                          { $aim++; tagentry($1); }
-     | SIDEFF                          { $aim++; tagentry($1); }
-     | RESTR                           { $aim++; tagentry($1); }
-     | PROCED                          { $aim++; tagentry($1); }
-     | SEEALSO                         { $aim++; tagentry($1); }
-     | AUTHOR                          { $aim++; tagentry($1); }
-     | MODHIST                         { $aim++; tagentry($1); }
-     | INP                             { $aim++; tagentry($1); }
-     | KEYS                            { $aim++; tagentry($1); }
-     | OPTINP                          { $aim++; tagentry($1); }
-     | OUT                             { $aim++; tagentry($1); }
-     | OPTOUT                          { $aim++; tagentry($1); }
-     | SUPERCLASSES                    { $aim++; tagentry($1); }
-     | CONSTRUCTION                    { $aim++; tagentry($1); }
-     | DESTRUCTION                     { $aim++; tagentry($1); }
-     | ABMETHODS                       { $aim++; tagentry($1); }
-     | METHODS                         { $aim++; tagentry($1); }
+ID   : EXAMP                           { $cat++; $aim++; tagentry($1); }
+     | VER                             { $cat++; $aim++; tagentry($1); }
+     | NAME                            { $cat++; $aim++; $name = 1; }
+     | AIM                             { $cat++; $aim=1; tagentry($1); }
+     | PURP                            { $cat++; $aim++; tagentry($1); }
+     | CAT                             { $cat=1; $aim++; tagentry($1); }
+     | CALLSEQ                         { $cat++; $aim++; if (parseAim()) { PrintAll(); return 0; } else { tagentry($1);}; }
+     | COMBLO                          { $cat++; $aim++; tagentry($1); }
+     | SIDEFF                          { $cat++; $aim++; tagentry($1); }
+     | RESTR                           { $cat++; $aim++; tagentry($1); }
+     | PROCED                          { $cat++; $aim++; tagentry($1); }
+     | SEEALSO                         { $cat++; $aim++; tagentry($1); }
+     | AUTHOR                          { $cat++; $aim++; tagentry($1); }
+     | MODHIST                         { $cat++; $aim++; tagentry($1); }
+     | INP                             { $cat++; $aim++; tagentry($1); }
+     | KEYS                            { $cat++; $aim++; tagentry($1); }
+     | OPTINP                          { $cat++; $aim++; tagentry($1); }
+     | OUT                             { $cat++; $aim++; tagentry($1); }
+     | OPTOUT                          { $cat++; $aim++; tagentry($1); }
+     | SUPERCLASSES                    { $cat++; $aim++; tagentry($1); }
+     | CONSTRUCTION                    { $cat++; $aim++; tagentry($1); }
+     | DESTRUCTION                     { $cat++; $aim++; tagentry($1); }
+     | ABMETHODS                       { $cat++; $aim++; tagentry($1); }
+     | METHODS                         { $cat++; $aim++; tagentry($1); }
      ;
 %%
