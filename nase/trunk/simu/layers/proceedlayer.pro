@@ -2,43 +2,45 @@
 ; NAME:                 ProceedLayer
 ;
 ; PURPOSE:              Führt einen Simulationszeitschritt durch (Schwellenvergleich), 
-;                       der Input fuer die Layer muß vorher mit den jeweiligen
-;                       Prozeduren InputLayer_x übergeben werden.
-;                       ProceedLayer ist nur eine Rahmenprozedur, die dem
-;                       Benutzer die Angabe des Layer-Typs erspart. 
+;                       der Input fuer die Layer muß vorher mit
+;                       Prozeduren  <A HREF="../simu/layers/#INPUTLAYER">InputLayer</A> übergeben werden.
+;
+;                       ProceddLayer ist lediglich eine Rahmenprozedur, die
+;                       selbständig die für den jeweiligen Neuronentyp
+;                       spezifische <A HREF="../simu/layers/#PROCEEDLAYER_1">
+;                       ProceedLayer_i<\A>-Prozdeur aufruft.
 ;                       
 ; CATEGORY:             SIMULATION / LAYERS
 ;
-; CALLING SEQUENCE:     ProceedLayer, Layer [,/CORRECT]  
+; CALLING SEQUENCE:     ProceedLayer, Layer [,_EXTRA=_extra]  
 ;
 ; INPUTS:               Layer: eine durch InitLayer_x initialisierte Layer
 ;
-; KEYWORD PARAMETERS:   CORRECT: Die Iterationsformel fuer den Leaky-Integrator erster Ordnung
-;                               lautet korrekterweise: 
-;                                           F(t+1)=F(t)*exp(-1/tau)+V/tau
-;                               Das tau wird aber oft vergessen, was sehr stoerend sein kann, denn
-;                               die Normierung bleibt so nicht erhalten. Das Keyword CORRECT fuehrt diese
-;                               Division explizit aus.
-;                       (VORSICHT: Dieses Keyword ist nicht bei allen Neuronentypen implementiert!) 
+; OPTIONAL INPUTS &
+; KEYWORD PARAMETERS:   _extra: alle übrigen Parameter werden an die jeweilige
+;                               ProceedLayer_i-Prozedur weitergereicht.
 ;
 ; COMMON BLOCKS:        common_random
 ;
 ; PROCEDURE:            ProceedLayer schaut nach dem Typ des übergebenen Layers (aus dem
 ;                       Layer.Type-String und ruft mit CALL_PROCEDURE die
-;                       jeweilige spezielle ProceedLayer_x-Prozedur auf
+;                       jeweilige spezielle ProceedLayer_x-Prozedur auf.
 ;
 ; EXAMPLE:
-;                       para1         = InitPara_1(tauf=10.0, vs=1.0)
-;                       InputLayer    = InitLayer_1(5,5, para1)
-;                       FeedingIn     = Spassmacher(10.0 + RandomN(seed, InputLayer.w*InputLayer.h))
-;                       InputLayer_1, InputLayer, FEEDING=FeedingIn
-;                       ProceedLayer, InputLayer
-;                       Print, 'Output: ', Out2Vector(InputLayer.O)
+;                       para1 = InitPara_1(tauf=10.0, vs=1.0)
+;                       mylayer = InitLayer(WIDTH=5, HEIGHT=5, TYPE=para1)
+;                       feedingin = Spassmacher( 10.0 + RandomN(seed, mylayer.w*mylayer.h))
+;                       InputLayer, mylayer, FEEDING=feedingin
+;                       ProceedLayer, mylayer
+;                       Print, 'Output: ', Out2Vector(mylayer.O)
 ;
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  1998/11/04 16:30:26  thiel
+;              Jetzt mit EXTRA-Keyword.
+;
 ;       Revision 2.2  1998/11/04 14:45:28  thiel
 ;              Variablenzuweisung gespart.
 ;
@@ -49,8 +51,8 @@
 ;
 ;- 
 
-PRO ProceedLayer, Layer, CORRECT=correct
+PRO ProceedLayer, Layer, _EXTRA=_extra
 
-	Call_Procedure, 'ProceedLayer_'+Layer.Type, Layer, CORRECT=correct
+	Call_Procedure, 'ProceedLayer_'+Layer.Type, Layer,_EXTRA=_extra
 
 END
