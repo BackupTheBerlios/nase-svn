@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.16  1998/06/22 21:27:58  saam
+;             compress-folder was missing
+;
 ;       Revision 1.15  1998/06/10 16:32:48  neuroadm
 ;             bug
 ;
@@ -61,7 +64,7 @@ SubDirs   = ['alien',$
 	     'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support',$
 	     'math',$
              'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$
-             'misc','misc/arrays','misc/files+dirs','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
+             'misc','misc/arrays','misc/files+dirs','misc/files+dirs/compress','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
 	     'simu','simu/input','simu/connections','simu/layers','simu/plasticity']
 HTMLFile  = 'index.html'
 
