@@ -87,6 +87,7 @@
 
 FUNCTION StashOTrans, _fa, ba, mask, TRANS=trans, TRUE=true
 
+On_Error, 2
 
 Default, TRUE, 1
 IF NOT TVInfo(_fa, TRUE=true, ALPHA=alpha, W=wfa, H=hfa) THEN Console, 'first argument is not a valid rgb image', /FATAL
@@ -96,16 +97,18 @@ IF ((hba NE hfa) OR (wba NE wfa)) THEN Console, 'image dimensions differ', /FATA
 
 
 IF NOT alpha THEN BEGIN
-    IF Set(trans) AND (N_Params() EQ 3) THEN Console, 'specify either mask or TRANS', /FATAL
+    IF (Set(trans)+(N_Params() EQ 3)) GT 1 THEN Console, 'specify either mask or TRANS', /FATAL
     ; front image has no alpha channel, use default or user mask
+
     Default, trans, 0.5
     IF (trans LT 0) OR (trans GT 1) THEN Console, '0 <= TRANS <= 1 required', /FATAL
     Default, mask, Make_Array(/BYTE, wba, hba, VALUE=FIX(255*(1-trans))) ; half transparent as default
+
     IF NOT TVInfo(mask, TRUE=0, W=wm, H=hm) THEN Console, 'invalid mask dimensions', /FATAL
     IF ((hm NE hfa) OR (wm NE wfa)) THEN Console, 'wrong dimensions for mask', /FATAL
     fa = [_fa,reform(mask,1,wm,hm)]
 
-END ELSE THEN BEGIN
+END ELSE BEGIN
     IF Set(mask) THEN Console, "can't handle mask and alpha channel simultaneously", /FATAL
     fa = _fa
 END
