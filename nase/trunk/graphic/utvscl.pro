@@ -364,6 +364,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    Default, h_stretch, 1.0
    Default, centi    , 1   ; default is to TV with centimeters (disabled with DEVICE Keyword)
    DEFAULT, POLYGON  , 0
+   Default, cubic, 0.
 
    If Set(NORM_X_SIZE) then X_SIZE = (NORM_X_SIZE * !D.X_Size / !D.X_PX_CM)
    If Set(NORM_Y_SIZE) then Y_SIZE = (NORM_Y_SIZE * !D.Y_Size / !D.Y_PX_CM)
@@ -434,7 +435,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                                   , MINUS_ONE=minus_one)
          Image = Temporary(_Image)
       ENDIF ELSE BEGIN
-         IF (CUBIC NE 0) OR Keyword_Set(INTERP) OR $
+         IF (CUBIC NE 0.) OR Keyword_Set(INTERP) OR $
           Keyword_Set(MINUS_ONE) THEN BEGIN
             ;; Congrid when POLYGON is set but INTERPOLATION is desired
             _Image = DblArr((xsize*_smooth(0)) > 1 $
