@@ -8,7 +8,7 @@
 ; CATEGORY: Visualisierung
 ;
 ; CALLING SEQUENCE: Erg = InformationOverkill ( Title 
-;                                              [,PROCESS [,p1 .. ,pn] [,KEY1 .. ,KEYx] ]   (n <= 3)
+;                                              [,PROCESS [,p1 .. ,pn] [,KEY1 .. ,KEYx] ]   (n < = 4)
 ;                                             )
 ;
 ; INPUTS: Title: Titel und Filename des Videos
@@ -42,7 +42,7 @@
 ;-
 
 function InformationOverkill, title, $
-                              PROCESS=process, p1, p2, p3, _EXTRA=_extra
+                              PROCESS=process, p1, p2, p3, p4, _EXTRA=_extra
 
    default, video, title
 
@@ -60,6 +60,7 @@ function InformationOverkill, title, $
             2: erg = erg+Call_Function(process, float(replay(vid)), p1, _EXTRA=_extra)
             3: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, _EXTRA=_extra)
             4: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, p3, _EXTRA=_extra)
+            5: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, p3, p4, _EXTRA=_extra)
          endcase
       endif else begin
          case n_params() of
@@ -67,6 +68,7 @@ function InformationOverkill, title, $
             2: erg = erg+Call_Function(process, float(replay(vid)), p1)
             3: erg = erg+Call_Function(process, float(replay(vid)), p1, p2)
             4: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, p3)
+            5: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, p3, p4)
          endcase
       endelse
    endelse
