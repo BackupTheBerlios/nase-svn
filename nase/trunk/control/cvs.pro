@@ -115,6 +115,7 @@ common common_cvs, name
       Print
       Print, "=========== Current CVS-Editors:"
       Spawn, "cvs editors"
+      Print, "============= done."
       END
   'BUTTON35': BEGIN              ;Add
      n = name
