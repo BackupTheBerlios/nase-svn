@@ -59,6 +59,12 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Wed Aug 27 16:00:02 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		nicht verzoegerte, nicht vorhandene Verbindungen werden jetzt hoffentlich korrekt behandelt
+;               keine Matrixmultiplikation mehr, sondern Behandlung wie bei verzoegerten Verbindungen
+;
 ;       Mon Aug 18 16:56:33 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -88,8 +94,24 @@ FUNCTION DelayWeigh, DelMat, In
    IF (N_Elements(In) NE (Size(DelMat.Weights))(2))  AND ((Size(DelMat.Weights))(0) EQ 2) THEN Message, 'input incompatible with definition of matrix' 
    
    IF (DelMat.Delays(0) EQ -1) THEN BEGIN
-      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
-      RETURN, DelMat.Weights # In 
+
+;      alte Variante, ohne nocon !!!!!!!!!!
+;      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
+;      RETURN, DelMat.Weights # In 
+
+      spikes = Transpose(REBIN(In, (SIZE(DelMat.Weights))(2), (SIZE(DelMat.Weights))(1), /SAMPLE))
+                                ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
+                                ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
+      
+      res = FltArr(DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h)
+      active = WHERE(spikes NE 0, count) 
+      IF (count NE 0) THEN res(active) = DelMat.weights(active) ;* spikes(active)
+
+      noweights = WHERE(res LE !NONE, count)
+      IF count NE 0 THEN res(noweights) = 0
+
+      RETURN, TOTAL(res, 2)
+
    END ELSE BEGIN
       
       tmp = Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
