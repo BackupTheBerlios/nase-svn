@@ -104,7 +104,7 @@ FUNCTION  FZTMean,   X, SDInt, SDMInt,  $
    ; Checking parameters for errors:
    ;----------------------------------------------------------------------------------------------------------------------
 
-   On_Error, 2
+;   On_Error, 2
 
    ; Checking the argument X:
    IF  NOT Set(X)  THEN  Console, '   Argument X not defined.', /fatal
@@ -127,7 +127,7 @@ FUNCTION  FZTMean,   X, SDInt, SDMInt,  $
 
    IF  N_Params() GE 2  THEN  BEGIN   ; SD intervals desired
      M = IMean(Temporary(Z), SD, SDM, dimension = dimension)
-     DimsM  = Size(M, /dim)
+     DimsM  = Size(M, /dim) > 1 ; >1 is needed, because if X is onedimensional, dimsm gets 0, and produces an error in the following line
      SDInt  = Make_Array(dimension = [2,DimsM], type = 4, /nozero)   ; array for the SD  intervals
      SDMInt = Make_Array(dimension = [2,DimsM], type = 4, /nozero)   ; array for the SDM intervals
      SDInt( 0,*,*,*,*,*,*,*) = M - SDIntWidth * SD    ; lower border of the SD  interval(s)
