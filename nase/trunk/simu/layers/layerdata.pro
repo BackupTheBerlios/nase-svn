@@ -8,7 +8,7 @@
 ;                   <A HREF="#LAYERWIDTH">LayerWidth()</A> und <A HREF="#LAYERHEIGHT">LayerHeight()</A> zur Verfügung,
 ;                   die ein klein wenig schneller sein dürften, weil dort keine Arrays herumkopiert werden.
 ;
-; CATEGORY:         SIMULATION LAYERS
+; CATEGORY:         SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE: LayerData, Layer 
 ;                              [,TYPE=Type]
@@ -36,6 +36,17 @@
 ;                   Inhibition       : Stand der entsprechenden
 ;                                      Leckintegratoren (DoubleArray[HeightxWidth])
 ;                   Potential        : Membranpotentiale (DoubleArray[HeightxWidth])
+;                                      für Layer, die aus Typ-8-Neuronen bestehen,
+;                                      wird in POTENTIAL ein FltArr(width,height,5)
+;                                      zurückgegeben, das die Potentiale aller 
+;                                      Compartments und den Zustand der Recovery-
+;                                      Variablen enthält:
+;                                      Potential(*,*,0) = n  (Recovery) 
+;                                      Potential(*,*,1) = Vs  (Soma)
+;                                      Potential(*,*,2) = V3  (Dendrit 3) 
+;                                      Potential(*,*,3) = V2  (Dendrit 2)
+;                                      Potential(*,*,4) = V1  (Dendrit 1)
+;
 ;                   schnelle_Schwelle,
 ;                   langsame_Schwelle: Stand der entsprechenden
 ;                                      Leckinteergratoren (DoubleArray[HeightxWidth])
@@ -56,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.7  1999/03/08 10:04:51  thiel
+;               Typ-8-Behandlung ergänzt.
+;
 ;        Revision 2.6  1999/01/14 14:20:39  saam
 ;              + works now for one-neuron-layers, too
 ;
@@ -100,50 +114,65 @@ PRO LayerData, _Layer, $
    height     = Layer.H
    n = width*height
    parameters = Layer.Para
-   IF n GT 1 THEN potential  = REFORM(Layer.M, Layer.H, Layer.W) ELSE potential = Layer.M
 
 
-   ; handle FEEDING
+   ;--- handle Potential
+   CASE layer.type OF
+      '8' : IF n GT 1 THEN potential = Reform(layer.V, layer.h, layer.w, 5) $
+                       ELSE potential = layer.V
+      ELSE: IF n GT 1 THEN potential  = REFORM(Layer.M, Layer.H, Layer.W) $
+                       ELSE potential = Layer.M
+   ENDCASE
+
+
+;---  handle FEEDING
    CASE Layer.TYPE OF
       '6' : IF n GT 1 THEN feeding  = REFORM(Layer.para.corrAmpF*(Layer.F2-Layer.F1), Layer.H, Layer.W) ELSE  feeding  = Layer.para.corrAmpF*(Layer.F2-Layer.F1)
       '7' : BEGIN
-               IF n GT 1 THEN BEGIN
-                  ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
-                  sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
-               END ELSE BEGIN
-                  ffeeding = Layer.F1
-                  sfeeding = Layer.F2
-               END
-            END
+         IF n GT 1 THEN BEGIN
+            ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
+            sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
+         END ELSE BEGIN
+            ffeeding = Layer.F1
+            sfeeding = Layer.F2
+         END
+      END
+      '8' : feeding = !NONE
       ELSE: IF n GT 1 THEN feeding = REFORM(Layer.F, Layer.H, Layer.W) ELSE feeding = Layer.F
-   END   
+   ENDCASE
 
-   ; handle LINKING
+
+;--- handle LINKING
    CASE Layer.TYPE OF
       '6' : IF n GT 1 THEN linking = REFORM(Layer.para.corrAmpL*(Layer.L2-Layer.L1), Layer.H, Layer.W) ELSE linking = Layer.para.corrAmpL*(Layer.L2-Layer.L1)
+      '8' : linking = !NONE
       ELSE: IF n GT 1 THEN linking = REFORM(Layer.L, Layer.H, Layer.W) ELSE linking = Layer.L
-   END   
+   ENDCASE
+   
 
-   ; handle INHIBITION
+;--- handle INHIBITION
    CASE Layer.TYPE OF
       '7' : BEGIN
-               IF n GT 1 THEN BEGIN 
-                  finhibition = REFORM(Layer.I1, Layer.H, Layer.W) 
-                  sinhibition = REFORM(Layer.I2, Layer.H, Layer.W)
-               END ELSE BEGIN
-                  finhibition = Layer.I1 
-                  sinhibition = Layer.I2
-               END
-            END
+         IF n GT 1 THEN BEGIN 
+            finhibition = REFORM(Layer.I1, Layer.H, Layer.W) 
+            sinhibition = REFORM(Layer.I2, Layer.H, Layer.W)
+         END ELSE BEGIN
+            finhibition = Layer.I1 
+            sinhibition = Layer.I2
+         END
+      END
+      '8' : inhibition = !NONE
       ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
-   END   
+   ENDCASE
+   
 
-
-   ; handle THRESHOLD
+;--- handle THRESHOLD
    CASE Layer.TYPE OF
       '6' : IF n GT 1 THEN schwelle = REFORM(Layer.R + Layer.S + Layer.Para.th0, Layer.H, Layer.W) ELSE schwelle = Layer.R + Layer.S + Layer.Para.th0
+      '8' : schwelle = !NONE
       ELSE: IF n GT 1 THEN schwelle = REFORM(Layer.S, Layer.H, Layer.W) ELSE schwelle = Layer.S
-   END
+   ENDCASE
+
 
    ; handle SPECIAL TAGS
    IF Layer.Type EQ '2' THEN BEGIN
@@ -156,7 +185,6 @@ PRO LayerData, _Layer, $
    Handle_Value, _Layer, Layer, /NO_COPY, /SET
    output = LayerSpikes(_Layer, /DIMENSIONS)
 
-;;;   output                                  = Out2Vector(Layer, /DIMENSIONS)
 END
 
 
