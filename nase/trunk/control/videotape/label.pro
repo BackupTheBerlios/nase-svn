@@ -6,6 +6,11 @@
 ;          Besitzt das Video bereits ein Label, so wird dieses
 ;          entsprechend erweiter.
 ;
+;          Sofern nicht das FILE-Keyword (s.u.) benutzt wird, ruft
+;          diese Prozedur zur interaktiven Eingabe den Editor auf, der
+;          in der $EDITOR-Umgebungsvariablen definiert ist. Falls
+;          diese Variable nicht existiert, wird vi aufgerufen.
+;
 ; CATEGORY: Simulation
 ; 
 ; CALLING SEQUENCE: Label [,Title | TITLE] [,FILE] [,TEMPLATE]
