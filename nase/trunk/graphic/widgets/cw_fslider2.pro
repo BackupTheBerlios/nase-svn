@@ -7,6 +7,8 @@
 ;
 ; CALLING SEQUENCE: Widget_ID = CW_FSLIDER2( Parent
 ;                                           [,/DRAG]
+;                                           [,EVENT_FUNC = event_func]
+;                                           [,EVENT_PRO  = event_pro]
 ;                                           [,FONT_TITLE = fontstring]
 ;                                           [,FONT_LABEL = fontstring]
 ;                                           [,FORMAT     = format_string]
@@ -32,6 +34,10 @@
 ;                    events will be generated continuously when the slider
 ;                    is adjusted. Note: On slow systems, /DRAG performance can
 ;                    be inadequate. The default is DRAG = 0.
+;     EVENT_PRO/
+;       EVENT_FUNC : Event Procedure or Function to be associated with the new
+;                    widget. Free to the user.
+;
 ;     FONT_TITLE/
 ;       FONT_LABEL : The font to use for the title (given in TITLE)
 ;                    and the label (given in FORMAT)
@@ -138,6 +144,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/02/22 18:26:58  kupper
+;        Added Event_Pro, Event_Func keywords and theri proper handling!
+;
 ;        Revision 1.1  1999/09/01 16:43:53  thiel
 ;            Moved from other directory.
 ;
@@ -167,23 +176,23 @@
 
 Function CW_FSLIDER2_event_func, event
    ;;only slider-events will arrive here.
-   ;;event.HANDLER is the id of the outer Base.
-   ;;all information is stored in the UVALUE of its first child
-   FirstChild = Widget_Info(event.HANDLER, /CHILD)
-   Widget_Control, FirstChild, GET_UVALUE=uval, /NO_COPY
+   ;;event.HANDLER is the id of the first child.
+   ;;All information is stored in its UVALUE
+   
+   Widget_Control, event.handler, GET_UVALUE=uval, /NO_COPY
 
    uval.value = event.value/double(uval.maxslider)*(uval.maximum-uval.minimum)+uval.minimum
    Widget_Control, uval.W_Label, SET_VALUE=string(uval.value, FORMAT=uval.format)
-   
+
    If event.drag and not(uval.drag) then returnevent = 0 $ ; swallow event
    else returnevent = {CW_FSLIDER2, $
-                       ID      : event.handler, $ ;The FSLIDER2-Base
+                       ID      : widget_info(event.handler, /Parent), $ ;The FSLIDER2-Base
                        TOP     : event.top, $ ;pass-through
                        HANDLER : 0L, $ ; We handled it!
                        VALUE   : uval.value, $
                        DRAG    : event.drag}
 
-   Widget_Control, FirstChild, SET_UVALUE=uval, /NO_COPY
+   Widget_Control, event.handler, SET_UVALUE=uval, /NO_COPY
    return, returnevent
 End
 
@@ -210,26 +219,28 @@ Pro CW_FSLIDER2_pro_set_value, id, value
 End
 
 Function CW_FSLIDER2, Parent $
-           ,DRAG       = drag $
-           ,FONT_TITLE = font_title $
-           ,FONT_LABEL = font_label $
-           ,FORMAT     = format $
-           ,FRAME      = frame $
-           ,SUBFRAME   = subframe $
-           ,LABEL_BOTTOM= label_bottom $
-           ,LABEL_LEFT = label_left $
-           ,LABEL_RIGHT= label_right $
-           ,LABEL_TOP  = label_top $
-           ,MAXIMUM    = maximum $
-           ,MINIMUM    = minimum $
-           ,NO_COPY    = no_copy $
-           ,STEPWIDTH  = stepwidth $
-           ,TITLE      = title $
-           ,UVALUE     = uvalue $
-           ,VALUE      = value $
-           ,VERTICAL   = vertical $
-           ,XOFFSET = xoffset, YOFFSET = yoffset $
-           ,XSIZE = xsize  ,YSIZE = ysize 
+                      ,DRAG       = drag $
+                      ,EVENT_FUNC = event_func $
+                      ,EVENT_PRO  = event_pro $
+                      ,FONT_TITLE = font_title $
+                      ,FONT_LABEL = font_label $
+                      ,FORMAT     = format $
+                      ,FRAME      = frame $
+                      ,SUBFRAME   = subframe $
+                      ,LABEL_BOTTOM= label_bottom $
+                      ,LABEL_LEFT = label_left $
+                      ,LABEL_RIGHT= label_right $
+                      ,LABEL_TOP  = label_top $
+                      ,MAXIMUM    = maximum $
+                      ,MINIMUM    = minimum $
+                      ,NO_COPY    = no_copy $
+                      ,STEPWIDTH  = stepwidth $
+                      ,TITLE      = title $
+                      ,UVALUE     = uvalue $
+                      ,VALUE      = value $
+                      ,VERTICAL   = vertical $
+                      ,XOFFSET = xoffset, YOFFSET = yoffset $
+                      ,XSIZE = xsize  ,YSIZE = ysize 
    
    Default, drag, 0
    Default, maximum, 100
@@ -255,7 +266,7 @@ Function CW_FSLIDER2, Parent $
                         PRO_SET_VALUE="CW_FSLIDER2_pro_set_value", $
                         XOFFSET = xoffset, YOFFSET = yoffset, $
                         UVALUE=uvalue, NO_COPY=no_copy, $
-                        EVENT_FUNC="CW_FSLIDER2_event_func")
+                        EVENT_FUNC=event_func, EVENT_PRO=event_pro)
    
    If keyword_set(LABEL_TOP) or keyword_set(LABEL_BOTTOM) then begin
       column = 1
@@ -265,13 +276,16 @@ Function CW_FSLIDER2, Parent $
       row = 1
    endelse
    
+   ;;W_InnerBase must always be the first child, as the sliders will be it's
+   ;;children, and the first child is used as the event handler (see below)
+   W_InnerBase = Widget_Base(W_Base, $
+                             COLUMN=column, ROW=row, $
+                             /BASE_ALIGN_CENTER, FRAME=subframe)   
+
    If Keyword_Set(TITLE) then W_Title = Widget_Label(W_Base, $
                                                      FONT=font_title, $
                                                      VALUE=title)
    
-   W_InnerBase = Widget_Base(W_Base, $
-                             COLUMN=column, ROW=row, $
-                             /BASE_ALIGN_CENTER, FRAME=subframe)   
 
    ;if LABEL_TOP or LABEL_LEFT, create Label NOW:
    if Keyword_Set(LABEL_TOP) or Keyword_Set(LABEL_LEFT) then $
@@ -298,7 +312,10 @@ Function CW_FSLIDER2, Parent $
 
    ;;UVALE of W_Base has to be left to the user (the compound widget
    ;;shall look like a normal one, with a free UVALUE.
-   ;;We use the UVALE of the first child for our needs. (This can be used as a standard.)
+   ;;We use the UVALE of the first child for our needs. (This can be used as a
+   ;;standard.)
+   ;;The first child will also be our event handler, so that the user can assign 
+   ;;a private event handler to our new compound widget.
    FirstChild = Widget_Info(W_Base, /CHILD)
    Widget_Control, FirstChild, SET_UVALUE={info         : "CW_FSLIDER2", $
                                            W_Slider     : W_SLider, $
@@ -309,6 +326,7 @@ Function CW_FSLIDER2, Parent $
                                            value        : double(value), $
                                            format       : format, $
                                            drag         : drag}
+   Widget_Control, FirstChild, EVENT_FUNC="CW_FSLIDER2_event_func"
 
 
    
