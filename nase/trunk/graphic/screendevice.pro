@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/08/31 15:01:18  kupper
+;        oops. Typos.
+;
 ;        Revision 1.4  2000/08/31 09:58:58  kupper
 ;        Added space to turn watch on.
 ;
@@ -46,12 +49,13 @@
 ;
 Function ScreenDevice
 
-   cas strupcase(!Version.OS_Family) of
-   "MACOS": return, "MAC"
-   "VMS": return, "X"
-   "WINDOWS": return, "WIN"
-   "UNIX": return, "X"
-   else: Message, "Connot determine windows device - unrecognized " + $
-    "operating system."
+   case strupcase(!Version.OS_Family) of
+      "MACOS": return, "MAC"
+      "VMS": return, "X"
+      "WINDOWS": return, "WIN"
+      "UNIX": return, "X"
+      else: Message, "Connot determine windows device - unrecognized " + $
+       "operating system."
+   endcase
 
 End
