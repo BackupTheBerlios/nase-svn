@@ -129,6 +129,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.17  1999/11/23 13:37:14  kupper
+;        exchanged Keyword_Set(START) by Set(START) to allow start-value
+;        0.
+;
 ;        Revision 1.16  1999/11/04 18:13:46  kupper
 ;        Added to Header comment on IDL 5.0 workaround.
 ;
@@ -205,7 +209,7 @@ Common common_RGB, My_freier_Farbindex
          RETURN, bestMatch
       END
 
-       if Not(Keyword_Set(My_freier_Farbindex))or keyword_set(START) then begin
+       if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
           Default, start, 1
           My_freier_Farbindex = start
        end
