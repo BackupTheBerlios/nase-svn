@@ -51,7 +51,7 @@
 ;  MPEGFILENAME:: name of mpeg file (default: "test.mpg")
 ;  REP::          if given means repeat every image 'rep' times
 ;                  (as a workaround to modify replay speed)
-;  TMPDIR::        directory for temporary data (default: "/tmp/idl2mpeg.frames")
+;  TMPDIR::        directory for temporary data (default: provided by <A>TmpNam</A>)
 ;  WRITE::         calls write_mpeg to write the image
 ;  TRUE::         Set this keywrod to indicate that the image(s) to be
 ;                 written is a truecolor image.
@@ -131,7 +131,7 @@ default,write,0
 default,close,0
 default,rep,1
 default,delaft,0
-default,TMPDIR , '/tmp/idl2mpeg.frames'
+default,TMPDIR , TmpNam()
 default,mpegfilename,'test.mpg'
 default,framenum,0
 default,nFrames,0
