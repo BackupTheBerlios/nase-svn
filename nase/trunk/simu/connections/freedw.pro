@@ -17,9 +17,15 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.4  1997/10/27 14:28:49  kupper
+;       1. Der Learn-Tag wird jetzt nur noch freigegeben, wenn er auch existiert!
+;       2. Im Header stand kein Log-Eintrag, daher ist die Mod.Hist. nicht vollständig.
+;
+;
 ;       Fri Sep 12 10:47:40 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;       $Revision$
+;      
 ;
 ;		Schoepfung 
 ;
