@@ -1,10 +1,12 @@
 #include <cstdio>
+
+extern "C" {
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <fcntl.h>
-
 #include "export.h"
+}
 
 #include "IDL_IO_support.h"
 
@@ -53,7 +55,7 @@ IDL_LONG get_fd (int argc, void* argv[])
 // -------------------------------------------------------------------------------------------------------
 
 IDL_LONG wait_for_data (int argc, void *argv[])
-{
+{ 
   if (argc != 4) // Exactly two arguments expected
 	{
 	  IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP|IDL_MSG_ATTR_BELL,
