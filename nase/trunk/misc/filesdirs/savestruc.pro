@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/03/13 14:43:20  saam
+;           much faster saving now
+;
 ;     Revision 2.2  1997/12/17 16:23:08  saam
 ;           Beispiel an veraenderten Aufruf von LoadStruc angepasst
 ;
@@ -71,7 +74,7 @@ PRO SaveStruc, lun, ST
       IF tagSize(N_Elements(tagSize)-2) EQ 8 THEN Message, 'sorry, tags are not allowed to be structures'
       PrintF, lun, N_Elements(tagSize)
       PrintF, lun, tagSize 
-      IF N_Elements(tagSize) GT 3 THEN BEGIN
+      IF N_Elements(tagSize) GT 3 AND tagSize(N_Elements(tagSize)-2) EQ 7 THEN BEGIN
          ; this complicated handling is needed for correct saving of string arrays
          ; other types don't care 
          FOR i=0l, tagSize(N_Elements(tagSize)-1)-1 DO  BEGIN
