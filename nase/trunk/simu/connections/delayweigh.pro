@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.33  1998/02/11 17:39:01  saam
+;             bloede (!!) Optimierungen
+;
 ;       Revision 1.32  1998/02/11 16:17:14  saam
 ;             HandleOperationen mit NO_COPY
 ;
@@ -154,10 +157,9 @@ FUNCTION DelayWeigh, _DW, InHandle
    Handle_Value, _DW, DW, /NO_COPY 
    Handle_Value, InHandle, In
 
-   tS = DW.target_w*DW.target_h
-
+ 
 ;----- Der Teil ohne Delays:   
-   IF (Info(DW) EQ 'SDW_WEIGHT') THEN BEGIN
+   IF (DW.Info EQ 'SDW_WEIGHT') THEN BEGIN
 
 
       IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, In, /SET $
@@ -165,7 +167,7 @@ FUNCTION DelayWeigh, _DW, InHandle
 
       IF In(0) EQ 0 THEN BEGIN
          result = FltArr(2,1)
-         result(1,0) = tS
+         result(1,0) = DW.target_w*DW.target_h
          Handle_Value, _DW, DW, /NO_COPY, /SET 
          RETURN, result
                                 ;aus der Funktion rausspringen, wenn
@@ -176,19 +178,20 @@ FUNCTION DelayWeigh, _DW, InHandle
       ; asi : active source index
       ; asn : active source neuron
       ; wi  : weight indices
-      vector = FltArr(tS)
+      vector = FltArr(DW.target_w*DW.target_h)
       
       FOR asi=2l,In(0)+1 DO BEGIN
          asn = In(asi)
          IF DW.S2T(asn) NE -1 THEN BEGIN
             Handle_Value, DW.S2C(asn), wi, /NO_COPY
-            Handle_Value, DW.S2T(asn), tN, /NO_COPY
+            Handle_Value, DW.S2T(asn), tN, /NO_COPY        ; kommentieren(1)
             ; C2T(wi) has each target neuron only once,
             ; because there is only one connection between
             ; source and target; therefore next assignment is ok
+;            tN = DW.C2T(wi)                               ; auskommentieren(1)
             vector(tN) = vector(tn) + DW.W(wi)
             Handle_Value, DW.S2C(asn), wi, /NO_COPY, /SET
-            Handle_Value, DW.S2T(asn), tN, /NO_COPY, /SET
+            Handle_Value, DW.S2T(asn), tN, /NO_COPY, /SET  ; kommentieren(1)
          END
       END
 
@@ -199,7 +202,7 @@ FUNCTION DelayWeigh, _DW, InHandle
       
       
 ;----- Der Teil mit Delays:      
-   END ELSE IF (Info(DW) EQ 'SDW_DELAY_WEIGHT') THEN BEGIN
+   END ELSE IF (DW.Info EQ 'SDW_DELAY_WEIGHT') THEN BEGIN
       
       ; acili: active connection index list IN
       ; acilo: active connection index list OUT
@@ -239,7 +242,7 @@ FUNCTION DelayWeigh, _DW, InHandle
       IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, acilo, /SET $
       ELSE DW.Learn = Handle_Create(_DW, VALUE=acilo)
 
-      vector = FltArr(tS)
+      vector = FltArr(DW.target_w*DW.target_h)
 
       ; create a Spass vector with the output activity
       IF acilo(0) GT 0 THEN BEGIN
@@ -259,7 +262,7 @@ FUNCTION DelayWeigh, _DW, InHandle
          RETURN, Spassmacher(vector)
       END ELSE BEGIN
          Handle_Value, _DW, DW, /NO_COPY, /SET 
-         RETURN, [0, tS]
+         RETURN, [0, DW.target_w*DW.target_h]
       END
               
       
