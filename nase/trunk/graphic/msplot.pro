@@ -81,7 +81,7 @@ PRO MSPLOT, z, zz, zzz $
             , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
             , _EXTRA=extra
 
-;   On_Error, 2
+   On_Error, 2
 
    Default, SDCOLOR, RGB(100,100,200)
    Default, MCOLOR, GetForeground()
