@@ -147,6 +147,15 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
          If Keyword_Set(INIT) then begin 
             Info.Range_In = get_range_in
             Info.colormode = get_colormode ;store for update
+            if (a_eq(get_range_in, [0, 0])) then begin
+               console, /Warning, "/INIT: Unable to establish " + $
+                        "color scaling, because all entries " + $
+                        "are 0 or !NONE."
+               console, /Warning, "Postponed initialization to next call."
+               ;; we want to indicate this by setting Info.Range_In to
+               ;; "uninitialized":
+               Info.Range_In = [-1d, -1d]
+            endif
          EndIf
          
       ENDIF else begin
@@ -170,6 +179,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
                   console, /Warning, "/INIT: Unable to establish " + $
                            "color scaling, because all entries " + $
                            "are equal (value: "+str(min)+")."
+                  console, /Warning, "Postponed initialization to next call."
                   ;; we want to indicate this by setting Info.Range_In to
                   ;; "uninitialized":
                   Info.Range_In = [-1d, -1d]
