@@ -54,10 +54,10 @@
 ;  Compute left and right value, then modify an INDGEN() accordingly.
 ;  
 ; EXAMPLE:
-;  Plot, Ramp(100, LEFT=-10, RIGHT=100), /ISO
-;  Plot, Ramp(100, LEFT=-10, SLOPE=-1), /ISO
-;  Plot, Ramp(100, RIGHT=100, ANGLE=45), /ISO
-;  Plot, Ramp(100, MEAN=0, ANGLE=30), /ISO
+;*Plot, Ramp(100, LEFT=-10, RIGHT=100), /ISO
+;*Plot, Ramp(100, LEFT=-10, SLOPE=-1), /ISO
+;*Plot, Ramp(100, RIGHT=100, ANGLE=45), /ISO
+;*Plot, Ramp(100, MEAN=0, ANGLE=30), /ISO
 ;  
 ; SEE ALSO:
 ;  <A>Span()</A>, INDGEN(), Angle2Slope()
