@@ -75,12 +75,13 @@ FUNCTION  ReadASCII, FName
 
    ; The number of lines contained in the file is determined; afterwards, the pointer is re-set to the beginning:
    Line   = ''
-   NLines = 0
+   NLines = 0l
    WHILE  NOT EOF(File)  DO  BEGIN
      ReadF, File, Line
      NLines = NLines + 1
    ENDWHILE
    Point_LUN, File, 0
+
 
    ; Each line of the file is read into the Lines array:
    Lines = StrArr(NLines)
