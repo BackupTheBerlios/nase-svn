@@ -13,7 +13,7 @@
 ;  multidimensional distribution for one of the dimensions.<BR>
 ;  A typical example is to determine the mean and variance of a
 ;  function <*>y = y(x)</*> using several iterations. Let data be
-;  supplied in the format <*>y(x,iter)</*>. <*>IMoment(y,1)</*> now
+;  supplied in the format <*>y(x,iter)</*>. <C>IMoment(y,1)</C> now
 ;  returns the desired values depending on <*>x</*>. Calling
 ;  conventions are the same as in <A>UMoment()</A>.
 ;
@@ -39,14 +39,14 @@
 ;             <*>MIN=0</*>.
 ;  ORDER:: Maximum order of the moment to be calculated (default: 3).
 ;  ITER:: If <*>ITER</*> is set, <*>i</*> is interpreted as the
-;         iteration index, <*>i</*> may also be an array of indces.
+;         iteration index, <*>i</*> may also be an array of indices.
 ;
 ; OUTPUTS:
 ;  result:: Moments of the distribution contained in
 ;           <*>x</*>. Undefined values are returned as <*>!NONE</*>.
 ;
 ; OPTIONAL OUTPUTS:
-;  MDEV, SDEV:: See <A>UMoment()</A>.
+;  MDEV, SDEV:: See documentation of <A>UMoment()</A>.
 ;
 ; EXAMPLE:
 ; First example:
