@@ -1,7 +1,11 @@
 ;+
-; NAME:               FileSplit
+; NAME:               FileSplit()
 ;
-; PURPOSE:            Splits a filepath in a directory and a file part.
+; PURPOSE:            Splits a filepath in a directory and a file
+;                     part.
+;                     WARNING: Filepath may be modified by a call to
+;                              RealFilename(). Use File_Split() (note
+;                              underscore) to avoid this problem!
 ;
 ; CATEGORY:           MISC FILES DIRS
 ;
@@ -14,6 +18,10 @@
 ;                               name.
 ;
 ; RESTRICITIONS:      The filename has to have a correct syntax.
+;
+;                     WARNING: Filepath may be modified by a call to
+;                              RealFilename(). Use File_Split() (note
+;                              underscore) to avoid this problem!
 ;
 ; EXAMPLE:            
 ;                     print, FileSplit('/usr/ax1303/saam/test.tex')
@@ -28,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/08 13:51:13  kupper
+;     Added warning regarding RealFilename().
+;
 ;     Revision 1.2  2000/06/19 13:30:08  saam
 ;           + doc header translated
 ;           + uses split now
