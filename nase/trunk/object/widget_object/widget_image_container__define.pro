@@ -143,6 +143,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/03/15 14:29:16  kupper
+;        Renamed member "image" to "contents" to allow for polymorphic inheritance from
+;        class widget_image_container and class image_factory.
+;
 ;        Revision 1.4  2000/03/15 13:44:39  kupper
 ;        Complete.
 ;        Filled in header.
@@ -166,9 +170,9 @@ Function widget_image_container::init, IMAGE=image, XPOS=xpos, YPOS=ypos, $
    self.extra = Ptr_New(_extra) ;temporary storage to get it into initial_paint_hook_
 
    If Size(image, /TName) eq "POINTER" then begin
-      self.image=image
+      self.contents=image
    endif else begin
-      self.image=Ptr_New(image)
+      self.contents=Ptr_New(image)
       self.free_image_flag = 1
    Endelse
    
@@ -192,7 +196,7 @@ Pro widget_image_container::cleanup, _REF_EXTRA = _ref_extra
    Cleanup_Superclasses, self, "widget_image_container", _EXTRA=_ref_extra
 
    ;; Now do what is needed to cleanup a widget_image_container object:
-   If self.free_image_flag then Ptr_Free, self.image
+   If self.free_image_flag then Ptr_Free, self.contents
    Ptr_Free, self.update_info
    Ptr_Free, self.extra
 End
@@ -210,14 +214,14 @@ End
 ;; ------------ Public --------------------
 ;;
 Function widget_image_container::imageptr
-   return, self.image
+   return, self.contents
 End
 Function widget_image_container::image
-   return, *self.image
+   return, *self.contents
 End
 Pro widget_image_container::image, image, NO_COPY=no_copy
-   If Keyword_Set(NO_COPY) then *self.image = Temporary(image) $
-   else *self.image = image
+   If Keyword_Set(NO_COPY) then *self.contents = Temporary(image) $
+   else *self.contents = image
    self->paint
 End
 
@@ -239,7 +243,7 @@ End
 
 ;; ------------ Private --------------------
 Pro widget_image_container::paint_hook_
-   PlotTvScl, *self.image, self.xpos, self.ypos, $
+   PlotTvScl, *self.contents, self.xpos, self.ypos, $
     Update_Info=*self.update_info, INIT=self.renew_scaling_flag, $
     /SETCOL, _EXTRA=(*(self.extra))
    self.renew_scaling_flag = 0
@@ -258,7 +262,7 @@ Pro widget_image_container__DEFINE
             $
             inherits basic_draw_object, $
             $
-            image: Ptr_New(), $
+            contents: Ptr_New(), $
             free_image_flag: 0b, $
             update_info: Ptr_New(), $ ;Will hold a {PLOTTVSCL_INFO} struct
             xpos: 0.0, $
