@@ -271,6 +271,34 @@ unless the optional second argument NOINDENT is non-nil."
    (idlwave-rw-case "</*>")
    "insert typewriter text" t))
 
+(defun idlwave-nase-boldface ()
+  (interactive)
+  (idlwave-nase-template
+   (idlwave-rw-case "<B>")
+   (idlwave-rw-case "</B>")
+   "insert bold text" t))
+
+(defun idlwave-nase-italicface ()
+  (interactive)
+  (idlwave-nase-template
+   (idlwave-rw-case "<I>")
+   (idlwave-rw-case "</I>")
+   "insert bold text" t))
+
+(defun idlwave-nase-superscriptface ()
+  (interactive)
+  (idlwave-nase-template
+   (idlwave-rw-case "<SUP>")
+   (idlwave-rw-case "</SUP>")
+   "insert superscript text" t))
+
+(defun idlwave-nase-subscriptface ()
+  (interactive)
+  (idlwave-nase-template
+   (idlwave-rw-case "<SUB>")
+   (idlwave-rw-case "</SUB>")
+   "insert subscript text" t))
+
 (defun idlwave-nase-commonrandom ()
   (interactive)
   (idlwave-nase-template
@@ -303,18 +331,25 @@ unless the optional second argument NOINDENT is non-nil."
   (message "Installing NASE idlwave extention...")
   
   ;; --add key bindings--
-  ;; document header is bound to \C-c\C-h by default. We want to
-  ;; change this, hence undefine it first
-  (local-unset-key "\C-c\C-h")
+  ;; document header is bound to "\C-c\C-h" by default. We want to
+  ;; change this, hence undefine it first.
+  ;; "\C-c\C-h" is the old notation, and it has two meanings, which are
+  ;; both bound in the keymap. We have to release both.
+  (local-unset-key [(control c) (backspace)])
+  (local-unset-key [(control c) (control h)])
   ;; now (re)define bindings:
-  (local-set-key "\C-nh" 'idlwave-doc-header)
-  (local-set-key "\C-nl" 'idlwave-nase-doclink)
-  (local-set-key "\C-n\C-l" 'idlwave-nase-complexdoclink)
-  (local-set-key "\C-nc" 'idlwave-nase-commandref)
-  (local-set-key "\C-nt" 'idlwave-nase-typewriterface)
-  (local-set-key "\C-n\r" 'idlwave-nase-linebreak)
-  (local-set-key "\C-nr" 'idlwave-nase-commonrandom)
-  (local-set-key "\C-n;" 'idlwave-nase-commentedblock)
+  (local-set-key [(control n) (h)] 'idlwave-doc-header)
+  (local-set-key [(control n) (l)] 'idlwave-nase-doclink)
+  (local-set-key [(control n) (control l)] 'idlwave-nase-complexdoclink)
+  (local-set-key [(control n) (c)] 'idlwave-nase-commandref)
+  (local-set-key [(control n) (t)] 'idlwave-nase-typewriterface)
+  (local-set-key [(control n) (b)] 'idlwave-nase-boldface)
+  (local-set-key [(control n) (i)] 'idlwave-nase-italicface)
+  (local-set-key [(control n) (up)] 'idlwave-nase-superscriptface)
+  (local-set-key [(control n) (down)] 'idlwave-nase-subscriptface)
+  (local-set-key [(control n) (return)] 'idlwave-nase-linebreak)
+  (local-set-key [(control n) (r)] 'idlwave-nase-commonrandom)
+  (local-set-key [(control n) (control c)] 'idlwave-nase-commentedblock)
 ;  (local-set-key "\C-nf" 'idlwave-fill-paragraph)
   ;; --End: add key bindings--
   
@@ -325,7 +360,13 @@ unless the optional second argument NOINDENT is non-nil."
       ["Documentation Link (simple)" idlwave-nase-doclink t]
       ["Documentation Link (complex)" idlwave-nase-complexdoclink t]
       ["Command Reference" idlwave-nase-commandref t]
+      "--"
       ["Typewriter Face" idlwave-nase-typewriterface t]
+      ["Bold Face" idlwave-nase-boldface t]
+      ["Italic Face" idlwave-nase-italicface t]
+      ["Superscript" idlwave-nase-superscriptface t]
+      ["Subscript" idlwave-nase-subscriptface t]
+      "--"
       ["Linebreak" idlwave-nase-linebreak t]
       "--"
       ["fill paragraph" idlwave-fill-paragraph t]
@@ -350,7 +391,7 @@ unless the optional second argument NOINDENT is non-nil."
 
 
   ;; --set location of the document header template--
-  (setq headerfile "$NASEPATH/header.pro")
+  (setq headerfile (concat (getenv "NASEPATH") "/header.pro") )
   (setq idlwave-file-header (list headerfile "") )
   ;; --End: set location of the document header template--
 
