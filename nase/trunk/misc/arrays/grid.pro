@@ -11,14 +11,16 @@
 ; PURPOSE:
 ;   Extracts indices for positions placed
 ;   on a two-dimensional evenly spaced grid.
-;   In the current version the grid is center
+;   In the current version the grid is centered
 ;   in the array (if possible).
 ;  
 ; CATEGORY:
 ;  Array
+;  Graphic
 ;  
 ; CALLING SEQUENCE:
-;* idx = Grid {,dims | ,SIZE=...} [,STEP=...] [,COUNT=...] [,CSHIFT=...] 
+;* idx = Grid {,dims | ,SIZE=...} [,STEP=...] [,COUNT=...]
+;             [,CSHIFT=...] [,/UNIFORM] [,/SHOW]
 ;  
 ; OPTIONAL INPUTS:
 ;   dims :: array of dimensions of the underlying array
@@ -40,7 +42,7 @@
 ;            dimension (default: 0)
 ;   UNIFORM :: step is automatically set to dims/count, which means
 ;              uniform distribution of the count points on the grid.
-;
+;   SHOW :: displays chosen positions in the current plot device
 ;           
 ;  
 ; OUTPUTS:
@@ -54,7 +56,7 @@
 ;* plottvscl, a
 ;  
 ;-
-FUNCTION GRID, _dims, STEP=step, COUNT=count, SIZE=_size, CSHIFT=cshift, UNIFORM=uniform
+FUNCTION GRID, _dims, STEP=step, COUNT=count, SIZE=_size, CSHIFT=cshift, UNIFORM=uniform, SHOW=show
 
 ; check dimensions
 IF Set(_dims)+Set(_size) NE 1 THEN Console, 'either dims or size must be set', /FATAL
@@ -74,10 +76,11 @@ if Set(uniform) then step = fix(dims/count)
 ;check grid method
 FOR d=ndim-1,0,-1 DO BEGIN
     IF count(d) EQ !NONE THEN ccount = (dims(d))/step(d) ELSE ccount = MAX([1,count(d)])
-
     t = REVERSE((LindGen(ccount)*step(d)))
-    t=t - (MAX(t)-MIN(t))/2 - cshift(d)
-    pos = (dims(d)-1)/2 - t 
+    t=t - (MAX(t)-MIN(t)+1)/2 - cshift(d)
+    pos = (dims(d))/2 - t - even(ccount)*even(dims(d))
+    print,t
+    print, pos
     ok = WHERE((pos GE 0) AND (pos LT dims(d)),c) 
     IF (c NE ccount) THEN BEGIN
         Console, "Grid doesn't fit into the array...", /WARN
@@ -91,6 +94,19 @@ FOR d=ndim-1,0,-1 DO BEGIN
         idx = lidx + sidx        
     END
 END
+
+IF Keyword_Set(SHOW) THEN BEGIN
+    a=Make_Array(SIZE=[N_Elements(dims),dims,1,PRODUCT(dims)])
+    a(idx)=1
+    plottvscl, a, XRANGE=[0,dims(0)-1], XTITLE='first dimension', YRANGE=[0,dims(1)-1], YTITLE='second dimension', TITLE='grid'
+    
+    IF Odd(dims(0)) THEN plots, [(dims(0)-1)/2, (dims(0)-1)/2], [0, dims(1)-1], LINESTYLE=1 $
+                    ELSE plots, [(dims(0)-1)/2+0.5, (dims(0)-1)/2+0.5], [0, dims(1)-1], LINESTYLE=1
+    IF Odd(dims(1)) THEN plots, [0, dims(0)-1], [(dims(1)-1)/2, (dims(1)-1)/2], LINESTYLE=1 $
+                    ELSE plots, [0, dims(0)-1], [(dims(1)-1)/2+0.5, (dims(1)-1)/2+0.5], LINESTYLE=1
+END
+
+
 
 RETURN, REFORM(idx, N_Elements(idx))
 END
