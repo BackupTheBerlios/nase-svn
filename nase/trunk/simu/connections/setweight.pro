@@ -56,7 +56,9 @@
 ;
 ;
 ;
-; RESTRICTIONS:siehe GetWeight()
+; RESTRICTIONS: Die übergebenen Gewichte müssen je nach Kontext
+;               entweder ein Skalar oder ein Array mit entsprechenden
+;               imensionen (s. GetWeight() ) sein!
 ;
 ;
 ;
