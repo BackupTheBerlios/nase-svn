@@ -1,0 +1,6 @@
+PushD, GetEnv("NASEPATH"); cd to nase
+
+.compile misc/arrays/scl
+.compile simu/connections/nonone
+
+PopD ;Return to old dir

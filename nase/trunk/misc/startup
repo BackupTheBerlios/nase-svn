@@ -1,5 +1,9 @@
 ;+
 ;       $Log$
+;       Revision 1.25  1999/09/22 13:33:49  kupper
+;       Added new procompiling-feature to NASE-startup script.
+;       Allowing identically named Procs/Funcs (currently NoNone and Scl).
+;
 ;       Revision 1.24  1999/09/01 16:50:52  thiel
 ;           Changed tree structure: New directories graphic/widgets and
 ;            graphic/widgets/faceit_demo.
@@ -128,7 +132,9 @@ if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
 ;; --------------------------------------------------------
 
 
-defglobvars ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt    
+defglobvars ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt 
+
+@precompile ;Compile some modules that cannot be compiled automatically
 
 If WillShowLogo then ShowLogo, SECS=3
 
