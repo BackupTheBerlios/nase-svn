@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1998/02/03 16:10:27  thiel
+;              Mal wieder auf den neuesten Stand gebracht.
+;
 ;       Revision 1.4  1997/10/13 16:46:02  saam
 ;       zeitliche Abfolge des Zeitschrittes korrigiert
 ;
@@ -112,7 +115,7 @@ Window, 2, XSIZE=800, YSIZE=400
 
       
 ;-------------> LEARN SOMETHING
-      TotalRecall, LP_L1_L1, CON_L1_L1.Learn
+      TotalRecall, LP_L1_L1, CON_L1_L1
       LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
 
 
@@ -138,7 +141,7 @@ Window, 2, XSIZE=800, YSIZE=400
          
          ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
       END
-      IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MAX(CON_L1_L1.weights)
+      IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MAX(Weights(CON_L1_L1))
    END
    Print, 'Main Simulation Loop done'
 
