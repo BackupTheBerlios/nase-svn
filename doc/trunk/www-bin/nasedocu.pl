@@ -9,7 +9,9 @@ use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp qw(fatalsToBrowser);
 use File::Find;
 use File::Basename;
-#use strict;
+use strict;
+
+my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $INDEX, $myurl, $fullurl, $sub, $lastmod);
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -26,6 +28,7 @@ chop ($hostname = `uname -a`);
   $CGIROOT="/usr/lib"; 
 }
 
+
 $INDEX="$DOCDIR/index.routines";
 
 
@@ -36,21 +39,23 @@ $myurl =~ s/$CGIROOT//;
 
 # the directory we are currently
 $sub = path_info();
-if ($sub eq '') {$sub = '/'};
-$fullurl = $myurl.$sub;
+#if ($sub eq '') {$sub = '/'};
+$fullurl = "$myurl/$sub";
 
 
 
 # fix hyperlinks for a list of strings
 sub fixhl { 
+  my (@lines, @ridx, @url, $routine, @res, @fixed);
+  
   @lines = @_;
   @ridx = readRoutineIdx();
   foreach (@lines){
     s/<[^<>]*>//g; # remove HTML stuff
     s/\s+//g;      # remove whitespaces    
     s,\(.*?\),,g;  # remove braces like routine()
-    my @url = split(',', $_);
-    foreach my $routine (@url){
+    @url = split(',', $_);
+    foreach $routine (@url){
       @res = grep { /\/$routine\.pro/i  } @ridx; 
       $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=text&show=header>$routine</A>" : $routine);
     }
@@ -63,7 +68,7 @@ sub readRoutineIdx {
 
   createRoutineIdx() unless -r $INDEX;
   open (IDX, "<$INDEX") || die "can't open $INDEX for read: $!\n";
-  @ridx = <IDX>; chomp @ridx;
+  my @ridx = <IDX>; chomp @ridx;
   close (IDX) || die "can't close $INDEX, $!\n";
 
   return @ridx;
@@ -124,7 +129,7 @@ sub updatedoc {
 
 
 sub showedit {
-  my ($res);
+  my ($res, $file, $name);
 
   $file = shift(@_);
   $file .= ".pro" unless $file =~ /\.pro$/i;
@@ -168,7 +173,9 @@ sub showlog {
 
 sub showheader {
 
-  my $file = shift(@_);
+  my ($namefound, $file);
+
+  $file = shift(@_);
   $file .= ".pro" unless $file =~ /\.pro$/i;
   
   open(IN, "$file") || die "can't open $file";
@@ -194,13 +201,15 @@ sub showheader {
 
 sub showsource {
 
-my @keywords = qw (AND BEGIN CASE COMMON DO ELSE END ENDCASE ENDELSE ENDFOR
-		   ENDIF ENDREP ENDWHILE EQ FOR FUNCTION GE GOTO GT IF INHERITS
-		   LE LT MOD NE NOT OF ON_IOERROR OR PRO REPEAT THEN UNTIL WHILE XOR
-		   RETURN);
+  my ($file, $namefound, $line, $keyword);
+  my @keywords = qw (AND BEGIN CASE COMMON DO ELSE END ENDCASE ENDELSE ENDFOR
+		     ENDIF ENDREP ENDWHILE EQ FOR FUNCTION GE GOTO GT IF INHERITS
+		     LE LT MOD NE NOT OF ON_IOERROR OR PRO REPEAT THEN UNTIL WHILE XOR
+		     RETURN);
 
 
-  my $file = shift(@_);
+
+  $file = shift(@_);
   $file .= ".pro" unless $file =~ /\.pro$/i;
   
   open(IN, "$file") || die "can't open $file";
@@ -218,7 +227,7 @@ my @keywords = qw (AND BEGIN CASE COMMON DO ELSE END ENDCASE ENDELSE ENDFOR
     $_ = <IN>;
 #    s/\"([^\"]*)\"/\"<FONT COLOR=green>$1<\/FONT>\"/gi;
 #    s/\'([^\']*)\'/\'<FONT COLOR=green>$1<\/FONT>\'/gi;
-    foreach my $keyword (@keywords){
+    foreach $keyword (@keywords){
       s/(\s)$keyword(\s)/$1<FONT COLOR="red">$keyword<\/FONT>$2/gi;
     }
 #    s/;(.*)\n/<FONT COLOR="blue">;$1<\/FONT>\n/gi;
@@ -240,48 +249,41 @@ sub ddot {
   return  join('/',@dir);
 }
 
-sub showdirs {
-  my ($reldir, $fulldir, @ndir);
-  ($reldir) = @_;
-  $fulldir = "$DOCDIR/$reldir";
 
-  # display non-dot dirs 
-  opendir(DIR, $fulldir) || print "can't opendir $fulldir: $!\n";
-  @ndir = grep { /^[^\.]/ && -d "$fulldir/$_" } readdir(DIR);
-  closedir DIR;      
+sub showdir {
+  my ($mydir, $targetdir, $level, $reldir, @sdir, @file);
 
+  ($mydir, $targetdir, $level) = @_;
+  $mydir     =~ s,\/$,,g;
+  $targetdir =~ s,\/$,,g;
+  ($reldir = $mydir) =~ s,.*\/,,;
 
+  # display yourself
+  print a({href=>"$myurl/$mydir?mode=list",target=>"list"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."$reldir"), br;
   
-  if ($reldir ne '/'){ 
-    $reldir =~ s/^\/+//g;
-    print font({size=>"+1"},$reldir),br;
-    print a({href=>$myurl."/".ddot($reldir)."?mode=list"}, img({src=>"/icons/back.gif",alt=>"[DIR]",border=>"0"})."  parent dir"), br;
-  }
-  foreach $ndir (sort @ndir) {
-    if (($ndir ne "CVS") && ($ndir ne "RCS")){
-      print a({href=>"$fullurl/$ndir?mode=list",target=>"list"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."  $ndir"), br;
+
+  # if you are the target path display all, otherwise do nothing
+  if ((!$mydir) || ($targetdir =~ /$mydir/)){
+    # search for non-dot subdirs and IDL files
+    opendir(DIR, "$DOCDIR/$mydir") || print "can't opendir $mydir: $!\n";
+    @sdir = grep { /^[^\.]/ && -d "$DOCDIR/$mydir/$_" && ! /(CVS)|(RCS)/ } readdir(DIR);
+    rewinddir(DIR);
+    @file = sort grep { /\.pro$/i && -f "$DOCDIR/$mydir/$_" } readdir(DIR);
+    closedir DIR;      
+    
+    print "<BLOCKQUOTE>" if $level;
+
+    foreach (@sdir){
+      showdir("$mydir/$_", $targetdir, $level+1);
     }
+    foreach (sort @file) {
+      s/\.pro//i;
+      print a({href=>"$myurl/$mydir?file=$_&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]",border=>"0"})."  $_"), br;
+    }
+
+    print "</BLOCKQUOTE>" if $level;
   }
 }
-
-
-sub showfiles {
-  my ($reldir, $fulldir, $fif, @fif, @ndir);
-  ($reldir) = @_;
-  $fulldir = "$DOCDIR/$reldir";
-
-  # scan for pro files
-  opendir(DIR, $fulldir) || die "can't opendir $fulldir: $!";
-  @file = sort grep { /\.[Pp][Rr][Oo]$/ && -f "$fulldir/$_" } readdir(DIR);
-  closedir DIR;  
-
-  foreach $file (sort @file) {
-    $file =~ s/\.pro//i;
-    ($base) = split(/\./,$file);
-    print a({href=>"$fullurl?file=$file&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]",border=>"0"})."  $base"), br;
-  }
-}
-
 
 
 print header;
@@ -299,8 +301,7 @@ if ($P::mode){
     /update/i && do { updatedoc();
 		      last TRUNK;};
     /list/i   && do { print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
-                      showdirs($sub);
-		      showfiles($sub);
+		      showdir("/",$sub, 0);
 		      $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
 		      print font({size=>"-2"}, 
 				 hr,
