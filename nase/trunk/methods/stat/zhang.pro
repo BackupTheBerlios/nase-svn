@@ -29,7 +29,7 @@
 ;
 ; CALLING SEQUENCE:
 ;* estimate = Zhang( s, r, [,EXTPRIOR=...][,PROBE=...]
-;*                         [,SNBINS=...][,TAU=...][,SMEARTUNING=...]
+;*                         [,SNBINS=...][,TAU=...][MEMORYSAVE=...]
 ;*                         [,/OPTIMAL][,/CENTER][,/VERBOSE]
 ;*                         [,GET_MEAN=...][,GET_PRIOR=...] )
 ;
@@ -70,7 +70,25 @@
 ;        firing rate. Furthermore,
 ;        extra large <*>tau</*> may result in mathematical overflows
 ;        because of the computation of <*>rate^(no. of spikes)</*>.
-;  smeartuning:: Floating point value.
+; memorysave:: The setting of this keyword influences the setting of
+;              the corresponding keywords of the two internal
+;              <A>InstantRate()</A> routines. See also documentation
+;              of this routine.<BR>
+;              <*>memorysave='none'</*>
+;              computes both training and probing firing rates without
+;              the memorysave option.<BR> 
+;              <*>memorysave='train'</*>
+;              sets the memorysave option for computation of the
+;              training firing rates, but not for computation of
+;              probing rates. This may be useful if the training data
+;              is much larger than the probe data.<BR>
+;              <*>memorysave='probe'</*>
+;              vice versa.<BR> 
+;              <*>memorysave='both'</*>
+;              computes both training and probing firing rates with
+;              the memorysave option, suitable for equally large
+;              sets of training and probe data.<BR>
+;              Default: <*>memorysave='none'</*>.  
 ;  /OPTIMAL:: As the final estimate, <C>Zhang()</C> may either use the
 ;             maximum (MAP method) or
 ;             the average of the <I>a posteriori</I> distribution (optimal
@@ -79,26 +97,26 @@
 ;             applied. Optimal estimation may yield smoother 
 ;             results, as it is not restricted to the discrete
 ;             stimulus bins. On the other hand, optimal estimation is
-;             not recommended with two-peak 
+;             not recommended with bimodal
 ;             distributions, because the second peak shifts the mean
 ;             towards lower values. MAP does not have this problem. If
 ;             e.g. velocity and direction of motion is estimated, this
 ;             effect becomes profound. Default: <*>OPTIMAL=0</*>
-;  /CENTER:: If rate is interpreted as firing during some short <I>past</I>
-;            time interval, shift the rate array because smooth
-;            returns rates centered within the tau
-;            interval. <*>CENTER=0</*> corresponds to measuring the
+;  /CENTER:: <*>CENTER=0</*> corresponds to measuring the
 ;            rates by counting the spikes in the interval <*>[t-tau,t]</*>,
 ;            <*>CENTER=1</*> corresponds to Zhangs original algorithm,
 ;            counting spikes in the interval <*>[t-tau/2,t+tau/2]</*>,
 ;            but maybe less realistic when exact timing is
-;            relevant. The setting of <*>CENTER</*> is passed to
+;            relevant, since in this case future information is
+;            included into the present estimation. The setting of
+;            <*>CENTER</*> is passed to
 ;            <A>InstantRate()</A>. Default: <*>CENTER=0</*>
 ;  /VERBOSE:: Print information about the routines progress into the
 ;             <A NREF=INITCONSOLE>console</A>. Default: <*>VERBOSE=0</*>.
 ;
 ; OUTPUTS:
-;  estimate::
+;  estimate:: The estimate of the stimulus vector as a function of
+;             time.
 ;
 ; OPTIONAL OUTPUTS:
 ;  get_mean:: Double array giving the mean firing rates of each neuron
@@ -203,8 +221,9 @@
 
 FUNCTION Zhang, s, r, EXTPRIOR=extprior $
                 , PROBE=probe, SNBINS=snbins, TAU=tau $
-                , SMEARTUNING=smeartuning $
+;                , SMEARTUNING=smeartuning $
                 , OPTIMAL=optimal, CENTER=center $
+                , MEMORYSAVE=memorysave $
                 , VERBOSE=verbose $
                 , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
@@ -214,7 +233,27 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    Default, center, 0
    Default, optimal, 0
    Default, verbose, 0
+   Default, memorysave, 'none'
 
+   CASE memorysave OF 
+      'none': BEGIN
+         memsavetrain = 0
+         memsaveprobe = 0
+      END
+      'train': BEGIN
+         memsavetrain = 1
+         memsaveprobe = 0
+      END
+      'probe': BEGIN
+         memsavetrain = 0
+         memsaveprobe = 1
+      END
+      'both': BEGIN
+         memsavetrain = 1
+         memsaveprobe = 1
+      END
+      ELSE: Console, /FATAL, 'Unknown MEMORYSAVE option.'
+   ENDCASE
 
    ssize = Size(s)
    sdur = ssize(1)
@@ -248,43 +287,109 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
                      , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
                      , GET_BINVALUES=sbinval $
                      , REVERSE_INDICES=srevidx)
+
+      ;; Set empty and therefore zero prior bins to 1 because
+      ;; otherwise they cannot be evaluated when taking the logarithm
+      ;; of the prior later. Empty bins to not appear in the reverse
+      ;; indices.
+      peq0 = Where(shist LE 0, count)
+      IF count NE 0 THEN BEGIN
+         Console, /WARN, Str(count)+' stimulus bins empty.'
+         pne0 = DiffSet(LIndgen(N_Elements(shist)), peq0)  
+         ;; Offset is 1 entry
+         shist[peq0] = 1
+      ENDIF 
+         
       totshist = Total(shist)
       prior = shist/totshist
       UnDef, shist
+
    ENDELSE
 
    sp = Size(prior)
-
-   dummy = Where(prior LE 0., count)
-   IF count NE 0 THEN Console, /WARN, Str(count)+' stimulus bins empty.'
+   nelemprior = sp[sp[0]+2]
+   idxarr = LIndGen(nelemprior)
 
    IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Computing likelihoods.'
 
    sr = Size(r)
-   lr = sr(1) ;; length of response
+   lr = sr[1] ;; length of response
    
-   IF sr(0) GT 1 THEN $
-    nr = sr(2) $ ;; number of responses
+   IF sr[0] GT 1 THEN $
+    nr = sr[2] $ ;; number of responses
    ELSE $
     nr = 1 ;; number of responses
  
       
-   srate = sr
-   srate(srate(0)+1) = 4 ;; make rate array float type
-   rate = Make_Array(SIZE=srate)
+   ;; no longer needed, Instantrate defines rate array anyway
+   ;; srate = sr
+   ;;   srate[srate[0]+1] = 4 ;; make rate array float type
+   ;;   rate = Make_Array(SIZE=srate)
 
 
+   ;; consider SMOOTH inside InstantRate() can only
+   ;; handle odd window lengths, so correct for this by using
+   ;; realtau which is always odd.   
    realtau = NOT(tau MOD 2)+tau
-
    IF Keyword_Set(VERBOSE) AND NOT(tau MOD 2) THEN $
     Console, /WARN, 'Width of window in rate computing is actually ' $
      +Str(realtau)
 
-   rate = InstantRate(r, SSHIFT=1, SSIZE=tau/2, /MEMORYSAVE, CENTER=center)
-    
-   ;; compute spike numbers from rates, consider SMOOTH can only
-   ;; handle odd window lengths, so correct for this by using
-   ;; realtau which is always odd.
+   rate = InstantRate(r, SSHIFT=1, SSIZE=tau/2, MEMORYSAVE=memsavetrain $
+    , CENTER=center)
+   
+   ;; f is DOUBLE to avoid overflows when potentiation is done later
+   ;; sf = [sp[0]+1, sp[1:sp[0]], nr, 5, nelemprior*nr]
+   ;; f is no longer DOUBLE since log version. Hopefully works...
+   sf = [sp[0]+1, sp[1:sp[0]], nr, 4, nelemprior*nr]
+   f = Make_Array(SIZE=sf)
+   sum = Make_Array(SIZE=sp);, /DOUBLE)
+
+   ;; smeartuning option is not part of the Zhang algorithm
+;   IF Set(smeartuning) THEN BEGIN
+;      IF smeartuning GT 0. THEN BEGIN
+;         xmask = Double(DistMD(IntArr(sdim)+Fix(6*smeartuning+1)))
+;         mask = Exp(-0.5/smeartuning^2*xmask^2)
+;         mask = mask/Total(mask)
+;         sm = Size(mask)
+;         IF Min(sp[1:sp[0]]-sm[1:sm[0]]) LT 0. THEN Console, /FATAL $
+;          , 'SMEARTUNING is too large.'
+;      ENDIF
+;   ENDIF ELSE smeartuning = 0.
+
+   ;; loop of response dimensions
+   FOR rdimidx=0, nr-1 DO BEGIN
+
+      ;; loop of stimulus bins
+      FOR sbinidx=0, nelemprior-1 DO BEGIN
+         ;; stimulus bin not empty?
+         IF srevidx(sbinidx) NE srevidx(sbinidx+1) THEN BEGIN
+            flatf = FlatIndex(sf, [Subscript(sbinidx, SIZE=sp), rdimidx])
+            f[flatf] = $
+;             (UMoment(rate[srevidx[srevidx[sbinidx]:srevidx[sbinidx+1]-1] $
+;                           , rdimidx], ORDER=0))[0]
+             Total(rate[srevidx[srevidx[sbinidx]:srevidx[sbinidx+1]-1] $
+                           , rdimidx])/(srevidx[sbinidx+1]-srevidx[sbinidx])
+         ENDIF ;; stimulus bin not empty
+      ENDFOR ;; sbinidx
+
+      ;; 1dim array with slice consisting of f(*,*,rdimidx)
+      sliceidx = idxarr+rdimidx*nelemprior
+;      fcurrent = Reform(f[sliceidx], sp[1:sp[0]])
+
+      ;; smeartuning option is not part of the Zhang algorithm
+;      IF smeartuning GT 0. THEN BEGIN
+;         fnew = Convol(fcurrent, mask, /EDGE_TRUNC)
+;         f(sliceidx) = fnew
+;         sum = Temporary(sum)+fnew    
+;      ENDIF ELSE BEGIN
+         sum = Temporary(sum)+Reform(f[sliceidx], sp[1:sp[0]])
+;      ENDELSE ;; smeartuning GT 0.
+         
+   ENDFOR ;; rdimidx
+
+   ;; compute spike numbers from rates, either for probe or for
+   ;; training stimulus
 
 ; Less memory consuming, but beware of precision when converting to
 ; integer type, some 0.999999 may be set to 0
@@ -292,73 +397,31 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
 ;     ni = Fix(InstantRate(probe, SSHIFT=1, SSIZE=tau/2)*realtau*0.001) $
 ;   ELSE $
 ;    ni = Fix(rate*realtau*0.001)
+
+   ;; rate contains now integer spike numbers, this was formerly
+   ;; contained in the variable "ni". To save memory, non-integer rates
+   ;; are now overwritten, because they are no longer needed.
    IF Set(probe) THEN BEGIN
-      ;; see above
-      ni = InstantRate(probe, SSHIFT=1, SSIZE=tau/2, CENTER=center) $
-       *realtau*0.001
+      rate = InstantRate(probe, SSHIFT=1, SSIZE=tau/2 $
+       , MEMORYSAVE=memsaveprobe, CENTER=center)*realtau*0.001
    ENDIF ELSE $
-    ni = rate*realtau*0.001
+    rate = Temporary(rate)*realtau*0.001
 
-
-   sf = [sp(0)+1, sp(1:sp(0)), nr, 5, sp(sp(0)+2)*nr]
-   ;; f is DOUBLE to avoid overflows when potentiation is done later
-   f = Make_Array(SIZE=sf)
-
-   sum = Make_Array(SIZE=sp, /DOUBLE)
-
-   IF Set(smeartuning) THEN BEGIN
-      IF smeartuning GT 0. THEN BEGIN
-         xmask = Double(DistMD(IntArr(sdim)+Fix(6*smeartuning+1)))
-         mask = Exp(-0.5/smeartuning^2*xmask^2)
-         mask = mask/Total(mask)
-         sm = Size(mask)
-         IF Min(sp[1:sp[0]]-sm[1:sm[0]]) LT 0. THEN Console, /FATAL $
-          , 'SMEARTUNING is too large.'
-      ENDIF
-   ENDIF ELSE smeartuning = 0.
-
-
-   ;; loop of response dimensions
-   FOR rdimidx=0, nr-1 DO BEGIN
-      ;; loop of stimulus bins
-      FOR sbinidx=0, sp(sp(0)+2)-1 DO BEGIN
-         ;; stimulus bin not empty?
-         IF srevidx(sbinidx) NE srevidx(sbinidx+1) THEN BEGIN
-            flatf = FlatIndex(sf, [Subscript(sbinidx, SIZE=sp), rdimidx])
-            f[flatf] = $
-             (UMoment(rate(srevidx(srevidx(sbinidx):srevidx(sbinidx+1)-1) $
-                           , rdimidx), ORDER=0))(0)
-         ENDIF ;; stimulus bin not empty
-;            Console, /WARN, 'Empty stimulus bin '+Str(sbinidx)+'. No tuning information here!'
-;         ENDELSE ;; stimulus bin not empty?
-      ENDFOR ;; sbinidx
-
-      ;; 1dim array with slice consisting of f(*,*,rdimidx)
-      sliceidx = IndGen(sp(sp(0)+2))+rdimidx*sp(sp(0)+2)
-      fcurrent = Reform(f[sliceidx], sp(1:sp[0]))
-
-      IF smeartuning GT 0. THEN BEGIN
-         fnew = Convol(fcurrent, mask, /EDGE_TRUNC)
-         f(sliceidx) = fnew
-         sum = Temporary(sum)+fnew    
-      ENDIF ELSE BEGIN
-         sum = Temporary(sum)+fcurrent
-         ENDELSE ;; smeartuning GT 0.
-
-   ENDFOR ;; rdimidx
 
    ;; Avoid empty
    ;; and therefore zero tuning bins that cannot be evaluated when
    ;; taking the logarithm  
-   feq0 = Where(f EQ 0., count)
+   feq0 = Where(f LE 0., count)
    IF count NE 0 THEN BEGIN
       fne0 = DiffSet(LIndgen(N_Elements(f)), feq0)
       ;; Offset is minimum of "real" tuning values divided by 1000 
       f[feq0] = 1.E-3*Min(f[fne0])
    ENDIF
 
-;   esum = Exp(-tau*0.001*sum)
-;   ep = esum*prior
+   ;;old, non log version
+   ;;   esum = Exp(-tau*0.001*sum)
+   ;;   ep = esum*prior
+   ;;new, logarithmic version
    bias = ALog(prior)-tau*0.001*sum
    lnf = ALog(f)
 
@@ -369,7 +432,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    ;; Start estimation
    IF Keyword_Set(VERBOSE) THEN BEGIN
       Console, /MSG, 'Estimate stimuli.'
-      SimTimeInit, MAXSTEPS=100, /PRINT, CONSOLE=!CONSOLE
+      SimTimeInit, MAXSTEPS=10, /PRINT, CONSOLE=!CONSOLE
    ENDIF
 
    se = [sdim+1, lr, sdim, 4, sdim*lr]
@@ -377,35 +440,35 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    sdimidx = IndGen(sdim)
 
    FOR t=0l, lr-1 DO BEGIN
-;      prod = Make_Array(SIZE=sp, VALUE=1., /DOUBLE)
+      ;; old non log version
+      ;; prod = Make_Array(SIZE=sp, VALUE=1., /DOUBLE)
       lnsum = Make_Array(SIZE=sp, VALUE=0., /DOUBLE)
       ;; loop of response dimensions
       FOR rdimidx=0, nr-1 DO BEGIN
          ;; 1dim array with slice consisting of f(*,*,rdimidx)
-         sliceidx = IndGen(sp(sp(0)+2))+rdimidx*sp(sp(0)+2)
-;         fcurrent = Reform(f(sliceidx), sp(1:sp(0)))
-         fcurrent = Reform(lnf[sliceidx], sp[1:sp[0]])
-;         prod = Temporary(prod)*fcurrent^ni(t, rdimidx)
-         lnsum = Temporary(lnsum)+fcurrent*ni[t, rdimidx]
-
+         sliceidx = idxarr+rdimidx*nelemprior
+         ;; old non log version
+         ;; fcurrent = Reform(f(sliceidx), sp(1:sp(0)))
+         ;; prod = Temporary(prod)*fcurrent^ni(t, rdimidx)
+         ;; new log version
+;         fcurrent = Reform(lnf[sliceidx], sp[1:sp[0]])
+;         lnsum = Temporary(lnsum)+fcurrent*rate[t, rdimidx]
+         lnsum = Temporary(lnsum)+ $
+          Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t, rdimidx]
          IF Min(Finite(lnsum)) LT 1 THEN Console, /FATAL $
-          , 'Overflow during potentiation. Try lower TAU.'
+          , 'Overflow during potentiation.'
       ENDFOR ;; rdimidx
 
-;      IF Total(prod) EQ 0. THEN BEGIN
-;         Console, /FATAL, 'Product of tuning functions is zero.'
-;         prod = Make_Array(SIZE=sp, VALUE=1., /DOUBLE)
-;      ENDIF
-
-;      posterior = prod*ep
+      ;;old, non log version
+      ;; posterior = prod*ep
+      ;; new log version
       lnposterior = lnsum+bias
-
-;print, Total(Abs(posterior-Exp(lnposterior)))
 
       ;; determine index of maximum or mean of posterior
       IF Keyword_Set(OPTIMAL) THEN BEGIN
-         ;; normalization needed for optimal estimator
+         ;; reverse logarithm
          posterior = Exp(lnposterior)
+         ;; normalization needed for optimal estimator
          posterior = posterior/Total(posterior)
          smultidimidx = CenterOfMass(posterior)
          IF smultidimidx(0) EQ !NONE THEN BEGIN
@@ -422,7 +485,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          estimate[t, *] = sbinval[smultidimidx+1,sdimidx]
       ENDELSE
 
-      IF Keyword_Set(VERBOSE) AND (((t+1) MOD (lr/100)) EQ 0) THEN SimTimeStep
+      IF Keyword_Set(VERBOSE) AND (((t+1) MOD (lr/10)) EQ 0) THEN SimTimeStep
 
    ENDFOR ;; time 
 
