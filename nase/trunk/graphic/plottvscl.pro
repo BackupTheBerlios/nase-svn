@@ -89,7 +89,7 @@
 ;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
 ;                     PLOTCOL   : Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
 ;                                 wird versucht, eine passende Farbe zu raten.
-;                       RANGE_IN: When passed, the two-element array is taken as the range to
+;                     RANGE_IN  : When passed, the two-element array is taken as the range to
 ;                                 scale to the plotting colors. (I.e. the first element is scaled to
 ;                                 color index 0, the scond is scaled to the highest available
 ;                                 index (or to TOP in the no-NASE, no-NEUTRAL, no-NOSCALE 
@@ -104,10 +104,11 @@
 ;                                 struct. However, the new scaling is valid for
 ;                                 this call only, and is not stored in the
 ;                                 struct, unless you also specify /INIT.
-;                    UPDATE_INFO: When omitted or undefined, the call acts like
+;                    UPDATE_INFO: When omitted, undefined, or passend an empty
+;                                 PLOTTVSCL_INFO structure, the call acts like
 ;                                 a normal PlotTvScl call. Axes as well as the
 ;                                 array are plotted.
-;                                 This keyword acts as an optional output
+;                                   This keyword acts as an optional output
 ;                                 also. A <A HREF="../misc/structures#PLOTTVSCL_INFO__DEFINE">PLOTTVSCL_INFO</A> struct is returned,
 ;                                 containing information on keywords, plot
 ;                                 positions and color scaling. When this strict
@@ -117,15 +118,25 @@
 ;                                 array. (I.e. the colors of the two plots are
 ;                                 directly comparable. See also keywords
 ;                                 RANGE_IN and INIT.)
-;                                 When UPDATE_INFO is set, all keywords execept
+;                                   When UPDATE_INFO is set, all keywords execept
 ;                                 RANGE_IN and INIT are silently overriden by
 ;                                 the values contained in the PLOTTVSCL_INFO
 ;                                 struct.
-;                                 Note that calling PlotTvScl with keyword
+;                                   Note that calling PlotTvScl with keyword
 ;                                 UPDATE_INFO set to a defined structure is
 ;                                 equivalent to calling PlotTvScl_Update on this 
 ;                                 structure. The UPDATE_INFO keyword is supplied 
 ;                                 for convenience.
+;                                   If you intend to store UPDATE_INFO
+;                                 structures in an array or another structure,
+;                                 use the zeroed structure {PLOTTVSCL_INFO} as
+;                                 initial value. This value will be treated as
+;                                 if an undefined variable was passed to
+;                                 UPDATE_INFO. When storing in another
+;                                 structure, note also that structure tags are
+;                                 passed by value in IDL. You need to use a
+;                                 temporary variable. (See IDL Reference Manual,
+;                                 chapter "Parameter Passing with Structures", sic!)
 ;                           INIT: When passing a structure in UPDATE_INFO, array 
 ;                                 values are scaled according to the values
 ;                                 contained in the PLOTTVSCL_INFO struct. /INIT
@@ -163,12 +174,18 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
+;          ; Using the UPDATE_INFO keyword:
+;          PlotTvScl, 
+;
 ; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A>, <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="../#NASETVSCL">NaseTVScl</A>,
 ;           <A HREF="#PLOTTVSCL_UPDATE">PlotTVScl_update</A>            
 ;
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.63  2000/03/07 16:28:28  kupper
+;     Now treating zeroed PLOTTVSCL_INFO as undefined.
+;
 ;     Revision 2.62  2000/03/06 16:06:06  kupper
 ;     Added Keywords RANGE_IN, UPDATE_INFO and INIT.
 ;
@@ -416,8 +433,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    IF NOT Set(_W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
    
+   
+   Default, UPDATE_INFO, {PLOTTVSCL_INFO}
 
-   If not Keyword_Set(UPDATE_INFO) then begin ;;This is a normal PlotTvScl-Call
+   If UPDATE_INFO eq {PLOTTVSCL_INFO} then begin
+      ;; UPDATE_INFO either was not specified, or it was passed an empty
+      ;; PLOTTVSCL_INFO struct.
+      ;;This is a normal PlotTvScl-Call
 
       INIT = 1
       
