@@ -34,8 +34,9 @@
 ;                     ob alle Elemnte disjunkt sind. Falls nicht, wird nach 10 mal probieren
 ;                     nach obigen Verfahren die alte Methode benutzt (kommt sowieso nicht vor: Lotto!!)
 ;                     Ist das Verhaeltnis m/n kleiner als 0.005 wird auch die alte Methode benutzt.
-;                     Beschleunigung bei n=10^5 Faktor 1000 , bei n=10^4 Faktor 20 
-;                     OLDMETHOD: 
+;                     Beschleunigung bei n=10^5 Faktor 1000 , bei n=10^4 Faktor 20.<BR>
+; 
+;                     OLDMETHOD:<BR>
 ;                     Index-Array wird um die bereits gezogenen Zahlen
 ;                     verkleinert (viel scheller als Brute-Force der 
 ;                     noch aelteren Version von All_Random(), Faktor 15 bei n=10^4)
