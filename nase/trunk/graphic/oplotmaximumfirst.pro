@@ -31,7 +31,10 @@
 ;          respectively, the following using increasing LINESTYLE- and
 ;          PSYM-values. The order of the onedimensional subarrays in
 ;          yarray therefore determines the appearance of their
-;          corresponding plots.
+;          corresponding plots.<BR>
+;          If the passed arrays are one-dimensional,
+;          <C>OPlotMaximumFirst</C> simply calls the standard
+;          <C>PLOT</C> routine and exits.
 ;  
 ; OPTIONAL INPUTS:
 ;  xarray::    X-values corresponding to the yarray entries.
@@ -61,6 +64,10 @@
 ;  3. OPlot of the arrays using specified linestyles, psyms or
 ;     colors.<BR>
 ; 
+; RESTRICTIONS:
+;  If the passed arrays are one-dimensional, <C>OPlotMaximumFirst</C>
+;  simply calls the standard <C>PLOT</C> routine and exits.
+;
 ; EXAMPLE:
 ;*  a = randomn(seed,50)
 ;*  b = randomn(seed,50)
@@ -69,15 +76,27 @@
 ;*  oplotmaximumfirst,[[a],[b]],COLOR=[RGB(250,0,0),RGB(0,0,250)],LINESTYLE=-1
 ;  
 ; SEE ALSO:
-;  Standard IDL-procedures Plot and OPlot with their graphics keywords
-;  LINESTYLE and PSYM.
-;
+;  Standard IDL-procedures <C>Plot</C> and <C>OPlot</C> with their
+;  graphics keywords <*>LINESTYLE</*> and <*>PSYM</*>.
 ;-
 
 PRO OPlotMaximumFirst, z, zz $
                        , LINESTYLE=linestyle, PSYM=psym, THICK=thick $
                        , COLOR=color, XRANGE=xrange $
                        , _EXTRA=_extra
+
+   ;; Fallback to normal PLOT routine for oinedimensional arrays:
+   If size(z, /N_Dimensions) eq 1 then begin
+      Console, /Msg, "Passed onedimensional data. Fallback to normal " + $
+        "PLOT routine."
+      if set(color) then color_ = color[0]
+      Plot, z, zz $
+        , LINESTYLE=linestyle, PSYM=psym, THICK=thick $
+        , COLOR=color_, XRANGE=xrange $
+        , _EXTRA=_extra
+      return
+   endif
+
 
    Default, LINESTYLE, 0
    Default, PSYM, -1
