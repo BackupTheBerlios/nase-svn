@@ -22,13 +22,13 @@ import_names('P');
 # NASE/MIND Settings
 chop ($hostname = `uname -a`);
 {
-#  $hostname =~ /SMP/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-#			     $DOCDIR="/vol/neuro/nase/nasedocu"; 
-#			     $CGIROOT="/vol/neuro/www";
-#			     $IDXDIR="$DOCDIR";
-#			     $HTDOCS="/vol/neuro/www/htdocs/nase";
-#			     $URL="http://neuro.physik.uni-marburg.de/nase/";
-#			     last;};
+  $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
+			       $DOCDIR="/vol/neuro/nase/nasedocu"; 
+			       $CGIROOT="/vol/neuro/www";
+			       $IDXDIR="$DOCDIR";
+			       $HTDOCS="/vol/neuro/www/htdocs/nase";
+			       $URL="http://neuro.physik.uni-marburg.de/nase/";
+			       last;};
   $DOCDIR="/mhome/saam/sim"; 
   $CGIROOT="/usr/lib"; 
   $IDXDIR="/tmp";
@@ -284,7 +284,7 @@ if ($P::mode){
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
 				  } else {
-				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") || die "can't open index: $!\n";
+				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") || open(IDX, "<".$DOCDIR."/nase/doc/mainpage.html");
 				    while(<IDX>){print;};
 				    close(IDX) || die "can't close index: $!\n";
 				    last TRUNK;};
