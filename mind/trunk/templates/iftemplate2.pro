@@ -36,7 +36,7 @@
 ;                     LOGIC     : logical operation :
 ;                                 NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
 ;                                 allowed values are
-;                                 AND, OR, ADD
+;                                 'AND', 'OR', 'ADD'
 ;
 ;                     {various filter options}: to be added by the author
 ;
@@ -50,6 +50,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/20 18:13:12  saam
+;           doc header updated
+;
 ;     Revision 1.2  2000/01/20 10:37:02  alshaikh
 ;           changes in header
 ;
