@@ -82,6 +82,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.18  2000/08/30 22:35:29  kupper
+;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
+;
 ;     Revision 2.17  1999/11/16 16:47:51  kupper
 ;     Updated and corrected header.
 ;
@@ -174,7 +177,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
       
       IF Keyword_Set(VERBOSE) THEN Print, 'Defining a new Window.'
       
-      sheet = { type  : 'X'   ,$
+      sheet = { type  : 'X'   ,$;;meaning it is a window (X or WIN Device)
                 $               ;no longer in here, since scrollits may
                 $               ;not be realized at once:
                 $               ;winid : -2l    ,$
@@ -219,7 +222,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
                 multi    : multi        ,$
                 extra    : e            ,$
                 open     : 0 }
-      Set_Plot, 'X'
+      Set_Plot, XorWIN()
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN
      

@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  2000/08/30 22:35:29  kupper
+;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
+;
 ;     Revision 2.10  1999/07/28 07:37:32  saam
 ;           + return on error
 ;
@@ -115,7 +118,8 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
 
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
-   IF sheet.type EQ 'ps' OR sheet.type EQ 'X' THEN BEGIN 
+   IF sheet.type EQ 'ps' OR sheet.type EQ 'X' THEN BEGIN ;it is PS or
+                                                         ;a Window
       new = !P
       !P =  sheet.p
       sheet.p = new
@@ -143,12 +147,12 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
    IF sheet.type EQ 'ps' THEN BEGIN
       IF  sheet.open THEN BEGIN
          Device, /CLOSE
-         Set_Plot, 'X'
+         Set_Plot, XorWIN()
          sheet.open = 0
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
-      Set_Plot, 'X'
+      Set_Plot, XorWIN()
    END
       
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
