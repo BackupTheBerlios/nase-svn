@@ -46,6 +46,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  1998/03/31 12:27:38  saam
+;             if zipped and unzipped version exists
+;             now the zipped version is the reference
+;
 ;       Revision 2.9  1998/03/19 14:53:09  saam
 ;             new keyword 'ERROR'
 ;
@@ -92,7 +96,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    title = Parts(n_elements(Parts)-1)
 
    c = ZipStat(filename, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
-   IF nzf(0) NE '-1' OR bf(0) NE '-1' THEN zipped = 0 ELSE zipped = 1
+   IF nzf(0) NE '-1'  THEN zipped = 0 ELSE zipped = 1
    IF zipped THEN Unzip, filename
 
    IF NOT fileExists(infoname) THEN BEGIN
