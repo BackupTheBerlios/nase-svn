@@ -2,30 +2,33 @@
 ; NAME:
 ;  STA()
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM:
 ;  Compute the spike triggered average.
-; 
+;
 ; PURPOSE:
 ;  Computes the spike triggered average for one or several
-;  signals. This averages an arbitrary signal <*>C</*> in the
+;  signals. This averages an arbitrary signal <*>c</*> in the
 ;  neighborhood of several events, that are deteremined by a second
-;  (binary) signal <*>B</*>.
+;  (binary) signal <*>b</*>.
 ;
 ; CATEGORY:
 ;  Statistics
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* s = STA(C , B [,t] [,PSHIFT=...] [,AVSTART=...] [AVSTOP=...])
+;* s = STA(c , b [,t] [,PSHIFT=...] [,AVSTART=...] [AVSTOP=...])
 ;
 ; INPUTS:
-;  C :: the signal(s) to be averaged (time, other-dims)
-;  B :: the trigger (binary) signals (time, other-dims)
-;
+;  c:: the signal(s) to be averaged (time, other-dims)
+;  b:: the trigger (binary) signals (time, other-dims)
+;  
 ; INPUT KEYWORDS:
-;  PSHIFT:: the average is computed in the interval of
+;  PSHIFT:: The average is computed in the interval of
 ;           <*>[-PSHIFT,PSHIFT]</*> around every trigger signal
-;           (default: 64)
+;           (default: 64).
 ;  AVSTART:: The starting time of the averaging interval relative to
 ;            the trigger signal. Negative values denote times that lie
 ;            past the trigger signal.
@@ -34,23 +37,27 @@
 ;            <*>AVSTART</*>. 
 ;
 ; OUTPUTS:
-; s :: the spike triggered average (delta_t, other-dims)
+;  s:: the spike triggered average (delta_t, other-dims)
+;  
 ;
 ; OPTIONAL OUTPUTS:
-; t :: the optional time axis belonging to the averaging interval.
+;  t:: the optional time axis belonging to the averaging interval.
+;
+; PROCEDURE:
+;  Find spikes and sum intervals around them.
 ;
 ; EXAMPLE:
-;* C = 20*RandomU(seed,1000)
-;* B = ROUND(0.6*RANDOMU(seed,1000))
-;* s = STA(C, B, t, PSHIFT=128)
+;* c = 20*RandomU(seed,1000)
+;* b = Round(0.6*RandomU(seed,1000))
+;* s = STA(c, b, t, PSHIFT=128)
 ;* plot, t, s
-;
 ;-
+
 
 FUNCTION STA, C, B, t, PSHIFT=pshift $
               , AVSTART=avstart, AVSTOP=avstop
 
-;ON_ERROR, 2
+   ON_ERROR, 2
 
    ;----->
    ;-----> CHECK & COMPLETE COMMAND LINE SYNTAX
@@ -87,10 +94,11 @@ FUNCTION STA, C, B, t, PSHIFT=pshift $
    db = sb(1:sb(0))
    IF N_Elements(db) GT 1 THEN nb = PRODUCT(db(1:N_Elements(db)-1)) ELSE nb=1
 
-   IF nb NE nc THEN Console, "B and C have to have same number of iterations.", /FATAL
+   IF nb NE nc THEN $
+    Console, "B and C must have same number of iterations.", /FATAL
 
-   c = REFORM(c, dc(0), nc, /OVERWRITE)
-   b = REFORM(b, db(0), nb, /OVERWRITE)
+   c = Reform(c, dc(0), nc, /OVERWRITE)
+   b = Reform(b, db(0), nb, /OVERWRITE)
    s = FltArr(avstop-avstart+1, nc)
    FOR i=0l, nc-1 DO BEGIN
        
@@ -102,22 +110,27 @@ FUNCTION STA, C, B, t, PSHIFT=pshift $
          ELSE _c = c(avstart:*, i)
          ;; append space at end of c if avstop lies in the future
          IF avstop GT 0 THEN _c = [_c, FltArr(avstop)] $
-         ELSE _c = _c(0:N_Elements(_c)+avstop-1)
+         ELSE BEGIN
+            nelc = N_Elements(_c)
+            _c = _c[0:nelc+avstop-1]
 ;           _C = [FltArr(Abs(avstart)),C(*,i),FltArr(avstop)] ; extend
 ;           signal to simplify summation (old version)
+         ENDELSE
+
          FOR j=0l, SpikeCount-1 DO $
           s(*,i) = s(*,i) + _C( BI(j): BI(j)-avstart+avstop)
-         S(*,i) = S(*,i)/FLOAT(SpikeCount)
+
+         s(*,i) = Temporary(s[*,i])/Float(SpikeCount)
       ENDIF 
    ENDFOR
 
-   b = REFORM(b, db, /OVERWRITE)
-   c = REFORM(c, dc, /OVERWRITE)
+   b = Reform(b, db, /OVERWRITE)
+   c = Reform(c, dc, /OVERWRITE)
 ;   s = REFORM(S, [2*pshift+1, dc(1:N_ELEMENTS(dc)-1)])
    IF N_Elements(dc) GT 1 THEN $
-    s = REFORM(S, [avstop-avstart+1, dc(1:N_ELEMENTS(dc)-1)]) $
+    s = Reform(S, [avstop-avstart+1, dc(1:N_ELEMENTS(dc)-1)], /OVERWRITE) $
    ELSE $
-    s = REFORM(S, avstop-avstart+1)
+    s = Reform(S, avstop-avstart+1, /OVERWRITE)
    
    t = IndGen(avstop-avstart+1)+avstart ; time axis is an optional output
 
