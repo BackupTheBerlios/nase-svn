@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.17  1999/07/28 08:14:07  saam
+;          return on error
+;
 ;     Revision 2.16  1999/06/15 17:36:39  kupper
 ;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
 ;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
@@ -118,6 +121,8 @@
 PRO OpenSheet, __sheet, multi_nr
 
    COMMON ___SHEET_KILLS, sk
+
+   On_Error, 2
 
    Handle_Value, __sheet, _sheet, /NO_COPY
 
