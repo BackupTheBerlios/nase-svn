@@ -9,10 +9,14 @@
 ; CALLING SEQUENCE: Der übliche Aufruf von RGB() geschieht in einer
 ;                    Graphikprozedur im COLOR-Schlüsselwort.
 ;                   
-;                   COLOR= RGB( Rot, Grün, Blau [,INDEX=Farbindex] [,START=Startindex] 
+;                   COLOR= RGB( {Rot,Grün,Blau | Farbname}
+;                               [,INDEX=Farbindex] [,START=Startindex] 
 ;                               [,/NOALLOC] )
 ;                    
-; INPUTS: Rot, Grün, Blau: Werte im Bereich 0..255, die die gewünschte Farbe definieren.
+; INPUTS: Entweder Rot, Grün, Blau: Werte im Bereich 0..255, die die
+;                                   gewünschte Farbe definieren,
+;         oder            Farbname: Ein String mit einem bekannten
+;                                   Farbnamen (s. <A HREF="#../../alien/COLOR">Color</A>.) 
 ;
 ; KEYWORD PARAMETERS:
 ;
@@ -110,6 +114,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.12  1998/02/23 14:59:43  kupper
+;               Versteht jetzt Farbnamen.
+;
 ;        Revision 1.11  1998/02/19 17:33:33  thiel
 ;               Sucht jetzt aehnlichste Farbe mit Hilfe des
 ;               YIC-Farbmodells.
@@ -141,6 +148,7 @@ FUNCTION RGB, R,G,B, INDEX=index, $; je 0..255
                       NOALLOC=noalloc
 Common common_RGB, My_freier_Farbindex   
   
+   If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
    IF !D.Name EQ 'PS' THEN BEGIN
       ; korrekte Behandlung nur fuer Grauwertpostscripts 
