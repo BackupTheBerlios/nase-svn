@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;  Creates a colortable to display your two dimensional data with a
-;  color code, which can be displayed using <A>PlotTvSCL</A> or
+;  color code, which can be displayed using <A>PTvS</A> or
 ;  others. The main advantage to using a fixed colormap is that you
 ;  do not have to scale your data to match the color table.
 ;  The colors are best matched to the individual data, in
@@ -18,20 +18,22 @@
 ;  data is not equally distributed around zero. The routine assures
 ;  that MAX(ABS(data)) is displayed with maximal saturation, but in
 ;  general the colortable is not symmetric around zero. However, zero is
-;  assured to be black or white.
+;  assured to be black or white. You may use a linear, logarithmic or
+;  exponential distribution of color values.
 ;
 ; CATEGORY:
 ;  Color
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;* BalanceCT, data [,TOP=...]  [, {/TOPRED | /TOPGREEN | /TOPBLUE} ]
+;*BalanceCT [,data] [,TOP=...] [, {/TOPRED | /TOPGREEN | /TOPBLUE} ]
 ;*                             [, {/ZEROBLACK | /ZEROWHITE} ]
 ;*                             [, {/BOTTOMRED | /BOTTOMGREEN | /BOTTOMBLUE} ]
 ;*                             [ {,EXP=...} | {,LOG=...} ]
 ;
 ; INPUTS:
-;  data :: the color table is adapted to this specific data
+;  data :: the color table is adapted to this specific data. If not
+;          specified, the colortable will be symmetric around zero.
 ;
 ; OPTIONAL INPUTS:
 ;  TOP :: The colortable will occupy the elements <*>0..TOP</*> in the
@@ -56,9 +58,9 @@
 ;  overwrites the existing colormap
 ;
 ; EXAMPLE:
-;*  n=randomu(seed,20,20)-0.3
-;*  balancect, n              
-;*  plottvscl, n,/legend     
+;*n=randomu(seed,20,20)-0.3
+;*balancect, n              
+;*plottvscl, n,/legend     
 ;
 ;-
 
@@ -102,9 +104,16 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
 
    cid = maci-mici+1             ;number of color indices used
 
-   mid = FLOAT(MIN(data))
-   mad = FLOAT(MAX(data))
-   
+   IF N_Params() EQ 1 THEN BEGIN
+       mid = FLOAT(MIN(data))
+       mad = FLOAT(MAX(data))
+   END ELSE BEGIN
+       ; symmetric around zero if no data is given
+       mid = -1.
+       mad =  1.
+   END
+
+
    ; nuf : negative upstroke flank
    ; puf : positive upstroke flank
    ; ndf : negative downstroke flank
