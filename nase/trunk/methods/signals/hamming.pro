@@ -42,6 +42,7 @@
 
 
 
+
 FUNCTION  Hamming,   N,   nonorm = nonorm
 
 
