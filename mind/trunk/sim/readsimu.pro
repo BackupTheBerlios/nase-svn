@@ -7,8 +7,9 @@
 ;
 ; CALLING SEQUENCE:   R = ReadSimu([LAYER] [,FILE=file] [,OS=os] [,/TD])
 ;
-; KEYWORD PARAMETERS: LAYER : species the layer to be read. Currently you have to
-;                             specify the index (name or filename may be implemented).
+; KEYWORD PARAMETERS: LAYER : species the layer to be read. You may
+;                             use the layer index or the file string
+;                             associated with the layer
 ;                     FILE  : you may specify a path/file (without suffices), if not the latest
 ;                             simulation (COMMON BLOCK ATTENTION) is taken
 ;                     OS    : the data's oversampling factor (it takes latest ATTENTION value if
@@ -28,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/05/16 16:25:11  saam
+;             layer syntax extended
+;
 ;       Revision 1.5  2000/04/06 09:34:51  saam
 ;             passes INFO keyword from and to readsim
 ;
@@ -69,10 +73,25 @@ FUNCTION ReadSIMU, Layer, FILE=file, OS=OS, TD=TD, INFO=info, _EXTRA=e
    ;----->
    ;----->  GLOBAL DEFINES
    ;----->
-   L = Handle_Val(P.LW(LAYER))
+
+   IF TypeOf(Layer) EQ 'STRING' THEN BEGIN
+       i = -1 & lidx = !NONE
+       REPEAT BEGIN
+            i=i+1
+            L = Handle_Val(P.LW(i))
+            IF Contains(L.file, layer) THEN BEGIN
+                lidx = i
+                i = N_Elements(P.LW)+1 ; terminate loop
+            END
+       END UNTIL (i GE N_Elements(P.LW)-1)
+   END ELSE lidx = layer
+   IF ((lidx LT 0) OR (lidx GT N_Elements(P.LW))) THEN Console, 'unknown layer', /FATAL
+   L = Handle_Val(P.LW(lidx))
    w = L.w
    h = L.h
    filename = FILE+'.'+L.FILE
+   
+   console, 'restoring '+L.name
    
    data = ReadSim(filename, INFO=info, _EXTRA=e)
    IF Keyword_Set(TD) THEN data = REFORM(data, h, w, (SIZE(data))(2), /OVERWRITE)
