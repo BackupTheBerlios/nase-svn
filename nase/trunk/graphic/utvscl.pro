@@ -63,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.17  1998/02/27 13:28:51  saam
+;           verbesserte Implementierung der DEVICE section
+;
 ;     Revision 2.16  1998/02/27 13:07:13  saam
 ;           Keyword DEVICE hinzugefuegt
 ;
@@ -132,7 +135,9 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    Default, stretch  , 1.0
    Default, v_stretch, 1.0
    Default, h_stretch, 1.0
-   
+   Default, centi    , 1   ; default is to TV with centimeters (disabled with DEVICE Keyword)
+
+
    ; don't modify the original image
    Image = _Image
    IF (Size(Image))(0) EQ 1 THEN Image = Reform(Image, N_Elements(Image), 1)
@@ -159,8 +164,9 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
 
    ; pos in Centimeters
    IF Keyword_Set(DEVICE) THEN BEGIN
-      xpos = (DOUBLE(xnorm) / !D.X_PX_CM)
-      ypos = (DOUBLE(ynorm) / !D.Y_PX_CM)
+      centi =  0
+      xpos = xnorm
+      ypos = ynorm
    END ELSE BEGIN
       xpos = (xnorm * !D.X_Size / !D.X_PX_CM)
       ypos = (ynorm * !D.Y_Size / !D.Y_PX_CM)
@@ -179,15 +185,15 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
       END
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
          IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e 
+            TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e 
          END ELSE BEGIN
-            TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+            TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
          END
       END ELSE BEGIN
          IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+            TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
          END ELSE BEGIN
-            TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+            TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
          END
       END
 
@@ -196,15 +202,15 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
       Device, BYPASS_TRANSLATION=0
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
          IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xnorm, /CENTIMETERS, _EXTRA=e
+            TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
          END ELSE BEGIN
-            TVScl, Image, xnorm, /CENTIMETERS, _EXTRA=e
+            TVScl, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
          END
       END ELSE BEGIN
          IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+            TV, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
          END ELSE BEGIN
-            TVScl, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+            TVScl, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
          END
       END
       Device, /BYPASS_TRANSLATION
