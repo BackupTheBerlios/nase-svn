@@ -52,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/06 14:04:56  thiel
+;            Wrapped draw-widget inside base to provide free uservalue.
+;
 ;        Revision 1.1  1999/09/01 16:43:53  thiel
 ;            Moved from other directory.
 ;
@@ -63,7 +66,11 @@
 
 FUNCTION Widget_ShowIt_Event, Event
 
-   WIDGET_CONTROL, Event.Handler, GET_UVALUE=uv
+   ;;event.HANDLER is the id of the outer Base.
+   ;;all information is stored in the UVALUE of its first child
+   FirstChild = Widget_Info(event.HANDLER, /CHILD)
+   Widget_Control, FirstChild, GET_UVALUE=uv
+;   WIDGET_CONTROL, Event.Handler, GET_UVALUE=uv
 
    IF TAG_NAMES(Event, /STRUCTURE_NAME) EQ  "WIDGET_TRACKING" THEN BEGIN  
       ;Pointer entered or left the widget
@@ -75,7 +82,7 @@ FUNCTION Widget_ShowIt_Event, Event
          uv.YourPalette.R = Red
          uv.YourPalette.G = Green
          uv.YourPalette.B = Blue
-         WIDGET_CONTROL, Event.Handler, SET_UVALUE=uv
+         WIDGET_CONTROL, firstchild, SET_UVALUE=uv
                                 ;set private palette:
          UTVLCT, uv.MyPalette.R, uv.MyPalette.G, uv.MyPalette.B 
                                 ;message, /INFO, "Setting private palette"
@@ -87,10 +94,13 @@ FUNCTION Widget_ShowIt_Event, Event
       ;;-----------End: Check if pointer entered widget and set color table---
      
       ; Swallow tracking events if user doesn't want them:
-      IF NOT uv.tracking_events THEN event = 0
+      IF NOT uv.tracking_events THEN Return, 0
 
    ENDIF
 
+   ; make it look as if the outer base had created the event:
+   event.id = event.handler 
+   
    Return, event
   
 END
@@ -110,7 +120,7 @@ FUNCTION Widget_ShowIt, Parent, $
   ;;obtain current color table:
    UTVLCT, /GET, Red, Green, Blue
 
-   userstruct = { info  : 'widget_showit'   ,$
+   xtrastruct = { info  : 'widget_showit'   ,$
                   p     : !P    ,$
                   x     : !X    ,$
                   y     : !Y    ,$
@@ -121,14 +131,19 @@ FUNCTION Widget_ShowIt, Parent, $
                   YourPalette : {R: Red, G: Green, B: Blue} $
                 }
 
-   id = Widget_Draw(Parent, $
-                    TRACKING_EVENTS=(private_colors OR tracking_events), $
-                    UVALUE=userstruct, /NO_COPY, $
-                    _EXTRA=_extra)
+   ; create outer base to have free uservalue:
+   b = Widget_Base(Parent)
 
-   Widget_Control, id, EVENT_FUNC='Widget_ShowIt_Event'
+   
+   ; put draw-widget inside base and store xtra-values in its UVALUE:
+   d = Widget_Draw(b, $
+                   TRACKING_EVENTS=(private_colors OR tracking_events), $
+                   UVALUE=xtrastruct, /NO_COPY, $
+                   _EXTRA=_extra)
+
+   Widget_Control, b, EVENT_FUNC='Widget_ShowIt_Event'
       
-   Return, ID
+   Return, b
 
 END
 

@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/06 14:04:56  thiel
+;            Wrapped draw-widget inside base to provide free uservalue.
+;
 ;        Revision 1.1  1999/09/01 16:43:53  thiel
 ;            Moved from other directory.
 ;
@@ -46,7 +49,10 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
 
    Default, save_colors, 1
 
-   WIDGET_CONTROL, widid, GET_UVALUE=uservalue, /NO_COPY
+
+   firstchild = Widget_Info(widid, /CHILD)
+
+   Widget_Control, firstchild, GET_UVALUE=uservalue, /NO_COPY
    
    new = !P
    !P =  uservalue.p
@@ -70,7 +76,7 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
       uservalue.MyPalette.B = Blue
    ENDIF 
 
-   WIDGET_CONTROL, widid, SET_UVALUE=uservalue, /NO_COPY      
+   Widget_Control, firstchild, SET_UVALUE=uservalue, /NO_COPY      
 
 
 END

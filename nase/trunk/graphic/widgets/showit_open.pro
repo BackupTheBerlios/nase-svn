@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/06 14:04:56  thiel
+;            Wrapped draw-widget inside base to provide free uservalue.
+;
 ;        Revision 1.1  1999/09/01 16:43:53  thiel
 ;            Moved from other directory.
 ;
@@ -45,7 +48,8 @@ PRO ShowIt_Open, widid
 
    Widget_Control, widid, /REALIZE
 
-   Widget_Control, widid, GET_VALUE=winid, GET_UVALUE=uservalue, /NO_COPY
+   firstchild = Widget_Info(widid, /CHILD)
+   Widget_Control, firstchild, GET_VALUE=winid, GET_UVALUE=uservalue, /NO_COPY
    UWSet, winid
 
    old = !P
@@ -61,6 +65,6 @@ PRO ShowIt_Open, widid
    !Z = uservalue.z
    uservalue.z = old
 
-   Widget_Control, widid, SET_UVALUE=uservalue, /NO_COPY
+   Widget_Control, firstchild, SET_UVALUE=uservalue, /NO_COPY
 
 END
