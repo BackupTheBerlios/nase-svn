@@ -127,9 +127,11 @@ PRO MSPLOT, z, zz, zzz $
    
 
 
-   ; initialize coordinate system, without actually plotting the axes
+   ;; initialize coordinate system, with actually plotting neither
+   ;; data nor the axes :
    IF NOT Keyword_Set(OPLOT) THEN $
-    Plot, x, m, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4, YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=e
+     Plot, x, m, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4 $
+     , YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=e
 
    IF Keyword_Set(BW) THEN BEGIN
        OPlot, x, m+sd(1,*), LINESTYLE=1
@@ -143,6 +145,12 @@ PRO MSPLOT, z, zz, zzz $
    END
 
    ; plot coordinate system only
-   IF NOT KEYWORD_Set(OPLOT) THEN $
-     Plot, x, m, /NODATA, /NOERASE, XRANGE=xrange, XSTYLE=xstyle, YRANGE=yr, YSTYLE=ystyle, _EXTRA=e
+   IF NOT KEYWORD_Set(OPLOT) THEN begin
+;     Plot, x, m, /NODATA, /NOERASE, XRANGE=xrange, XSTYLE=xstyle, YRANGE=yr, YSTYLE=ystyle, _EXTRA=e
+       Axis, XAXIS=0, XRANGE=xrange, XSTYLE=xstyle, _EXTRA=e
+       Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks'
+       Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, _EXTRA=e
+       Axis, YAXIS=1, YRANGE=yrange, YSTYLE=ystyle, YTICKFORMAT='noticks'
+   endif
+ 
 END
