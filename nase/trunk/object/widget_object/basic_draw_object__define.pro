@@ -125,13 +125,15 @@
 ;                          never be called directly.
 ;                          Note the trailing underscore.
 ;
-;   xct_callback_        : This method is called during interactive
+;   xct_callback_hook_   : This method is called during interactive
 ;                          palette selection using the xct method. Its
 ;                          purpose is to renew the portions of the
 ;                          display that may be affected by a changed
-;                          colormap.
+;                          colormap. The ShowIt widget is already
+;                          opened when this method is called, and will
+;                          be closed automatically when it returns.
 ;                          The default implementation of this method
-;                          simply calls the paint method to redraw the
+;                          simply calls the pain_hook_ method to redraw the
 ;                          whole display. Override this implementation
 ;                          in a subclass, if more sophisticated update
 ;                          methods exist.
@@ -193,8 +195,7 @@ End
 
 Pro BDO_UXLoadCT_Callback, DATA=o
    COMPILE_OPT HIDDEN
-;;   o->paint_hook_
-   o->xcd_callback_
+   o->paint, /XCT_CALLBACK_
 End
 
 ;; ------------ Member access methods -----------------------
@@ -334,13 +335,22 @@ Pro basic_draw_object::cleanup, _REF_EXTRA = _ref_extra
 End
 
 ;; ------------ Public --------------------
-Pro basic_draw_object::paint
+Pro basic_draw_object::paint, XCT_CALLBACK_ = xct_callback_
+   ;; note: the XCT_CALLBACK_ keyword is for internal use only, and is
+   ;;       not documented in the header. It is set, when interactive
+   ;;       palette selection using the xct method is used. In this
+   ;;       case, xct_callback_hook_ is called for updating the
+   ;;       display, otherwise paint_hook_ is called. The default
+   ;;       implementation of xct_callback_hook_ just calls
+   ;;       paint_hook_, but the user is free to reimplement it.
    If self.prevent_paint_flag then begin
       self.delayed_paint_request_flag = 1;store the request
    endif else begin ;;paint
       If Widget_Info(self.widget, /Realized) then begin
          showit_open, self.w_showit
-         self->paint_hook_
+         If keyword_set(XCT_CALLBACK_) then $
+           self -> xct_callback_hook_ else $
+           self -> paint_hook_
          showit_close, self.w_showit, Save_Colors=self.save_colors
       Endif else begin
          console, /Warning, "Warning: Ignored paint request for unrealized " + $
@@ -375,7 +385,7 @@ Pro basic_draw_object::ct, n
       showit_open, self.w_showit
       ULoadCt, n
       showit_close, self.w_showit, Save_Colors=self.save_colors
-      self->paint
+      self->paint, /XCT_CALLBACK_
    Endif else begin
       console, /Debug, "Postponed ct request for unrealized " + $
           "widget-object."
@@ -409,10 +419,11 @@ Pro basic_draw_object::xct, _EXTRA=_extra
 End
 
 ;; ------------ Private --------------------
-Pro basic_draw_object::xct_callback_
+Pro basic_draw_object::xct_callback_hook_
    ;; the default implementation of this routine simply calls the
-   ;; paint method. Override as desired.
-   self -> paint
+   ;; paint_hook_ method. Override as desired.
+   print, "basic_draw_object::xct_callback_hook_"
+   self -> paint_hook_
 End
 
 Pro basic_draw_object::paint_hook_; -ABSTRACT-
