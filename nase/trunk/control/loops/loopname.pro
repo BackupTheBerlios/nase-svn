@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/04/04 13:21:04  saam
+;           corrected typo
+;
 ;     Revision 1.6  2000/04/04 13:02:34  saam
 ;           + added PNAME keyword to get the name for the next
 ;             higher loop order but deactivated it, because i'm
@@ -106,6 +109,6 @@ ON_ERROR, 2
 ;      IF (PName EQ '') AND NOT Keyword_Set(PRINT) THEN PName = '_'
       RETURN, Name
 
-   END ELSE , CONSOLE, 'no valid loop structure passed', /FATAL
+   END ELSE CONSOLE, 'no valid loop structure passed', /FATAL
 
 END
