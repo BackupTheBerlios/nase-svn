@@ -27,8 +27,9 @@
 ;                         REPEAT BEGIN
 ;                           print, LoopName(LS)
 ;                           print, LoopName(LS,/NOLONG)
-;                           tmpStruc = Looping(LS, dizzy)
+;                           tmpStruc = LoopValue(LS)
 ;                           dummy = Get_Kbrd(1)
+;                           Looping, LS, dizzy
 ;                         END UNTIL dizzy
 ;
 ;                    ScreenShot:
@@ -41,11 +42,14 @@
 ;                           _C_2_D_C
 ;                           _2_C                                   
 ;      
-; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPING">Looping</A>
+; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPING">Looping</A>, <A HREF="#LOOPVALUE">LoopValue</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/11/26 09:21:38  saam
+;           Update der Docu
+;
 ;     Revision 1.1  1997/11/25 16:42:16  saam
 ;           vom Hundertsten ins Tausendste
 ;

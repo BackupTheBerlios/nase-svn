@@ -25,9 +25,10 @@
 ;                                          d:['A','C'] }
 ;                         LS = InitLoop(MeineParameter)
 ;                         REPEAT BEGIN
-;                           tmpStruc = Looping(LS, dizzy)
+;                           tmpStruc = LoopValue(LS)
 ;                           help, tmpStruc, /STRUCTURE
 ;                           dummy = Get_Kbrd(1)
+;                           Looping, LS, dizzy
 ;                         END UNTIL dizzy
 ;
 ;                    ScreenShot:
@@ -52,11 +53,14 @@
 ;                           C               INT              2
 ;                           D               STRING    'C'
 ;      
-; SEE ALSO:          <A HREF="#LOOPING">Looping</A>,<A HREF="#LOOPNAME">LoopName</A>
+; SEE ALSO:          <A HREF="#LOOPING">Looping</A>, <A HREF="#LOOPNAME">LoopName</A>, <A HREF="#LOOPVALUE">LoopValue</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1997/11/26 09:21:39  saam
+;           Update der Docu
+;
 ;     Revision 1.4  1997/11/25 16:44:00  saam
 ;           Hyperlink-Update
 ;
