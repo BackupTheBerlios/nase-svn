@@ -149,6 +149,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  2000/12/14 15:15:19  kupper
+;        Broke on first call, as Queue(/Valid) now issues error, when no valid elements are in queue.
+;
 ;        Revision 2.4  2000/09/25 09:13:10  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -182,7 +185,8 @@ Function Regler, Regler, Ist, Soll, P=p, D=d, I=i
    Last_S = Head(Regler)        ;Stellgröße vom letzten Aufruf
    delta_S = S-Last_S
 
-   Durchschnitt = Total(Queue(Regler, /VALID))/n_elements(Regler.Q) ;Durchschnitt über die gesamte Gedächtnislänge
+   If ContainedElements(Queue, /Valid) eq 0 then Durchschnitt = 0 else $
+    Durchschnitt = Total(Queue(Regler, /VALID))/n_elements(Regler.Q) ;Durchschnitt über die gesamte Gedächtnislänge
    ;;--------------------------------
    
    ;;------------------> aktuelle Stellgröße merken:
