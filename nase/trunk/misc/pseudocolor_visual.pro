@@ -1,6 +1,7 @@
 ;+
 ; NAME:
 ;   Pseudocolor_Visual()
+;
 ; PURPOSE:
 ;   On the X or WIN graphics device, determine whether the device runs in Pseudocolor 
 ;   mode or not.
@@ -29,7 +30,7 @@
 ;   TrueColor              no
 ;   DirectColor            no
 ;
-; CATEGORY:
+; CATEGORY: Graphics
 ;   
 ; CALLING SEQUENCE:
 ;   result = Pseudocolor_Visual()
@@ -50,13 +51,18 @@
 ;   concrete, Pseudocolor_Visual() will yield false results for StaticGray and
 ;   StaticColor visuals, as these are 8-bit, but not pseudocolor
 ;   systems. Anyway, these visuals are seldom used.
+;
 ; EXAMPLE:
 ;
 ; SEE ALSO:
+;   <A HREF="../graphic/colors/#RGB">RGB()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/03/07 14:43:51  kupper
+;        Updated Header.
+;
 ;        Revision 1.4  2000/03/07 14:19:15  kupper
 ;        Added StaticGrey and StaticColor visual check.
 ;        Added header.
