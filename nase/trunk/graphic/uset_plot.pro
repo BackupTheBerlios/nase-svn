@@ -39,7 +39,7 @@ pro uset_plot, Device, _EXTRA=extra
    __device = device
 
    if __Device EQ 'X' and not XAllowed() then begin
-      printf,-2, "% WARN: (USET_PLOT) DISPLAY environment variable not set: cannot set device to '"+ __Device+"'"
+      printf,-2, "% WARN: (USET_PLOT) X Connections not allowed (see XAllowed()): cannot set device to '"+ __Device+"'"
       printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
       flush, -2
       __Device = 'Z'
