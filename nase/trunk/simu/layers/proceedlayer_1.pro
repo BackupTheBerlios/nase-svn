@@ -40,6 +40,7 @@
 ;
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotentials, Mirko Saam, 25.7.97
+;                       Schwelle wird jetzt erst im naechsten Zeitschritt erhoeht, Mirko Saam, 29.7.97
 ;
 ;- 
 FUNCTION ProceedLayer_1, Layer, FeedingIn, LinkingIn, InhibitionIn
