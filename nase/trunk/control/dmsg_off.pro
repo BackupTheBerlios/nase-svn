@@ -1,3 +1,17 @@
+;+
+; NAME: 
+;   DMsg_off
+;
+; VERSION:
+;   $Id$
+;
+; AIM:
+;   Internal use
+;   
+; CATEGORY:
+;  Internal
+;
+;-
 ; This module is needed for the "Debugging" command.
 
 Pro DMsg, con, message
