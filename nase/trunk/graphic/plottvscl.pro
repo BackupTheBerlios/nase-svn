@@ -84,6 +84,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.32  1998/08/04 14:28:38  gabriel
+;          Bug bei Convert_Coord nochmals verbessert/korrigiert
+;
 ;     Revision 2.31  1998/08/04 13:23:32  gabriel
 ;          Jetzt mit !P.MULTI Funktionalitaet. (Convert_Coord korrigiert, kann
 ;          bei hoeheren (>4.0)  IDL Versionen wieder falsch sein)
@@ -259,8 +262,10 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
    plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
    ;; convert_coord macht bei !P.MULTI Fehler Y Koordinate muss korregiert werden
-   IF FLOAT(!P.MULTI(2)) GT 0 AND ArrayHeight GT ArrayWidth THEN $
-    plotregion_norm(1,1) = !Y.S(0)+ !Y.S(1)*ycoord(N_ELEMENTS(ycoord)-1)/FLOAT(2)
+   IF FLOAT(!P.MULTI(2)) GT 0 AND (ArrayHeight GT ArrayWidth) THEN BEGIN
+      plotregion_norm(1,1) = !Y.S(0)+ !Y.S(1)*ycoord(N_ELEMENTS(ycoord)-1)*  ArrayWidth/FLOAT(ArrayHeight)
+      ;print,"hallo",plotregion_norm(1,1)
+   ENDIF
    plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
   
    !P.MULTI = PTMP
@@ -350,12 +355,12 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
          ;PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
          PlotPositionDevice(3) = plotregion_device(1,1)
-         print, PlotPositionDevice,'hallo1'
+         ;print, PlotPositionDevice,'hallo1'
       ENDIF ELSE BEGIN
          PlotPositionDevice(3) = PixelSizeDevice(0)*(ArrayHeight+1)+OriginDevice(1)
          ;PlotPositionDevice(2) = VisualWidth - UpRightDevice(0)
          PlotPositionDevice(2) = plotregion_device(0,1) - LegendRandDevice
-         print,PlotPositionDevice,'hallo2'
+         ;print,PlotPositionDevice,'hallo2'
       ENDELSE 
 
       Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
