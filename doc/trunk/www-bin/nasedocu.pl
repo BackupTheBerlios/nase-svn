@@ -48,6 +48,7 @@ sub fixhl {
   foreach (@lines){
     s/<[^<>]*>//g; # remove HTML stuff
     s/\s+//g;      # remove whitespaces    
+    s,\(.*?\),,g;  # remove braces like routine()
     my @url = split(',', $_);
     foreach my $routine (@url){
       @res = grep { /\/$routine\.pro/i  } @ridx; 
@@ -121,6 +122,50 @@ sub updatedoc {
   print "...done</PRE>";
 }
 
+
+sub showedit {
+  my ($res);
+
+  $file = shift(@_);
+  $file .= ".pro" unless $file =~ /\.pro$/i;
+  $name = basename($file);
+  $name =~ s,\.pro$,,;
+  
+  
+  open (CMD, "cd ".dirname($file)."; cvs editors ".basename($file)."|") || die "can't open pipe: $!\n";
+  $res = '';
+  while (<CMD>){
+    if (m,^$name.pro\s+(\w+)\s+(.*GMT),){$res = "currently edited by $1 since $2";}
+
+  }
+  close(CMD) || die "can't close pipe: $!\n";
+  return $res;
+}
+
+
+sub showlog {
+
+  my ($file,$name);
+
+  $file = shift(@_);
+  $file .= ".pro" unless $file =~ /\.pro$/i;
+  $name = basename($file);
+  $name =~ s,\.pro$,,;
+  
+  print h1("$name <FONT SIZE=-1><A HREF=$fullurl?file=".lc($name)."&mode=text&show=header>header</A> <A HREF=$fullurl?file=".lc($name)."&mode=text&show=source>source</A> ".showedit($file)."</FONT>"); 
+  
+  open (CMD, "cd ".dirname($file)."; cvs log ".basename($file)."|") || die "can't open pipe: $!\n";
+  print "<PRE>";
+  while (<CMD>){
+    print;
+  }
+  print "</PRE>";
+  close(CMD) || die "can't close pipe: $!\n";
+  
+}
+
+
+
 sub showheader {
 
   my $file = shift(@_);
@@ -136,7 +181,7 @@ sub showheader {
     s/^;//;
 
     {
-      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=huhe2>modifications</A></FONT>"); $namefound=1; } else {print;};  last;};
+      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>"); $namefound=1; } else {print;};  last;};
       /(SEE\s+ALSO\s*:\s+)(.*)/i && do {print $1, fixhl($2); last; };
       print;
     }
@@ -162,7 +207,7 @@ my @keywords = qw (AND BEGIN CASE COMMON DO ELSE END ENDCASE ENDELSE ENDFOR
   print "<PRE>";
   while ($line = <IN>){
     if ((! $namefound) && ($line =~ /NAME\s*:\s*(\w+)/i)){
-      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=header>header</A> <A HREF=huhe2>modifications</A></FONT>");
+      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=header>header</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>");
       $namefound = 1;
     }
     last if ($line =~ /^[PRO|FUNCTION]/i);
@@ -210,7 +255,7 @@ sub showdirs {
   if ($reldir ne '/'){ 
     $reldir =~ s/^\/+//g;
     print font({size=>"+1"},$reldir),br;
-    print a({href=>$myurl.ddot($reldir)."?mode=list"}, img({src=>"/icons/back.gif",alt=>"[DIR]",border=>"0"})."  parent dir"), br;
+    print a({href=>$myurl."/".ddot($reldir)."?mode=list"}, img({src=>"/icons/back.gif",alt=>"[DIR]",border=>"0"})."  parent dir"), br;
   }
   foreach $ndir (sort @ndir) {
     if (($ndir ne "CVS") && ($ndir ne "RCS")){
@@ -264,9 +309,9 @@ if ($P::mode){
 		      font({size=>"-2"}, 
 			   '$Id$ ');
 		      last TRUNK;};
-    /text/i   && do { if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); }
-				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); }
-				  };
+    /text/i   && do { if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); };
+				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
+				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };};
 		      last TRUNK;};
   }
 } else {
