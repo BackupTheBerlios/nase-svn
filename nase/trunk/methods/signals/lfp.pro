@@ -34,6 +34,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/04/01 16:19:03  saam
+;           now also a single region of interest
+;           is investigated (small bug)
+;
 ;     Revision 1.2  1998/03/04 09:34:59  saam
 ;           new keyword ROI
 ;
@@ -49,7 +53,13 @@ FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
    IF N_Params() NE 2 THEN Message, 'wrong number of arguments'
 
    mtS    = SIZE(mt)
+
    listS  = SIZE(list)
+   IF listS(0) EQ 1 AND N_Elements(list) EQ 2 THEN BEGIN
+      list = REFORM(list, 2, 1, /OVERWRITE)
+      listS = SIZE(list)
+   END
+
    maxROI = listS(1)  
    maxT   = mtS(3)
 
