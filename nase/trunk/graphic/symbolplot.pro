@@ -112,6 +112,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1998/06/30 20:42:49  thiel
+;               Neue Keywords X/YTICKNAMESHIFT koennen an PrepareNasePlot
+;               durchgereicht werden.
+;
 ;        Revision 2.4  1998/06/08 10:28:29  thiel
 ;               NoNone durch NoNone_Proc ersetzt.
 ;
@@ -131,7 +135,8 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
                POSORIENT=posorient, NEGORIENT=negorient, ORIENTATIONS=_orientations, RAD=rad, DIRECTION=direction, $
                NASE=nase, noscale=noscale, $
                THICK=thick, FILL=fill, $
-               _EXTRA=_extra
+               XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift, $
+                _EXTRA=_extra
 
    Default, thick, 0
    Default, nase, 0
@@ -141,6 +146,8 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
    Default, POSCOLOR, !P.COLOR
    Default, NEGCOLOR, RGB("red", /NOALLOC)
    Default, NONECOLOR, RGB("pale blue", /NOALLOC)
+   Default, XTICKNAMESHIFT, 0
+   Default, YTICKNAMESHIFT, 0
 
    If Keyword_Set(NASCOL) then begin
       If not Keyword_Set(NASE) then message, /INFORM, "/NASCOL-Schlüsselwort gesetzt, aber nicht /NASE - sicher?"
@@ -169,7 +176,8 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
 
 
    ;;------------------> !X und !Y geeignet setzen
-   PrepareNasePlot, height, width, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot
+   PrepareNasePlot, height, width, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot, $
+    XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift
    ;;--------------------------------
 
    ;;------------------> Koordinatensystem plotten
