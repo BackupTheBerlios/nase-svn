@@ -27,7 +27,7 @@
 ;*                   [,FEEDING=Feeding] 
 ;*                   [,FFEEDING1=ffeeding1][,SFEEDING=sfeeding] 
 ;*                   [,LINKING=linking][,ILINKING=ilinking]  
-;*                   [,INHIBITION=Inhibition]
+;*                   [,INHIBITION=Inhibition][,SHUNTING=shunting]
 ;*                   [,SNHIBITION=sinhibition][,FINHIBITION=finhibition]
 ;*                   [,POTENTIAL=Potential]
 ;*                   [,THRESHOLD=threshold] 
@@ -90,6 +90,7 @@ PRO LayerData, _Layer, $
                , ILINKING=ilinking $
                , INHIBITION=inhibition, $
                FINHIBITION=finihibition, SINHIBITION=sinhibition,$
+               SHUNTING=shunting, MEMTAU=memtau, $
                POTENTIAL=potential, $
                SCHWELLE=schwelle, LSCHWELLE=lschwelle $
                , THRESHOLD=threshold, STHRESHOLD=sthreshold, $
@@ -154,7 +155,6 @@ PRO LayerData, _Layer, $
       ELSE: IF n GT 1 THEN linking = REFORM(Layer.L, Layer.H, Layer.W) ELSE linking = Layer.L
    ENDCASE
    
-
 ;--- handle INHIBITION
    CASE Layer.TYPE OF
       '7' : BEGIN
@@ -166,6 +166,13 @@ PRO LayerData, _Layer, $
             sinhibition = Layer.I2
          END
       END
+
+      '12' : BEGIN
+         IF n GT 1 THEN shunting = REFORM(Layer.X, Layer.H, Layer.W) $
+         ELSE shunting = Layer.Layer.X
+         IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
+      end 
+
       '8' : inhibition = !NONE
       '9' : inhibition = !NONE
      ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
