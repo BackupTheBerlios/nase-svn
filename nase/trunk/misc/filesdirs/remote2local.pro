@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/10/29 11:41:06  saam
+;           Ermittlung des Hosts aus dem Pfadnamen in Path2Host
+;     	ausgelagert
+;
 ;     Revision 1.1  1997/10/29 11:10:44  saam
 ;          vom Klapperstorch gebracht
 ;
@@ -58,19 +62,8 @@ FUNCTION Remote2Local, RemoteDir, WishDir, NOZIP=nozip
    User = User(0)
    
 
-;   
-;---------> get the host where data-dir resides
-;
-   RemoteHost = 'dummy'
-   IF Contains(RemoteDir, '/usr/ax1302') THEN RemoteHost = 'ax1302'
-   IF Contains(RemoteDir, '/usr/ax1303') THEN RemoteHost = 'ax1303'
-   IF Contains(RemoteDir, '/usr/elauge1') OR Contains(RemoteDir, '/usr/ax1315') THEN RemoteHost = 'ax1315'
-   IF Contains(RemoteDir, '/usr/ax1317') OR Contains(RemoteDir, '/home/gonzo') THEN RemoteHost = 'ax1317'
-   IF Contains(RemoteDir, '/usr/ax1318') THEN RemoteHost = 'ax1318'
-   IF Contains(RemoteDir, '/usr/ax1319') THEN RemoteHost = 'ax1319'
-   IF Contains(RemoteDir, '/usr/neuro') OR Contains(RemoteDir, '/home/neuro') THEN RemoteHost = 'neuro'
-   IF RemoteHost EQ 'dummy' THEN Message, 'could not get host where datadir resides'
-   
+   ; get the host where remote-dir resides
+   RemoteHost = Path2Host(RemoteDir)
 
      
 ;
