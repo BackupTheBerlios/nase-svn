@@ -107,6 +107,12 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Thu Aug 28 21:51:10 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Weights und Delays sind jetzt Floats und keine Doubles
+;		mehr.
+;
 ;       Tue Aug 19 15:24:06 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -216,9 +222,9 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  source_h: s_height,$
                  target_w: t_width,$
                  target_h: t_height,$
-                 Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
+                 Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
                  Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
-                 Delays  : Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ),$
+                 Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height ),$
                  Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ), $
                  VP      : FLOAT(learn_vp),$
                  DP      : exp(-1.0/FLOAT(learn_taup)),$
@@ -229,7 +235,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                 source_h: s_height,$
                 target_w: t_width,$
                 target_h: t_height,$
-                Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
+                Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
                 Delays  : [-1, -1] $
                }
    END
