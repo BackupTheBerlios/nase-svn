@@ -26,7 +26,7 @@
 ;
 ; CATEGORY: SIMULATION, PLASTICITY
 ;
-; CALLING SEQUENCE: LearnABS, G, SOURCE_CL=SourceCluster, TARGET_CL=TargetCluster, 
+; CALLING SEQUENCE: LearnABS, G, TARGET_CL=TargetCluster, 
 ;                             RATE=Rate, ALPHA=Alpha,
 ;                             ENTLERNAPMLITUDE=ThetaMinus, LERNAMPLITUDE=ThetaPlus
 ;                             [,/SELF | ,/NONSELF]
@@ -64,7 +64,7 @@
 ;            5. Der neue Zustand der Gewichtsmatrix wird aus dem alten
 ;                plus DeltaW ermittelt.
 ;
-; EXAMPLE: LearnABS, W, SOURCE_CL=Layer, TARGET_CL=Layer, RATE=0.01, ALPHA=1.0, $
+; EXAMPLE: LearnABS, W, TARGET_CL=Layer, RATE=0.01, ALPHA=1.0, $
 ;                    LERNAPMLITUDE=0.8, ENTLERNAMPLITUDE=0.4, /NONSELF
 ;          veraendert die Matrix W entsprechend dem Zustand des
 ;          Clusters 'Layer', dh es werden Intra-Cluster-Verbindungen
@@ -74,6 +74,12 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.6  1998/08/23 12:59:21  saam
+;       + Delayed-Version didn't work at all -> its ok now i guess
+;       + syntax change: the specificaion of a source cluster is
+;                        unnecessary, because relevant informations
+;                        are already available in SDW
+;
 ; Revision 2.5  1998/03/11 11:59:24  thiel
 ;        Bugfix: C2T allein war undefiniert, DW.C2T tuts,
 ;        hoffentlich ists auch richtig.
@@ -102,17 +108,18 @@
 
 
 PRO LearnABS, _DW, $
-              SOURCE_CL=Source_Cl, TARGET_CL=Target_Cl, $
+              TARGET_CL=Target_Cl, $
               RATE=Rate, ALPHA=Alpha, $
               LERNAMPLITUDE=Lernamplitude, ENTLERNAMPLITUDE=Entlernamplitude, $
               SELF=Self,NONSELF=NonSelf
   
 
-;-----Die Prozedur muss nichts tun, wenn keine praesynaptischen Spikes vorliegen: 
-   Handle_Value, Source_Cl.O, Prae 
+   ;-----Die Prozedur muss nichts tun, wenn keine praesynaptischen Spikes vorliegen: 
+   Prae = LearnAP(_DW)
    If Prae(0) EQ 0 Then Return
 
    Handle_Value, _DW, DW, /NO_COPY
+
 
    ; si : index to source neuron
    ; sn : to si belonging source neuron
@@ -120,11 +127,12 @@ PRO LearnABS, _DW, $
 
    IF DW.info EQ 'SDW_WEIGHT' THEN BEGIN
 
+
       FOR si=2,Prae(0)+1 DO BEGIN
          sn = Prae(si)
          IF DW.S2C(sn) NE -1 THEN BEGIN
             Handle_Value, DW.S2C(sn), wi
-            DeltaW = DW.W(wi)-DW.W(wi)-1.0
+            DeltaW = Make_Array(N_Elements(wi),/FLOAT,  VALUE=-1)
             Rauf = Where(Target_Cl.M(DW.C2T(wi)) GE Lernamplitude, c1)
             IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
             Gleich = Where(Target_Cl.M(DW.C2T(wi)) LT Entlernamplitude, c2)
@@ -140,24 +148,20 @@ PRO LearnABS, _DW, $
    END ELSE BEGIN 
       IF DW.info EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          
-         FOR si=2,Prae(0)+1 DO BEGIN
-            sn = Prae(si)
-            IF DW.S2C(sn) NE -1 THEN BEGIN
-               Handle_Value, DW.S2C(sn), wi
-               DeltaW = DW.W(wi)-DW.W(wi)-1.0
-               Rauf = Where(Target_Cl.M(DW.C2T(wi)) GE Lernamplitude, c1)
-               IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
-               Gleich = Where(Target_Cl.M(DW.C2T(wi)) LT Entlernamplitude, c2)
-               IF c2 NE 0 THEN DeltaW(Gleich) = 0.0
-               IF Set(NONSELF) THEN BEGIN
-                  self = WHERE(DW.C2T(wi) EQ tn, count)
-                  IF count NE 0 THEN deltaw(self) = 0.0
-               ENDIF
-               DW.W(wi) = DW.W(wi) + Rate*deltaw
-            ENDIF
-         ENDFOR
+         wi = Prae(2:Prae(0)+1)
          
-      END ELSE Message, 'illegal first argument'
+         DeltaW = Make_Array(N_Elements(wi),/FLOAT,  VALUE=-1)
+         Rauf = Where(Target_Cl.M(DW.C2T(wi)) GE Lernamplitude, c1)
+         IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
+         Gleich = Where(Target_Cl.M(DW.C2T(wi)) LT Entlernamplitude, c2)
+         IF c2 NE 0 THEN DeltaW(Gleich) = 0.0
+         IF Set(NONSELF) THEN BEGIN
+            self = WHERE(DW.C2T(wi) EQ DW.C2S(wi), count)
+            IF count NE 0 THEN deltaw(self) = 0.0
+         ENDIF
+         print, 'LEARN: ',c1,'   EQUAL: ',c2, '    DELEARN: ',N_Elements(wi)-c1-c2
+         DW.W(wi) = (DW.W(wi) + Rate*deltaw) >  0.0 < Alpha
+      ENDIF ELSE Message, 'illegal first argument'
    END
 
    Handle_Value, _DW, DW, /NO_COPY, /SET
