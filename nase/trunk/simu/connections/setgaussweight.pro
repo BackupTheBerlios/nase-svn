@@ -9,7 +9,8 @@
 ; CALLING SEQUENCE: SetGaussWeight ( DWS
 ;                                   [,Maximum] [,Sigma | ,HWB=Halbwertsbreite]
 ;                                    ,S_ROW=Source_Row, S_COL=Source_Col
-;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col )
+;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
+;                                   [,ALL [,LWX ,LWY]] )
 ;
 ;
 ; 
@@ -23,7 +24,7 @@
 ;                  Sigma  : Standardabweichung in Gitterpunkten.
 ;                           alternativ kann in HWB die Halbwertsbreite angegeben werden.
 ;	
-; KEYWORD PARAMETERS: s.o.
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY : s. SetWeight!
 ;
 ; OUTPUTS: ---
 ;
@@ -52,6 +53,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Mon Aug 4 01:14:21 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		ALL, LWX, LWY zugefügt.
+;
 ;       Fri Aug 1 17:55:26 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -60,11 +66,13 @@
 ;-
 
 Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb, $
-                       S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col
+                       S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
+                       ALL=all, LWX=lwx, LWY=lwy
 
    Default, Amp, 1
 
    SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
-              Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
+              Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row), $
+              ALL=all, LWX=lwx, LWY=lwy
 
 end
