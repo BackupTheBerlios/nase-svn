@@ -79,7 +79,10 @@
 ;                                D   INT = Array[10, 3, 20, 30] 
 ;-     
 ; MODIFICATION HISTORY:
-;        $Log:
+;        $Log$
+;        Revision 1.2  2000/09/28 16:45:21  gabriel
+;             local variables for keyword extend
+;
 ;
 function concat,A, B, index, extend=extend, overwrite=overwrite
 
@@ -91,17 +94,17 @@ default, add, 0
 default, overwrite , 0
 over_a = overwrite
 over_b = overwrite
-
+__extend = extend
 
 s_a = size(a)
 s_b = size(b)
 
 if (s_b(0) +1) EQ s_a(0) then begin 
    add = 1 
-   extend = 0
+   __extend = 0
 endif
 
-if ( index GE s_a(0) and extend eq 0 ) OR  ( index GT s_a(0) and extend eq 1 )  then $
+if ( index GE s_a(0) and __extend eq 0 ) OR  ( index GT s_a(0) and __extend eq 1 )  then $
  Console, 'Array dimension missmatch', /FATAL
 
 
@@ -109,7 +112,7 @@ if ( index GE s_a(0) and extend eq 0 ) OR  ( index GT s_a(0) and extend eq 1 )  
 s_na = s_a(1:s_a(0))
 s_nb = s_b(1:s_b(0))
 
-if extend ge 1 then begin
+if __extend ge 1 then begin
 
    s_na = shift([1, shift( s_a(1:s_a(0)), -index)], index)
    s_nb = shift([1, shift( s_b(1:s_b(0)), -index)], index)
@@ -122,7 +125,7 @@ if add ge 1 then begin
  
    s_nb = shift([1, shift( s_b(1:s_b(0)), -index)], index)
    s_b = [ s_b(0)+1, s_nb, s_b(s_b(0)+1), s_b(s_b(0)+2) ]
-   extend = 1
+   __extend = 1
    over_a = 1
    
 endif
@@ -144,7 +147,7 @@ if s_a(0) GE 2 THEN $
           EQ ((s_b(1:s_b(0)))(shift_index))(1:s_b(0)-1) ) NE (s_a(0)-1) then $
  Console, 'Array dimension missmatch', /FATAL
 
-if extend eq 1 then begin
+if __extend eq 1 then begin
 
    if index NE 0 then $
     return,  utranspose([utranspose(reform(a,s_na, overwrite=over_a), shift_index),$
