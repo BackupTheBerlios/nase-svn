@@ -1,5 +1,10 @@
 ;+
 ;       $Log$
+;       Revision 1.43  2001/02/27 17:04:41  saam
+;       defined several default values (as defined by the IDL help)
+;       for !P, !X, !Y settings, because IDL leaves them zero, but assumes other default,
+;       which confuses several NASE routines that rely on correct settings
+;
 ;       Revision 1.42  2001/02/13 10:48:01  saam
 ;       removed annoying "product placement"
 ;
@@ -159,6 +164,18 @@ ResetCM
 ;; !NASEP system variable:
 Foreground, "white"          ; default foreground is white
 Background, "black"          ; default background is black
+!X.TICKLEN = 0.02            ; this is IDLs default value for the ticklen; in its IDL like  
+!Y.TICKLEN = 0.02            ; fashion that we all adore, it sets it to 0.00 but uses 0.02 
+                             ; and confuses several NASE routines, that rely on a correct 
+                             ; setting of the ticklen  
+!P.THICK     = 1.            ; ...same *argh!!*	
+!X.THICK     = 1.
+!Y.THICK     = 1.
+!P.CHARSIZE  = 1.
+!X.CHARSIZE  = 1.
+!Y.CHARSIZE  = 1.
+!P.CHARTHICK = 1
+                             ; 
 SelectNASETable, /STANDARD   ; default NASE color table set
 !NASEP.INTERPOLATION=0       ; 0:none, 1:linear, 2:cubic, 3:none(polygons)
 
