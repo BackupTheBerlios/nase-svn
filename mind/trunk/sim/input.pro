@@ -1,69 +1,33 @@
 ;+
-; NAME:                Input
+; NAME:
+;  Input()
 ;
-; AIM:                 provides all input to simulations (used by <A>Sim</A>)
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:             Generates various inputs for various Layers. This routine
-;                      is called from SIM. It makes nearly no sense to call it directly.
+; AIM:
+;  Provides all input to simulations (used by <A>Sim</A>).
 ;
-; CATEGORY:            MIND SIM INTERNAL
+; PURPOSE:
+;  Generates various inputs for various Layers. This routine is called
+;  from <A>Sim</A>. It makes nearly no sense to call it directly. See
+;  comments in source for more details. 
 ;
-; COMMON BLOCKS:       ATTENTION
-;                      COMMON_RANDOM : nase COMMON block 
-;                      PLOT_INPUT    : shares plotcilloscope with INPUT
-;                      SH_INPUT      : shares sheets with INPUT
-;                      INPUT         : shares serveral data structures with INPUT
+; CATEGORY:
+;  Input
+;  Internal
+;  MIND
+;  Simulation  
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#FREEINPUT>freeinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>
+; COMMON BLOCKS:
+;  ATTENTION
+;  COMMON_RANDOM:: nase COMMON block 
+;  PLOT_INPUT:: shares plotcilloscope with INPUT
+;  SH_INPUT:: shares sheets with INPUT
+;  INPUT:: shares serveral data structures with INPUT
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.12  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.11  2000/07/04 08:55:53  saam
-;           + passes file skeleton to IFfilters via FILE keyword
-;           + passes TOROID boundary conditions to LIFfilters via /WRAP
-;
-;     Revision 1.10  2000/06/20 13:14:09  saam
-;           + filter handling had some serious bugs
-;           + i hope it is working now
-;
-;     Revision 1.9  2000/04/06 09:41:53  saam
-;           now outputs synapse type where input
-;           is apllied to
-;
-;     Revision 1.8  2000/01/28 15:16:45  saam
-;           changend console call by putting the console
-;           data from the common block into the ap structure
-;
-;     Revision 1.7  2000/01/28 14:28:53  alshaikh
-;           some console-bugs were left
-;
-;     Revision 1.6  2000/01/26 16:19:51  alshaikh
-;           print,message -> console
-;
-;     Revision 1.5  2000/01/20 16:28:07  alshaikh
-;          SOME bugfixes
-;
-;     Revision 1.4  2000/01/19 17:18:23  saam
-;           + commented out poissoninput (!!!) all poisson inputs
-;             with the old input system temporarily don't work
-;           + the params tag may be omitted like in checkinput
-;           + init/step call conventions updated like in checkinput
-;
-;     Revision 1.3  2000/01/14 10:26:57  alshaikh
-;           NEW: 'EXTERN' input
-;
-;     Revision 1.2  1999/12/10 10:05:15  saam
-;           * hyperlinks for freeinput added
-;
-;     Revision 1.1  1999/12/10 09:36:47  saam
-;           * hope these are all routines needed
-;           * no test, yet
-;
-;
+; SEE ALSO:
+;  <A>InitInput</A>, <A>FreeInput</A>, <A>Sim</A>.
 ;-
 
 ; COMMON TAGS:
@@ -140,10 +104,12 @@
 ;             delta_t : refresh interval (delta_t=-1  => each SIM-step)
 ;             period  : periodicity (period=-1   =>infinite period)
 ;             filter  : array of filters
-;             start   : time within a period when the filter is activated
-;             stop    :    "                "                   stopped
+;             start   : time in ms when the input is activated (default: 0)
+;             stop    :    "        "          stopped (default: simtime-1)
 ;             visible : yes(1), no(0)
 ;
+
+
 
 FUNCTION Input, L, _IN
 
@@ -277,64 +243,86 @@ FUNCTION Input, L, _IN
       
       11 : BEGIN                ; EXTERN
          
-         act_time =  OS*IN.t         ; timesteps -> ms
-         delta_t =   IN.delta_t      ; resolution in ms
- 
-         number_filter =  IN.number_filter
-         IF (IN.period NE -1) THEN act_time = act_time MOD IN.period
-
-         IF ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0)) THEN BEGIN
-             pattern = fltarr(h,w) ; initialize input-matrix
-             FOR i=0, number_filter-1 DO BEGIN
-                 IF N_Elements(IN.temps) EQ 1 THEN _t = IN.temps ELSE _t = IN.temps(i) ;fix IDL3.6 problems!
-                 IF N_Elements(IN.filters) EQ 1 THEN Handle_Value,IN.filters,act_filter ELSE Handle_Value,IN.filters(i),act_filter ;fix IDL3.6 problems!
-                 IF ((act_time GE act_filter.start) AND (act_time LE act_filter.stop)) THEN BEGIN 
-                     IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
-                         console,P.CON, curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
-                         FILE = P.File+'.'+curLayer.FILE+'.if'+STR(i)
-                         IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
-                             temp = CALL_FUNCTION(act_filter.NAME,$
-                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h, WRAP=wrap, FILE=file, _EXTRA=act_filter.params,$
-                                                  temp_vals=_t,DELTA_T=delta_t) 
-                         END ELSE BEGIN
-                             temp = CALL_FUNCTION(act_filter.NAME,$
-                                                  MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h, WRAP=wrap, FILE=file, $
-                                                  temp_vals=_t,DELTA_T=delta_t) 
-                         END
-                     END                      
-                     IF ((delta_t EQ -1) OR ((act_time MOD (delta_t)) EQ 0)) THEN BEGIN
-                         pattern = CALL_FUNCTION(act_filter.NAME,$
-                                                 PATTERN=pattern, temp_vals=_t) 
-                     END
-                 END                  
-             ENDFOR             ; i  
-             
-             IN.pattern = pattern ; store for future use
-             
-             
-             IF IN.visible NE 0 THEN BEGIN ; show what you've done
-                 OpenSheet, INPUT_1
-                 PlotTvScl, IN.pattern
-                 CloseSheet, INPUT_1
-             END 
-         END 
+         act_time =  OS*IN.t    ; timesteps -> ms
+         delta_t =   IN.delta_t ; resolution in ms
          
-         R = Spassmacher(IN.pattern)
-         IN.t = IN.t + 1
-     END 
+         pattern = FltArr(h,w)  ; initialize input-matrix
+ 
+         IF ((act_time GE in.start) $
+             AND (act_time LE in.stop)) THEN BEGIN; global start/stop
+
+            number_filter =  IN.number_filter
+
+            IF (IN.period NE -1) THEN act_time = act_time MOD IN.period
+
+            IF ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0)) THEN BEGIN
+               FOR i=0, number_filter-1 DO BEGIN
+               
+                  IF N_Elements(IN.temps) EQ 1 THEN _t = IN.temps $
+                  ELSE _t = IN.temps(i) ; fix IDL3.6 problems!
+                  
+                  IF N_Elements(IN.filters) EQ 1 $
+                   THEN Handle_Value,IN.filters,act_filter $
+                  ELSE Handle_Value,IN.filters(i),act_filter 
+                   ;fix IDL3.6 problems!
+                
+                  IF ((act_time GE act_filter.start) $
+                      AND (act_time LE act_filter.stop)) THEN BEGIN 
+                      ; periodic start/stop
+                     IF act_time EQ act_filter.start THEN BEGIN
+                        ; initialize filter
+                        console,P.CON, curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
+                        FILE = P.File+'.'+curLayer.FILE+'.if'+STR(i)
+                        IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                           temp = CALL_FUNCTION(act_filter.NAME $
+                                                ,MODE=0,PATTERN=pattern $
+                                                ,WIDTH=w,HEIGHT=h, WRAP=wrap $
+                                                ,FILE=file $
+                                                ,_EXTRA=act_filter.params $
+                                                ,temp_vals=_t,DELTA_T=delta_t) 
+                        ENDIF ELSE BEGIN
+                           temp = CALL_FUNCTION(act_filter.NAME,MODE=0 $
+                                                ,PATTERN=pattern,WIDTH=w $
+                                                ,HEIGHT=h, WRAP=wrap $
+                                                ,FILE=file $
+                                                ,temp_vals=_t,DELTA_T=delta_t) 
+                        ENDELSE ; params?
+                     ENDIF      ; initialize filter                      
+
+;obsolete?  IF ((delta_t EQ -1) OR ((act_time MOD (delta_t)) EQ 0)) THEN BEGIN
+                  ; do filter step
+                     pattern = CALL_FUNCTION(act_filter.NAME, MODE=1 $
+                                             ,PATTERN=pattern, temp_vals=_t) 
+;obsolete?  END
+                  ENDIF ;; periodic start/stop?                  
+               ENDFOR ;; i  
+             
+           ENDIF ;; ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0))
+         
+        ENDIF ;; ((act_time GE in.start) AND (act_time LE in.stop))
+
+        IN.pattern = pattern    ; store for future use
+             
+        IF IN.visible NE 0 THEN BEGIN ; show what you've done
+           OpenSheet, INPUT_1
+           PlotTvScl, IN.pattern
+           CloseSheet, INPUT_1
+        ENDIF ;; IN.visible NE 0
+ 
+        R = Spassmacher(IN.pattern)
+        IN.t = IN.t + 1
+
+     END ;; external input
      
-
-
-
 
    ENDCASE
 
    
-   IF IN.FADEYN THEN R = Spassmacher(R*IN.FADE(_TIME)); ELSE R = Spassmacher(R)
+   IF IN.FADEYN THEN R = Spassmacher(R*IN.FADE(_TIME)) ; ELSE R = Spassmacher(R)
 
 
    IF ((_TIME GE OS*IN.REC(0)) AND (_TIME LT OS*IN.REC(1)) AND (IN.REC(0) NE -1)) THEN dummy = CamCord( IN.RECLUN, frame)
-
+   
    
    Handle_Value, _IN, IN, /NO_COPY, /SET
    RETURN, R

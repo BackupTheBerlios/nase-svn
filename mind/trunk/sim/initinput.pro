@@ -1,64 +1,37 @@
 ;+
-; NAME:                InitInput
+; NAME:
+;  InitInput()
 ;
-; AIM:                 prepares input to simulations (used by <A>Sim</A>)
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:             Prepares data structures serving as input for sim. This routine
-;                      is called from SIM. It makes nearly no sense to call it directly.
+; AIM:
+;  Prepares input to simulations (used by <A>Sim</A>).
 ;
-; CATEGORY:            MIND SIM INTERNAL
+; PURPOSE:
+;  Prepares data structures managing the input in a MIND
+;  simulation. This routine is called from <A>Sim</A>. It makes nearly
+;  no sense to call it directly. See comments in source for more
+;  details. 
 ;
-; COMMON BLOCKS:       ATTENTION
-;                      PLOT_INPUT : shares plotcilloscope with INPUT
-;                      SH_INPUT   : shares sheets with INPUT
-;                      INPUT      : shares serveral data structures with INPUT
+; CATEGORY:
+;  Input
+;  Internal
+;  MIND
+;  Simulation  
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INPUT>input</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#FREEINPUT>freeinput</A>
+; COMMON BLOCKS:
+;  ATTENTION
+;  COMMON_RANDOM:: nase COMMON block 
+;  PLOT_INPUT:: shares plotcilloscope with INPUT
+;  SH_INPUT:: shares sheets with INPUT
+;  INPUT:: shares serveral data structures with INPUT
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.12  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.11  2000/05/16 16:30:58  saam
-;           changed flt to dbl
-;
-;     Revision 1.10  2000/04/06 09:41:53  saam
-;           now outputs synapse type where input
-;           is apllied to
-;
-;     Revision 1.9  2000/01/28 15:16:44  saam
-;           changend console call by putting the console
-;           data from the common block into the ap structure
-;
-;     Revision 1.8  2000/01/27 17:45:24  alshaikh
-;           new console-syntax
-;
-;     Revision 1.7  2000/01/26 16:19:50  alshaikh
-;           print,message -> console
-;
-;     Revision 1.6  2000/01/19 17:20:21  saam
-;          removed all poissoninput calls (!!!!!!!!!)
-;
-;     Revision 1.5  2000/01/19 09:08:55  saam
-;           + wrong handling of delta_t fixed
-;
-;     Revision 1.4  2000/01/14 10:34:40  saam
-;           bug in print corrected
-;
-;     Revision 1.3  2000/01/14 10:26:57  alshaikh
-;           NEW: 'EXTERN' input
-;
-;     Revision 1.2  1999/12/10 10:05:15  saam
-;           * hyperlinks for freeinput added
-;
-;     Revision 1.1  1999/12/10 09:36:46  saam
-;           * hope these are all routines needed
-;           * no test, yet
-;
-;
+; SEE ALSO:
+;  <A>Input</A>, <A>FreeInput</A>, <A>Sim</A>.
 ;-
+
+
 
 ; COMMON TAGS:
 ; ------------   
@@ -150,10 +123,11 @@
 ;             delta_t : refresh interval (delta_t=-1  => each SIM-step)
 ;             period  : periodicity (period=-1   =>infinite period)
 ;             filter  : array of filters
-;             start   : time within a period when filter is activated
-;             stop    :    "                "               stopped
+;             start   : time in ms when the input is activated (default: 0)
+;             stop    :    "        "          stopped (default: simtime)
 ;             visible : 0|1 ... what do you think?
 ;
+
 
 
 FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
@@ -172,6 +146,12 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
    IF NOT ExtraSet(IN, 'LAYER')   THEN console,P.CON, 'tag LAYER undefined!','initinput',/fatal
    IF NOT ExtraSet(IN, 'SYNAPSE') THEN console,P.CON, 'tag SYNAPSE undefined!','initinput',/fatal
    IF NOT ExtraSet(IN, 'TYPE')    THEN console,P.CON, 'tag TYPE undefined!','initinput',/fatal
+
+   ;; set global start/stop if they are not supplied:
+   IF NOT ExtraSet(IN, 'start') THEN $
+    in = Create_Struct(in, 'start', 0l)
+   IF NOT ExtraSet(IN, 'stop') THEN $
+    in = Create_Struct(in, 'stop', P.simulation.time-1)
 
 
    typelist = ['SPIKES', 'GWN', 'POISSON', 'PCC', 'BAR', 'FADEBAR', 'FADEIN', 'NONE', 'STATIC', 'BURST', 'AF','EXTERN']
@@ -378,6 +358,8 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
                 synapse         : IN.synapse             ,$ ; just for logging messages
                 index           : IN.index               ,$ 
                 period          : IN.period              ,$ ; period time
+                start: IN.start, $ ; global start time
+                stop: IN.stop, $ ; global stop time
                 number_filter   : N_elements(IN.filters) ,$ ; how many filters are used?
                 delta_t         : dt                     ,$ ; time resolution
                 t               : 0l                     ,$ ; internal sim-time
