@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.3  1998/11/08 17:27:16  saam
+;            the layer-structure is now a handle
+;
 ;      Revision 2.2  1998/08/23 12:36:27  saam
 ;            new Keyword FADE
 ;
@@ -54,6 +57,6 @@ FUNCTION InitLayer_6, WIDTH=width, HEIGHT=height, TYPE=type
              O      : handle               ,$
              AR     : Byte(type.fade*RANDOMU(seed,width*height))  }  ; for the absolute refractory period
 
-   RETURN, Layer
+   RETURN, Handle_Create(!MH, VALUE=Layer, /NO_COPY)
 
 END 

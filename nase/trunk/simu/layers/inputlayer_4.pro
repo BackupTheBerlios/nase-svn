@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 2.3  1998/11/08 17:27:19  saam
+;            the layer-structure is now a handle
+;
 ;      Revision 2.2  1998/02/11 14:57:36  saam
 ;            Spike hat nun wieder normale Hoehe
 ;
@@ -35,7 +38,9 @@
 ;
 ;
 ;-
-PRO InputLayer_4, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
+PRO InputLayer_4, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F = Layer.F * Layer.para.df
@@ -67,5 +72,5 @@ PRO InputLayer_4, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
       END
    END
 
-
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END

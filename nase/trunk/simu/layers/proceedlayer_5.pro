@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/11/08 17:27:24  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 2.1  1998/02/09 16:03:20  gabriel
 ;            Ein neuer TYP mit NMDA- und Feeding TP 2. Ordnung-Synapsen
 ;
@@ -49,9 +52,10 @@
 ;                       LinkingIn und InhibitionIn sind jetzt
 ;                       optional. Rüdiger, 22. August '97
 ;- 
-PRO ProceedLayer_5, Layer
+PRO ProceedLayer_5, _Layer, _EXTRA=e
 COMMON common_random, seed
 
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F1 = Layer.F1 * Layer.para.df
@@ -81,4 +85,6 @@ COMMON common_random, seed
    Handle_Value, Layer.O, newOut, /SET
 
    Layer.decr = 1
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END

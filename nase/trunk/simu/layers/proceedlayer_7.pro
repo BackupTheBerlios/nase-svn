@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/11/08 17:27:26  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 2.1  1998/10/30 17:44:42  niederha
 ;        	proceedlayer_7.pro
 ;
@@ -46,8 +49,10 @@
 ;                       Random-Commonblock zugefügt, Rüdiger, 5.Sept 97
 ;
 ;- 
-PRO ProceedLayer_7, Layer, CORRECT=correct
+PRO ProceedLayer_7, _Layer, CORRECT=correct
 common common_random, seed
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F1 = Layer.F1 * Layer.para.df1
@@ -86,6 +91,8 @@ common common_random, seed
    Handle_Value, Layer.O, newOut, /SET
    
    Layer.decr = 1
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END
 
 

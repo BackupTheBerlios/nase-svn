@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;  $Log$
+;  Revision 2.4  1998/11/08 17:27:17  saam
+;        the layer-structure is now a handle
+;
 ;  Revision 2.3  1998/11/06 14:28:18  thiel
 ;         Hyperlinks.
 ;
@@ -49,9 +52,13 @@
 ;
 ;-
 
-PRO InputLayer, Layer, _EXTRA=_extra
+PRO InputLayer, _Layer, _EXTRA=_extra
 
-	Call_Procedure, 'InputLayer_'+Layer.Type, Layer, _EXTRA=_extra
+   Handle_Value, _LAYER, LAYER, /NO_COPY
+   type = LAYER.TYPE
+   Handle_Value, _LAYER, LAYER, /NO_COPY, /SET
+
+   Call_Procedure, 'InputLayer_'+type, _Layer, _EXTRA=_extra
 
 END
 

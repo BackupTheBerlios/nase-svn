@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  1998/11/08 17:27:23  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 1.7  1998/06/01 15:10:47  saam
 ;             spontanous activity with keyword spikenoise implemented
 ;
@@ -43,8 +46,10 @@
 ;                       Random-Commonblock zugefügt, Rüdiger, 5.Sept 97
 ;
 ;- 
-PRO ProceedLayer_2, Layer, CORRECT=correct
+PRO ProceedLayer_2, _Layer, CORRECT=correct
 common common_random, seed
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F = Layer.F * Layer.para.df
@@ -81,4 +86,6 @@ common common_random, seed
    Handle_Value, Layer.O, newOut, /SET
    
    Layer.decr = 1
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END

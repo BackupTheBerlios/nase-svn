@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  1998/11/08 17:27:13  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 1.7  1998/01/14 20:21:42  saam
 ;             Die Potentiale koennen nun zufaellig
 ;             vorbelegt werden
@@ -71,6 +74,6 @@ FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
              O      : handle}
 
    
-   RETURN, Layer
+   RETURN, Handle_Create(!MH, VALUE=Layer, /NO_COPY)
 
 END 

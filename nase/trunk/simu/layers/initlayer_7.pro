@@ -18,25 +18,14 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/11/08 17:27:16  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 2.1  1998/10/30 17:43:47  niederha
 ;        	initlayer_7.pro
 ;               inputlayer_7.pro
 ;               proceedlayer_7.pro
 ;
-;       Revision 1.6  1998/01/21 21:44:10  saam
-;             korrekte Behandlung der DGL durch Keyword CORRECT
-;             in InputLayer_?
-;
-;       Revision 1.5  1997/10/14 16:31:39  kupper
-;              Schöpfung, durch Übernahme von initlayer_1
-;
-;
-;                       initial version, Mirko Saam, 22.7.97
-;                       Alternative Keyword-Parameter zugefügt, Rüdiger Kupper, 24.7.97
-;                       verbindliche Keyword-Parameter, Mirko Saam, 25.7.97
-;                       Strukturnamen entfernt, Rüdiger Kupper, 30.7.97
-;                       Dafür String-Tag Typ eingeführt, Rüdiger Kupper, 30.7.97
-;                       info-Tag zugefügt, Rüdiger, 4.9.1997
 ;-
 
 FUNCTION InitLayer_7, WIDTH=width, HEIGHT=height, TYPE=type
@@ -65,7 +54,7 @@ FUNCTION InitLayer_7, WIDTH=width, HEIGHT=height, TYPE=type
              R      : DblArr(width*height) ,$
              O      : handle  }
 
-   RETURN, Layer
+   RETURN, Handle_Create(!MH, VALUE=Layer, /NO_COPY)
 
 END 
 

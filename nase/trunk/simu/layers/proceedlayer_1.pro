@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.9  1998/11/08 17:27:22  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 1.8  1998/06/01 15:10:47  saam
 ;             spontanous activity with keyword spikenoise implemented
 ;
@@ -53,9 +56,10 @@
 ;                       LinkingIn und InhibitionIn sind jetzt
 ;                       optional. Rüdiger, 22. August '97
 ;- 
-PRO ProceedLayer_1, Layer, CORRECT=correct
+PRO ProceedLayer_1, _Layer, CORRECT=correct
 COMMON common_random, seed
 
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F = Layer.F * Layer.para.df
@@ -90,4 +94,6 @@ COMMON common_random, seed
    Handle_Value, Layer.O, newOut, /SET
 
    Layer.decr = 1
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END

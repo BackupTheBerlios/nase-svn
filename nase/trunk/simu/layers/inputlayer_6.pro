@@ -27,12 +27,17 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 2.2  1998/11/08 17:27:20  saam
+;            the layer-structure is now a handle
+;
 ;      Revision 2.1  1998/08/23 12:19:18  saam
 ;            is there anything to say?
 ;
 ;
 ;-
-PRO InputLayer_6, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
+PRO InputLayer_6, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F1 = Layer.F1 * (Layer.para.df)(0)
@@ -68,5 +73,6 @@ PRO InputLayer_6, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
       END
    END
 
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 
 END

@@ -24,14 +24,19 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.2  1998/11/08 17:27:25  saam
+;            the layer-structure is now a handle
+;
 ;      Revision 2.1  1998/08/23 12:19:18  saam
 ;            is there anything to say?
 ;
 ;
 ;- 
-PRO ProceedLayer_6, Layer
+PRO ProceedLayer_6, _Layer, _EXTRA=e
    COMMON COMMON_RANDOM, seed
 
+   Handle_Value, _Layer, Layer, /NO_COPY
+   
    IF Layer.decr THEN BEGIN
       Layer.F1 = Layer.F1 * (Layer.para.df)(0)
       Layer.F2 = Layer.F2 * (Layer.para.df)(1)
@@ -76,4 +81,6 @@ PRO ProceedLayer_6, Layer
    Handle_Value, Layer.O, newOut, /SET
    
    Layer.decr = 1
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END

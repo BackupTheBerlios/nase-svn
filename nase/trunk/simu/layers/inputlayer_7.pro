@@ -41,7 +41,9 @@
 ;               Entstanden aus einem Teil von ProceedLayer_1
 ;
 ;-
-PRO InputLayer_7, Layer, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, INHIBITION1=inhibition1,INHIBITION2=inhibition2, CORRECT=correct
+PRO InputLayer_7, _Layer, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, INHIBITION1=inhibition1,INHIBITION2=inhibition2, CORRECT=correc
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F1 = Layer.F1 * Layer.para.df1
@@ -112,7 +114,7 @@ PRO InputLayer_7, Layer, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, 
       END
    END
 
-
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END
 
 

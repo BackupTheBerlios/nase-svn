@@ -33,15 +33,20 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.4  1998/11/08 17:27:18  saam
+;             the layer-structure is now a handle
+;
+;
 ;       Thu Sep 11 18:36:59 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;       Revision: $Revision$
-;
 ;		Schoepfung und Tests
 ;               Entstanden aus einem Teil von ProceedLayer_1
 ;
 ;-
-PRO InputLayer_2, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition, CORRECT=correct
+PRO InputLayer_2, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition, CORRECT=correct
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F = Layer.F * Layer.para.df
@@ -85,5 +90,6 @@ PRO InputLayer_2, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
       END
    END
 
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 
 END

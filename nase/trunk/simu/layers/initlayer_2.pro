@@ -18,6 +18,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  1998/11/08 17:27:14  saam
+;             the layer-structure is now a handle
+;
 ;       Revision 1.6  1998/01/21 21:44:10  saam
 ;             korrekte Behandlung der DGL durch Keyword CORRECT
 ;             in InputLayer_?
@@ -58,6 +61,6 @@ FUNCTION InitLayer_2, WIDTH=width, HEIGHT=height, TYPE=type
              R      : DblArr(width*height) ,$
              O      : handle  }
 
-   RETURN, Layer
+   RETURN, Handle_Create(!MH, VALUE=Layer, /NO_COPY)
 
 END 

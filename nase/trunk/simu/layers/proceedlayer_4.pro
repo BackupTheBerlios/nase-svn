@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.5  1998/11/08 17:27:24  saam
+;            the layer-structure is now a handle
+;
 ;      Revision 2.4  1998/08/23 12:36:28  saam
 ;            new Keyword FADE
 ;
@@ -38,8 +41,10 @@
 ;
 ;
 ;- 
-PRO ProceedLayer_4, Layer
+PRO ProceedLayer_4, _Layer, _EXTRA=e
 common common_random, seed
+
+   Handle_Value, _Layer, Layer, /NO_COPY
 
    IF Layer.decr THEN BEGIN
       Layer.F = Layer.F * Layer.para.df
@@ -83,4 +88,6 @@ common common_random, seed
    Handle_Value, Layer.O, newOut, /SET
    
    Layer.decr = 1
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
 END
