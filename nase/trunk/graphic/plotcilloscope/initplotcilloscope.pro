@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/03/19 11:04:22  kupper
+;            Inkompatibilität zu IDL4 entfernt... (_extra-Verarbeitung)
+;
 ;     Revision 2.6  1998/03/18 12:43:34  kupper
 ;            INSTANTREFRESH und _EXTRA implementiert.
 ;
@@ -81,7 +84,7 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
    Default, YMAX, 1.0
    Default, Rays, 1
    Default, XTITLE, 't / ms'
-   Default, _extra, {dummy:0}
+   Default, _extra, {XTITLE: xtitle}
    time =  time*OVERSAMP
    maxSc = 1
    minSc = 1
@@ -104,10 +107,9 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
           maxSc : maxSc         ,$
           minSc : minSc         ,$
           os    : oversamp      ,$
-          xtitle: xtitle        ,$
           _extra: _extra}
    
-   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, XTITLE=xtitle, _EXTRA=_extra
+   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, _EXTRA=_extra
 
    RETURN, PS
 END

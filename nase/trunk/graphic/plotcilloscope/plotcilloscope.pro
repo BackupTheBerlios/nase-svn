@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1998/03/19 11:04:23  kupper
+;            Inkompatibilität zu IDL4 entfernt... (_extra-Verarbeitung)
+;
 ;     Revision 2.7  1998/03/18 12:43:34  kupper
 ;            INSTANTREFRESH und _EXTRA implementiert.
 ;
@@ -94,7 +97,7 @@ PRO Plotcilloscope, PS, value
       ticks = STRCOMPRESS(String((PS.t - (PS.t MOD PS.time))/PS.os), /REMOVE_ALL)
       FOR i=1,5 DO ticks = [ticks, STRCOMPRESS(STRING((PS.t - (PS.t MOD PS.time) +i*PS.time/5)/PS.os), /REMOVE_ALL) ]
 
-      plot, PS.y(0,*), YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XTICKS=5, XTICKNAME=ticks, /NODATA, XSTYLE=1, XTITLE=PS.xtitle, _EXTRA=PS._extra
+      plot, PS.y(0,*), YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XTICKS=5, XTICKNAME=ticks, /NODATA, XSTYLE=1, _EXTRA=PS._extra
       FOR ray=0,PS.rays-1 DO BEGIN
          IF xpos GT 0 THEN oplot, FIndGen(xpos+1)/PS.os, PS.y(ray,0:xpos), COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray), /NOALLOC)
          IF xpos LT PS.time-4 AND PS.t GE PS.time THEN oplot, (Indgen(PS.time-xpos-3)+xpos+3)/Float(PS.OS), PS.y(ray,xpos+3:*), COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray), /NOALLOC)
