@@ -7,7 +7,7 @@ body { margin-top:10px; margin-bottom:10px; margin-left:0px; background-color:#F
 
 
 
-p,h1,h2,h3,h4,ul,ol,li,div,td,th,address,blockquote,nobr,b,i
+p,h1,h2,h3,h4,ul,ol,li,div,td,tl,th,address,blockquote,nobr,b,i
 
 /* font-family = Schriftart fuer Textelemente */
 /* Arial,sans-serif = Arial und serifenlose Schrift, Wert aenderbar */
@@ -95,6 +95,16 @@ td.xmpcode { background-color:#FFFFE0 }
 
 td.keycode { background-color:#CCCCCC }
 
+th.title { font-family:Arial,sans-serif; font-size:14pt; font-weight:bold; color:#FFFFFF; }
+/* this is for left stuff */
+
+td.title { font-family:Arial,sans-serif; font-size:14pt; font-weight:bold; color:#FFFFFF; background-color:#000066; }
+td.stitle { font-family:Arial,sans-serif; font-size:10pt; color:#FFFFFF; }
+td.ltitle { font-family:Arial,sans-serif; font-size:10pt; color:#000000; background-color:#FFFFFF; }
+tr.title { background-color:#000066; }
+td.left  { background-color:#CCCCCC; }
+
+
 /* Bereiche mit Beispiel-Quelltexten */
 /* nur MS IE 4, Netscape 4.0 ignoriert diese Angaben */
 /* border-width = Randbreite */
@@ -173,7 +183,7 @@ a:active { color:#0000C0; text-decoration:underline; }
 
 a.an { text-decoration:none; }
 
-blockquote { margin-left:10px; }
+blockquote { margin-left:5px; }
 
 
 /* Wenn Sie sich mit Style-Sheets */
