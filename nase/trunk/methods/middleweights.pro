@@ -1,6 +1,7 @@
 ;+
 ; NAME:               MiddleWeights
 ;
+; AIM:                mean of a DW-structure                   
 ;
 ; PURPOSE:            Mittelung ueber eine Gewichtsmatrix
 ;
@@ -66,10 +67,13 @@
 ;               diese zunaechst zur Kontrolle mit ShowWeights dar.
 ;               Ueber die Gewichte in der DW-Struktur wird dann gemittelt,
 ;               einmal mit zyklischen Randbedingungen, einmal ohne.
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.14  2000/09/28 09:45:45  gabriel
+;            AIM tag added, message <> console
+;
 ;       Revision 1.13  2000/09/05 19:15:00  kupper
 ;       Old typo.
 ;
@@ -111,21 +115,21 @@
 ;       Wed Sep 3 15:14:49 1997, Andreas Thiel
 ;		Die erste Version erblickt das Licht der Welt.
 ;
-;-
+;
 
 FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, NODW=nodw, $
                         PROJECTIVE=projective, RECEPTIVE=receptive, $
                         ROWS=rows, COLS=cols, DEBUG=debug, STOP=stop, DELAYS=DELAYS
 
    
-   IF Keyword_Set(FROMS) THEN Message, /INFO, 'keyword FROMS wurde durch PROJECTIVE ersetzt, bitte aendern!'
-   IF Keyword_Set(TOS) THEN Message, /INFO, 'keyword TOS wurde durch RECEPTIVE ersetzt, bitte aendern!'
+   IF Keyword_Set(FROMS) THEN Console, /WARNING, 'keyword FROMS wurde durch PROJECTIVE ersetzt, bitte aendern!'
+   IF Keyword_Set(TOS) THEN Console, /WARNING, 'keyword TOS wurde durch RECEPTIVE ersetzt, bitte aendern!'
 
    Default, PROJECTIVE, FROMS
    Default, RECEPTIVE, TOS
    
 
-   IF NOT keyword_set(PROJECTIVE) AND NOT keyword_set(RECEPTIVE) THEN message, 'Eins der Schlüsselwörter PROJECTIVE oder RECEPTIVE muß gesetzt sein!'
+   IF NOT keyword_set(PROJECTIVE) AND NOT keyword_set(RECEPTIVE) THEN Console, /fatal, 'Eins der Schlüsselwörter PROJECTIVE oder RECEPTIVE muß gesetzt sein!'
 
    IF Keyword_Set(NODW) THEN BEGIN
       Matrix = {Weights: DW           ,$
@@ -201,8 +205,8 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, NODW=nodw, $
 
    ;;------------------> Über Reihen mitteln:
    If Keyword_Set(COLS) then begin
-      Message, /INFORM, "Das COLS-Keyord ist noch nicht implementiert..."
-      Message, " Aber das könntest Du mal machen: Orientiere Dich an der Implementierung von ROWS!"
+      Console, /WARNING , "Das COLS-Keyord ist noch nicht implementiert..."
+      Console, /FATAL , " Aber das könntest Du mal machen: Orientiere Dich an der Implementierung von ROWS!"
    EndIf
    ;;--------------------------------
 
@@ -211,8 +215,8 @@ FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, NODW=nodw, $
    sh = Matrix.sh
    tw = Matrix.tw
    sw = Matrix.sw
-   IF sh GT th THEN Message, 'it only works for target- >= sourceheight'
-   IF sw GT tw THEN Message, 'it only works for target- >= sourcewidth'
+   IF sh GT th THEN Console, /fatal, 'it only works for target- >= sourceheight'
+   IF sw GT tw THEN Console, /fatal, 'it only works for target- >= sourcewidth'
 
    stepw = tw/(sw-1)
    steph = th/(sh-1)
