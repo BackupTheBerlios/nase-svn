@@ -14,7 +14,6 @@
 ; CALLING SEQUENCE:    vel = SPHASEVELOCITY(  A [, distance_ax] [, delay_ax][, time_ax][, ICHISQ=ICHISQ],[ISUPPORTP=ISUPPORTP]
 ;                                                    [,CORRSTRENGHTH_CRIT=CORRSTRENGHTH_CRIT][,IMED_CORRSTRENGTH=IMED_CORRSTRENGTH]
 ;                                                    [,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT][,CHISQ_CRIT=CHISQ_CRIT,] [PLOT=PLOT],[INTERPOL=INTERPOL],[PHASE=PHASE])
-
 ;
 ; 
 ; INPUTS:              three dimensional array  (spatial correlation, temporal correlation, time)
@@ -29,7 +28,7 @@
 ;                      CHISQ_CRIT: The criterion for the linear regression fit. The standard deviation must be lower 
 ;                                  than CHISQ_CRIT to obtain successfull fit (default: 1.0).
 ;                      SUPPORTPOINTS_CRIT: The minimum of points, which should be  used for the fit in percent (default: 0.5)
-;                      CORRSTRENGTH_CRIT: The maximum of the standard deviation of the correllation strenght, which (default: 0.1)
+;                      CORRSTRENGTH_CRIT: The maximum of the standard deviation of the correllation strenght, which (default: 0.05ä)
 ;                      PLOT: plots the actual processing results
 ;                      INTERPOL: zoom factor of result's spatiotemporal  dimensions (interpolation after correlation is systemtheoretical allowed) 
 ;
@@ -84,6 +83,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/07/04 17:48:28  saam
+;           + defaults in docheader didn't match
+;             implementation
+;
 ;     Revision 1.6  2000/07/04 15:13:31  gabriel
 ;          FIX for slow velocities
 ;
