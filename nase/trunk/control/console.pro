@@ -39,6 +39,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.6  2000/03/29 08:03:37  saam
+;           stops at the callers position after fatal error
+;
 ;     Revision 2.5  2000/03/28 15:35:52  saam
 ;           view is now centered at the latest messages
 ;
@@ -117,7 +120,13 @@ IF level GE status.threshold THEN begin
     
 END 
 
-IF level GE status.tolerance THEN stop
+fatal = status.tolerance
 Handle_Value,_console,status,/no_copy,/set
 
+IF level GE fatal THEN stopp ; no, this is no typo! in conjunction with on_error,2
+                                ; this must make an error ->
+                                ; it stops at the position of the
+                                ; Console call
+                                ; i don't know another methods since
+                                ; .o doesn't work in procedures
 END
