@@ -88,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2001/09/21 12:46:35  kupper
+;        integrator display is now interpolated.
+;
 ;        Revision 1.3  2001/09/17 15:34:41  kupper
 ;        Range_In is now only passed to the widget_image-container-part, not to
 ;        the widget_leaky_intergrator_array, as there it is computed from
@@ -122,7 +125,9 @@ Function widget_leaky_image_container::init, IMAGE=image, $
    ;; IN ADDITION to the initialization of the superclasses:
   
    self.lia = Obj_New("widget_leaky_integrator_array", OParent=self, $
-                      Dimensions=Size(IMAGE, /Dimensions), _EXTRA=_ref_extra)
+                      Dimensions=Size(IMAGE, /Dimensions), $
+                      CUBIC=-0.5, /MINUS_ONE, $
+                      _EXTRA=_ref_extra)
 
    ;; If we reach this point, initialization of the
    ;; whole object succeeded, and we can return true:
