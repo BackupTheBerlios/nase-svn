@@ -147,9 +147,9 @@ sub createAim {
 ###################################
 sub Aim2Html {
   my ($mydir) = @_;
-  my ($dir, $key, @data, @subdir, $fh);
+  my ($dir, $key, @data, $fh);
   my $DOCDIR = getDocDir();
-
+  my @subdir = ();
   
   sub wanted {
     push(@subdir, $File::Find::dir) if -d;
@@ -173,9 +173,8 @@ sub Aim2Html {
     if (open (AIM, ">$DOCDIR/$dir/index.html")){
       $fh = select(AIM);
       print 
-	start_html('NASE/MIND Documentation System'),
-	h1($dir);
-      R2HTML(@data);
+	start_html('NASE/MIND Documentation System');
+      R2HTML($dir, sort(@data));
       select($fh);
       close (AIM);
     } else {
@@ -193,8 +192,10 @@ sub Aim2Html {
 #
 # assumes that openHread is already called
 sub R2HTML {
+  my $title = shift;
 
-  print "<TABLE COLS=2>\n";
+  print "<TABLE>\n<COLGROUP SPAN=2></COLGROUP>\n";
+  print '<TR CLASS="title"><TH CLASS="title" COLSPAN=2 ALIGN="LEFT">',$title, "</TH></TR>\n";
   foreach (@_){
     print 
       '<TR>',
@@ -235,8 +236,7 @@ sub quickSearch {
       showHeader(key=>$results[0]);
       last SWITCH;
     }
-    print h2("Search Results");
-    R2HTML(sort(@results));
+    R2HTML("Search Results", sort(@results));
     closeHread();
   }
 }
@@ -384,14 +384,15 @@ sub showHeader {
     $file = getDocDir()."/".$entry[0]."/".$key;
 
     print 
-      h1( $entry[1], 
-	  "<FONT SIZE=-1>",
-	  makeURL($entry[1], "source", undef,"source"),
-	  ", ", 
-	  makeURL($entry[1], "modifications", undef,"log"),
-	  showedit($file),
-	  "</FONT>"), 
-      "\n".'<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">'."\n";  
+      '<TABLE VALIGN=TOP>'."\n",
+      '<TR CLASS="title"><TD CLASS="title">',$entry[1],
+      '</TD><TD VALIGN="BOTTOM" CLASS="ltitle">', 
+      makeURL($entry[1], "source", undef,"source"), " ",
+      makeURL($entry[1], "modifications", undef,"log"), " ",
+      showedit($file),
+      '</TD></TD>';
+      
+
     
     print 
       '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
@@ -405,7 +406,7 @@ sub showHeader {
 
     print 
       h1("RoutineName (will be resoved later)"), 
-      "\n".'<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">'."\n";  
+      "\n".'<TABLE VALIGN=TOP><COLGROUP SPAN=2></COLGROUP>'."\n";  
   }    
 
 
