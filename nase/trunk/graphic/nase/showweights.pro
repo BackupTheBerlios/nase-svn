@@ -64,7 +64,14 @@
 ;          vergroessert in einem Fenster mit Titel 'wunderschoene
 ;          Matrix' dar.
 ;
-; MODIFICATION HISTORY: Erste Version vom 25. Juli '97, Andreas.
+; MODIFICATION HISTORY: 
+;
+;       Mon Aug 18 16:58:34 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		nicht vorhandene Verbindungen werden vorlaeufig mit Wert NULL dargestellt
+;
+;                       Erste Version vom 25. Juli '97, Andreas.
 ;                       Diese Version (Verbesserte Parameterabfrage) vom 28. Juli '97, Andreas
 ;                       Versucht, Keyword FROMS zuzufügen, Rüdiger,
 ;                       30.7.1997
@@ -99,6 +106,10 @@ if keyword_set(TOS) then begin                   ; Source- und Targetlayer verta
              target_w: _Matrix.source_w, $
              target_h: _Matrix.source_h}
 endif else Matrix = _Matrix
+
+
+no_connections = WHERE(Matrix.Weights EQ !NONE, count)
+IF count NE 0 THEN Matrix.Weights(no_connections) = 0.0
    
 If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
 If Not Set(GROESSE) Then Begin 

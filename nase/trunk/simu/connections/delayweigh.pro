@@ -59,11 +59,17 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Mon Aug 18 16:56:33 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		nicht vorhandene Verbindungen werden korrekt bearbeitet 
+;
 ;       Thu Aug 14 15:01:16 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;                   Anpassung an ver"anderten SpikeQueue-Aufruf
-;                   Löschen der Initialisierung, die nun von InitDW uebernommen wird
-;                   Einige Optimierungen
+;
+;               Anpassung an ver"anderten SpikeQueue-Aufruf
+;               Löschen der Initialisierung, die nun von InitDW uebernommen wird
+;               Einige Optimierungen
 ;
 ;                         initial version, Mirko Saam, 24.7.97
 ;                         Ergaenzung der zentralen Struktur um Breite und Hoehe der Source- und Target-Cluster, 25.7.97 
@@ -97,7 +103,7 @@ FUNCTION DelayWeigh, DelMat, In
       active = WHERE(spikes NE 0, count) 
       IF (count NE 0) THEN res(active) = DelMat.weights(active) ;* spikes(active)
 
-      noweights = WHERE(res LE -7654321, count)
+      noweights = WHERE(res LE !NONE, count)
       IF count NE 0 THEN res(noweights) = 0
 
       
