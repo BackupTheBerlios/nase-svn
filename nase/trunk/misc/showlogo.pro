@@ -45,9 +45,11 @@ Pro ShowLogo, SECS=secs
    window, /free, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
    win = !D.WINDOW
    
-   Utvlct, r, g, b, /OVER;; this is a bitmap using all 256 colors!! It
-                         ;; breaks NASE color conventions!!
-   Utv, logo
+   ;; Do NOT use U-routines here:
+   ;; this is a bitmap using all 256 colors!! It
+   ;; breaks NASE color conventions!!
+   Tvlct, r, g, b
+   Tv, logo
 
    if Keyword_Set(SECS) then begin
       wait, SECS
