@@ -11,7 +11,8 @@
 ;                              [,XSTYLE=xstyle] [,YSTYLE=ystyle]
 ;                              [,MINORANGLETICKS=minorangleticks]
 ;                              [,THICK=thick],[CLOSE=CLOSE],
-;                              [SDCOLOR=sdcolor],[MCOLOR=mcolor],[DELTA=DELTA]
+;                              [SDCOLOR=sdcolor],[MCOLOR=mcolor],[DELTA=DELTA],
+;                              [ORIGPT=ORIGPT]
 ;
 ; INPUTS: radiusarray: Die in diesem Array enthaltenen Werte werden als Abstaende
 ;                      gemessen vom Ursprung dargestellt.
@@ -41,6 +42,9 @@
 ;                         da eine Interpolation nur fuer geschlossene  Kurven sinnvoll ist.  
 ;                  MCOLOR  : Farbindex fuer den Mittelwert         (Default: weiss)
 ;                  SDCOLOR : Farbindex fuer die Standardabweichung (Default: dunkelblau) 
+;                  ORIGPT:   Original Stuetzstellen werden als Kreise
+;                            mit dem Radius ORIGPT * max(radius)*1.2/20. eingezeichnet
+;                            (default: 1) 
 ;
 ; OUTPUTS: Polardarstellung der Daten auf dem aktuellen Plot-Device.
 ;
@@ -56,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.14  2000/07/05 13:36:36  gabriel
+;             Keyword ORIGPT new
+;
 ;        Revision 2.13  2000/07/05 10:19:14  saam
 ;              little bug in doc header
 ;
@@ -104,7 +111,8 @@ PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor,DELTA
                XRANGE=xrange, YRANGE=yrange, $
                XSTYLE=xstyle, YSTYLE=ystyle, $
                MINORANGLETICKS=minorangleticks, $
-               THICK=thick , CLOSE=CLOSE,radiusinterpol=radiusinterpol,winkelinterpol=winkelinterpol, _EXTRA=e
+               THICK=thick , CLOSE=CLOSE,radiusinterpol=radiusinterpol,$
+               winkelinterpol=winkelinterpol, ORIGPT=ORIGPT,_EXTRA=e
 
 
    On_Error, 2
@@ -127,7 +135,7 @@ Default, title, ''
 Default, charsize, 1.0
 Default, thick, 3.0
 default,delta,1
-
+default, origpt, 0
 
 
 IF DELTA GT 1 THEN BEGIN
@@ -218,7 +226,12 @@ IF set(_SDEV) THEN BEGIN
 ENDIF
 
 oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
+if ORIGPT GT 0 then begin
 
+   r = ORIGPT*max(radiusarray)*1.2/20. & PHI=findgen(40+1)*2*!PI/40. & y=r*sin(PHI) & x=r*cos(PHI) &  usersym,x,y,/fill
+   oplot,radiusarray, winkelarray,/polar,PSYM=8
+
+endif
 Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
     XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
 Axis, 0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
