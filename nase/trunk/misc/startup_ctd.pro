@@ -2,13 +2,13 @@
 ;; the second time by mistake.
 
 Pro Startup_ctd
-   
+
    if (fix(!VERSION.Release) ge 4) then OS_FAMILY=!version.OS_FAMILY else OS_FAMILY='unix'
-   
-   if  OS_FAMILY eq "unix"    then separator=":" 
-   if OS_FAMILY eq "Windows" then separator=";" 
-   if  OS_FAMILY eq "vms"     then separator="," 
-   if  OS_FAMILY eq "MacOS"   then separator="," 
+
+   if  OS_FAMILY eq "unix"    then separator=":"
+   if OS_FAMILY eq "Windows" then separator=";"
+   if  OS_FAMILY eq "vms"     then separator=","
+   if  OS_FAMILY eq "MacOS"   then separator=","
 
    ;; warning: FilePath changes the variable passed to ROOT_DIR
    ;;          argument! Hence, using read-only !NASEPATH.
@@ -58,22 +58,22 @@ Pro Startup_ctd
 ;------------------------------------------------------------------
 
 
-   defglobvars                  ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt 
+   defglobvars                  ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt
 
    check_NASE_LIB               ;Check NASE C-library, make it if it does'n exist.
 
 
    ;; ----------- Are we running an interactive session? -----
-   stdout_fstat = fstat(-1)		
+   stdout_fstat = fstat(-1)
    if fix(!version.release) lt 4 then $
     IsInteractiveSession = stdout_fstat.isatty $
-   else $  
+   else $
     IsInteractiveSession = stdout_fstat.interactive
    ;; --------------------------------------------------------
 
    ;; --- in a nohup-session, don't connect to X-Server ------
    if IsInteractiveSession then $
-    DEVICE, TRUE_COLOR=24       ; try to get it, if available, but no DIRECT_COLOR!
+    if !D.NAME EQ 'X' THEN DEVICE, TRUE_COLOR=24       ; try to get it, if available, but no DIRECT_COLOR!
    if IsInteractiveSession then $
     DEVICE, DECOMPOSED=0
    ;; --------------------------------------------------------
