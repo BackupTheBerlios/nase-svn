@@ -33,10 +33,10 @@
 ; INPUT KEYWORDS:
 ;  LCOLORS:: Scalar or array of color indices specifying the line
 ;            colors. If a scalar value is given, all lines get
-;            this color. Default: white.
+;            this color. Default: <*>!P.COLOR</*>.
 ;  TCOLORS:: Scalar or array of color indices specifying the color of
 ;            the text. If a scalar value is given, the whole text gets
-;            this color. Default: white.
+;            this color. Default: <*>!P.COLOR</*>.
 ;  LSTYLES:: Array of linestyle indices. Default: increasing index MOD
 ;            6.
 ;  LSPREAD:: Spread between text lines in multiples of
@@ -53,7 +53,7 @@
 ;  BOX:: Draw a box around the annotation. Default: off.
 ;  BSEP:: Separation between box and text in normal
 ;         cordinates. Default: 0.01.
-;  BCOLOR:: Color index used for drawing the box. Default: white.
+;  BCOLOR:: Color index used for drawing the box. Default: <*>!P.COLOR</*>.
 ;  BSTYLE:: Box linestyle. Default: 0.
 ;  BTHICK:: Thickness of line used for drawing the box. Default: 1.0.
 ;
@@ -112,10 +112,10 @@ PRO PlotLegend, xo, yo, texts $
 
    Default, box, 0
 
-   Default, lcolors, Make_Array(number, /INTEGER, VALUE=RGB('white'))
+   Default, lcolors, Make_Array(number, /INTEGER, VALUE=!P.COLOR)
    IF N_Elements(lcolors) EQ 1 THEN $
     lcolors = Make_Array(number, /INTEGER, VALUE=lcolors)
-   Default, tcolors, Make_Array(number, /INTEGER, VALUE=RGB('white'))
+   Default, tcolors, Make_Array(number, /INTEGER, VALUE=!P.COLOR)
    IF N_Elements(tcolors) EQ 1 THEN $
     tcolors = Make_Array(number, /INTEGER, VALUE=tcolors)
 
@@ -160,7 +160,7 @@ PRO PlotLegend, xo, yo, texts $
    IF Keyword_Set(BOX) THEN BEGIN
 
       Default, bsep, 0.01       ; separation between box and text, normal
-      Default, bcolor, RGB('white')
+      Default, bcolor, !P.COLOR
       Default, bstyle, 0        ; box linestyle
       Default, bthick, 1.       ; box linethick
 
