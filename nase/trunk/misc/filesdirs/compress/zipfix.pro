@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1999/07/28 08:40:37  saam
+;           better conflict handling
+;
 ;     Revision 2.4  1998/04/09 14:38:38  saam
 ;           now leaves opened files untouched
 ;
@@ -59,7 +62,14 @@ PRO ZipFix, filepattern
    END
    IF bf(0) NE '-1' THEN BEGIN
       FOR i=0,N_Elements(bf)-1 DO BEGIN
-         IF NOT FileOpen(bf(i)) THEN spawn, 'rm -f '+bf(i) ELSE Print, 'ZIPFIX: file is open...doing nothing'
+         IF NOT FileOpen(bf(i)) THEN BEGIN
+            t1 = mtime(bf(i))
+            t2 = mtime(bf(i)+'.'+suffix)
+            IF t1 GT t2 THEN BEGIN ; unzipped file is newer
+               spawn, 'rm -f '+bf(i)+'.'+suffix ; delete zipped version
+               Zip, bf(i)                       ; zip the uncompressed one
+            END ELSE spawn, 'rm -f '+bf(i) 
+         END ELSE Print, 'ZIPFIX: file is open...doing nothing'
       END
    END
 
