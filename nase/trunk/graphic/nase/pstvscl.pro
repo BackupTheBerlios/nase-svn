@@ -6,21 +6,23 @@
 ;
 ; CATEGORY: GRAPHIC
 ;
-; CALLING SEQUENCE: PSTVScl, Feld [,PSFILE=Dateiname] 
-;                                 [,Width=Breite] [,Height=Hoehe]
+; CALLING SEQUENCE: PSTVScl, Feld [,PSFILE=Dateiname]
+;                                 [.XTITLE=XText][,YTITLE=YText]
+;                                 [,WIDTH=Breite][,HEIGHT=Hoehe]
 ;                                 [,BPP=Farbtiefe]
 ;                                 [,/EPS] [,/COLOR] [,/ORDER]
 ; 
 ; INPUTS: Feld : Das darzustellende Array
 ;
 ; OPTIONAL INPUTS: Dateiname     : Gibt an, in wie die erzeugte Datei
-;                                  heissen soll, Default ist 'postscript_tvscl' 
+;                                  heissen soll, Default ist 'postscript_tvscl'
+;                  XText, YText  : Achsenbeschriftung
 ;	           Breite, Hoehe : Breite und Hoehe des erzeugten
 ;	                           Bildes, Default ist 5 cm breit und
 ;	                           quadratisch. Wird nur Hoehe oder
 ;	                           Breite angegeben, ist das Ergebnis
 ;	                           ebenfalls quadratisch.
-;                  Farbiefe      : Die Farbteife des Ausdrucks, Default ist 8
+;                  Farbtiefe     : Die Farbteife des Ausdrucks, Default ist 8
 ;                                  Bits per Pixel.
 ;
 ; KEYWORD PARAMETERS: EPS   : Erzeugt ein Encapsulated-PostScript-File
@@ -35,19 +37,28 @@
 ;            Farben um und oeffnet ein Postscript-File mit der
 ;            gewuenschten Groesse. Danach wird noch ein Rahmen um die
 ;            Darstellung des Arrays gemalt.
+;            Optional wird mit XYOUTS die Achsenbeschriftung ausgegeben.
 ;
 ; EXAMPLE: BspMatrix = indgen(5,5)       
-;          PSTVScl, BspMatrix, psfile='~/postscriptfernsehen', /eps, /order 
+;          PSTVScl, BspMatrix, psfile='~/postscriptfernsehen', XTITLE='icksaxe', /eps, /order 
 ;
 ; MODIFICATION HISTORY:
+; 
+; $Log$
+; Revision 2.2  1997/10/07 11:37:08  thiel
+;        PostScript-TVScales koennen jetzt mit
+;        Achsenbeschriftung erzeugt werden.
 ;
+;   
 ;       Fri Sep 5 14:33:06 1997, Andreas Thiel
 ;		Erste Version wird verfuegbar.
 ;
 ;-
 
 
-PRO PSTVScl, _Array, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, EPS=eps, BPP=bpp, COLOR=Color, _EXTRA=e
+PRO PSTVScl, _Array, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, $
+                 XTITLE=XTitle, YTITLE=YTitle, $
+                 EPS=eps, BPP=bpp, COLOR=Color, _EXTRA=e
 
 If Not Set(PSFILE) Then PSFile = 'postscript_tvscl'
 
@@ -69,6 +80,9 @@ If Not Set(BPP) Then bpp=8
 min = min(_Array)
 max = max(_Array)
 
+;-----Zusaetzlichen Rand fuer die Beschriftung vorsehen:
+IF Set(YTITLE) THEN XRand = Width/5.0 ELSE XRand = 0.0
+IF Set(XTITLE) THEN YRand = Height/5.0 ELSE YRand = 0.0
 
 SET_PLOT, 'PS'
 
@@ -78,8 +92,8 @@ If Not Set(EPS) Then Begin
     Endif Else Begin
         DEVICE, Filename = PSFile+'.eps'
         DEVICE, /Encapsulated
-        DEVICE, XSize=width
-        DEVICE, YSize=height
+        DEVICE, XSize=Width + (2.0*XRand)
+        DEVICE, YSize=Height + (2.0*YRand)
     Endelse
 
 If Set(COLOR) Then DEVICE, /Color Else DEVICE, Color=0
@@ -99,14 +113,18 @@ Endif Else Begin ;-----Farbild
 EndElse
 
 
-TVscl, Array, XSize=Width, YSize=Height, /Centimeters ,_EXTRA=e
+TVscl, Array, XRand, YRand, XSize=Width, YSize=Height, /Centimeters ,_EXTRA=e
 
-plots, 0, 0 , /DEVICE 
-plots, 1000.0*width, 0 ,/Continue, /DEVICE 
-plots, 1000.0*width, 1000.0*height ,/Continue, /DEVICE
-plots, 0, 1000.0*height ,/Continue, /device 
-plots, 0, 0, /continue, /DEVICE 
+;-----Rahmen um die TVSCL-Graphik:
+plots, 1000.0*XRand, 1000.0*YRand , /DEVICE 
+plots, 1000.0*(width+XRand), 1000.0*YRand ,/Continue, /DEVICE 
+plots, 1000.0*(width+XRand), 1000.0*(Height+YRand),/Continue, /DEVICE
+plots, 1000.0*XRand, 1000.0*(height+YRand) ,/Continue, /DEVICE 
+plots, 1000.0*XRand, 1000.0*YRand, /Continue, /DEVICE 
 
+;-----Die Beschriftung (zentriert):
+IF Set(XTITLE) THEN XYOuts, 1000.0*((Width+(2.0*XRand))/2.0), 1000.0*(YRand/2.0), XTITLE, ALIGNMENT=0.5, /DEVICE, SIZE=0.8
+IF Set(YTITLE) THEN XYOuts, 1000.0*(XRand/2.0), 1000.0*((Height+(2.0*YRand))/2.0), YTITLE, ALIGNMENT=0.5, /DEVICE, ORIENTATION=90, Size=0.8
 
 DEVICE, /Close
 SET_PLOT, 'X'
