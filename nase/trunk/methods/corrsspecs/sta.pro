@@ -1,5 +1,7 @@
 ;+
 ; NAME:                STA
+;
+; AIM:                 computes the spike-triggered average (STA)
 ; 
 ; PURPOSE:             Berechnet den Spike-Triggered Average. Dieser mittelt
 ;                      ein Signal C in einer bestimmten Umgebung um Events, die
@@ -24,21 +26,24 @@
 ;                      B = ROUND(0.6*RANDOMU(seed,1000))
 ;                      s = STA(C, B, t, PSHIFT=128)
 ;                      plot, t, s
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/28 13:25:07  gabriel
+;           AIM tag added , message <> console
+;
 ;     Revision 1.1  1998/06/23 19:09:48  saam
 ;           damned &^!%@$(&^$#
 ;
 ;
-;-
+;
 FUNCTION STA, C, B, t, PSHIFT=pshift
 
    ;----->
    ;-----> CHECK & COMPLETE COMMAND LINE SYNTAX
    ;----->
-   IF N_Params() LT 2 THEN Message, 'at least two parameters expected'
+   IF N_Params() LT 2 THEN console, /fatal, 'at least two parameters expected'
    ; C : continuous signal
    ; B ; binary signal
    SC = SIZE(C)
@@ -46,9 +51,9 @@ FUNCTION STA, C, B, t, PSHIFT=pshift
    NC = N_Elements(C)
    NB = N_Elements(B)
 
-   IF (SC(0) NE 1) OR (SB(0) NE 1) THEN Message, 'only one-dimensional signals will be processed'
+   IF (SC(0) NE 1) OR (SB(0) NE 1) THEN console, /fatal, 'only one-dimensional signals will be processed'
    IF (NOT InSet(SB(SB(0)+1), [1,2,3])) OR (Min(B) LT 0) OR (MAX(B) GT 1) THEN Message, 'second signal has to be a spike train!'
-   IF (NC NE NB) THEN Message, 'signal have to have same size' 
+   IF (NC NE NB) THEN console, /fatal, 'signal have to have same size' 
 
    Default, PShift, 64
    
