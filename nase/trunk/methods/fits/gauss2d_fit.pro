@@ -69,7 +69,7 @@ END
 
 
 Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = neg, TILT=tilt,$
-                CONVERGED=converged
+                CONVERGED=converged, WEIGHTS=weights
 ;+
 ; NAME:
 ;	GAUSS2d_FIT
@@ -179,6 +179,9 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1998/03/14 13:58:31  saam
+;             new Keyword WEIGHTS
+;
 ;       Revision 1.4  1998/03/10 16:51:41  saam
 ;             new keyword CONVERGED
 ;
@@ -227,8 +230,9 @@ a = [	(ax(3) + ay(3))/2., $		;Constant
 if Keyword_set(tilt) then a = [a, 0.0]
 
 ;print,'1st guess:',string(a,format='(8f10.4)')
+IF NOT Set(Weights) THEN Weights = replicate(1.,n)
 result = ucurvefit([nx, ny, x, y], reform(z, n, /OVERWRITE), $
-		replicate(1.,n), a, itmax=50, $
+		weights, a, itmax=50, $
 		function_name = "GAUSS2__FUNCT", /NODERIVATIVE, CONVERGED=converged)
 
 ; If we didn't already have an XY term, add it = 0.0
