@@ -28,9 +28,10 @@
 ;                                          d:['A','C'] }
 ;                         LS = InitLoop(MeineParameter)
 ;                         REPEAT BEGIN
-;                           tmpStruc = Looping(LS, dizzy)
+;                           tmpStruc = LoopValue(LS)
 ;                           help, tmpStruc, /STRUCTURE
 ;                           dummy = Get_Kbrd(1)
+;                           Looping, LS, dizzy
 ;                         END UNTIL dizzy
 ;
 ;                    ScreenShot:
@@ -55,11 +56,16 @@
 ;                           C               INT              2
 ;                           D               STRING    'C'
 ;      
-; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPNAME">LoopName</A>
+; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPNAME">LoopName</A>, <A HREF="#LOOPVALUE">LoopValue</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1997/11/26 09:20:42  saam
+;           Aktueller Schleifenzustand nun ueber LoopValue zu ermitteln
+;           Function -> Procedure
+;           Docu-Update
+;
 ;     Revision 1.4  1997/11/25 16:43:52  saam
 ;           Hyperlink-Update
 ;
@@ -71,28 +77,14 @@
 ;
 ;
 ;-
-FUNCTION Looping, LS, dizzy
+PRO Looping, LS, dizzy
 
    IF Contains(LS.Info,'Loop') THEN BEGIN
-
-      ; names for new structure      
-      TagNames   = Tag_Names(LS.struct)
-
-
-      ; values for new structure
-      latestLoop = CountValue(LS.counter)
-
-      newStruct =  Create_Struct(TagNames(0), LS.struct.(0)(latestLoop(0)))
-      FOR tag = 1, LS.n-1 DO BEGIN 
-        newStruct = Create_Struct(newStruct, TagNames(tag),(LS.struct.(tag))(latestLoop(tag)) )
-      END
 
       ; update counters
       tmpCounter = LS.counter
       Count, tmpCounter, dizzy
       LS.counter = tmpCounter
-
-      IF LS.info EQ 'LoopStruc' THEN RETURN, newStruct ELSE RETURN, newStruct.huhu
 
    END ELSE Message, 'no valid loop structure passed'
 
