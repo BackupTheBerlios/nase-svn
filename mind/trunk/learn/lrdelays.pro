@@ -14,7 +14,7 @@
 ;  MIND / LEARNING ROUTINES
 ;  
 ; CALLING SEQUENCE:
-;  LRDelays, CON=con,WIN=win,LEARNFUNC=learnfunc[,/SHUTUP],_EXTRA=_extra
+;  LRDelays, CON=con,WIN=win,LEARNFUNC=learnfunc,_EXTRA=_extra
 ;  
 ; INPUTS:
 ;  con: A DelayWeigh structure containing connection information. 
@@ -63,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/15 15:20:05  thiel
+;            Last SHUTUP removed from header.
+;
 ;        Revision 1.3  2000/09/15 15:18:49  thiel
 ;            Hyperlinks & header updated.
 ;
