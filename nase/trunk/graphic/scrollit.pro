@@ -44,7 +44,9 @@
 ;                                               IDL-!P.Multi-Variable (mehrere "Fensterchen" in einem Fenster).
 ;                                               In MULTI kann ein maximal fünfelementiges Array angegeben werden, das
 ;                                               das gleiche Format wie !P.Multi hat:
+;
 ;                                               [Anzahl_ges,Anzahl_x,Anzahl_y,Anzahl_z,Order].
+;                                               Ausgelassene Argumente werden als 0 interpretiert. 
 ;                                               Anzahl_ges: Gesamtzahl der Fenster. (weicht leicht von der !P.Multi-Konvention ab.)
 ;                                               Anzahl_x/y/z: Anzahl in x/y/z-Richtung (Layout)
 ;                                                             Die z-Zahl wird augenblicklich ignoriert.
@@ -74,13 +76,24 @@
 ;
 ; PROCEDURE: Einfaches Base- und Draw-Widget mit einfachem Resize-Event-Handler.
 ;
-; EXAMPLE: My_Win = ScrollIt ()
-;          Plot, indgen(100)
-;          XManager
+; EXAMPLE: 1. My_Win = ScrollIt ()
+;             Plot, indgen(100)
+;             XManager
+;
+;          2. My_MultiWin = ScrollIt (MULTI=[4,2,2], XSIZE=200, YSIZE=200, XDRAWSIZE=300, YDRAWSIZE=300)
+;             Plot, indgen(10)
+;             WSet, My_MultiWin(3)
+;             Plot, 10-indgen(10)
 ;
 ; SEE ALSO: Slide_Image  (Standard-IDL-Routine)
+;           <A HREF="#DEFINESHEET">DefineSheet()</A>.
 ;
 ; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 2.14  1998/05/18 17:42:56  kupper
+;              Beispiel für MULTI, UPDATE-Kontrolle im Event-Handler.
+;
 ;
 ;       Thu Sep 4 16:18:27 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -95,6 +108,8 @@ Pro ScrollIt_Event, Event
    WIDGET_CONTROL, Event.Top, GET_UVALUE=base_uval
 
    If TAG_NAMES(Event, /STRUCTURE_NAME) eq "WIDGET_BASE" then begin
+      WIDGET_CONTROL, Event.Top, UPDATE=0 ;Prevent Screen-Update
+
       New_XSize = (Event.X-base_uval.wincols*2*2)/base_uval.wincols ;Framedicke=2!
       New_YSize = (Event.Y-base_uval.winrows*2*2)/base_uval.winrows ;Framedicke=2!
 
@@ -107,6 +122,7 @@ Pro ScrollIt_Event, Event
          endwhile
          SubBase = WIDGET_INFO(SubBase, /SIBLING) ;das ist unsere nächste SubBase!
       EndWhile
+      WIDGET_CONTROL, Event.Top, UPDATE=1 ;Allow Screen-Update
    EndIf
    
    ;;-----------Deliver Events to other Widgets?-------------------------
