@@ -164,11 +164,11 @@ PRO PTvS, data, XPos, YPos, $
 
 
    ;; save orginal plot parameters for a later restore 
-   oldRegion   = !P.Region
-   oldXTicklen = !X.TickLen 
-   oldYTicklen = !Y.TickLen 
-   oldXMinor   = !X.Minor
-   oldYMinor   = !Y.Minor
+;   oldRegion   = !P.Region
+;   oldXTicklen = !X.TickLen 
+;   oldYTicklen = !Y.TickLen 
+;   oldXMinor   = !X.Minor
+;   oldYMinor   = !Y.Minor
    
 
    ;; set ticks and their lengths
@@ -176,10 +176,10 @@ PRO PTvS, data, XPos, YPos, $
    !Y.TickLen = 0.02            ; this will be changed later
 
 
-   IF hdata GE 15 THEN !Y.Minor = 0 ELSE $
-     IF hdata GE 7 THEN !Y.Minor = 2 ELSE !Y.Minor=-1   
-   IF wdata GE 15 THEN !X.Minor = 0 ELSE $
-     IF wdata GE 7 THEN !X.Minor = 2 ELSE !X.Minor=-1
+;   IF hdata GE 15 THEN !Y.Minor = 0 ELSE $
+;     IF hdata GE 7 THEN !Y.Minor = 2 ELSE !Y.Minor=-1   
+;   IF wdata GE 15 THEN !X.Minor = 0 ELSE $
+;     IF wdata GE 7 THEN !X.Minor = 2 ELSE !X.Minor=-1
    
    
 
@@ -187,7 +187,11 @@ PRO PTvS, data, XPos, YPos, $
    ;; plot has already been done. This is important for an initial
    ;; guesstimation of the width-to-height ratio... 
    ;; ?XSTYLE=5 assures to no coordinate system is actually plotted
-   PLOT, [0,1], XRANGE=_xrange, YRANGE=_yrange, XSTYLE=5, YSTYLE=5, /NODATA, CHARSIZE=Charsize, _EXTRA=_extra
+   PLOT, [0,1], XRANGE=_xrange, YRANGE=_yrange, XSTYLE=5, YSTYLE=5, /NODATA, CHARSIZE=Charsize 
+                                ; i omitted _EXTRA=extra because a
+                                ; [xy]title might be plotted, if it
+                                ; does't work this way, you have to
+                                ; remove all titles from the extra variable  
    
    xyrange_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
    xyrange_dev = (convert_coord(xyrange_norm,/NORM,/TO_DEVICE))
@@ -420,11 +424,11 @@ PRO PTvS, data, XPos, YPos, $
 
 
    ;; restore original device parameters
-   !P.Region  = oldRegion 
-   !X.TickLen = oldXTicklen 
-   !Y.TickLen = oldYTicklen 
-   !X.Minor   = oldXMinor  
-   !Y.Minor   = oldYMinor   
+;   !P.Region  = oldRegion 
+;   !X.TickLen = oldXTicklen 
+;   !Y.TickLen = oldYTicklen 
+;   !X.Minor   = oldXMinor  
+;   !Y.Minor   = oldYMinor   
    
 
 
