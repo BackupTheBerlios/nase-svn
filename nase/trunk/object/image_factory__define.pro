@@ -7,7 +7,7 @@ Function image_factory::image
       call_method, self.type+"_", self
       self.recompute = 0
    Endif
-   return, *self.image*self.brightness
+   return, (*self.image)*self.brightness
 End
 
 Function image_factory::width
@@ -57,6 +57,7 @@ Function image_factory::init, HEIGHT=height, WIDTH=width
    self.height = height
    self.width = width
    self.size = 1.0
+   self.brightness = 1.0
    self.type = "gauss"
    self.recompute = 1
    return, 1                    ;TRUE
