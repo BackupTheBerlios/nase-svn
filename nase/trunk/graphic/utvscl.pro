@@ -23,7 +23,8 @@
 ;  Image
 ;
 ; CALLING SEQUENCE:   
-;*UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
+;*UTvScl, Image [,XNorm [,YNorm [,Dimension]]]
+;*              [,/XCENTER] [,/YCENTER] [,/CENTER]
 ;*              [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
 ;*              [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;*              [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
@@ -33,7 +34,7 @@
 ;  image:: ein ein- oder zweidimensionales Array
 ;
 ; OPTIONAL INPUTS:
-;  XNorm, YNORM:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
+;  XNorm, YNorm:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
 ;                 bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
 ;                 wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
 ;                                    von XNorm nebeneinander positioniert, siehe Docu von TV
@@ -45,7 +46,9 @@
 ;                         
 ;
 ; INPUT KEYWORDS: 
-;              CENTER::              Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
+;              [X|Y]CENTER:: image will be
+;                            horizontally/vertically centered around <*>XNorm</*>/<*>YNorm</*>
+;              CENTER:: shortcut for setting <*>/XCENTER</*> and <*>/YCENTER</*>
 ;              X_SIZE, Y_SIZE::      Es kann die gewuenschte Groesse des Bildes in CM angegeben werden,
 ;                                    wobei 1cm !D.PX_CM Pixeln entspricht. (40 für das X-Device.) Wird
 ;                                    nur einer der beiden Parameter angegeben, so wird der andere so
@@ -185,7 +188,7 @@ PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCA
    ENDFOR
 END
 PRO UTvScl, __Image, XNorm, YNorm, Dimension $
-            , CENTER=center $
+            , XCENTER=xcenter, YCENTER=ycenter, CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
             , NORM_X_SIZE=norm_x_size, NORM_Y_SIZE=norm_y_size $
@@ -207,6 +210,11 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    IF NOT ExtraSet(E, 'TOP') THEN SetTag, E, "TOP", !TOPCOLOR
 
 
+   IF Keyword_Set(CENTER) THEN BEGIN
+       XCENTER = 1
+       YCENTER = 1
+   END
+
    ; don't modify the original image
    Image = __Image
 
@@ -216,10 +224,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       IF (Size(Image))(0) GT 2 THEN Message, 'array has more than 2 effective dimensions'
    END
    IF (Size(Image))(0) NE 1 AND (Size(Image))(0) NE 2 THEN Message, 'array with one or two dimensions expected'
-   IF N_Params() LT 3 AND     Keyword_Set(CENTER) THEN YNorm = 0.5
-   IF N_Params() LT 3 AND NOT Keyword_Set(CENTER) THEN YNorm = 0.0
-   IF N_Params() LT 2 AND     Keyword_Set(CENTER) THEN XNorm = 0.5
-   IF N_Params() LT 2 AND NOT Keyword_Set(CENTER) THEN XNorm = 0.0
+   IF N_Params() LT 3 AND     Keyword_Set(YCENTER) THEN YNorm = 0.5
+   IF N_Params() LT 3 AND NOT Keyword_Set(YCENTER) THEN YNorm = 0.0
+   IF N_Params() LT 2 AND     Keyword_Set(XCENTER) THEN XNorm = 0.5
+   IF N_Params() LT 2 AND NOT Keyword_Set(XCENTER) THEN XNorm = 0.0
    
    Default, stretch  , 1.0
    Default, v_stretch, 1.0
@@ -268,10 +276,8 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       xpos = (xnorm * !D.X_Size / !D.X_PX_CM)
       ypos = (ynorm * !D.Y_Size / !D.Y_PX_CM)
    END
-   IF Keyword_Set(CENTER) THEN BEGIN
-      xpos = xpos - xsize/2.
-      ypos = ypos - ysize/2.
-   END
+   IF Keyword_Set(XCENTER) THEN xpos = xpos - xsize/2.
+   IF Keyword_Set(YCENTER) THEN ypos = ypos - ysize/2.
    
    IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN begin
       im_max = max(Image)
