@@ -49,6 +49,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.14  1998/03/18 12:45:47  kupper
+;              Minor Bugfixes, Wildcards jetzt erlaubt.
+;
 ;       Revision 1.13  1998/02/18 14:12:23  kupper
 ;              Verzeichnis hat sich mal wieder geändert...
 ;
@@ -90,7 +93,7 @@ Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher ni
 End
 
 PRO MAIN13_Event, Event
-common common_cvs, name
+common common_cvs, name, npath
 
   WIDGET_CONTROL,Event.Id,GET_UVALUE=Ev
 
@@ -104,8 +107,8 @@ common common_cvs, name
       if name eq "nase" then NASE_Special ;do some nosy things
       END
   'BUTTON25': BEGIN             ;Edit
-     n = name
-      file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=n)
+     n = npath
+      file = PickFile(TITLE="Select File to Edit", FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
          Print, "=========== Making File Editable: "+file
@@ -115,8 +118,8 @@ common common_cvs, name
       endif
       END
   'BUTTON15': BEGIN              ;UnEdit
-     n = name
-      file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=n)
+     n = npath
+      file = PickFile(TITLE="Select File to UnEdit", FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
          Print, "=========== UnEditing Changes on: "+file
@@ -131,8 +134,8 @@ common common_cvs, name
       Print, "============= done."
       END
   'BUTTON35': BEGIN              ;Add
-     n = name
-      file = PickFile(TITLE="Select File to Add", /MUST_EXIST, FILTER="*.pro", GET_PATH=path, PATH=n)
+     n = npath
+      file = PickFile(TITLE="Select File to Add", FILTER="*.pro", GET_PATH=path, PATH=n)
       If file ne "" then begin
          Print
          Print, "=========== Establishing CVS-Control for: "+file
@@ -154,8 +157,8 @@ common common_cvs, name
       if name eq "nase" then NASE_Special ;do some nosy things
       END
   'BUTTON28': BEGIN              ;Commit File
-     n = name
-      file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=n)
+     n = npath
+      file = PickFile(TITLE="Select File to Commit", FILTER="*.pro", PATH=n)
       If file ne "" then begin
          Print
          Print, "=========== Committing File "+file
@@ -174,11 +177,12 @@ END
 
 
 PRO cvs, CVS_Name, NASPATH=naspath, GROUP=Group
-common common_cvs, name
+common common_cvs, name, npath
 
   default, CVS_Name, "nase"
   default, naspath, "~/IDL"
   name = CVS_Name
+  npath = naspath+'/'+CVS_Name
 
   CD, naspath, CURRENT=old_dir
 
