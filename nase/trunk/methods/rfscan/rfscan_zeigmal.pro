@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/06/16 08:53:15  kupper
+;        Added AUTO_SINGLEDOT.
+;
 ;        Revision 1.5  1998/03/06 11:35:10  kupper
 ;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
 ;                wenn beim Aufruf kein Fenster geöffnet war.
@@ -106,6 +109,16 @@ Function RFScan_Zeigmal, RFS, Picture
    EndIf
    ;;--------------------------------
    
+   ;;------------------> (AUTO_SINGLEDOT) (gee, this is easy...)
+   If Keyword_Set(RFS.auto_singledot) then begin
+      RFS.count = RFS.count+1
+      RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
+      wo = fix(randomu(seed)*N_Elements(RFS.Picture))
+      RFS.Picture(wo) = 1.0
+      Return, ReturnPic(RFS)
+   Endif
+   ;;--------------------------------
+
    ;;------------------> (AUTO_RANDOMDOTS) (gee, this is easy...)
    If Keyword_Set(RFS.auto_randomdots) then begin
       RFS.count = RFS.count+1
