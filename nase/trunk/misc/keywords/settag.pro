@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/04/04 13:59:24  saam
+;           bug if structure contained only one tag corrected
+;
 ;     Revision 1.2  2000/01/17 14:29:52  kupper
 ;     Typo!
 ;     Must have been AGES ODL!
@@ -57,6 +60,6 @@ PRO SetTag, S, TN, TV
    IF TypeOf(TN) NE 'STRING' THEN message, 'second argument has to be a string'
 
    DelTag, S, TN
-   S = Create_Struct(S, TN, TV)
+   IF TypeOf(S) EQ "STRUCT" THEN S = Create_Struct(S, TN, TV) ELSE S = Create_Struct(TN, TV)
 
 END
