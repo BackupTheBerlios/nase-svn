@@ -53,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/02/16 16:31:44  thiel
+;               NASE-Indizierung gilt auch fuer CENTER-Schluesselworte.
+;
 ;        Revision 2.1  1998/01/31 17:00:09  thiel
 ;               Jetzt kann ichs comitten, jetzt ist auch der
 ;               Header fertig.
@@ -91,8 +94,8 @@ totalindex = Transpose(indgen(height,width))
 ;print, (totalindex)
 
 
-oben = centerrow-boxwidth/2
-links = centercol-boxheight/2
+oben = centercol-boxwidth/2
+links = centerrow-boxheight/2
 
 totalindex = Shift(totalindex,-oben,-links)
 
