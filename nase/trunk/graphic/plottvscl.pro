@@ -204,7 +204,7 @@ end
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
-               XRANGE=xrange, YRANGE=yrange, $
+               XRANGE=_xrange, YRANGE=_yrange, $
                GET_Position=Get_Position, $
                GET_COLOR=Get_Color, $
                GET_XTICKS=Get_XTicks, $
@@ -324,8 +324,10 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          VisualHeight = !D.Y_VSIZE/FLOAT(!P.MULTI(2))
       ENDIF
 
-      Default, XRANGE, [0, ArrayWidth-1]
-      Default, YRANGE, [0, ArrayHeight-1]
+      Default, _XRANGE, [0, ArrayWidth-1]
+      Default, _YRANGE, [0, ArrayHeight-1]
+      xrange = _XRANGE
+      yrange = _YRANGE
 
       IF N_Elements(XRANGE) NE 2 THEN Message, 'wrong XRANGE argument'
       IF N_Elements(YRANGE) NE 2 THEN Message, 'wrong YRANGE argument'
