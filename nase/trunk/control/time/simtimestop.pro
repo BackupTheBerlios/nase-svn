@@ -9,48 +9,24 @@
 ;                        zu protokollieren und nach der Gesamtsimulation eine Statistik/Graphik aus-
 ;                        zugeben.
 ;
-; CATEGORY:              ORGANISATION
+; CATEGORY:
+; 
+; ExecutionControl
 ;
 ; CALLING SEQUENCE:      SimTimeStop
 ;
 ; COMMON BLOCKS:         SimTime
 ;
 ; EXAMPLE:
-;*                        SimTimeInit, GRAPHIC=5, /PRINT
-;*                        FOR a=1,10 DO BEGIN
-;*                           Wait, 5.*RandomU(seed)
-;*                           SimTimeStep
-;*                        END
-;*                        SimTimeStop
 ;
-;-             
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.7  2001/02/01 10:37:50  gabriel
-;           FLUSH for STDOUT inserted
-;
-;     Revision 1.6  2000/11/17 12:57:59  gabriel
-;          BUG fixed for stat.step GT stat.maxsteps
-;
-;     Revision 1.5  2000/09/28 13:25:36  alshaikh
-;           added AIM
-;
-;     Revision 1.4  1997/11/13 14:00:50  saam
-;           Bug bei Ausgabe korrigiert
-;
-;     Revision 1.3  1997/11/13 13:57:21  saam
-;           Anpassung an NULL-Device
-;
-;     Revision 1.2  1997/10/28 15:24:55  saam
-;           !P.Multi wird korrekt gesetzt
-;           der alte Zustand von !P.Multi bleibt erhalten
-;
-;     Revision 1.1  1997/10/26 18:41:58  saam
-;           vom Himmel gefallen
-;
-;
-;
+;*SimTimeInit, GRAPHIC=5, /PRINT
+;*FOR a=1,10 DO BEGIN
+;* Wait, 5.*RandomU(seed)
+;* SimTimeStep
+;*END
+;*SimTimeStop
+;*
+;-
 PRO SimTimeStop
    
    COMMON SimTime, stat
