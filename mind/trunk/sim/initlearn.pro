@@ -248,7 +248,11 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
          END
          2: BEGIN; EXPO
             console,P.CON, 'LEARNWIN: EXPO, '+ STR(LS.tau)+ ' ms',/msg
-            win = InitRecall(_CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
+            IF delay THEN win = InitRecall(_CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE) $
+                           ELSE win = InitRecall(P.LW(curDW.SOURCE),  EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
+            ;; If-Abfrage von delay fehlte für den EXPO-case!!
+            ;; daher eingefügt, analog zum ALPHA-case
+            ;; 18.11.03 FM
          END
          ELSE: console,P.CON, 'Learning Window for these learning rule expected!',/fatal
       END
