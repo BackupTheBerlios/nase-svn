@@ -70,7 +70,7 @@ sub updatedoc {
     @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i } readdir(DIR);
     closedir DIR;      
     print "looking for projects ... ", join(" ",@projects), "\n";
-    print "DOCDIR is set to     ... $DOCDIR\n";
+    print "DOCDIR is set to ... $DOCDIR\n";
     
     `rm -Rf $DOCDIR/*`;
     foreach (@projects){
@@ -81,14 +81,23 @@ sub updatedoc {
   } else {print "CVSROOT: not set   ... ignoring checkout\n"; };
 
 
-  print "generating routine index...";
+  print "generating routine index..."; 
   createRoutineIdx();
   print "...done\n";
   print "generating directory indices...";
-  createAim("/");
+  opendir(DIR, $DOCDIR) || print "can't opendir $DOCDIR: $!\n";
+  @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i && ! /doc/ } readdir(DIR); # ignore doc dir; no .pros are there
+  closedir DIR;      
+  foreach (@projects){
+    createAim("/$_");
+  }
   print "generating keyword lists...";
   keylista();
   print "...done</PRE>";
+  print "create HTML documentation...";
+  `$DOCDIR/doc/www-bin/automakedoc`;
+  print "...done</PRE>";
+
 }
 
 
