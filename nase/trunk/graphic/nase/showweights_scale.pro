@@ -1,17 +1,20 @@
 ;+
 ; NAME: ShowWeights_Scale()
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM: Scale array to be plotted using one of the predefined NASE
 ;      color tables.
 ;
-; PURPOSE: Wurde aus ShowWeights ausgelagert.
-;          Ein Array wird so skaliert, daß es mit <A>UTv</A> ausgegeben werden 
-;          kann und dann aussieht wie bei ShowWeights.
-;          Alle Array-Einträge werden durch die entsprechenden
-;          Farbindizes ersetzt. (Ausnahme: Der Wert !NONE wird
-;          unverändert durchgeschleift. !NONE wird von <A>UTv</A>
-;          durch den speziellen Farbindex ersetzt.)<BR>
-;          Optional kann auch die Farbtabelle entsprechend gesetzt werden.
+; PURPOSE: 
+;  An outsourced part of <A>ShowWeights</A>. An array is scaled such
+;  that it can be displayed with <A>UTV</A> and will look the same as
+;  drawn by <A>ShowWeights</A>. All array entries are substituted by
+;  the corresponding color indices. An exeption is the <*>!NONE</*>
+;  value, which is left unchanged since <A>UTV</A> uses a separate
+;  color index to display <*>!NONE</*>s.<BR>
+;  As an optional feature, the colortable may be set accordingly.
 ;
 ; CATEGORY:
 ;  Array
@@ -22,122 +25,109 @@
 ;  NASE
 ;
 ; CALLING SEQUENCE:
-;*  UTv_Array = ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
-;*                                [,COLORMODE=mode]
-;*                                [,RANGE_IN=upper_boundary]
+;*  utv_array = ShowWeights_Scale( array [,SETCOL={1|2}] ,[/PRINTSTYLE]
+;*                                [,COLORMODE=...]
+;*                                [,RANGE_IN=...]
 ;*                                [,GET_COLORMODE={+1|-1}]
-;*                                <I>obsolete: </I>[,GET_MAXCOL=Farbindex]
-;*                                [,GET_RANGE_IN =scaling_boundaries_in ]
-;*                                <I>obsolete: </I>[,GET_RANGE_OUT=scaling_boundaries_out])
+;*                                <I>obsolete: </I>[,GET_MAXCOL=...]
+;*                                [,GET_RANGE_IN =...]
+;*                                <I>obsolete: </I>[,GET_RANGE_OUT=...])
 ;
-; INPUTS: Array:: Ein (nicht notwendigerweise, aber wohl meist)
-;                NASE-Array. (D.h. es darf auch <*>!NONE</*>-Werte
-;                enthalten..., ganz positiv oder positiv/negativ sein.)
+; INPUTS: 
+;  array:: An array of numerical type that may also contain
+;          <*>!NONE</*> values. 
 ;
 ; INPUT KEYWORDS:
-;  SETCOL:: Wird dieses Schlüsselwort auf <*>1</*> gesetzt, so initialisiert
-;           die Routine auch die Farbtabelle und paßt die Werte von
-;           <*>!P.Background</*> und <C>Set_Shading</C> entsprechend an. (Graustufen
-;           für positive Arrays, Rot/Grün für gemischtwertige.)<BR>
-;<BR>
-;           Wird dieses Schlüsselwort auf <*>2</*> gesetzt, so initialisiert
-;           die Routine NUR die Farbtabelle und paßt die Werte von
-;           <*>!P.Background</*> und <C>Set_Shading</C> entsprechend an. Das Array
-;           wird NICHT skaliert. Der Rückgabewert ist in diesem Fall
-;           <*>0</*>.<BR>
-;
-;  COLORMODE:: Mit diesem Schlüsselwort kann unabhängig von den Werten
-;              im Array die schwarz/weiss-Darstellung (<C>COLORMODE</C><*>=+1</*>)
-;              oder die rot/grün-Darstellung (<C>COLORMODE</C><*>=-1</*>) erzwungen
-;              werden.
-;
-;  PRINTSTYLE:: Wird dieses Schlüsselwort gesetzt, so wird die gesamte
-;               zur Verfügung stehende Farbpalette für
-;               Farbschattierungen benutzt. Die Farben orange und blau
-;               werden NICHT gesetzt. (gedacht für Ausdruck von
-;               schwarzweiss-Zeichnungen.)
-;
-;  RANGE_IN:: The <I>positive scalar value</I> given in <C>RANGE_IN</C> will be
+;  SETCOL:: When set to 1, <C>ShowWeigthsSacle()</C> initializes the
+;           colortable and adjusts the values of <*>!P.Background</*>
+;           und <*>Set_Shading</*> (greyscale for positive arrays, red
+;           /green for arrays of mixed sign).<BR>
+;           If set to 2, <C>ShowWeigthsSacle()</C> initializes the
+;           colortable and adjusts the values of <*>!P.Background</*>
+;           und <*>Set_Shading</*>, while the array itself it
+;           <I>not</I> scaled. The function returns 0 in this case.
+;  COLORMODE:: With this keyword it is possible to force either the
+;              greyscale <*>COLORMODE=+1</*> or red/green
+;              <*>COLORMODE=-1</*> display no matter what the
+;              values in <*>array</*> are.
+;  /PRINTSTYLE:: This switch causes the whole available color palette
+;                to be used for greyscales. The colors orange and blue
+;                are not set. This option is intended for generating
+;                printable greyscale graphics.
+;  RANGE_IN:: The <I>positive scalar value</I> given in <*>RANGE_IN</*> will be
 ;             scaled to the maximum color (white / full green). Note
 ;             that this exact value does not have to be contained in
 ;             the array. If the array contains values greater than
-;             <C>RANGE_IN</C>, the result will contain invalid color
+;             <*>RANGE_IN</*>, the result will contain invalid color
 ;             indices.<BR>
 ;             By default, this value will be determined from the
 ;             arrays contents such as to span the whole available
 ;             color range.<BR>
 ;             Please note that this expects a scalar value, in
-;             contrary to the <C>RANGE_IN</C> keywords in other
+;             contrary to the <*>RANGE_IN</*> keywords in other
 ;             routines like <A>UTvScl</A> or <A>PlotTvScl</A>.
 ;
 ; OUTPUTS:
-;  TV_Array:: Das geeignet skalierte Array, das direkt mit
-;             <A>UTV</A> dargestellt werden kann.
+;  utv_array:: A suitably scaled array that may be directly displayed
+;              using <A>UTV</A>.
 ;
 ; OPTIONAL OUTPUTS:
-;  GET_MAXCOL:: ShowWeights benutzt die Farben blau für 
-;                 <*>!NONE</*>-Verbindungen und orange für das
-;                 Liniengitter.
-;                 Daher stehen für die Bilddarstellung
-;                 nicht mehr alle Farbindizes zur
-;                 Verfügung. In <C>GET_MAXCOL</C> kann der
-;                 letzte verwendbare Index abgefragt werden.<BR>
-;<BR>
+;  GET_MAXCOL:: <A>ShowWeights</A> uses the colors blue for showing
+;               <*>!NONE</*> connections and orange for drawing a line
+;               grid. Therefore, not all color indices are available
+;               for displaying the data. With <*>GET_MAXCOL</*>, the
+;               last free color index can be returned.<BR>
 ;                 <I>The keyword <C>GET_MAXCOL</C> is obsolete, but
 ;                 maintained for backwards compatibility.<BR>
 ;                 The value returned is always
 ;                 <*>GET_MAXCOL = !TOPCOLOR</*></I>.
-;  GET_COLORMODE:: Liefert als Ergebnis <*>+1</*>, falls der
-;                 schwarz/weiss-Modus zur Darstellung
-;                 benutzt wurde (DW-Matrix enthielt nur
-;                 positive Werte), und <*>-1</*>, falls der
-;                 rot/grün-Modus benutzt wurde (DW-Matrix
-;                 enthielt negative Werte).
-;  GET_RANGE_IN, GET_RANGE_OUT:: Diese Werte können direkt an den 
-;                 Befehl <A>Scl</A> weitergereicht
-;                 werden, um weitere Arrays so zu
-;                 skalieren, daß deren Farbwerte
-;                 direkt vergleichbar sind
-;                 (d.h. ein Wert <I>w</I> eines so
-;                 skalierten Arrays wird auf den
-;                 gleichen Farbindex abgebildet,
-;                 wie ein Wert <I>w</I>, der im
-;                 Originalarray enthalten war).<BR>
-;<BR>
+;  GET_COLORMODE:: Returns <*>+1</*>, if the greyscale mode was used
+;                  for displaying the data, ie, the array only
+;                  contained positive values. Returns <*>-1</*> if the
+;                  red/green mode was used, ie the array also
+;                  contained negative values.
+;  GET_RANGE_IN, GET_RANGE_OUT:: These values may be passed directly
+;                                to the <A>Scl</A> command to scale
+;                                multiple arrays in such a way that
+;                                their colors are directly comparable.<BR>
 ;                 <I>The keyword <C>GET_RANGE_OUT</C> is obsolete, but
 ;                 maintained for backwards compatibility.<BR>
 ;                 The value returned is always
 ;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*></I>.<BR>
 ;<BR>
-;                 Zur Information: Es gilt die Beziehung<BR>
-;*  GET_RANGE_IN  = [0, Range_In       ], falls Range_In angegeben wurde,
-;*                = [0, max(abs(Array))]  sonst.
+;                 The following relations apply:<BR>
+;*  GET_RANGE_IN  = [0, Range_In       ], if Range_In was set,
+;*                = [0, max(abs(Array))]  otherwise
 ;*  GET_RANGE_OUT = [0, !TOPCOLOR]
 ;
-; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
-;        	Außerdem setzt es <*>!P.BACKGROUND</*> stets auf den Farbindex für schwarz
-;               und initialisiert <C>SET_SHADING</C> geeignet, damit folgende Surface-Plots nicht
-;               seltsam aussehen.
+; SIDE EFFECTS: 
+;  The color table is changed if necessary. Furthermore,
+;  <*>!P.BACKGROUND</*> is set to the color index of black and
+;  <*>SET_SHADING</*> is suitably initialized such that subsequent
+;  Surface-Plots don't look strange.
 ;
-; PROCEDURE: Aus Showweights, Rev. 2.15 ausgelagert.
+; PROCEDURE:
+;  Outsourced from <A>ShowWeights</A>, Rev. 2.15.
 ;
 ; EXAMPLE:
-;*  1. UTV, /NORDER, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), STRETCH=10
-;*  2. Window, /FREE, TITLE="Membranpotential"
+; 1.
+;* UTV, /NORDER, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), STRETCH=10
+; 2. 
+;* Window, /FREE, TITLE="Membranpotential"
 ;*     LayerData, MyLayer, POTENTIAL=M
 ;*     UTV, /NORDER, ShowWeights_Scale( M, /SETCOL), STRETCH=10
-;*  3. a = gauss_2d(100,100)
+;3. 
+;* a = gauss_2d(100,100)
 ;*     WINDOW, 0
 ;*     UTV, ShowWeights_Scale( a, /SETCOL, $
 ;*                                GET_RANGE_IN=ri, GET_RANGE_OUT=ro )
 ;*     WINDOW, 1
 ;*     UTV, Scl( 0.5*a, ro, ri )
-;*    Die Werte der Arrays in den beiden Fenstern können 
-;*    nun direkt verglichen werden.
-;*    Der letzte Befehl ist übrigens identisch mit
+; The arrays' values displayed in both windows are now comparable. The
+; last command is identical to:
 ;*     UTV, ShowWeights_Scale( 0.5*a, RANGE_IN=ri(1) )
 ;
-; SEE ALSO: <A>ShowWeights()</A>, <A>UTvScl</A>, <A>PlotTvScl</A>.
+; SEE ALSO: <A>ShowWeights</A>, <A>UTvScl</A>, <A>PlotTvScl</A>.
 ;-
 
 Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
@@ -165,8 +155,14 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
                                 ;literal 0)
    Default, Range, max([max, -min]) ; for positive Arrays this equals max.
 
+   ;; Is this possible to work around range=0 for "empty" arrays???
+   ;; at least leaving range eq 0 does not work fine
+   IF range EQ 0 THEN range = 1
+
    assert, N_Elements(Range) eq 1, "Range_In must be a positive scalar value for this routine."
    assert, Range gt 0, "Range_In must be a positive scalar value for this routine."
+
+
 
    ;;--------------------------------
    
