@@ -3,13 +3,14 @@
 ;
 ; PURPOSE: Zeichnen eines Polardiagramms
 ;
-; CATEGORY: GRAPHICS
+; CATEGORY: GRAPHICS / GENERAL
 ;
 ; CALLING SEQUENCE: PolarPlot, radiusarray, winkelarray
 ;                              [,TITLE=title] 
 ;                              [,XRANGE=xrange] [,YRANGE=yrange]
 ;                              [,XSTYLE=xstyle] [,YSTYLE=ystyle]
 ;                              [,MINORANGLETICKS=minorangleticks]
+;                              [,THICK=thick]
 ;
 ; INPUTS: radiusarray: Die in diesem Array enthaltenen Werte werden als Abstaende
 ;                      gemessen vom Ursprung dargestellt.
@@ -27,6 +28,7 @@
 ;                                   minorangleticks=n malt in jedem Quadranten
 ;                                   n Zwischenwinkelmarkierungen, z.B. liefert
 ;                                   n=1 Markierungen bei 45, 135, 225 und 315 Grad. 
+;                  thick: Die Liniendicke, Normal: 1.0, Default: 3.0
 ;
 ; OUTPUTS: Polardarstellung der Daten auf dem aktuellen Plot-Device.
 ;
@@ -42,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/01/22 14:11:02  thiel
+;               Jetzt mit variabler Liniendicke, Keyword THICK.
+;
 ;        Revision 2.1  1998/01/22 13:46:52  thiel
 ;               Die erste Version ist fertig.
 ;
@@ -52,7 +57,8 @@ PRO PolarPlot, radiusarray, winkelarray, $
                TITLE=title, $
                XRANGE=xrange, YRANGE=yrange, $
                XSTYLE=xstyle, YSTYLE=ystyle, $
-               MINORANGLETICKS=minorangleticks
+               MINORANGLETICKS=minorangleticks, $
+               THICK=thick
 
 Default, xstyle, 4
 Default, ystyle, 4
@@ -62,7 +68,9 @@ Default, yrange, [-Max(RadiusArray),Max(RadiusArray)]
 
 Default, title, ''
 
-Plot, radiusarray, winkelarray, /polar, THICK=2.0, $
+Default, thick, 3.0
+
+Plot, radiusarray, winkelarray, /polar, THICK=thick, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
  TITLE=title
