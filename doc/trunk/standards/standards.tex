@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.2  2000/08/24 16:46:12  saam
+%             extended the messaging section
+%
 %       Revision 1.1  2000/08/24 10:01:32  saam
 %             first version
 %
@@ -120,7 +123,7 @@ On_Error, 2
 Console, 'error message', /FATAL .
 \end{verbatim}
 %
-\item All nonfatal errors and strange conditions occuring during the processing of the routine, should be logged via
+\item All nonfatal errors, strange conditions or status messages during the processing of the routine, should be logged via
 \begin{verbatim}
 Console, 'what happened' [,/MSG | ,/INFO] 
 \end{verbatim}
@@ -129,9 +132,10 @@ With this policy the user can decide if he/she actually wants to see all this st
 \item Fatal errors should stop the routine at the position of the calling program segment. You may implement a fallback, that the calling function may use to handle the error. Thi should look like:
 \begin{verbatim}
 PRO RoutineGeneratingError, ERROR=error
+On_Error, 2
 ...
 ; a fatal error has occured
-IF Keyword_Set(Error) THEN BEGIN
+IF Keyword_Set(ERROR) THEN BEGIN
                              error=1 ; or another documented value/string
                              RETURN
                            END ELSE Console, 'fatal error', /FATAL
@@ -143,6 +147,9 @@ END
 %
 \end{itemize}
 \subsection{Syntax Checking}
+\begin{itemize}
+\item The syntax and semantics of the passed arguments should be checked as strict/extensive as possible. If the routine is time critical (called many times), the checking can be skipped by the keyword \texttt{/FAST}. You also may omit the syntax check, if documented in the \texttt{Restrictions} section. 
+\end{itemize}
 \subsection{Calling Conventions}
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -152,9 +159,9 @@ END
 %%%%%%%%%%%%%%%%%%%%%
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Improving Speed and Reducing Memory Consumption}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Improving Speed and Readability}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{itemize}
 \item Use array operations rather than loops wherever possible. Try to avoid loops with high repetition counts.
@@ -174,9 +181,16 @@ B = A * (16./MAX(A))
 \item Whenever possible, vector and array data should always be processed with IDL array operations instead of scalar operations in a loop. 
 \item Use constants of the correct type.
 \item Eliminate invariant expressions.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reducing Memory Consumption}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{itemize}
 \item If virtual memory is a problem, try to tailor your programming to minimize the number of images held in IDL variables. Keep in mind that IDL creates temporary arrays to evaluate expressions involving arrays.  
 \item Use the TEMPORARY function: A = TEMPORARY(A) + 1 instead of A = A + 1
-\item Avoid memory leaks when dealing with handles.
+\item Avoid memory leaks when dealing with handles. This is easy, if you use the NASE system variable !MH as father for all handles you create. By freeing !MH (for master handle), you can also free the memory for all his children.3
 \end{itemize}
 
 
