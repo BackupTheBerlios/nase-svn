@@ -23,12 +23,15 @@
 ;
 ; CATEGORY: Darstellung, Miscellaneous
 ;
-; CALLING SEQUENCE: SurfIt, Data_Array [,XPOS] [,YPOS] [,XSIZE] [,YSIZE] [,GROUP] [,JUST_REG]
+; CALLING SEQUENCE: SurfIt, Data_Array [,XPOS] [,YPOS] [,XSIZE]
+;                                      [,YSIZE] [,GROUP] [,JUST_REG]
+;                                      [,TITLE=Fenstertitel]
+;                                      [,DELIVER_EVENTS=Array_of_Widget_IDs]
+;                                      [,GET_BASE=Base_ID]        
+;
 ; 
 ; INPUTS: Data_Array: Das zu plottende Array
 ;
-; OPTIONAL INPUTS: ---
-;	
 ; KEYWORD PARAMETERS: XPOS, YPOS, XSIZE, YSIZE: Die Fenster-Koordinaten, wie üblich
 ;                     GROUP:    Die Widget-ID eines Widgets, das als "Group-Leader" dienen soll:
 ;                               Wird der Group-Leader gekillt, so stirbt auch unser Widget.
@@ -41,17 +44,8 @@
 ;                                     ankommenden Events
 ;                                     weitergereicht werden.
 ;                     TITLE:    Ein Titel für das Fenster. (Default:
-;                               "Scroll It!")
-;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
-; RESTRICTIONS: ---
+;                               "Surf It!")
+;                     GET_BASE: Die ID des erstellten Base-Widgets
 ;
 ; PROCEDURE: Benutzte Routinen: Default
 ;
@@ -93,9 +87,6 @@ Pro SurfIt_Event, Event
      "WIDGET_BASE": Begin ;Unser Main-Widget wird resized
         info.xsize = Event.X
         info.ysize = Event.Y
-        WIDGET_CONTROL, Event.Top, $ ;Das ist unser Main-Widget! Frag mich nicht, warum, aber auch das muss von Hand resized werden...
-                        XSIZE=Event.X, $
-                        YSIZE=Event.Y
         WIDGET_CONTROL, WIDGET_INFO(Event.Top, /CHILD), $ ;Das ist unser Draw-Widget!
                         XSIZE=Event.X, $
                         YSIZE=Event.Y
@@ -195,8 +186,8 @@ window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
               deliver_events:deliver_events $
              }, $
       /NO_COPY, $
-      XSIZE=xsize, $
-      YSIZE=ysize, $
+;      XSIZE=xsize, $
+;      YSIZE=ysize, $           ;Will have natural-Size (auto)
       XOFFSET=xpos, $
       YOFFSET=ypos, $
       /COLUMN, $
