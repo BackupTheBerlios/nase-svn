@@ -185,9 +185,11 @@ console, outputstring
          pick = reform(TV.pick, TV.h, TV.w)
          d=subscript(cuttedstim,TV.pick)    
          balancect, cuttedstim-.5
-         plottvscl, cuttedstim, /LEGEND
+         plottvscl, cuttedstim-.5, /LEGEND, get_position=pos
          oplot, d(*, 0), d(*, 1), psym=4, color=rgb("white")
-
+         odm=Orient_2d(TV.detectsize, DEGREE=TV.DETECTORIENT-90.)    
+         utvscl, odm, pos(2)+0.1, pos(1)
+         xyouts, pos(2)+0.1, pos(1), "OD",/normal
       END
       ELSE: BEGIN
          console, 'unknown mode', /FATAL
