@@ -55,6 +55,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1998/03/20 16:13:58  thiel
+;              Benutzt kein _EXTRA mehr, um Konflikte mit ALL
+;              zu vermeiden.
+;
 ;       Revision 1.7  1998/02/10 14:26:46  kupper
 ;              Tippfehler korrigiert.
 ;
@@ -88,8 +92,7 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
                   S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                   T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                   ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                  TRANSPARENT=transparent, _EXTRA=extra
-
+                  TRANSPARENT=transparent
 
    tw = DWDim(DWS, /TW)
    th = DWDim(DWS, /TH)
@@ -115,7 +118,7 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
       SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
        dog, $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-       TRANSPARENT=transparent, _EXTRA=extra
+       TRANSPARENT=transparent
 
    endif else begin             ; Wir definieren FROMS:
 
@@ -132,7 +135,7 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
       SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
        dog, $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-       TRANSPARENT=transparent, _EXTRA=extra
+       TRANSPARENT=transparent
 
    endelse
 
