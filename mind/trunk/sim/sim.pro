@@ -126,11 +126,6 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       curLayer = Handle_Val(P.LW(i))
       tmp = curLayer.NPW
 
-
-      ;tmp2 = InitPara_6(TAUF=[tmp.tf1,tmp.tf2], TAUL=[tmp.tl1,tmp.tl2], TAUI=tmp.ti, VS=tmp.vs, TAUS=tmp.ts, VR=tmp.vr, TAUR=tmp.tr, TH0=tmp.t0, SIGMA=tmp.n, NOISYSTART=tmp.ns, OVERSAMPLING=os, SPIKENOISE=tmp.sn, FADE=tmp.fade)
-
-      ; this line was replaced by the following three
-
       NAME = tmp.INFO         ; name of init-routine
       deltag, tmp, 'INFO'     ; remove this name from structure
       tmp2 =  CALL_FUNCTION(NAME,_EXTRA=tmp)
@@ -150,7 +145,6 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    console,P.CON,'Initializing simulation...'
 
 
-;   IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN --- former version
    IF NOT graphic THEN BEGIN
       IF TSSCloutmax GE 0 THEN $
        CSIM_1  = DefineSheet(/NULL, MULTI=[TSSCloutmax+1,1,TSSCloutmax])
@@ -248,7 +242,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       REC = curLayer.LEX
 
       ; ensure REC_LFP is defined
-      IF NOT ExtraSet(REC, "REC_LFP") THEN SetTag, REC, "REC_LFP", 0
+      IF NOT ExtraSet(REC, "REC_LFP") THEN BEGIN
+          SetTag, REC, "REC_LFP", 0
+          curLayer.LEX = REC
+      END
 
       IF ((REC.REC_O(1) GT REC.REC_O(0)) AND (REC.REC_O(0) LT P.SIMULATION.TIME)) THEN BEGIN
          IF N_Elements(REC.REC_O) GT 2 THEN BEGIN
@@ -317,9 +314,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    IF Learn THEN BEGIN
        FOR i=0, DWmax DO BEGIN
           curDW = Handle_Val((P.DWW)(i)) 
-          lun = UOpenW(P.file+'.'+curDW.FILE+'.ini.dw', /ZIP)
-          SaveStruc, lun, SaveDW(CON(i))
-          UClose, lun
+          UWriteU, P.file+'.'+curDW.FILE+'.ini.dw', SaveDW(CON(i)), /COMPRESS
        END
    END
 
@@ -399,7 +394,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          IF REC.REC_MUA THEN dummy = CamCord( VID_MUA(i), LONG(LayerMUA(L(i))))
          IF REC.REC_LFP THEN BEGIN
              LayerData, L(i), POTENTIAL=m
-             dummy = CamCord( VID_LFP(i), FLOAT(TOTAL(m)))
+             dummy = CamCord( VID_LFP(i), FLOAT(TOTAL(m)))             
          END
       END
 
@@ -432,9 +427,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       curDW = Handle_Val((P.DWW)(i)) 
       IF ExtraSet(curDW, "FILE") THEN BEGIN
           IF (curDW.FILE NE 'NULL') THEN BEGIN
-              lun = UOpenW(P.file+'.'+curDW.FILE+'.dw', /ZIP)
-              SaveStruc, lun, SaveDW(CON(i))
-              UClose, lun
+              UWriteU, P.file+'.'+curDW.FILE+'.dw', SaveDW(CON(i)), /COMPRESS
           ENDIF
       ENDIF
    END
