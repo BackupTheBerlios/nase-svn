@@ -1,6 +1,8 @@
 ;+
 ; NAME: SPATIOTEMPCORR
 ;
+; AIM:                 two dimensional timeresolved spatiotemporal correalation histogramm
+;
 ;
 ; PURPOSE:              A two dimensional spatiotemporal correalation function with sliding windows. The result is normed 
 ;                       in relation to spatial overlap.
@@ -33,11 +35,14 @@
 ;
 ; EXAMPLE:               SEE: <A HREF="#SPHASEVELOCITY">SPHASEVELOCITY</A>
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/28 11:49:57  gabriel
+;          AIM tag added , message <> console
+;
 ;     Revision 1.3  2000/07/04 15:09:53  gabriel
 ;          POWER keyword new
 ;
@@ -48,12 +53,12 @@
 ;          was neues
 ;
 ;
-;-
+;
 FUNCTION spatiotempcorr,A,distance_ax,delay_ax,time_ax,xpshift=xpshift,tpshift=_tpshift,ssize=_ssize,$
                         sshift=_sshift,SAMPLEPERIOD=SAMPLEPERIOD, xsample=xsample,POWER=POWER
    sa = size(a)
 
-   IF sa(0) NE 2 THEN message,"Array isn't a two dimensional array A(space,time)"
+   IF sa(0) NE 2 THEN console, /fatal,"Array isn't a two dimensional array A(space,time)"
    default,xpshift,FLOOR(sa(1)-1)
    default,SAMPLEPERIOD,0.001
    default,_ssize,20

@@ -1,6 +1,8 @@
 ;+
 ; NAME: RUNICA
 ;
+; AIM:        performs Independent Component Analysis (ICA)
+;
 ;
 ; PURPOSE:    Perform Independent Component Analysis (ICA) decomposition
 ;             of psychophysiological data using the ICA algorithm of 
@@ -78,11 +80,14 @@
 ;
 ; EXAMPLE:
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 11:45:41  gabriel
+;          AIM tag added , message <> console
+;
 ;     Revision 1.2  2000/06/08 10:19:43  gabriel
 ;             Floating underflow corrected (changed data to double)
 ;
@@ -146,7 +151,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
                 extended=extended,posact=posactflag,verbose=verbose
    On_Error, 2
    np = N_Params()
-   IF (np LT 1) OR (np GT 7)THEN Message, 'wrong number of arguments'
+   IF (np LT 1) OR (np GT 7)THEN console, /fatal, 'wrong number of arguments'
    data = double(_data)
    data_size = size(data)
    nchans = data_size(1)
@@ -154,7 +159,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    frames = data_size(2)
    datalength = frames
    if nchans LT 2 OR frames LT nchans THEN BEGIN
-      message,'runica() - data size (' + str(nchans)+ ',' + str(frames) +') too small.' 
+      console, /fatal,'runica() - data size (' + str(nchans)+ ',' + str(frames) +') too small.' 
    END 
    ;;
    ;; ;;;;;;;;;;;;;;;;;;;; Declare defaults used below ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -175,7 +180,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    default,sphering,1    ;;   use the sphere matrix as the default starting weight matrix
    default,posactflag,0  ;;   don't use PCA reduction
    IF posactflag THEN BEGIN
-      message,'posact not yet supported'
+      console, /fatal ,'posact not yet supported'
    END
    default,verbose,1     ;;   write ascii info to calling screen
    default,block      , floor(sqrt(frames/3.)) ;; heuristic default  - may need adjustment!   
@@ -197,7 +202,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
 
    IF set(ncomps) THEN BEGIN
       IF _ncomps LT urchans AND _ncomps NE ncomps THEN $
-       message,'runica(): Use either PCA or ICA dimension reduction'
+       console, /fatal,'runica(): Use either PCA or ICA dimension reduction'
       ;;ncomp already setted
    END ELSE BEGIN
       ;;default
@@ -205,11 +210,11 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    END
    IF set(PCA) THEN BEGIN
       IF ncomps LT urchans AND ncomps NE PCA THEN $
-       message,'runica(): Use either PCA or ICA dimension reduction'
+       console, /fatal,'runica(): Use either PCA or ICA dimension reduction'
       ncomps = PCA
       pcaflag = 1
       if ncomps GE chans OR ncomps LT 1 THEN $
-       message,'runica(): pca value must be in range [1,'+str(chans-1)+']'
+       console, /fatal,'runica(): pca value must be in range [1,'+str(chans-1)+']'
       nchans = ncomps
    END ELSE IF set(extended) THEN BEGIN
       extblocks = fix(extended) ;; number of blocks per kurt() compute
@@ -228,19 +233,19 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
       IF  annealdeg LT 0 THEN annealdeg = 0
    END
    IF lrate GT MAX_LRATE OR lrate LT 0 THEN $
-    message,'runica(): lrate value is out of bounds'
+    console, /fatal,'runica(): lrate value is out of bounds'
    IF maxsteps LT 0 THEN $
-    message,'runica(): maxsteps value must be a positive integer'
+    console,/fatal,'runica(): maxsteps value must be a positive integer'
    IF annealstep LE 0 OR  annealstep GT 1 THEN $
-    message,'runica(): anneal step value must be (0,1]'
+    console,/fatal,'runica(): anneal step value must be (0,1]'
    IF annealdeg GT 180 OR annealdeg LT 0 THEN $
-    message,'runica(): annealdeg value is out of bounds [0,180]'
+    console,/fatal,'runica(): annealdeg value is out of bounds [0,180]'
    IF momentum GT 1.0 OR momentum LT 0 THEN $
-    message,'runica(): momentum value is out of bounds [0,1]'
+    console,/fatal,'runica(): momentum value is out of bounds [0,1]'
 
  
    IF ncomps LT nchans OR ncomps LT 1 THEN $
-    message,'runica(): number of components must be 1 to '+STR(chans)
+    console,/fatal,'runica(): number of components must be 1 to '+STR(chans)
 
    IF set(weights_in) THEN BEGIN ;; initialize weights
       ;;starting weights are being passed to runica() from the commandline
@@ -248,15 +253,15 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
       IF  nchans GT ncomps AND  set(weights_in)  THEN BEGIN
          ws = size(weights_in)
          IF s(1) NE ncomps OR s(2) NE nchans THEN $
-          message,'runica(): weight matrix must have '+STR(nchans)+' rows, '+str(ncomps)+' columns.'
+          console,/fatal,'runica(): weight matrix must have '+STR(nchans)+' rows, '+str(ncomps)+' columns.'
       END
    END
    ;; Check keyword values
-   IF frames LT nchans THEN message,'runica(): data length '+str(frames)+' < data channels '+str(nchans)+'!' $
-   ELSE IF block LT 2 THEN message,'runica(): block size '+str(block)+' too small!' $
-   ELSE IF block GT frames THEN message,'runica(): block size exceeds data length!' $
-   ELSE IF floor(epochs) NE epochs THEN message,'runica(): data length is not a multiple of the epoch length!' $
-   ELSE IF nsub GT ncomps THEN message,'runica(): there can be at most '+str(ncomps)+' sub-Gaussian components!' 
+   IF frames LT nchans THEN console,/fatal,'runica(): data length '+str(frames)+' < data channels '+str(nchans)+'!' $
+   ELSE IF block LT 2 THEN console,/fatal,'runica(): block size '+str(block)+' too small!' $
+   ELSE IF block GT frames THEN console,/fatal,'runica(): block size exceeds data length!' $
+   ELSE IF floor(epochs) NE epochs THEN console,/fatal,'runica(): data length is not a multiple of the epoch length!' $
+   ELSE IF nsub GT ncomps THEN console,/fatal,'runica(): there can be at most '+str(ncomps)+' sub-Gaussian components!' 
    ;; Process the data 
    IF verbose THEN BEGIN
       print,'Input data size ['+str(nchans)+','+str(frames)+'] = '+str(nchans)+' channels, '+str(frames)+' frames.'
@@ -283,7 +288,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    ;; Perform PCA reduction
    IF pcaflag THEN BEGIN
       print,'Reducing the data to '+str(ncomps)+' principal dimensions...'
-      message,'pca not yet supported'
+      console,/fatal,'pca not yet supported'
       ;;make data its projection onto the ncomps-dim principal subspace
    END
    ;; Use the sphering matrix
@@ -562,7 +567,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
    END ELSE activations = weights#data
    ;; If pcaflag, compose PCA and ICA matrices
    IF pcaflag THEN BEGIN
-      message,'pca not yet supported'
+      console,/fatal,'pca not yet supported'
       print,'Composing the eigenvector, weights, and sphere matrices'
       print,'into a single rectangular weights matrix; sphere=eye('+str(nchans)+')'
       weights= weights#sphere#eigenvectors(*,0:ncomps-1)
@@ -578,7 +583,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
          winv = invert(weights#sphere)
       END ELSE BEGIN
          print,'Using pseudo-inverse of weight matrix to rank order component projections'
-         message,'pseudo-inverse of weight matrix not yet supported'
+         console,/fatal,'pseudo-inverse of weight matrix not yet supported'
          winv = pinv(weights#sphere)
       ENDELSE
    
