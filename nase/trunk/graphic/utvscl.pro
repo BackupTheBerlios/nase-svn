@@ -53,7 +53,7 @@
 ;*               [,STRETCH=stretch][,H_STRETCH=h_stretch][,V_STRETCH=v_stretch]
 ;*               [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
 ;*               [,CUBIC=...][,/INTERP][,/MINUS_ONE]
-;*               [,/NASE]
+;*               {[,/NORDER] [,/NSCALE]} | [,/NASE]
 ;*               [,/ALLOWCOLORS]
 ;*               [,TOP=...] [,RANGE_IN=[..., ...]]
 ;
@@ -114,7 +114,9 @@
 ;                            interpolation with <*>POLYGON</*> set
 ;                            results in very large Postscript output
 ;                            files.
-; /NASE:: Array is in NASE coordinates (array will be transposed before output).
+; /NASE:: Array is in NASE coordinates (array will be rotated suitably before output).
+; /NORDER   ::
+; /NSCALE   ::
 ; /ALLOWCOLORS:: If <C>/ALLOWCOLORS</C> is set, at the upper end of the
 ;               palette, only colors above the color table size are
 ;               clipped, leaving the indices between <*>!TOPCOLOR</*>
@@ -301,7 +303,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one $
             , TRUE=_true $
             , TOP=top $
-            , NASE=nase  $
+            , NASE=nase, NORDER=norder, NSCALE=nscale $
             , ALLOWCOLORS=allowcolors $
             , RANGE_IN=range_in $
             , _EXTRA=e
@@ -309,6 +311,11 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
+
+   ;;NASE implies NORDER and NSCALE:
+   Default, NASE, 0
+   Default, NORDER, NASE
+   Default, NSCALE, NASE
 
    Default, DEVICE, 0
 
@@ -330,10 +337,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    END
 
    ; don't modify the original image, and
-   ; do NASE-transpose if /NASE was set:
+   ; do NASE-transpose if /NASE or /NORDER was set:
    IF N_Params() LT 1 THEN Console, 'at least one positional argument expected', /FATAL
-   If Keyword_Set(NASE) then $
-     Image = Transpose(REFORM(__Image)) $
+   If Keyword_Set(NORDER) then $
+     Image = Rotate(REFORM(__Image), 3) $
     else $
      Image = REFORM(__Image)
    

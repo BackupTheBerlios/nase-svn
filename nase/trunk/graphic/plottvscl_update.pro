@@ -101,24 +101,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 ;Note that the above does not cover the non-NSCALE, non-NEUTRAL,
 ;non-NOSCALE case (As it relies on ShowWeights_Scale). 
 ;The INIT/update of this case is therefore
-;handled in special in the Plotting part below.
-  
-   
-;   ;-----Behandlung der NORDER und ORDER-Keywords:
-   IF keyword_set(ORDER) THEN BEGIN
-      UpSideDown = 1
-   ENDIF ELSE BEGIN
-      UpSideDown = 0
-   ENDELSE
-
-   IF (Keyword_Set(NORDER)) AND (Keyword_Set(ORDER)) THEN BEGIN
-      UpsideDown = 0 
-   ENDIF
-
-   IF (Keyword_Set(NORDER)) AND (NOT(Keyword_Set(ORDER)))THEN BEGIN
-      UpSideDown = 1 
-   ENDIF 
-    
+;handled in special in the Plotting part below.    
 
 
    ;-----Plotten der UTVScl-Graphik:
@@ -131,7 +114,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
          UTV, NASE=NORDER, W, Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, ALLOWCOLORS=allowcolors, $
           X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM,$
-          ORDER=UpSideDown, POLYGON=POLYGON
+          ORDER=order, POLYGON=POLYGON
          If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]
 
       END ELSE BEGIN            ;CASE: NSCALE
@@ -142,7 +125,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM,$
-          Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
+          Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=Order , POLYGON=POLYGON
          If Keyword_Set(INIT) then begin 
             Info.Range_In = get_range_in
             Info.colormode = get_colormode ;store for update
@@ -159,7 +142,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM, $
-          Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
+          Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=Order , POLYGON=POLYGON
          If Keyword_Set(INIT) then begin 
             Info.Range_In = get_range_in
             Info.colormode = get_colormode ;store for update
@@ -173,7 +156,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
              Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
              Info.y00_norm, $
              X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-             ORDER=UpSideDown, POLYGON=POLYGON
+             ORDER=Order, POLYGON=POLYGON
             If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]            
          endif else begin       ;CASE: None of NSCALE, NEUTRAL, NOSCALE set
 ;            print, "NONE"
@@ -205,7 +188,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
                 Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
                 Info.y00_norm, $
                 X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-                ORDER=UpSideDown, POLYGON=POLYGON
+                ORDER=Order, POLYGON=POLYGON
                            
          EndElse
 
