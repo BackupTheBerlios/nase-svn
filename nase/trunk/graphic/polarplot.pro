@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.8  2000/02/24 15:51:49  gabriel
+;                ------
+;
 ;        Revision 2.7  2000/02/24 15:49:22  gabriel
 ;              Bugfix: Axis weren't printed properly
 ;
@@ -201,7 +204,7 @@ Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
     XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
 Axis, 0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
   YRANGE=yrange, CHARSIZE=charsize, COLOR=RGB(255, 255, 255, /noall)
-print, yrange
+
 Arcs, TickArray, LINESTYLE=1
 
 IF (Set(minorangleticks)) THEN BEGIN
