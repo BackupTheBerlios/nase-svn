@@ -76,6 +76,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  1998/04/10 16:51:21  kupper
+;            Es wurden nichtdefinierte Schlüsselworte übergeben.
+;
 ;     Revision 2.1  1998/02/23 13:27:42  gabriel
 ;          jetzt kann man explizit coordinaten konvertieren
 ;
@@ -84,6 +87,14 @@
 
 FUNCTION UCONVERT_COORD,X, Y, Z, DATA=DATA, DEVICE=DEVICE, NORMAL=NORMAL,$
                  T3D=T3D, TO_DATA=TO_DATA, TO_DEVICE=TO_DEVICE, TO_NORMAL=TO_NORMAL,OX=OX,OY=OY,OZ=OZ
+
+   Default, data, 0
+   Default, device, 0
+   Default, normal, 0
+   Default, t3d, 0
+   Default, to_data, 0
+   Default, to_device, 0
+   Default, to_normal, 0
    
    tmp = size(X)
    IF tmp(0) GT 0 THEN datadim = tmp(1)$
