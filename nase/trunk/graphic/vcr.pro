@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/05/31 13:56:59  saam
+;           hotfix to implement shadows; undocumented
+;
 ;     Revision 2.6  1998/08/10 14:10:08  saam
 ;           problems with 8bit display hopefully corrected
 ;
@@ -80,10 +83,12 @@ PRO VCR_DISPLAY, UD
       Device, COPY=[0,0,UD.xsize-1, UD.ysize, 0, 0, UD.pm]
    END ELSE BEGIN
       WSet, UD.did
+      IF UD.isdecay THEN UD.mem = UD.mem*(exp(-float(UD.play)/UD.decay)) + a(*,*,UD.t) > 0 $ 
+        ELSE UD.mem = a(*,*,UD.t)      
       IF UD.scale THEN BEGIN
-         IF  UD.nase THEN NaseTvScl, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTvScl, a(*,*,UD.t), STRETCH=ud.zoom
+         IF  UD.nase THEN NaseTvScl, UD.mem, STRETCH=ud.zoom ELSE UTvScl, UD.mem, STRETCH=ud.zoom
       END ELSE BEGIN
-         IF  UD.nase THEN NaseTv, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTv, a(*,*,UD.t), STRETCH=ud.zoom
+         IF  UD.nase THEN NaseTv, UD.mem, STRETCH=ud.zoom ELSE UTv, UD.mem, STRETCH=ud.zoom
       END
    END
    WSet, oId
@@ -228,9 +233,9 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize
+PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, DECAY=decay
 
-   On_Error,2 
+;   On_Error,2 
 
 
   ; COMPLETE COMMAND LINE SYNTAX
@@ -241,6 +246,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   Default, scale, 0
   Default, XSIZE, 320
   Default, YSIZE, 200
+  Default, DECAY, 0
 
 
   IF N_Params() NE 1 THEN Message, 'exactly one argument expected'
@@ -688,6 +694,9 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
                max   : tmax          ,$
                xsize : xsize         ,$
                ysize : ysize         ,$
+               isdecay: decay GT 0   ,$
+               decay : decay         ,$
+               mem   : FltArr(xsize,ysize),$
                pm    : pm            ,$
                modus : modus         ,$
                t     : 0l            ,$
