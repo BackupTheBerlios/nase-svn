@@ -88,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.37  1998/10/28 13:50:38  gabriel
+;          !P.Multi fuer Postscript verbessert
+;
 ;     Revision 2.36  1998/08/10 08:38:04  gabriel
 ;           Keyword POLYGON neu
 ;
@@ -270,14 +273,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ArrayHeight = (size(w))(2)
       ArrayWidth  = (size(w))(1)
    END
-
-   PTMP = !P.MULTI
+   
+   
    charcor = 1.
-   IF !P.MULTI(1) GT 0 AND !P.MULTI(2) GT 0 THEN charcor = SQRT(FLOAT((!P.MULTI(2))/FLOAT(!P.MULTI(1))))
+   IF !P.MULTI(1) GT 0  AND !P.MULTI(2) GT 0 THEN charcor =sqrt(1./FLOAT(!P.MULTI(1)))
+   ;print,charcor
    xcoord = lindgen(ArrayWidth)
    ycoord = lindgen(ArrayHeight)
    PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize*charcor,_EXTRA=e
-   
    
 
    plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
@@ -288,8 +291,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;print,"hallo",plotregion_norm(1,1)
 ;   ENDIF
    plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
-  
-   !P.MULTI = PTMP
+ 
 
    VisualWidth = !D.X_VSIZE
    VisualHeight = !D.Y_VSIZE
@@ -371,6 +373,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;-----Plotten des Koodinatensystems:
    IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
    IF Min(YRANGE) LT -1 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
+   PTMP = !P.MULTI
+   !P.MULTI(0) = 1
    IF NOT Keyword_Set(FullSheet) THEN BEGIN 
       IF PixelSizeDevice(1)*(ArrayWidth+1)+UpRightDevice(0) LT VisualWidth THEN BEGIN
          PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
@@ -395,7 +399,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
        XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
    ENDELSE
-   
+   !P.MULTI = PTMP
    Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
    
    TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
