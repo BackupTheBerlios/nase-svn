@@ -2,6 +2,9 @@
 ; NAME: 
 ;  Sim
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM:
 ;  Simulate network topology, display variables and record results. 
 ;
@@ -322,8 +325,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          FOR i=0,NWmax DO BEGIN
             OpenSheet, CSIM_6, i
             NW = Handle_Val(P.NWATCH(i))
-            LayerData, L(NW.L), FEEDING=f, POTENTIAL=m, SCHWELLE=s
-;             , PARAMETERS=layerdatap
+            LayerData, L(NW.L), FEEDING=f, POTENTIAL=m, THRESHOLD=s
             Plotcilloscope, PCWN(i), [F(NW.h,NW.w), M(NW.h, NW.w) $
                                       , S(NW.h, NW.w)]
             CloseSheet, CSIM_6, i
