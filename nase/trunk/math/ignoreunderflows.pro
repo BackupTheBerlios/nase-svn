@@ -74,6 +74,6 @@
 ;-
 
 Pro IgnoreUnderflows
-   If IdlVersion() gt 3 then $
+   If IdlVersion(/float) gt 5.2 then $
     If !Version.OS_FAMILY ne "Windows" then dummy = Check_Math(Mask=32)
 End
