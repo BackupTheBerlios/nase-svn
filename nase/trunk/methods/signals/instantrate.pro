@@ -5,7 +5,7 @@
 ;          ein Rechteckfenster einer vorgegebenen Breite über den Spiketrain 
 ;          geschoben. Die Zahl der im Fenster enthaltenen Spikes geteilt durch
 ;          die Fensterbreite liefert dann die Feuerrate an der Position des 
-;          Fensters.
+;          Fensters Fnord.
 ;
 ; CATEGORY: METHODS / SIGNALS
 ;
@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/12/06 16:27:02  thiel
+;            Turn on watch?
+;
 ;        Revision 1.1  1999/12/06 15:37:12  thiel
 ;            Neu.
 ;
