@@ -317,7 +317,7 @@ unless the optional second argument NOINDENT is non-nil."
   (interactive)
   (idlwave-nase-template
    (idlwave-rw-case "<BR>\n")
-   (idlwave-rw-case "")
+   (idlwave-rw-case (concat comment-start " "))
    "linebreak inserted" t))
 ;; --End: templates--
 
