@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  1999/04/13 14:39:19  thiel
+;               'Set' bei der NORM-Abfrage durch 'Keyword_Set' ersetzt.
+;
 ;        Revision 1.6  1997/11/25 18:07:14  gabriel
 ;              Blow geloescht, Halbwertsbreiten fuer x und y hinzugefuegt
 ;
@@ -116,7 +119,7 @@ Function Gauss_2D, xlen,ylen, $
   ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
   
 
-  If set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
+  If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
 
   return, ERG(*,*)          
 end
