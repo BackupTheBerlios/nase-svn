@@ -46,7 +46,6 @@
 FUNCTION i2rgbs, _a, _EXTRA=e
 
 a=_a-min(_a)
-a=a/max(a)*!TOPCOLOR
-
+a=FIX(a/max(float(a))*!TOPCOLOR)
 RETURN, i2rgb(a,_EXTRA=e)
 END
