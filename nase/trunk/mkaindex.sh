@@ -16,13 +16,12 @@ echo ' <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 for i in $(find $DIR -name "*.html") ; do
 if [ ! $i = $DIR/aindex.html -a ! $i = $DIR/index.html  ] ; then
 PFAD=$(echo $i | sed "s/\//\\\\\//g" )
-grep HREF $i | grep -v Routine | grep  "#" | sed "s/.*<A //g" \
-| tr '[:lower:]' '[:upper:]'\
-| sed "s/#/${PFAD}&/g" | sed "s/^/<A /g" | sed "s/$/<BR>/g" \
+grep HREF $i | grep -v Routine  | grep -v ";  " | sed "s/.*<A //g" | sed 's/">.*$//g'  \
+| sed "s/#.*$/${PFAD}&\">###&<\/A>/g" | sed "s/####//g" | sed "s/^/<A /g" | sed "s/$/<BR>/g" \
  >>/tmp/alphrout.html
 fi
 done
-sort -t '#' -k 2 /tmp/alphrout.html | uniq >>  $DIR/aindex.html
+sort -d -f -u -k 2 -t '#'  /tmp/alphrout.html  >>  $DIR/aindex.html
 echo "</UL></P><HR></BODY></HTML>" dynamical created at $(date) >> $DIR/aindex.html
-rm -f /tmp/alphrout.html
+#rm -f /tmp/alphrout.html
 
