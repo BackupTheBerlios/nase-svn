@@ -166,7 +166,10 @@ Function BDO_Event_Func, event
    Endelse
 End
 
-
+Pro BDO_UXLoadCT_Callback, DATA=o
+   print,  "call"
+   o->paint_hook_
+End
 
 ;; ------------ Member access methods -----------------------
 Function basic_draw_object::showit
@@ -205,7 +208,8 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                           X_SCROLL_SIZE = x_scroll_size, $ 
                           Y_SCROLL_SIZE = y_scroll_size, $
                           FRAME=frame, $
-                          SUBFRAME=subframe
+                          SUBFRAME=subframe, $
+                          PALETTE_BUTTON=palette_button
    ;;all other keywords are passed to the base
    ;;constructor through _ref_extra
 
@@ -329,6 +333,29 @@ Pro basic_draw_object::ct, n
 End
 Function basic_draw_object::ct
    return, self.ct
+End
+
+Pro basic_draw_object::xct, _EXTRA=_extra
+
+   If Widget_Info(self.widget, /Realized) then begin
+
+      ;; will we have auto-painting during XLoadCT?
+      If self.prevent_paint_flag then begin
+         self.delayed_paint_request_flag = 1 ;store a paint request
+         ;; so data will be painted as soon as possible.
+      endif else begin
+         ;; use call back during XLoadCT:
+         updatecallback="BDO_UXLoadCT_Callback"
+         updatecbdata = self
+      endelse
+      
+      ;; do it:
+      showit_open, self.w_showit
+      UXLoadCt, _EXTRA=_extra, UPDATECALLBACK=updatecallback, UPDATECBDATA=updatecbdata
+      showit_close, self.w_showit, Save_Colors=self.save_colors
+   Endif else begin
+      console, /Warning, "Skipping xct call for unrealized widget."
+   endelse
 End
 
 ;; ------------ Private --------------------
