@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  1999/04/13 17:10:30  thiel
+;               Noch ein Bugfix bei XHWB/YHWB und NORM-Zusammenarbeit.
+;
 ;        Revision 1.7  1999/04/13 14:39:19  thiel
 ;               'Set' bei der NORM-Abfrage durch 'Keyword_Set' ersetzt.
 ;
@@ -110,7 +113,8 @@ Function Gauss_2D, xlen,ylen, $
      xerg = REBIN(xerg,xlen,ylen,/SAMPLE)
      yerg = REBIN(yerg,xlen,ylen,/SAMPLE)
      ERG = xerg*yerg
-     return, ERG(*,*)   
+     If Keyword_Set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
+    return, ERG(*,*)   
 
   ENDIF
 
