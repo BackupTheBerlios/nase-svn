@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/10/28 15:24:55  saam
+;           !P.Multi wird korrekt gesetzt
+;           der alte Zustand von !P.Multi bleibt erhalten
+;
 ;     Revision 1.1  1997/10/26 18:41:58  saam
 ;           vom Himmel gefallen
 ;
@@ -50,12 +54,14 @@ PRO SimTimeStop
       
       
       IF stat.graphic NE 0 AND stat.step GT 0 THEN BEGIN
+         oldmulti = !P.Multi
          Window, stat.graphic, TITLE='Simulation Times'
-         
+         !P.Multi = [0,0,1,0,0]
          Plot, stat.tpi(0:stat.step-1), /NODATA, XTITLE='Iteration', YTITLE='Seconds'         
          PolyFill, [ 0, stat.step, stat.step, 0, 0]   , [ m+sd, m+sd, m-sd, m-sd, m+sd], NOCLIP=0, COLOR=RGB(50,50,250)
          PlotS, [0, stat.step], [m, m], COLOR=23         
          OPlot, stat.tpi(0:stat.step-1)
+         !P.Multi = oldmulti
       END
    END
 
