@@ -334,7 +334,6 @@ Pro widget_image_container::examineit, xpos=xpos, ypos=ypos, _EXTRA=_extra
    examineit, self->image(), $
               GROUP=self->widget(), $
               XPOS=xpos, YPOS=ypos, $
-              NASE=(*self.update_info).nase, $
               NORDER = (*self.update_info).norder, $
               NSCALE = (*self.update_info).nscale, $
               SETCOL=0, $
@@ -352,7 +351,6 @@ Pro widget_image_container::surfit, _EXTRA=_extra
    surfit, self->image(), $
               GROUP=self->widget(), $
               XPOS=xpos, YPOS=ypos, $
-              NASE=(*self.update_info).nase, $
               NORDER=(*self.update_info).norder, $
               _EXTRA=_extra
 End
