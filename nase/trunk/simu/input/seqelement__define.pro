@@ -27,6 +27,11 @@
 ; CALLING SEQUENCE:
 ;*result = obj_new('seqelement', IndexNr=0, INPUTPATTERN=InputPattern)
 ;
+;
+; OBJECT METHODS:
+;    init:: initializes the sequence element
+;    load:: loads a stored sequence element
+;
 ; INPUTS:
 ;  
 ;
@@ -59,7 +64,7 @@
 ;*>
 ;
 ; SEE ALSO:
-;  <A>RoutineName</A>
+;  <A>seqobject__define</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
