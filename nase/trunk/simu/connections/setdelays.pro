@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/01/29 16:15:39  saam
+;           last revision was completely unusable,
+;           now it seems to work :-0
+;
 ;     Revision 2.1  1998/01/05 17:20:24  saam
 ;           Jo, hmm, viel Spass...
 ;
@@ -29,13 +33,18 @@
 ;-
 PRO SetDelays, _DW, W
    
+   IF NOT Contains(Info(_DW), 'DW_DELAY_WEIGHT', /IGNORECASE) THEN Message, 'no DelayWeigh structure, but ...'+Info(_DW)
+   
    Handle_Value, _DW, DW, /NO_COPY 
    
    S = Size(W)
    IF S(0) NE 2                 THEN Message, 'Delay Matrix has to be two-dimensional'
-   IF S(1) NE target_h*target_s THEN Message, 'wrong target dimensions'
-   IF S(2) NE source_w*source_h THEN Message, 'wrong source dimensions'
+   IF S(1) NE DW.target_w*DW.target_h THEN Message, 'wrong target dimensions'
+   IF S(2) NE DW.source_w*DW.source_h THEN Message, 'wrong source dimensions'
    DW.Delays = W
+
+   FreeSpikeQueue, DW.Queue
+   DW.Queue = InitSpikeQueue(INIT_DELAYS = DW.Delays)
 
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
