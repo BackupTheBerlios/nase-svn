@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.6  2000/10/06 12:07:31  saam
+%        new version including the, fri, wed
+%
 %       Revision 1.5  2000/10/04 12:02:47  saam
 %       new schedule for wednesday
 %
@@ -184,7 +187,7 @@ Version: \$Id$ $\$
 
 \subsection{Dienstag, 3. Oktober, vormittags}
 
-\subsubsection{Einf"uhrung in MIND}
+\subsubsection{Einf"uhrung in MIND (Vortrag: Basim)}
 \begin{itemize}
 \item Vorstellung des Demo-Simulation \texttt{DSIM}
 \item Erl"auterung des Console Konzepts
@@ -205,7 +208,66 @@ Version: \$Id$ $\$
 \end{itemize}
 
 
+\subsection{Mittwoch, 4. Oktober, vormittags}
 
+\subsubsection{Einf"uhrung in CVS (Concurrent Version System) (Vortrag: Mirko)}
+\subsubsection{Effiziente IDL-Programmierung}
+
+
+\subsection{Mittwoch, 4. Oktober, nachmittag}
+
+\subsection{Routinendurchsicht: Mathematics}
+\begin{itemize}
+\item Einteilung in Kategorien: Bool'sche Algebra, Lineare Algebra, Algebra, Mengen, Kombinatorik, Statistik
+\end{itemize}
+
+\subsection{Integration ANDRALEX und NASE}
+\begin{itemize}
+\item Aufnehmen der originalen Routinen in tempor"aren Pfad des Repositories: neuro
+\item Sukzessives "Uberf"uhren in die NASE Struktur und L"oschung der alten Routinen
+\item verantwortlich f"ur die Koordination: Mathematics (HJB),  Graphic (RK), Signals (AB), MISC (AG)
+\item Probleme mit UNIX-spezifischen Routinen, Fileseparatoren
+\end{itemize}
+
+\subsection{Routinendurchsicht: Misc}
+
+
+
+\subsection{Donnerstag, 5. Oktober, vormittag}
+
+\subsubsection{Color Managment (Vortrag: R"udiger)}
+\begin{itemize}
+\item Problem: einheitliche Darstellung von Farben auf diversen Displays und PS.
+\item DECOMPOSED=0 ist NASE Standard
+\item \texttt{Sheet}s erlauben einheitliche Behandlung von Bildschirm und PS.
+\item \texttt{ULoadct}, \texttt{UTvScl} fixen diverse IDL Bugs.
+\end{itemize}
+
+\subsection{Donnerstag, 5. Oktober, nachmittag}
+
+\subsubsection{Color Managment (Fortsetzung)}
+\begin{itemize}
+\item Festlegung von Richtlinien zum einheitlichen Farbmanagment
+\item Aufschreiben der Stanards erw"unscht (RK)
+\end{itemize}
+
+\subsubsection{Einf"uhrung in die IDL Objekt Graphics (Vortrag: Susanne)}
+
+\subsubsection{Routinendurchsicht: Signalanalyse}
+\begin{itemize}
+\item Routinen sollen auf mehrdimensionalen Arrays arbeiten k"onnen
+\item Die erste Dimension enth"alt die Zeit.
+\end{itemize}
+
+\subsection{Freitag, 6. Oktober, vormittag}
+
+\subsubsection{Debugging}
+\begin{itemize}
+\item \texttt{Console}, \texttt{ConsoleTreshold}
+\item Debug Messages via DMSG. Diese Ausgaben k"onnen mit einem entsprechenden Performancegewinn unterdr"uckt werden.
+\item Assertions
+\item Profiling mit Hilfe der IDL Routine \texttt{profiler}
+\end{itemize}
 %\bibliography{workshop}
 %\bibliographystyle{plainnat} 
 \end{document}

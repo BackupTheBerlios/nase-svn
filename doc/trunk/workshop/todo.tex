@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.4  2000/10/06 12:07:31  saam
+%        new version including the, fri, wed
+%
 %       Revision 1.3  2000/10/03 16:16:51  saam
 %       updated
 %
@@ -124,6 +127,10 @@ Version: \$Id$ $\$
 \item Abtrennung von Keywords und Beschreibung durch ``::''
 \item show path to file in header display
 \item standards Makefile broken for non-saam environment
+\item move Traps and Bugs into the standards document
+\item directories unsorted in HyperHelp
+\item header view also with currently edited 
+\item insert some interesting IDL links on NASE home page
 \end{itemize}
 
 
@@ -133,13 +140,14 @@ Version: \$Id$ $\$
 \item allow \texttt{console} to log into a file, simultaneously
 \item console ignores level keyword and outputs filename instead of procedure/function name
 \item \texttt{SimTime}: make it work together with console
+\item \texttt{Video}: extension to save and restore arbitrary parameter structures
 \end{itemize}
 
 
 \section{Graphic}
 \begin{itemize}
 \item \texttt{PlotTvScl}: PS and NASE option broken
-\item \texttt{PlotTvScl}: colors in PS broken
+\item \texttt{PlotTvScl}: legend only approximately identical with actual coordinate system
 \item \texttt{CAW}: doesn't work for Andreas
 \end{itemize}
 
@@ -153,21 +161,24 @@ Version: \$Id$ $\$
 \section{MIND}
 
 \begin{itemize}
-\item routines save their evaluation parameters 
+\item simulation and analysis routines save their evaluation parameters via \texttt{Video}s
 \item allow deletion of unnecessary tags
 \item external learning rules should display relevant information
 \item \texttt{DSim}: not up to date
 \item \texttt{FakeEach}: omit the skel keyword, or delete from documentation
 \item modify \texttt{foreach} to process multiple parameter variations synchronously. 
+\item display iteration time in \texttt{console} instead of terminal
+\item \texttt{UOpenR} and partners should use IDLs streaming ZIP functionality
 \end{itemize}
 
 
 
 \section{Misc}
 \begin{itemize}
-\item \texttt{StrJoin}: internal IDL routine?
+\item \texttt{StrJoin}: remove or maintain due to IDL 3.6?
 \item How can marburg specific extensions be included?
 \item \texttt{RealFileName}: marburg specific actions brake other systems
+\item \texttt{XMatEdit}: obsolete 
 \end{itemize}
 
 
@@ -184,6 +195,7 @@ Version: \$Id$ $\$
 \item \texttt{delayWeigh}: improvement in processing speed and memory consumption?
 \item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well
 \item commit neuron type file
+\item \texttt{N_Spikes} and \texttt{LayerMUA} are redundant. One has to be deleted!
 \end{itemize}
 
 
