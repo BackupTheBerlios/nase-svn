@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2001/02/01 12:52:41  bruns
+;     * changed FOR loop variable type to LONG
+;
 ;     Revision 2.5  2000/12/20 09:56:08  bruns
 ;     * replaced [] by () for compatibility with lower IDL versions
 ;
@@ -90,7 +93,7 @@ FUNCTION Product, A, dim, DOUBLE=DOUBLE
    IF dim EQ 0 THEN BEGIN   ; no dimension given
 
       Prod = (Make_Array(dimension = [1], type = PType, value = 1))(0)   ; generate a scalar 1 of the desired type
-      FOR i=0,S(S(0)+2)-1 DO Prod = Prod * A(i)   ; calculate the product over all elements
+      FOR i=0L,S(S(0)+2)-1 DO Prod = Prod * A(i)   ; calculate the product over all elements
 
       Return, Prod
 
@@ -99,13 +102,13 @@ FUNCTION Product, A, dim, DOUBLE=DOUBLE
       ; generate an array of the desired dimensional structure and type
       Prod = Make_Array(dimension = S( Where( (IndGen(S(0))+1) NE dim ) + 1 ), type = PType, value = 1)
       CASE  dim  OF   ; calculate the product over the specified dimension
-        1: FOR  i=0,S(dim)-1  DO  Prod(*) = A(i,*,*,*,*,*,*) * Prod(*)
-        2: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,i,*,*,*,*,*) * Prod(*)
-        3: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,i,*,*,*,*) * Prod(*)
-        4: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,i,*,*,*) * Prod(*)
-        5: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,*,i,*,*) * Prod(*)
-        6: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,*,*,i,*) * Prod(*)
-        7: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,*,*,*,*,*,i) * Prod(*)
+        1: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(i,*,*,*,*,*,*) * Prod(*)
+        2: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(*,i,*,*,*,*,*) * Prod(*)
+        3: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(*,*,i,*,*,*,*) * Prod(*)
+        4: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(*,*,*,i,*,*,*) * Prod(*)
+        5: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(*,*,*,*,i,*,*) * Prod(*)
+        6: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(*,*,*,*,*,i,*) * Prod(*)
+        7: FOR  i=0L,S(dim)-1  DO  Prod(*) = A(*,*,*,*,*,*,i) * Prod(*)
       ENDCASE
 
       Return, Prod

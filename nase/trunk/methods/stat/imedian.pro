@@ -136,7 +136,7 @@ FUNCTION  IMedian,   X_, MD,  $
    X = Reform(Transpose(X_, Permutation), NM, NI, /overwrite)
    M = Make_Array(NI, /float, /nozero)
    ; The median value is computed:
-   FOR  i = 0, NI-1  DO  M(i) = Median(X(*,i))
+   FOR  i = 0L, NI-1  DO  M(i) = Median(X(*,i))
    ; The mean deviation is computed:
    IF  N_Params() EQ 2  THEN  BEGIN
      MX = Transpose(ReBin(M, NI, NM, /sample))   ; blowing M up to the size of X

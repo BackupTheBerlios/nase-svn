@@ -127,7 +127,7 @@ FUNCTION  SincerpolateFFT, Signal, Factor
      FFT_S = FFT(Signal(s1:s2),-1)
      FFT_S(NSignal/2) = 0.5 * FFT_S(NSignal/2)
      IntSignal(i1:i2) = FFT([ FFT_S(0:NSignal/2) , ComplexArr(NInterp-NSignal-1) , FFT_S(NSignal/2:*)   ], 1)
-   ENDFOR  ELSE  FOR  e = 0, NEpochs-1  DO  BEGIN
+   ENDFOR  ELSE  FOR  e = 0L, NEpochs-1  DO  BEGIN
      s1 = e  * NSignal
      s2 = s1 + NSignal - 1
      i1 = e  * NInterp

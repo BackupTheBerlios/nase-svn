@@ -101,7 +101,7 @@ FUNCTION  FltStr,   X_, NDec_, N_,   space = space_
      XStr = Reform(XStr, Size(X, /dim), /overwrite)
      IF  TypeN NE 0  THEN  BEGIN
        NSpace = N - StrLen(XStr)
-       FOR  i = 0, NX-1  DO  IF  NSpace(i) GT 0  THEN  XStr(i) = StrJoin(Replicate(Space, NSpace(i))) + XStr(i)
+       FOR  i = 0L, NX-1  DO  IF  NSpace(i) GT 0  THEN  XStr(i) = StrJoin(Replicate(Space, NSpace(i))) + XStr(i)
      ENDIF
    ENDELSE
 

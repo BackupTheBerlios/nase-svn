@@ -105,7 +105,7 @@ FUNCTION  Convol2DFFT, X, K
    C = Reform(Make_Array(size = SizeX, /nozero), NX(0), NX(1), NEpochs, /overwrite)
 
    ; The actual convolution procedure:
-   FOR  i = 0, NEpochs-1  DO  C(*,*,i) = N * Shift(FFT( SpectrumK*FFT(X(*,*,i)), 1 ), NShift(0),NShift(1))
+   FOR  i = 0L, NEpochs-1  DO  C(*,*,i) = N * Shift(FFT( SpectrumK*FFT(X(*,*,i)), 1 ), NShift(0),NShift(1))
 
    ; The arrays must be reformed back:
    X = Reform(X, DimsX, /overwrite)

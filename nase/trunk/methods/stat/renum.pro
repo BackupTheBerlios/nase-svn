@@ -76,7 +76,7 @@ FUNCTION  ReNum, X
    ; The three lines referred to in the doc header:
    Y  = Elements(X)     ; all different elements occurring in X
    NY = N_Elements(Y)   ; the number of different elements of X
-   FOR  i = 0, NY-1  DO  Rank[Where(X EQ Y[i])] = i   ; the ranks are allocated one after the other
+   FOR  i = 0L, NY-1  DO  Rank[Where(X EQ Y[i])] = i   ; the ranks are allocated one after the other
 
    Rank = Rank + 1      ; the ranks start with 1
 
