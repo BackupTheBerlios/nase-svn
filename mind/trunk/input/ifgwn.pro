@@ -17,7 +17,8 @@
 ;* newPattern = IFgwn( [MODE=1], PATTERN=pattern )
 ;* ignore_me  = IFgwn( MODE=[2|3] )
 ;	
-; KEYWORD PARAMETERS: A         :: amplitude of noise process (Default:1)
+; INPUT KEYWORDS: 
+;                     A         :: amplitude of noise process (Default:1)
 ;                     CORR      :: all input receive fraction <*>CORR</*> of a
 ;                                 correlated GWN process
 ;                     DELTA_T   :: passing time in ms between two sucessive calls of this filter function
@@ -38,11 +39,25 @@
 ; COMMON BLOCKS:      ATTENTION    :: for output to console 
 ;                     COMMON_RANDOM:: for correct handling of pseudo randoms
 ; 
+; EXAMPLE:
+;*
+;* stim_amp = 0.1
+;* stim_noise = 0.8
+;* MFILTER(5) = Handle_Create(!MH, $
+;*                            VALUE={NAME: 'IFgwn', $
+;*                                   start: 0, $
+;*                                   stop: simulation.time-1, $
+;*                                   params: {A:stim_noise*stim_amp} $
+;*                                  } $
+;*                            )
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2004/03/16 10:58:30  zwickel
+;     ... now really header according to latest convention; example added
+;
 ;     Revision 1.5  2004/03/16 10:44:10  zwickel
 ;     introduced new header style
 ;
