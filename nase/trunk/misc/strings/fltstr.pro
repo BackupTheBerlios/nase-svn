@@ -93,17 +93,21 @@ FUNCTION  FltStr,   X_, NDec_, N_,   space = space_
    ; Converting the number(s) to string(s):
    ;----------------------------------------------------------------------------------------------------------------------
 
-   IF  TypeNDec EQ 0  THEN  BEGIN
-     XStr = Str(X)
-   ENDIF  ELSE  BEGIN
-     IF  TypeN EQ 0  THEN  XStr = Str([String( X, format = '(F255.'       +Str(NDec)+')' )])  $
-                     ELSE  XStr = Str([String( X, format = '(F'+Str(N)+'.'+Str(NDec)+')' )])
+   XStr = Str([X])
+   IF  TypeNDec NE 0  THEN  BEGIN
+     ; Checking X for finite elements is necessary because of a very strange IDL bug: When using IDL's STRING function
+     ; with the FORMAT keyword, with NaN or Inf being the argument(s), and with the total number of specified places
+     ; exceeding some seemingly arbitrary value, IDL does not return from whatever it does...
+     iFinite = Where(Finite(X), NFinite)
+     IF  NFinite GE 1  THEN  $
+       IF  TypeN EQ 0  THEN  XStr[iFinite] = Str([String( X[iFinite], format = '(F255.'       +Str(NDec)+')' )])  $
+                       ELSE  XStr[iFinite] = Str([String( X[iFinite], format = '(F'+Str(N)+'.'+Str(NDec)+')' )])
      XStr = Reform(XStr, Size([X], /dim), /overwrite)
      IF  TypeN NE 0  THEN  BEGIN
        NSpace = N - StrLen(XStr)
        FOR  i = 0L, NX-1  DO  IF  NSpace(i) GT 0  THEN  XStr(i) = StrJoin(Replicate(Space, NSpace(i))) + XStr(i)
      ENDIF
-   ENDELSE
+   ENDIF
 
    IF  (Size(X))(0) EQ 0  THEN  Return, XStr(0)  ELSE  Return, XStr
 
