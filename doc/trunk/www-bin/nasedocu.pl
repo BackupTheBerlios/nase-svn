@@ -191,13 +191,13 @@ sub showdirs {
 
   if ($reldir ne '/'){ 
     print h2($reldir);
-    print img({src=>"/icons/back.gif",alt=>"[DIR]"});
-    print a({href=>$myurl.ddot($reldir)."?mode=list"}, "  parent dir"), br;
+#    print img({src=>"/icons/back.gif",alt=>"[DIR]",href=>"http://"});
+    print a({href=>$myurl.ddot($reldir)."?mode=list"}, img({src=>"/icons/back.gif",alt=>"[DIR]"})."  parent dir"), br;
   }
   foreach $ndir (sort @ndir) {
     if (($ndir ne "CVS") && ($ndir ne "RCS")){
-      print img({href=>"$fullurl/$ndir?mode=list",target=>"list", src=>"/icons/folder.gif",alt=>"[DIR]"});
-      print a({href=>"$fullurl/$ndir?mode=list",target=>"list"}, "  $ndir"), br;
+#      print img({target=>"list", src=>"/icons/folder.gif",alt=>"[DIR]"});
+      print a({href=>"$fullurl/$ndir?mode=list",target=>"list"}, img({src=>"/icons/folder.gif",alt=>"[DIR]"})."  $ndir"), br;
     }
   }
 }
@@ -216,8 +216,8 @@ sub showfiles {
   foreach $file (sort @file) {
     $file =~ s/\.pro//i;
     ($base) = split(/\./,$file);
-    print img({src=>"/icons/text.gif",alt=>"[DIR]"});
-    print a({href=>"$fullurl?file=$file&show=header&mode=text",target=>"text"}, "  $base"), br;
+#    print img({src=>"/icons/text.gif",alt=>"[DIR]"});
+    print a({href=>"$fullurl?file=$file&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]"})."  $base"), br;
   }
 }
 
