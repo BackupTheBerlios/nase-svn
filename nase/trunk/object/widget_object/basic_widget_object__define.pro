@@ -25,13 +25,18 @@ End
 
 ;; ------------ Constructor & Destructor --------------------
 Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
+                            TITLE=title, $
                             _REF_EXTRA=_extra
    DMsg, "I am created."
-   
+
+   Default, title, Obj_Class(self)
+   self.title = title
+
    If Keyword_Set(OParent) then Parent = OParent->widget()
 
    If Keyword_Set(Parent) then begin
       self.widget = widget_base(Parent, $
+                                TITLE=title, $
                                 UValue=self, $;; all widgets have self
                                 $  ;; as uvalue
                                 UName="basic_widget_object", $
@@ -39,6 +44,7 @@ Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
                                 _EXTRA=_extra)
    endif else begin             ;create top-level-base
       self.widget = widget_base(UName="basic_widget_object", $
+                                TITLE=title, $
                                 UValue=self, $;; all widgets have self
                                 $  ;; as uvalue
                                 Func_Get_Value="basic_widget_object_get_value", $
@@ -92,7 +98,7 @@ End
 
 Pro basic_widget_object::register, TITLE=title, NO_BLOCK=no_block, _ref_extra=e
    ;; no_block is default!
-   Default, title, Obj_Class(self)
+   Default, title, self.title
    Default, no_block, 1
    widget_Control, Tlb_Set_Title=title, self->widget()
    Xmanager, title, self->widget(), NO_BLOCK=no_block, _EXTRA=e
@@ -109,6 +115,7 @@ End
 Pro basic_widget_object__DEFINE
    dummy = {basic_widget_object, $
             $
-            widget: 0l $
+            widget: 0l, $
+            title: "" $
            }
 End
