@@ -1,245 +1,152 @@
 ;+
-; NAME: FaceIt 
-;       (Frame for Application Control by Event-driven Interactive Technology)
+; NAME:
+;  FaceIt
+;
+; VERSION:
+;  $Id$
 ;
 ; AIM:
 ;  A universal graphical user interface for NASE simulations.
 ;
-; PURPOSE: Stellt Grundfunktionen einer graphischen Simulationsoberfläche zur 
-;          Verfügung. FaceIt erzeugt eine IDL-Widget-Anwendung, die ein Fenster
-;          zur Darstellung des Simulationsablaufs und Buttons zur Steuerung 
-;          dieser Simulation besitzt. Der Simulationskern und die Darstellung
-;          der Ergebnisse (Spiketrains, DW-Matrizen usw) müssen vom Benutzer 
-;          in separaten Routinen festgelegt werden. FaceIt ruft diese Routinen 
-;          dann regelmäßig und entsprechend den auftretenden Ereignisse (zB 
-;          Mausklicks auf die Buttons) auf.
+; PURPOSE:
+;  <C>FaceIt</C> is an acronym for <B>F</B>rame for <B>A</B>pplication <B>C</B>ontrol by
+; <B>E</B>vent-driven <B>I</B>nteractive <B>T</B>echnology. The
+; routine generates an IDL widget 
+;  application that supplies basic components of a graphical
+;  simulation environment. The widget application consists of a window
+;  diplaying the progress of the simulation and a number of buttons
+;  to control its execution. The simulation kernel and routines to
+;  display results, like spike trains or connection matrices, have to be
+;  supplied by the user in separate routines, which <C>FaceIt</C>
+;  then calls regularly during the simulation, while at the same time
+;  reacting to 
+;  events like mouse clicks on the control buttons.   
 ;
-; CATEGORY: GRAPHIC / WIDGETS
+; CATEGORY:
+;  Graphic
+;  NASE
+;  Simulation
+;  Widgets
 ;
-; CALLING SEQUENCE: FaceIt, name [,/COMPILE]
+; CALLING SEQUENCE:
+;* FaceIt, name [,/COMPILE]
 ;
-; INPUTS PARAMETERS: 
-;         name: Ein String, der den Namen der auszuführenden Simulation 
-;               enthält.
+; INPUTS:
+;  name:: A string specifying the name of the simulation intended to
+;         execute.<BR>
+;  <C>FaceIt</C> is supposed to be able to find the subroutines
+;  described below, click on the routines' names to see their own
+;  header with more information. When called by <C>FaceIt</C>, the pointers
+;  <*>dataptr</*> and <*>displayptr</*>, the widget <*>w_userbase</*>
+;  and the structure <*>event</*> are passed to the subroutines as
+;  required.<BR> 
+;  <*>PRO</*> <A NREF=HAUS2_INITDATA>name_INITDATA</A><*>,
+;  dataptr</*>: Contains specification of simulation parameters and
+;                necessary data structures, eg layers and connections.<BR>
+;  <*>PRO</*> <A NREF=HAUS2_INITDISPLAY>name_INITDISPLAY</A><*>,
+;  dataptr, displayptr, w_userbase</*>: Construction of the user
+;                                       defined widget hierarchy.<BR>
+;  <*>FUNCTION</*> <A NREF=HAUS2_SIMULATE>name_SIMULATE</A><*>,
+;  dataptr</*>: Contains the simulation kernel, input calculation,
+;               computation of the new network state and the like.<BR>
+;  <*>PRO</*> <A NREF=HAUS2_DISPLAY>name_DISPLAY</A><*>, dataptr,
+;  displayptr</*>: Used to display the network's state during simulation.<BR>
+;  <*>PRO</*> <A NREF=HAUS2_USEREVENT>name_USEREVENT</A><*>,
+;  event</*>: The reaction of user defined widgets to externel events
+;             like mouse clicks or slider movements has to be defined here.<BR>
+;  <*>PRO</*> <A NREF=HAUS2_RESET>name_RESET</A><*>, dataptr,
+;  displayptr, w_userbase</*>: Actions that should be executed when the
+;                             Reset button is pressed may be described
+;                             here.<BR>
+;  <*>PRO</*> <A NREF=HAUS2_FILEOPEN>name_FILEOPEN</A><*>, dataptr,
+;  displayptr, group</*>: This routine is called by the menu entry
+;                         'File.Open'. It may be used to read
+;                         previously saved simulation data. (The
+;                         parameter <*>group</*> serves as the file
+;                         choose widget's parent, it is of no
+;                         importance for the user.)<BR>
+;  <*>PRO</*> <A NREF=HAUS2_FILESAVE>name_FILESAVE</A><*>, dataptr,
+;  group</*>: Menu entry 'File.Save' calls this routine. It may be
+;             used to save simulation data for later retrieval.<BR>
+;  <*>FUNCTION</*> <A NREF=HAUS2_KILL_REQUEST>name_KILL_REQUEST</A><*>,
+;  dataptr, displayptr</*>: Instructions herein are executed prior to
+;                           destruction of the FaceIt widget. Eg, data
+;                           structures may be correctly destroyed
+;                           here.
 ;
-;         FaceIt erwartet, daß es die unten aufgeführten Routinen finden kann. 
-;         Beim ihrem Aufruf durch FaceIt werden die angeführten Parameter
-;         übergeben. Dabei handelt es sich um die beiden Pointer dataptr und 
-;         displayptr, das Widget w_userbase und die Struktur event.
+; INPUT KEYWORDS:
+;  /COMPILE:: If set, all subroutines of the simulation specified by
+;             <*>name</*> are compiled prior to the start. This is
+;             useful during testing phase, when numerous changes are
+;             made in different subroutines. <*>/COMPILE</*> avoids
+;             forgetting to compile some of the routines that were
+;             changed.
 ;
-;          PRO <A HREF="./faceit_demo/#HAUS2_INITDATA">name_INITDATA</A>, dataptr
-;             Zum Festlegen der Simulationsparameter und -datenstrukturen,
-;             zB Layers und DWs.
-;          PRO <A HREF="./faceit_demo/#HAUS2_INITDISPLAY">name_INITDISPLAY</A>, dataptr, displayptr, w_userbase
-;             Hierin sollte der Aufbau der benutzereigenen Widget-Hierarchie
-;             stattfinden.
-;          FUNCTION <A HREF="./faceit_demo/#HAUS2_SIMULATE">name_SIMULATE</A>, dataptr 
-;             Sollte den Simulationskern enthalten: Inputbestimmung, Lernen,
-;             Berechnen des neuen Netwerkzustands und dergleichen.
-;          PRO <A HREF="./faceit_demo/#HAUS2_DISPLAY">name_DISPLAY</A>, dataptr, displayptr
-;             Hier soll die Darstellung des Netzwerkzustands während der 
-;             Simulation erfolgen.
-;          PRO <A HREF="./faceit_demo/#HAUS2_USEREVENT">name_USEREVENT</A>, Event
-;             Die Reaktion der benutzerdefinierten Widgets auf äußere 
-;             Ereignisse (Mausklicks, Sliderbewegungen) muß hier festgelegt
-;             werden.
-;          PRO <A HREF="./faceit_demo/#HAUS2_RESET">name_RESET</A>, dataptr, displayptr, w_userbase
-;             Falls notwendig, können hier Aktionen bestimmt werden, die bei
-;             Betätigung des RESET-Buttons ausgeführt werden sollen.
-;          PRO <A HREF="./faceit_demo/#HAUS2_FILEOPEN">name_FileOpen</A>, dataptr, displayptr, group
-;             Diese Routine wird vom Menüpunkt 'File.Open' aufgerufen. Hier
-;             können zuvor gespeicherte Simulationsdaten eingelesen werden.
-;             (Der 'group'-Parameter dient dem Dateiauswahl-Widget als Eltern-
-;             teil, ist für den Benutzer uninteressant.)
-;          PRO <A HREF="./faceit_demo/#HAUS2_FILESAVE">name_FileSave</A>, dataptr, group
-;             Der Menüeintrag 'File.Save' ruft diese Routine auf. Der Benutzer
-;             kann damit bei Bedarf Simulationsdaten speichern.
-;          FUNCTION <A HREF="./faceit_demo/#HAUS2_KILL_REQUEST">name_KILL_REQUEST</A>, dataptr, displayptr
-;             Die hierin enthaltenen Befehle werden vor der Zerstörung des
-;             FaceIt-Widgets ausgeführt. ZB können Datenstrukturen freigegeben
-;             werden.
+; OUTPUTS:
+;  An IDL widget application with the following elements:<BR>
+;  File menu:: For loading and saving simulation data.
+;  Simulation menu:: Its entries let the user choose between bounded
+;                    or unbounded simulation (<*>duration</*>) and
+;                    allow the slowing down of display refresh to
+;                    observe fast processes (<*>delay</*>).
+;  Display button:: Toggles plotting of results during the simulation.
+;  Step:: Indicates the number of simulation steps. The counter is
+;         increased each time <C>name_SIMULATE</C> is called.
+;  Last::  Duration of previous simulation step in milliseconds.
+;  Simulation Progress:: If a bounded duration (see <*>Simulation</*>
+;                        menu is chosen, the progress
+;                        is displayed here.
+;  Start/Stop buttons:: These buttons start and stop the simulation
+;                       run. After stopping, pressing <*>START</*>
+;                       again continues the calculations at the
+;                       stopping point. 
+;  Reset button:: Execute the subroutine 
+;                 <C>name_RESET</C>, to set the
+;                 simulation parameters to their original value or to
+;                 refresh the screen. The <*>steps</*> counter is also
+;                 reset.
+;  w_userbase:: A widget that is located beneath the control
+;               elements. It is intended to carry the simulation
+;               specific display elements supplied by the user.
 ;
-; OUTPUTS: Eine IDL-Widget-Anwendung mit folgenden Bedienelementen:
-;           FILE-Menü: Die bisher enthaltenen Unterpunkte dienen dem Laden
-;                      und Speichern und dem Verlassen der Simulation.
-;           SIMULATION-Menü: Die Unterpunkte ermöglichen die Wahl einer
-;                            begrenzten oder unbegrenzten Simulationsdauer
-;                            (DURATION) und die Verzögerung der Darstellung,
-;                            um auch schnelle Abläufe nachvollziehen zu können
-;                            (DELAY).
-;           DISPLAY: Schaltet die Darstellung während der Simulation ein oder 
-;                    aus.
-;           Step: Zeigt die Zahl der Simulationsschritte an. Der Zähler wird
-;                  bei jedem Simulate-Aufruf um 1 erhöht.
-;           Last: Zeigt die Dauer des letzten Simulationsschrittes in
-;                  Millisekunden.
-;           Simulation Progress: Zeigt den Fortschritt der Simulation, falls
-;                                eine begrenzte Simulationsdauer gewählt wurde.
-;                                (Siehe dazu SIMULATION-Menü.)
-;           START / STOP: Startet / stoppt die Simulation. Nach einem Stop wird
-;                         der Simulationablauf bei erneutem Start-Drücken 
-;                         an der gleichen Stelle fortgesetzt. Ein Zurücksetzen
-;                         erfolgt nicht (siehe RESET).
-;           RESET: Führt die Prozedur <A HREF="./faceit_demo/#HAUS2_RESET">name_RESET</A> aus, zB, um die 
-;                  Simulationsdaten auf ihren ursprünglichen Stand zu setzen
-;                  oder die Bildschirmdarstellung zu erneuern. Außerdem wird
-;                  der Zähler 'Steps' zurückgesetzt.
-;          Desweiteren besitzt die erzeugte Anwendung ein Widget namens 
-;          w_userbase, das sich unter den Bedienelementen befindet und zur 
-;          Aufnahme der simulationsspezifischen Widgets dient.
+; COMMON BLOCKS:
+;  WidgetSimulation, MyFont, MySmallFont, with <BR>
+;   <*>MyFont = !NASEWIDGETFONT</*> and <BR>
+;   <*>MySmallFont = !NASEWIDGETFONTSMALL</*>. (See <A>DefGlobVars</A>.) 
 ;
-; KEYWORD PARAMETERS: 
-;           COMPILE:  Wenn gesetzt, werden alle Teilroutinen der
-;                     in "name" angegebenen Simulation vor dem
-;                     Start neu kompiliert. Das ist in der
-;                     Probephase nützlich, wenn oft Änderungen
-;                     in verschiedenen Teilroutinen vorgenommen
-;                     werden. Hier geht das Neukompilieren sonst 
-;                     oft vergessen.
-;           
-; COMMON BLOCKS: 
-;                WidgetSimulation, MyFont, MySmallFont
-;                mit: MyFont = '-adobe-helvetica-bold-r-normal$
-;                               --14-140-75-75-p-82-iso8859-1'
-;                und: MySmallFont = '-adobe-helvetica-bold-r-normal$
-;                                    --12-120-75-75-p-70-iso8859-1'
+; RESTRICTIONS:
+;  Usage is only possible with IDL version 5.0 or higher.<BR>
 ;
-; RESTRICTIONS: Die Benutzung ist erst mit IDL 5 möglich.
+; PROCEDURE:
+;  - Create an IDL widget hierarchy with the control elements.<BR>
+;  - Introduce <*>dataptr</*> and call <C>name_INITDATA</C> via
+;  <*>Call_Procedure</*>.<BR>
+;  - Create <*>displayptr</*> and call <C>name_INITDISPLAY</C>. At
+;  this point, the widget hierarchy should be completely defined.<BR>
+;  - Let <C>FaceIt</C> realize the widgets if this has not yet been
+;  done by the user.<BR>
+;  - Register the application in IDL's XManager and make XManager repeatedly
+;  process the event function <C>FACEIT_EVENT</C>.<BR>
+;  - <C>FACEIT_EVENT</C> in turn calls <C>name_SIMULATE</C> and
+;  <C>name_DISPLAY</C> and reacts to the user's button presses when
+;  needed.
 ;
-; PROCEDURE: - Aufbau einer IDL-Widget-Hierarchie mit den Kontrollelementen.
-;            - Erzeugen des dataptr und Aufruf der _INITDATA-Routine per 
-;              Call_Procedure.
-;            - displayptr erzeugen und _INITDISPLAY aufrufen. Diese sollte
-;              die Widget-Hierarchie vervollständigen.
-;            - Falls die Widgets nicht schon vom Benutzer realisiert wurden,
-;              dies mit FaceIt nachholen.
-;            - Die Anwendung beim XMANAGER anmelden, und diesen dann immer 
-;              wieder die Event-Funktion FACEIT_EVENT abarbeiten lassen.
-;            - FaceIt_EVENT ruft regelmäßig _SIMULATE und _DISPLAY auf und
-;              reagiert auf Knopfdruck vom Benutzer, wenn nötig.
+; EXAMPLE:
+;* FaceIt, 'haus2'
+; This example defines a layer of 7x7 neurons that are completely
+; coupled. Coupling strength is uniform, the amplitude can be varied
+; during the simulation using one of the sliders. All connections are
+; delayed, with time lags randomly distributed in the interval
+; [10ms,20ms].<BR>
+; Neurons simultaneuosly receive pulsed external input. Amplitude
+; and period of these pulses may also be controlled via sliders. More
+; sliders are intended to adjust the threshold's parameters.<BR>
+; For more information on the networks architecture and its definition,
+; see the source code of <A NREF=HAUS2_INITDATA>haus2_INITDATA</A>.
 ;
-; EXAMPLE: FaceIt, 'haus2'
-;          Die Beispielsimulation definiert eine Schicht aus 7x7 Neuronen,
-;          die vollständig verbunden sind (allerdings keine direkte Verbindung
-;          eines Neurons mit sich selbst). Die Verbindungstärken sind alle 
-;          gleich, ihre Stärke kann mit einem Schieberegler während der 
-;          Simulation variiert werden. Alle Verbindungen sind verzögert, die 
-;          Initialisierung der Delays ist zufällig gleichverteilt im Intervall
-;          [10ms, 20ms]. 
-;          Die Neuronen erhalten außerdem äußeren Input in Form von Pulsen, 
-;          die alle Neuronen gleichzeitig erregen. Stärke und Periode dieser 
-;          Pulse kann ebenfalls mit Slidern reguliert werden.
-;          Weitere Schieberegler dienen dem Anpassen der Parameter der
-;          dynamischen Schwelle.
-;          Zur Definition der Netzwerkarchitektur siehe auch den Programmtext 
-;          von <A HREF="./faceit_demo/#HAUS2_INITDATA">haus2_INITDATA</A>. 
-;
+; SEE ALSO:
+;  <A>FaceIt_Rename</A>
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.22  2003/02/06 15:42:20  kupper
-;        produced .png-Version of naselogo2_small.gif and incativated Basim's
-;        NOGIF-switch.
-;        (Switch remains for compatibility, but has no effect.)
-;
-;        Revision 1.21  2003/01/21 16:54:05  alshaikh
-;        added nogif tag
-;
-;        Revision 1.20  2000/10/03 12:39:43  kupper
-;        Added INVISIBLE and GETBASE keywords.
-;
-;        Revision 1.19  2000/10/01 14:51:58  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 1.18  2000/09/27 15:59:17  saam
-;        service commit fixing several doc header violations
-;
-;        Revision 1.17  2000/09/01 19:46:12  kupper
-;        Stepcounter is now an unsigned LONG64.
-;
-;        Revision 1.16  2000/03/31 17:14:50  kupper
-;        Fixed small bug in comparison.
-;
-;        Revision 1.15  2000/03/31 12:15:36  kupper
-;        FaceIt_NewUserBase()es are now realized automatically.
-;        Fixed passing of /FLOATING keyword to FaceIt_NewUserBase().
-;
-;        Invented batch-mode.
-;        No documentation yet. Suggest a "real" document describing FaceIt. Header is
-;        just to small. (TO BE DONE!)
-;
-;        Revision 1.14  2000/03/22 16:55:46  kupper
-;        Fixed overflow-bug when computing averaged steptime.
-;
-;        Revision 1.13  2000/03/20 17:43:17  kupper
-;        Oho, forgoto to adjust Quit-Menu-code to new parameters of Faceit_Kill_Request.
-;        Fixed.
-;
-;        Revision 1.12  2000/03/17 11:40:41  kupper
-;        Now displays also average steptime over last 100 steps.
-;
-;        Revision 1.11  1999/11/29 16:07:02  kupper
-;        Implemented service function "FACEIT_NewUserbase".
-;
-;        Revision 1.10  1999/11/16 18:03:23  kupper
-;        Now sets black/white linear colortable after initialization is
-;        finished. Thus, ShowIts with PRIVATE_COLORS not set don't look
-;        so strange...
-;
-;        Revision 1.9  1999/10/27 12:01:11  kupper
-;        Added no_block-keyword.
-;
-;        Revision 1.8  1999/09/21 13:15:35  kupper
-;        Added Keyword COMPILE.
-;
-;        Revision 1.7  1999/09/16 12:03:55  thiel
-;            Progress display now stays insensitive after display activation.
-;
-;        Revision 1.6  1999/09/15 15:08:42  thiel
-;            Some changes:
-;            - RESET and KILL_REQUEST moved into separate routines.
-;            - Delay-slider exhanged by progression display.
-;            - Now possible to run simulation until maximum duration is reached.
-;            - Added new menu-items.
-;
-;        Revision 1.5  1999/09/03 14:23:55  thiel
-;            Changed funcs to procs where possible and improved docu.
-;
-;        Revision 1.4  1999/09/02 14:56:58  kupper
-;        Carrected misspelled hyperling.
-;
-;        Revision 1.3  1999/09/02 12:20:42  thiel
-;            Hyperlinks corrected.
-;
-;        Revision 1.2  1999/09/01 16:56:30  thiel
-;            Removed 'w_userbase' in call to *_KILL_REQUEST.
-;
-;        Revision 1.1  1999/09/01 16:43:53  thiel
-;            Moved from other directory.
-;
-;        Revision 1.3  1999/08/30 16:16:39  thiel
-;            New File-menu.
-;
-;        Revision 1.2  1999/08/24 14:28:26  thiel
-;            Beta release.
-;
-;        Revision 1.1  1999/08/19 08:21:36  thiel
-;            The Program Formerly Known As NASim.
-;
-;        Revision 1.3  1999/08/17 13:34:38  thiel
-;            Still not complete, but improved once more.
-;
-;        Revision 1.2  1999/08/13 15:38:13  thiel
-;            Alpha release: Now separated basic functions and user definitions.
-;
-;        Revision 1.1  1999/08/09 16:43:23  kupper
-;        Ein Sub-Alpha-Realease der neuen graphischen
-;        Simulationsoberflaeche.
-;        Fuer Andreas.
-;
-
 
 
 
@@ -601,8 +508,8 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch, $
    minSimDelay = 1e-30; secs
 
 
-   MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
-   MySmallFont = '-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1'
+   MyFont = !NASEWidgetFont
+   MySmallFont = !NASEWidgetFontSmall
 
    Widget_Control, DEFAULT_FONT=MySmallFont ;Let it be default.
 
