@@ -34,7 +34,7 @@
 ;                                 angegeben, so wird der andere so gewaehlt, dass keine Verzerrungen
 ;                                 auftreten. Achtung, die Stretch-Keywords koennen die endgueltige
 ;                                 Groesse noch veraendern, daher besser nicht zusammen verwenden.
-;                 NORM_X/Y_SIZE : Wie X/Y_SIZE nur in Normalkoordinaten.
+;                     NORM_X/Y_SIZE : Wie X/Y_SIZE nur in Normalkoordinaten.
 ;                     STRETCH   : Vergroessert bzw. verkleinert das Originalbild um Faktor
 ;                     H_STRETCH ,
 ;                     V_STRETCH : Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
@@ -48,6 +48,7 @@
 ;                     DEVICE    : falls gesetzt werden [XY]Norm als Device-Koordinaten ausgewertet. Eigentlich
 ;                                 sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
 ;                                 die Deviceunabhaegigkeit ist.
+;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (Empfehlenswert bei Postscript-Ausgabe)  
 ;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
 ;                
@@ -64,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.24  1998/08/07 15:33:39  gabriel
+;          PolyPlot implementiert
+;
 ;     Revision 2.23  1998/04/18 15:09:02  kupper
 ;            Fehler bei der !Revertpscolors-Verarbeitung.
 ;
@@ -135,6 +139,67 @@
 ;
 ;
 ;-
+PRO __multipolyplot ,A ,XNorm , Ynorm ,Xsize=X_size, ysize=y_size ,NOSCALE=NOSCALE ,DEVICE=DEVICE $
+                     ,CENTIMETERS=centimeters 
+   ;ON_ERROR, 2
+   as = size(A)
+   xsize = as(1)
+   ysize = as(2)
+   default,Xnorm,0
+   default,Ynorm,0
+   default,X_size,xsize
+   default,Y_size,ysize
+   default,noscale,0
+   default,device,1
+   default,centimeters,0 ;;dummy
+
+   IF  (NOSCALE EQ 1) THEN BEGIN
+      ARRAY = A
+   END ELSE BEGIN
+       ARRAY = FLOOR(FLOAT(A-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(!D.TABLE_SIZE-1)) 
+      ;ARRAY = FLOOR(FLOAT(A-MIN(a))/FLOAT(MAX(a)-MIN(a))*FLOAT(256-1)) 
+         ;ARRAY = BYTSCL(ARRAY,TOP=!D.N_COLORS-1) 
+      
+        
+      
+      UTVLCT,R,G,B,/GET
+      print,max(ARRAY),min(ARRAY)
+      help,R,G,B
+;      print,!D.N_COLORS-1
+      
+   ENDELSE
+   xpix = FLOAT(X_size)/FLOAT(xsize)
+   ypix = FLOAT(Y_size)/FLOAT(ysize)
+   IF  DEVICE EQ 1 THEN BEGIN
+      X_PX_CM = !D.X_PX_CM
+      Y_PX_CM = !D.Y_PX_CM
+   END ELSE BEGIN
+      X_PX_CM = 1.0
+      Y_PX_CM = 1.0
+   ENDELSE
+   print,Xnorm,Ynorm,X_SIZE,Y_SIZE
+   FOR i = 0 , xsize -1 DO BEGIN
+      FOR j = 0 , ysize -1 DO BEGIN
+         x = [ i - 0.5 , i + 0.5 , i + 0.5 , i - 0.5 ] + 0.5
+         y = [ j - 0.5 , j - 0.5 , j + 0.5 , j + 0.5 ] + 0.5
+         x(*) = (x(*)*xpix + Xnorm) *X_PX_CM
+         y(*) = (y(*)*ypix + Ynorm )*Y_PX_CM
+         
+ 
+         IF  (NOSCALE EQ 1) THEN BEGIN
+            polyfill,x,y,COLOR=ARRAY(i,j), /DEVICE 
+         END ELSE BEGIN
+            ;print,R(ARRAY(i,j)),G(ARRAY(i,j)),B(ARRAY(i,j))
+            polyfill,x,y,COLOR=RGB(R(ARRAY(i,j)) ,G(ARRAY(i,j)) ,B(ARRAY(i,j)),/NOALLOC),/DEVICE
+
+            ;polyfill,x,y,COLOR=ARRAY(i,j),/DEVICE
+
+         ENDELSE
+      ENDFOR
+   ENDFOR
+END
+
+
 PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
@@ -143,6 +208,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , DIMENSIONS=dimensions $
             , NOSCALE=noscale $
             , DEVICE=device $
+            , POLYGON=POLYGON $
             , _EXTRA=e
 
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -163,6 +229,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    Default, v_stretch, 1.0
    Default, h_stretch, 1.0
    Default, centi    , 1   ; default is to TV with centimeters (disabled with DEVICE Keyword)
+   DEFAULT,POLYGON,0
 
    If Set(NORM_X_SIZE) then X_SIZE = (NORM_X_SIZE * !D.X_Size / !D.X_PX_CM)
    If Set(NORM_Y_SIZE) then Y_SIZE = (NORM_Y_SIZE * !D.Y_Size / !D.Y_PX_CM)
@@ -214,36 +281,68 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 ;         Image = MaxPix - Image 
          Image = !D.Table_Size-1-Image
       END
-      IF N_Params() EQ 2 THEN BEGIN; position implicitely
-         IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e 
+      IF NOT Keyword_Set(POLYGON) THEN BEGIN 
+         IF N_Params() EQ 2 THEN BEGIN ; position implicitely
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e 
+            END ELSE BEGIN
+               TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END
          END ELSE BEGIN
-            TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END ELSE BEGIN
+               TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END
          END
-      END ELSE BEGIN
-         IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+      END ELSE BEGIN ;; polygone statt pixel
+         IF N_Params() EQ 2 THEN BEGIN ; position implicitely
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+                __multipolyplot , Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, _EXTRA=e 
+            END ELSE BEGIN
+               __multipolyplot, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END
          END ELSE BEGIN
-            TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
-         END
-      END
-
-   END ELSE BEGIN ; it is a WINDOW
-      IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1)
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE , _EXTRA=e
+            END ELSE BEGIN
+                __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END
+         END 
+      ENDELSE
+   END ELSE BEGIN   ;; it is a WINDOW
       Device, BYPASS_TRANSLATION=0
-      IF N_Params() EQ 2 THEN BEGIN; position implicitely
-         IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+      IF NOT KEYWORD_SET(POLYGON) THEN BEGIN
+         IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1)         
+         IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               TV, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+            END ELSE BEGIN
+               TVScl, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+            END
          END ELSE BEGIN
-            TVScl, Image, xnorm, CENTIMETERS=centi, _EXTRA=e
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               TV, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
+            END ELSE BEGIN
+               TVScl, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
+            END
          END
-      END ELSE BEGIN
-         IF Keyword_Set(NOSCALE) THEN BEGIN
-            TV, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
+      END ELSE BEGIN ;; polygone statt pixel
+         IF N_Params() EQ 2 THEN BEGIN ; position implicitely
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               __multipolyplot , Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE, _EXTRA=e 
+            END ELSE BEGIN
+               __multipolyplot, Image, xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END
          END ELSE BEGIN
-            TVScl, Image, xpos, ypos, CENTIMETERS=centi, _EXTRA=e
-         END
-      END
+            IF Keyword_Set(NOSCALE) THEN BEGIN
+               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, /NOSCALE , _EXTRA=e
+            END ELSE BEGIN
+               __multipolyplot , Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, _EXTRA=e
+            END
+         END 
+         
+      ENDELSE
       Device, /BYPASS_TRANSLATION
    END
 
