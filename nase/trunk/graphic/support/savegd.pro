@@ -15,7 +15,8 @@
 ;  hand, so most times IDL will be restarted instead. <C>SaveGD</C>
 ;  saves the current state of the graphic device (<*>!P</*>,
 ;  <*>!X</*>, <*>!Y</*>, <*>!Z</*>) and its partner
-;  <A>RestoreGD</A> can restore it whenever wanted.<BR>
+;  <A>RestoreGD</A> can restore it whenever wanted. Additionally you
+;  can save the current status in an arbitrary variable.<BR>
 ;  This routine is also called directly after the NASE startup, so you
 ;  can always use <A>RestoreGD</A> to get a defined status.
 ;
@@ -23,23 +24,39 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*SaveGD
+;*SaveGD [,gd]
 ;
+; OPTIONAL OUTPUTS:
+;  gd:: returns a structure containing the status of the graphics
+;       device. If not set, the status will be saved in <*>!SAVEGD</*>.
+;  
 ; SIDE EFFECTS:
-;  creates or modifies the system variable <*>!SAVEGD</*>
+;  may create or modify the system variable <*>!SAVEGD</*>
 ;
 ; EXAMPLE:
-;*SaveGD
+;  Save the current state...
+;*  SaveGD, gd
+;...do some terrible graphics nonsense...
+;*  make_nonsense
+;...restore the previous state
+;*  RestoreGD, gda
+;...and everything is fine again
 ;
 ; SEE ALSO:
 ;  <A>RestoreGD</A>
 ;
 ;-
-PRO SaveGD
+PRO SaveGD, gd
 
-DefSysV, '!SAVEGD', EXISTS=e
+On_Error, 2
 
-IF e EQ 1 THEN           !SAVEGD = { P: !P, X: !X, Y: !Y, Z: !Z } $
-          ELSE DefSysV, '!SAVEGD', { P: !P, X: !X, Y: !Y, Z: !Z }
+gd = { P: !P, X: !X, Y: !Y, Z: !Z }
+
+IF N_Params() EQ 0 THEN BEGIN
+    DefSysV, '!SAVEGD', EXISTS=e
+
+    IF e EQ 1 THEN           !SAVEGD = gd $
+              ELSE DefSysV, '!SAVEGD', gd 
+END
 
 END

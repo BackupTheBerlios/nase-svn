@@ -16,23 +16,37 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*SaveGD
+;*RestoreGD [,gd]
+;
+; OPTIONAL INPUTS:
+;  gd:: structure returned by <A>SaveGD</A>. If not passed, the
+;       routine will use the system variable <*>!SAVEGD</*>.
 ;
 ; SIDE EFFECTS:
 ;  modifies <*>!P</*>, <*>!X</*>, <*>!Y</*>, <*>!Z</*>
 ;
 ; EXAMPLE:
-;*RestoreGD
+;  Save the current state...
+;*  SaveGD, gd
+;...do some terrible graphics nonsense...
+;*  make_nonsense
+;...restore the previous state
+;*  RestoreGD, gda
+;...and everything is fine again
 ;
 ; SEE ALSO:
 ;  <A>SaveGD</A>
 ;
 ;-
-PRO RestoreGD
+PRO RestoreGD, gd
 
-!P = !SAVEGD.P
-!X = !SAVEGD.X
-!Y = !SAVEGD.Y
-!Z = !SAVEGD.Z
+On_Error, 2
+
+IF N_Params() EQ 0 THEN gd = !SAVEGD
+
+!P = gd.P
+!X = gd.X
+!Y = gd.Y
+!Z = gd.Z
 
 END
