@@ -1,6 +1,8 @@
 ;+
 ; NAME: DogMin()
 ;
+; AIM:  position of a DOG's minimum
+;
 ; PURPOSE: Berechnet die Lage des Minimums einer DOG.
 ;
 ; CATEGORY: Simu, Analysis
@@ -21,14 +23,17 @@
 ;          print, DogMin(100,210)      -> 239.939
 ;
 ; SEE ALSO: <A HREF="#array/DOG">DOG()</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/28 09:08:37  gabriel
+;              AIM tag added
+;
 ;        Revision 2.1  1998/03/03 16:30:43  kupper
 ;               Schöpfung.
 ;
-;-
+;
 
 function dogmin,s1,s2
 
