@@ -1,6 +1,8 @@
 ;+
 ; NAME:                LFP - derives unfiltered LFP signals from membrane potentials  
 ;
+; AIM:                 computes LFP-signals of simulated data
+;
 ; PURPOSE:             Computes LFP-signals similar to those got by
 ;                      micro-electrode recordings. You can choose
 ;                      various recording positions. The signals are
@@ -46,10 +48,13 @@
 ;                      LFPS = LFP(mt, [[0,5], [0,5]], HMW_GAUSS=2)
 ;                      plot, REFORM(LFPS(0,*))
 ;                      oplot, REFORM(LFPS(1,*))-50., LINESTYLE=2                      
-;    
+;-    
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.12  2000/09/28 11:39:02  gabriel
+;          AIM tag added
+;
 ;     Revision 1.11  2000/06/06 14:57:59  saam
 ;           + a plain copy of mua with a modified header
 ;
@@ -90,7 +95,7 @@
 ;           a birth
 ;
 ;
-;-
+;
 FUNCTION LFP, mt, list, HMW_GAUSS=hmw_gauss, HMW_EXP=hmw_exp, ROI=roi, NASE=nase, WRAP=wrap, LOG=log
 
    ON_ERROR, 2

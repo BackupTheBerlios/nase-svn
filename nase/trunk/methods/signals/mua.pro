@@ -1,6 +1,8 @@
 ;+
 ; NAME:                MUA - derives unfiltered MUA signals from spike trains  
 ;
+; AIM:                 computes multiple unit activity (MUA) of simulated spiketrains
+;
 ; PURPOSE:             Derives MUA signals (multiple unit activity)
 ;                      from a time course of spiketrains in a layer.
 ;                      You may select specific recording positions or
@@ -53,10 +55,13 @@
 ;                      MUAS = MUA(nt, [[0,5], [0,5]], HMW_EXP=2)
 ;                      plot, REFORM(MUAS(0,*))
 ;                      oplot, REFORM(MUAS(1,*))-50., LINESTYLE=2                      
-;    
+;-    
 ; MODIFICATION HISTORY:
 ; 
 ;     $Log$
+;     Revision 1.6  2000/09/28 11:40:41  gabriel
+;          AIM tag added
+;
 ;     Revision 1.5  2000/06/06 14:57:38  saam
 ;           + completed the new doc header
 ;           + returns on error
@@ -77,7 +82,7 @@
 ;           revision 1.3
 ;
 ;
-;-
+;
 FUNCTION MUA, mt, list, HMW_GAUSS=hmw_gauss, HMW_EXP=hmw_exp, ROI=roi, NASE=nase, WRAP=wrap, LOG=log
 
    ON_ERROR, 2
