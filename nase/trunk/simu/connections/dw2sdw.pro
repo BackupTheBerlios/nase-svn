@@ -24,6 +24,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/02/11 15:43:11  saam
+;           Geschwindigkeitsoptimierung durch eine neue Liste
+;           die source- auf target-Neuronen abbildet
+;
 ;     Revision 2.3  1998/02/05 14:29:51  saam
 ;           another int <-> long problem
 ;
@@ -70,7 +74,7 @@ PRO DW2SDW, _DW
       IF c NE 0 THEN t2c(t) = Handle_Create(_DW, VALUE=iW(t,wsn))
    ENDFOR 
    
-   
+
    ; create Cons->Source and Cons->Target
    IF eWc NE 0 THEN BEGIN
       c2s = eW  /  tS
@@ -80,6 +84,17 @@ PRO DW2SDW, _DW
       c2t = -1
    END
 
+   ; create Source->Target
+   s2t = Make_Array(sS, /LONG, VALUE=-1)
+   FOR s=0l, sS-1 DO BEGIN
+      IF s2c(s) NE -1 THEN BEGIN
+         Handle_Value, s2c(s), c
+         s2t(s) = Handle_Create(_DW, VALUE=c2t(c))
+      END
+   ENDFOR 
+   
+
+   
    ; create delay list if needed
    IF eWc NE 0 THEN W = DW.Weights(eW) ELSE W = -1
 
@@ -109,6 +124,8 @@ PRO DW2SDW, _DW
               s2c     : s2c        ,$
               c2s     : c2s        ,$
               t2c     : t2c        ,$
+              c2t     : c2t        ,$              
+              s2t     : s2t        ,$
               c2t     : c2t        ,$              
               W       : W          ,$
               Learn   : -1l         }

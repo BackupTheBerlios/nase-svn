@@ -32,6 +32,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.31  1998/02/11 15:43:10  saam
+;             Geschwindigkeitsoptimierung durch eine neue Liste
+;             die source- auf target-Neuronen abbildet
+;
 ;       Revision 1.30  1998/02/11 14:11:05  saam
 ;             Geschwindigkeitsoptimierung
 ;
@@ -143,14 +147,11 @@
 ;-
 FUNCTION DelayWeigh, _DW, InHandle
    
-   tw = DWDim(_DW, /TW)
-   th = DWDim(_DW, /TH)
-   sw = DWDim(_DW, /SW)
-   sh = DWDim(_DW, /SH)
-
 
    Handle_Value, _DW, DW, /NO_COPY 
    Handle_Value, InHandle, In
+
+   tS = DW.target_w*DW.target_h
 
 ;----- Der Teil ohne Delays:   
    IF (Info(DW) EQ 'SDW_WEIGHT') THEN BEGIN
@@ -161,7 +162,7 @@ FUNCTION DelayWeigh, _DW, InHandle
 
       IF In(0) EQ 0 THEN BEGIN
          result = FltArr(2,1)
-         result(1,0) = tw*th
+         result(1,0) = tS
          Handle_Value, _DW, DW, /NO_COPY, /SET 
          RETURN, result
                                 ;aus der Funktion rausspringen, wenn
@@ -172,16 +173,16 @@ FUNCTION DelayWeigh, _DW, InHandle
       ; asi : active source index
       ; asn : active source neuron
       ; wi  : weight indices
-      vector = FltArr(tw*th)
+      vector = FltArr(tS)
       
       FOR asi=2l,In(0)+1 DO BEGIN
          asn = In(asi)
-         IF DW.S2C(asn) NE -1 THEN BEGIN
-            Handle_Value, DW.S2C(asn), wi
+         IF DW.S2T(asn) NE -1 THEN BEGIN
+            Handle_Value, DW.S2C(asn), wi 
+            Handle_Value, DW.S2T(asn), tN 
             ; C2T(wi) has each target neuron only once,
             ; because there is only one connection between
             ; source and target; therefore next assignment is ok
-            tN = DW.C2T(wi) 
             vector(tN) = vector(tn) + DW.W(wi)
          END
       END
@@ -233,7 +234,7 @@ FUNCTION DelayWeigh, _DW, InHandle
       IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, acilo, /SET $
       ELSE DW.Learn = Handle_Create(_DW, VALUE=acilo)
 
-      vector = FltArr(tw*th)
+      vector = FltArr(tS)
 
       ; create a Spass vector with the output activity
       IF acilo(0) GT 0 THEN BEGIN
@@ -244,7 +245,7 @@ FUNCTION DelayWeigh, _DW, InHandle
          FOR i=0l,N_Elements(acilo)-1 DO BEGIN
             wi = acilo(i)
             ; get corresponding target index
-            tN = DW.C2T(wi) 
+            Handle_Value, DW.S2T(asn), tN            
             vector(tN) = vector(tN) + DW.W(wi)
          END
 
@@ -253,7 +254,7 @@ FUNCTION DelayWeigh, _DW, InHandle
          RETURN, Spassmacher(vector)
       END ELSE BEGIN
          Handle_Value, _DW, DW, /NO_COPY, /SET 
-         RETURN, [0, tw*th]
+         RETURN, [0, tS]
       END
               
       

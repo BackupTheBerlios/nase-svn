@@ -18,6 +18,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  1998/02/11 15:43:11  saam
+;             Geschwindigkeitsoptimierung durch eine neue Liste
+;             die source- auf target-Neuronen abbildet
+;
 ;       Revision 2.7  1998/02/05 13:16:01  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -62,6 +66,10 @@ PRO FreeDW, _DW
       DW.T2C(t) = -1
    END
 
+   FOR s=0, DW.source_w*DW.source_h-1 DO IF DW.S2T(s) NE -1 THEN BEGIN
+      Handle_Free, DW.S2T(s) 
+      DW.S2T(s) = -1
+   END
 
    IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN FreeSpikeQueue, DW.Queue 
 
