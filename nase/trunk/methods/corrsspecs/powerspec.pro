@@ -70,6 +70,14 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.12  2000/07/26 14:10:47  saam
+;       + corrected problem with strange
+;         behaviour from PHASE in
+;         crosspower
+;       + removed obsolete SAMPLPERIOD
+;         keyword, use SAMPLEPERIOD
+;         instead
+;
 ; Revision 1.11  2000/07/26 09:25:45  saam
 ;       + translated doc header
 ;       + now handles multiple powerspecs
@@ -106,19 +114,22 @@
 ;
 
 FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,NEGFREQ=NegFreq ,$
-                    TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD, SAMPLEPERIOD=sampleperiod, COMPLEX=Complex
+                    TRUNC_PHASE=TRUNC_PHASE, KERNEL=kernel, SAMPLEPERIOD=sampleperiod, COMPLEX=Complex
  
    IF (SIZE(series))(0) EQ 2 THEN BEGIN
        slicec = (SIZE(series))(1)
+       IF Set(Phase) THEN _PHASE=0 ; crosspower has a somewhat strange handling of the phase keyword....
        FOR i=0l, slicec-1 DO BEGIN
            _series = REFORM(series(i,*))
            _PSpec = crosspower( _series, _series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
                                 DOUBLE=Double ,Phase=_Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLEPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
            IF Set(PSpec) THEN PSpec = [PSpec, _PSpec] ELSE PSpec=_PSpec
-           IF Set(Phase) THEN Phase = [Phase, _Phase] ELSE Phase=_Phase
+           IF Set(PHASE) THEN BEGIN
+               IF i EQ 0 THEN Phase=_Phase ELSE Phase = [Phase, _Phase]
+           END
        END
        PSpec = TRANSPOSE(REFORM(PSpec, N_Elements(xaxis), slicec))
-       Phase = TRANSPOSE(REFORM(Phase, N_Elements(xaxis), slicec))
+       IF Set(PHASE) THEN Phase = TRANSPOSE(REFORM(Phase, N_Elements(xaxis), slicec))
    END ELSE BEGIN
        PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
                            DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLEPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
