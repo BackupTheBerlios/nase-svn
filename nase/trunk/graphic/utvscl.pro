@@ -113,6 +113,10 @@
 ;  BUGS/TODO:<BR>
 ;  o Handling of 1-dim arrays is broken.<BR>
 ;  o Handling of arrays with trailing dimensions of 1 is broken.
+;  o When /POLY is set, and only one positioning-argument is given, it
+;    is interpreted as the x-coordinate, and y defaults to zero. This
+;    is wrong, positions in the window should be counted in this case,
+;    see documentation of IDL's <C>TV</C> or POLY=0-behaviour.
 ;                
 ; EXAMPLE:
 ;* bild = FIndgen(100,100)
@@ -157,17 +161,19 @@ End
 ; This function clips all entries inside an array that lie above
 ; !TRUECOLOR or below 0, or are !NONE, and replaces the, by the
 ; special colors.
-Function __ClipArray, A
+Function __ClipArray, A, NOCOLORCLIP=nocolorclip
    result = A
 
    ;; keep nones in mind:
    nones = where(result eq !NONE, nonecount)
 
-   clips = where(result gt !TOPCOLOR, count)
-   if (count gt 0) then result[clips] = rgb("dark yellow")
-
-   clips = where(result lt 0, count)
-   if (count gt 0) then result[clips] = rgb("very dark yellow")
+   If not Keyword_Set(NOCOLORCLIP) then begin
+      clips = where(result gt !TOPCOLOR, count)
+      if (count gt 0) then result[clips] = rgb("dark yellow")
+      
+      clips = where(result lt 0, count)
+      if (count gt 0) then result[clips] = rgb("very dark yellow")
+   EndIf
 
    ;; restore nones to the correct color:
    if (nonecount gt 0) then result[nones] = rgb("none")
@@ -182,7 +188,9 @@ End
 ;; Note: This routine performs scaling and clipping by itself.
 PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
                      , NOSCALE=NOSCALE, DEVICE=device $
-                     , TOP=TOP ,ORDER=ORDER, _EXTRA=extra
+                     , TOP=TOP ,ORDER=ORDER, NOCOLORCLIP=nocolorclip, $
+                     _EXTRA=extra
+
    ON_ERROR, 2
    as = size(A)
    xsize = as(1)
@@ -196,7 +204,7 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
    default,order,0
 
    IF (NOSCALE EQ 1) THEN BEGIN
-      ARRAY = __ClipArray(A)
+      ARRAY = __ClipArray(A, NOCOLORCLIP=nocolorclip)
    END ELSE BEGIN
       ARRAY = __ScaleArray(A, TOP=top)
       TVLCT,R,G,B,/GET   
@@ -238,6 +246,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one $
             , TRUE=_true $
             , NASE=nase  $
+            , NOCOLORCLIP=nocolorclip $
             , _EXTRA=e
 
    ON_ERROR, 2
@@ -401,13 +410,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e 
+               TV, __ClipArray(Image, NOCOLORCLIP=nocolorclip), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e 
             END ELSE BEGIN
                TV, __ScaleArray(Image), xnorm, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image, NOCOLORCLIP=nocolorclip), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
                TV, __ScaleArray(Image), xpos, ypos, XSIZE=xsize, YSIZE=ysize, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
@@ -415,18 +424,18 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       END ELSE BEGIN ;; polygons instead of pixels
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
                 , /NOSCALE, DEVICE = device, _EXTRA=e 
             END ELSE BEGIN
-               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
                 , DEVICE = device, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
                 , /NOSCALE, DEVICE = device, _EXTRA=e
             END ELSE BEGIN
-               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
                 , DEVICE = device, _EXTRA=e
             END
          END 
@@ -438,13 +447,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image), xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image, NOCOLORCLIP=nocolorclip), xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
                TV, __ScaleArray(Image), xnorm, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               TV, __ClipArray(Image), xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
+               TV, __ClipArray(Image, NOCOLORCLIP=nocolorclip), xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END ELSE BEGIN
                TV, __ScaleArray(Image), xpos, ypos, CENTIMETERS=centi, TRUE=true, _EXTRA=e
             END
@@ -452,20 +461,20 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       END ELSE BEGIN ;; polygons instead of pixels
          IF N_Params() EQ 2 THEN BEGIN ; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
                 , /NOSCALE, DEVICE = device $
                 ;;, TRUE=true $ ;; TRUE not supported for polygons
                , _EXTRA=e 
             END ELSE BEGIN
-               __MultiPolyPlot, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xnorm, XSIZE=xsize, YSIZE=ysize $
                 , DEVICE = device, _EXTRA=e
             END
          END ELSE BEGIN
             IF Keyword_Set(NOSCALE) THEN BEGIN
-               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
                 , /NOSCALE, DEVICE = device, _EXTRA=e
             END ELSE BEGIN
-               __MultiPolyPlot, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
+               __MultiPolyPlot, NOCOLORCLIP=nocolorclip, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize $
                 , DEVICE = device, _EXTRA=e
             END
          END 
