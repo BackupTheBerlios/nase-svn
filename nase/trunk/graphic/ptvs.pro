@@ -29,7 +29,7 @@
 ;*      [,CHARSIZE=...]
 ;*      [,/ORDER]
 ;*      [,/POLYGON]
-;*      [,CUBIC=...] [, /INTERP] [, /MINUS_ONE]
+;*      [,/SMOOTH] [,CUBIC=...] [, /INTERP] [, /MINUS_ONE]
 ;*      [,TOP=...]
 ;*      [,GET_POSITION=...] [,GET_PIXELSIZE=...]
 ;*
@@ -95,6 +95,7 @@
 ;                            <C>ConGrid</C>, to smooth the
 ;                            bitmap. This only works, if
 ;                            <*>/POLYGON</*> is not set.   
+;  SMOOTH :: smoothes the plot, using <*>CUBIC=-0.5</*> and <*>/MINUS_ONE</*>
 ;
 ; OPTIONAL OUTPUTS:
 ;  GET_POSITION:: a four-element array [x0,y0,x1,y1], specifying the
@@ -132,7 +133,7 @@ PRO PTvS, data, XPos, YPos, $
           XRANGE=__xrange, YRANGE=__yrange, ZRANGE=_zrange, $
           LEGEND=Legend, LEGMARGIN=LEGMARGIN, $
           POLYGON=POLYGON, $
-          CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+          CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth, $
           GET_Position=Get_Position, GET_PIXELSIZE=Get_PixelSize, $
           _EXTRA=_extra
 
@@ -202,7 +203,10 @@ PRO PTvS, data, XPos, YPos, $
    default, INTERP, 0
    default, MINUS_ONE, 0
 
-
+   IF Keyword_Set(SMOOTH) THEN BEGIN
+       CUBIC=-0.5
+       MINUS_ONE=1
+   END
 
    ;; set ticks and their lengths
    !X.TickLen = 0.02            ; temporarily set ticklen to a reasonable value, it may contain strange values  
