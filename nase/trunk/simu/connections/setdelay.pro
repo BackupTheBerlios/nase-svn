@@ -87,7 +87,7 @@
 Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
     
-   if V_Matrix.Delays eq [-1] then message, 'Die übergebene Delay-Weight-Struktur enthält gar keine Delays!'
+   if V_Matrix.Delays(0) eq -1 then message, 'Die übergebene Delay-Weight-Struktur enthält gar keine Delays!'
 
     s = size(Delay)
 
