@@ -12,7 +12,8 @@
 ; <C>seqobjinput__define</C> provides an object, which can handle
 ; multiple sequence objects.  It creates an set of input objects (see
 ; <A>seqobject__define</A>). Each input object consists of a grid of
-; sequence elements (see <A>seqelement__define</A>).
+; sequence elements (see <A>seqelement__define</A>). For using this
+; object as MIND input you need the <A>ifiniputobjwrapper</A>.
 ;
 ; CATEGORY:
 ;  Input
@@ -56,7 +57,7 @@
 ;*>
 ;
 ; SEE ALSO:
-;  <A>seqobject__define</A>, <A>seqelement__define</A>
+;  <A>seqobject__define</A>, <A>seqelement__define</A>, <A>ifinputobjwrapper</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
