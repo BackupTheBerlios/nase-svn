@@ -1,7 +1,8 @@
 ;+
 ; NAME:              GetColorIndex
 ;
-; PURPOSE:           Ermittelt einen Eintrag des aktuellen Colortables
+; PURPOSE:           Ermittelt einen Eintrag des aktuellen Colortables auf
+;                    8-bit-Devices; bitte das allgemeinere CIndex2RGB verwenden!
 ;
 ; CATEGORY:          GRAPHIC
 ;
@@ -23,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.2  1997/11/14 16:06:07  saam
+;             Doc-Header verbessert
+;
 ;       Revision 2.1  1997/11/05 09:46:30  saam
 ;             das Pendant zu SetColorIndex
 ;
