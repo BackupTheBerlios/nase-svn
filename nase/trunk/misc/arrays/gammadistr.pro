@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  Fill an array with values according to the gamma distribution function. 
+;  Fill an array with values according to the gamma distribution function.
 ;
 ; PURPOSE:
 ;  <C>GammaDistr()</C> fills an array with values according to the
@@ -19,7 +19,7 @@
 ;  Statistics
 ;
 ; CALLING SEQUENCE:
-;* result = GammaDistr(x, M=..., A=..., E=..., V=...
+;* result = GammaDistr(x {,M=...,A=...}|{,E=...,V=...}
 ;*                     [,TAUMIN=...][,/NORMALIZED])
 ;
 ; INPUTS:
@@ -27,24 +27,25 @@
 ;      distribution function is to be computed.
 ;
 ; INPUT KEYWORDS:
-;  M:: First parameter. (<*>M=E^2/V</*>.)
-;  A:: Second parameter. (<*>A=E/V<*>.)
-;  E:: Mean of the resulting distribution.
+;  M:: First parameter. <*>M=E^2/V</*>. You may either supply
+;      <*>M</*> and <*>A</*> or <*>E</*> and <*>V</*>.
+;  A:: Second parameter. <*>A=E/V<*>. 
+;  E:: Mean of the resulting distribution. You may either supply
+;      <*>M</*> and <*>A</*> or <*>E</*> and <*>V</*>.
 ;  V:: Variance of the resulting distribution.
 ;  TAUMIN:: Shifts the function along the x-axis. Default: 0.
 ;  /NORMALIZED :: Returns a function whose intergral is normailzed to
-;                 1.
 ;
 ; OUTPUTS:
 ;  result:: A onedimensional array containing the function values.
-;
+;  
 ; RESTRICTIONS:
 ;  m must not be too large, otherwise overflows may occur.
 ;
 ; PROCEDURE:
 ;  First compute logarithm of the final result, and the use exponential
 ;  function.
-;
+;  
 ; EXAMPLE:
 ;* x=FIndGen(1000)/100.
 ;* y=GammaDistr(x,M=6.,A=6.,TAUMIN=2.)
@@ -53,8 +54,6 @@
 ; SEE ALSO:
 ;  IDL's <C>Gamma()</C> and  <C>LNGamma()</C>.
 ;-
-
-
 
 FUNCTION GammaDistr, x, M=m, A=a $
                       , E=e, V=v $
@@ -98,4 +97,3 @@ FUNCTION GammaDistr, x, M=m, A=a $
    Return, g
 
 END
-
