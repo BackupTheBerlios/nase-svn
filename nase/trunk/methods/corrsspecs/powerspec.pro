@@ -10,7 +10,7 @@
 ; CATEGORY:              STATISTICS
 ;
 ; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE]        $
-;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase])
+;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase][,KERNEL=kernel])
 ;
 ; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
 ;                                  mit mind. 10 Elementen
@@ -21,6 +21,8 @@
 ;                                     erst ab IDL-Version 4.0 moeglich)
 ;                        TRUNC_PHASE: Phasenbeitraege werden fuer Werte <= (TRUNC_PHASE (in Prozent) * MAX(ps))
 ;                                     auf Null gesetzt.
+;                        KERNEL:      Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
+;                                     KEYWORD PHASE
 ;
 ;
 ; OUTPUTS:               ps      : das berechnete Powerspektrum
@@ -56,11 +58,17 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.6  1998/01/27 18:45:09  gabriel
+;      Smooth Kernel Keyword neu
+;
 ; Revision 1.5  1998/01/27 11:29:49  gabriel
 ;      ruft jetzt crosspower auf
 ;
 ; Revision 1.4  1998/01/07 15:03:18  thiel
-;        Jetzt auch mit $Log:$ im Header.
+;        Jetzt auch mit $Log: powerspec.pro,v $
+;        Jetzt auch mit Revision 1.5  1998/01/27 11:29:49  gabriel
+;        Jetzt auch mit      ruft jetzt crosspower auf
+;        Jetzt auch mit im Header.
 ;
 ;
 ;       Tue Aug 19 20:58:57 1997, Mirko Saam
@@ -73,9 +81,10 @@
 
 
 
-FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE
+FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel
  
- PSpec = crosspower( series, series, xaxis, hamming=HAMMING, DOUBLE=Double ,PPhase=PPhase ,TRUNC_PHASE=TRUNC_PHASE)
+ PSpec = crosspower( series, series, xaxis, hamming=HAMMING,$
+                     DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel)
 
  Return,PSpec
 END
