@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.4  2000/01/24 15:31:31  alshaikh
+;            new layer-initialization
+;
 ;      Revision 1.3  2000/01/14 11:02:02  saam
 ;            changed dw structures to anonymous/handles
 ;
@@ -93,9 +96,18 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    FOR i=0, Lmax DO BEGIN
       curLayer = Handle_Val(P.LW(i))
       tmp = curLayer.NPW
-      tmp2 = InitPara_6(TAUF=[tmp.tf1,tmp.tf2], TAUL=[tmp.tl1,tmp.tl2], TAUI=tmp.ti, VS=tmp.vs, TAUS=tmp.ts, VR=tmp.vr, TAUR=tmp.tr, TH0=tmp.t0, SIGMA=tmp.n, NOISYSTART=tmp.ns, OVERSAMPLING=os, SPIKENOISE=tmp.sn, FADE=tmp.fade)
+
+
+      ;tmp2 = InitPara_6(TAUF=[tmp.tf1,tmp.tf2], TAUL=[tmp.tl1,tmp.tl2], TAUI=tmp.ti, VS=tmp.vs, TAUS=tmp.ts, VR=tmp.vr, TAUR=tmp.tr, TH0=tmp.t0, SIGMA=tmp.n, NOISYSTART=tmp.ns, OVERSAMPLING=os, SPIKENOISE=tmp.sn, FADE=tmp.fade)
+
+      ; this line was replaced by the following three
+
+      NAME = tmp.INFO         ; name of init-routine
+      deltag, tmp, 'INFO'     ; remove this name from structure
+      tmp2 =  CALL_FUNCTION(NAME,_EXTRA=tmp)
+
       L(i) = InitLayer(WIDTH=curLayer.w, HEIGHT=curLayer.h, TYPE = tmp2)
-      print, 'LAYER: ',curLayer.NAME, ', ',STR(curLayer.w),'x', STR(curLayer.h)
+      print, 'LAYER: ',curLayer.NAME, ', ',STR(curLayer.w),'x', STR(curLayer.h),', TYPE :',NAME  
    END
 
 
