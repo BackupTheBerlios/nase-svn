@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  1998/02/18 15:20:03  saam
+;             falsche Typueberpruefung
+;
 ;       Revision 2.2  1998/01/26 13:22:41  saam
 ;             ...von wegen
 ;
@@ -32,7 +35,7 @@ PRO FreeLayer_2, L
    IF N_Params() NE 1 THEN Message, 'syntax error: check parameters'
    
    
-   IF Contains(L.info, 'LAYER') AND Contains(L.Type, '1') THEN BEGIN
+   IF Contains(L.info, 'LAYER') AND Contains(L.Type, '2') THEN BEGIN
       IF Handle_Info(L.o) THEN Handle_Free, L.o ELSE Message, 'i dont understand'
    END ELSE Message, 'invalid layer structure'
    
