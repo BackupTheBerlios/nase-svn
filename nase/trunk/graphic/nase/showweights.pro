@@ -45,7 +45,7 @@
 ;                            Bildschirmbreite und -höhe). Wird die
 ;                            Darstellung mit dem angegebenen
 ;                            Zoomfaktor zu groß, so öffnet Showweights 
-;                            automaitisch ein Slide-Window.
+;                            automatisch ein Slide-Window.
 ;                     WINNR: Nr des Fensters, in dem die Darstellung
 ;                            erfolgen soll (muss natuerlich offen
 ;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
@@ -128,6 +128,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.17  1998/02/26 13:58:49  kupper
+;              TV durch UTV ersetzt. Mal sehen...
+;
 ;       Revision 2.16  1998/02/18 13:48:18  kupper
 ;              Schlüsselworte COLORMODE,GET_COLORMODE,GET_MAXCOL zugefügt.
 ;
@@ -218,12 +221,13 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin, GET_WIN=get_win, $
-                 MAXSIZE=maxsize, $
+;                 MAXSIZE=maxsize, $
                  GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode
 
    IF !D.Name EQ 'NULL' THEN RETURN
 
    Default, GROESSE, ZOOM       ;Die Schlüsselworte können alternativ verwendet werden.
+   MAXSIZE = Get_Screen_Size()  ;Wußte früher nicht, daß es diese Funktion gibt, sorry...
 
 ;   Handle_Value, __Matrix, _Matrix, /NO_COPY 
 
@@ -301,7 +305,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    Endelse
 
    ;;------------------> Auto-Slide ?
-   If keyword_set(MAXSIZE) then begin ;Showweights soll ein geeignetes Fenster öffnen
+   If not keyword_set(SLIDE) then begin ;Eventuell doch ein SLIDE Fenster öffnen
       XS=(XGroesse*Matrix.target_w +1)*Matrix.source_w
       YS=(YGroesse*Matrix.target_h +1)*Matrix.source_h
       If (XS+8 gt MAXSIZE(0)) or (YS+20 gt MAXSIZE(1)) then begin ;Fensterränder+Schieber ca. 20, 55 Pixel...
@@ -380,7 +384,7 @@ erase, GET_MAXCOL+2
 
    for YY= 0, Matrix.source_h-1 do begin
       for XX= 0, Matrix.source_w-1 do begin  
-         tv, rebin( /sample, $
+         utv, rebin( /sample, $
                     transpose(MatrixMatrix(*, *, YY, XX)), $
                     xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
           /Order, $
