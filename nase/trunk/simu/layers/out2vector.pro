@@ -20,6 +20,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/09/19 16:35:24  thiel
+;            Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
+;                                      von vector2spass nach Spassmacher
+;
 ;     Revision 2.1  1997/09/17 10:25:53  saam
 ;     Listen&Listen in den Trunk gemerged
 ;
@@ -27,6 +31,6 @@
 ;-
 FUNCTION Out2Vector, OutHandle
 
-   RETURN, SSpass2Vector(Handle_Val(OutHandle))
+   RETURN, SSpassBeiseite(Handle_Val(OutHandle))
 
 END

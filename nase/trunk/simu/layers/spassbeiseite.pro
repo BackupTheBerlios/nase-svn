@@ -1,7 +1,7 @@
 ;+
-; NAME:              Spass2Vector
+; NAME:              SpassBeiseite
 ;
-; PURPOSE:           Konvertiert die mit Vector2Spass erzeugte Liste wieder zurueck in einen
+; PURPOSE:           Konvertiert die mit Spassmacher erzeugte Liste wieder zurueck in einen
 ;                    Vector (Float-Array)
 ;                    Format:
 ;                             Sparse(0,0) : Zahl der Elemente ungleich Null in Sparse
@@ -19,7 +19,7 @@
 ;
 ; CATEGORY:          MISC
 ;
-; CALLING SEQUENCE:  vector = Spass2Vector( sparse )
+; CALLING SEQUENCE:  vector = SpassBeiseite( sparse )
 ;
 ; INPUTS:            sparse : ein zweidimensionales Float-Array
 ;
@@ -30,8 +30,8 @@
 ;
 ; EXAMPLE:
 ;                    vector = 10*RandomU(seed, 1+20*FIX(RandomU(seed)))
-;                    sparse = Vector2Spass(vector)
-;                    vectorFromSparse = Spass2Vector(sparse)
+;                    sparse = Spassmacher(vector)
+;                    vectorFromSparse = SpassBeiseite(sparse)
 ; 
 ;                    IF TOTAL(vector NE vectorFromSparse) EQ 0 THEN Print, 'Success!' $
 ;                                                              ELSE Print, 'Shit!!!!'
@@ -44,7 +44,7 @@
 ;		Schoepfung und ausgiebiger Test, Version 1.1.2.1
 ;
 ;-
-FUNCTION Spass2Vector, sparse
+FUNCTION SpassBeiseite, sparse
 
    vector = FltArr(sparse(1,0))
    

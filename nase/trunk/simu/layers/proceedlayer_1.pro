@@ -15,7 +15,7 @@
 ; EXAMPLE:
 ;                       para1         = InitPara_1(tauf=10.0, vs=1.0)
 ;                       InputLayer    = InitLayer_1(5,5, para1)
-;                       FeedingIn     = Vector2Spass(10.0 + RandomN(seed, InputLayer.w*InputLayer.h))
+;                       FeedingIn     = Spassmacher(10.0 + RandomN(seed, InputLayer.w*InputLayer.h))
 ;                       InputLayer_1, InputLayer, FEEDING=FeedingIn
 ;                       ProceedLayer_1, InputLayer
 ;                       Print, 'Output: ', Out2Vector(InputLayer.O)
@@ -24,6 +24,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.6  1997/09/19 16:35:26  thiel
+;              Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
+;                                        von vector2spass nach Spassmacher
+;
 ;       Revision 1.5  1997/09/17 10:25:54  saam
 ;       Listen&Listen in den Trunk gemerged
 ;

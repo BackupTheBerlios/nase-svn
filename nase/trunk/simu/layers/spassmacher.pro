@@ -1,5 +1,5 @@
 ;+
-; NAME:              Vector2Spass
+; NAME:              Spassmacher
 ;
 ; PURPOSE:           Konvertiert ein eindimensionales Float-Array in eine Liste mit folgendem
 ;                    Format:
@@ -18,7 +18,7 @@
 ;
 ; CATEGORY:          MISC
 ;
-; CALLING SEQUENCE:  sparse = Vector2Spass( vector )
+; CALLING SEQUENCE:  sparse = Spassmacher( vector )
 ;
 ; INPUTS:            vector : ein Float-Array
 ;
@@ -28,8 +28,8 @@
 ;
 ; EXAMPLE:
 ;                    vector = 10*RandomU(seed, 1+20*FIX(RandomU(seed)))
-;                    sparse = Vector2Spass(vector)
-;                    vectorFromSparse = Spass2Vector(sparse)
+;                    sparse = Spassmacher(vector)
+;                    vectorFromSparse = SpassBeiseite(sparse)
 ; 
 ;                    IF TOTAL(vector NE vectorFromSparse) EQ 0 THEN Print, 'Success!' $
 ;                                                              ELSE Print, 'Shit!!!!'
@@ -42,7 +42,7 @@
 ;		Schoepfung und ausgiebiger Test, Version 1.1.2.2
 ;
 ;-
-FUNCTION Vector2Spass, vector
+FUNCTION Spassmacher, vector
 
    dim = N_Elements(vector)
    sparse = Make_Array(2, dim+1, /FLOAT, /NOZERO)

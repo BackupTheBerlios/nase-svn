@@ -1,7 +1,7 @@
 ;+
 ; NAME:                InputLayer_1
 ;
-; PURPOSE:             Addiert Input vom Typ Sparse (siehe Vector2Spass) auf die Neuronenpotentiale und klingt
+; PURPOSE:             Addiert Input vom Typ Sparse (siehe Spassmacher) auf die Neuronenpotentiale und klingt
 ;                      diese vorher ab. Ein mehrmaliger Aufruf von InputLayer_1 ist moeglich.
 ;                      Danach sollte man auf jeden Fall ProceedLayer_1 aufrufen.
 ;

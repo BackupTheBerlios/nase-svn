@@ -1,8 +1,8 @@
 ;+
-; NAME:              Vector2SSpass
+; NAME:              SSpassBeiseite
 ;
-; PURPOSE:           Konvertiert ein eindimensionales Array, das nur 1'en und 0'en enthaelt 
-;                    in eine Liste mit folgendem Format:
+; PURPOSE:           Konvertiert ein mit SSpassmacher erzeugte Liste, wieder in einen Vector.
+;                    Das Format der Liste:
 ;                             SSparse(0) : Zahl der Elemente ungleich Null in Sparse
 ;                             SSparse(1) : Zahl der Elemente in Vector (fuer Sparse2Vector)
 ;                             SSparse(i) mit Sparse(0,0)+1 => i > 1 :
@@ -16,24 +16,36 @@
 ;
 ; CATEGORY:          MISC
 ;
-; CALLING SEQUENCE:  ssparse = Vector2SSpass( vector )
+; CALLING SEQUENCE:  vector = SSpassBeiseite( ssparse )
 ;
-; INPUTS:            vector : ein Array mit Nullen und Einsen belegt
+; INPUTS:            ssparse : ein eindimensionales Long-Array
 ;
-; OUTPUTS:           ssparse : ein eindimensionales Long-Array
+; OUTPUTS:           vector : ein Array mit Nullen und Einsen belegt
 ;
 ; RESTRICTIONS:      Ist vector mehrdimensional enthaelt ssparse die eindimensionalen Indizes
 ;
 ; EXAMPLE:
 ;                    vector = BytArr( 1+20*RandomU(seed) )
 ;                    vector( FIX( 20*RandomU(seed, 5) ) ) = 1
-;                    ssparse = Vector2SSpass(vector)
-;                    vectorFromSSparse = SSpass2Vector(ssparse)
+;                    ssparse = SSpassmacher(vector)
+;                    vectorFromSSparse = SSpassBeiseite(ssparse)
 ; 
 ;                    IF TOTAL(vector NE vectorFromSparse) EQ 0 THEN Print, 'Success!' $
 ;                                                              ELSE Print, 'Shit!!!!'
 ;
 ; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 2.1  1997/09/19 16:35:32  thiel
+;              Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
+;                                        von vector2spass nach Spassmacher
+;
+;       Revision 2.1  1997/09/17 10:25:57  saam
+;       Listen&Listen in den Trunk gemerged
+;
+;       Revision 1.1.2.4  1997/09/15 10:31:23  saam
+;            Bugs korrigiert
+;
 ;
 ;       Thu Sep 11 17:16:46 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
@@ -41,18 +53,12 @@
 ;		Schoepfung und ausgiebiger Test, Version 1.1.2.1
 ;
 ;-
-FUNCTION Vector2SSpass, vector
+FUNCTION SSpassBeiseite, ssparse
 
-   dim = N_Elements(vector)
-   ssparse = LonArr(dim+2)
+   vector = FltArr(ssparse(1))
    
-   ssparse(1,0) = dim
-   actNeurons = WHERE(vector NE 0, count)
+   IF ssparse(0) GT 0 THEN vector( ssparse(2:ssparse(0,0)+1) ) = 1.0
+   
+   RETURN, vector
 
-   IF count NE 0 THEN BEGIN
-      ssparse(0,0) = count
-      ssparse(2:count+1) = actNeurons
-   END
-  
-   RETURN, ssparse(0:count+1)
 END

@@ -1,8 +1,8 @@
 ;+
-; NAME:              SSpass2Vector
+; NAME:              SSpassmacher
 ;
-; PURPOSE:           Konvertiert ein mit Vector2SSpass erzeugte Liste, wieder in einen Vector.
-;                    Das Format der Liste:
+; PURPOSE:           Konvertiert ein eindimensionales Array, das nur 1'en und 0'en enthaelt 
+;                    in eine Liste mit folgendem Format:
 ;                             SSparse(0) : Zahl der Elemente ungleich Null in Sparse
 ;                             SSparse(1) : Zahl der Elemente in Vector (fuer Sparse2Vector)
 ;                             SSparse(i) mit Sparse(0,0)+1 => i > 1 :
@@ -16,32 +16,24 @@
 ;
 ; CATEGORY:          MISC
 ;
-; CALLING SEQUENCE:  vector = SSpass2Vector( ssparse )
+; CALLING SEQUENCE:  ssparse = SSpassmacher( vector )
 ;
-; INPUTS:            ssparse : ein eindimensionales Long-Array
+; INPUTS:            vector : ein Array mit Nullen und Einsen belegt
 ;
-; OUTPUTS:           vector : ein Array mit Nullen und Einsen belegt
+; OUTPUTS:           ssparse : ein eindimensionales Long-Array
 ;
 ; RESTRICTIONS:      Ist vector mehrdimensional enthaelt ssparse die eindimensionalen Indizes
 ;
 ; EXAMPLE:
 ;                    vector = BytArr( 1+20*RandomU(seed) )
 ;                    vector( FIX( 20*RandomU(seed, 5) ) ) = 1
-;                    ssparse = Vector2SSpass(vector)
-;                    vectorFromSSparse = SSpass2Vector(ssparse)
+;                    ssparse = SSpassmacher(vector)
+;                    vectorFromSSparse = SSpassBeiseite(ssparse)
 ; 
 ;                    IF TOTAL(vector NE vectorFromSparse) EQ 0 THEN Print, 'Success!' $
 ;                                                              ELSE Print, 'Shit!!!!'
 ;
 ; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 2.1  1997/09/17 10:25:57  saam
-;       Listen&Listen in den Trunk gemerged
-;
-;       Revision 1.1.2.4  1997/09/15 10:31:23  saam
-;            Bugs korrigiert
-;
 ;
 ;       Thu Sep 11 17:16:46 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
@@ -49,12 +41,18 @@
 ;		Schoepfung und ausgiebiger Test, Version 1.1.2.1
 ;
 ;-
-FUNCTION SSpass2Vector, ssparse
+FUNCTION SSpassmacher, vector
 
-   vector = FltArr(ssparse(1))
+   dim = N_Elements(vector)
+   ssparse = LonArr(dim+2)
    
-   IF ssparse(0) GT 0 THEN vector( ssparse(2:ssparse(0,0)+1) ) = 1.0
-   
-   RETURN, vector
+   ssparse(1,0) = dim
+   actNeurons = WHERE(vector NE 0, count)
 
+   IF count NE 0 THEN BEGIN
+      ssparse(0,0) = count
+      ssparse(2:count+1) = actNeurons
+   END
+  
+   RETURN, ssparse(0:count+1)
 END

@@ -23,15 +23,19 @@
 ;                                           WEIGHT=3.0,$
 ;                                           D_CONST=[4,2])
 ;
-;                         InHandle = Handle_Create(Vector2SSpass([1,1,1,1,1,1,1]))
+;                         InHandle = Handle_Create(SSpassmacher([1,1,1,1,1,1,1]))
 ;                         OutVector = DelayWeigh ( MyDelMat, InHandle)
-;                         print, Spass2Vector(OutVector)
+;                         print, SpassBeiseite(OutVector)
 ;
-;                         FOR z=0,6 DO print, Spass2Vector(DelayWeigh( MyDelMat, Create_Handle(Vector2Spass([0,0,0,0,0,0,0])) ))
+;                         FOR z=0,6 DO print, SpassBeiseite(DelayWeigh( MyDelMat, Create_Handle(Spassmacher([0,0,0,0,0,0,0])) ))
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.24  1997/09/19 16:35:20  thiel
+;              Umfangreiche Umbenennung: von spass2vector nach SpassBeiseite
+;                                        von vector2spass nach Spassmacher
+;
 ;       Revision 1.23  1997/09/17 10:25:47  saam
 ;       Listen&Listen in den Trunk gemerged
 ;
@@ -144,7 +148,7 @@ Handle_Value, InHandle, In
          END
       END
       
-      RETURN, vector2spass(vector)
+      RETURN, Spassmacher(vector)
       
       
       
