@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1999/02/12 15:22:52  saam
+;           sheets are mutated to handles
+;
 ;     Revision 2.6  1998/06/18 15:01:11  kupper
 ;            Hyperlings geupgedatet nach Veraenderigung der Verzeichnischtrugdur.
 ;
@@ -54,7 +57,9 @@
 ;
 ;
 ;-
-PRO DestroySheet, _sheet, multi_nr
+PRO DestroySheet, __sheet, multi_nr
+
+   Handle_Value, __sheet, _sheet, /NO_COPY
 
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet(0)
 
@@ -70,5 +75,8 @@ PRO DestroySheet, _sheet, multi_nr
    END
 
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet(0) = sheet
+
+   Handle_Value, __sheet, _sheet, /NO_COPY, /SET
+   Handle_Free, __sheet
 
 END

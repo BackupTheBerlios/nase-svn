@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/02/12 15:22:52  saam
+;           sheets are mutated to handles
+;
 ;     Revision 2.5  1998/06/18 15:01:10  kupper
 ;            Hyperlings geupgedatet nach Veraenderigung der Verzeichnischtrugdur.
 ;
@@ -46,7 +49,9 @@
 ;
 ;
 ;-
-PRO CloseSheet, _sheet, multi_nr
+PRO CloseSheet, __sheet, multi_nr
+
+   Handle_Value, __sheet, _sheet, /NO_COPY
 
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
@@ -77,5 +82,8 @@ PRO CloseSheet, _sheet, multi_nr
    END
       
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
+
+
+   Handle_Value, __sheet, _sheet, /NO_COPY, /SET
 
 END

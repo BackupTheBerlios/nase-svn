@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  1999/02/12 15:22:52  saam
+;           sheets are mutated to handles
+;
 ;     Revision 2.13  1998/06/18 14:56:14  kupper
 ;            nur Hyperlink nach Umstellung der Verzeichnisstruktur angepasst.
 ;
@@ -92,9 +95,11 @@ END
 
 
 
-PRO OpenSheet, _sheet, multi_nr
+PRO OpenSheet, __sheet, multi_nr
 
    COMMON ___SHEET_KILLS, sk
+
+   Handle_Value, __sheet, _sheet, /NO_COPY
 
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
@@ -189,5 +194,8 @@ PRO OpenSheet, _sheet, multi_nr
    END ELSE Message, 'no initialized sheet???'
 
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
+
+
+   Handle_Value, __sheet, _sheet, /NO_COPY, /SET
 
 END

@@ -56,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  1999/02/12 15:22:52  saam
+;           sheets are mutated to handles
+;
 ;     Revision 2.11  1998/06/18 15:01:11  kupper
 ;            Hyperlings geupgedatet nach Veraenderigung der Verzeichnischtrugdur.
 ;
@@ -163,6 +166,5 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
 
    If keyword_set(multi) then sheet = replicate(sheet, multi(0))
 
-
-   RETURN, sheet
+   RETURN, Handle_Create(VALUE=sheet)
 END
