@@ -120,7 +120,7 @@ END
 
 
 
-PRO cvs, CVS_Name, nasPATH=path, GROUP=Group
+PRO cvs, CVS_Name, NASPATH=naspath, GROUP=Group
 common common_cvs, name
 
   default, CVS_Name, "nase"
