@@ -8,13 +8,14 @@
 ;                       ProceddLayer ist lediglich eine Rahmenprozedur, die
 ;                       selbständig die für den jeweiligen Neuronentyp
 ;                       spezifische <A HREF="../simu/layers/#PROCEEDLAYER_1">
-;                       ProceedLayer_i<\A>-Prozdeur aufruft.
+;                       ProceedLayer_i</A>-Prozdeur aufruft.
 ;                       
 ; CATEGORY:             SIMULATION / LAYERS
 ;
 ; CALLING SEQUENCE:     ProceedLayer, Layer [,_EXTRA=_extra]  
 ;
-; INPUTS:               Layer: eine durch InitLayer_x initialisierte Layer
+; INPUTS:               Layer : eine mit  <A HREF="../simu/layers/#INITLAYER">
+;                       InitLayer</A> erzeugte Struktur
 ;
 ; OPTIONAL INPUTS &
 ; KEYWORD PARAMETERS:   _extra: alle übrigen Parameter werden an die jeweilige
@@ -38,6 +39,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.4  1998/11/06 14:16:00  thiel
+;              Hyperlink defekt
+;
 ;       Revision 2.3  1998/11/04 16:30:26  thiel
 ;              Jetzt mit EXTRA-Keyword.
 ;
