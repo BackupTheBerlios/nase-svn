@@ -1,6 +1,10 @@
 ;+
-; NAME:                InputLayer_4
+; NAME:
+;  InputLayer_4
 ;
+; AIM:
+;  Transfer input to Oversampling Neuron synapses of given layer. 
+
 ; PURPOSE:             Addiert Input vom Typ Sparse (siehe Spassmacher) auf die Neuronenpotentiale und klingt
 ;                      diese vorher ab. Ein mehrmaliger Aufruf von InputLayer_4 ist moeglich.
 ;                      Danach sollte man auf jeden Fall ProceedLayer_4 aufrufen.
@@ -27,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 2.4  2000/09/28 13:05:26  thiel
+;          Added types '9' and 'lif', also added AIMs.
+;
 ;      Revision 2.3  1998/11/08 17:27:19  saam
 ;            the layer-structure is now a handle
 ;

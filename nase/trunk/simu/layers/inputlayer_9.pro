@@ -1,10 +1,9 @@
 ;+
 ; NAME:
-;  InputLayer_8
+;  InputLayer_9
 ;
 ; AIM:
-;  Transfer input to Four Compartment Neuron synapses of given layer. 
-;
+;  Transfer input to Four Compartment Object Neuron synapses of given layer. 
 ;
 ; PURPOSE: Ermöglicht den Input von Spikes oder konstanten Strömen
 ;          in eine Schicht von <A HREF="#INITPARA_8">Typ-8-Neuronen</A>.
@@ -93,7 +92,7 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
-;      Revision 1.3  2000/09/28 13:05:26  thiel
+;      Revision 2.1  2000/09/28 13:05:26  thiel
 ;          Added types '9' and 'lif', also added AIMs.
 ;
 ;      Revision 1.2  1999/03/11 09:36:33  thiel
@@ -105,55 +104,36 @@
 ;-
 
 
-PRO InputLayer_8, _layer, CURR1=curr1, CURR2=curr2, CURR3=curr3, $
-                          SYN1=syn1, SYN2=syn2, SYN3=syn3
+PRO InputLayer_9, _layer, CURR1=curr1, CURR2=curr2, CURR3=curr3, CURR4=curr4,$
+                          SYN1=syn1, SYN2=syn2, SYN3=syn3, SYN4=syn4, $
+                          VARTIMESTEP=vartimestep
 
 
    Handle_Value, _layer, layer, /NO_COPY
 
 
-   IF layer.decr THEN BEGIN
-      layer.dualexp(*,0) = layer.dualexp(*,0) * layer.para.dsyn(0)
-      layer.dualexp(*,1) = layer.dualexp(*,1) * layer.para.dsyn(1)
-      Layer.decr = 0
-   END
+   layer.cells -> ApplyCurrent, SPARSECURRENT1 = curr1, $
+                                SPARSECURRENT2 = curr2, $
+                                SPARSECURRENT3 = curr3;, $
+;                                SPARSECURRENT4 = curr4
 
-   appcurr = FltArr(layer.w*layer.h,3)
+   layer.cells -> SpikeInput, SPARSESPIKES1 = syn1, $
+                              SPARSESPIKES2 = syn2, $
+                              SPARSESPIKES3 = syn3;, $
+;                              SPARSESPIKES4 = syn4
 
-   IF Set(CURR1) THEN $
-    IF (curr1(0,0) GT 0) THEN appcurr(*,2) = Spassbeiseite(curr1)
-   IF Set(CURR2) THEN $
-    IF (curr2(0,0) GT 0) THEN appcurr(*,1) = Spassbeiseite(curr2)
-   IF Set(CURR3) THEN $
-    IF (curr3(0,0) GT 0) THEN appcurr(*,0) = Spassbeiseite(curr3)
+   IF Keyword_Set(VARTIMESTEP) THEN BEGIN
+      layer.fastcells -> ApplyCurrent, SPARSECURRENT1 = curr1, $
+                                       SPARSECURRENT2 = curr2, $
+                                       SPARSECURRENT3 = curr3;, $
+;                                       SPARSECURRENT4 = curr4
 
-
-   IF Set(SYN1) THEN $
-    IF (syn1(0,0) GT 0) THEN BEGIN
-      synnr = syn1(0,1:syn1(0,0))
-      layer.dualexp(2*layer.w*layer.h+synnr,0) = layer.dualexp(2*layer.w*layer.h+synnr,0) + syn1(1,1:syn1(0,0))
-      layer.dualexp(2*layer.w*layer.h+synnr,1) = layer.dualexp(2*layer.w*layer.h+synnr,1) + syn1(1,1:syn1(0,0))
+      layer.fastcells -> SpikeInput, SPARSESPIKES1 = syn1, $
+                                     SPARSESPIKES2 = syn2, $
+                                     SPARSESPIKES3 = syn3;, $
+;                                     SPARSESPIKES4 = syn4
    ENDIF
 
-   IF Set(SYN2) THEN $
-    IF (syn2(0,0) GT 0) THEN BEGIN
-      synnr = syn2(0,1:syn2(0,0))
-      layer.dualexp(layer.w*layer.h+synnr,0) = layer.dualexp(layer.w*layer.h+synnr,0) + syn2(1,1:syn2(0,0))
-      layer.dualexp(layer.w*layer.h+synnr,1) = layer.dualexp(layer.w*layer.h+synnr,1) + syn2(1,1:syn2(0,0))
-   ENDIF
-
-   IF Set(SYN3) THEN $
-    IF (syn3(0,0) GT 0) THEN BEGIN
-      synnr = syn3(0,1:syn3(0,0))
-      layer.dualexp(synnr,0) = layer.dualexp(synnr,0) + syn3(1,1:syn3(0,0))
-      layer.dualexp(synnr,1) = layer.dualexp(synnr,1) + syn3(1,1:syn3(0,0))
-   ENDIF
-
-
-   syncurr = layer.para.gsyn*layer.para.corrampsyn*(layer.dualexp(*,1)-layer.dualexp(*,0))*(layer.V(*,2:4)-layer.para.Vsyn)
-        
-
-   layer.incurr = appcurr - syncurr
 
 
    Handle_Value, _layer, layer, /NO_COPY, /SET

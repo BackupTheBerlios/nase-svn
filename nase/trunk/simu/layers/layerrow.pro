@@ -1,6 +1,10 @@
 ;+
-; NAME: LayerRow()
+; NAME:
+;  LayerRow()
 ;
+; AIM:
+;  Return row number of neuron in layer given neuron's onedimensional index.
+;  
 ; PURPOSE: Liefert zum eindimensionalen Layerindex (Entsprechend den Arrays in der Layer-Struktur) den
 ;	   zweidimensionalen Zeilenindex.
 ;
@@ -37,6 +41,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.6  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.5  1998/05/16 16:01:50  kupper
 ;              Verarbeiten nun auch Arrays von Indizes...
 ;

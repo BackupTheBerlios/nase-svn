@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitPara_11
+; NAME:
+;  InitPara_11()
+;
+; AIM:
+;  Define parameter values for layer of Inhibitory Linking Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para11, die
 ;                       Neuronenparameter fuer Neuronentyp 11 enthaelt
@@ -33,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/28 13:05:26  thiel
+;            Added types '9' and 'lif', also added AIMs.
+;
 ;        Revision 2.1  2000/06/06 15:02:32  alshaikh
 ;              new layertype 11
 ;

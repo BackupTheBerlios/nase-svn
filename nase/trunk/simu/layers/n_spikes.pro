@@ -1,5 +1,9 @@
 ;+
-; NAME: N_Spikes()
+; NAME:
+;  N_Spikes() - OBSOLETE! eq LayerMUA
+;
+; AIM:
+;  Compute sum of spikes occuring in given layer during current timestep. 
 ;
 ; PURPOSE: Ermittelt die Anzahl der spikenden Neuronen in einem Layer
 ;          zum aktuellen Zeitpunkt.
@@ -21,6 +25,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/28 13:05:26  thiel
+;            Added types '9' and 'lif', also added AIMs.
+;
 ;        Revision 2.2  1999/03/24 12:41:48  thiel
 ;               War noch nicht auf Layer=Handle umgestellt.
 ;

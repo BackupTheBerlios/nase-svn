@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitPara_5
+; NAME:
+;  InitPara_5()
+;
+; AIM:
+;  Define parameter values for layer of NMDA Linking Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para5, die Neuronenparameter fuer Neuronentyp 5 enthaelt
 ;
@@ -37,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.4  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.3  1998/11/04 16:26:54  thiel
 ;              Struktur enthaelt jetzt info='PARA'
 ;              und type='Neuronentyp' getrennt.

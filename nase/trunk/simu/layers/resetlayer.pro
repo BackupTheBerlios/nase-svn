@@ -1,5 +1,9 @@
 ;+
-; NAME: ResetLayer
+; NAME:
+;  ResetLayer
+;
+; AIM:
+;  Destroy given layer structure and generate new one with the same properties.
 ;
 ; PURPOSE: Zurücksetzen der Neuronen eines Leyers (Re-Initialisierung)
 ;
@@ -28,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/09/28 13:05:27  thiel
+;            Added types '9' and 'lif', also added AIMs.
+;
 ;        Revision 2.3  2000/09/27 15:59:41  saam
 ;        service commit fixing several doc header violations
 ;

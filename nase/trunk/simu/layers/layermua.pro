@@ -1,5 +1,9 @@
 ;+
-; NAME:              LayerMUA
+; NAME:
+;  LayerMUA()
+;
+; AIM:
+;  Compute sum of spikes occuring in given layer during current timestep. 
 ;
 ; PURPOSE:           Ermittelt das MUA (multiple unit activity) einer Layer. Bei diesem 
 ;                    Signal handelt es sich HIER einfach um die Summe aller Spikes. Das
@@ -26,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/28 13:05:26  thiel
+;         Added types '9' and 'lif', also added AIMs.
+;
 ;     Revision 2.1  1998/11/08 17:44:20  saam
 ;           new & quick
 ;

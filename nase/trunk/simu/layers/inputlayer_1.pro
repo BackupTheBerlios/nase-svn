@@ -1,5 +1,9 @@
 ;+
-; NAME:                InputLayer_1
+; NAME:
+;  InputLayer_1
+;
+; AIM:
+;  Transfer input to Standard Marburg Model Neuron synapses of given layer. 
 ;
 ; PURPOSE:             Addiert Input vom Typ Sparse (siehe <A HREF="#SPASSMACHER">Spassmacher</A>) 
 ;                      auf die Neuronenpotentiale und klingt diese vorher ab. 
@@ -42,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.5  1999/04/20 12:51:38  thiel
 ;              /CORRECT-Behandlung correctiert.
 ;

@@ -1,9 +1,9 @@
 ;+
 ; NAME:
-;  FREELAYER
+;  FreeLayer_9
 ;
 ; AIM:
-;  Free memory allocated by layer structure of arbitrary type.
+;  Free memory allocated by layer of Four Compartment Object Neurons.
 ;
 ; PURPOSE:            Gibt eine Neuronenschicht beliebigen Typs frei. 
 ;
@@ -24,7 +24,7 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
-;       Revision 2.5  2000/09/28 13:05:26  thiel
+;       Revision 2.1  2000/09/28 13:05:26  thiel
 ;           Added types '9' and 'lif', also added AIMs.
 ;
 ;       Revision 2.4  1998/11/08 17:22:43  saam
@@ -39,7 +39,7 @@
 ;
 ;-
 
-PRO FreeLayer, _L
+PRO FreeLayer_9, _L, VARTIMESTEP=vartimestep
 
 ;   Handle_Value, _LAYER, LAYER, /NO_COPY
 ;   type = LAYER.TYPE
@@ -55,6 +55,11 @@ PRO FreeLayer, _L
    IF N_Params() NE 1 THEN Message, 'syntax error: check parameters'
    
    IF Handle_Info(L.o) THEN Handle_Free, L.o ELSE Message, 'i dont understand'
+
+   Obj_Destroy, l.cells
+
+   IF Keyword_Set(VARTIMESTEP) THEN Obj_Destroy, l.fastcells
+
    
    Handle_Value, _L, L, /NO_COPY, /SET
    Handle_Free, _L

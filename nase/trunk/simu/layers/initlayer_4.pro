@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitLayer_4
+; NAME:
+;  InitLayer_4()
+;
+; AIM:
+;  Initialize layer of Oversampling Neurons.
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 4 (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 2ZK)
 ;                       dieser Type unterschiedet sich vom Type durch beliebige Erhoehung der Zeitaufloesung.
@@ -19,6 +23,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.5  2000/09/28 13:05:26  thiel
+;          Added types '9' and 'lif', also added AIMs.
+;
 ;      Revision 2.4  1998/11/09 10:53:37  saam
 ;            possible memory hole sealed up
 ;

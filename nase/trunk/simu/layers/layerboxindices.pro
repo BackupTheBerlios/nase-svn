@@ -1,5 +1,9 @@
 ;+
-; NAME: LayerBoxIndices
+; NAME:
+;  LayerBoxIndices()
+;
+; AIM:
+;  Return onedimensional indices of neurons in layer around given neuron.
 ;
 ;
 ; PURPOSE: Ermitteln der eindimensionalen Indizes der Neuronen, die 
@@ -53,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/28 13:05:26  thiel
+;            Added types '9' and 'lif', also added AIMs.
+;
 ;        Revision 2.2  1998/02/16 16:31:44  thiel
 ;               NASE-Indizierung gilt auch fuer CENTER-Schluesselworte.
 ;

@@ -1,5 +1,9 @@
 ;+
-; NAME: InitLayer_10
+; NAME:
+;  InitLayer_10()
+;
+; AIM:
+;  Initialize layer of Poisson Neurons.
 ;
 ; PURPOSE: Initialisiert eine Neuronenschicht vom Typ 10 (Poissonneuron) 
 ;
@@ -41,6 +45,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.4  2000/09/27 15:59:40  saam
 ;       service commit fixing several doc header violations
 ;

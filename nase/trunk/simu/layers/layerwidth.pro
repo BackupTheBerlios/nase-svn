@@ -1,5 +1,9 @@
 ;+
-; NAME:	LayerWidth()
+; NAME:
+;  LayerWidth()
+;
+; AIM:
+;  Return width (the number of columns) of given layer. 
 ;
 ; PURPOSE: liefert die Breite eines Layers (oder eines
 ;           mit einer DelayWeigh-Struktur verbundenen Layers) zurück 	
@@ -25,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.5  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.4  1998/11/09 13:44:21  saam
 ;            never worked with a delayweigh-structure!
 ;

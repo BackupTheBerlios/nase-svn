@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitLayer_6
+; NAME:
+;  InitLayer_6()
+;
+; AIM:
+;  Initialize layer of Second Order EPSP Neurons.
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 6 (1 Feeding 2ZK, 1 Linking 2ZK, 1 Inihibition 1ZK, Schwelle 2ZK)
 ;                       dieser Type unterschiedet sich vom Type durch beliebige Erhoehung der Zeitaufloesung.
@@ -19,6 +23,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.6  2000/09/28 13:05:26  thiel
+;          Added types '9' and 'lif', also added AIMs.
+;
 ;      Revision 2.5  1999/12/02 18:11:55  saam
 ;            new "SYNPASE" DIRECT
 ;

@@ -1,5 +1,9 @@
 ;+
-; NAME:                 RESTORELAYER
+; NAME:
+;  RESTORELAYER
+;
+; AIM:
+;  Restore layer structure by generating new handles.
 ;
 ;
 ; PURPOSE:              Stellt mit save abgespeicherte Layer Strukturen wieder her
@@ -26,6 +30,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/28 13:05:27  thiel
+;         Added types '9' and 'lif', also added AIMs.
+;
 ;     Revision 2.1  1997/12/16 09:09:10  gabriel
 ;          Erzeugt handles fue eine zuvor abgespeicherte Layerstruktur
 ;

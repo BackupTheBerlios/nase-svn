@@ -1,5 +1,9 @@
 ;+
-; NAME: ProceedLayer_10
+; NAME:
+;  ProceedLayer_10
+;
+; AIM:
+;  Compute output of Poisson Neurons in current timestep.
 ;
 ; PURPOSE: Führt einen Simulationsschritt für eine Schicht aus Neuronen
 ;          vom Typ 10 (Poissonneuronen) durch. Die Feuerwahrscheinlichkeit
@@ -34,6 +38,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.2  2000/09/27 15:59:41  saam
 ;       service commit fixing several doc header violations
 ;

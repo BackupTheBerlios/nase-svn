@@ -1,5 +1,9 @@
 ;+
-; NAME: InitPara_8
+; NAME:
+;  InitPara_8()
+;
+; AIM:
+;  Define parameter values for layer of Four Compartment Neurons.
 ;
 ;
 ; PURPOSE: Festlegen der Parameter für eine Schicht aus Typ8-Neuronen
@@ -201,6 +205,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/28 13:05:26  thiel
+;            Added types '9' and 'lif', also added AIMs.
+;
 ;        Revision 1.2  1999/03/08 09:44:26  thiel
 ;               Hyperlinks kaputt, wie immer.
 ;

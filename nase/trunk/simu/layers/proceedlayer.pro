@@ -1,5 +1,9 @@
 ;+
-; NAME:                 ProceedLayer
+; NAME:
+;  ProceedLayer
+;
+; AIM:
+;  Compute output of given layer during current simulation timestep.
 ;
 ; PURPOSE:              Führt einen Simulationszeitschritt durch (Schwellenvergleich), 
 ;                       der Input fuer die Layer muß vorher mit
@@ -33,10 +37,15 @@
 ;                       ProceedLayer, mylayer
 ;                       Print, 'Output: ', Out2Vector(mylayer.O)
 ;
+;
 ;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.9  2000/09/28 13:05:27  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.8  2000/09/27 15:59:40  saam
 ;       service commit fixing several doc header violations
 ;

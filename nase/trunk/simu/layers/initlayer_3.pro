@@ -1,5 +1,6 @@
 ;+
-; NAME:                 InitLayer_3
+; NAME:
+;  InitLayer_3() - OBSOLETE!
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 3
 ;                       (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 1ZK, Lernpotential)
@@ -19,6 +20,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.6  1998/11/08 15:53:17  saam
 ;             neuron type disabled cause it out of date, use type 1
 ;             with a Recall-Structure instead

@@ -1,5 +1,9 @@
 ;+
-; NAME: LayerIndex()
+; NAME:
+;  LayerIndex()
+;
+; AIM:
+;  Compute neuron's onedimensional index in layer from its row/col-indices.
 ;
 ; PURPOSE: Rechnet den zweidimensionalen Layerindex (Zeile/Spalte) in den eindimensionalen um.
 ;
@@ -40,6 +44,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.4  1998/11/08 17:34:02  saam
 ;             adapted to new layer type
 ;

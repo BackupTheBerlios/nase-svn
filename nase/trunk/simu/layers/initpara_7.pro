@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitPara_7
+; NAME:
+;  InitPara_7()
+;
+; AIM:
+;  Define parameter values for layer of Two Feeding Inhibition Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para7, die Neuronenparameter fuer Neuronentyp 7 enthaelt
 ;                            (2 Feeding 2ZK, 1 Linking 1ZK, 2 Inihibition 2ZK, Schwelle 2 additive ZK 1.Ordnung)
@@ -34,6 +38,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.2  1998/11/04 16:26:55  thiel
 ;              Struktur enthaelt jetzt info='PARA'
 ;              und type='Neuronentyp' getrennt.

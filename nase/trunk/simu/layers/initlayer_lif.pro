@@ -1,9 +1,9 @@
 ;+
 ; NAME:
-;  InitLayer_1()
+;  InitLayer_LIF()
 ;
 ; AIM:
-;  Initialize layer of Standard Marburg Model Neurons.
+;  Initialize layer of Leaky Integrate and Fire Neurons.
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 1 
 ;                           (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 1ZK)
@@ -36,7 +36,7 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
-;       Revision 1.10  2000/09/28 13:05:26  thiel
+;       Revision 2.1  2000/09/28 13:05:26  thiel
 ;           Added types '9' and 'lif', also added AIMs.
 ;
 ;       Revision 1.9  1998/11/09 10:53:35  saam
@@ -56,7 +56,7 @@
 ;
 ;-
 
-FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
+FUNCTION InitLayer_LIF, WIDTH=width, HEIGHT=height, TYPE=type
 
    COMMON Common_Random, seed
 
@@ -68,18 +68,18 @@ FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
 
    handle = Handle_Create(!MH, VALUE=[0, width*height])
 
-   Layer = { info   : 'LAYER', $
-             Type   : '1'                  ,$
-             w      : width                ,$
-             h      : height               ,$
-             para   : type                 ,$
-             decr   : 1                    ,$ ;decides if potentials are to be decremented or not
-             F      : type.ns*Double(RandomU(seed,width*height)) ,$
-             L      : type.ns*Double(RandomU(seed,width*height)) ,$
-             I      : type.ns*Double(RandomU(seed,width*height)) ,$
-             M      : DblArr(width*height) ,$
-             S      : DblArr(width*height) ,$
-             O      : handle}
+   Layer = {info   : 'LAYER', $
+            Type   : 'LIF'                  ,$
+            w      : width                ,$
+            h      : height               ,$
+            para   : type                 ,$
+            decr: 1, $ ; decides if potentials are to be decremented or not
+            F: type.ns*Double(RandomU(seed,width*height)), $
+            L: type.ns*Double(RandomU(seed,width*height)), $
+            I: type.ns*Double(RandomU(seed,width*height)), $
+            M: DblArr(width*height), $
+            S: DblArr(width*height), $ ; keep S to allow plotting of threshold
+            O: handle}
 
    
    RETURN, Handle_Create(!MH, VALUE=Layer, /NO_COPY)

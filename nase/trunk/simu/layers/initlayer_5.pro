@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitLayer_5
+; NAME:
+;  InitLayer_5()
+;
+; AIM:
+;  Initialize layer of NMDA Linking Neurons.
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 1 
 ;                           (1 Feeding 1ZK oder 1 Feeding TP2 , 1 Linking 1ZK, 1 NMDA 1ZK, 1 Inihibition 1ZK, Schwelle 1ZK)
@@ -34,6 +38,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.4  2000/09/28 13:05:26  thiel
+;     Added types '9' and 'lif', also added AIMs.
+;
 ; Revision 2.3  1998/11/09 10:53:37  saam
 ;       possible memory hole sealed up
 ;

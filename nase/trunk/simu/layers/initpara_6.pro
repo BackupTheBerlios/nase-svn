@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitPara_6
+; NAME:
+;  InitPara_6()
+;
+; AIM:
+;  Define parameter values for layer of Second Order EPSP Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para4, die Neuronenparameter fuer Neuronentyp 4 enthaelt
 ;                            (1 Feeding 2ZK, 1 Linking 2ZK, 1 Inihibition 1ZK, Schwelle 2 additive ZK 1.Ordnung,
@@ -11,8 +15,8 @@
 ;                                          [, VS=vs] [, TAUS=taus] [, TH0=th0] [, SIGMA=sigma] [NOISYSTART=noisystart] $
 ;                                          [OVERSAMPLING=oversampling] [,REFPERIOD=refperiod] [,SPIKENOISE=spikenoise] [,FADE=fade])
 ;
-; KEYWORD PARAMETERS:   tauf        : [tauf1, tauf2]; Feeding-Zeitkonstanten, Default:0.5,10
-;                       taul        : [taul1, taul2]; Linking-Zeitkonstante , Default:0.5,10
+; KEYWORD PARAMETERS:   tauf        : [tauf1, tauf2]; Feeding-Zeitkonstanten, Default:0.2,10
+;                       taul        : [taul1, taul2]; Linking-Zeitkonstante , Default:0.2,10
 ;                       taui        : Inihibition-Zeitkonstante             , Default:10
 ;                       vaur        : Schwellen-Verstaerkung2
 ;                       taur        : Schwellen-Zeitkonstante2
@@ -38,6 +42,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.4  2000/09/28 13:05:26  thiel
+;          Added types '9' and 'lif', also added AIMs.
+;
 ;      Revision 2.3  1998/11/04 16:26:54  thiel
 ;             Struktur enthaelt jetzt info='PARA'
 ;             und type='Neuronentyp' getrennt.

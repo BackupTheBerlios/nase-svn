@@ -1,9 +1,9 @@
 ;+
 ; NAME:
-;  InitPara_1()
+;  InitPara_LIF()
 ;
 ; AIM:
-;  Define parameter values for layer of Standard Marburg Model Neurons.
+;  Define parameter values for layer of Leaky Integrate And Fire Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 1 enthaelt
 ;
@@ -15,9 +15,7 @@
 ; KEYWORD PARAMETERS:   tauf       : Feeding-Zeitkonstante
 ;                       taul       : Linking-Zeitkonstante
 ;                       taui       : Inihibition-Zeitkonstante
-;                       vaus       : Schwellen-Verstaerkung
-;                       taus       : Schwellen-Zeitkonstante
-;                       th0        : Schwellen-Offset
+;                       th0        : Schwelle
 ;                       sigma      : Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
 ;                       noisystart : alle Input-Potential (F,L,I) werden mit gleichverteilten Zufalls-
 ;                                    zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
@@ -33,7 +31,7 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
-;       Revision 1.7  2000/09/28 13:05:26  thiel
+;       Revision 2.1  2000/09/28 13:05:26  thiel
 ;           Added types '9' and 'lif', also added AIMs.
 ;
 ;       Revision 1.6  1998/11/04 16:26:52  thiel
@@ -59,29 +57,34 @@
 ;                Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
 ;
 ;-
-FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise
+
+
+
+FUNCTION InitPara_LIF, TAUF=tauf, TAUL=taul, TAUI=taui $
+                       , TH0=th0, SIGMA=sigma, NOISYSTART=noisystart $
+                       , SPIKENOISE=spikenoise
 
    Default, tauf      , 10.0
    Default, taul      , 10.0
    Default, taui      , 10.0
-   Default, vs        , 10.0
-   Default, taus      , 10.0
+;   Default, vs        , 10.0
+;   Default, taus      , 10.0
    Default, th0       ,  1.0
    Default, sigma     ,  0.0
    Default, noisystart,  0.0
    Default, spikenoise  ,  0.0
 
    Para = { info : 'PARA'         ,$
-	    type : '1'            ,$
+	    type : 'LIF'            ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             di   : exp(-1./taui)  ,$
             tauf : FLOAT(tauf)    ,$
             taul : FLOAT(taul)    ,$
             taui : FLOAT(taui)    ,$
-            vs   : vs             ,$
-            ds   : exp(-1./taus)  ,$
-            taus : FLOAT(taus)    ,$
+;            vs   : vs             ,$
+;            ds   : exp(-1./taus)  ,$
+;            taus : FLOAT(taus)    ,$
             th0  : th0            ,$
             sigma: sigma          ,$
             sn   : spikenoise/1000.,$

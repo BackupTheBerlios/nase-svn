@@ -1,5 +1,9 @@
 ;+
-; NAME:	LayerSize()
+; NAME:
+;  LayerSize()
+;
+; AIM:
+;  Return total number of neurons contained in given layer.
 ;
 ; PURPOSE: liefert die Gesamtneuronenzahl eines Layers (oder eines
 ;           mit einer DelayWeigh-Struktur verbundenen Layers) zurück 	
@@ -23,6 +27,9 @@
 ; MODIFICATION HISTORY: erstellt am 24.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.4  1998/02/19 15:32:26  kupper
 ;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
 ;

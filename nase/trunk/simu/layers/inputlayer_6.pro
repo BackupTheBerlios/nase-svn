@@ -1,5 +1,9 @@
 ;+
-; NAME:                InputLayer_6
+; NAME:
+;  InputLayer_6
+;
+; AIM:
+;  Transfer input to Second Order EPSP Neuron synapses of given layer. 
 ;
 ; PURPOSE:             Addiert Input vom Typ Sparse (siehe Spassmacher) auf die Neuronenpotentiale und klingt
 ;                      diese vorher ab. Ein mehrmaliger Aufruf von InputLayer_6 ist moeglich.
@@ -29,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 2.4  2000/09/28 13:05:26  thiel
+;          Added types '9' and 'lif', also added AIMs.
+;
 ;      Revision 2.3  1999/12/02 18:11:56  saam
 ;            new "SYNPASE" DIRECT
 ;

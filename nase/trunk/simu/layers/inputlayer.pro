@@ -1,5 +1,9 @@
 ;+
-; NAME:               InputLayer
+; NAME:
+;  InputLayer
+;
+; AIM:
+;  Transfer input to neuron synapses of a given layer. 
 ;
 ; PURPOSE:            Addiert Input vom Typ Sparse (siehe 
 ;		      <A HREF="#SPASSMACHER">Spassmacher</A>) auf die 
@@ -40,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;  $Log$
+;  Revision 2.7  2000/09/28 13:05:26  thiel
+;      Added types '9' and 'lif', also added AIMs.
+;
 ;  Revision 2.6  2000/06/19 13:43:12  saam
 ;       + REV 2.5 insertion of CheckMath was IDL3.6 incompatible
 ;         ... fixed that

@@ -1,8 +1,12 @@
 ;+
+; NAME: Out2Vector() - OBSOLETE!
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/28 13:05:26  thiel
+;         Added types '9' and 'lif', also added AIMs.
+;
 ;     Revision 2.5  1998/11/08 17:34:46  saam
 ;           obsolete and replaced by layerspikes and layerout respectively
 ;

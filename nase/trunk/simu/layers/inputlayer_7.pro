@@ -1,5 +1,10 @@
 ;+
-; NAME:                InputLayer_7
+; NAME:
+;  InputLayer_7
+;
+; AIM:
+;  Transfer input to Two Feeding Inhibition Neuron synapses of given layer. 
+;
 ;
 ; PURPOSE:             Addiert Input vom Typ Sparse (siehe Spassmacher) auf die Neuronenpotentiale und klingt
 ;                      diese vorher ab. Ein mehrmaliger Aufruf von InputLayer_7 ist moeglich.
@@ -41,7 +46,7 @@
 ;               Entstanden aus einem Teil von ProceedLayer_1
 ;
 ;-
-PRO InputLayer_7, _Layer, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, INHIBITION1=inhibition1,INHIBITION2=inhibition2, CORRECT=correc
+PRO InputLayer_7, _Layer, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, INHIBITION1=inhibition1,INHIBITION2=inhibition2, CORRECT=correct
 
    Handle_Value, _Layer, Layer, /NO_COPY
 

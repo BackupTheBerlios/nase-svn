@@ -1,5 +1,9 @@
 ;+
-; NAME: InputLayer_10
+; NAME:
+;  InputLayer_10
+;
+; AIM:
+;  Transfer input to Poisson Neuron synapses of given layer. 
 ;
 ; PURPOSE: Addiert Input vom Typ Sparse (siehe <A>Spassmacher</A>) 
 ;          auf die Neuronenpotentiale und klingt diese vorher ab. 
@@ -46,6 +50,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.3  2000/09/27 15:59:40  saam
 ;       service commit fixing several doc header violations
 ;

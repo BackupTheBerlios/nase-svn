@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitLayer_7
+; NAME:
+;  InitLayer_7()
+;
+; AIM:
+;  Initialize layer of Two Feeding Inhibition Neurons.
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 7 (2 Feeding 2ZK, 1 Linking 1ZK, 2 Inihibition 2ZK, Schwelle 2ZK)
 ;
@@ -18,6 +22,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.4  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.3  1998/11/09 10:53:38  saam
 ;             possible memory hole sealed up
 ;

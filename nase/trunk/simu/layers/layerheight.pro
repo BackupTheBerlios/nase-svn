@@ -1,5 +1,9 @@
 ;+
-; NAME:	LayerHeight()
+; NAME:
+;  LayerHeight()
+;
+; AIM:
+;  Return height (the number of rows) of given layer. 
 ;
 ; PURPOSE: liefert die Höhe eines Layers (oder eines
 ;           mit einer DelayWeigh-Struktur verbundenen Layers) zurück 	
@@ -25,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.5  1998/11/09 13:44:22  saam
 ;            never worked with a delayweigh-structure!
 ;

@@ -1,22 +1,21 @@
 ;+
 ; NAME:
-;  InitLayer_8()
+;  InitLayer_9()
 ;
 ; AIM:
-;  Initialize layer of Four Compartment Neurons.
+;  Initialize layer of Four Compartment Object Neurons.
 ;
-; PURPOSE: Initialisiert eine Neuronenschicht vom Typ 8.
-;
+; PURPOSE: Initialisiert eine Neuronenschicht vom Typ 9.
 ;
 ; CATEGORY: SIMULATION / LAYERS
 ;
-; CALLING SEQUENCE: layer = InitLayer_8( WIDTH=width, HEIGHT=height, 
+; CALLING SEQUENCE: layer = InitLayer_9( WIDTH=width, HEIGHT=height, 
 ;                                        TYPE=type, 
 ;                                        INIT_V=init_v)
 ;
 ; INPUTS: WIDTH, HEIGHT : Breite und Höhe des Layers
 ;         TYPE          : Struktur, die neuronenspezifische Parameter enthält;
-;                          definiert mit <A>InitPara_8</A>.
+;                          definiert mit <A HREF="#INITPARA_8">InitPara_8</A>.
 ; 
 ; OPTIONAL INPUTS : init_v : Die Potentiale aller Neuronen der Layer
 ;                             werden mit den in init_v angegebenen Werten
@@ -105,27 +104,25 @@
 ;  END
 ;
 ;
-; SEE ALSO: <A>InitPara_8</A>, <A>InputLayer_8</A>, <A>ProceedLayer_8</A>
-;-
+; SEE ALSO: <A HREF="#INITPARA_8">InitPara_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>, <A HREF="#PROCEEDLAYER_8">ProceedLayer_8</A>
+;
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
-;      Revision 1.4  2000/09/28 13:05:26  thiel
+;      Revision 2.1  2000/09/28 13:05:26  thiel
 ;          Added types '9' and 'lif', also added AIMs.
-;
-;      Revision 1.3  2000/09/27 15:59:40  saam
-;      service commit fixing several doc header violations
-;
-;      Revision 1.2  1999/03/16 16:35:14  thiel
-;             LongArray for refractory period.
 ;
 ;      Revision 1.1  1999/03/08 09:47:12  thiel
 ;             Neuer Neuronentyp Nr. 8.
 ;
 ;
+;-
 
 
-FUNCTION InitLayer_8, WIDTH=width, HEIGHT=height, TYPE=type, INIT_V=init_v
+FUNCTION InitLayer_9, WIDTH=width, HEIGHT=height, TYPE=type, $
+                      DELTAT=deltat, $
+                      VARTIMESTEP=vartimestep, _EXTRA=_extra
+
 
    COMMON Common_Random, seed
 
@@ -134,25 +131,33 @@ FUNCTION InitLayer_8, WIDTH=width, HEIGHT=height, TYPE=type, INIT_V=init_v
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   V = FltArr(width*height, 5)
-
-   IF Set(INIT_V) THEN V = Transpose(Rebin(init_v, 5, width*height))
+   Default, deltat, 0.1
 
    handle = Handle_Create(!MH, VALUE=[0, width*height])
 
+   IF Set(VARTIMESTEP) THEN $
    layer = { info    : 'LAYER', $
-             type    : '8', $
+             type    : '9', $
              w       : width, $
              h       : height, $
              para    : type, $
-             decr    : 1, $     ;decides if potentials are to be decremented or not
-             incurr  : FltArr(width*height,3), $
-             dualexp : FltArr(3*width*height,2), $
-             V       : V, $
+             errbound : vartimestep, $
              o       : handle, $
-             ar      : LonArr(width*height)  }  ; for the absolute refractory period
+             cells   : Obj_New(type, WIDTH=width, HEIGHT=height, $
+                               DELTAT=deltat, _EXTRA=_extra), $
+             fastcells   : Obj_New(type, WIDTH=width, HEIGHT=height, $
+                                   DELTAT=2.0*deltat, _EXTRA=_extra) } $
+   ELSE $
+    layer = { info    : 'LAYER', $
+              type    : '9', $
+              w       : width, $
+              h       : height, $
+              para    : type, $
+              o       : handle, $
+              cells   : Obj_New(type, WIDTH=width, HEIGHT=height, $
+                                DELTAT=deltat, _EXTRA=_extra) }
 
-   
    RETURN, Handle_Create(!MH, VALUE=layer, /NO_COPY)
+
 
 END 

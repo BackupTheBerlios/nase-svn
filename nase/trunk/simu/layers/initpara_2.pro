@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitPara_2
+; NAME:
+;  InitPara_2()
+;
+; AIM:
+;  Define parameter values for layer of Adaptive Marburg Model Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 2 enthaelt
 ;                            (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 2 additive ZK 1.Ordnung)
@@ -32,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.5  1998/11/04 16:26:52  thiel
 ;              Struktur enthaelt jetzt info='PARA'
 ;              und type='Neuronentyp' getrennt.

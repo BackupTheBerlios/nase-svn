@@ -1,5 +1,9 @@
 ;+
-; NAME:                 ProceedLayer_2
+; NAME:
+;  ProceedLayer_2
+;
+; AIM:
+;  Compute output of Adaptive Marburg Model Neurons in current timestep.
 ;
 ; PURPOSE:              fuehrt einen Zeitschritt durch (Schwellenvergleich), der Input fuer die Layer wird 
 ;                       mit der Procedure InputLayer_2 uebergeben
@@ -20,10 +24,15 @@
 ;                       ProceedLayer_2, MyLayer
 ;                       Print, 'Output: ', Out2Vector(MyLayer.O)
 ;
+;
 ;-
+;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.10  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.9  2000/09/27 15:59:41  saam
 ;       service commit fixing several doc header violations
 ;

@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitLayer_2
+; NAME:
+;  InitLayer_2()
+;
+; AIM:
+;  Initialize layer of Adaptive Marburg Model Neurons.
 ;
 ; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 2 (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 2ZK)
 ;
@@ -18,6 +22,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.9  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.8  1998/11/09 10:53:36  saam
 ;             possible memory hole sealed up
 ;

@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitPara_3
+; NAME:
+;  InitPara_3() - OBSOLETE!
+;
+; AIM:
+;  Define parameter values for layer of Learning Potential Neurons.
 ;
 ; PURPOSE:              initialisiert Parameterstruktur Para3, die Neuronenparameter fuer Neuronentyp 3 enthaelt
 ;
@@ -30,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 1.6  1998/11/08 15:53:17  saam
 ;             neuron type disabled cause it out of date, use type 1
 ;             with a Recall-Structure instead

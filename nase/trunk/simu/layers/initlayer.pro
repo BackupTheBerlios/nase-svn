@@ -1,5 +1,9 @@
 ;+
-; NAME:                 InitLayer
+; NAME:
+;  InitLayer()
+;
+; AIM:
+;  Initialize neuron layer of arbitrary type.
 ;
 ; PURPOSE:              Initialisiert eine Schicht aus Neuronen vom Typ i.
 ;                       Der Neuronentyp wird in der Parameterstruktur
@@ -45,6 +49,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.4  2000/09/28 13:05:26  thiel
+;           Added types '9' and 'lif', also added AIMs.
+;
 ;       Revision 2.3  1998/11/06 14:28:38  thiel
 ;              Hyperlinks.
 ;

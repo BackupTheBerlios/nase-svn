@@ -1,5 +1,9 @@
 ;+
-; NAME:            LayerData
+; NAME:
+;  LayerData
+;
+; AIM:
+;  Return information about state of given layer.
 ;
 ; PURPOSE:         Liefert Informationen über einen Layer zurück
 ;                  (s.u. OPTIONAL OUTPUTS)
@@ -20,7 +24,7 @@
 ;                              [,LERNPOTENTIAL=Lernpotential]
 ;                              [,OUTPUT=Output]
 ;
-; INPUTS:           Layer: Eine mit <A HREF="#INITLAYER>InitLayer</A> initialisierte NASE-Layer-Struktur
+; INPUTS:           Layer: Eine mit <A HREF="#INITLAYER">InitLayer</A> initialisierte NASE-Layer-Struktur
 ;
 ; OPTIONAL OUTPUTS: Alle Daten werden in Schlüssesworten
 ;                   zurückgegeben. 
@@ -67,6 +71,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.9  2000/09/28 13:05:26  thiel
+;            Added types '9' and 'lif', also added AIMs.
+;
 ;        Revision 2.8  2000/06/06 15:02:33  alshaikh
 ;              new layertype 11
 ;
@@ -123,8 +130,14 @@ PRO LayerData, _Layer, $
    CASE layer.type OF
       '8' : IF n GT 1 THEN potential = Reform(layer.V, layer.h, layer.w, 5) $
                        ELSE potential = layer.V
+      '9' : BEGIN
+         layer.cells->Info, GET_POTENTIALS = potential
+;         FOR i=0,layer.w*layer.h-1 DO $
+;          potential(i,*)=layer.cells(i)->State()
+         IF n GT 1 THEN potential = Reform(potential, layer.h, layer.w, 5)
+         END
       ELSE: IF n GT 1 THEN potential  = REFORM(Layer.M, Layer.H, Layer.W) $
-                       ELSE potential = Layer.M
+                      ELSE potential = Layer.M
    ENDCASE
 
 
@@ -141,6 +154,7 @@ PRO LayerData, _Layer, $
          END
       END
       '8' : feeding = !NONE
+      '9' : feeding = !NONE
       ELSE: IF n GT 1 THEN feeding = REFORM(Layer.F, Layer.H, Layer.W) ELSE feeding = Layer.F
    ENDCASE
 
@@ -155,6 +169,7 @@ PRO LayerData, _Layer, $
 
       '6' : IF n GT 1 THEN linking = REFORM(Layer.para.corrAmpL*(Layer.L2-Layer.L1), Layer.H, Layer.W) ELSE linking = Layer.para.corrAmpL*(Layer.L2-Layer.L1)
       '8' : linking = !NONE
+      '9' : linking = !NONE
       ELSE: IF n GT 1 THEN linking = REFORM(Layer.L, Layer.H, Layer.W) ELSE linking = Layer.L
    ENDCASE
    
@@ -171,7 +186,8 @@ PRO LayerData, _Layer, $
          END
       END
       '8' : inhibition = !NONE
-      ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
+      '9' : inhibition = !NONE
+     ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
    ENDCASE
    
 
@@ -179,6 +195,7 @@ PRO LayerData, _Layer, $
    CASE Layer.TYPE OF
       '6' : IF n GT 1 THEN schwelle = REFORM(Layer.R + Layer.S + Layer.Para.th0, Layer.H, Layer.W) ELSE schwelle = Layer.R + Layer.S + Layer.Para.th0
       '8' : schwelle = !NONE
+      '9' : schwelle = !NONE
       ELSE: IF n GT 1 THEN schwelle = REFORM(Layer.S, Layer.H, Layer.W) ELSE schwelle = Layer.S
    ENDCASE
 
@@ -187,9 +204,11 @@ PRO LayerData, _Layer, $
    IF Layer.Type EQ '2' THEN BEGIN
       IF n GT 1 THEN lschwelle = Reform(Layer.R, Layer.H, Layer.W) ELSE lschwelle = Layer.R
    END
-   IF Layer.Type EQ '3' THEN BEGIN
-      IF n GT 1 THEN lernpotential = Reform(Layer.P, Layer.H, Layer.W) ELSE lernpotential = Layer.P
-   END
+
+;--- Type 3 (learning potential neuron) was obsolete has been removed 
+;   IF Layer.Type EQ '3' THEN BEGIN
+;      IF n GT 1 THEN lernpotential = Reform(Layer.P, Layer.H, Layer.W) ELSE lernpotential = Layer.P
+;   END
 
    Handle_Value, _Layer, Layer, /NO_COPY, /SET
    output = LayerSpikes(_Layer, /DIMENSIONS)

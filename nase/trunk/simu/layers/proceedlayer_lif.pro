@@ -1,9 +1,9 @@
 ;+
 ; NAME:
-;  ProceedLayer_1
+;  ProceedLayer_LIF
 ;
 ; AIM:
-;  Compute output of Standard Marburg Model Neurons in current timestep.
+;  Compute output of Leaky Integrate and Fire Neurons in current timestep.
 ;
 ; PURPOSE:              fuehrt einen Zeitschritt durch (Schwellenvergleich), der Input fuer die Layer wird 
 ;                       mit der Procedure InputLayer_1 uebergeben
@@ -25,16 +25,11 @@
 ;                       Print, 'Output: ', Out2Vector(InputLayer.O)
 ;
 ;
-;-
-;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
-;       Revision 1.11  2000/09/28 13:05:26  thiel
+;       Revision 2.1  2000/09/28 13:05:27  thiel
 ;           Added types '9' and 'lif', also added AIMs.
-;
-;       Revision 1.10  2000/09/27 15:59:41  saam
-;       service commit fixing several doc header violations
 ;
 ;       Revision 1.9  1998/11/08 17:27:22  saam
 ;             the layer-structure is now a handle
@@ -67,8 +62,9 @@
 ;                       Zeitschritt erhoeht, Mirko Saam, 29.7.97
 ;                       LinkingIn und InhibitionIn sind jetzt
 ;                       optional. Rüdiger, 22. August '97
-; 
-PRO ProceedLayer_1, _Layer, CORRECT=correct
+;- 
+PRO ProceedLayer_LIF, _Layer, CORRECT=correct
+
 COMMON common_random, seed
 
    Handle_Value, _Layer, Layer, /NO_COPY
@@ -77,17 +73,17 @@ COMMON common_random, seed
       Layer.F = Layer.F * Layer.para.df
       Layer.L = Layer.L * Layer.para.dl
       Layer.I = Layer.I * Layer.para.di
-      Layer.S = Layer.S * Layer.para.ds
+;      Layer.S = Layer.S * Layer.para.ds
    END
 
    Handle_Value, Layer.O, oldOut
    IF oldOut(0) GT 0 THEN BEGIN
       oldOut = oldOut(2:oldOut(0)+1)
-      IF Keyword_Set(CORRECT) THEN BEGIN
-         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs/Layer.para.taus
-      END ELSE BEGIN
-         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs
-      END
+;      IF Keyword_Set(CORRECT) THEN BEGIN
+;         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs/Layer.para.taus
+;      END ELSE BEGIN
+         Layer.F(oldOut) = 0.
+;      END
    END
 
    
@@ -95,11 +91,13 @@ COMMON common_random, seed
    
    IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
 
-   ; do some spike noise by temporarily incresing membrane potential
-   spikenoise = WHERE(RandomU(seed, Layer.w*Layer.h) LT Layer.para.sn, c)
-   IF c NE 0 THEN Layer.M(spikenoise) = Layer.M(spikenoise)+Layer.Para.th0*1.05
+   layer.m = layer.m <layer.para.th0 >0.
 
-   result = WHERE(Layer.M GE (Layer.S + Layer.Para.th0), count) 
+   ; do some spike noise by temporarily incresing membrane potential
+;   spikenoise = WHERE(RandomU(seed, Layer.w*Layer.h) LT Layer.para.sn, c)
+;   IF c NE 0 THEN Layer.M(spikenoise) = Layer.M(spikenoise)+Layer.Para.th0*1.05
+
+   result = WHERE(Layer.M GE (Layer.Para.th0), count) 
 
    newOut = [count, Layer.w * Layer.h]
    IF count NE 0 THEN newOut = [newOut, result]

@@ -1,5 +1,9 @@
 ;+
-; NAME:               LayerSpikes
+; NAME:
+;  LayerSpikes()
+;
+; AIM:
+;  Return current state of spiking activity in given layer.
 ;
 ; PURPOSE:            Ermittelt den Spike-Zustand einer Layer.
 ;
@@ -30,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/28 13:05:26  thiel
+;         Added types '9' and 'lif', also added AIMs.
+;
 ;     Revision 2.1  1998/11/08 17:43:43  saam
 ;           the replacement for Out2Vector
 ;

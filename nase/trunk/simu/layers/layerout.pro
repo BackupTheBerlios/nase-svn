@@ -1,5 +1,9 @@
 ;+
-; NAME:                LayerOut
+; NAME:
+;  LayerOut()
+;
+; AIM:
+;  Return handle on current spike list of given layer.
 ;
 ; PURPOSE:             Ermittelt einen Handle auf die Spikeliste eines Layer zur Weiterverwendung
 ;                      mit DelayWeigh.
@@ -20,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/28 13:05:26  thiel
+;         Added types '9' and 'lif', also added AIMs.
+;
 ;     Revision 2.1  1998/11/08 17:43:42  saam
 ;           the replacement for Out2Vector
 ;
