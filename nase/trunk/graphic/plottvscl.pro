@@ -79,6 +79,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.23  1998/05/04 18:33:02  saam
+;           nase-matrices were handled correctly now
+;           (include legend)
+;
 ;     Revision 2.22  1998/03/16 14:33:16  saam
 ;           PS-Output always had a legend even if
 ;           unwanted
@@ -194,9 +198,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, LEGEND, 0
    
    W = _W
-   IF (Keyword_Set(NASE)) THEN W = Transpose(W)
-   
-   
+   IF (Keyword_Set(NASE)) THEN BEGIN
+      maxW = Max(W)
+      minW = Min(NoNone(W))
+   END
+
    ArrayHeight = (size(w))(2)
    ArrayWidth  = (size(w))(1)
    
@@ -299,19 +305,47 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
 
    ;-----Plotten der UTVScl-Graphik:
-   UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
-   
+   IF Keyword_Set(NASE) THEN BEGIN
+      UTV, ShowWeights_Scale(Transpose(W),/SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
+   END ELSE BEGIN
+      UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
+   END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
    ;-----Legende, falls erwuenscht:
-   IF Keyword_Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-    H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
-    V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
-    Max=Max(W), Min=Min(W), $
-    CHARSIZE=Charsize, $
-    NOSCALE=NoScale, $
-    /Vertical, /Center 
-
+   IF Keyword_Set(LEGEND) THEN BEGIN
+      IF Keyword_Set(NASE) THEN BEGIN
+         IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+            MaxW = MAX([ABS(MaxW),ABS(MinW)])
+            MinW = -MaxW
+            Mid = 0
+            TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+             H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+             Max=MaxW, Min=MinW, Mid='0',$
+             CHARSIZE=Charsize, $
+             NOSCALE=NoScale, $
+             /Vertical, /Center 
+         END ELSE BEGIN
+            MinW = 0
+            TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+             H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+             V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+             Max=MaxW, Min=MinW,$
+             CHARSIZE=Charsize, $
+             NOSCALE=NoScale, $
+             /Vertical, /Center 
+         END
+      END ELSE BEGIN
+         TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+          H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+          V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
+          Max=Max(W), Min=Min(W), $
+          CHARSIZE=Charsize, $
+          NOSCALE=NoScale, $
+          /Vertical, /Center 
+      END
+   END
 
    ;-----Restauration der urspruenglichen Device-Parameter
    !P.Region  = oldRegion 
