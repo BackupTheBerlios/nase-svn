@@ -132,7 +132,7 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
-      uSet_Plot, ScreenDevice()
+      uSet_Plot, 'NULL'
    END
       
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
