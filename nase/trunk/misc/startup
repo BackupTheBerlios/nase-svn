@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.12  1998/09/02 10:23:37  kupper
+;       Logo wird jetzt beim Start angezeigt.
+;
 ;       Revision 1.11  1998/06/18 12:28:57  gabriel
 ;            Globale Vars in defglobvars.pro
 ;
@@ -26,4 +29,10 @@
 ;
 ;-
 
+ShowLogo
+
 defglobvars
+
+wait, 3
+
+caw
