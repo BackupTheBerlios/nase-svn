@@ -11,6 +11,7 @@
 ;
 ; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT]
 ;                                 [,/MEMBRANE] [,/MUA] [,/LFP] 
+;                                 [,/NONE]
 ;                                 [,TIME=time] [,SELECT=select] $
 ;                                 [,INFO=info]
 ;
@@ -21,6 +22,7 @@
 ;                     OUTPUT  : read spike output of layer (this is default)
 ;                     MEMBRANE: read membrane potentials of layer
 ;                     MUA     : read multiple unit activity
+;                     NONE    : read arbitrary data
 ;                     TIME    : reads the simulation from BIN start to BIN end specified
 ;                               as [start,end]. if end is negative,
 ;                               data is read to the (-end)-last
@@ -41,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.9  2000/06/19 14:59:29  saam
+;            + keyword NONE added
+;
 ;      Revision 1.8  2000/05/18 08:16:58  saam
 ;            small bug fix
 ;
@@ -69,7 +74,7 @@
 ;
 ;
 ;-
-FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, RMUA=rmua, TIME=time, INFO=info, SELECT=select
+FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, RMUA=rmua, TIME=time, INFO=info, SELECT=select
 
    On_Error, 2
 
@@ -78,13 +83,17 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
    END 
 
    IF N_Params() NE 1 THEN Message, 'filename expected'
-   kc = Set(INPUT)+Keyword_Set(OUTPUT)+Keyword_Set(MEMBRANE)+Keyword_Set(MUA)+Keyword_Set(RMUA)
+   kc = Set(INPUT)+Keyword_Set(OUTPUT)+Keyword_Set(MEMBRANE)+Keyword_Set(MUA)+Keyword_Set(RMUA)+Keyword_Set(NONE)
    IF kc EQ 0 THEN BEGIN
       OUTPUT = 1
       kc = 1
    END
    IF kc NE 1 THEN Console, 'can only read one type of data simultanously', /FATAL
    
+   IF Set(NONE) THEN BEGIN
+      filename = file 
+      console, 'loading unknown data ...'
+   END
    IF Set(INPUT) THEN BEGIN
       filename = file+'.'+STR(INPUT)+'.in.sim' 
       console, 'loading input spikes ('+STR(INPUT)+') ...'
@@ -134,7 +143,7 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
       END
       anz =  N_Elements(SELECT)
    END
-   IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) OR Keyword_Set(RMUA) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
+   IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) OR Keyword_Set(RMUA) OR KEYWORD_Set(NONE) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
 
    TIME = LONG(TIME)
    REWIND, Video, TIME(0), /SHUTUP
