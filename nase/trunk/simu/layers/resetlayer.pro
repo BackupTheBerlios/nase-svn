@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/03/12 16:52:09  kupper
+;        Changed to use the neuron-type independent "FreeLayer" and "InitLayer".
+;
 ;        Revision 2.1  1998/03/10 16:03:18  kupper
 ;               Schöpfung.
 ;
@@ -38,11 +41,8 @@ Pro ResetLayer, Layer
 
    LayerData, Layer, TYPE=Layertyp, PARAMETERS=Parameter, WIDTH=width, HEIGHT=height
 
-   InitFunktion = "InitLayer_"+Layertyp ;ergibt Strings wie "InitLayer_1" usw.
-   FreePro = "FreeLayer_"+Layertyp
+   FreeLayer, Layer
 
-   Call_Procedure, FreePro, Layer
-
-   Layer = Call_Function( InitFunktion, WIDTH=width, HEIGHT=height, TYPE=Parameter )
+   Layer = InitLayer( WIDTH=width, HEIGHT=height, TYPE=Parameter )
 
 End
