@@ -84,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  1999/03/21 13:33:43  gabriel
+;          Phase Null Korrektur
+;
 ;     Revision 1.4  1999/03/21 09:55:54  gabriel
 ;          Phase Keyword new
 ;
@@ -117,10 +120,12 @@ default,CORRSTRENGTH_CRIT,0.05
 default,PLOTFLAG,0
 default,plot,0
 default,verbose,0
-interpoldim = [(sa(1)*interpol*2)/2+1,(sa(2)*interpol*2)/2+1]
+interpoldim = [(sa(1)/2*interpol*2)+1,(sa(2)/2*interpol*2)+1]
 
-distance_ax = (lindgen(interpoldim(0))/FLOAT(interpol)-sa(1)/2.)/FLOAT(sa(1))*last(distance_ax)*2.
-delay_ax = (lindgen(interpoldim(1))/FLOAT(interpol)-sa(2)/2.)/FLOAT(sa(2))*last(delay_ax)*2.
+;distance_ax = (lindgen(interpoldim(0))/FLOAT(interpol)-sa(1)/2.)/FLOAT(sa(1))*last(distance_ax)*2.
+;delay_ax = (lindgen(interpoldim(1))/FLOAT(interpol)-sa(2)/2.)/FLOAT(sa(2))*last(delay_ax)*2.
+distance_ax = (lindgen(interpoldim(0))/FLOAT(interpoldim(0)-1)-0.5)*last(distance_ax)*2
+delay_ax =(lindgen(interpoldim(1))/FLOAT(interpoldim(1)-1)-0.5)*last(delay_ax)*2
 
 iCHISQ = fltarr(sa(3))
 iMED_CORRSTRENGTH = fltarr(sa(3))
@@ -145,13 +150,18 @@ FOR i=0 ,sa(3)-1 DO BEGIN
    IF interpol EQ 1 THEN BEGIN
       tmparray = a(*,*,i)
    END ELSE BEGIN 
-      tmparray = congrid(a(*,*,i),N_ELEMENTS(distance_ax),N_ELEMENTS(delay_ax),cubic=-0.5,/MINUS)
-   ;stop
+      tmparray = congrid(a(*,*,i),N_ELEMENTS(distance_ax),N_ELEMENTS(delay_ax),cubic=-0.5,/minus)
+      ;spezial correktur interpolation verschmiert das Maximum der Autokorrelation 
+      maxofarr = max(tmparray)
+      tmparray = tmparray/maxofarr
+      tmparray(N_ELEMENTS(distance_ax)/2,N_ELEMENTS(delay_ax)/2) = maxofarr
+      tmparray = tmparray/maxofarr
    ENDELSE   
    tmpmax =  imax(tmparray,0,index)
    t_indtmp = DELAY_AX(index) 
    phase(i,*) = t_indtmp
    X_indtmp = DISTANCE_AX
+   ;stop
    IF PLOT EQ 1 THEN BEGIN
      
       opensheet,pix_1
