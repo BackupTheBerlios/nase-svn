@@ -244,7 +244,9 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          Console, /MSG, '.'
          Console, /MSG, 'Determining prior.'
       ENDIF
-      shist = HistMD(s, NBINS=snbins, GET_BINVALUES=sbinval $
+      shist = HistMD(s, NBINS=snbins $
+                     , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
+                     , GET_BINVALUES=sbinval $
                      , REVERSE_INDICES=srevidx)
       totshist = Total(shist)
       prior = shist/totshist
