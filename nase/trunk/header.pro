@@ -55,6 +55,8 @@
 ;  
 ; EXAMPLE:
 ;  
+; SEE ALSO:
+;
 ;-
 
 ;;; look in ../doc/header.pro for explanations and syntax,
