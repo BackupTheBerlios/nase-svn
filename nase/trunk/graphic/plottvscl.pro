@@ -134,6 +134,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.60  1999/11/22 13:09:43  kupper
+;     Another error with !P.-Background-bug: Did not pass "COLORMODE"
+;     to Showweights_Scale.
+;
 ;     Revision 2.59  1999/11/15 16:21:33  kupper
 ;     Corrected (hope so) handling of XNorm, YNorm positional
 ;     parameters.
@@ -380,7 +384,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;;     Farben richtig zu setzen, damit auch !P.Background
    ;;     stimmt
    If (SETCOL ne 0) and (Keyword_Set(NASE) or Keyword_Set(NEUTRAL)) then $
-    forgetit = ShowWeights_Scale(_W, SETCOL=2)
+    forgetit = ShowWeights_Scale(_W, SETCOL=2, COLORMODE=colormode)
 
 
    If set(PLOTCOL) then sc = plotcol else begin
