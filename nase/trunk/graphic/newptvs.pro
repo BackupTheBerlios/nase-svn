@@ -116,7 +116,7 @@ PRO newPTVS, first, second, third, _EXTRA=_extra
    Default, legmin, Str(mif, FORMAT='(G0.0)')
    Default, legmax, Str(maf, FORMAT='(G0.0)')
 
-   a = Scl(first, [0, !TOPCOLOR])
+   a = Scl(first, [0, !TOPCOLOR-1])
 
    CASE N_Params() OF
       1: newPTV, a, LEGMIN=legmin, LEGMAX=legmax, _EXTRA=_extra
