@@ -1,79 +1,60 @@
 ;+
-; NAME: IFOD
+; NAME: 
+;   IFoD
 ;
-; AIM: convolutes sinusoidal grating with Canny-Edge detectors
-;  
+; VERSION:
+;   $Id$
+;
+; AIM:
+; convolutes sinusoidal grating with Canny-Edge detectors
+;   
 ; PURPOSE:
-;  -please specify-
-;  
+;   
 ; CATEGORY:
-;  -please specify-
-;  
+;  Array
+;  DataStructures
+;  Input
+;  Internal
+;
 ; CALLING SEQUENCE:
-;  -please specify-
 ;  
 ; INPUTS:
-;  -please remove any sections that do not apply-
-;  
-; OPTIONAL INPUTS:
 ;
 ;      STIMSHIFT : for values ne 0 the grid is divided up into two equal-sized grids
 ;                  with the right one (provided 0dg orientation) shifted by a phase
 ;                  of STIMSHIFT
 ;
+;      STEP      : adjacent rf's are separated by STEP points
 ;
-;          
-;  -please remove any sections that do not apply-
+;      DETECTSIZE: size of the convolution-kernel. is directly passed
+;                  to <a>orient_2d<\a>
 ;  
-; KEYWORD PARAMETERS:
-;  -please remove any sections that do not apply-
+; OPTIONAL INPUTS:
 ;  
+; INPUT KEYWORDS:
+;
 ; OUTPUTS:
-;  -please remove any sections that do not apply-
 ;  
 ; OPTIONAL OUTPUTS:
-
-;  -please remove any sections that do not apply-
 ;  
 ; COMMON BLOCKS:
-;  -please remove any sections that do not apply-
 ;  
 ; SIDE EFFECTS:
-;  -please remove any sections that do not apply-
 ;  
 ; RESTRICTIONS:
-;  -please remove any sections that do not apply-
 ;  
 ; PROCEDURE:
-;  -please specify-
 ;  
 ; EXAMPLE:
-;  -please specify-
 ;  
 ; SEE ALSO:
-;  -please remove any sections that do not apply-
-;  <A HREF="#MY_ROUTINE">My_Routine()</A>
-;  
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.4  2000/09/29 08:10:35  saam
-;        added the AIM tag
-;
-;        Revision 1.3  2000/09/01 14:24:42  alshaikh
-;              new keyword STIMSHIFT
-;
-;        Revision 1.2  2000/09/01 10:12:23  saam
-;              still undoumented
-;
-;
+
 
 FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                       LOGIC=op, STIMORIENT=stimorient, DETECTORIENT=detectorient, STIMPERIOD=stimperiod, STIMPHASE=stimphase, $
-                      STIMSHIFT=stimshift,$
-                      STEPANGLE=stepangle,$
+                STIMSHIFT=stimshift,$ $
+                STEPANGLE=stepangle,detectsize=detectsize, step=step, $
                       A=a, _EXTRA=e
 
 ;   ON_ERROR, 2
@@ -83,6 +64,8 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
    Default, op  , 'ADD'
    Default, rotperiod, !NONE
    Default, stepangle, 0.
+   Default, step, 1.
+   Default, detectsize, 25.
 
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      
@@ -95,10 +78,11 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
           Default, stimphase, 0
           Default, stimshift, 0
           Default, stimperiod, 1
-          md = FIX(MAX([w,h])*1.5)
-          md = md + ((md+1) MOD 2) + 50
-          y1=sin(2*!DPi*((dindgen(md) - md/2)/stimperiod + stimphase/360.d))          
-          y2=sin(2*!DPi*((dindgen(md) - md/2)/stimperiod + (stimphase+stimshift)/360.d))          
+          mdx = w*step+2*detectsize
+          mdy = h*step+2*detectsize
+          md = fix((max([mdx, mdy])+1)*2)/2
+          y1=sin(2*!DPi*((dindgen(md)/step - md/2)/stimperiod + stimphase/360.d))          
+          y2=sin(2*!DPi*((dindgen(md)/step - md/2)/stimperiod + (stimphase+stimshift)/360.d))          
 
           lstim1=(1+rebin(y1,md,md/2,/SAMPLE))*0.5
           lstim2 =(1+rebin(y2,md,md-md/2,/SAMPLE))*0.5
@@ -107,8 +91,19 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
           lstim(*,(md/2):md-1) = lstim2
 
           stim = (rot(lstim,STIMORIENT,1,md/2,md/2,/cubic,/pivot))
-          odm=Orient_2d(25, DEGREE=DETECTORIENT-90.)    
-          mem = a*((convol(stim, odm))^2)(md/2-h/2:md/2+h/2,md/2-w/2:md/2+w/2)
+          odm=Orient_2d(detectsize, DEGREE=DETECTORIENT-90.)    
+          temp = a*((convol(stim, odm))^2)
+
+          ; points to pick
+          lowx = indgen(w)*step+md/2-(step*w/2)+1
+          lowy = indgen(h)*step+md/2-step*h/2+1
+
+          mem = fltarr(h, w)
+          for y=0, n_elements(lowy)-1 do begin
+             mem(y, * ) = temp(lowy(y), lowx)
+          endfor 
+          temp = !NONE
+
 
           TV =  {                             $
                   a            : a           ,$
@@ -119,6 +114,8 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
                   stimphase    : stimphase   ,$
                   stimshift    : stimshift   ,$
                   detectorient : detectorient,$
+                  detectsize   : detectsize, $
+                  step         : step,  $
                   stimorient   : stimorient  ,$
                   stepangle    : stepangle   ,$
                   cangle       : 0d          ,$
@@ -137,12 +134,13 @@ console, outputstring
       ; STEP
       1: BEGIN                             
           IF (TV.stepangle NE 0) THEN BEGIN
-              TV.cangle = (TV.cangle + TV.stepangle) MOD 360
-              md = FIX(MAX([TV.w,TV.h])*1.5)
-              md = md + ((md+1) MOD 2) + 50
-              y1=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + TV.stimphase/360.d))          
-              y2=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + (TV.stimphase+TV.stimshift)/360.d))          
-
+             TV.cangle = (TV.cangle + TV.stepangle) MOD 360
+             mdx = w*TV.step+2*TV.detectsize
+             mdy = h*TV.step+2*TV.detectsize
+             md = FIX(MAX([mdx,mdy]))
+             y1=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + TV.stimphase/360.d))          
+             y2=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + (TV.stimphase+TV.stimshift)/360.d))          
+             
               lstim1=(1+rebin(y1,md,md/2,/SAMPLE))*0.5
               lstim2 =(1+rebin(y2,md,md-md/2,/SAMPLE))*0.5
               lstim = fltarr(md,md)
@@ -150,8 +148,19 @@ console, outputstring
               lstim(*,(md/2):md-1) = lstim2
               
               stim = (rot(lstim,TV.STIMORIENT+TV.cangle,1,md/2,md/2,/cubic,/pivot))
-              odm=Orient_2d(25, DEGREE=TV.DETECTORIENT-90.)    
-              TV.mem = TV.a*((convol(stim, odm))^2)(md/2-TV.h/2:md/2+TV.h/2,md/2-TV.w/2:md/2+TV.w/2)
+              odm=Orient_2d(TV.detectsize, DEGREE=TV.DETECTORIENT-90.)    
+              temp = a*((convol(stim, odm))^2)
+
+                                ; points to pick
+              lowx = indgen(w)*TV.step+md/2-(TV.step*w/2)+1
+              lowy = indgen(h)*TV.step+md/2-TV.step*h/2+1
+              
+              TV.mem = fltarr(h, w)
+              for y=0, n_elements(lowy)-1 do begin
+                 TV.mem(y, * ) = temp(lowy(y), *)
+              endfor 
+              temp = !NONE
+
               Console, 'a='+STR(TV.a)+', grating: '+STR(TV.stimorient+TV.cangle)+' dg, detector: '+STR(TV.detectorient)+' dg, spat freq: '+STR(TV.stimperiod)+', phase: '+STR(TV.stimphase)+' dg'
           END
           TV.sim_time =  TV.sim_time + TV.delta_t
