@@ -83,6 +83,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 1.4  1999/05/07 12:47:07  thiel
+;          Weiﬂ nich mehr, was da ge‰ndert wurde.
+;
 ;      Revision 1.3  1999/03/08 09:54:59  thiel
 ;             Hyperlink-Korrektur.
 ;
@@ -142,7 +145,7 @@ PRO ProceedLayer_8, _layer, _EXTRA=_extra
    refN = WHERE(layer.ar GT 0, count)
    IF count NE 0 THEN layer.ar(refN) = layer.ar(refN)-1
 
-   
+
    result = WHERE(layer.V(*,1) GE (layer.para.th + 100.*layer.ar), count) 
 
 
