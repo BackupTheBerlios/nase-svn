@@ -28,28 +28,24 @@
 ;
 ; EXAMPLE:
 ;
-; SEE ALSO: IDL help for TOTAL().
+; RESTRICTIONS:
+;  This routine was scheduled to be removed from the repository during
+;  the first NASE workshop. It was meant to be replaced by IMEAN(),
+;  but at the moment, IMEAN() has no possibility to total (not
+;  average). Since this routine works pretty well, I commented out the
+;  warning message. When IMEAN is ready to replace this routine, we
+;  can think about it again...
+;   Rüdiger.
 ;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.3  2000/12/20 17:29:04  bruns
-;        * preparations for removal from repository (warning message)
-;
-;        Revision 1.2  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.1  2000/06/14 14:07:04  kupper
-;        Checked in at last!
+; SEE ALSO: <A>IMean</A>, IDL help for <C>TOTAL()</C>.
 ;
 ;-
 
 Function MultiTotal, Array, DimensionArray, MEAN=mean
 
-   Console, '  This routine will be removed from the repository soon. Use IMean() instead.', /warning
+;;   Console, '  This routine will be removed from the repository soon. Use IMean() instead.', /warning
 
+;; what use is the next line? Something missing??
    Default, DimensionArray
 
    Reihenfolge = Rotate(Sort([DimensionArray]), 2) ;umgekehrte Reihenfolge
