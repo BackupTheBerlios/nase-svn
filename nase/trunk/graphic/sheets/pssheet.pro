@@ -9,7 +9,10 @@
 ;  Generate a sheet structure for EPS output.
 ;
 ; PURPOSE:
-;  Generate a sheet structure for EPS output.
+;  Generate a sheet structure for EPS output. The main puprpose is to
+;  ensure that plots have a similar look and characters are always
+;  the same size no matter how <*>!P.MULTI</*> is set. In addition,
+;  postscript or truetype fonts are used instead of ugly vector fonts.
 ;
 ; CATEGORY:
 ;  Graphic
@@ -20,7 +23,7 @@
 ;*                  [,XOMARGIN=...][,YOMARGIN=...]
 ;*                  [,XSIZE=...][,YSIZE=...]
 ;*                  [,CHARSIZE=...][,FONTTYPE=...]
-;*                  [, PRODUCER=...] 
+;*                  [,PRODUCER=...] 
 ;*                  [,/VERBOSE] )
 ;
 ; INPUT KEYWORDS:
@@ -42,7 +45,7 @@
 ;                 plots, it is <*>0.25*(Sqrt(5.)-1)*xsize</*> times
 ;                 the number of plots.
 ; charsize:: The size of the annotation chars. Note that this size is
-;            <i>not</i> reduced as in normal IDL when more than 2
+;            <I>not</I> reduced as in normal IDL when more than 2
 ;            plots appear on the sheet. Default: 1.8.
 ; fonttype:: A string specifying the desired type of font used on the
 ;            sheet. This can either be 'tt' for truetype fonts and
@@ -51,7 +54,7 @@
 ;            resulting EPS sheet. If <*>producer=''</*>, nothing is
 ;            printed. If <*>producer='foobar'</*>, "foobar" is printed
 ;            together with the current system time. A special value
-;            is <*>"CALLER"</*> wich prints the name of the routine that
+;            is <*>'/CALLER'</*> which prints the name of the routine that
 ;            called the subsequent <A>CloseSheet</A> together with
 ;            systime. Default: <*>/CALLER</*>.
 ; /VERBOSE:: Print information into the console.
@@ -68,8 +71,12 @@
 ;  attributes right.
 ;
 ; EXAMPLE:
-;*
-;*>
+;* pssh=PSSheet(FILE='demosheet',MULTI=[0,1,3,0,0],PRODUCER='demo')
+;* OpenSheet, pssh
+;* Plot, IndGen(10)
+;* Plot, 10-IndGen(10)
+;* Plot, IndGen(10)
+;* CloseSheet, pssh
 ;
 ; SEE ALSO:
 ;  <A>DefineSheet()</A>, <A>OpenSheet()</A>, <A>CloseSheet()</A>
