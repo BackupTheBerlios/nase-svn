@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/07/02 09:35:23  saam
+;           returns now if an error occurs
+;
 ;     Revision 1.2  1998/06/03 08:30:50  saam
 ;           added optional output 'indices'
 ;
@@ -57,6 +60,8 @@
 ;-
 FUNCTION IMax, A, i, indices
    
+   On_Error, 2
+
    s = Size(A)
 
    IF s(0) LE i THEN Message, 'index too large for array'
