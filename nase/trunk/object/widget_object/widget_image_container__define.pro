@@ -325,10 +325,14 @@ Pro widget_image_container::renew_plot, XPOS=xpos, YPOS=ypos, _EXTRA=_extra
 End
 
 Pro widget_image_container::examineit, _EXTRA=_extra
+   ;; we want examineit to inherit our widgets private color table, so
+   ;; we open the showit berforehand.
+   showit_open, self->showit()
    examineit, self->image(), $
               GROUP=self->widget(), $
               NASE=(*self.update_info).nase, $
               _EXTRA=_extra
+   showit_close, self->showit()
 End
 
 Pro widget_image_container::surfit, _EXTRA=_extra
