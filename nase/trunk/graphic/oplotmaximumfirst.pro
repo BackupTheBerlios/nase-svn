@@ -101,7 +101,7 @@ PRO OPlotMaximumFirst, z, zz $
       y = z
    END
  
-   Default, xrange, [x(0), Last(x)]
+   Default, xrange, [min(x), max(x)]
 
    xri = [(Where(x GE xrange(0)))(0), last((Where(x LE xrange(1))))] 
 
