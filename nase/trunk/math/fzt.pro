@@ -89,53 +89,66 @@ FUNCTION   FZT, X, Direction,   overwrite = overwrite, infind = infind
    TypeX = Size(X, /type)
    IF   TypeX EQ 0                     THEN  Console, '   Argument x not defined.'     , /fatal
    IF  (TypeX GE 6) AND (TypeX LE 11)  THEN  Console, '   Argument x is of wrong type.', /fatal
-
+   IF  TypeX EQ 5  THEN  Infinity = !Values.D_Infinity  $
+   ELSE  Infinity = !Values.F_Infinity
+   
    Default, Direction, -1
-
-   ;----------------------------------------------------------------------------------------------------------------------
-   ; Fisher's Z transform:
-   ;----------------------------------------------------------------------------------------------------------------------
+   ;; A copy of X is made unless the OVERWRITE keyword is set, in
+   ;; which case X is simply renamed to _X: 
+   IF  Keyword_Set(overwrite)  THEN  _X = Temporary(X)  $
+   ELSE  _X = X
+   ;;----------------------------------------------------------------------------------------------------------------------
+   ;; Fisher's Z transform:
+   ;;----------------------------------------------------------------------------------------------------------------------
 
    CASE  Direction  OF
 
       1:  BEGIN
-            ; This seemingly strange way of computing (exp(x)-exp(-x))/(exp(x)+exp(-x)) reduces time and memory effort:
-            IF  Keyword_Set(overwrite)  THEN  Return, 1.0 - 2.0 / (exp(2.0*Temporary(X))+1.0)  $
-                                        ELSE  Return, 1.0 - 2.0 / (exp(2.0*          X )+1.0)
-          END
+         ;;look if any value is inf
+         ;;[-inf,inf] has to transformed to [-1,1]
+         inf_index = where((_X EQ -infinity) OR (_X EQ infinity), inf_count)
+         if inf_count GT 0 then begin
+            sign = signum(_X(inf_index))
+            _X(inf_index) = 0.0
+         endif
+         ;; This seemingly strange way of computing
+         ;; (exp(x)-exp(-x))/(exp(x)+exp(-x)) reduces time and memory
+         ;; effort:
+         _X = 1.0 - 2.0 / (exp(2.0*Temporary(_X))+1.0)
+         if inf_count GT 0 then begin
+            _X(inf_index) = sign
+         endif
+         return, _X
+      END
 
      -1:  BEGIN
-            ; Checking whether values lie outside the interval (-1,1), and determining their subscripts (separately
-            ; for values <= -1 and >= +1, respectively):
-            MaxX = Max(X, min = MinX)
-            NInfNeg = 0
-            NInfPos = 0
-            IF  MinX LE -1  THEN  iInfNeg = Where(X LE -1, NInfNeg)
-            IF  MaxX GE  1  THEN  iInfPos = Where(X GE  1, NInfPos)
-            NInf = NInfNeg + NInfPos
-            CASE  1  OF
-              NInfNeg GE 1  AND  NInfPos GE 1:  InfInd = [ iInfNeg , iInfPos ]
-              NInfNeg GE 1  AND  NInfPos EQ 0:  InfInd =   iInfNeg
-              NInfNeg EQ 0  AND  NInfPos GE 1:  InfInd =   iInfPos
-              ELSE:  InfInd = -1L
-            ENDCASE
-            ; If values outside the interval [-1,1] exist, an extra warning message is given:
-            IF  (MinX LT -1) OR (MaxX GT 1)  THEN  Console, '   Range of x beyond [-1,1]. Clipping values.', /warning
-            ; A copy of X is made unless the OVERWRITE keyword is set, in which case X is simply renamed to X_:
-            IF  Keyword_Set(overwrite)  THEN  X_ = Temporary(X)  $
-                                        ELSE  X_ = X
-            ; Computing the forward Fisher's Z transform. The values outside the interval (-1,1) are not transformed,
-            ; since computations producing math errors take much more time; instead, X is set to 0 in the critical
-            ; positions (which does not produce math errors), and the result in the corresponding positions is explicitly
-            ; set to +/-inf:
-            IF  TypeX EQ 5  THEN  Infinity = !Values.D_Infinity  $
-                            ELSE  Infinity = !Values.F_Infinity
-            IF  NInf    GE 1  THEN  X_[InfInd]  = 0
-            X_ = 0.5 * alog(2.0/(1.0-Temporary(X_)) - 1.0)
-            IF  NInfNeg GE 1  THEN  X_[iInfNeg] = -Infinity
-            IF  NInfPos GE 1  THEN  X_[iInfPos] =  Infinity
-            Return, X_
-          END
+        ;; Checking whether values lie outside
+        ;; the interval (-1,1), and determining
+        ;; their subscripts (separately 
+        ;; for values <= -1 and >= +1, respectively):
+        MaxX = Max(X, min = MinX)
+        ;; If values outside the interval [-1,1] exist, an extra
+        ;; warning message is given: 
+        IF  (MinX LT -1) OR (MaxX GT 1)  THEN  Console, '   Range of x beyond [-1,1]. Clipping values.', /warning
+ 
+        ;; Computing the forward Fisher's Z transform. The values
+        ;; outside the interval (-1,1) are not transformed, 
+        ;; since computations producing math errors take much more
+        ;; time; instead, X is set to 0 in the critical 
+        ;; positions (which does not produce math errors), and the
+        ;; result in the corresponding positions is explicitly 
+        ;; set to +/-inf:
+        one_index = where((_X GE 1.0) OR (_X LE -1.0), one_count)
+        if one_count GT 0 then begin
+           sign = signum(_X(one_index))
+           _X(one_index) = 0.0
+        ENDIF
+        _X =  0.5 * alog(2.0/(1.0-Temporary(_X)) - 1.0)
+        if one_count GT 0 then begin
+           _X(one_index) = sign*infinity
+        endif
+        return, _X
+     end
 
      ELSE:  Console, '   Direction of transform must be -1 or 1.', /fatal
 
