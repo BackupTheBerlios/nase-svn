@@ -1,7 +1,12 @@
 ;+
-; NAME: RFScan_Init()
+; NAME:
+;  RFScan_Init()
 ;
-; AIM:     initializes the RF-Cinematogramm of simulated neurons
+; VERSION:
+;  $Id$
+;
+; AIM: Initialize the (simplified) RF-Cinematogram of simulated neurons.
+;  
 ;
 ; PURPOSE: Experimentelle Bestimmung der rezeptiven Felder der
 ;          Neuronen eines Layers unter bestimmten Reizbedingungen.
@@ -12,76 +17,65 @@
 ;          mehrere Layer geht oder Rückkopplung und Linking mit
 ;          einfließt, also nichtklassiche RFs vorliegen).
 ;
-;   Beschreibung
-;   der Methode: Die Routinen können in jede funktionierende
-;                NASE-Simulation eingebaut werden:
-;                Nach der Initialisierung mit RFScan_Init() erzeugt
-;                die Funktion RFScan_Zeigmal() ein geeignetes
-;                Inputmuster für den Eingabelayer des Netzwerks.
-;                Dieses wird dann (wie im normalen Simulationsbetrieb) 
-;                dem Netz präsentiert, die ganze Simulation wie immer
-;                durchgenudelt, und dann, wenn man meint, dass das
-;                Netz sich auf den Input eingestellt hat (er kann auch 
-;                über mehrere Simulationsschritte hin präsentiert
-;                werden), dann übergibt man einfach den Output der zu
-;                untersuchenden Neuronen an die Routine
-;                RFScan_Schaumal. (Auch das kann für ein gegebenes
-;                Muster mehrfach geschehen.)
-;                Danach besorgt man sich ein neues Inputbild mit
-;                RFScan_Zeigmal() usw.
-;                Aus der Abhängigkeit von Input- und Outputmuster wird 
-;                dann eine Schätzung für das (effektive) rezeptive
-;                Feld der Neuronen berechnet, die man sich zum Schluß
-;                mit RFScan_Return() als DW-Struktur zurückgeben läßt.
+; CATEGORY:
+;  NASE
+;  Statistics
+;  Signals
+;  Simulation
 ;
+; CALLING SEQUENCE:
+;*My_RFScan = RFScan_Init( [Picture]
+;*                         {,INDW=EingabeDWStruktur | ,WIDTH=..., HEIGHT=...}
+;*                           ,OUTLAYER=...
+;*                         [,/SHIFT_VERTICAL]
+;*                         [,/SHIFT_HORIZONTAL]
+;*                         [,/AUTO_SINGLEDOT
+;*                           |,AUTO_RANDOMDOTS=...
+;*                           |,AUTO_VERTICALLINE=...
+;*                           |,AUTO_HORIZONTALLINE=...
+;*                           |,AUTO_VERTICALEDGE={-2|-1|1|2|3}
+;*                           |,AUTO_HORIZONTALEDGE={-2|-1|1|2|3}
+;*                         ]
+;*                         [,/OBSERVE_SPIKES | ,/OBSERVE_POTENTIALS]
+;*                         [,VISUALIZE=Array(InZoom,OutZoom,DWZoom,Period)
+;*                           [,/WRAP]
+;*                         ]
+;*                       )
 ;
-; CATEGORY: Auswertung, Analyse, Statistik, Methoden
+; INPUTS:;  INDW | WIDTH, HEIGHT::
+;    Die DW-Struktur, als deren Input ein Bild generiert werden
+;    soll. Für den Fall, daß die Verarbeitung des Bildes 
+;    nicht direkt über DelayWeigh
+;    geschieht, sondern beispielsweise über eine
+;    mathematische Operation (Faltung), kann alternativ
+;    auch direkt Bildbreite und -höhe in WIDTH und
+;    HEIGHT übergeben werden.
+;  OUTLAYER::
+;    Der Layer, für dessen Neuronen die RFs bestimmt
+;    werden sollen.
+;  
 ;
-; CALLING SEQUENCE: My_RFScan = RFScan_Init( [  Picture ]
-;                                            { ,INDW=EingabeDWStruktur | ,WIDTH=Bildbreite, HEIGHT=Bildhöhe }
-;                                              ,OUTLAYER=AusgabeLayer
-;                                            [,/SHIFT_VERTICAL ]
-;                                            [,/SHIFT_HORIZONTAL ]
-;                                            [,/AUTO_SINGLEDOT
-;                                             |,AUTO_RANDOMDOTS=PunktHäufigkeit
-;                                             |,AUTO_VERTICALLINE=Linienbreite | ,AUTO_HORIZONTALLINE=Linienbreite
-;                                             |,AUTO_VERTICALEDGE={-2|-1|1|2|3} | ,AUTO_HORIZONTALEDGE={-2|-1|1|2|3}
-;                                            ]
-;                                            [,/OBSERVE_SPIKES | ,/OBSERVE_POTENTIALS ]
-;                                            [,VISUALIZE=Array(InZoom,OutZoom,DWZoom,Period) [,/WRAP] ] )
-;
-; INPUTS: INDW | WIDTH, HEIGHT:
-;                   Die DW-Struktur, als deren Input ein Bild generiert werden
-;                   soll. Für den Fall, daß die Verarbeitung des Bildes 
-;                   nicht direkt über DelayWeigh
-;                   geschieht, sondern beispielsweise über eine
-;                   mathematische Operation (Faltung), kann alternativ
-;                   auch direkt Bildbreite und -höhe in WIDTH und
-;                   HEIGHT übergeben werden.
-;         OUTLAYER: Der Layer, für dessen Neuronen die RFs bestimmt
-;                   werden sollen.
-;
-; OPTIONAL INPUTS & KEYWORD PARAMETERS:
-;
-;         VISUALIZE: Ist dieses Schlüsselwort benutzt, wird der
+; OPTIONAL INPUTS:
+;         VISUALIZE:: Ist dieses Schlüsselwort benutzt, wird der
 ;                    Scanvorgang in einem Fenster dargestellt.
 ;                    In VISUALIZE muß dazu ein vierelementiges
 ;                    IntegerArray übergeben werden (s. CALLING
 ;                    SEQUENCE), dessen Elemente folgende Bedutung
-;                    haben:
-;                    InZoom:  Zoomfaktor für die Darstellung des Inputs
-;                    OutZoom:      "      "   "        "      "  Outputs
-;                    DWZoom:       "      "   "        "      der DW-Matrix mit ShowWeights
-;                    Period:  Intervalle, in denen die Bildschirmdarstellung aufgefrischt wird
-;                             (d.h.: alle soundsoviel Aufrufe von RFScan_Schaumal wird die DW-Matrix neu dargestellt.)
-;
-;              WRAP: Hat nur in Verbindung mit VISUALIZE Bedeutung. Es
+;                    haben:<BR>
+;                    <I>InZoom:</I> Zoomfaktor für die Darstellung des Inputs<BR>
+;                    <I>OutZoom:</I> Zoomfaktor für die Darstellung des Outputs<BR>
+;                    <I>DWZoom:</I> Zoomfaktor für die Darstellung der DW-Matrix mit ShowWeights<BR>
+;                    <I>Period:</I> Intervalle, in denen die Bildschirmdarstellung aufgefrischt wird
+;                             (d.h.: alle soundsoviel Aufrufe von <A>RFScan_Schaumal</A> wird die DW-Matrix neu dargestellt.)
+;  
+;              WRAP:: Hat nur in Verbindung mit VISUALIZE Bedeutung. Es
 ;                    wird direkt an die MiddleWieghts-Routine
 ;                    übergeben, der es mitteilt, ob zyklische
 ;                    Randbedingungen bei der DW-Matrix angenommen
 ;                    werden sollen, oder nicht.
 ;
-;         OBSERVE_SPIKES | OBSERVE_POTENTIALS:
+;
+;         OBSERVE_SPIKES | OBSERVE_POTENTIALS::
 ;                    Das Setzen eines dieser Schlüsselworte
 ;                    entscheidet darüber, welche Information des
 ;                    OutputLayers zur Berechnung der RFs benutzt wird:
@@ -96,17 +90,19 @@
 ;                    des Membranpotentials wird auch eine aktive
 ;                    Hemmung der Zelle (M < 0) erkannt. Die so
 ;                    bestimmten RFs können daher auch negative Anteile 
-;                    enthalten.
+;                    enthalten.<BR>
+;<BR>
 ;
 ;         Alle weiteren Schlüsselworte und das "Picture"-Argument
 ;         betreffen die Art des Inputs.
-;         Dabei werden drei mögliche Inputmethoden unterschieden:
+;         Dabei werden drei mögliche Inputmethoden unterschieden:<BR>
 ;
-;         1. Die manuelle Methode: Wird keins der Input-Schlüsselworte 
+;         <I>1. Die manuelle Methode:</I><BR>
+;                                  Wird keins der Input-Schlüsselworte 
 ;                                  angegeben und fehlt auch das
 ;                                  "Picture"-Argument, so muß bei
 ;                                  jedem folgenden Aufruf von
-;                                  RFScan_Zeigmal() das zu
+;                                  <A>RFScan_Zeigmal</A> das zu
 ;                                  präsentierende Bild manuell
 ;                                  spezifiziert werden. Dieser Modus
 ;                                  erlaubt dem Benutzer die völlige
@@ -114,54 +110,54 @@
 ;                                  Wird der RF-Scan mit der manuellen
 ;                                  Methode initialisiert, so wird eine 
 ;                                  informative Message darüber
-;                                  ausgegeben.
-;         2. Die halbautomatische
+;                                  ausgegeben.<BR>
+;         <I>2. Die halbautomatische</I><BR>
 ;                         Methode: Wird bei der Initialisierung ein
 ;                                  Bild als "Picture"-Argument
 ;                                  übergeben (auf richtige Ausmaße
-;                                  achten!), so sorgt RFScan_Zeigmal
+;                                  achten!), so sorgt <A>RFScan_Zeigmal</A>
 ;                                  automatisch dafür, daß dieses Bild
 ;                                  bei jedem Aufruf geeignet
 ;                                  verschoben wird. Dabei entscheiden
-;                                  die Schlüsselworte SHIFT_VERTICAL
-;                                  und SHIFT_HORIZONTAL darüber, ob
+;                                  die Schlüsselworte <*>SHIFT_VERTICAL</*>
+;                                  und <*>SHIFT_HORIZONTAL</*> darüber, ob
 ;                                  das Bild vertikal, horizontal oder
 ;                                  in beiden Richtungen verschoben
 ;                                  werden soll (dazu können entweder
 ;                                  beide oder keines der
-;                                  SHIFT-Schlüsselworte angegeben
-;                                  werden.) RFScan_Zeigmal()
+;                                  <*>SHIFT_*</*>-Schlüsselworte angegeben
+;                                  werden.) <A>RFScan_Zeigmal</A>
 ;                                  präsentiert das Bild zufällig an
 ;                                  allen möglichen Positionen und
 ;                                  informiert darüber, wenn ein neuer
-;                                  Präsentationszyklus beginnt.
-;         3. Die vollautomatische
-;                         Methode: Wird eines der AUTO-Schlüsselworte
+;                                  Präsentationszyklus beginnt.<BR>
+;         <I>3. Die vollautomatischeMethode:</I><BR>
+;                                  Wird eines der <*>AUTO_*</*>-Schlüsselworte
 ;                                  angegeben, so generiert
-;                                  RFScan_Zeigmal() den Input
+;                                  <A>RFScan_Zeigmal</A> den Input
 ;                                  automatisch.
 ;                                  Es braucht kein "Picture"-Argument
-;                                  übergeben zu werden.
-;            Die AUTO-Modi:
-;                  AUTO_SINGLEDOT: Als Input wird ein einzelner Pixel
+;                                  übergeben zu werden.<BR><BR>
+;            Die AUTO-Modi:<BR>
+;                  <B>AUTO_SINGLEDOT:</B> Als Input wird ein einzelner Pixel
 ;                                  generiert, der gleichverteilt
 ;                                  zufällig an jeder Position des
-;                                  Inputarrays erscheinen kann.
-;                 AUTO_RANDOMDOTS: Als Input wird ein zufälliges
+;                                  Inputarrays erscheinen kann.<BR>
+;                 <B>AUTO_RANDOMDOTS:</B> Als Input wird ein zufälliges
 ;                                  Punktmuster generiert. Der Wert
 ;                                  dieses Schlüsselwortes entscheidet
 ;                                  dabei über die Häufigkeit der
 ;                                  Punkte. (Ein Wert von 0.5 bedeutet
 ;                                  gleichviele dunkle wie helle
-;                                  Stellen.)
-;               AUTO_VERTICALLINE: Als Input dient eine vertikale
+;                                  Stellen.)<BR>
+;               <B>AUTO_VERTICALLINE:</B> Als Input dient eine vertikale
 ;                                  Linie, die an allen möglichen
 ;                                  horizontalen Positionen präsentiert 
 ;                                  wird. Der Wert des Schlüsselwortes
 ;                                  entscheidet dabei über die Dicke
-;                                  der Linie. (In Pixeln)
-;             AUTO_HORIZONTALLINE: entsprechend.
-;               AUTO_VERTICALEDGE: Als Input dient eine (oder zwei, 
+;                                  der Linie. (In Pixeln)<BR>
+;             <B>AUTO_HORIZONTALLINE:</B> entsprechend.<BR>
+;               <B>AUTO_VERTICALEDGE:</B> Als Input dient eine (oder zwei, 
 ;                                  s.u.) vertikale
 ;                                  Kontrastkanten, die an allen
 ;                                  möglichen horizontalen Positionen
@@ -172,7 +168,7 @@
 ;                                  ein Dunkel-/Hell-Übergang
 ;                                  oder (Typ 3) jeweils zwei Übergänge 
 ;                                  (Hell-/Dunkel- und Dunkel-/Hell-)
-;                                  generiert werden.
+;                                  generiert werden.<BR>
 ;                                  Oder: (Typ -1) ein scharfer
 ;                                        Hell-/Dunkel-Übergang und ein 
 ;                                        verwaschener
@@ -180,7 +176,7 @@
 ;                                        (Typ -2) ein scharfer
 ;                                        Dunkel-/Hell-Übergang und ein 
 ;                                        verwaschener
-;                                        Hell-/Dunkel-Übergang.
+;                                        Hell-/Dunkel-Übergang.<BR>
 ;                                  Anbei: Die Inputtypen 1 und 2 sind für
 ;                                         Netze mit zyklischen
 ;                                         Randbedingugen nur
@@ -194,72 +190,30 @@
 ;                                         Netze besonders geeignet,
 ;                                         jedoch weiniger für nichtzyklische.
 ;                                  
+; OUTPUTS:
+;   My_RFScan:: Eine Struktur mit Info-Tag "RFSCAN", die alle
+;               nötigen Daten für die anderen RFScan-Routinen enthält.
+;  
 ;
-; OUTPUTS: My_RFScan: Eine Struktur mit Info-Tag "RFSCAN", die alle
-;                     nötigen Daten für die anderen RFScan-Routinen enthält.
+; SIDE EFFECTS:
+;  Es wird dynamischer Speicher für eine DW-Struktur angefordert.
 ;
-; SIDE EFFECTS: Es wird dynamischer Speicher für eine DW-Struktur angefordert.
+; RESTRICTIONS:
+;  Man beachte, daß die erhaltenen Ergebnisse stark vom
+;  gewählten Inputtyp abhängen! Z.B. kann keine
+;  Erkenntnis über horizontale Komponenten eines RFs
+;  erwartet werden, wenn mit einer vertikalen Linie
+;  getestet wird!
 ;
-; RESTRICTIONS: Man beachte, daß die erhaltenen Ergebnisse stark vom
-;               gewählten Inputtyp abhängen! Z.B. kann keine
-;               Erkenntnis über horizontale Komponenten eines RFs
-;               erwartet werden, wenn mit einer vertikalen Linie
-;               getestet wird!
+; EXAMPLE:
+;*My_RFScan = RFScan_Init( INDW=XCells_Recept, OUTLAYER=SimpleCells, AUTO_RANDOMDOTS=0.5 )
+;  Hier sollte man wohl ne Beispielsimulation zur Verfügung stellen...
 ;
-; EXAMPLE: My_RFScan = RFScan_Init( INDW=XCells_Recept, OUTLAYER=SimpleCells, AUTO_RANDOMDOTS=0.5 )
-;          Ich werd wohl ne BeispielSimulation zur Verfügung stellen...          
-;
-; SEE ALSO: <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
+; SEE ALSO:
+;  <A>RFScan_Zeigmal</A>, <A>RFScan_Schaumal</A>, <A>RFScan_Return</A>
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.9  2000/09/28 12:25:17  gabriel
-;             AIM tag added , message <> console
-;
-;        Revision 1.8  2000/06/16 08:53:01  kupper
-;        Some corrections for AUTO_SINGLEDOT.
-;        Adjusted header.
-;
-;        Revision 1.7  2000/06/16 08:28:32  kupper
-;        Added AUTO_SINGLEDOT mode.
-;
-;        Revision 1.6  1998/03/14 11:26:46  kupper
-;               Inputkantentypen -1 und -2 implementiert.
-;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
-;
-;        Revision 1.5  1998/03/06 11:35:10  kupper
-;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
-;                wenn beim Aufruf kein Fenster geöffnet war.
-;
-;        Revision 1.4  1998/03/03 14:44:20  kupper
-;               RFScan_Schaumal ist jetzt viel schneller, weil es
-;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
-;                   Das ist zwar unelegant, aber schnell.
-;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
-;                   macht und daher nur für die tatsächlich feuernden Neuronen
-;                   Berechnungen durchführt.
-;
-;        Revision 1.3  1998/02/16 14:59:47  kupper
-;               VISUALIZE ist jetzt implementiert. WRAP auch.
-;
-;        Revision 1.4  1998/02/10 14:21:58  kupper
-;               kleiner Übergangs-Commit...
-;
-;        Revision 1.3  1998/02/09 18:18:09  kupper
-;               Noch dabei, VISUALIZE zu implementieren.
-;                Mußte schonmal einchecken, wegen NASE-Umzug auf Neuro...
-;
-;        Revision 1.2  1998/01/30 17:02:48  kupper
-;               Header geschrieben und kosmetische Veränderungen.
-;                 VISUALIZE ist noch immer nicht implementiert.
-;
-;        Revision 1.1  1998/01/29 14:45:05  kupper
-;               Erste Beta-Version.
-;                 Header mach ich noch...
-;                 VISUALIZE-Keyword ist noch nicht implementiert...
-;
-;
+
+
 
 Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
                WIDTH=width, HEIGHT=height, $
