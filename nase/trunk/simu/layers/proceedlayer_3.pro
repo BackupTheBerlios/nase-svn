@@ -6,7 +6,7 @@
 ;
 ; CATEGORY:             SIMULATION
 ;
-; CALLING SEQUENCE:     Out = ProceedLayer_3( Layer, FeedingIn, LinkingIn, InihibitionIn )
+; CALLING SEQUENCE:     Out = ProceedLayer_3( Layer, FeedingIn [,LinkingIn [,InihibitionIn]] )
 ;
 ; INPUTS:               Layer         : eine durch initlayer_3 initialisierte Layer
 ;                       FeedingIn     : Input-Vektor fuer Feeding-Potential der Dimension Layer.w * Layer.h
@@ -43,8 +43,12 @@
 ;                       Schwelle wird jetzt erst im naechsten Zeitschritt erhoeht, Mirko Saam, 29.7.97
 ;                       Zusaetzlich Lernpotential (realisiert als Leckintegrator) Andreas. 29. Juli 97
 ;                       geaenderter Ablauf, LP wird sofort erhoeht. Andreas. 30. Juli '97
+;                       LinkingIn und InhibitionIn sind jetzt optional. Rüdiger, 22. August '97
 ;- 
 FUNCTION ProceedLayer_3, Layer, FeedingIn, LinkingIn, InhibitionIn
+
+   Default, LinkingIn, fltarr(LayerSize(Layer))
+   Default, InhibitionIn, fltarr(LayerSize(Layer))
 
    Layer.F = Layer.F * Layer.para.df
    Layer.L = Layer.L * Layer.para.dl

@@ -6,7 +6,7 @@
 ;
 ; CATEGORY:             SIMULATION
 ;
-; CALLING SEQUENCE:     Out = ProceedLayer_2( Layer, FeedingIn, LinkingIn, InihibitionIn )
+; CALLING SEQUENCE:     Out = ProceedLayer_2( Layer, FeedingIn [,LinkingIn [,InihibitionIn]] )
 ;
 ; INPUTS:               Layer         : eine durch initlayer_2 initialisierte Layer
 ;                       FeedingIn     : Input-Vektor fuer Feeding-Potential der Dimension Layer.w * Layer.h
@@ -41,9 +41,13 @@
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotentials, Mirko Saam, 25.7.97
 ;                       Schwelle wird jetzt erst im naechsten Zeitschritt erhoeht, Mirko Saam, 29.7.97
+;                       LinkingIn und InhibitionIn sind jetzt optional. Rüdiger, 22. August '97
 ;
 ;- 
 FUNCTION ProceedLayer_2, Layer, FeedingIn, LinkingIn, InhibitionIn
+
+   Default, LinkingIn, fltarr(LayerSize(Layer))
+   Default, InhibitionIn, fltarr(LayerSize(Layer))
 
    Layer.F = Layer.F * Layer.para.df
    Layer.L = Layer.L * Layer.para.dl
