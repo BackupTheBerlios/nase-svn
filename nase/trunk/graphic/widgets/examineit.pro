@@ -2,7 +2,7 @@
 ; NAME: ExamineIt
 ;
 ; AIM:
-;  Interactively investigate the comtents of a two-dimensional array.
+;  Interactively investigate the contents of a two-dimensional array.
 ;
 ; PURPOSE: Darstellung und interaktive Abfrage eines zweidimensionalen
 ;          Arrays. (S. auch PROCEDURE-Abschnitt)
@@ -18,7 +18,9 @@
 ;*  ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel]
 ;*                   [,COLOR=PlotColor]
 ;*                   [,XPOS=xoffset] [,YPOS=yoffset]
-;*                   [,/BOUND] [,/NASE]
+;*                   [,/BOUND]
+;*                   [,RANGE=...]
+;*                   [ [,/NORDER] [,/NSCALE] | [,/NASE] ]
 ;*                   [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
 ;*                   [,GET_BASE=BaseID]
 ;*                   [,DELIVER_EVENTS=Array_of_Widget_IDs]
@@ -57,7 +59,14 @@
 ;                             The BOUND mode can also be toggled
 ;                             "online" via a widget menu entry.
 ;                      NASE::  Wenn gesetzt, wird das Array als NASE-Array in richtiger Orientierung und
-;                             mit richtigen Farben dargestellt (Es braucht kein TV-Array angegeben zu werden.)
+;                             mit richtigen Farben dargestellt (Es
+;                             braucht kein TV-Array angegeben zu
+;                             werden.)
+;                     NORDER::
+;                    NSCALE::
+;                     RANGE::
+;<BR>
+; 
 ;                     GROUP::  Eine Widget-ID des Widgets, das als
 ;                             Übervater dienen soll.
 ;                     MODAL::  Wenn angegeben, ist das Widget modal,
@@ -81,8 +90,6 @@
 ;                             ankommenden Events
 ;                             weitergereicht werden. (VORSICHT, BUGGY!
 ;                             (s.u.))
-;
-; RESTRICTIONS: Kann bisher noch keine NASE-Typ-Arrays.
 ;
 ; PROCEDURE: Nach dem Aufruf kann mit der Maus in der TV-Darstellung
 ;            herumgeklickt oder gefahren werden, wobei der aktuelle
@@ -170,7 +177,8 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          allmin = info.wmin
          allmax = info.wmax
 
-         If info.nase then begin ;Entschuldige mich für diesen Wust... sorry...
+         ;; handle NONE entries (have been replaced by 999999 during initialization
+;;;         If info.nase then begin ;Entschuldige mich für diesen Wust... sorry...
             If minrow eq 999999 then minrow = "(none)" else minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
             If maxrow eq 999999 then maxrow = "(none)" else maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
             If mincol eq 999999 then mincol = "(none)" else mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)
@@ -178,16 +186,20 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
             If value  eq 999999 then value  = "(none)"
             If allmin eq 999999 then allmin = "(none)" else allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
             If allmax eq 999999 then allmax = "(none)" else allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
+;;;         Endif else begin
+;;;            minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
+;;;            maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
+;;;            mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)            
+;;;            maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
+;;;            allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
+;;;            allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
+;;;         endelse
+
+         If info.norder then begin ;Entschuldige mich für diesen Wust... sorry...
             row_nr = info.height-y_arr-1
             y_nr = x_arr
             x_nr = info.height-y_arr-1
          endif else begin
-            minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
-            maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
-            mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)            
-            maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
-            allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
-            allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
             row_nr = y_arr
             y_nr = y_arr
             x_nr = x_arr
@@ -219,18 +231,19 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          endelse
 
          wset, info.row_win     ;Reihe darstellen
-         PrepareNASEPlot, info.height, info.width, /OFFSET, GET_OLD=oldplot, NONASE=1-info.nase, /X_ONLY
+         PrepareNASEPlot, info.height, info.width, /OFFSET, GET_OLD=oldplot, NONASE=1-Keyword_Set(info.norder), /X_ONLY
          rowpos = info.position
          rowpos(3) = info.win_height/3-rowpos(1);15*info.zoom-rowpos(1)
-         If keyword_set(info.nase) then begin
+         ;; NONES shall now also be skipped in no-NASE-case!
+;;;         If keyword_set(info.nase) then begin
             plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
              yrange=[rowplotmin, rowplotmax], MAX_VALUE=999998
-            endif else begin
-             plot, indgen(info.Width)+1, info.w(*, y_arr),  /DEVICE, POSITION=rowpos, $
-             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-             yrange=[rowplotmin, rowplotmax]
-          endelse
+;;;            endif else begin
+;;;             plot, indgen(info.Width)+1, info.w(*, y_arr),  /DEVICE, POSITION=rowpos, $
+;;;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+;;;             yrange=[rowplotmin, rowplotmax]
+;;;          endelse
           if info.bound then begin
              oplot, indgen(info.Width)+1, replicate(rowplotmin, $
                                                     info.Width), color=rgb("orange", /noalloc), thick=2
@@ -250,17 +263,18 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
                       colpos(0), $
                       info.win_height-colpos(1), $
                       colpos(2)]
-         PrepareNASEPlot, info.width, info.height, /OFFSET, NONASE=1-info.nase, /X_ONLY
-         If not info.nase then !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
-         If keyword_set(info.nase) then begin
+         PrepareNASEPlot, info.width, info.height, /OFFSET, NONASE=1-Keyword_Set(info.nase), /X_ONLY
+         If not info.norder then !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
+         ;; NONES shall now also be skipped in no-NASE-case!
+;;;         If keyword_set(info.nase) then begin
             plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
              yrange=[colplotmin, colplotmax], MAX_VALUE=999998
-         endif else begin
-            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
-             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-             yrange=[colplotmin, colplotmax]
-         endelse
+;;;         endif else begin
+;;;            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
+;;;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+;;;             yrange=[colplotmin, colplotmax]
+;;;         endelse
          if info.bound then begin
             oplot, indgen(info.Width)+1, replicate(colplotmin, $
                                                    info.Height), color=rgb("orange", /noalloc), thick=2
@@ -358,22 +372,29 @@ End
 Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                GROUP=group, JUST_REG=just_reg, NO_Block=no_block, MODAL=modal, $
                GET_BASE=get_base, DELIVER_EVENTS=deliver_events, $
-               BOUND=bound, RANGE=range, NASE=nase, $
+               BOUND=bound, RANGE=range, $
+               NASE=nase, NORDER=norder, NSCALE=nscale, $
                XPOS=xpos, YPOS=ypos, COLOR=color
    
    MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
    MySmallFont = '-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1'
 
 
+   ;;NASE implies NORDER and NSCALE:
+   Default, NASE, 0
+   Default, NORDER, NASE
+   Default, NSCALE, NASE
+   
+
    If (Size(_w))(0) eq 2 then w = _w $ ;Do not change Contents!
-   else w = reform(_w) ;Try to get rid of leading 1-dims.
+   else w = reform(_w)        ;Try to get rid of leading 1-dims.
               
    If Keyword_Set(_tv_w) then begin
       If (Size(_tv_w))(0) eq 2 then tv_w = _tv_w $ ;Do not change Contents!
       else tv_w = reform(_tv_w)       ;Try to get rid of leading 1-dims. 
       noscale = 1 
    endif else begin
-      If Keyword_Set(nase) then begin
+      If Keyword_Set(NSCALE) then begin
          tv_w = ShowWeights_Scale(w, /setcol)
          noscale = 1
       endif else begin
@@ -382,17 +403,17 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
       endelse
    endelse
 
-   If keyword_set (nase) then begin
+   If keyword_set (NORDER) then begin
       w = rotate(Temporary(w), 3)
       tv_w = rotate(Temporary(tv_w), 3)
-      nones = where(w eq !NONE, count)
-      If count ne 0 then w(nones) = max(w) ;Finde min ausser NONES
-      Default, Range, [min(w), max(w)]
-      If count ne 0 then w(nones) = +999999 ;Weil IDL3 noch kein MIN_VALUE kennt
-   EndIf
-  
-   Default, nase, 0
+   Endif
+
+   ;; determine right default range, ignoring any !NONES:
+   nones = where(w eq !NONE, count)
+   If count ne 0 then w(nones) = max(w) ;Finde min ausser NONES
    Default, Range, [min(w), max(w)]
+   If count ne 0 then w(nones) = +999999 ;Weil IDL3 noch kein MIN_VALUE kennt
+  
    default, bound, 0
    Default, no_block, 1
    Default, modal, 0
@@ -485,7 +506,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    Widget_Control, base, /hourglass
 
    wset, tv_win
-   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, COLOR=color, GET_POSITION=gp
+   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-Keyword_Set(NORDER), COLOR=color, GET_POSITION=gp
    WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
    
    info={name    : "tv", $
@@ -510,6 +531,8 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
          xsize   : win_width, $
          ysize   : win_height, $
          nase    : nase, $
+         norder  : norder, $
+         nscale  : nscale, $
          color   : color, $
          last_y_arr: w_height/2, $
          last_x_arr: w_width/2}
