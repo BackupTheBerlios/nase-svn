@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/06/20 13:27:25  saam
+;              + works with new LFP routine now
+;
 ;        Revision 1.1  2000/04/06 09:31:26  saam
 ;              finally
 ;
@@ -62,26 +65,27 @@ COMMON ATTENTION
 IF NOT Set(bp) THEN bp=[30,70]
 IF N_Elements(BP) NE 2 THEN Console, 'illegal format for BANDPASS', /FATAL
 Default, LAYER,    0
-Default, LFPHMW, 1.0
 
+IF ExtraSet(P,"LFPHMW") THEN Default, LFPHMW, P.LFPHMW ELSE Default, LFPHMW, 1.0
 
 ; load membrane potentials, if not passed as argument
-IF NOT SET(m) THEN M = ReadSimu(L, /MEMBRANE, /TD, FILE=P.file)
+IF NOT SET(m) THEN M = ReadSimu(Layer, /MEMBRANE, /TD, FILE=P.file)
 
 
 ; generate LFP signals
 IF Keyword_Set(NOWRAP) THEN l = LFP(m, /FULL, HMW_EXP=LFPHMW, LOG=llog) $
-                       ELSE l = LFP(m, /FULL, HMW_EXP=LFPHMW, /WRAP, LOG=llog)
+                       ELSE l = LFP(m, /FULL, HMW_EXP=LFPHMW, /WRAP, LOG=llog, roi=roi)
+
 
 
 ; band pass filtering
 mlog =  "bandpass ("+STR(bp(0))+"-"+STR(bp(1))+" Hz)" 
 Console, mlog+"..."
-f = Filter(bp(0), bp(1), 50, 20, SAMPLEPERIOD=P.SIMULATION.SAMPLE)      ;To get coefficients (same as ANDI)
+f = Filter(bp(0), bp(1), 50, 50, SAMPLEPERIOD=P.SIMULATION.SAMPLE)      ;To get coefficients (same as ANDI)
 lf = l
 
-w = (SIZE(m))(1)
-h = (SIZE(m))(2)
+h = (SIZE(m))(1)
+w = (SIZE(m))(2)
 t = (SIZE(m))(3)
 
 FOR i=0,h-1 DO BEGIN
