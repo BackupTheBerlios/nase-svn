@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/03/14 13:59:26  saam
+;           no EDGE_TRUNCATE option during convol
+;
 ;     Revision 1.1  1998/02/25 10:50:02  saam
 ;           Mein Gott, der Header ist mal wieder
 ;           laenger als die Funktion
@@ -78,7 +81,7 @@ FUNCTION Sincerpolate, signal, delta, KSIZE=KSIZE, SINC=sinc
 
 
    ; CONVOLVE SIGNAL AND KERNEL
-   signalS = CONVOL(signalZ, sinc, /EDGE_TRUNCATE)
+   signalS = CONVOL(signalZ, sinc);, /EDGE_TRUNCATE)
    
    RETURN,signalS
 END
