@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/07/07 14:15:52  gabriel
+;           BGCOLOR BUG for ps plot fixed
+;
 ;     Revision 2.5  2000/04/04 12:53:51  saam
 ;           sets the background to black (or
 ;           something that is nearly black)
@@ -51,8 +54,9 @@ PRO ULoadCt, nr, _Extra=e
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
 
       Loadct, nr, _Extra=e
-      !P.Background = RGB(0,0,0,/NOALLOC)
-
+      IF  !D.NAME NE 'PS' THEN BEGIN
+         !P.Background = RGB(0,0,0,/NOALLOC)
+      ENDIF
    END
 
 END
