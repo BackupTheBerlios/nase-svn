@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.29  1999/12/21 14:59:32  kupper
+;       DECOMPOSED=0 ist jetzt Standard!
+;
 ;       Revision 1.28  1999/12/14 16:05:57  alshaikh
 ;             jetzt auch IDL3-kompatibel!!
 ;
@@ -153,6 +156,8 @@ if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
 defglobvars ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt 
 
 @precompile ;Compile some modules that cannot be compiled automatically
+
+DEVICE, DECOMPOSED=0
 
 If WillShowLogo then ShowLogo, SECS=3
 
