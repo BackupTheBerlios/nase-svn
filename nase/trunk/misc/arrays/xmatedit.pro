@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1998/02/21 15:30:17  kupper
+;               Grummel... altes IDL 3.6... Mist...
+;
 ;        Revision 1.3  1998/02/19 15:36:34  kupper
 ;               Fehlerchen...
 ;
@@ -75,23 +78,15 @@ Common XMAT_Widgets, Matrix, Felder, MSize
       TITLE='XMatEdit', $          
       UVALUE='MAIN13')          
           
-  BASE40 = WIDGET_BASE(MAIN13, $          
-      COLUMN=2, $          
-      MAP=1, $          
-      TITLE='Knoepfe', $          
-      UVALUE='BASE40')          
-          
-  BUTTON79 = WIDGET_BUTTON( BASE40, $          
-      UVALUE='BUTTON79', $          
-      VALUE='Accept')          
-          
-  BUTTON42 = WIDGET_BUTTON( BASE40, $          
-      UVALUE='BUTTON42', $          
-      VALUE='Cancel')          
+;  BASE40 = WIDGET_BASE(MAIN13, $          
+;      COLUMN=2, $          
+;      MAP=1, $          
+;      TITLE='Knoepfe', $          
+;      UVALUE='BASE40')          
           
           
   BASE43 = WIDGET_BASE(MAIN13, $          
-      ROW=MSize(2), $          
+      ROW=MSize(2)+1, $          
       MAP=1, $          
       TITLE='Felder', $          
       UVALUE='BASE43')          
@@ -101,6 +96,14 @@ Common XMAT_Widgets, Matrix, Felder, MSize
      Felder(x,y) = Cw_Field(Base43,Value=M(x,y),/Row,/Frame,XSize=5,Title=" ")        
    endfor         
   endfor         
+
+  BUTTON79 = WIDGET_BUTTON( BASE43, $   ;BASE40, $          
+      UVALUE='BUTTON79', $          
+      VALUE='Accept')          
+          
+  BUTTON42 = WIDGET_BUTTON( BASE43, $ ;BASE40, $          
+      UVALUE='BUTTON42', $          
+      VALUE='Cancel')          
            
          
 WIDGET_CONTROL, MAIN13, /REALIZE          
