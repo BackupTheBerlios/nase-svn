@@ -37,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  1998/03/14 11:26:46  kupper
+;               Inputkantentypen -1 und -2 implementiert.
+;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
+;
 ;        Revision 1.5  1998/03/06 11:35:10  kupper
 ;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
 ;                wenn beim Aufruf kein Fenster geöffnet war.
@@ -92,7 +96,7 @@ Function RFScan_Return, RFS, FILENAME=filename
          ActP = !P
          !P.Multi = 0
          !P.Position = [0, 0, 0, 0]
-         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), color=RGB('orange', /NOALLOC)      
+         Shade_Surf, Rotate(MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), 3), color=RGB('orange', /NOALLOC)      
          !P = ActP
 
          If ActWin ne -1 then WSet, ActWin

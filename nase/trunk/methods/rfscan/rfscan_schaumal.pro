@@ -19,6 +19,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  1998/03/14 11:26:47  kupper
+;               Inputkantentypen -1 und -2 implementiert.
+;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
+;
 ;        Revision 1.5  1998/03/06 11:35:10  kupper
 ;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
 ;                wenn beim Aufruf kein Fenster geöffnet war.
@@ -57,7 +61,7 @@ Pro RFScan_Schaumal, RFS, OutLayer
    End
    If RFS.OBSERVE_POTENTIALS then LayerData, OutLayer, POTENTIAL=Out
    
-   ;;------------------> VIUALIZE?
+   ;;------------------> VISUALIZE?
    If Keyword_Set(RFS.VISUALIZE) then begin
       ActWin = !D.Window
       
@@ -74,7 +78,7 @@ Pro RFScan_Schaumal, RFS, OutLayer
          ActP = !P
          !P.Multi = 0
          !P.Position = [0, 0, 0, 0]
-         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), color=RGB('orange', /NOALLOC)
+         Shade_Surf, Rotate(MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), 3), color=RGB('orange', /NOALLOC)
          !P = ActP
       Endif
 

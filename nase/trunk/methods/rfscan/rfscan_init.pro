@@ -42,7 +42,7 @@
 ;                                            [,/SHIFT_HORIZONTAL ]
 ;                                            [ ,AUTO_RANDOMDOTS=PunktHäufigkeit
 ;                                             |,AUTO_VERTICALLINE=Linienbreite | ,AUTO_HORIZONTALLINE=Linienbreite
-;                                             |,AUTO_VERTICALEDGE={1|2} | ,AUTO_HORIZONTALEDGE={1|2}
+;                                             |,AUTO_VERTICALEDGE={-2|-1|1|2|3} | ,AUTO_HORIZONTALEDGE={-2|-1|1|2|3}
 ;                                            ]
 ;                                            [,/OBSERVE_SPIKES | ,/OBSERVE_POTENTIALS ]
 ;                                            [,VISUALIZE=Array(InZoom,OutZoom,DWZoom,Period) [,/WRAP] ] )
@@ -166,6 +166,14 @@
 ;                                  oder (Typ 3) jeweils zwei Übergänge 
 ;                                  (Hell-/Dunkel- und Dunkel-/Hell-)
 ;                                  generiert werden.
+;                                  Oder: (Typ -1) ein scharfer
+;                                        Hell-/Dunkel-Übergang und ein 
+;                                        verwaschener
+;                                        Dunkel-/Hell-Übergang oder
+;                                        (Typ -2) ein scharfer
+;                                        Dunkel-/Hell-Übergang und ein 
+;                                        verwaschener
+;                                        Hell-/Dunkel-Übergang.
 ;                                  Anbei: Die Inputtypen 1 und 2 sind für
 ;                                         Netze mit zyklischen
 ;                                         Randbedingugen nur
@@ -174,6 +182,10 @@
 ;                                         allen Bildern vorhandene
 ;                                         Kontrastkante des jeweils
 ;                                         anderen Typs vorliegt!
+;                                         Dagegen sind die Inputtypen
+;                                         -1 und -2 für zyklische
+;                                         Netze besonders geeignet,
+;                                         jedoch weiniger für nichtzyklische.
 ;                                  
 ;
 ; OUTPUTS: My_RFScan: Eine Struktur mit Info-Tag "RFSCAN", die alle
@@ -195,6 +207,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  1998/03/14 11:26:46  kupper
+;               Inputkantentypen -1 und -2 implementiert.
+;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
+;
 ;        Revision 1.5  1998/03/06 11:35:10  kupper
 ;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
 ;                wenn beim Aufruf kein Fenster geöffnet war.
@@ -259,6 +275,29 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
       Picture(*, 0:AUTO_VERTICALLINE-1) = 1.0
       SHIFT_VERTICAL = 0
       SHIFT_HORIZONTAL = 1
+   Endif
+   ;;--------------------------------
+
+   ;;------------------> Implementation of smooth AUTO-EDGE-MODES:
+   If keyword_set(AUTO_HORIZONTALEDGE) then begin
+      If AUTO_HORIZONTALEDGE le -1 then begin
+         Picture = indgen(HEIGHT)/float(HEIGHT-1)
+         If AUTO_HORIZONTALEDGE eq -2 then Picture = 1-Picture
+         Picture = rebin(Picture, HEIGHT, WIDTH, /SAMPLE)
+         SHIFT_VERTICAL = 1
+         SHIFT_HORIZONTAL = 0
+         AUTO_HORIZONTALEDGE = 0 ;Shift will do the job...
+      Endif
+   EndIf
+   If keyword_set(AUTO_VERTICALEDGE) then begin
+      If AUTO_VERTICALEDGE le -1 then begin
+         Picture = transpose(indgen(WIDTH)/float(WIDTH-1))
+         If AUTO_VERTICALEDGE eq -2 then Picture = 1-Picture
+         Picture = rebin(Picture, HEIGHT, WIDTH, /SAMPLE)
+         SHIFT_VERTICAL = 0
+         SHIFT_HORIZONTAL = 1
+         AUTO_VERTICALEDGE = 0  ;Shift will do the job...
+      Endif
    Endif
    ;;--------------------------------
 
