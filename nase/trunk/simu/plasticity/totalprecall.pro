@@ -1,5 +1,5 @@
 ;+
-; NAME:               TotalRecall
+; NAME:               TotalPrecall
 ;
 ; PURPOSE:            Die Prozedur erhaelt als Input die 
 ;                     (verzoegerten oder unverzoegerten) praesynaptischen 
@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1999/07/26 09:10:52  thiel
+;           New version with even better learned connection reset.
+;
 ;       Revision 1.2  1999/07/23 13:13:45  thiel
 ;           Corrected two bugs: Dimension of 'wi' and
 ;                               reset of learned connections.
@@ -119,7 +122,7 @@ PRO TotalPrecall, _PC, _DW, postL
          atn = PostAP(ati)
          IF DW.T2C(atn) NE -1 THEN BEGIN
             Handle_Value, DW.T2C(atn), wi
-            wi = Transpose(wi)
+            wi = Transpose(wi)  ; diese Zeile ergänzt
             IF Set(postCON) THEN postCON = [postCON, wi] ELSE postCON = wi ;postCON : list of active postsynaptic weight indidices
          END
       END
@@ -162,9 +165,29 @@ PRO TotalPrecall, _PC, _DW, postL
    IF Handle_Info(PC.postpre) THEN Handle_Value, PC.postpre, list, /SET ELSE PC.postpre = Handle_Create(!MH, VALUE = list)
    
    
+;   Print, 'List: ', list
+
+;   Print
+;   Print, 'pc.pre: ', pc.pre
+;   Print
+;   Print, 'pc.post: ', pc.post
+
    ; reset learned connections
-   IF Set(learnPre)    THEN PC.Pre(learnPre)     = !NONEl
-   IF Set(learnPost)   THEN PC.Post(learnPost)    = !NONEl
+   IF Set(learnPre)    THEN BEGIN
+;      Print
+;      Print, 'learnpre: ', learnpre
+      PC.Pre(learnPre) = !NONEl
+      PC.Post(PN) = !NONEl
+   ENDIF
+
+;vorher:   IF Set(learnPost)   THEN PC.Pre(learnPost)    = !NONEl
+   IF Set(learnPost)   THEN BEGIN
+;      Print
+;      Print, 'learnpost: ', learnpost
+      PC.Pre(learnPost)    = !NONEl
+      PC.Post(PostNeurons)    = !NONEl
+   ENDIF
+
 
 
    ; reset neuron's last spike if its too old
@@ -175,6 +198,7 @@ PRO TotalPrecall, _PC, _DW, postL
    oldSpikes = WHERE(PC.pre LE PC.time-PC.deltaMax,c)
    IF c NE 0 THEN PC.pre(oldSpikes) = !NONEl
    
+
 
 
    PC.time = PC.time + 1
