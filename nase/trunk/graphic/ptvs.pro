@@ -80,7 +80,10 @@
 ;               the actual data is larger than the provided range,
 ;               values exeeding these limits will be clipped to the
 ;               minimum or maximum allowed. If this happens, a warning
-;               will be placed at the right side of the plot. 
+;               will be placed at the right side of the
+;               plot. Additionally clipped positions will be marked
+;               with a small dot. 
+; 
 ;  CUBIC, INTERP, MINUS_ONE:: will be passed to IDL routine
 ;                            <C>ConGrid</C>, to smooth the
 ;                            bitmap. This only works, if
@@ -401,12 +404,19 @@ PRO PTvS, data, XPos, YPos, $
                                 ; MAX(data) GT ZRANGE(1) fails (or at
                                 ; least failed for my demo [MS] 
                                 
+
+           ch=0
+           cl=0
            IF (LONG(_zrange(1)) NE !NONEl) THEN BEGIN
-               _data = _data < _zrange(1) 
+               cuthi=WHERE(_data GT _zrange(1),ch)
+               IF ch GT 0 THEN _data(cuthi)=_zrange(1)
            END ELSE ZRANGE(1) = MAX(data)
            IF (LONG(_zrange(0)) NE !NONEl) THEN BEGIN
-               _data = _zrange(0) > _data 
+               cutlo=WHERE(_data LT _zrange(0),cl)
+               IF cl GT 0 THEN _data(cutlo)=_zrange(0)
            END ELSE ZRANGE(0) = MIN(data)
+                    ; clipped positions are stored .... 
+           
 
            IF MAX(data) GT ZRANGE(1) THEN warnstr = warnstr + 'maxima'
            IF MIN(data) LT ZRANGE(0) THEN BEGIN
@@ -422,6 +432,11 @@ PRO PTvS, data, XPos, YPos, $
              ORDER=UpSideDown, POLYGON=POLYGON, $
              CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
 
+           IF ch GT 0 THEN Plots, cuthi MOD wdata , cuthi / wdata, PSYM=3, COLOR=color
+           IF cl GT 0 THEN Plots, cutlo MOD wdata , cutlo / wdata, PSYM=3, COLOR=color
+                                ; clipped positions are marked by a
+                                ; small dot
+           
            IF (warnstr NE "") THEN Inscription, 'WARNING: '+warnstr+' clipped', /RIGHT, /MIDDLE, COLOR=color
            
        END ELSE BEGIN
