@@ -19,7 +19,10 @@
 ;                              der Schicht an, die betrachtet werden sollen. Hier ist es also
 ;                              moeglich, Reihen oder Spalten von Neuronen festzulegen, oder
 ;                              kreisfoermig angeordnete, oder... 
-;                              Wird kein IndexArry angegeben, werden alle Neuronen der Schicht betrachtet. 
+;                              Wird kein IndexArry angegeben, werden alle Neuronen der Schicht 
+;                              betrachtet.
+;                              VORSICHT: Das Indexarray muss eindimensional sein, sonst gehts
+;                                        nicht. Also gegebenenfalls REFORMen. 
 ;                  Startzeit:  Default ist 0.
 ;
 ; KEYWORD PARAMETERS: siehe INPUTS
@@ -33,16 +36,7 @@
 ;          und ein Array, in das die entsprechende Werte gespeichert
 ;          werden. (Abszisse: Zeit, Ordinate: Neuronennummer)
 ;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
-; RESTRICTIONS: ---
-;
-; PROCEDURE: Set()
-;            Default
+; PROCEDURE: Kleiner Syntaxtest, Defaults festlegen und dann die Struktur erzeugen.
 ;
 ; EXAMPLE: MittlereSpalteOben=LayerIndex(Layer90, Row=0, Col=Layer90.w/2-1)
 ;          MittlereSpalte=mittlerespalteoben+IndGen(Layer90.h)
@@ -52,7 +46,10 @@
 ;          Das Beispiel erzeugt zunaechst ein Index-Array, das die
 ;          mittlere Spalte der Schicht beschreibt. Dieses wird dann an
 ;          die InitTape-Funktion uebergeben, damit die weiss, welche
-;          Neuronen der Schicht Layer90 ueberhaupt untersucht werden sollen. 
+;          Neuronen der Schicht Layer90 ueberhaupt untersucht werden sollen.
+;
+; SEE ALSO: <A HREF="#RECORD">Record</A>
+;
 ;
 ;
 ; MODIFICATION HISTORY:
