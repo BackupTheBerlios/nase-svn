@@ -24,8 +24,8 @@ Pro image_factory::three_gauss_2D_
        gauss_2d(self.height, self.width, $
                 self->mindim_()*SIGMA*self->size(), $
                 0, width/2.0*(*self.image_info).r[dot], $
-                PHI=-(*self.image_info).phi[dot]) $
-        < 1.0
-
+                PHI=-(*self.image_info).phi[dot])
    endfor
+
+   *self.image = Temporary(*self.image) < 1.0
 End
