@@ -19,37 +19,45 @@
 ;  Put the following category (or categories, specified separate
 ;  lines) here.
 ;
-;*  Animation
-;*  Array
-;*  Color
-;*  Font
-;*  Graphic
-;*  Help
-;*  Image
-;*  IO
-;*  Math
-;*  MIND
-;*  NASE 
-;*  Object
-;*  Operating System Access
-;*  Startup
-;*  Signal
-;*  Simulation
-;*  String
-;*  Structure
-;*  Type
-;*  Widget
-;*  Window
+;  Animation
+;  Array
+;  Color
+;  Connections
+;  DataStorage
+;  DataStructures
+;  Dirs
+;  ExecutionControl
+;  Files
+;  Fonts
+;  Graphic
+;  Help
+;  Input
+;  Image
+;  IO
+;  Layers
+;  Math
+;  MIND
+;  NASE 
+;  Objects
+;  OS
+;  Plasticity
+;  Startup
+;  Signals
+;  Simulation
+;  Strings
+;  Structures
+;  Widgets
+;  Windows
 ;
 ; CALLING SEQUENCE:
 ;  Write the calling sequence here. For procedures, use the form
 ;
-;*    ProcedureName, in1, in2, out1 [,in3] [,out1] [,/IN4] [,IN5=in5] [,OUT2=out2]
+;*    ProcedureName, in1, in2, out1 [,in3] [,out1] [,/IN4] [,IN5=...] [,OUT2=...]
 ;
 ;  Positional arguments are written in lower case,
 ;  while all keyword arguments are written in all caps. For functions, use the form
 ; 
-;*    out0 = FunctionName(in1, in2, out1 [,in3] [,out2] [,/IN4] [,IN5=in5] [,OUT3=out3])
+;*    out0 = FunctionName(in1, in2, out1 [,in3] [,out2] [,/IN4] [,IN5=...] [,OUT3=...])
 ;
 ;  In more complex routines, certain keyword dependencies may arise.
 ;  Use the following compound symbols to improve understanding
@@ -73,7 +81,7 @@
 ;  passed to the routine. They are writen in lower case.
 ;  in3:: description for argument in3
 ;  
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;  Optional input keywords are specified her. The are
 ;  noted by all caps. No routine should ever need required keywords!
 ;  IN4:: description for keyword IN4 
@@ -82,9 +90,8 @@
 ;  outputs the routine requires to pass to the caller,
 ;  including the function result (here: out0, out1). They
 ;  are noted by lower case.
-;  out0:: the doumentation system can of course handle for long descriptions without
-;         any problems, as long as you do not use any colons, except they are 'protected'
-;         by round or curly braces (:) {:} 
+;  out0:: the documentation system can of course handle for long descriptions without
+;         any problems, at least i hope that it works. 
 ;  out1:: description for output out1
 ;  
 ; OPTIONAL OUTPUTS:
@@ -128,8 +135,8 @@
 ;  
 ; EXAMPLE:
 ;  Please provide a simple example here. Things
-;  you specifiy on IDLs command line should be indicated
-;  by 
+;  you specifiy on IDLs command line should be written
+;  as
 ;*  print, "foobar" 
 ;  
 ;  IDLs output should be shown using
