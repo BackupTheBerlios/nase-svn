@@ -45,9 +45,9 @@ AR_STATIC_ARGS = cr
 NAME = NASE::parse
 DISTNAME = NASE-parse
 NAME_SYM = NASE_parse
-VERSION = 0.01
-VERSION_SYM = 0_01
-XS_VERSION = 0.01
+VERSION = 1.2
+VERSION_SYM = 1_2
+XS_VERSION = 1.2
 INST_BIN = blib/bin
 INST_EXE = blib/script
 INST_LIB = blib/lib
@@ -637,7 +637,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd:
-	@$(PERL) -e "print qq{<SOFTPKG NAME=\"NASE-parse\" VERSION=\"0,01,0,0\">\n}. qq{\t<TITLE>NASE-parse</TITLE>\n}. qq{\t<ABSTRACT></ABSTRACT>\n}. qq{\t<AUTHOR></AUTHOR>\n}. qq{\t<IMPLEMENTATION>\n}. qq{\t\t<OS NAME=\"$(OSNAME)\" />\n}. qq{\t\t<ARCHITECTURE NAME=\"i386-linux\" />\n}. qq{\t\t<CODEBASE HREF=\"\" />\n}. qq{\t</IMPLEMENTATION>\n}. qq{</SOFTPKG>\n}" > NASE-parse.ppd
+	@$(PERL) -e "print qq{<SOFTPKG NAME=\"NASE-parse\" VERSION=\"1,2,0,0\">\n}. qq{\t<TITLE>NASE-parse</TITLE>\n}. qq{\t<ABSTRACT></ABSTRACT>\n}. qq{\t<AUTHOR></AUTHOR>\n}. qq{\t<IMPLEMENTATION>\n}. qq{\t\t<OS NAME=\"$(OSNAME)\" />\n}. qq{\t\t<ARCHITECTURE NAME=\"i386-linux\" />\n}. qq{\t\t<CODEBASE HREF=\"\" />\n}. qq{\t</IMPLEMENTATION>\n}. qq{</SOFTPKG>\n}" > NASE-parse.ppd
 
 # --- MakeMaker pm_to_blib section:
 
