@@ -201,4 +201,8 @@ DefSysV, '!CONSOLE', InitConsole(TITLE='Standard Output')
 
 
 
+; program for eps-to-pdf conversion
+DefSysV, '!EPS2PDF_CONVERTER', 'epstopdf'
+
+
 END

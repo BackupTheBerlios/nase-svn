@@ -129,6 +129,8 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
           Device, /CLOSE
           uSet_Plot, ScreenDevice()
           sheet.open = 0
+          ;; PDF conversion:
+          If Keyword_Set(sheet.pdf) then spawn, !EPS2PDF_CONVERTER+" "+FILE
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN

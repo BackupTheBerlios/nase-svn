@@ -32,7 +32,7 @@
 ;
 ; CALLING SEQUENCE:   
 ;* sheet = DefineSheet( [ parent ]
-;*                     [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=...]
+;*                     [{,/WINDOW | ,/PS [,/ENCAPSULATED] | ,/PDF ,/NULL}] [,MULTI=...]
 ;*                     [PRODUCER=...]
 ;*                     [,/INCREMENTAL] [,/VERBOSE]
 ;*                     [,/PRIVATE_COLORS]
@@ -45,6 +45,11 @@
 ; INPUT KEYWORDS: 
 ;  WINDOW:: The graphics will be shown in a window on the screen.
 ;  PS:: The graphics will be saved as a file in postscript format.
+;  ENCAPSULATED:: If specified together with PS, the postscript will be encapsulated.
+;  PDF:: An encapsulated postscript will be generated, which is
+;        converted to a PDF after closing. The program used for eps to
+;        pdf conversion can be specified in the system variable
+;        !EPS2PDF_CONVERTER. (Default value: 'epstopdf')
 ;  NULL:: No graphics will be shwon at all.
 ;  MULTI:: This is the equivalent to IDL's !P.MULTI. Several small
 ;          sheets can be shown inside the same window frame. This
@@ -114,7 +119,7 @@
 
 
 
-FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
+FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
                       , FILENAME=filename, INCREMENTAL=incremental $
                       , ENCAPSULATED=encapsulated, COLOR=color $
                       ,VERBOSE=verbose, MULTI=multi, PRODUCER=producer $
@@ -127,6 +132,12 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
    Default, multi, 0
    Default, private_colors, 0
    Default, producer, ''
+
+   ;; PDF implies generation of an eps:
+   If Keyword_Set(PDF) then begin
+      PS = 1
+      ENCAPSULATED = 1
+   EndIf
 
    IF NOT SET(sk) THEN BEGIN
       sk = BytArr(128)
@@ -170,6 +181,9 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
          IF incremental  THEN tz = ', incremental' ELSE tz = ''
          Console, /MSG, '   Type:     '+Str(ty)+Str(tz)
          Console, /MSG, '   Filename: '+filename+'.'+Str(ty)
+         If keyword_set(PDF) then $
+           Console, /MSG, "   After closing, the file will be converted " + $
+                    "to PDF using this command: "+!EPS2PDF_CONVERTER
       END
 
       IF TypeOf(E) EQ "STRUCT" THEN BEGIN
@@ -183,6 +197,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
                 curfile  : ''           ,$ ;stores the current filename if there is one  
                 inc      : incremental  ,$
                 eps      : encapsulated ,$
+                pdf      : pdf         , $
                 color    : color        ,$
                 p        : !P           ,$
                 x        : !X           ,$
