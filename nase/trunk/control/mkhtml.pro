@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  1997/11/20 19:48:15  gabriel
+;            Jettzt werden alphabetische Listen fuer Routinen erzeugt
+;
 ;       Revision 1.6  1997/11/11 16:46:54  saam
 ;             an neue Verzeichnisstruktur angepasst
 ;
@@ -29,7 +32,9 @@
 PRO MkHTML
 
 Spawn, 'pwd', MainDir
-SubDirs   = ['control','input','graphic','graphic/nonase','misc', 'misc/array', 'misc/structures', 'simu', 'simu/connections', 'simu/layers', 'simu/plasticity', 'stat', 'video+tape']
+SubDirs   = ['control','input','graphic','graphic/nonase','misc', $
+             'misc/array', 'misc/structures', 'simu', 'simu/connections',$
+             'simu/layers', 'simu/plasticity', 'stat', 'video+tape']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
@@ -44,5 +49,8 @@ FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
 END
 
 cd, MainDir(0)
+
+Spawn, 'mkaindex.sh'+ MainDir(0)
+
 
 END
