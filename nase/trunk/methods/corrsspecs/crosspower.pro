@@ -10,7 +10,8 @@
 ; CATEGORY:              STATISTICS
 ;
 ; CALLING SEQUENCE:      cp = CrossPower( xseries,yseries [,xaxis] [,/HAMMING][,/DOUBLE]        $
-;                                        [,PHASE=phase] [,COMPLEX=complex] [,NEGFREQ=negfreq][,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel])
+;                                        [,PHASE=phase] [,COMPLEX=complex] [,NEGFREQ=negfreq]$
+;                                        [,TRUNC_PHASE=trunc_phase] [,KERNEL=kernel] , [SMAMPLPERIOD=samplperiod])
 ;
 ; INPUTS:                xseries : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
 ;                                  mit mind. 10 Elementen
@@ -28,6 +29,8 @@
 ;                        COMPLEX:     als Output complexe CrossPower
 ;
 ;                        NEGFREQ:     Output mit negativen Frequenzen (default ist: nur pos. freq.)
+;
+;;                       SAMPLPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
 ;
 ;
 ; OUTPUTS:               cp      : Betrag der berechneten CrossPower
@@ -66,6 +69,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.4  1998/05/04 17:59:57  gabriel
+;       SAMPLPERIOD Keyword neu
+;
 ; Revision 1.3  1998/02/23 11:24:26  gabriel
 ;      KEYWORD PHASE Fehler behoben, neue Keywords NEGFREQ und COMPLEX
 ;
@@ -84,7 +90,7 @@
 
 FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
                      DOUBLE=Double ,COMPLEX=COMPLEX,Phase=Phase ,$
-                     TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel, NEGFREQ=negfreq
+                     TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel, NEGFREQ=negfreq,SAMPLPERIOD=SAMPLPERIOD
    
    IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN Message, 'wrong number of arguments'
    IF (Size(xseries))(0) NE 1                 THEN Message, 'wrong format for x-signal'
@@ -98,10 +104,11 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
    END
 
 
-
+   DEFAULT,negfreq,0
    Default, Double, 0
-      
-   SamplingPeriod = 0.001       ; 1 ms 
+   Default,hamming,0
+   Default, SAMPLPERIOD  , 0.001   
+   SamplingPeriod = SAMPLPERIOD      ; 1 ms 
    SamplingFreq   = 1.0 / SamplingPeriod
    FreqRes        = SamplingFreq / N
 
@@ -110,7 +117,7 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
    xSeries0 = xseries - xMedian  ; times series without constant offset 
    ySeries0 = yseries - yMedian  ; times series without constant offset 
 
-   IF Keyword_Set(hamming) THEN BEGIN
+   IF (hamming) THEN BEGIN
       HammingWin  = Hanning(N, ALPHA=0.54)  ;generate hamming window
       HammingNorm = Total(HammingWin^2) / N ;normalization for hamming-window, normed power
       xSeries0 = (xSeries0 * HammingWin)
@@ -131,7 +138,7 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
    CPower = (xFFT*CONJ(yFFT) ) * N / HammingNorm
    CPower(0) = CPower(0) + xMedian*yMedian
 
-   IF set(NEGFREQ) THEN BEGIN
+   IF (NEGFREQ) THEN BEGIN
       CPower = shift(CPower,N/2)
                                 ; generate x-axis
       xaxis = (FIndGen(N_Elements(CPower))-N/2)*FreqRes
