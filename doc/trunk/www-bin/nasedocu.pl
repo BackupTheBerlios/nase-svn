@@ -4,14 +4,13 @@
 #
 
 
-# CGI module
 use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp qw(fatalsToBrowser);
 use File::Find;
 use File::Basename;
 use strict;
 
-my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $INDEX, $myurl, $fullurl, $sub, $lastmod);
+my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $DIRINDEX, $ALPHINDEX, $INDEXURL, $myurl, $fullurl, $sub, $lastmod);
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -29,27 +28,29 @@ chop ($hostname = `uname -a`);
 }
 
 
-$INDEX="$DOCDIR/index.routines";
-
-
+$DIRINDEX="$DOCDIR/index-by-dir";
+$ALPHINDEX="$DOCDIR/index-by-name";
+$INDEXURL="/vol/neuro/nase/nase/nindex.html";
 
 # global variables
-$myurl = $0;
-$myurl =~ s/$CGIROOT//;
+($myurl = $0) =~ s/$CGIROOT//;
 
 # the directory we are currently
 $sub = path_info();
-#if ($sub eq '') {$sub = '/'};
 $fullurl = "$myurl/$sub";
 
 
 
-# fix hyperlinks for a list of strings
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub fixhl { 
   my (@lines, @ridx, @url, $routine, @res, @fixed);
   
   @lines = @_;
-  @ridx = readRoutineIdx();
+  @ridx = readRoutineIdx($DIRINDEX);
   foreach (@lines){
     s/<[^<>]*>//g; # remove HTML stuff
     s/\s+//g;      # remove whitespaces    
@@ -64,23 +65,45 @@ sub fixhl {
   return @fixed;
 }
 
-sub readRoutineIdx {
 
-  createRoutineIdx() unless -r $INDEX;
-  open (IDX, "<$INDEX") || die "can't open $INDEX for read: $!\n";
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
+sub readRoutineIdx{
+
+  my ($file) = @_;
+
+  createRoutineIdx() unless -r $DIRINDEX;
+  open (IDX, "<$file") || die "can't open $file for read: $!\n";
   my @ridx = <IDX>; chomp @ridx;
-  close (IDX) || die "can't close $INDEX, $!\n";
-
+  close (IDX) || die "can't close $file, $!\n";
+  
   return @ridx;
 }
 
 
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub createRoutineIdx {
 
-  open (IDX, ">$INDEX") || die "can't open $INDEX for write: $!\n";
+  my %alpha;
+  
+  open (IDX, ">$DIRINDEX") || die "can't open $DIRINDEX for write: $!\n";
   find(\&appendFile, $DOCDIR);
-  close (IDX) || die "can't close $INDEX: $!\n";
+  close (IDX) || die "can't close $DIRINDEX: $!\n";
    
+  open (IDX, ">$ALPHINDEX") || die "can't open $ALPHINDEX for write: $!\n";
+  foreach (sort keys %alpha){
+    print IDX "$alpha{$_}\n";
+  }
+  close (IDX) || die "can't close $ALPHINDEX: $!\n";
 
   sub appendFile {
     if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
@@ -88,16 +111,18 @@ sub createRoutineIdx {
       $file =~ s/$DOCDIR//; 
       $file =~ s/^(\/)+//; 
       print IDX "$file\n";
+      $alpha{basename($file)} = $file;
     }
-# to output directories as status 
-#    else {
-#      -d && ! /(CVS)|(RCS)/ && print $File::Find::name, br;
-#    }
-
   }
 }
 
 
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub updatedoc {
   my (@projects,@stat);
 
@@ -128,6 +153,12 @@ sub updatedoc {
 }
 
 
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub showedit {
   my ($res, $file, $name);
 
@@ -137,17 +168,23 @@ sub showedit {
   $name =~ s,\.pro$,,;
   
   
-  open (CMD, "cd ".dirname($file)."; cvs editors ".basename($file)."|") || die "can't open pipe: $!\n";
+  open (CMD, "cd ".dirname($file)."; cvs editors ".basename($file)."|") || warn "can't open pipe: $!\n";
   $res = '';
   while (<CMD>){
     if (m,^$name.pro\s+(\w+)\s+(.*GMT),){$res = "currently edited by $1 since $2";}
 
   }
-  close(CMD) || die "can't close pipe: $!\n";
+  close(CMD) || warn "can't close pipe: $!\n";
   return $res;
 }
 
 
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub showlog {
 
   my ($file,$name);
@@ -159,18 +196,23 @@ sub showlog {
   
   print h1("$name <FONT SIZE=-1><A HREF=$fullurl?file=".lc($name)."&mode=text&show=header>header</A> <A HREF=$fullurl?file=".lc($name)."&mode=text&show=source>source</A> ".showedit($file)."</FONT>"); 
   
-  open (CMD, "cd ".dirname($file)."; cvs log ".basename($file)."|") || die "can't open pipe: $!\n";
+  open (CMD, "cd ".dirname($file)."; cvs log ".basename($file)."|") || warn "can't open pipe: $!\n";
   print "<PRE>";
   while (<CMD>){
     print;
   }
   print "</PRE>";
-  close(CMD) || die "can't close pipe: $!\n";
+  close(CMD) || warn "can't close pipe: $!\n";
   
 }
 
 
 
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub showheader {
 
   my ($namefound, $file);
@@ -199,6 +241,12 @@ sub showheader {
 }
 
 
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub showsource {
 
   my ($file, $namefound, $line, $keyword);
@@ -240,18 +288,14 @@ sub showsource {
 }
 
 
-sub ddot {
-  my (@dir,$path);
-  ($path) = @_;
-
-  @dir = split('/', $path);
-  pop @dir;
-  return  join('/',@dir);
-}
 
 
+
+###################################################################################
+###################################################################################
+###################################################################################
 sub showdir {
-  my ($mydir, $targetdir, $level, $reldir, @sdir, @file);
+  my ($mydir, $targetdir, $level, $reldir, @sdir, @file, $tmprep);
 
   ($mydir, $targetdir, $level) = @_;
   $mydir     =~ s,\/$,,g;
@@ -263,7 +307,8 @@ sub showdir {
   
 
   # if you are the target path display all, otherwise do nothing
-  if ((!$mydir) || ($targetdir =~ /$mydir/)){
+  ($tmprep = $mydir) =~ s,\+,\\\+,;
+  if ((!$mydir) || ($targetdir =~ m,$tmprep,)){
     # search for non-dot subdirs and IDL files
     opendir(DIR, "$DOCDIR/$mydir") || print "can't opendir $mydir: $!\n";
     @sdir = grep { /^[^\.]/ && -d "$DOCDIR/$mydir/$_" && ! /(CVS)|(RCS)/ } readdir(DIR);
@@ -286,11 +331,17 @@ sub showdir {
 }
 
 
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
 print header;
 #print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
 print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE></HEAD>";
 
-if (! -r $INDEX){
+if ((! -r $DIRINDEX)||(! -r $ALPHINDEX)){
   createRoutineIdx();
 }
 
@@ -302,7 +353,7 @@ if ($P::mode){
 		      last TRUNK;};
     /list/i   && do { print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
-		      $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
+		      $lastmod = (stat($DIRINDEX))[9] || die "can't stat() $DIRINDEX: $!\n";
 		      print font({size=>"-2"}, 
 				 hr,
 				 "last update: ".localtime($lastmod).", ",
@@ -312,7 +363,12 @@ if ($P::mode){
 		      last TRUNK;};
     /text/i   && do { if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
-				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };};
+				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
+				  } else {
+				    open(IDX, "<$INDEXURL") || die "can't open $INDEXURL: $!\n";
+				    while(<IDX>){print;};
+				  };
+		      
 		      last TRUNK;};
   }
 } else {
