@@ -31,7 +31,7 @@
 ;
 ; INPUTS:
 ;  object:: Number of the object, ranging from 1 to 20.
-;  angle :: Angle of the pose, given in deegrees. The value is <I>not</I>
+;  angle :: Angle of the pose, given in degrees. The value is <I>not</I>
 ;           restricted to the range [0, 360). Note that images are
 ;           available in steps of 5 degrees. The value given will be
 ;           appropriately rounded. 
