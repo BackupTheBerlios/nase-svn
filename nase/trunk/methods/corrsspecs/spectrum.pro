@@ -195,7 +195,7 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
    DimsS    = DimsX
    DimsS[0] = NS
    ; The array that will contain the spectra:
-   S  = Make_Array(dim = DimsS, /complex)
+   S  = Make_Array(dim = DimsS, /complex, /nozero)
    ; An array that will temporarily contain a long (padded) signal epoch in the FOR loop (see below):
    Xi = Make_Array(NS, type = TypeX)
 
