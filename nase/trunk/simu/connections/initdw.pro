@@ -99,7 +99,6 @@
 ;                                  100 Hz : Depression ca. 30% langsamer       
 ;                      REALSCALE: ist REALSCALE gesetzt, so ist bei depression fuer transm=1 der
 ;                                 output U_se(i) * W(i), andernfalls ist der output W(i)...
-
 ;
 ; OUTPUTS: Eine Initialisiert Delay-Weight-Struktur. Wird keines der Delay-Schlüsselwörter angegeben, so enthält die Struktur keine Delays.
 ;
@@ -166,6 +165,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.21  2000/07/18 16:52:08  kupper
+;       Deletet empty line in header.
+;
 ;       Revision 2.20  2000/07/18 16:38:46  kupper
 ;       Implemented Poggio&Riesenhuber-like MAX conjuction operation.
 ;
