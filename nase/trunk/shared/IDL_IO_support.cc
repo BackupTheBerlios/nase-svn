@@ -1,7 +1,7 @@
-#include <cstdio>
-#include <cassert>
-
 extern "C" {
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <memory.h> // needed for select() to compile on SUN OS.
 #include <unistd.h>
 #include <sys/types.h>
@@ -95,7 +95,8 @@ IDL_LONG wait_for_data (int argc, void *argv[])
   // ------------------------------
 
   // Get filedescriptors: ---------
-  int fd_array[n_elements]; // Array of file-descriptors
+  int *fd_array=new int[n_elements]; // Array of file-descriptors
+  //  int fd_array[n_elements]; // Array of file-descriptors
   int max_fd;               // Greatest used descriptor
   max_fd = get_fd_array(lun_array, n_elements, fd_array); // Get fildescriptors from LUNs
   //-------------------------------
@@ -131,7 +132,8 @@ IDL_LONG wait_for_data (int argc, void *argv[])
 		  lun_array[i] = FD_ISSET(fd_array[i], &readset) ? IDL_TRUE : IDL_FALSE;
 		}
 	}
-  
+
+  delete fd_array;
   return(number_ready);
 }
 
@@ -265,3 +267,4 @@ char* tmp_nam (int argc, void* argv[])
 }
 
 // =======================================================================================================
+

@@ -22,16 +22,16 @@ all :
 			"C_LD_FLAGS=-S -shared" ;; \
 	   "Linux" ) make libs \
 			"CC=cc" \
-			"CXX=g++" \
+			"CXX=c++" \
 			"C_LD=ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-shared" ;; \
 	   "SunOS" ) make libs \
-			"CC=/opt2/gcc/2.95.2/bin/gcc" \
-			"CXX=/opt2/gcc/2.95.2/bin/g++" \
-			"C_LD=/usr/ccs/bin/ld" \
-			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
-			"C_LD_FLAGS=-G -B dynamic -L/opt2/gcc/2.95.2/lib -R/opt2/gcc/2.95.2/lib" ;; \
+			"CC=/opt2/Forte7/SUNWspro/bin/cc" \
+			"CXX=/opt2/Forte7/SUNWspro/bin/CC -instances=static"\
+			"C_LD=/usr/ccs/bin/ld"\
+			"CFLAGS=-xarch=generic64 -Kpic -G -I$(IDL_DIR)/external" \
+			"C_LD_FLAGS=-G -Bdynamic" ;; \
 	   *) echo "This system is not supported" ;; \
        esac
 
@@ -61,6 +61,7 @@ tidy :
 
 clean :
 	rm -f *.o *.so *.sl *.a so_locations
+	rm -rf sunos_sparc
 
 
 #  Rules for building the object files.
