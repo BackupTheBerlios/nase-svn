@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/06/22 09:56:52  saam
+;           inadvertently inserted line removed
+;
 ;     Revision 1.2  1998/01/27 11:35:29  gabriel
 ;          an powerspec angepasst
 ;
@@ -58,7 +61,6 @@ FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_P
    N = N_Elements(series)
    IF (N LT slicesize) THEN Message, 'number of elements less than slicesize!!'
    
-   slicephase
    i = 0
    FOR slicestart= 0, N - slicesize, slicesize / 2 DO BEGIN
       IF SET(Phase) THEN BEGIN
