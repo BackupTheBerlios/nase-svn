@@ -25,11 +25,12 @@
 ;
 ;
 ; CALLING SEQUENCE:  
-;                       result =  coherence( SignalX, SignalY, CXY , 
+;                       result =  coherence( SignalX, SignalY, CXY , confidence
 ;                                          [dimension = dimension], 
 ;                                          [SAMPLEPERIOD = SAMPLEPERIOD],
-;                                          [F=F], [NEGFREQU=NEGFREQU],
-;                                          [correction = correction])
+;                                          [F=F], [NEGFREQ=NEGFREQ],
+;                                          [correction = correction],
+;                                          [cfvalue=cfvalue])
 ;
 ; 
 ; INPUTS:               SignalX:   Array of time signal channel 1 (first dimension is the time)
@@ -41,9 +42,10 @@
 ; KEYWORD PARAMETERS:
 ;                       dimension:    The Dimension in which the trials in SignalX or SignalY are hold (default: 2) 
 ;                       correction:   Correction of coherence in respect to the number of trials     
-;                       sampleperiod: The time period of data sampling [ms]
-;                       negfrequ:     The result includes also the negative frequencies (in the manner of FFT)
+;                       sampleperiod: The time period of data sampling [ms] (default: 0.001)
+;                       negfreq:      The result includes also the negative frequencies (in the manner of FFT)
 ;                                     and CXY is the crossspectrum (complex!!)
+;                       cfvalue:      the confidencevalue for the result (default: 0.95)  
 ;                                     
 ; OUTPUTS:
 ;                       Coherence between SIgnalX und SignalY
@@ -51,6 +53,7 @@
 ; OPTIONAL OUTPUTS:
 ;                       CXY: CrossPower of SIgnalX und SignalY
 ;;                      F: Array with the values of the frequence axis [Hz]
+;                       confidence: an array with the confidence interval for each coherencevalue.
 ;
 ; EXAMPLE:
 ;
@@ -59,20 +62,15 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1998/11/20 17:17:35  gabriel
+;          Confidence Berechnung  neu
+;
 ;     Revision 1.1  1998/08/11 10:31:32  gabriel
 ;           Dem N.A.S.E Standard angepasst (Org. von A. Bruns)
 ;
 ;
 ;-
 
-;***********************************************************************************************
-;
-;FUNCTION  KOHAERENZFUNKTION  , SignaleX, SignaleY,   CXY
-;                               d = dimension, k = korrektur
-;
-;***********************************************************************************************
-;-----------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------
 
 
 FUNCTION  __HAMMING,   N,   nonorm = nonorm
@@ -89,7 +87,7 @@ END
 ;-----------------------------------------------------------------------------------------------
 
 
-FUNCTION  COHERENCE,  SignalX, SignalY,   CXY,  $
+FUNCTION  COHERENCE,  SignalX, SignalY,   CXY, confidence , cfvalue=cfvalue ,$
                       dimension = dimension, correction = correction ,$
                       SAMPLEPERIOD=SAMPLEPERIOD, F=F , NEGFREQ=NEGFREQ
 
@@ -97,9 +95,9 @@ FUNCTION  COHERENCE,  SignalX, SignalY,   CXY,  $
    default,correction,0
    default,dimension,2
    default,negfreq,0
+   default,cfvalue,0.95
 
    AnzTrials = (SIZE(SignalX))(Dimension)
-
    DatenBins = N_ELEMENTS(SignalX(*,0,0,0))
 
    F = SHIFT((findgen(DatenBins)-Datenbins/2)*1./(Sampleperiod)/FLOAT(DATENBINS),DatenBins/2)
@@ -129,10 +127,11 @@ FUNCTION  COHERENCE,  SignalX, SignalY,   CXY,  $
       CXY = abs(CXY(0:DatenBins/2,*,*,*))*2
       F = abs(F(0:DatenBins/2))
    ENDIF
+   IF N_PARAMS() EQ 4 THEN BEGIN
+      confidence = chconfidence(K,AnzTrials,cfvalue)
+   ENDIF
 
    RETURN, K
-
-
 END
 
 
