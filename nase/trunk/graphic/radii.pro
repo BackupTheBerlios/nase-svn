@@ -20,7 +20,7 @@
 ;
 ; CALLING SEQUENCE:
 ;* Radii, r1, r2, a [,x0] [,yy] [,COLOR=...] [,LINESTYLE=...]
-;         [,/{DEVICE|DATA|NORM}]
+;*        [,/{DEVICE|DATA|NORM}]
 ;
 ; INPUTS:
 ;  r1 :: start radius of radius to draw (data units)
