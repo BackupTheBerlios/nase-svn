@@ -57,8 +57,8 @@
 ;                <*>MEMORYSAVE=0</*>.
 ;  /CENTER:: Center the sliding spike count window such that the spike
 ;            rate at time <*>t</*> is computed by counting the spikes
-;            in the interval <*>[t-ssize/2,t+ssize/2[</*>. If
-;            <*>CENTER</*> is not set, then the interval <*>[t,t+ssize[</*>
+;            in the interval <*>[t-ssize/2,t+ssize/2]</*>. If
+;            <*>CENTER</*> is not set, then the interval <*>[t-ssize,t]</*>
 ;            is used. Default: <*>CENTER=1</*>.
 ;
 ; OUTPUTS: 
