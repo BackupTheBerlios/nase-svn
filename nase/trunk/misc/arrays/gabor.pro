@@ -44,9 +44,9 @@
 ;                              das Maximum der Gaussmaske auf 1
 ;                              normiert. In diesem Fall ist dann das
 ;                              Maximum des Gabor-Patches kleiner als
-;                              0. In Faellen, in denen gewuenscht ist, 
+;                              1. In Faellen, in denen gewuenscht ist, 
 ;                              dass das Maximum des Ergebnisses
-;                              unabhaengig von der Phasenlage 1 ist,
+;                              unabhaengig von der Phasenlage gleich 1 ist,
 ;                              kann /MAXONE gesetzt werden.
 ;
 ; OUTPUTS: Ein (size x size) double-Array mit entsprechendem Inhalt.
@@ -66,6 +66,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/06/28 14:18:14  kupper
+;        Corrected Misttypings...
+;
 ;        Revision 1.1  1999/06/28 14:02:19  kupper
 ;        Initial Revision.
 ;
