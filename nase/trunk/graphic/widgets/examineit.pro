@@ -383,8 +383,8 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    endelse
 
    If keyword_set (nase) then begin
-      w = rotate(w, 3)
-      tv_w = rotate(tv_w, 3)
+      w = rotate(Temporary(w), 3)
+      tv_w = rotate(Temporary(tv_w), 3)
       nones = where(w eq !NONE, count)
       If count ne 0 then w(nones) = max(w) ;Finde min ausser NONES
       Default, Range, [min(w), max(w)]
