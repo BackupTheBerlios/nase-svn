@@ -92,32 +92,42 @@ Pro Startup_ctd
 
 
    ;; ----------- Are we running an interactive session? -----
+    
+   
    stdout_fstat = fstat(-1)
    if fix(!version.release) lt 4 then $
     IsInteractiveSession = stdout_fstat.isatty $
    else $
-    IsInteractiveSession = stdout_fstat.interactive
+    IsInteractiveSession =  stdout_fstat.interactive
+   if NOT IsInteractiveSession then begin
+      Flush, -2
+      Flush, -1
+   endif
+
    ;; --------------------------------------------------------
 
    ;; --- in a nohup-session, don't connect to X-Server ------
    ;; --- but always connect to X-Server, if display of ------
    ;; --- the NASE logo was requested!                  ------
-   if IsInteractiveSession or (GetEnv("NASELOGO") eq "TRUE") then $
-    if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24       ; try to get it, if available, but no DIRECT_COLOR!
-   if IsInteractiveSession or (GetEnv("NASELOGO") eq "TRUE") then $
-    DEVICE, DECOMPOSED=0
-   ;; --------------------------------------------------------
-
+   uset_plot, !D.NAME  
    ;; ----------- Show Logo on startup? ----------------------
-   WillShowLogo = (GetEnv("NASELOGO") eq "TRUE")
+   WillShowLogo = (GetEnv("NASELOGO") eq "TRUE") 
+   if IsInteractiveSession or  WillShowLogo then begin
+      ;; try to get it, if available, but no DIRECT_COLOR!
+      if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24
+      DEVICE, DECOMPOSED=0
+   endif
+   ;; --------------------------------------------------------
+   
+   ;; ----------- Show Logo on startup? ----------------------
    WillShowLogo = (WillShowLogo or IsInteractiveSession)
+   ;; if it is not explicitly wished
    if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
    If WillShowLogo then ShowLogo, SECS=3
    ;; --------------------------------------------------------
-
-
+  
    ResetCM
-   Foreground, 255, 255, 255 ; default foreground is white
-   Background,   0,   0,   0 ; default background is black
-
+   Foreground, 255, 255, 255    ; default foreground is white
+   Background,   0,   0,   0    ; default background is black
+   
 End
