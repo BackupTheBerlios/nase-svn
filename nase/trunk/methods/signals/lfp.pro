@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/05/18 19:45:55  saam
+;           problems with nase layers corrected by new keyword NASE
+;
 ;     Revision 1.4  1998/04/01 17:35:09  saam
 ;           only two recording sites were handled
 ;           corrected -> now it hopefully with 1..n
@@ -50,7 +53,7 @@
 ;
 ;
 ;-
-FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
+FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi, NASE=nase
 
    Default, radius, 5
 
@@ -64,7 +67,7 @@ FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
       listS = SIZE(list)
    END
 
-   maxROI = listS(2)  
+   maxROI = listS(2)
    maxT   = mtS(3)
 
    IF listS(0) NE 2 THEN Message, 'wrong format for second argument'
@@ -82,11 +85,19 @@ FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
       IF Set(CONST) THEN BEGIN
          print, !KEY.UP, 'LFP: using constant weighting with radius ',STRCOMPRESS(const,/REMOVE_ALL)
          tmpArr = Make_Array(mtS(1), mtS(2), /INT, VALUE=1)
-         tmpArr = CutTorus(tmpArr, const, X_CENTER=list(0,i)-mtS(1)/2, Y_CENTER=list(1,i)-mtS(2)/2)
+         IF Keyword_Set(NASE) THEN BEGIN
+            tmpArr = CutTorus(tmpArr, const, X_CENTER=list(1,i)-mtS(1)/2, Y_CENTER=list(0,i)-mtS(2)/2)
+         END ELSE BEGIN
+            tmpArr = CutTorus(tmpArr, const, X_CENTER=list(0,i)-mtS(1)/2, Y_CENTER=list(1,i)-mtS(2)/2) 
+         END
          ROI(i,*,*) = tmpArr
       ENDIF ELSE IF Set(hmw_x2) THEN BEGIN
          print, !KEY.UP, 'LFP: using x^(-2) weighting with HMW  ',STRCOMPRESS(hmw_x2,/REMOVE_ALL)
-         tmpArr = SHIFT(DIST(mtS(1), mtS(2)), list(0,i), list(1,i) )
+         IF Keyword_Set(NASE) THEN BEGIN
+            tmpArr = SHIFT(DIST(mtS(1), mtS(2)), list(1,i), list(0,i) )
+         END ELSE BEGIN
+            tmpArr = SHIFT(DIST(mtS(1), mtS(2)), list(0,i), list(1,i) )
+         END
          tmpArr = 1./(HMW_X2^2)*(tmpArr^2)
          tmpArr = 1./(1.+tmpArr)
          ROI(i,*,*) = tmpArr/MAX(tmpArr)
