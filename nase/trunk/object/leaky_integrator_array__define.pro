@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/03/09 17:12:53  kupper
+;        really corrected reset method...
+;
 ;        Revision 1.3  2000/03/09 17:10:26  kupper
 ;        Corrected comparison of array dimensions.
 ;        Corrected reset method.
@@ -68,7 +71,7 @@ Pro leaky_integrator_array::cleanup, _dummy=_dummy
 End
 
 Pro leaky_integrator_array::reset
-   *self.data(*) = 0
+   (*self.data)[*] = 0
 End
 
 
