@@ -32,6 +32,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.34  1998/02/11 17:49:55  thiel
+;              Jetzt wieder ohne Benutzung der S2T-Liste, weils
+;              keinen Unterschied macht.
+;
 ;       Revision 1.33  1998/02/11 17:39:01  saam
 ;             bloede (!!) Optimierungen
 ;
@@ -184,14 +188,12 @@ FUNCTION DelayWeigh, _DW, InHandle
          asn = In(asi)
          IF DW.S2T(asn) NE -1 THEN BEGIN
             Handle_Value, DW.S2C(asn), wi, /NO_COPY
-            Handle_Value, DW.S2T(asn), tN, /NO_COPY        ; kommentieren(1)
             ; C2T(wi) has each target neuron only once,
             ; because there is only one connection between
             ; source and target; therefore next assignment is ok
-;            tN = DW.C2T(wi)                               ; auskommentieren(1)
+            tN = DW.C2T(wi) 
             vector(tN) = vector(tn) + DW.W(wi)
             Handle_Value, DW.S2C(asn), wi, /NO_COPY, /SET
-            Handle_Value, DW.S2T(asn), tN, /NO_COPY, /SET  ; kommentieren(1)
          END
       END
 
