@@ -20,10 +20,10 @@
 ;  seperate simulation runs to demonstrate the use of <A>ForEach</A>. 
 ;   
 ; CATEGORY:
-;*  Demonstration
-;*  Graphic
-;*  MIND
-;*  Simulation
+;  Demonstration
+;  Graphic
+;  MIND
+;  Simulation
 ;
 ; CALLING SEQUENCE:
 ;  DSim & Sim
