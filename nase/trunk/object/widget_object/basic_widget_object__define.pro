@@ -26,10 +26,18 @@ End
 ;; ------------ Constructor & Destructor --------------------
 Function basic_widget_object::init, PARENT=Parent, _REF_EXTRA=_extra
    message, /Info, "I am created."
-   self.widget = widget_base(Parent, /Column, $
-                             UName="basic_widget_object", $
-                             Func_Get_Value="basic_widget_object_get_value", $
-                             _EXTRA=_extra)
+   
+   If Keyword_Set(Parent) then begin
+      self.widget = widget_base(Parent, /Column, $
+                                UName="basic_widget_object", $
+                                Func_Get_Value="basic_widget_object_get_value", $
+                                _EXTRA=_extra)
+   endif else begin             ;create top-level-base
+      self.widget = widget_base(/Column, $
+                                UName="basic_widget_object", $
+                                Func_Get_Value="basic_widget_object_get_value", $
+                                _EXTRA=_extra)
+   Endelse
    ;; Our widget uses a child as a container for the
    ;; object reference. The user can query it as the VALUE of
    ;; the main widget:
