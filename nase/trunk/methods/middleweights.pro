@@ -48,6 +48,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Wed Sep 3 16:54:06 1997, Andreas Thiel
+;		Normierung im WRAP-Fall korrigiert.
+;
 ;       Wed Sep 3 15:14:49 1997, Andreas Thiel
 ;		Die erste Version erblickt das Licht der Welt.
 ;
