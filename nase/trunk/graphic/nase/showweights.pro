@@ -9,12 +9,11 @@
 ;   
 ; CATEGORY: GRAPHIC
 ;
-; CALLING SEQUENCE: ShowWeights, Matrix, Titel, Fenstergroesse
+; CALLING SEQUENCE: ShowWeights, Matrix
+;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr]
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
 ;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
-;         Titel: Titel des Fensters, das die Darstellung enthaelt 
-;         Fenstergroesse: Faktor fuer die Vergroesserung der Darstellung
 ; 
 ; OPTIONAL INPUTS: ---
 ;
