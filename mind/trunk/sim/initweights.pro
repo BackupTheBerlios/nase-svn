@@ -15,6 +15,10 @@
 ; MODIFACTION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/05/16 16:32:30  saam
+;             + new weight type INIT
+;             + fixed bug with undefined W_RANDOM
+;
 ;       Revision 1.3  2000/01/20 14:41:51  saam
 ;             the dinit may be completely omitted if
 ;             no delays are necessary
@@ -60,6 +64,8 @@ FUNCTION InitWeights, DWW
       ; INIT THE WEIGHTS
       IF Contains(DWW.WINIT.TYPE, 'CONST') THEN BEGIN      
          OPT = Create_Struct('W_CONST',[DWW.WINIT.A, DWW.WINIT.R], 'W_TRUNCATE', truncate, 'NOCON', DWW.WINIT.R)
+      END ELSE IF Contains(DWW.WINIT.TYPE, 'INIT') THEN BEGIN
+          OPT = Create_Struct( 'W_INIT',[DWW.WINIT.W])
       END ELSE IF Contains(DWW.WINIT.TYPE, 'GAUSSIAN') THEN BEGIN
          IF DWW.WINIT.NORM EQ 1 THEN BEGIN
             OPT = Create_Struct( 'W_GAUSS',[DWW.WINIT.A, DWW.WINIT.S, 1], 'W_TRUNCATE',truncate, 'NOCON', DWW.WINIT.R)
@@ -72,7 +78,7 @@ FUNCTION InitWeights, DWW
          OPT = Create_Struct('WEIGHT', DWW.WINIT.W)
       END ELSE Message, 'unknown option for weights'
 
-      OPT = Create_Struct(OPT, 'W_RANDOM', [0,DWW.WINIT.N])
+      IF ExtraSet(DWW.WINIT, "N") THEN OPT = Create_Struct(OPT, 'W_RANDOM', [0,DWW.WINIT.N])
 
 
       ; INIT THE DELAYS
