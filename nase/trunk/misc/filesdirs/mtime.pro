@@ -6,7 +6,7 @@
 ; PURPOSE:             Ermittelt fuer ein File/Directory die Zeit der letzten
 ;                      Modifikation. 
 ;
-; CATEGORY:            MISC FILES DIRS
+; CATEGORY:            FILES
 ;
 ; CALLING SEQUENCE:    seconds = MTime(File, DATE=Date)
 ;
@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2003/03/05 13:34:47  gabriel
+;          bug fix idl version 5.6, use internal idl function now
+;
 ;     Revision 1.3  2000/09/25 09:13:02  saam
 ;     * added AIM tag
 ;     * update header for some files
@@ -58,9 +61,12 @@
 FUNCTION MTime, File, DATE=date
 
    IF TypeOf(FILE) NE 'STRING' THEN Message, 'string as first argument expected'
-   
    date = ''
-   seconds = CALL_EXTERNAL(!NASE_LIB, 'mtime', File, date)
+   if idlversion(/float) GE 5.6 then begin
+      f_info = file_info(File)
+      seconds = f_info.mtime
+   end else seconds = CALL_EXTERNAL(!NASE_LIB, 'mtime', File, date)
+
    date = STRMID(date,0,24)
    
    RETURN, seconds
