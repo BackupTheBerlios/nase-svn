@@ -6,17 +6,17 @@
 ;          verdeutlichen. Im einzelnen sind dies Routinen
 ;          
 ;          -zur Behandlung von Neuronenschichten: 
-;            <A HREF="file:/vol/neuro/nase/simu/layers/index.html#INITPARA_1">InitPara_1</A>, <A HREF="file:/vol/neuro/nase/simu/layers/index.html#INITLAYER_1">InitLayer_1</A>, <A HREF="file:/vol/neuro/nase/simu/layers/index.html#INPUTLAYER_1">InputLayer_1</A>, <A HREF="file:/vol/neuro/nase/simu/layers/index.html#PROCEEDLAYER_1">ProceedLayer_1</A>,
-;            <A HREF="file:/vol/neuro/nase/simu/layers/index.html#FREELAYER_1">FreeLayer_1</A>
+;            <A HREF="file:../simu/layers/index.html#INITPARA_1">InitPara_1</A>, <A HREF="file:../simu/layers/index.html#INITLAYER_1">InitLayer_1</A>, <A HREF="file:../simu/layers/index.html#INPUTLAYER_1">InputLayer_1</A>, <A HREF="file:../simu/layers/index.html#PROCEEDLAYER_1">ProceedLayer_1</A>,
+;            <A HREF="file:../simu/layers/index.html#FREELAYER_1">FreeLayer_1</A>
 ;
 ;          -zur Behandlung von Verbindungen zwischen Neuronenschichten:
-;            <A HREF="file:/vol/neuro/nase/simu/connections/index.html#INITDW">InitDW</A>, <A HREF="file:/vol/neuro/nase/simu/connections/index.html#DELAYWEIGH">DelayWeigh</A>, <A HREF="file:/vol/neuro/nase/simu/connections/index.html#FREEDW">FreeDW</A>
+;            <A HREF="file:../simu/connections/index.html#INITDW">InitDW</A>, <A HREF="file:../simu/connections/index.html#DELAYWEIGH">DelayWeigh</A>, <A HREF="file:../simu/connections/index.html#FREEDW">FreeDW</A>
 ;
 ;          -zum Lernen von Verbindungsstaerken:
-;            <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#INITRECALL">InitRecall</A>, <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#TOTALRECALL">TotalRecall</A>, <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#LEARNHEBBLP">LearnHebbLP</A>, <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#FREERECALL">FreeRecall</A>
+;            <A HREF="file:../simu/plasticity/index.html#INITRECALL">InitRecall</A>, <A HREF="file:../simu/plasticity/index.html#TOTALRECALL">TotalRecall</A>, <A HREF="file:../simu/plasticity/index.html#LEARNHEBBLP">LearnHebbLP</A>, <A HREF="file:../simu/plasticity/index.html#FREERECALL">FreeRecall</A>
 ;
 ;          -zur graphischen Darstellung:
-;            <A HREF="file:/vol/neuro/nase/graphic/index.html#SHOWWEIGHTS">ShowWeights</A>, <A HREF="file:/vol/neuro/nase/graphic/index.html#TRAINSPOTTING">Trainspotting</A>
+;            <A HREF="file:../graphic/index.html#SHOWWEIGHTS">ShowWeights</A>, <A HREF="file:../graphic/index.html#TRAINSPOTTING">Trainspotting</A>
 ;
 ;          Das Beispielnetzwerk besteht aus einer Schicht von 10x10
 ;          Neuronen (im Programm L1 genannt) und einem Inhibitionsneuron 
@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.12  1998/02/19 13:14:00  thiel
+;              Bessere Hyperlinks.
+;
 ;       Revision 1.11  1998/02/11 16:16:43  saam
 ;             alles weg
 ;
@@ -165,10 +168,10 @@ Window, 2, XSIZE=800, YSIZE=400
 
       
 ;-------------> LEARN SOMETHING
-;      TotalRecall, LP_L1_L1, CON_L1_L1
-;      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
+      TotalRecall, LP_L1_L1, CON_L1_L1
+      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
  
-;      IF t EQ 3000 THEN ShowNoMercy, CON_L1_L1, LESSTHAN=0.01
+      IF t EQ 3000 THEN ShowNoMercy, CON_L1_L1, LESSTHAN=0.01
 
 ;-------------> PROCEED NEURONS
       ; Input -> Layer -> Output
@@ -187,12 +190,12 @@ Window, 2, XSIZE=800, YSIZE=400
          WSet, 2
          !P.Multi = [0,1,2,0,0]
          ; plot output activities as spikeraster
-;         TrainSpotting, O_L1, TITLE='Output L1', OFFSET=t-500
-;         TrainSpotting, O_L2, TITLE='Output L2', OFFSET=t-500
+         TrainSpotting, O_L1, TITLE='Output L1', OFFSET=t-500
+         TrainSpotting, O_L2, TITLE='Output L2', OFFSET=t-500
          
-;         ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
+         ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
       END
-      IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MAX(Weights(CON_L1_L1))
+      IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MaxWeight(CON_L1_L1)
    END
    SimTimeStep
    SimTimeStop
