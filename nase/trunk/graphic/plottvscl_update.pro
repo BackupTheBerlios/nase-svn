@@ -20,13 +20,13 @@
 ; INPUTS: Array   : Der neue Inhalt der Graphik. Muß
 ;                   selbstverständlich die gleichen Ausmaße wie
 ;                   das ursprüngliche Array haben.
+;                   (Die Ausmaße werden von der Routine NICHT getestet.)
 ;         PlotInfo: Der von <A HREF="#PLOTTVSCL">PlotTVScl</A> beim
 ;                   ursprünglichen Aufruf in GET_INFO
 ;                   zurückgelieferte Struct.
 ;
 ; KEYWORD PARAMETERS: 
-;                     NOSCALE:   Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
-;                                mit dem Aufruf von <A HREF="#PLOTTV">PlotTV</A>
+;                     NOSCALE:   Schaltet die Intensitaetsskalierung ab.
 ;                                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
 ;                                TVSCL und TV.
 ;                     ORDER:     der gleiche Effekt wie bei Original-TVScl
@@ -36,7 +36,10 @@
 ;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
 ;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
-;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
+;                     POLYGON   : Statt Pixel werden Polygone
+;                                 gezeichnet (gut fuer Postscript)
+;                                 /POLYGON setzt /CUBIC, /INTERP
+;                                 und /MINUS_ONE außer Kraft.
 ;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
 ;                     CUBIC,
 ;                     INTERP,
@@ -47,7 +50,7 @@
 ;                                 schwarz/weiss-Darstellung (COLORMODE=+1) 
 ;                                 oder die rot/grün-Darstellung
 ;                                 (COLORMODE=-1) erzwungen werden.
-;                     SETCOL    : Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
+;                     SETCOL    : Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
 ;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
 ;
 ;
@@ -70,6 +73,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.4  1999/09/23 14:01:22  kupper
+;     Huh, covered all cases now, hopefully...
+;
 ;     Revision 2.3  1999/09/22 09:49:30  kupper
 ;     Added Documentation.
 ;
@@ -83,62 +89,55 @@
 ;
 ;-
 
-PRO PlotTvscl_update, _W, Info, $
+PRO PlotTvscl_update, W, Info, $
              ORDER=Order, NASE=Nase, NEUTRAL=neutral, NOSCALE=NoScale, $
              POLYGON=POLYGON,$
              TOP=top,$
              CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-             COLORMODE=colormode, SETCOL=setcol
-
+             COLORMODE=colormode, SETCOL=setcol, $
+             INIT=init
+;print, "PlotTvScl_update"
    On_Error, 2
-   IF NOT Set(_W) THEN Message, 'Argument undefined'
+   IF NOT Set(W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
-
+   
+   ;;These Keywords are needed in both cases, init and update:
    Default, ORDER, Info.order
    Default, NASE, Info.nase
-   Default, NOSCALE, Info.noscale
    Default, POLYGON, Info.polygon
-   Default, TOP, Info.top
    Default, CUBIC, Info.cubic
    Default, INTERP, Info.interp
    Default, MINUS_ONE, Info.minus_one
-   Default, COLORMODE, Info.colormode
-   Default, SETCOL, Info.setcol
    Default, NEUTRAL, Info.neutral
+   Default, NOSCALE, Info.noscale
+   Default, COLORMODE, Info.colormode
 
+   Default, TOP, Info.top
+   Default, TOP, !D.Table_Size-1
 
+   If not Keyword_Set(INIT) then begin ;Just plot in new image with same scaling
+      Range_In = Info.Range_In(1)  ;use given scaling, let not choose showweights_scale
+      SETCOL    = 0             ;We never want to have the colortable set at an update.
+   EndIf
+;Note that the above does not cover the non-NASE, non-NEUTRAL,
+;non-NOSCALE case (As it relies on ShowWeights_Scale). 
+;The INIT/update of this case is therefore
+;handled in special in the Plotting part below.
 
-   W = _W
-   IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
-      maxW = Max(W)
-      minW = Min(NoNone_Func(W))
-   END
-
-   IF Keyword_Set(NASE) THEN BEGIN
-      ArrayHeight = (size(w))(1)
-      ArrayWidth  = (size(w))(2)
-   END ELSE BEGIN
-      ArrayHeight = (size(w))(2)
-      ArrayWidth  = (size(w))(1)
-   END
-   
-   
+  
    
 ;   ;-----Behandlung der NASE und ORDER-Keywords:
-;   XBeschriftung = XRANGE
    IF keyword_set(ORDER) THEN BEGIN
       UpSideDown = 1
-;      YBeschriftung = REVERSE(YRANGE)
    ENDIF ELSE BEGIN
       UpSideDown = 0
-;      YBeschriftung = YRANGE
    ENDELSE
+
    IF (Keyword_Set(NASE)) AND (Keyword_Set(ORDER)) THEN BEGIN
       UpsideDown = 0 
-;      YBeschriftung = YRANGE
    ENDIF
+
    IF (Keyword_Set(NASE)) AND (NOT(Keyword_Set(ORDER)))THEN BEGIN
-;      YBeschriftung = REVERSE(YRANGE)
       UpSideDown = 1 
    ENDIF 
     
@@ -146,28 +145,78 @@ PRO PlotTvscl_update, _W, Info, $
 
    ;-----Plotten der UTVScl-Graphik:
    IF Keyword_Set(NASE) THEN BEGIN
-      If Keyword_Set(NOSCALE) then BEGIN 
+
+      If Keyword_Set(NOSCALE) then BEGIN ;CASE: NASE, but do not scale
+;         print, "NASE, NOSCALE"
          UTV, Transpose(W), Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm,$
           X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM,$
           ORDER=UpSideDown, POLYGON=POLYGON
-      END ELSE BEGIN
-         UTV, ShowWeights_Scale(Transpose(W),SETCOL=setcol, COLORMODE=colormode), Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+         If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]
+
+      END ELSE BEGIN            ;CASE: NASE
+;         print, "NASE"
+         UTV, $
+          ShowWeights_Scale(Transpose(W),SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
+                            RANGE_IN=Range_In, GET_RANGE_IN=get_range_in), $
+          Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM,$
           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
+         If Keyword_Set(INIT) then begin 
+            Info.Range_In = get_range_in(1) ;=MAXCOL, by the way...
+            Info.colormode = get_colormode ;store for update
+         EndIf
+
       ENDELSE
-   END ELSE BEGIN
-      IF Keyword_Set(NEUTRAL) THEN BEGIN
-         UTV, ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode), Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+
+   END ELSE BEGIN               ;NASE not set
+
+      IF Keyword_Set(NEUTRAL) THEN BEGIN ;CASE: NEUTRAL: just scale like NASE
+;         print, "NEUTRAL"
+         UTV, $
+          ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
+                            RANGE_IN=Range_In, GET_RANGE_IN=get_range_in), $
+          Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM, $
           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
+         If Keyword_Set(INIT) then begin 
+            Info.Range_In = get_range_in(1) ;=MAXCOL, by the way...
+            Info.colormode = get_colormode ;store for update
+         EndIf
+
       END ELSE BEGIN
-         UTVScl, W, Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          Info.y00_norm, $
-          X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-          ORDER=UpSideDown, NOSCALE=NoScale, POLYGON=POLYGON, TOP=top
-      END
+         
+         If Keyword_Set(NOSCALE) then begin ;CASE: NoNase, Noscale
+;            print, "simple NOSCALE"
+            UTV, W, $
+             Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+             Info.y00_norm, $
+             X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+             ORDER=UpSideDown, POLYGON=POLYGON
+            If Keyword_Set(INIT) then Info.Range_In = [-1.0, -1.0]            
+         endif else begin       ;CASE: None of NASE, NEUTRAL, NOSCALE set
+;            print, "NONE"
+            If Keyword_Set(INIT) then begin ;Use normal UTvScl and store Range
+;               PRINT, "INIT"
+               Info.Range_In = [min(W), max(W)]
+               UTVSCL, W, $
+                Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+                Info.y00_norm, $
+                X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+                ORDER=UpSideDown, POLYGON=POLYGON, TOP=top
+            Endif Else begin    ;this is an update: Use UTV and scale as stored at last INIT 
+;               PRINT, "UPDATE"
+               UTV, Scl(W, [0, TOP], Info.Range_In), $
+                Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+                Info.y00_norm, $
+                X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+                ORDER=UpSideDown, POLYGON=POLYGON
+            Endelse
+         EndElse
+
+     END
    END
+
 
 
 ;-----ENDE:
