@@ -36,6 +36,15 @@
 <! SQL PRINT_ROWS q1 "<TR><TD CLASS='xmpcode' VALIGN=TOP>@q1.0 @q1.1</TD><TD CLASS="xplcode">@q1.2</TD></TR>\n" >
 </TABLE>
 
+<FONT SIZE=-2>NASE currently contains 
+<! SQL QUERY "select count(*) from pro where dir rlike 'nase'" q2 >
+<! SQL PRINT "@q2.0"  >
+routines, MIND counts 
+<! SQL QUERY "select count(*) from pro where dir rlike 'mind'" q2 >
+<! SQL PRINT "@q2.0"  >
+.</FONT> 
+
+
 <! sql close>
 
 
