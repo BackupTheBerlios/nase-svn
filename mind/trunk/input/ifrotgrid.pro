@@ -48,6 +48,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/28 14:30:35  alshaikh
+;           seems to be ok, now
+;
 ;     Revision 1.5  2000/01/27 17:44:25  alshaikh
 ;           new console-syntax
 ;
@@ -113,7 +116,7 @@ if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
 
          FOR x=0,2*h DO BEGIN
             FOR y=0,2*w DO BEGIN 
-               background(x,y) = 0.5*(1+sin(2*3.14159/lambda*(x+offset)))
+               background(x,y) = 0.5*(1+(sin(2*3.14159/lambda*(x+offset))))
             ENDFOR 
          ENDFOR 
 
@@ -163,9 +166,7 @@ if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
                            +temp_vals.delta_alpha $
                            ELSE angle =  temp_vals.alpha
 
-console,output,'angle: '+str(angle)
-
-temp_vals.myseed =  _seed
+            temp_vals.myseed =  _seed
 
             FOR x=-(temp_vals.h/2),temp_vals.h/2 DO BEGIN
                FOR y=-(temp_vals.w/2),(temp_vals.w/2) DO BEGIN
