@@ -1,127 +1,108 @@
 ;+
-; NAME: Scl
+; NAME:
+;  Scl
 ;
-; AIM: linear rescaling of an array
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Lineares Skalieren eines Arrayinhaltes, vergleichbar
-;          dem, was die TvScl-Routine macht, doch etwas allgemeiner.
+; AIM:
+;  Linearly rescale array contents.
 ;
-; CATEGORY: ARRAY, MISCELLANEOUS
+; PURPOSE: 
+;  Lineares Skalieren eines Arrayinhaltes, vergleichbar dem, was die
+;  TvScl-Routine macht, doch etwas allgemeiner.<BR>
+;  <BR>
+;  The linear transformation is defined via the transformation
+;  of two example points:
+;*
+;*                             P1'             P2'
+;*   output space  ------------o---------------o-------------->    /|\
+;*                             |             _/                     |
+;*                             \           _/                 transformation
+;*                              |         /                         |
+;*   input space   -------------o--------o-------------------->     |
+;*                              P1       P2
+;*
+; CATEGORY:
+;  Array
+;  Image
+;  Math
 ;
-; CALLING SEQUENCE: Entweder Funktionsform:
-;                      New = Scl ( Old [,Range [,Range_In]] )
+; CALLING SEQUENCE:
+;  This routine can be a procedure (the argument is changed), as
+;  well as a function (the argument stays unchanged, and the result is
+;  returned.)<BR>
+;  <BR>
+;  The <C>Scl()</C> function:
+;*new = Scl ( old [,range [,range_in]] )
+;  The <C>Scl</C> procedure:
+;*Scl, old [,range [,range_in]]
 ;
-;                   oder Prozedurform:
-;                            Scl, Old [,Range [,Range_In]]
+; INPUTS:
+;  old:: The array to rescale. The array must contain numeric values.
 ;
-; INPUTS: Old: Das zu skalierende Array.
+; OPTIONAL INPUTS:
+;  range   :: Ein zweielementiges Array der Form [P1',P2']. Wenn der
+;             dritte Positionsparameter "Range_In" nicht angegeben
+;             wird, entsprechen diese Werten gerade dem Minimum und
+;             dem Maximum des Ergebnisarrays.  Default:
+;             [0,!D.Table_Size-1], in Anlehnung an das Verahalten von
+;             TvScl.
+;  
+;  range_in:: Ein zweielementiges Array der Form [P1,P2].  Default:
+;             [min(Old),max(Old)]<BR>
+;  
+;  Man beachte, daß der 1. Positionsparameter die Bilder und der
+;  2. Positionsparameter die Urbilder der zwei Beispielpunkte enthält
+;  (nicht umgekehrt).
 ;
-; PROCEDURE:  Die lineare Abbildung wird über die Abbildung 
-;             zweier Beispielpunkte definiert:
 ;
-;                              P1'             P2'
-;    Outputraum    ------------o---------------o-------------->    /|\
-;                              |             _/                     |
-;                              \           _/                   Abbildung
-;                               |         /                         |
-;    Inputraum     -------------o--------o-------------------->     |
-;                               P1       P2
+; OUTPUTS: 
+;  new:: Ein Array mit gleichen Ausmaßen und entsprechend skaliertem
+;        Inhalt. Das Ergebnis ist vom Typ Double, wenn das
+;        Ausgangsarray vom Typ Double war, sonst vom Typ Float.
 ;
+; RESTRICTIONS: 
+;  Falls P1 und P2 identisch sind, ist die Skalierung nicht
+;  definiert. Dies ist z.B. der Fall für Arrays, welche lauter
+;  identische Werte enthalten, sofern "Range_In" nicht explizit
+;  angegeben wird.  Als Rückgabewert wird hier das mehr oder weniger
+;  sinnvolle Ergebnis eines Float-Arrays geliefert, das den konstanten
+;  Wert P1' enthält.
 ;
-; OPTIONAL INPUTS: Range   : Ein zweielementiges Array der Form
-;                            [P1',P2']. Wenn der dritte
-;                            Positionsparameter "Range_In" nicht 
-;                            angegeben wird, entsprechen diese
-;                            Werten gerade dem Minimum und dem
-;                            Maximum des Ergebnisarrays.
-;                            Default: [0,!D.Table_Size-1], in
-;                            Anlehnung an das Verahalten von
-;                            TvScl.
+; PROCEDURE:
+;  Elementary mathematical operations are performed on the array
+;  contents.
 ;
-;                  Range_In: Ein zweielementiges Array der Form
-;                            [P1,P2].
-;                            Default: [min(Old),max(Old)]
+; EXAMPLE:
+;  1. Diese beiden Aufrufe sind identisch:
 ;
-;                  Man beachte, daß der 1. Positionsparameter
-;                  die Bilder und der 2. Positionsparameter die
-;                  Urbilder der zwei Beispielpunkte enthält
-;                  (nicht umgekehrt).
+;*     TvScl,   gauss_2d(100,100)
+;*     Tv, Scl( gauss_2d(100,100) )
 ;
-; OUTPUTS: New: Ein Array mit gleichen Ausmaßen und entsprechend 
-;               skaliertem Inhalt. Das Ergebnis ist vom Typ
-;               Double, wenn das Ausgangsarray vom Typ Double
-;               war, sonst vom Typ Float.
-;
-; RESTRICTIONS: Falls P1 und P2 identisch sind, ist die
-;               Skalierung nicht definiert. Dies ist z.B. der
-;               Fall für Arrays, welche lauter identische Werte
-;               enthalten, sofern "Range_In" nicht explizit
-;               angegeben wird.
-;               Als Rückgabewert wird hier das mehr oder weniger 
-;               sinnvolle Ergebnis eines Float-Arrays geliefert, das
-;               den konstanten Wert P1' enthält.               
-;
-; PROCEDURE: Elementare mathematische Operationen auf dem Arrayinhalt.
-;
-; EXAMPLE: 1. Diese beiden Aufrufe sind identisch:
-;
-;              TvScl,   gauss_2d(100,100)
-;              Tv, Scl( gauss_2d(100,100) )
-;
-;          2. Dieser Aufruf skaliert den Inhalt des Arrays A auf 
-;             Werte im geschlossenen Intervall [0,1]:
-;
-;              Scl, A, [0,1]
-;
-;          4. Dieser Aufruf rechnet Temperaturwerte von der
-;             Farenheit- in die Celsiusskala um:
-;               0°F = -17.8°C (Kältemischung)
-;             100°F =  37.8°C (Körpertemperatur. Naja, hitziges Temperament..)
-;
-;              Celsius = Scl( Fahrenheit, [-17.8,37.8], [0,100] )
-;
-;             Man beachte, daß die Werte 0 und 100 im
-;             Ausgangsarray nicht enthalten sein müssen.
-;
-;          5. Diese zwei Aufrufe definieren jeweils die
-;             identische Abbildung:
-;
-;              Scl, A, [0,1], [0,1]
-;              Scl, A, [min(A),max(A)]
+;  2. Dieser Aufruf skaliert den Inhalt des Arrays A auf 
+;     Werte im geschlossenen Intervall [0,1]:
+;  
+;*     Scl, A, [0,1]
+;  
+;  4. Dieser Aufruf rechnet Temperaturwerte von der
+;     Farenheit- in die Celsiusskala um:<BR>
+;       0°F = -17.8°C (Kältemischung)<BR>
+;     100°F =  37.8°C (Körpertemperatur. Naja, hitziges Temperament..)
+;  
+;*     Celsius = Scl( Fahrenheit, [-17.8,37.8], [0,100] )
+;  
+;     Man beachte, daß die Werte 0 und 100 im
+;     Ausgangsarray nicht enthalten sein müssen.
+;  
+;  5. Diese zwei Aufrufe definieren jeweils die
+;     identische Abbildung:
+;  
+;*     Scl, A, [0,1], [0,1]
+;*     Scl, A, [min(A),max(A)]
 ;              
-;
-; SEE ALSO: <A HREF="../../alien/#SCALEARRAY">ScaleArray()</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.7  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.6  1999/10/11 12:10:30  kupper
-;        Changed return value for homogeneous Arrays to P1', to be
-;        compatible to the behaviour of PlotTvScl known until now.
-;
-;        Added a Temporary().
-;
-;        Revision 1.5  1999/10/08 12:52:20  kupper
-;        Now catches the case (Range_In(0) eq Range_In(1)).
-;
-;        Revision 1.4  1999/09/22 14:42:24  kupper
-;        Grrr. Hyperling again.
-;
-;        Revision 1.3  1999/09/22 14:36:27  kupper
-;        Corrected Hyperling.
-;
-;        Revision 1.2  1999/09/22 14:33:05  kupper
-;        Added Docu.
-;
-;        Revision 1.1  1999/09/22 13:33:50  kupper
-;        Added new procompiling-feature to NASE-startup script.
-;        Allowing identically named Procs/Funcs (currently NoNone and Scl).
-;
+; SEE ALSO:
+;  IDL's <C>TvScl</C>, <A>PlotTvScl</A>, <A>PTvS</A>
 ;-
 
 Function Scl, A, Range, Range_In
@@ -130,7 +111,7 @@ Function Scl, A, Range, Range_In
    Default, Range_In, [min(A), max(A)       ]
 
    If Range_In(0) eq Range_In(1) then begin
-      return, Make_Array(/FLOAT, SIZE=size(Temporary(A)), VALUE=Range(0))
+      return, Make_Array(/FLOAT, SIZE=size(A), VALUE=Range(0))
    endif else begin
       Return, (A - Range_In(0)) $
                 * FLOAT(Range(1)-Range(0)) $
