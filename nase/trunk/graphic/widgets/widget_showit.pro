@@ -36,12 +36,9 @@
 ;
 ;                     ALIGN_BOTTOM
 ;                     ALIGN_CENTER 
-;ALIGN_LEFT
-;ALIGN_RIGHT
-;ALIGN_TOP
-;GROUP_LEADER
-;MAP
-;
+;                     ALIGN_LEFT
+;                     ALIGN_RIGHT
+;                     ALIGN_TOP
 ;                     APP_SCROLL
 ;                     BUTTON_EVENTS
 ;                     EVENT_PRO
@@ -50,6 +47,8 @@
 ;                     NOTIFY_REALIZE
 ;                     KILL_NOTIFY
 ;                     FRAME
+;                     GROUP_LEADER
+;                     MAP
 ;                     MOTION_EVENTS
 ;                     NO_COPY
 ;                     UNAME
@@ -96,6 +95,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2000/03/10 20:38:52  kupper
+;        some header formatting.
+;
 ;        Revision 1.8  2000/03/10 20:36:10  kupper
 ;        Added missing keywords to _extra passing.
 ;
