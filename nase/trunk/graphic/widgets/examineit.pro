@@ -20,7 +20,7 @@
 ;*                   [,XPOS=xoffset] [,YPOS=yoffset]
 ;*                   [,/BOUND]
 ;*                   [,RANGE=...]
-;*                   {[,/NORDER] [,/NSCALE]} | [,/NASE]
+;*                   { {[,/NORDER] [,/NSCALE]} | [,/NASE] }
 ;*                   [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
 ;*                   [,GET_BASE=BaseID]
 ;*                   [,DELIVER_EVENTS=Array_of_Widget_IDs]
@@ -33,8 +33,9 @@
 ;                            Original unterscheiden, wenn
 ;                            beispielsweise bestimmten Arraywerten
 ;                            besondere Farbindizes zugeordnet werden
-;                            sollen (man denke z.B. an
-;                            N.A.S.E.-!NONE-Verbindungen).
+;                            sollen.<BR>
+;                            Passing this parameter implies setting of
+;                            <C>/NOSCALE</C>.
 ;	
 ; OPTIONAL OUTPUTS: GET_BASE:: Hier kann die ID des produzierten Widgets erfahren werden.
 ;
@@ -58,12 +59,31 @@
 ;                             irritierend wirken kann.
 ;                             The BOUND mode can also be toggled
 ;                             "online" via a widget menu entry.
-;                      NASE::  Wenn gesetzt, wird das Array als NASE-Array in richtiger Orientierung und
-;                             mit richtigen Farben dargestellt (Es
-;                             braucht kein TV-Array angegeben zu
-;                             werden.)
-;                     NORDER::
-;                    NSCALE::
+;      NOSCALE:: Do not perform any color scaling. Array contents will
+;                be directly interpreted as color indices. (Cf.
+;                <C>NOSCALE</C> keyword in <A>UTVScl</A>.)
+;         NASE:: Setting this keyword is equivalent to setting
+;                <C>NORDER</C> and <C>NSCALE</C> (see below). It is
+;                maintained for backwards compatibility.<BR>
+;                <I>Note: In general, newer applications sould use the
+;                         <C>NORDER</C> and <C>NSCALE</C> keywords to
+;                         indicate array ordering and color scaling
+;                         according to NASE conventions.</I>
+;       NORDER:: Indicate that array ordering conforms to the NASE
+;                convention: The indexing order is <*>[row,column]</*>, and
+;                the origin will be displayed on the upper left corner
+;                (unless <C>ORDER</C> is set, cf. IDL help on
+;                <C>TvScl</C>).
+;       NSCALE:: Request that colorscaling shall be done according to
+;                NASE conventions: Before display, the array contents
+;                will be scaled for display with the NASE colortables
+;                (b/w linear or red/green linear by default). The
+;                value <*>0</*> will always be mapped to black. In
+;                addition, the appropriate NASE color table will be
+;                loaded, unless <C>SETCOL</C><*>=0</*> is passed. (For
+;                further information cf. <A>Showweights_Scale</A>.)<BR>
+;                This keyword has no effect, if <C>/NOSCALE</C> is set.
+; If this keyword is set, the <C>TV_Array</C> parameter will be ignored.
 ;                     RANGE_IN::
 ;<BR>
 ; 
@@ -372,6 +392,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                GET_BASE=get_base, DELIVER_EVENTS=deliver_events, $
                BOUND=bound, RANGE_IN=range_in, $
                NASE=nase, SETCOL=setcol, NORDER=norder, NSCALE=nscale, $
+               NOSCALE = _noscale, $
                XPOS=xpos, YPOS=ypos, COLOR=color
    
    MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
@@ -386,23 +407,32 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    ;; to have it the same here. It only applies when NSCALE or NASE is
    ;; set.
    
+   ;; do not change NOSCALE argument, for safety:
+   Default, noscale, _noscale
 
    If (Size(_w))(0) eq 2 then w = _w $ ;Do not change Contents!
    else w = reform(_w)        ;Try to get rid of leading 1-dims.
-              
-   If Keyword_Set(_tv_w) then begin
+
+
+   If Set(_tv_w) then begin
       If (Size(_tv_w))(0) eq 2 then tv_w = _tv_w $ ;Do not change Contents!
-      else tv_w = reform(_tv_w)       ;Try to get rid of leading 1-dims. 
+      else tv_w = reform(_tv_w) ;Try to get rid of leading 1-dims. 
       noscale = 1 
-   endif else begin
-      If Keyword_Set(NSCALE) then begin
-         tv_w = ShowWeights_Scale(w, SETCOL=setcol, RANGE_IN=max(abs(RANGE_IN)))
-         noscale = 1
+   endif
+
+   If Keyword_Set(NSCALE) and not Keyword_Set(noscale) then begin
+      if keyword_set(RANGE_IN) then begin
+         tv_w = ShowWeights_Scale(w, SETCOL=setcol, $
+                                  RANGE_IN=max(abs(RANGE_IN)))
       endif else begin
-         tv_w = w
-         noscale = 0
+         tv_w = ShowWeights_Scale(w, SETCOL=setcol)
       endelse
-   endelse
+      noscale = 1
+   endif
+
+   ;; if tv_w is not set until now, it defaults to w:
+   Default, tv_w, w
+
 
    If keyword_set (NORDER) then begin
       w = rotate(Temporary(w), 3)

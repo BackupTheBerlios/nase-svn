@@ -53,7 +53,7 @@
 ;*               [,STRETCH=stretch][,H_STRETCH=h_stretch][,V_STRETCH=v_stretch]
 ;*               [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
 ;*               [,CUBIC=...][,/INTERP][,/MINUS_ONE]
-;*               {[,/NORDER] [,/NSCALE]} | [,/NASE]
+;*               [,/NORDER | ,/NASE]
 ;*               [,/ALLOWCOLORS]
 ;*               [,TOP=...] [,RANGE_IN=[..., ...]]
 ;
@@ -114,9 +114,16 @@
 ;                            interpolation with <*>POLYGON</*> set
 ;                            results in very large Postscript output
 ;                            files.
-; /NASE:: Array is in NASE coordinates (array will be rotated suitably before output).
-; /NORDER   ::
-; /NSCALE   ::
+; /NASE:: Setting this keyword is equivalent to setting <C>NORDER</C>
+;         (see below). It is maintained for backwards compatibility.<BR>
+;         <I>Note: In general, newer applications sould use the <C>NORDER</C>
+;         and <C>NSCALE</C> keywords to indicate array ordering and
+;         color scaling according to NASE conventions.</I>
+; /NORDER:: Indicate that array ordering conforms to the NASE
+;           convention: The indexing order is <*>[row,column]</*>, and
+;           the origin will be displayed on the upper left corner
+;           (unless <C>ORDER</C> is set, cf. IDL help on
+;           <C>TvScl</C>).
 ; /ALLOWCOLORS:: If <C>/ALLOWCOLORS</C> is set, at the upper end of the
 ;               palette, only colors above the color table size are
 ;               clipped, leaving the indices between <*>!TOPCOLOR</*>

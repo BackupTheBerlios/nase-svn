@@ -24,7 +24,7 @@
 ;*           [, /NOSCALE]
 ;*           [, /LEGEND]
 ;*           [, /ORDER]
-;*           {[,/NORDER] [,/NSCALE]} | [,/NASE]
+;*           { {[,/NORDER] [,/NSCALE]} | [,/NASE] }
 ;*           [, XRANGE=...] [, YRANGE=...]
 ;*           [, GET_POSITION=...]
 ;*           [, GET_COLOR=...]
@@ -61,108 +61,123 @@
 ;                                   Standardschriftgroesse (1.0) angibt
 ;
 ; INPUT KEYWORDS: 
-;                     FULLSHEET:: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
-;                                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
-;                                der Regel nicht quadratisch.
-;                     NOSCALE::   Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
-;                                mit dem Aufruf von <A>PlotTV</A>
-;                                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
-;                                TVSCL und TV.
-;                     LEGEND::    Zeigt zusaetzlich eine <A NREF="TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
-;                                an. 
-;                     ORDER::     der gleiche Effekt wie bei Original-TVScl
-;                     NASE::      Bewirkt die richtig gedrehte Darstellung von Layerdaten 
-;                                (Inputs, Outputs, Potentiale, Gewichte...).
-;                                D.h. z.B. werden Gewichtsmatrizen in der gleichen
-;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
-;                     NORDER   ::
-;                     NSCALE   ::
-;                     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung:
-;                                das erste Element gibt das Minimum,
-;                                das zweite das Maximum der Achse an 
-;                     LEGMARGIN:: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
-;                     leg_(max|min):: alternative Beschriftung der Legende 
-;                     NEUTRAL::   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
-;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
-;                     POLYGON:: Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
-;                                 /POLYGON setzt /CUBIC, /INTERP
-;                                 und /MINUS_ONE außer Kraft.
-;                     TOP::       Benutzt nur die Farbeintraege
-;                                 von 0..TOP (siehe IDL5-Hilfe von TvSCL)
-;                                 Dieses Schlüsselwort hat nur
-;                                 Bedeutung, wenn nicht eines
-;                                 der Schlüsselworte NASE,
-;                                 NEUTRAL oder NOSCALE gesetzt ist.
-;                     CUBIC, INTERP, MINUS_ONE:: 
-;                                 werden an ConGrid weitergereicht (s. IDL-Hilfe)
-;                     COLORMODE:: Wird an Showweights_scale
-;                                 weitergereicht. Mit diesem Schlüsselwort kann unabhängig 
-;                                 von den Werten im Array die
-;                                 schwarz/weiss-Darstellung (COLORMODE=+1) 
-;                                 oder die rot/grün-Darstellung
-;                                 (COLORMODE=-1) erzwungen werden.
-;                     SETCOL::    Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
-;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
-;                     PLOTCOL::   Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
-;                                 wird versucht, eine passende Farbe zu raten.
-;                     RANGE_IN::  When passed, the two-element array is taken as the range to
-;                                 scale to the plotting colors. (I.e. the first element is scaled to
-;                                 color index 0, the scond is scaled to the highest available
-;                                 index (or to TOP in the no-NASE, no-NEUTRAL, no-NOSCALE 
-;                                 case)).
-;                                 Note that when NASE or NEUTRAL is specified, only the highest
-;                                 absolute value of the passed array is used, as according to NASE 
-;                                 conventions, the value 0 is always mapped to
-;                                 color index 0 (black).
-;                                 If used in conjunction with UPDATE_INFO, this
-;                                 keyword overrides the values regarding color
-;                                 scaling that are part of the PLOTTVSCL_INFO
-;                                 struct. However, the new scaling is valid for
-;                                 this call only, and is not stored in the
-;                                 struct, unless you also specify /INIT.
-;                   UPDATE_INFO:: When omitted, undefined, or passend an empty
-;                                 PLOTTVSCL_INFO structure, the call acts like
-;                                 a normal PlotTvScl call. Axes as well as the
-;                                 array are plotted.
-;                                   This keyword acts as an optional output
-;                                 also. A <A>PLOTTVSCL_INFO</A> struct is returned,
-;                                 containing information on keywords, plot
-;                                 positions and color scaling. When this strict
-;                                 is passed with the next call to PlotTvScl,
-;                                 only the array is re-plotted, and the new
-;                                 array is scaled in the ranges of the original
-;                                 array. (I.e. the colors of the two plots are
-;                                 directly comparable. See also keywords
-;                                 RANGE_IN and INIT.)
-;                                   When UPDATE_INFO is set, all keywords execept
-;                                 RANGE_IN and INIT are silently overriden by
-;                                 the values contained in the PLOTTVSCL_INFO
-;                                 struct.
-;                                   Note that calling PlotTvScl with keyword
-;                                 UPDATE_INFO set to a defined structure is
-;                                 equivalent to calling PlotTvScl_Update on this 
-;                                 structure. The UPDATE_INFO keyword is supplied 
-;                                 for convenience.
-;                                   If you intend to store UPDATE_INFO
-;                                 structures in an array or another structure,
-;                                 use the zeroed structure '{PLOTTVSCL_INFO}' as
-;                                 initial value. This value will be treated as
-;                                 if an undefined variable was passed to
-;                                 UPDATE_INFO. When storing in another
-;                                 structure, note also that structure tags are
-;                                 passed by value in IDL. You need to use a
-;                                 temporary variable. (See IDL Reference Manual,
-;                                 chapter "Parameter Passing with Structures", sic!)
-;                          INIT:: When passing a structure in UPDATE_INFO, array 
-;                                 values are scaled according to the values
-;                                 contained in the PLOTTVSCL_INFO struct. /INIT
-;                                 forces the color scaling to be re-initialized, 
-;                                 i.e., the array (or any interval specified in
-;                                 RANGE_IN, respectively) is individually scaled
-;                                 to span all availabe color indices.
-;                                 The new scling is stored in the PLOTTVSCL_INFO 
-;                                 struct for subsequent calls.
-;                  /ALLOWCOLORS:: Passed to <A>UTvScl</A>, see there.
+;     FULLSHEET::Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
+;                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
+;                der Regel nicht quadratisch.
+;     NOSCALE::  Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
+;                mit dem Aufruf von <A>PlotTV</A>
+;                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
+;                TVSCL und TV.
+;     LEGEND::   Zeigt zusaetzlich eine <A NREF="TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
+;                an. 
+;     ORDER::    der gleiche Effekt wie bei Original-TVScl
+;     NASE::     Setting this keyword is equivalent to setting
+;                <C>NORDER</C> and <C>NSCALE</C> (see below). It is
+;                maintained for backwards compatibility.<BR>
+;                <I>Note: In general, newer applications sould use the
+;                         <C>NORDER</C> and <C>NSCALE</C> keywords to
+;                         indicate array ordering and color scaling
+;                         according to NASE conventions.</I>
+;     NORDER::   Indicate that array ordering conforms to the NASE
+;                convention: The indexing order is <*>[row,column]</*>, and
+;                the origin will be displayed on the upper left corner
+;                (unless <C>ORDER</C> is set, cf. IDL help on
+;                <C>TvScl</C>).
+;       NSCALE:: Request that colorscaling shall be done according to
+;                NASE conventions: Before display, the array contents
+;                will be scaled for display with the NASE colortables
+;                (b/w linear or red/green linear by default). The
+;                value <*>0</*> will always be mapped to black. In
+;                addition, the appropriate NASE color table will be
+;                loaded, unless <C>SETCOL</C><*>=0</*> is passed. (For
+;                further information cf. <A>Showweights_Scale</A>.)<BR>
+;                This keyword has no effect, if <C>/NOSCALE</C> is set.
+;     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung:
+;                das erste Element gibt das Minimum,
+;                das zweite das Maximum der Achse an 
+;     LEGMARGIN:: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
+;     leg_(max|min):: alternative Beschriftung der Legende 
+;     NEUTRAL::   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
+;                !NONE, ohne den ganzen anderen NASE-Schnickschnack
+;     POLYGON:: Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
+;                 /POLYGON setzt /CUBIC, /INTERP
+;                 und /MINUS_ONE außer Kraft.
+;     TOP::       Benutzt nur die Farbeintraege
+;                 von 0..TOP (siehe IDL5-Hilfe von TvSCL)
+;                 Dieses Schlüsselwort hat nur
+;                 Bedeutung, wenn nicht eines
+;                 der Schlüsselworte NASE,
+;                 NEUTRAL oder NOSCALE gesetzt ist.
+;     CUBIC, INTERP, MINUS_ONE:: 
+;                 werden an ConGrid weitergereicht (s. IDL-Hilfe)
+;     COLORMODE:: Wird an Showweights_scale
+;                 weitergereicht. Mit diesem Schlüsselwort kann unabhängig 
+;                 von den Werten im Array die
+;                 schwarz/weiss-Darstellung (COLORMODE=+1) 
+;                 oder die rot/grün-Darstellung
+;                 (COLORMODE=-1) erzwungen werden.
+;     SETCOL::    Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
+;                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
+;     PLOTCOL::   Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
+;                 wird versucht, eine passende Farbe zu raten.
+;     RANGE_IN::  When passed, the two-element array is taken as the range to
+;                 scale to the plotting colors. (I.e. the first element is scaled to
+;                 color index 0, the scond is scaled to the highest available
+;                 index (or to TOP in the no-NASE, no-NEUTRAL, no-NOSCALE 
+;                 case)).
+;                 Note that when NASE or NEUTRAL is specified, only the highest
+;                 absolute value of the passed array is used, as according to NASE 
+;                 conventions, the value 0 is always mapped to
+;                 color index 0 (black).
+;                 If used in conjunction with UPDATE_INFO, this
+;                 keyword overrides the values regarding color
+;                 scaling that are part of the PLOTTVSCL_INFO
+;                 struct. However, the new scaling is valid for
+;                 this call only, and is not stored in the
+;                 struct, unless you also specify /INIT.
+;   UPDATE_INFO:: When omitted, undefined, or passend an empty
+;                 PLOTTVSCL_INFO structure, the call acts like
+;                 a normal PlotTvScl call. Axes as well as the
+;                 array are plotted.
+;                   This keyword acts as an optional output
+;                 also. A <A>PLOTTVSCL_INFO</A> struct is returned,
+;                 containing information on keywords, plot
+;                 positions and color scaling. When this strict
+;                 is passed with the next call to PlotTvScl,
+;                 only the array is re-plotted, and the new
+;                 array is scaled in the ranges of the original
+;                 array. (I.e. the colors of the two plots are
+;                 directly comparable. See also keywords
+;                 RANGE_IN and INIT.)
+;                   When UPDATE_INFO is set, all keywords execept
+;                 RANGE_IN and INIT are silently overriden by
+;                 the values contained in the PLOTTVSCL_INFO
+;                 struct.
+;                   Note that calling PlotTvScl with keyword
+;                 UPDATE_INFO set to a defined structure is
+;                 equivalent to calling PlotTvScl_Update on this 
+;                 structure. The UPDATE_INFO keyword is supplied 
+;                 for convenience.
+;                   If you intend to store UPDATE_INFO
+;                 structures in an array or another structure,
+;                 use the zeroed structure '{PLOTTVSCL_INFO}' as
+;                 initial value. This value will be treated as
+;                 if an undefined variable was passed to
+;                 UPDATE_INFO. When storing in another
+;                 structure, note also that structure tags are
+;                 passed by value in IDL. You need to use a
+;                 temporary variable. (See IDL Reference Manual,
+;                 chapter "Parameter Passing with Structures", sic!)
+;          INIT:: When passing a structure in UPDATE_INFO, array 
+;                 values are scaled according to the values
+;                 contained in the PLOTTVSCL_INFO struct. /INIT
+;                 forces the color scaling to be re-initialized, 
+;                 i.e., the array (or any interval specified in
+;                 RANGE_IN, respectively) is individually scaled
+;                 to span all availabe color indices.
+;                 The new scling is stored in the PLOTTVSCL_INFO 
+;                 struct for subsequent calls.
+;  /ALLOWCOLORS:: Passed to <A>UTvScl</A>, see there.
 ;
 ; OPTIONAL OUTPUTS:
 ;                 
@@ -187,6 +202,10 @@
 ;* 2. Zeichnen der Achsen an der ermittelten Position.
 ;* 3. Ausfuellen mit einer entsprechend grossen UTVScl-Graphik
 ;* 4. Legende hinzufuegen 
+;
+; SIDE EFFECTS:
+;  If <C>/NASE</C> or <C>/NSCALE</C> is set, and unless <C>SETCOL</C><*>=0</*> is passed, the
+;  appropriate NASE color table is loaded.
 ;
 ; EXAMPLE: 
 ;*          width = 25
