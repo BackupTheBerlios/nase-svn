@@ -44,6 +44,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.10  2000/11/16 14:25:29  saam
+;     double coordinate system plotting only on
+;     a screen device.
+;
 ;     Revision 2.9  2000/10/11 16:14:24  gabriel
 ;           Modification History ;- deleted
 ;
@@ -72,9 +76,7 @@
 ;          Eine kleine neue Routine
 ;
 ;
-;
-
-
+;-
 PRO ubar_plot,xdata,ydata,xbase,COLORS=COLORS,OFFSET=OFFSET,CENTER=CENTER,BARSPACE=BARSPACE,SYMMETRIC=SYMMETRIC,OPLOT=OPLOT,_EXTRA=e
 
 DEFAULT,offset,0
@@ -127,23 +129,24 @@ FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN
    polyfill,x,y,COLOR=COLORS(i),NOCLIP=0
 
 END
-;IF OPLOT EQ 0 THEN BEGIN
-   ;;Und Nochmal Drueber
-   ;;print,!P.MULTI
-   !P.MULTI = PTMP 
-   CASE 1 OF
-      ExtraSet(e, 'XRANGE'): plot,__xdata,ydata,/NODATA,/NOERASE,/XSTYLE,_EXTRA=e
-      ExtraSet(e, 'XSTYLE'): plot,__xdata,ydata,/NODATA,/NOERASE,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],_EXTRA=e
-      ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
-         maxr = MAX([ABS(__xdata(0)-stepl),ABS(MAX(__xdata)+stepr)])
-         plot,__xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
-      END ELSE BEGIN
-         plot,__xdata,ydata,/NODATA,/NOERASE,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],/XSTYLE,_EXTRA=e
-      END
-   ENDCASE
-   
-   ;;print,!P.MULTI
-;ENDIF
+
+IF ((OPLOT EQ 0) AND NOT Contains(!D.Name, 'PS', /IGNORECASE)) THEN BEGIN
+    ; redraw tickmarks on a screen device
+    ; not when using postscript, because overplotted
+    ; lines are annoying in corel
+
+    !P.MULTI = PTMP 
+    CASE 1 OF
+        ExtraSet(e, 'XRANGE'): plot,__xdata,ydata,/NODATA,/NOERASE,/XSTYLE,_EXTRA=e
+        ExtraSet(e, 'XSTYLE'): plot,__xdata,ydata,/NODATA,/NOERASE,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],_EXTRA=e
+        ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
+            maxr = MAX([ABS(__xdata(0)-stepl),ABS(MAX(__xdata)+stepr)])
+            plot,__xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
+        END ELSE BEGIN
+            plot,__xdata,ydata,/NODATA,/NOERASE,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],/XSTYLE,_EXTRA=e
+        END
+    ENDCASE
+ENDIF
 !P.MULTI = PTMP2
 END
 
