@@ -9,7 +9,7 @@
 ;   Arrays and scalar data types can easily be stored via
 ;   <*>PrintF</*> or <*>WriteU</*>. For structures, this is 
 ;   only possible, if one knows the names and sizes of all
-;   tags. SaveStruc and its partner <A>LoadStruc</A> provide
+;   tags. <*>LoadStruc</*> and its partner <A>SaveStruc</A> provide
 ;   an easy to use extension for this.<BR>
 ;   Why not use IDLs <*>Save</*>, instead? Restored structures
 ;   always have to have the same name when being restored. This
