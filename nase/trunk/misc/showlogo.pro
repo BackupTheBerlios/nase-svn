@@ -30,12 +30,17 @@ Pro ShowLogo, SECS=secs
    device, get_screen_size=ss
    window, /free, COLORS=256, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
    win = !D.WINDOW
+   
    Utvlct, r, g, b
    Utv, logo
 
    if Keyword_Set(SECS) then begin
       wait, SECS
+      ;;hide the window
+      wshow, win, 0
+      ;;wait needed for refreshing the color table (KDE 2.1.x 8-bit Display)
+      wait, 0.01
       wdelete, win
-      loadct, 0
+      uloadct, 0
    endif
 end
