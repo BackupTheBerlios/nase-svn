@@ -23,11 +23,14 @@
 ;
 ; COMMON BLOCKS:      ATTENTION
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/internal#READSIM>readsim</A> readsim, ReadInd
+; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/internal#READSIM>readsim</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1999/12/21 09:49:39  saam
+;             doc header updated
+;
 ;       Revision 1.2  1999/12/21 09:48:54  saam
 ;            error in TD section
 ;
