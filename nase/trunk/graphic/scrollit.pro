@@ -96,6 +96,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.17  1999/03/08 10:38:40  thiel
+;              Größe des Plotbereichs ein klein wenig verändert,
+;              um unnötige Scrollbars zu vermeiden.
+;
 ;       Revision 2.16  1998/05/20 14:17:39  kupper
 ;              SPACE=0 hinzugefügt.
 ;
@@ -196,11 +200,11 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
 
    If not Keyword_Set(XDRAWSIZE) then begin
       XDRAWSIZE = XSIZE
-      XSIZE = XSIZE-27
+      XSIZE = XSIZE-25
    EndIf
    If not Keyword_Set(YDRAWSIZE) then begin
       YDRAWSIZE = YSIZE
-      YSIZE = YSIZE-27
+      YSIZE = YSIZE-25
    EndIf
  
    
