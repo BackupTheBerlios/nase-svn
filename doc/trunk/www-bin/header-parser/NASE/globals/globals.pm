@@ -15,13 +15,13 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir checkH openHwrite closeHwrite openHread closeHread KeyByNameHTML KeyByCountHTML RoutinesHTML KeyByName KeyByCount parseAim getDocURL %hdata @hentry myHeader myBody);
+@EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir checkH openHwrite closeHwrite openHread closeHread KeyByNameHTML KeyByCountHTML RoutinesHTML RoutinesCatHTML KeyByName KeyByCount parseAim getDocURL %hdata @hentry myHeader myBody);
 $VERSION = '1.1';
 
 
 # Preloaded methods go here.
 my ($DOCURL, $hostname);
-my ($INDEXDIR, $CVSROOT, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr);
+my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr, $CVSROOT);
 
 ## just default settings (START) ##
 # CVSROOT: the location of the repository, if unset no checkout will be performed
@@ -68,10 +68,12 @@ sub setSubDir { $SUBDIR = shift @_; }
 sub getSubDir { return $SUBDIR; }
 
 
+
 sub parseAim        { if ($#_ ge 0) { $_parseAim = shift @_;  } else { return $_parseAim; } }
 sub KeyByNameHTML   { return "keywords-by-name.html"; } 
 sub KeyByCountHTML  { return "keywords-by-count.html"; }
 sub RoutinesHTML    { return "routines-by-name.html"; } 
+sub RoutinesCatHTML { return "routines-by-cat.html"; } 
 sub KeyByName       { return getIndexDir()."keywords-by-name"; }
 sub KeyByCount      { return getIndexDir()."keywords-by-count"; }
 
@@ -80,7 +82,7 @@ sub KeyByCount      { return getIndexDir()."keywords-by-count"; }
 ## implement a simple locking, persistent hash
 ##
 ## %hdata is a hash of lists, the key is the filename 
-## the lists has the following organization [dir, name, aim, ...]
+## the lists has the following organization [dir, name, aim, catlist ]
 my $hfiler = "/tmp/nasedocu.db";
 my $hfilew = "/tmp/nasedocu.new.db";
 @hentry = ();
@@ -128,7 +130,8 @@ sub myHeader {
 }
 
 sub myBody {
-  return "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>";
+#  return "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>";
+  return "<BODY bgcolor=#FFFFFF text=#000000>";
 }
 
 
