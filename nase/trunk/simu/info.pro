@@ -1,5 +1,8 @@
 ;+
-; NAME:                  Info
+; NAME:
+;  Info
+;
+; AIM: Check if structure is valid NASE structure, return info tag.
 ;
 ; PURPOSE:               Ermittelt, ob ob die uebergegebene Struktur eine
 ;                        gueltige NASE-Struktur ist und gibt den Info-Tag
@@ -7,7 +10,7 @@
 ;                        Ist die Struktur nicht gueltig, wird die Bearbeitung
 ;                        mit einem Fehler abgebrochen.
 ;
-; CATEGORY:              SIMULATION
+; CATEGORY: SIMULATION
 ;
 ; CALLING SEQUENCE:      infoTag = Info(S)
 ;
@@ -17,9 +20,14 @@
 ;
 ; EXAMPLE:               print, Info(S)
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/25 13:58:57  thiel
+;         Added AIMS in header.
+;
 ;     Revision 1.3  1998/02/27 18:26:10  kupper
 ;            Jetzt wird nur noch mit NO_COPY dereferenziert.
 ;     	Das ist dann tatsächlich viel schneller, da DW-Strukturen ja manchmal
@@ -32,7 +40,7 @@
 ;           aus der Not geboren
 ;
 ;
-;-
+
 FUNCTION Info, _NS
 
 ;Wir stellen uns hganz dumm und probieren erstmal:

@@ -1,11 +1,14 @@
 ;+
-; NAME: TestInfo
+; NAME:
+;  TestInfo
+;
+; AIM: Does info tag of a given structure match a teststring? 
 ;
 ; PURPOSE: Testet den Info-Tag einer Struktur auf einen bestimmten
 ;          Inhalt. (D.h. es kann schnell getestet werden, ob einer
 ;          Prozedur die "richtige" Art von Struktur übergeben wurde.)
 ;
-; CATEGORY: Simulation, Miscellaneous
+; CATEGORY: SIMULATION
 ;
 ; CALLING SEQUENCE: TestInfo, Structure, Name
 ;
@@ -41,9 +44,14 @@
 ;
 ; SEE ALSO: <A HREF="#INFO">Info</A>, <A HREF="../misc/array/#CONTAINS">Contains</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 13:58:57  thiel
+;            Added AIMS in header.
+;
 ;        Revision 1.1  1998/01/28 14:25:39  kupper
 ;               Dieses File wurde aus dem misc-Verzeichnis hierhin verschoben.
 ;
@@ -54,7 +62,7 @@
 ;               Mal schnell geschrieben, um nicht immer wieder den typischen
 ;        	"If-Contains-Message"-Teil am Prozeduranfang tippen zu müssen...
 ;
-;-
+
 
 Pro TestInfo, Struct, String
 
