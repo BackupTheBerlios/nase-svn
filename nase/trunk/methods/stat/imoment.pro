@@ -25,7 +25,8 @@
 ;                                Ist in der Matrix X z.B. -1 als 'kein sinnvoller Wert'
 ;                                definiert setzt man z.B. MIN=0
 ;
-;                     ITER: I ist dann der Iterationsindex (default: 0)
+;                     ITER: I ist dann der Iterationsindex (default: 0) und
+;                           I kann alternativ auch ein Array von Indizes sein
 ; EXAMPLE:            
 ;                     ;first example:
 ;                     x = [[1,2,3,4,5],[0.9,2.1,3.5,4.1,5.0],[1.05,1.99,3.0,4.02,5.1]]
@@ -41,12 +42,25 @@
 ;                     ;idl returns:
 ;                     ;<Expression>    FLOAT     = Array(10, 10, 4)
 ;                     surfit,m(*,*,0) ; plots the mean of the 2-dimensional iterations
-;   
+;                     
+;                     ;third example:
+;                     X=randomu(s,10,10,30,20) ; here: x means an array of type (xdim,ydim,iter1,iter2)
+;                     m=imoment(x,[3,4],/ITER)
+;                    
+;                     help,m
+;                     ;idl returns:   FLOAT     = Array(10, 10, 4) 
+;                     
+;
+;
+;
 ; SEE ALSO:           <A HREF="#UMOMENT">UMoment</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/06/08 10:13:55  gabriel
+;               ITER  keword supports arrays of indices
+;
 ;       Revision 1.5  1999/09/13 12:56:20  saam
 ;             array called sdev conflicted with function sdev in
 ;             the alien directory and was therefore renamed to
@@ -69,19 +83,25 @@
 
 FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
 
-   ;ON_ERROR, 2
+   ON_ERROR, 2
    default, iter,0
    s = Size(A)
 
 
-
-      IF s(0) LT i THEN Message, 'index too large for array'+string(s(0))
-      IF i    GT 7 THEN Message, 'maximal index is 7'
-      IF i    LT 1 THEN Message, 'index has to be greater equal 1'
-
+      IF s(0) LT max(i) THEN Message, 'index too large for array'+string(s(0))
+      IF max(i)    GT 7 THEN Message, 'maximal index is 7'
+      IF min(i)    LT 1 THEN Message, 'index has to be greater equal 1'
+      IF N_ELEMENTS(i) GE s(0) THEN MESSAGE,'index has to many elements'
+      IF N_ELEMENTS(i) GT 1 AND ITER EQ 0 THEN MESSAGE,'index array only with keyword ITER possible'
       IF iter EQ 1 THEN BEGIN
          ;; wo ist denn der boese index
-         ind = where(indgen(s(0)) NE (i-1))
+         ind = -1
+         FOR k=0, s(0)-1 DO BEGIN 
+            index = where(k EQ i-1,count)
+            IF count EQ 0   THEN ind = [ind,k]
+         ENDFOR
+         ind = ind(1:*)
+         
          ;; dimensionen bestimmen fuer m , sdeviation , mdev ohne den zu mittelnden index
          new_s1 = [s(0),s(ind+1),4,4,product([s(ind+1),4])]
          new_s2 = [s(0)-1,s(ind+1),4,product(ind+1)]
@@ -92,11 +112,24 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
 
          ;;hier tauschen wir den zu mittelnden index an die letzte stelle
          Atmp = utranspose(A,[ind,i-1])
-
-         FOR x=0, s(ind(0)+1)-1 DO BEGIN
+         s_tmp = size(Atmp)
+         CASE N_ELEMENTS(ind) OF
+            1: Atmp = reform(Atmp,s_tmp(1),product([s(i)]))
+            2: Atmp = reform(Atmp,s_tmp(1),s_tmp(2),product([s(i)]))
+            3: Atmp = reform(Atmp,s_tmp(1),s_tmp(2),s_tmp(3),product([s(i)]))
+            4: Atmp = reform(Atmp,s_tmp(1),s_tmp(2),s_tmp(3),s_tmp(4),product([s(i)]))
+            5: Atmp = reform(Atmp,s_tmp(1),s_tmp(2),s_tmp(3),s_tmp(4),s_tmp(5),product([s(i)]))
+            6: Atmp = reform(Atmp,s_tmp(1),s_tmp(2),s_tmp(3),s_tmp(4),s_tmp(5),s_tmp(6),product([s(i)]))
+         ENDCASE
+         ;;jetzt neue groesse
+         
+         s = size(Atmp)
+         ;stop
+         FOR x=0, s(1)-1 DO BEGIN
             Atmp2 = reform(Atmp(x,*,*,*,*,*,*))
             s1 = size(Atmp2)
             indtot = indgen(s1(0))
+            
             IF s(0) GT 2 THEN BEGIN
                ;; hier gehts ab recursiv ! (Glaube ist besser als Wissen)
                ;; solange bis (size(a))(0) > 2 und immer nach den letzten index,den  haben wir ja oben getauscht
@@ -113,6 +146,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
                   IF c NE 0 THEN Atmp2 = Atmp2(ltMax) ELSE Atmp2 = [!NONE]
                END
                m(x,*) = UMOMENT( Atmp2, SDEV=sd, MDEV=md)
+               
                sdeviation(x) = sd
                mdev(x) = md
             ENDELSE 
@@ -120,35 +154,39 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=i
          
          RETURN, m
       END ELSE BEGIN
-         
-         m    = FltArr(s(i),4)
-         mdev = FltArr(s(i))
-         sdeviation = FltArr(s(i))
-         FOR x=0,s(i)-1 DO BEGIN
-            CASE i OF  
-               1: Atmp = A(x,*) 
-               2: Atmp = A(*,x,*) 
-               3: Atmp = A(*,*,x,*) 
-               4: Atmp = A(*,*,*,x,*) 
-               5: Atmp = A(*,*,*,*,x,*) 
-               6: Atmp = A(*,*,*,*,*,x,*) 
-               7: Atmp = A(*,*,*,*,*,*,x) 
-            ENDCASE
-            IF SET(MIN) THEN BEGIN
-               geMin = WHERE(Atmp GE min, c)
-               IF c NE 0 THEN Atmp = Atmp(geMin) ELSE Atmp = [!NONE]
+         ;ind =  where(indgen(s(0)) NE (i-1))
+         ;return,imoment(A, ind+1 , mdev = mdev, sdev = sdeviation, min=min, max=max,/iter)
+         ;;old version
+         IF 1 EQ 1 THEN BEGIN
+            m    = FltArr(s(i),4)
+            mdev = FltArr(s(i))
+            sdeviation = FltArr(s(i))
+            FOR x=0,s(i)-1 DO BEGIN
+               CASE i OF  
+                  1: Atmp = A(x,*) 
+                  2: Atmp = A(*,x,*) 
+                  3: Atmp = A(*,*,x,*) 
+                  4: Atmp = A(*,*,*,x,*) 
+                  5: Atmp = A(*,*,*,*,x,*) 
+                  6: Atmp = A(*,*,*,*,*,x,*) 
+                  7: Atmp = A(*,*,*,*,*,*,x) 
+               ENDCASE
+               IF SET(MIN) THEN BEGIN
+                  geMin = WHERE(Atmp GE min, c)
+                  IF c NE 0 THEN Atmp = Atmp(geMin) ELSE Atmp = [!NONE]
+               END
+               IF SET(MAX) THEN BEGIN
+                  ltMax = WHERE(Atmp LT max, c)
+                  IF c NE 0 THEN Atmp = Atmp(ltMax) ELSE Atmp = [!NONE]
+               END
+               
+               
+               m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md)
+               sdeviation(x) = sd
+               mdev(x) = md
             END
-            IF SET(MAX) THEN BEGIN
-               ltMax = WHERE(Atmp LT max, c)
-               IF c NE 0 THEN Atmp = Atmp(ltMax) ELSE Atmp = [!NONE]
-            END
-            
-            
-            m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md)
-            sdeviation(x) = sd
-            mdev(x) = md
-         END
          
-         RETURN, m
+            RETURN, m
+         ENDIF
       ENDELSE
 END
