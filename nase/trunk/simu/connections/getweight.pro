@@ -40,6 +40,9 @@
 ;
 ;
 ;       $Log$
+;       Revision 1.6  1998/05/16 16:02:20  kupper
+;              Verarbeitet jetzt auch Arrays von Indizes...
+;
 ;       Revision 1.5  1998/02/05 13:16:02  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -87,8 +90,10 @@ Function GetWeight, DW, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
    if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
       
       if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=tw, HEIGHT=th)
-      ERG = reform( W(t_index, *), sh, sw )
-  
+      ERG = W(t_index, *)
+      ERG = reform(/OVERWRITE, ERG, n_elements(t_index), sh, sw)
+      ERG = reform(/OVERWRITE, ERG) ;kill leading/trailing 1s
+
       If set(NONE) THEN BEGIN
          n_index = where(ERG EQ !NONE,n_count)
          IF n_count GT 0 THEN ERG(n_index) = none
@@ -100,7 +105,9 @@ Function GetWeight, DW, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
    if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
       
       if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=sw, HEIGHT=sh)
-      ERG = reform( W(*, s_index),  th, tw )
+      ERG = W(*, s_index)
+      ERG = reform( /OVERWRITE, ERG, n_elements(s_index), th, tw)
+      ERG = reform(/OVERWRITE, ERG) ;kill leading/trailing 1s
      
       If set(NONE) THEN BEGIN
          n_index = where(ERG EQ !NONE,n_count)
