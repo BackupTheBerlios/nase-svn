@@ -146,7 +146,7 @@ pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
    PrepareNASEPlot, RESTORE_OLD=oldplot
    GET_POSITION = devpos
  
-   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale, /Allowcolors
+   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale
 end
 
 Pro examineit_refresh_plots, info, x_arr, y_arr
