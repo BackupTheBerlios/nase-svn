@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.13  1997/10/03 14:09:03  kupper
+;       Schreibfehler in "Lerrate" korrigiert!
+;
 ;       Revision 1.12  1997/09/20 17:29:29  thiel
 ;              TOTALRECALL wird NICHT MEHR von der Lernregel aufgerufen.
 ;              Das muss man jetzt selbst erledigen.
@@ -125,7 +128,7 @@ PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
   
 
    If Not Set(RATE) Then Rate = Entlernrate
-   If Not Set(ALPHA) Then Alpha = Lerrate/Entlernrate
+   If Not Set(ALPHA) Then Alpha = Lernrate/Entlernrate
 
    ; update learning potentials
    ; TotalRecall, LP, DW.Learn
