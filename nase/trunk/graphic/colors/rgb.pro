@@ -23,7 +23,10 @@ Common common_RGB, My_freier_Farbindex
   
    
    if !D.N_Colors LE 256 then begin  ; 256-Farb-Display mit Color-Map   
-       if Not(Keyword_Set(My_freier_Farbindex))or keyword_set(START) then My_freier_Farbindex = 1
+       if Not(Keyword_Set(My_freier_Farbindex))or keyword_set(START) then begin
+          Default, start, 1
+          My_freier_Farbindex = start
+       end
  
        My_Color_Map = bytarr(!D.Table_Size,3) 
        TvLCT, My_Color_Map, /GET  
