@@ -1,7 +1,7 @@
 ;+
 ; NAME:                  assoziativ.pro 
 ;
-; AIM:  Associative Memory Demonstration  in FaceIt-Style
+; AIM:  Associative Memory Demonstration  in <A>faceit</A>-Style
 ;
 ; PURPOSE:               Im Programm ist ein einfacher Assoziativspeicher implementiert.
 ;                        Fest vorgegeben sind 3 gelernte Muster. 
@@ -28,6 +28,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/28 11:49:40  alshaikh
+;           AIM bugfixes
+;
 ;     Revision 1.3  2000/09/27 12:16:06  alshaikh
 ;           changed aim
 ;

@@ -2,7 +2,7 @@
 ; NAME: asso_resetsliders
 ;
 ;
-; AIM: Module of assoziativ.pro (see also: FaceIt)
+; AIM: Module of assoziativ.pro  (see also  <A>faceit</A>)
 ;
 ;
 ; PURPOSE: siehe assoziativ.pro
@@ -13,6 +13,9 @@
 ;-
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 11:49:40  alshaikh
+;           AIM bugfixes
+;
 ;     Revision 1.2  2000/09/27 12:14:07  alshaikh
 ;           added aim
 ;
