@@ -18,6 +18,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  1998/04/01 15:42:44  saam
+;             DW-structure-handles were not freed
+;             -> memory hole corrected
+;
 ;       Revision 2.9  1998/02/11 18:03:37  saam
 ;             neuer Tag brachte keine Effizienz --> wieder weg
 ;
@@ -54,7 +58,10 @@
 ;-
 PRO FreeDW, _DW
 
-   IF (Info(_DW) EQ 'DW_DELAY_WEIGHT') OR (Info(_DW) EQ 'DW_WEIGHT') THEN RETURN
+   IF (Info(_DW) EQ 'DW_DELAY_WEIGHT') OR (Info(_DW) EQ 'DW_WEIGHT') THEN BEGIN
+      Handle_Free, _DW
+      RETURN
+   END
    IF (Info(_DW) NE 'SDW_DELAY_WEIGHT') AND (Info(_DW) NE 'SDW_WEIGHT') THEN Message,'expected DW structure but got '+STRING(Info(_DW))+' !'
 
    Handle_Value, _DW, DW, /NO_COPY
