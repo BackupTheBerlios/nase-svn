@@ -26,16 +26,14 @@
 ;                  D_NRANDOM, W_NRANDOM : Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zuf‰llig belegt mit Mittelwert MW und Standardabweichung sigma. Diese Belegung wirkt additiv, wenn zus‰tzlich zu diesem Schl¸sselwort noch ein anderes angegeben wird.
 ;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_CONST              : Array [Value,Range]. Die Delays werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
-;                             W_IDENT   :  
-;                  D_CONST              : 
+;                             W_IDENT   : fuehrt eine 1:1 Verkn¸pfung von Source- und Targetlayer mit Wert W_IDENT durch, wenn diese gleiche Dimensionen haben
 ;                             W_LINEAR  : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                  D_IDENT              : setzt die 1:1-Verbindungen von Source- zu Targetlayer auf die Verzoegerung D_IDENT, wenn diese gleiche Dimensionen haben
 ;                  D_LINEAR             : Array [min,max,Range]. Die Delays werden von jedem Soure-Neuron umgekehrt kegelfˆrmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_GAUSS   : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gauﬂfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_GAUSS              : Array [Min,Max,sigma]. Die Delays werden von jedem Source-Neuron umgekehrt gauﬂfˆrmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_DOG     : Array [Amp,on_sigma,off_sigma]. Die Gewichte werden von jedem Source-Neuron Maxican-Hat-fˆrmig in den Targetlayer gesetzt (mit Zentrumsamplitude Amp, on_sigma,off_sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gˆeichm‰ﬂig verteilt sind (Keyword ALL)
 ;                  D_NONSELF, W_NONSELF : Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
-;                  LEARN_TAUP, LEARN_VP : Zeitkonstante und Verstaerkung f"ur das Lernpotential (Leckintegrator 1. Ordnung) 
-;                                            LEARN_TAUP muss zur Initialisierung gesetzt werden, LEARN_VP hat Default 1.0 
 ;                  W_NOCON              : Neuronen, deren Abstand vom HotSpot groesser als NOCON ist, werden nicht verbunden;
 ;                                         zwischen diesen Neuronen koennen auch keine Gewichte gelernt werden
 ;               
@@ -112,6 +110,14 @@
 ;                  ShowWeights, /DELAYS, My_DWS, /FROMS, Titel="Delays"
 ;        
 ; MODIFICATION HISTORY:
+;
+;       Wed Sep 3 11:46:43 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		NOCON-Keyword entfernt
+;               IDENT-Doku ergaenzt
+;               Lernpotentiale herausgenommen -> neue Routine
+;               
 ;
 ;       Tue Sep 2 02:07:23 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -190,8 +196,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
-                 LEARN_TAUP=learn_taup,       LEARN_VP=learn_vp, $
-                 NOCON=nocon, W_NOCON=w_nocon, $
+                 W_NOCON=w_nocon, $
                  SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source
 
    Default, w_nocon, nocon
@@ -216,18 +221,6 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 ;konstante Belegungen:
    if HasDelay then begin
       
-                                ; es gibt Delays, also muessen die Lernpotentiale nun in den Verbindungen stehen,
-                                ; (falls gelernt werden soll)
-      IF Keyword_Set(learn_taup) THEN BEGIN
-         Default, learn_vp, 1.0
-         lp = FltArr( t_width*t_height, s_width*s_height )
-      END ELSE BEGIN
-         Default, learn_vp, 1.0
-         Default, learn_taup, 10.0
-         lp = -1
-      END
-      
-      
       Default, delay, 0
       
       DelMat = { source_w: s_width,$
@@ -237,10 +230,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
                  Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
                  Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height ),$
-                 Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ), $
-                 VP      : FLOAT(learn_vp),$
-                 DP      : exp(-1.0/FLOAT(learn_taup)),$
-                 LP      : lp $
+                 Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ) $
                }
    END ELSE BEGIN         
       DelMat = {source_w: s_width,$
@@ -339,10 +329,7 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
                     Weights : DelMat.Weights,$
                     Matrix  : DelMat.Matrix,$
                     Delays  : DelMat.Delays,$
-                    Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
-                    VP      : DelMat.VP,$
-                    DP      : DelMat.DP,$
-                    LP      : DelMat.LP }
+                    Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ) }
       END ELSE BEGIN
          RETURN, DelMat
       END
