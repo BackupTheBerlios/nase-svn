@@ -57,8 +57,11 @@ Function image_factory::init, HEIGHT=height, WIDTH=width
    self.height = height
    self.width = width
 
-   self->reset                  ;init values
+   self.size = 1.0
+   self.brightness = 1.0
+   self.type = "gauss"   
 
+   self.recompute = 1
    return, 1                    ;TRUE
 End
 
