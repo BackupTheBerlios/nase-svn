@@ -7,19 +7,33 @@
 ;
 ; CATEGORY: GRAPHICS
 ;
-; CALLING SEQUENCE: OPlotMaximumFirst, [xarray,] yarray, _EXTRA=_extra
+; CALLING SEQUENCE: OPlotMaximumFirst, [xarray,] yarray 
+;                                      [, LINESTYLE=linestyle] [, PSYM=psym]
+;                                      [, _EXTRA=_extra]
 ;
 ; INPUTS: yarray: Sollen n Arrays mit jeweils x Einträgen übereinander 
 ;                  geplottet werden, so muß yarray ein Array der 
 ;                  Dimension (x,n) sein.
-;                  Das erste der n Arrays wird dann mit LINESTYLE=0 geplottet,
-;                  die übrigen mit jeweils ansteigendem LINESTYLE-Wert. Über
-;                  die Reihenfolge der n Unterarrays im yarray kann also
-;                  deren LINESTYLE festgelegt werden.
+;                  Das erste der n Arrays wird dann mit LINESTYLE=linestyle
+;                  bzw PSYM=psym geplottet, die übrigen mit jeweils 
+;                  ansteigendem LINESTYLE- bzw PSYM-Wert. Über die 
+;                  Reihenfolge der n Unterarrays im yarray kann also deren 
+;                  LINESTYLE und PSYM festgelegt werden.
 ;
 ; OPTIONAL INPUTS: xarray: Die zu den y-Werten gehörenden x-Werte, das
 ;                           Ergebnis entspricht der normalen IDL-Plot-
 ;                           Ausgabe.
+;
+;                  linestyle: Der hier angegebene Wert bestimmt den
+;                             Linesytle des ersten Plots, außerdem sind
+;                             folgende Einstellungen möglich:
+;                             linestyle=-1 -> alle Linien mit Linestyle=0
+;                             linestyle=-2 -> keine Linien zwischen den 
+;                                              Punkten
+;
+;                  psym: Bestimmt den Startwert der Plotsymbole. Sonderfall:
+;                         psym=-1 -> keine Symbole
+;
 ;                  _EXTRA=_extra: Alle übrigen Schlüsselworte werden an
 ;                                  die Plot-Prozedur weitergereicht.
 ;
@@ -34,12 +48,16 @@
 ; EXAMPLE: a = randomn(seed,50)
 ;          b = randomn(seed,50)
 ;          oplotmaximumfirst, [[a],[b]]
+;          oplotmaximumfirst, [[a],[b]], PSYM=5, LINESTYLE=-1
 ;
 ; SEE ALSO: IDL-Prozeduren PLOT und OPLOT
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/04/29 13:17:18  thiel
+;            Und noch besser: kann jetzt auch PlotSymbols.
+;
 ;        Revision 1.2  1999/04/29 09:49:48  thiel
 ;            Jetzt wird auch das Minimum beachtet.
 ;
@@ -48,9 +66,13 @@
 ;
 ;-
 
-PRO OPlotMaximumFirst, z, zz, _EXTRA=_extra
+PRO OPlotMaximumFirst, z, zz, LINESTYLE=linestyle, PSYM=psym, _EXTRA=_extra
 
    maxlinestyle = 6
+   maxpsym = 7
+
+   Default, LINESTYLE, 0
+   Default, PSYM, -1
 
    IF N_Params() LT 1 THEN Message, 'wrong number of arguments'
    n = (Size(z))(1)
@@ -74,7 +96,7 @@ PRO OPlotMaximumFirst, z, zz, _EXTRA=_extra
    Plot, x, nodata, /NODATA, _EXTRA=_extra
 
    FOR n=0,plotnr-1 DO $
-    Oplot, x, y(*,n), LINESTYLE=(n MOD maxlinestyle) 
+    OPlot, x, y(*,n), PSYM=((psym+1)<1)*(((psym+n) MOD maxpsym)-2*((linestyle+2)<1)*((psym+n) MOD maxpsym)), LINESTYLE=(linestyle+n) MOD maxlinestyle
 
 END
 
