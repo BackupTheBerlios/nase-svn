@@ -131,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.17  2000/09/01 19:46:12  kupper
+;        Stepcounter is now an unsigned LONG64.
+;
 ;        Revision 1.16  2000/03/31 17:14:50  kupper
 ;        Fixed small bug in comparison.
 ;
@@ -668,7 +671,7 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
       'W_simlogo', w_simlogo, $
       'W_SimDisplay', W_SimDisplay, $
       'W_SimStepCounter', W_SimStepCounter, $
-      'stepcounter', 0l, $
+      'stepcounter', 0ull, $
       'simprogress', simprogress, $
       'W_percentage', W_percentage, $
       'W_duration', W_duration, $
