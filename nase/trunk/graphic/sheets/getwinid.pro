@@ -1,33 +1,33 @@
 ;+
-; NAME:                GetWinID
+; NAME: GetWinID
 ;
-; PURPOSE:             Liefert die zu einem Window-Sheet gehoerige WINID. Diese
-;                      wird fuer "Device, /COPY"-Anweisungen benoetigt.
+; PURPOSE: Liefert die zu einem Window-Sheet gehörige WINID. Diese wird fuer 
+;          "Device, /COPY"-Anweisungen benötigt.
 ;
-; CATEGORY:            SHEET GRAPHIC
+; CATEGORY: GRAPHICS /SHEETS
 ;
-; CALLING SEQUENCE:    winid = GetWinID(Sh)
+; CALLING SEQUENCE: winid = GetWinID(Sh)
 ;
-; INPUTS:              Sh : ein mit DefineSheet initialisiertes Sheet
+; INPUTS: Sh : ein mit DefineSheet initialisiertes Sheet
 ;
-; OUTPUTS:             winid: die WinID oder !NONE, falls keine vorhanden
+; OUTPUTS: winid: die WinID oder !NONE, falls keine vorhanden
 ;
-; SIDE EFFECTS:        Falls das Sheet ein Kind einer
-;                      Widget-Applikation ist, wird die gesamte
-;                      Hierarchie, zu der das Sheet gehoert, mit
-;                      diesem Aufruf realisiert, d.h. auf dem
-;                      Bildschirm sichtbar.
-;                      Man beachte in diesem Zusammenhang, dass das
-;                      Hinzufuegen eines Sheets/ScrollIts zu einer
-;                      bereits realisierten Widget-Hierarchie in der
-;                      aktuellen IDL-Version (5.0.2) unter KDE zu einem
-;                      astreinen IDL-Absturz fuehrt!
+; SIDE EFFECTS: Falls das Sheet ein Kind einer Widget-Applikation ist, wird die
+;               gesamte Hierarchie, zu der das Sheet gehört, mit diesem Aufruf
+;               realisiert, d.h. auf dem Bildschirm sichtbar.
+;               Man beachte in diesem Zusammenhang, daß das Hinzufügen eines 
+;               Sheets/ScrollIts zu einer bereits realisierten Widget-
+;               Hierarchie in der aktuellen IDL-Version (5.0.2) unter KDE zu 
+;               einem astreinen IDL-Absturz fuehrt!
 ;
-; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/graphic/sheets">andere Sheet-Routinen</A>
+; SEE ALSO: <A HREF="http://neuro.physik.uni-marburg.de/nase/graphic/sheets">andere Sheet-Routinen</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1999/09/06 13:33:34  thiel
+;         Now works with Multi-sheets as well.
+;
 ;     Revision 1.2  1999/06/15 17:36:39  kupper
 ;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
 ;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
@@ -48,15 +48,30 @@
 ;
 ;
 ;-
+
+
+
 FUNCTION GetWinID, _SH
 
    Handle_Value, _SH, SH
 
-   IF SH.Type EQ 'X' THEN begin
-      If not Widget_Info( SH.drawid, /REALIZED) then Widget_Control, SH.drawid, /REALIZE
-      Widget_Control, SH.drawid, GET_VALUE=winid
-      Return, winid
-   Endif ELSE Return, !NONE
+  IF (SH.Type)(0) EQ 'X' THEN BEGIN
+
+      IF (sh.multi)(0) EQ 0 THEN BEGIN
+         Widget_Control, SH.drawid, /REALIZE
+         Widget_Control, SH.drawid, GET_VALUE=winid
+         Return, winid
+      ENDIF ELSE BEGIN
+         winidarray = LonArr((sh.multi)(0))
+         FOR i=0, (sh.multi)(0)-1 DO BEGIN
+            Widget_Control, (SH.drawid)(i), /REALIZE
+            Widget_Control, (SH.drawid)(i), GET_VALUE=winid
+            winidarray(i) = winid
+         ENDFOR
+         Return, winidarray
+      ENDELSE
+
+   ENDIF ELSE Return, !NONE
             
 
 END
