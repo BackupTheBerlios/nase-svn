@@ -63,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.10  1998/08/24 10:34:00  saam
+;       think i programmed perl a little bit too much
+;
 ; Revision 1.9  1998/08/24 10:30:31  saam
 ;       keyword SAMPLPERIOD replaced by SAMPLEPERIOD, the old
 ;       version produces a warning but still works
@@ -98,11 +101,11 @@ FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,
  
    IF Set(SAMPLPERIOD) THEN BEGIN
       SamplePeriod = SamplPeriod
-      print 'POWERSPEC:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
+      print, 'POWERSPEC:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
    END
 
    PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
-                       DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
+                       DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLEPERIOD=SAMPLEPERIOD,COMPLEX=Complex)
 
  Return,PSpec
 END

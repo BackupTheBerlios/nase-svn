@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.6  1998/08/24 10:34:00  saam
+;       think i programmed perl a little bit too much
+;
 ; Revision 1.5  1998/08/24 10:30:31  saam
 ;       keyword SAMPLPERIOD replaced by SAMPLEPERIOD, the old
 ;       version produces a warning but still works
@@ -99,7 +102,7 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
 
    IF Set(SAMPLPERIOD) THEN BEGIN
       SamplePeriod = SamplPeriod
-      print 'CROSSPOWER:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
+      print, 'CROSSPOWER:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
    END
 
    
