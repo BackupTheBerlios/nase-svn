@@ -311,6 +311,7 @@ Pro ExamineIt_Event, Event
 
          ;;------------------> Das ist nötig, damit überlieferte
          ;;Events richtig ausgewertet werden:
+         WSet, info.tv_win
          ev_n = Convert_Coord(Event.X, Event.Y, /DEVICE, /TO_NORMAL);Umrechnung basiert auf Ausmaßen des Widgets, von dem das Event kommt
          X = info.xsize*ev_n(0);Umrechnung basiert auf Ausmaßen "unseres" Widgets
          Y = info.ysize*ev_n(1)
