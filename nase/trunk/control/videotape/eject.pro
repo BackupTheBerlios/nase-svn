@@ -34,6 +34,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Fri Aug 29 18:14:59 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Free_Luns zugefügt, die ich sträflicherweise vergaß...
+;
 ;       Wed Aug 27 17:09:55 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -66,7 +71,9 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
       endif
       close, Video.unit
       close, Video.infounit
-      
+      Free_Lun, Video.unit
+      Free_Lun, Video.infounit
+
    endif else begin             ; VideoMode="PLAY"
       
       if keyword_set(VERBOSE) then begin
@@ -79,6 +86,7 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
       endelse
       
       close, Video.unit
+      Free_Lun, Video.unit
          
    endelse
 
