@@ -110,4 +110,11 @@ Pro Startup_ctd
    if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
    If WillShowLogo then ShowLogo, SECS=3
    ;; --------------------------------------------------------
+
+
+   setcolorindex, !D.TABLE_SIZE-1, 255, 255, 255 ; highest color index is white
+   setcolorindex, !D.TABLE_SIZE-2,   0,   0,   0 ; second highest color index is black
+   !P.BACKGROUND = !D.TABLE_SIZE-2
+   !P.COLOR      = !D.TABLE_SIZE-1
+
 End
