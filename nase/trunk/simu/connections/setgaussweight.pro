@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.12  1997/12/15 12:35:33  gabriel
+;            Da war noch ein _EXTRA=extra drinnen
+;
 ;       Revision 1.11  1997/12/10 15:53:44  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -130,7 +133,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
        ENDIF
 
        SetWeight, DWS, S_ROW=s_row, S_COL=s_col, GaussMask, $
-        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,TRANSPARENT=transparent,_EXTRA=extra
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent,INITSDW=initsdw
 
    endif else begin             ; Wir definieren FROMS:
 
@@ -145,8 +148,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
        ENDIF
 
        SetWeight, DWS, T_ROW=t_row, T_COL=t_col, GaussMask,$
-        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-        TRANSPARENT=transparent,INITSDW=initsdw
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent,INITSDW=initsdw
 
    endelse
 
