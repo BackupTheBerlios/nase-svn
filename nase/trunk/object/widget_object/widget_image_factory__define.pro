@@ -29,8 +29,8 @@ Pro widget_image_factory::height, value
    self->paint
 End
 
-Pro widget_image_factory::type, string
-   self->image_factory::type, string
+Pro widget_image_factory::type, string, KEEP_IMAGE_INFO=KEEP_IMAGE_INFO
+   self->image_factory::type, string, KEEP_IMAGE_INFO=KEEP_IMAGE_INFO
    Widget_Control, self.w_type, SET_DROPLIST_SELECT=(Where(strupcase(*self.types) eq strupcase(string)))[0]
    self->paint
 End

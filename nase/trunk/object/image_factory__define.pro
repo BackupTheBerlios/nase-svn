@@ -26,14 +26,28 @@ End
 Function image_factory::type
    return, self.type
 End
-Pro image_factory::type, string
+Pro image_factory::type, string, KEEP_IMAGE_INFO=KEEP_IMAGE_INFO
    self.type = string
 
-   Ptr_Free, self.image_info
-   self.image_info = Ptr_New()  ; NULL
-   ;; the above will request a completely new variation of the current
-   ;; image.
+   If not keyword_set(KEEP_IMAGE_INFO) then begin
+      Ptr_Free, self.image_info
+      self.image_info = Ptr_New() ; NULL
+      ;; the above will request a completely new variation of the current
+      ;; image.
+   Endif
+
    self->recompute_
+End
+
+Pro image_factory::inherit_type, ifo
+   ;; this will inherit the image type and the image info from another
+   ;; image factory:
+;   self->prevent_recompute
+   Ptr_Free, self.image_info
+   self.image_info = Ptr_New(ifo->image_info_())
+;   self->allow_recompute
+   self->type, ifo->type(), /KEEP_IMAGE_INFO
+;   self->recompute_
 End
 
 Function image_factory::size
@@ -129,6 +143,10 @@ Pro image_factory::recompute_
 End
 
 
+;; ------------ Protected --------------------
+Function image_factory::image_info_
+   return, *self.image_info
+End
 
 
 
