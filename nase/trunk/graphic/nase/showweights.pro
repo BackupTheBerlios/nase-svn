@@ -175,6 +175,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.34  2001/01/24 14:28:49  kupper
+;       Corrected handling of the SURF and SUPERIMPOSE keywords, which was
+;       broken.
+;
 ;       Revision 2.33  2001/01/24 14:00:48  kupper
 ;       Color selection for PRINTSTYLE output was still wrong.
 ;
@@ -481,13 +485,13 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
             end ELSE begin
                OtherOther= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
             endelse
-            OtherOther = ShowWeights_Scale(OtherOther, SETCOL=setcol, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=printstyle)
+            OtherOther = ShowWeights_Scale(Temporary(OtherOther), SETCOL=setcol, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=printstyle)
          endif else begin 
-            dummy = ShowWeights_Scale(0, SETCOL=setcol, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=PRINTSTYLE) ;Grautabelle laden
-            nones = where(MatrixMatrix eq !NONE, count)
-            If count ne 0 then MatrixMatrix(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
+            dummy = ShowWeights_Scale([0,0], SETCOL=setcol, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=PRINTSTYLE) ;Grautabelle laden
          endelse
-      endif else MatrixMatrix = ShowWeights_Scale(MatrixMatrix, SETCOL=setcol, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE, PRINTSTYLE=PRINTSTYLE)
+         nones = where(MatrixMatrix eq !NONE, count)
+         If count ne 0 then MatrixMatrix(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
+      endif else MatrixMatrix = ShowWeights_Scale(Temporary(MatrixMatrix), SETCOL=setcol, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE, PRINTSTYLE=PRINTSTYLE)
 ;   erase, RGB('orange',/NOALLOC) ;GET_MAXCOL+2
 
       black = !P.Background
@@ -572,13 +576,13 @@ EndIf
    ;;------------------> Bild malen:
    If Keyword_Set(SURF) then begin
       oldP = !P
-      !P.Background = back      ;von nun an dunkelgelber Hintergrund     
       !P.Multi = 0
       !P.Position = [0, 0, 0, 0] ;Damit da nichts schiefgeht
       !P.Region = [0, 0, 0, 0]
       !P.T3d = 0
 
-      nonone = where(MatrixMatrix ne !NONE, count)
+      nonone = where(MatrixMatrix ne +999999, count);; we set all
+      ;; !NONES to +999999 before!
       If count ne 0 then begin
          zmax = max(MatrixMatrix(nonone))
          zmin = min(MatrixMatrix(nonone))
@@ -598,8 +602,10 @@ EndIf
          for XX= 0, Matrix.source_w-1 do begin  
             If Keyword_Set(GRID) then surfproc = "SURFACE" else surfproc = "SHADE_SURF"
             wset, pixwin
-            If Keyword_Set(SUPERIMPOSE) then Call_Procedure, surfproc, COLOR=white, SHADES=rotate(OtherOther(*, *, YY, XX), 3), rotate(MatrixMatrix(*, *, YY, XX), 3), MAX_VALUE=999998, xstyle=5, ystyle=5, zstyle=5, ZRANGE=[zmin, zmax], XMARGIN=[0, 0], YMARGIN=[0, 0], _EXTRA=_extra $
-            else Call_Procedure, surfproc, COLOR=white, rotate(MatrixMatrix(*, *, YY, XX), 3), MAX_VALUE=999998, xstyle=5, ystyle=5, zstyle=5, ZRANGE=[zmin, zmax], XMARGIN=[0, 0], YMARGIN=[0, 0], _EXTRA=_extra
+            If Keyword_Set(SUPERIMPOSE) then Call_Procedure, surfproc, $
+             COLOR=white, BACKGROUND=back, SHADES=rotate(OtherOther(*, *, YY, XX), 3), rotate(MatrixMatrix(*, *, YY, XX), 3), MAX_VALUE=999998, xstyle=5, ystyle=5, zstyle=5, ZRANGE=[zmin, zmax], XMARGIN=[0, 0], YMARGIN=[0, 0], _EXTRA=_extra $
+            else Call_Procedure, surfproc, COLOR=white, $
+             BACKGROUND=back, rotate(MatrixMatrix(*, *, YY, XX), 3), MAX_VALUE=999998, xstyle=5, ystyle=5, zstyle=5, ZRANGE=[zmin, zmax], XMARGIN=[0, 0], YMARGIN=[0, 0], _EXTRA=_extra
             Wset, weightwin
             DEVICE, COPY=[0, 0, bildxsize, bildysize, xoffset+XX*bildxsize, yoffset+(Matrix.source_h-YY-1)*bildysize, pixwin]
          end
