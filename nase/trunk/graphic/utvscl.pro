@@ -99,8 +99,8 @@
 ;                            interpolation with <*>POLYGON</*> set
 ;                            results in very large Postscript output
 ;                            files.
-; NASE:: Array is in NASE coordinates (array will be transposed before output).
-; ALLOWCOLORS:: If <C>/ALLOWCOLORS</C> is set, at the upper end of the
+; /NASE:: Array is in NASE coordinates (array will be transposed before output).
+; /ALLOWCOLORS:: If <C>/ALLOWCOLORS</C> is set, at the upper end of the
 ;               palette, only colors above the color table size are
 ;               clipped, leaving the indices between <*>!TOPCOLOR</*>
 ;               and <*>!D.TABLE_SIZE-1</*> untouched. This allows
@@ -168,14 +168,14 @@ Function __ScaleArray, A, TOP=top
    endif
 
    ;; set nones to correct color:
-   if nonecount ne n_elements(A) then result[nones] = rgb("none")
+   if nonecount ne 0 then result[nones] = rgb("none")
 
    Return, byte(result)
 End
 
 
 ; This function clips all entries inside an array that lie above
-; !TRUECOLOR or below 0, or are !NONE, and replaces them by the
+; !TOPCOLOR or below 0, or are !NONE, and replaces them by the
 ; special colors. If /ALLOWCOLROS is set, only colors above the color
 ; table size are clipped, leaving the indices between !TOPCOLOR and
 ; !D.TABLE_SIZE-1 untouched. This allows using the NASE colors that can
