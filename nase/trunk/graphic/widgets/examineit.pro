@@ -90,6 +90,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/05 16:40:00  kupper
+;       Changed BOUND indicators to orange color.
+;
 ;       Revision 1.4  2000/09/04 19:17:37  kupper
 ;       Typo
 ;
@@ -288,10 +291,10 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
           endelse
           if info.bound then begin
              oplot, indgen(info.Width)+1, replicate(rowplotmin, $
-                                                    info.Width), color=rgb("red", /noalloc), thick=2
+                                                    info.Width), color=rgb("orange", /noalloc), thick=2
              oplot, indgen(info.Width)+1, replicate(rowplotmax, $
                                                     info.Width), $
-              color=rgb("red", /noalloc), thick=2
+              color=rgb("orange", /noalloc), thick=2
           endif
          rowplotmin = !Y.CRANGE(0)
          rowplotmax = !Y.CRANGE(1)
@@ -318,10 +321,10 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          endelse
          if info.bound then begin
             oplot, indgen(info.Width)+1, replicate(colplotmin, $
-                                                   info.Height), color=rgb("red", /noalloc), thick=2
+                                                   info.Height), color=rgb("orange", /noalloc), thick=2
             oplot, indgen(info.Width)+1, replicate(colplotmax, $
                                                    info.Height), $
-             color=rgb("red", /noalloc), thick=2
+             color=rgb("orange", /noalloc), thick=2
          endif
          colplotmin = !Y.CRANGE(0)
          colplotmax = !Y.CRANGE(1)
