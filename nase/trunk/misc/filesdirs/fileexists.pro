@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/03/16 17:42:46  saam
+;           now hopefully works with IDL5
+;
 ;     Revision 2.1  1998/02/24 08:40:52  saam
 ;           zip-zip-zippi-die-dip
 ;
@@ -35,7 +38,7 @@
 FUNCTION FileExists, file, STAT=stat, INFO=info
 
    OpenR, lun, file, /GET_LUN, ERROR=err
-   IF NOT err THEN BEGIN
+   IF err EQ 0 THEN BEGIN
       stat = FStat(lun)      
       Close, lun
       Free_Lun, lun
