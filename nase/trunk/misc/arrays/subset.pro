@@ -54,7 +54,7 @@ FUNCTION SubSet, SetA, SetB
 
    ; reduce to a set for the case that SetA contains multiple instances of the same value (array!)
    ElmA = Elements(SetA,NElmA)
-   InS  = BYTARR(NSubS,/nozero)
+   InS  = BYTARR(NElma,/nozero)
    ; InS(n) contains the information whether ElmA(n) is in SetB
    FOR n=0,NElmA-1 DO InS(n) = Total(ElmA(n) EQ SetB) NE 0
 
