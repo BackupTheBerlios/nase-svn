@@ -17,7 +17,7 @@ cd $DIR
 for i in $(find . -name "*.html") ; do
 if [ ! $i = $DIR/aindex.html -a ! $i = $DIR/index.html  ] ; then
 PFAD=$(echo $i | sed "s/\//\\\\\//g" )
-grep HREF $i | grep -v Routine  | grep -v ";  " | sed "s/.*<A //g" | sed 's/">.*$//g'  \
+grep HREF $i | grep -v Routine  |  sed "s/^<LI><A //g" | sed 's/">.*$//g'  \
 | sed "s/#.*$/${PFAD}&\">###&<\/A>/g" | sed "s/####//g" | sed "s/^/<A /g" | sed "s/$/<BR>/g" \
  >>/tmp/alphrout.html
 fi
