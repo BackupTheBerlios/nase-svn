@@ -114,7 +114,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                                      Window_ID : Window_ID}
 
 ;   Leider funktioniert das Resize erst so richtig ab IDL 4.0:
-   If fix(!VERSION.Release) eq 4 then XMANAGER, 'ScrollIt', Base, /JUST_REG
+;   If fix(!VERSION.Release) eq 4 then XMANAGER, 'ScrollIt', Base, /JUST_REG
    If fix(!VERSION.Release) ge 5 then XMANAGER, 'ScrollIt', Base, /NO_BLOCK
 
    get_base = Base
