@@ -28,7 +28,7 @@
 ;*               [,Y_SIZE=y_size | ,NORM_Y_SIZE]
 ;*               [,STRETCH=stretch][,H_STRETCH=h_stretch][,V_STRETCH=v_stretch]
 ;*               [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
-;*               [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
+;*               [,CUBIC=...][,/INTERP][,/MINUS_ONE]
 ;
 ;  <C>UTvScl</C> passes unknown options to <C>TvScl</C>, e.g. <*>/ORDER</*>.
 ;
@@ -75,13 +75,18 @@
 ;           rectangles that are sufficiently large. This is
 ;           recommended for Postscript output. This option invokes the
 ;           <A>PolyTV</A> routine.
-;  
-;                     TOP::          es werden nur die Farbindices von 0..TOP belegt (siehe IDL5 Hilfe von TvSCL)
-;       CUBIC, INTERP, MINUS_ONE::   werden an ConGrid uebergeben (s. IDL_Hilfe)
-;                                    Man beachte, daﬂ die Interpolation eines Arrays, das !NONE-Elemente enth‰lt,
-;                                    nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
+; TOP:: Only color indices ranging from 0 to <*>top</*> are used for
+;       coloring. See also IDL online help for <C>TVScl</C>.
+; CUBIC, /INTERP, /MINUS_ONE:: These keywords are used to interpolate
+;                            the final image. They are passed to the
+;                            <C>Congrid</C> routine that is used to
+;                            accomplish this. See also IDL online help
+;                            for <C>Congrid</C>. Note that
+;                            intepolation of an array containing
+;                            <*>!NONE</*> elements is not recommended,
+;                            as <*>!NONE</*>s tend to disappear due to
+;                            the interpolation process.
 ;
-;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
 ;
 ;                     Man beachte, daﬂ die Interpolation (Keyw. CUBIC oder INTERP) eines Arrays,
@@ -94,7 +99,7 @@
 ;* UTvScl, bild
 ;* UTVScl, bild, /CENTER, STRETCH=2.0
 ;* UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
-;* UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
+;* UTvScl, bild, /CENTER, X_SIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
 ; SEE ALSO:
 ;  <A>UTv</A>, <A>PolyTV</A>.
@@ -331,8 +336,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       END
 
       ;; If POLYGON is set, the image array need not be resized,
-      ;; because POLYTV later resizes the pixels, not the array:
+      ;; because POLYTV later resizes the pixels, not the array.
+      ;; BUT if the user wants interpolation, resizing has to done.
       IF NOT(Keyword_Set(POLYGON)) THEN BEGIN
+         ;; Congrid when POLYGON is not set
          _Image = FltArr((xsize*_smooth(0)) > 1 $
                          , (ysize*_smooth(1)) > 1, TRUE > 1)
          FOR i=0, 2 * (TRUE GT 0) DO $
@@ -341,8 +348,20 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                                   CUBIC=cubic, INTERP=interp $
                                   , MINUS_ONE=minus_one)
          Image = Temporary(_Image)
-      ENDIF
-
+      ENDIF ELSE BEGIN
+         IF Set(CUBIC) OR Keyword_Set(INTERP) OR $
+          Keyword_Set(MINUS_ONE) THEN BEGIN
+            ;; Congrid when POLYGON is set but INETRPOLATION is desired
+            _Image = FltArr((xsize*_smooth(0)) > 1 $
+                            , (ysize*_smooth(1)) > 1, TRUE > 1)
+            FOR i=0, 2 * (TRUE GT 0) DO $
+             _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1 $
+                                     , (ysize*_smooth(1)) > 1, $
+                                     CUBIC=cubic, INTERP=interp $
+                                     , MINUS_ONE=minus_one)
+            Image = Temporary(_Image)
+         ENDIF
+      ENDELSE
 
       ;;If CUBIC was used, the maximum or
       ;;minimum may have been changed by
