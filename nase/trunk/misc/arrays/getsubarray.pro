@@ -44,9 +44,10 @@
 ;   s:: The sub-array.
 ;
 ; RESTRICTIONS:
-;   Sub-array must lie inside the boundaries of the mother array.
-;   Anyway, an EDGE_WRAP keyword could be easily implemented using SHIFT().
-;   Please feel free to do it :-).
+;   If the "sub"array is (in any dimension) actually larger than the
+;   original array, <C>/EDGE_TRUNCATE</C> <B>must</B> be used.<BR>
+;   Multiple replication could be implemented for <C>/EDGE_WRAP</C>,
+;   but this is not currently available.
 ;
 ; EXAMPLE:
 ;   a=IndGen( 5, 5)
@@ -75,7 +76,6 @@ FUNCTION GetSubArray, A, height, width, y_, x_, $
 
    sa = SIZE(A)
 
-   IF (sa(1) LT height) OR (sa(2) LT width) THEN Message, 'Array to be returned is larger than original array'
    IF sa(0) NE 2 THEN Message, 'Array has to be 2dimensional.'
    
    IF Keyword_Set(CENTER) THEN BEGIN
@@ -83,11 +83,21 @@ FUNCTION GetSubArray, A, height, width, y_, x_, $
       y = y+sa(1)/2-height/2
    Endif
    
-   If Keyword_Set(EDGE_WRAP) then $
+   If Keyword_Set(EDGE_WRAP) then begin
+      IF (sa(1) LT height) OR (sa(2) LT width) THEN begin
+         Message, '/EDGE_WRAP set and array to be returned is larger ' + $
+                  'than original array.', /Continue
+         Message, 'Consider using /EDGE_TRUNCATE.'
+      EndIf
       return, (shift(A, -y, -x))[0:height-1, 0:width-1]
+   endif
 
-   If Keyword_Set(EDGE_TRUNCATE) then $
-      return, (norot_shift(A, -y, -x, Weight=TRUNC_VALUE))[0:height-1, 0:width-1]
+   If Keyword_Set(EDGE_TRUNCATE) then begin
+      res = make_array(height>sa[1], width>sa[2], value=TRUNC_VALUE)
+      res[0:(sa[1]-1), 0:(sa[2]-1)] = A
+      
+      return, (norot_shift(temporary(res), -y, -x, Weight=TRUNC_VALUE))[0:height-1, 0:width-1]
+   endif
 
    If (x lt 0) or (y lt 0) or ((x+width) gt sa(2)) or ((y+height) gt sa(1)) then Begin
       Message, 'Area specified lies partly outside the array boundaries. ', /Continue
