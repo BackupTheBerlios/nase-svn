@@ -32,6 +32,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.40  1999/11/05 13:09:56  alshaikh
+;             1)jede synapse hat jetzt ihr eigenes U_se
+;             2)keyword REALSCALE
+;
 ;       Revision 1.39  1999/10/12 14:36:48  alshaikh
 ;             neues keyword '/depress'... synapsen mit kurzzeitdepression
 ;
@@ -225,10 +229,11 @@ FUNCTION DelayWeigh, _DW, InHandle
                DW.LAST_AP(wi) = 0
                
             ; normierung :
-            ; gleiches verhalten wie non-depressive synapsen bei transm=1
-               vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) ; eigentlich noch * DW.U_se (normierung)
+            ; gleiches verhalten wie non-depressive synapsen bei transm=1 ; nicht mehr
+               IF dw.realscale EQ 0 THEN vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) $
+               ELSE vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) * dw.U_se(wi) 
                                                                   
-               DW.TRANSM(wi) =  (1- DW.U_se)*DW.TRANSM(wi)
+               DW.TRANSM(wi) =  (1- DW.U_se(wi))*DW.TRANSM(wi)
 
             ; nichtdepressiver fall :   
             END ELSE vector(tN) = vector(tn) + DW.W(wi)
@@ -301,8 +306,10 @@ RETURN, Spassmacher(vector)
             IF DW.depress EQ 1 THEN begin
                DW.TRANSM(wi) = (1 - ((1 - DW.TRANSM(wi)) * DW.exp_array(DW.last_ap(wi) < (4*DW.tau_rec))))
                DW.LAST_AP(wi) = 0
-               vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi)
-               DW.TRANSM(wi) =  (1 - DW.U_se)*DW.TRANSM(wi)
+               
+               IF dw.realscale EQ 0 THEN vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) $
+                ELSE vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi)*dw.U_se(wi)  
+               DW.TRANSM(wi) =  (1 - DW.U_se(wi))*DW.TRANSM(wi)
               
                
             END ELSE vector(tN) = vector(tn) + DW.W(wi)

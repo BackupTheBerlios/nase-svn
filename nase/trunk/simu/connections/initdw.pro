@@ -14,7 +14,7 @@
 ;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
 ;                                   [,NOCON]
 ;                                   [,/OLDSTYLE]
-;                                   [,/DEPRESS [, TAU_REC] [, U_SE] ] )
+;                                   [,/DEPRESS [, TAU_REC] [, U_SE] ,[ REALSCALE] ] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaﬂe in S/T_Width/Height
 ;                                                oder implizit int W_INIT/D_INIT
@@ -66,7 +66,8 @@
 ;                               koennen die Zeitkonstante tau_rec, sowie die 'Synaptische Effizienz'
 ;                               U_se uebergeben werden.
 ;                               Jede Synapse wird durch ihre (relative) Zahl an freisetzbaren
-;                               Transmitterquanten transm(0<=transm<=1) charakterisiert. 
+;                               Transmitterquanten transm(0<=transm<=1), und durch die
+;                               Freisetzungswahrscheinlichkeit U_se' charakterisiert. 
 ;                               Bei Ausloesung eines APs wird der Bruchteil 'transm'
 ;                               ausgeschuettet, und 'transm' erniedrigt sich um den Betrag
 ;                               U_se*transm. Die Zahl der freisetzbaren Transmitter regeneriert sich
@@ -79,7 +80,8 @@
 ;                               2) 100 Neuronen, vollst. Verknuepfung:
 ;                                   10 Hz : Depression ca. 30% langsamer
 ;                                  100 Hz : Depression ca. 30% langsamer       
-
+;                      REALSCALE: ist REALSCALE gesetzt, so ist bei depression fuer transm=1 der
+;                                 output U_se(i) * W(i), andernfalls ist der output W(i)...
 
 ;
 ; OUTPUTS: Eine Initialisiert Delay-Weight-Struktur. Wird keines der Delay-Schl¸sselwˆrter angegeben, so enth‰lt die Struktur keine Delays.
@@ -136,6 +138,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.18  1999/11/05 13:09:58  alshaikh
+;             1)jede synapse hat jetzt ihr eigenes U_se
+;             2)keyword REALSCALE
+;
 ;       Revision 2.17  1999/10/12 14:36:50  alshaikh
 ;             neues keyword '/depress'... synapsen mit kurzzeitdepression
 ;
@@ -290,16 +296,18 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
                  W_NOCON=w_nocon, NOCON=nocon, $
                  SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source, $
-                 OLDSTYLE=oldstyle, depress=depress, tau_rec= tau_rec, U_se= U_se 
+                 OLDSTYLE=oldstyle, depress=depress, tau_rec= tau_rec, U_se= U_se_const, $ 
+                 REALSCALE=realscale
 
    Default, nocon, w_nocon
    Default, tau_rec, 200.0
-   Default, U_se, 0.35
+   Default, U_se_const, 0.35
    default, depress, 0
+   Default, realscale, 0
 
    IF keyword_set(depress) THEN depress = 1
 
-   IF ((U_se LT 0) OR (U_se GT 1)) THEN message, "Ungueltiger Wert fuer U_se!"
+   IF ((U_se_const LT 0) OR (U_se_const GT 1)) THEN message, "Ungueltiger Wert fuer U_se!"
    IF tau_rec LT 1 THEN message,"Ungueltiger Wert fuer tau_rec!"
 
    if keyword_set(w_nocon) then message, /INFORM, "Das W_NOCON-Schl¸sselwort ist ¸brigens seit Version 2.7 wieder in NOCON umbenannt. Bitte den Aufruf entsprechend ‰ndern. R¸diger."
@@ -360,7 +368,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 
          IF depress EQ 1 THEN BEGIN
             settag,tmp, 'tau_rec', tau_rec
-            settag,tmp, 'U_se', U_se
+            settag,tmp, 'U_se_const', U_se_const
+            settag,tmp, 'realscale', realscale         
          END
    
          _DW = Handle_Create(!MH, VALUE=tmp, /NO_COPY)
@@ -378,7 +387,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 IF depress EQ 1 THEN BEGIN
 
             settag,tmp, 'tau_rec', tau_rec
-            settag,tmp, 'U_se', U_se
+            settag,tmp, 'U_se_const', U_se_const
+            settag,tmp, 'realscale', realscale         
          END
          
          _DW = Handle_Create(!MH, VALUE=tmp, /NO_COPY)

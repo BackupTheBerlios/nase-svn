@@ -27,6 +27,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1999/11/05 13:09:57  alshaikh
+;           1)jede synapse hat jetzt ihr eigenes U_se
+;           2)keyword REALSCALE
+;
 ;     Revision 2.6  1999/10/25 08:14:18  alshaikh
 ;           Fehler korrigiert
 ;
@@ -78,8 +82,9 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
       
 ; depressions-parameter  
    IF depress EQ 1 THEN begin  
-      settag,dw, 'U_se',U_se
+      settag,dw, 'U_se_const',U_se_const
       settag,dw, 'tau_rec', tau_rec
+      settag,dw, 'realscale', realscale
    END 
    settag,dw, 'depress', depress
    

@@ -24,6 +24,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  1999/11/05 13:09:56  alshaikh
+;           1)jede synapse hat jetzt ihr eigenes U_se
+;           2)keyword REALSCALE
+;
 ;     Revision 2.11  1999/10/12 14:36:49  alshaikh
 ;           neues keyword '/depress'... synapsen mit kurzzeitdepression
 ;
@@ -113,8 +117,9 @@ IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
 
    IF depress EQ 1 THEN BEGIN
       tau_rec =  DW.tau_rec
-      U_se    =  DW.U_se
+      U_se_const    =  DW.U_se_const
       exp_array = exp(-indgen(4*tau_rec+1)/tau_rec) 
+      realscale =  DW.realscale
    END ELSE depress = 0
 
 
@@ -127,7 +132,9 @@ IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
       TRANSM = W * 0 + 1  ; i.e. transm=[1,1,1....]
    ; for each connection : time since last activity   
       LAST_AP = w * 0     ; i.e. last_ap=[0,0,0,0...]    
-   END
+   ; for each connection : synaptic efficacy... initialized with u_se_const
+      U_se =  W*0+U_se_const
+ END
 
 
 
@@ -173,13 +180,14 @@ IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
       END
       
       IF depress EQ 1 THEN BEGIN
-         settag,dw, 'U_se',U_se
+         settag,dw, 'U_se_const',U_se_const
+         settag,dw, 'U_se',[U_se]
          settag,dw, 'tau_rec', tau_rec
          settag,dw, 'transm',[transm]
          settag,dw, 'last_ap',[last_ap]
          settag,dw, 'exp_array', [exp_array]
-    
- end
+         settag,dw, 'realscale', realscale    
+      end
 
    Handle_Value, _DW, DW, /NO_COPY, /SET
 
