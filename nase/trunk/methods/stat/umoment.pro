@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1999/07/28 08:48:19  saam
+;             SDEV and MDEV are now set to !NONE, if necessary
+;
 ;       Revision 1.4  1999/02/17 17:55:59  saam
 ;             + new keyword DOUBLE
 ;             + is stolen from moment.pro ( IDL5 )
@@ -86,6 +89,8 @@ FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
 
    ;Check length.
    if TypeX(TypeX(0)+2) eq 1 then BEGIN
+      SDEV = !NONE
+      MDEV = !NONE
       RETURN, [X(0),0.0,!NONE,!NONE]
    END
 
@@ -113,7 +118,6 @@ FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
 
   ;Standard deviation (returned through the Sdev keyword).
   Sdev = SQRT(Var)
-
   if Sdev ne 0 then begin	;Skew & kurtosis defined?
     Skew = DATOTAL(Resid^3, Double = Double) / (nX * Sdev ^ 3)
     Kurt = DATOTAL(Resid^4, Double = Double) / (nX * Sdev ^ 4) - 3.0
