@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;  Displays numerous spike trains as a commonly used spike raster
-;  diagram. The ordinate lists neuron indices, the abszissa is
+;  diagram. The ordinate lists neuron indices, the abscissa is
 ;  interpreted as time and each spike is displayed as a vertical line
 ;  or as a dot.
 ;
@@ -20,20 +20,20 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE: 
-;* Trainspotting, tn [,XRANGE=...] [,YRANGE=...]
+;* Trainspotting, tn [,XRANGE=...] [,YRANGE=...] 
+;*                   [,OFFSET=...] [,OVERSAMPLING=...]
 ;*                   [,TITLE=...] [,XTITLE=...] [,YTITLE=...]
-;*                   [,WIN=...]
-;*                   [,LEVEL=...] [,OFFSET=...]
+;*                   [,WIN=...] [,LEVEL=...] 
 ;*                   [,XSYMBOLSIZE=...] [YSYMBOLSIZE=...]
-;*                   [,OVERSAMPLING=...]
+;*                   [,/OVERPLOT] [,/CLEAN] 
 ;*                   [,/MUA [,MCOLOR=...]]
-;*                   [,/CLEAN] [,/SPASS] [,/OVERPLOT]
-;*                   [,/NTOLDSTYLE]
+;*                   [,/SPASS] 
+;
 ; INPUTS: 
-;  tn:: Two dimensional array (time, neuron index), where each value
+;  tn:: Two dimensional array (time, neuron index), wherein each value
 ;       greater than <*>level</*> is interpreted as an action
 ;       potential. Alternatively, you may specify a sparse version of the
-;       array, and set the <*>SPASS</*> keyword.
+;       array, and set the <*>/SPASS</*> keyword.
 ;
 ; INPUT KEYWORDS:
 ;  XRANGE/YRANGE:: Area of the whole spike raster that is
@@ -41,13 +41,6 @@
 ;                    correspond to the actual axis annotation, not to
 ;                    array indices. If <*>OVERSAMPLING</*> is set,
 ;                    <*>XRANGE</*> may have to be adjusted properly.
-;  TITLE:: Title of the plot, default: 'Spikeraster'
-;  XTITLE:: Annotation of the x-axis, default: 'Time / ms'
-;  YTITLE:: Annotation of the y-axis, default: 'Neuron #' 
-;  WIN:: Opens and uses window no. <*>WIN</*> to display
-;          rasterplot.
-;  LEVEL:: Specifys the value an entry in <*>tn</*> must at least have to
-;            be displayed. Default: 0.0, ie all entries GT 0.0 are plotted.
 ;  OFFSET:: Value added to the x-axis annotation. This may be useful
 ;             if only a part of the original array is to be displayed
 ;             and passed to <C>Trainspotting</C> in the form of eg
@@ -64,6 +57,13 @@
 ;                   relation between bins and time is the same. For
 ;                   example, setting <*>OVERSAMPLING=1000</*> yields
 ;                   annotation in seconds, if bins are still 1 ms long.   
+;  TITLE:: Title of the plot, default: 'Spikeraster'
+;  XTITLE:: Annotation of the x-axis, default: 'Time / ms'
+;  YTITLE:: Annotation of the y-axis, default: 'Neuron #' 
+;  WIN:: Opens and uses window no. <*>WIN</*> to display
+;          rasterplot.
+;  LEVEL:: Specifys the value an entry in <*>tn</*> must at least have to
+;            be displayed. Default: 0.0, ie all entries GT 0.0 are plotted.
 ;  XSYMBOLSIZE/YSYMBOLSIZE:: Width and height of the symbols used
 ;                              to draw the spikes as a fraction of the
 ;                              total plot width respectively
@@ -73,16 +73,16 @@
 ;                              <A NREF=DEFINESHEET>sheets</A>. Defaults: 
 ;                              <*>XSYMBOLSIZE=1 pixel</*>,
 ;                              <*>YSYMBOLSIZE=1/number of neurons</*>.
-;  OVERPLOT:: Plots the data into an already existing coordinate system
-;  CLEAN :: Supresses all annotation and axes and draws only
+;  OVERPLOT:: Plots the data into an already existing coordinate system.
+;  CLEAN :: Suppresses all annotation and axes and draws only
 ;             spikes. This is useful for importing the graphics into other
 ;             programs.
-;  MCOLOR:: Color index used for the <*>/MUA</*> option (default is red).
 ;  /MUA:: Shades the plot with the time-resolved total spike
 ;            activity scaled using the already existing ordinate. This
 ;            cannot be done in advance (e.g. before the call of
 ;            <C>Trainspotting</C> because the coordinate doesn't yet
 ;            exist).
+;  MCOLOR:: Color index used for the <*>/MUA</*> option (default is red).
 ;  /SPASS:: Setting this keyword lets <C>Trainspotting</C> interpret
 ;          its input as an array in <A NREF=SPASSMACHER>sparse</A>
 ;          format. To enable correct plotting, the 
@@ -90,19 +90,6 @@
 ;          dimensions of the original array, i.e. it has to be
 ;          generated with the <*>/DIMENSIONS</*> option of
 ;          <A>Spassmacher</A> set. 
-; /NTOLDSTYLE:: Force <C>Trainspotting</C> to interpret its input in the
-;               old format of <*>tn(neuron index, time)</*>, violating the
-;               NASE convention of time being the first index. This
-;               option is added for reasons of compatibility and does
-;               not support setting the <*>/SPASS</*> keyword simultaneously. 
-;
-; RESTRICTIONS:
-;  <*>/NTOLDSTYLE</*> does not support setting the <*>/SPASS</*>
-;  keyword simultaneously. As <*>/NTOLDSTYLE</*> is for compatibility
-;  anyway, this is not a large problem. In the future,
-;  <*>/NTOLDSTYLE</*> may be removed, because it needs the input array
-;  to be transposed and copied internally to avoid modification of the
-;  original input, which is very memory consuming.
 ;
 ; PROCEDURE:
 ;  1. Conventional or sparse array? Determine sizes accordingly.<BR>
@@ -136,14 +123,13 @@
 
 
 
-PRO Trainspotting, _nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
+PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
                    CLEAN=clean, OVERPLOT=overplot, CHARSIZE=Charsize, $
                    XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
                    OverSampling=OverSampling, $
                    XTITLE=xtitle, SPASS=spass, $
                    XRANGE=xrange, YRANGE=yrange, $
                    MUA=mua, MCOLOR=mcolor $
-                   , NTOLDSTYLE=ntoldstyle $
                    , _EXTRA=_extra
 
    On_Error, 2
@@ -151,20 +137,12 @@ PRO Trainspotting, _nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
    ;;---------------> check syntax
    IF (N_PARAMS() LT 1) THEN Console, /FATAL, 'Wrong number of arguments.'
 
-   Default, ntoldstyle, 0
-
-   IF Keyword_Set(NTOLDSTYLE) THEN BEGIN
-      nt = Transpose(_nt)
-      Console, /WARN, 'NTOLDSYTLE does not conform to NASE convention.'
-      IF Keyword_Set(SPASS) THEN Console, /FATAL, 'Setting both SPASS and NTOLDSYTLE is not supported.'
-   ENDIF ELSE BEGIN
-      nt = _nt
-      IF (Size(nt))(1) LT (Size(nt))(2) THEN $
-       Console, /WARN, 'Did you consider NASE convention of time = first index?'
-   ENDELSE
-
-   
    s = Size(nt)
+
+   IF (s(0) EQ 2) AND (s(1) LT s(2)) THEN $
+    Console, /WARN $
+    , 'Did you consider NASE convention of time = first index?'
+
    IF Keyword_Set(SPASS) THEN BEGIN
       ; if there's only one dimension (empty sparse array) or there are
       ; as many entries in sparse(0,0) than in the whole array, then there
