@@ -4,8 +4,8 @@
 ;
 ; PURPOSE:
 ;       This function computes the mean, variance, skewness and kurtosis
-;       of an n-element vector. If it gets a scalar it returns it as 
-;       mean and sets all other values to zero.
+;       of an n-element vector. if values are not defined !NONE  will
+;       be returned instead
 ;
 ; CATEGORY:
 ;       STATISTICS.
@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1998/06/01 14:34:03  saam
+;             now returns !NONE for skew & kurt if undefined
+;
 ;       Revision 1.1  1998/03/14 14:00:39  saam
 ;             this is IDL4s moment-function with minor corrections
 ;
@@ -58,7 +61,7 @@ function umoment, x, mdev = mdev, sdev = sdev
   if nx eq 1 then BEGIN
      mdev = 0
      sdev = 0
-     RETURN, [x,0,0,0]
+     RETURN, [x,0,!NONE,!NONE]
   END
   IF nx LT 1 THEN message, 'empty input'
 
@@ -76,8 +79,11 @@ function umoment, x, mdev = mdev, sdev = sdev
   if var ne 0 then begin 
     skew = total(resid^3) / (nx * sdev ^ 3)
     kurt = total(resid^4) / (nx * sdev ^ 4) - 3.0
-  endif else message, $
-     'Skewness and Kurtosis not defined for a sample variance of zero.'
+  endif else begin
+     print, 'UMOMENT: Skewness and Kurtosis not defined for a sample variance of zero.'
+     skew = !NONE
+     kurt = !NONE
+  end
   return, [mean, var, skew, kurt]
 end
 
