@@ -6,7 +6,7 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: Remaster, Title [   ,SCALE=Faktor
-;                                     | ,PROCESS=FuncName [,p1 .. ,pn] [,KEY1 .. ,KEYx]    (n <= 3)
+;                                     | ,PROCESS=FuncName [,p1 .. ,pn] [,KEY1 .. ,KEYx]    (n < = 3)
 ;                                   ]
 ;
 ; INPUTS: Title: Filename, der auch der Videotitel ist.
@@ -76,6 +76,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/05/03 12:56:58  kupper
+;               HTML-Header-Bug entfernt.
+;
 ;        Revision 2.2  1997/12/10 17:54:26  kupper
 ;               PROCESS-Keywort implementiert.
 ;
