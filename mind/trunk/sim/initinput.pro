@@ -21,11 +21,11 @@
 ;  Simulation  
 ;
 ; COMMON BLOCKS:
-;  ATTENTION
-;  COMMON_RANDOM:: nase COMMON block 
-;  PLOT_INPUT:: shares plotcilloscope with INPUT
-;  SH_INPUT:: shares sheets with INPUT
-;  INPUT:: shares serveral data structures with INPUT
+;  attention,
+;  common_random (nase common block), 
+;  plot_input (shares plotcilloscope with <A>Input</A>),
+;  sh_input (shares sheets with <A>Input</A>),
+;  input (shares serveral data structures with <A>Input</A>). 
 ;
 ; SEE ALSO:
 ;  <A>Input</A>, <A>FreeInput</A>, <A>Sim</A>.

@@ -1,38 +1,28 @@
 ;+
-; NAME:                FreeInput
+; NAME:
+;  FreeInput
 ;
-; AIM:                 cleans up memory and files used by the input (used by <A>Sim</A>)
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:             Frees dynamic data structures used by INPUT, SIMP. This routine
-;                      is called from SIM. It makes nearly no sense to call it directly.
+; AIM:
+;  Cleans up memory and files used by the input (used by <A>Sim</A>)
 ;
-; CATEGORY:            MIND SIM INTERNAL
+; PURPOSE:
+;  Frees dynamic data structures used by <A>Input</A>. This routine
+;  is called from <A>Sim</A>. It makes nearly no sense to call it directly.
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INPUT>input</A>
+; CATEGORY:
+;  Input
+;  Internal
+;  MIND
+;  Simulation  
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.6  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.5  2000/05/16 16:28:15  saam
-;           fixed two IDL3.6 problems
-;
-;     Revision 1.4  2000/04/06 09:40:58  saam
-;           killed useless debugging message
-;
-;     Revision 1.3  2000/01/14 14:10:38  alshaikh
-;           bugfix
-;
-;     Revision 1.2  2000/01/14 10:26:58  alshaikh
-;           NEW: 'EXTERN' input
-;
-;     Revision 1.1  1999/12/10 10:03:57  saam
-;           * converted from freeninput
-;
-;
+; SEE ALSO: <A>Sim</A>, <A>InitInput</A>, <A>Input</A>
 ;-
+
+
+
 PRO FreeInput, _IN
 
    Handle_Value, _IN, IN, /NO_COPY

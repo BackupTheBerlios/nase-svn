@@ -19,14 +19,14 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE: 
-;  Sim [,/WSTOP][,/NOGRAPHIC]
+;*  Sim [,/WSTOP][,/NOGRAPHIC]
 ;
 ; INPUT KEYWORDS: 
 ;  WSTOP:: stop after weight initialization; DWs are in CON(i), i=0..n-1
 ;  NOGRAPHIC:: dont show any graphics (is considerably faster!)
 ;
 ; COMMON BLOCKS: 
-;  ATTENTION
+;  attention
 ;
 ; EXAMPLE:
 ;* DSim & Sim
