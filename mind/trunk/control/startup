@@ -6,6 +6,9 @@
 ; MODIFICATION HISTROY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/01/14 15:13:06  saam
+;             added templates path in IDLPATH
+;
 ;       Revision 1.3  1999/12/22 10:35:27  saam
 ;             internal directory added
 ;
@@ -33,11 +36,12 @@ IF OS_FAMILY EQ "vms"     THEN separator=","
 IF OS_FAMILY EQ "MacOS"   THEN separator=","
 
 MINDDIRS = FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["control"]) + separator
-MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["demo"])    + separator
-MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["graphic"]) + separator
-MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["input"])   + separator
-MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["internal"])+ separator
-MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["sim"])     + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["demo"])      + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["graphic"])   + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["input"])     + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["internal"])  + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["sim"])       + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["templates"]) + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["xplore"])
 
 !PATH = !PATH+":"+MINDDIRS
