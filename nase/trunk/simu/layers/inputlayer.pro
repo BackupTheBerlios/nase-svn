@@ -44,6 +44,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;  $Log$
+;  Revision 2.8  2001/01/23 16:10:44  kupper
+;  Replaced manual check for floating underflow errors by call to new
+;  IgnoreUnderflows procedure (which is platform independent).
+;
 ;  Revision 2.7  2000/09/28 13:05:26  thiel
 ;      Added types '9' and 'lif', also added AIMs.
 ;
@@ -80,7 +84,7 @@ PRO InputLayer, _Layer, _EXTRA=_extra
    Call_Procedure, 'InputLayer_'+type, _Layer, _EXTRA=_extra
 
    ;; Ignore any floating underflows:
-   IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+   IgnoreUnderflows
 
 END
 

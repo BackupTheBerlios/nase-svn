@@ -40,6 +40,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  2001/01/23 16:10:27  kupper
+;        Replaced manual check for floating underflow errors by call to new
+;        IgnoreUnderflows procedure (which is platform independent).
+;
 ;        Revision 1.9  2000/08/29 09:56:54  kupper
 ;        Filled in name entry.
 ;
@@ -109,7 +113,7 @@ Pro leaky_integrator_array::input, a
    *self.data = Temporary(*self.data) * self.decay_factor + a
  
   ;; Ignore any floating underflows:
-   dummy = Check_Math(Mask=32)
+   IgnoreUnderflows
 End
 
 Function leaky_integrator_array::result
