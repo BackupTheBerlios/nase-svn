@@ -50,7 +50,7 @@
 ;
 ; CALLING SEQUENCE:
 ;*ProcedureName, par, [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*reslult = FunctionName, par, [,optpar] [,/SWITCH] [,KEYWORD=...]
+;*result = FunctionName, par, [,optpar] [,/SWITCH] [,KEYWORD=...]
 ;
 ; INPUTS:
 ;  
