@@ -11,7 +11,8 @@
 ; CALLING SEQUENCE:  TrainspottingScope, TSC, O
 ;
 ; INPUTS:            TSC: mit <A HREF=/nase/graphic/plotcilloscope/#INITTRAINSPOTTINGSCOPE>InitTrainspottingScope</A> initialisierte Struktur
-;                    O  : der Output einer Neuronengruppe als Handle auf SSpass-Format
+;                    O  : der Output einer Neuronengruppe als Handle auf SSpass-Format bzw. ein Arraz mit Nullen und Einsen,
+;                         falls NONASE in InitTrainspottingScope gesetzt wurde
 ;
 ; EXAMPLE:               
 ;                    LP = InitPara1(SPIKENOISE=100)
@@ -30,6 +31,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.8  1999/03/17 10:24:14  saam
+;           new keyword NONASE implemented
+;
 ;     Revision 2.7  1999/03/08 13:34:18  thiel
 ;            Bugs korrigiert, die ich beim Bugfix gemacht hatte.
 ;
@@ -56,7 +60,9 @@
 PRO TrainspottingScope, _SR, _y
 
    Handle_Value, _SR, SR, /NO_COPY
-   y = Handle_Val(_y)
+
+   IF SR.nonase THEN y = SSpassMacher(_y) ELSE y = Handle_Val(_y)
+
    IF y(0) NE 0 THEN BEGIN
       xsc = SR.xsc
       ysc = SR.ysc

@@ -14,6 +14,9 @@
 ;                     TIME         : die Laenge der dargestellten Zeitachse in BIN (Def.:500)
 ;                     OVERSAMPLING : korrekte Umrechnung von BIN in ms bei
 ;                                    ueberabtastenden Neuronen
+;                     NONASE       : bewirkt, dass die Trainsspottingscope-Routine statt
+;                                    NASE-Output normale SpikeArrays (Inhalt: 0 oder 1)
+;                                    verarbeitet
 ;
 ;                     Außerdem sind alle Schlüsselworte erlaubt, die
 ;                     auch PLOT nimmt. Default für XTITLE ist "t / ms", fuer
@@ -36,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/03/17 10:24:14  saam
+;           new keyword NONASE implemented
+;
 ;     Revision 2.5  1999/03/08 13:34:18  thiel
 ;            Bugs korrigiert, die ich beim Bugfix gemacht hatte.
 ;
@@ -56,7 +62,7 @@
 FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
                                  OVERSAMPLING=oversampling, $
                                  XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
-                                 XTITLE=xtitle, YTITLE=ytitle, _EXTRA=_extra
+                                 XTITLE=xtitle, YTITLE=ytitle, NONASE=nonase, _EXTRA=_extra
 
    On_Error, 2
 
@@ -64,6 +70,7 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
 
    Default, OVERSAMPLING, 1
    Default, TIME, 500l
+   Default, NONASE, 0
 
    Default, XTITLE, 't / ms'
    If not keyword_set(_EXTRA) then _extra = {XTITLE: xtitle} else begin
@@ -108,6 +115,7 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
           xsc    : xsizechar/2.   ,$
           ysc    : ysizechar/2.   ,$
           fill   : fill           ,$
+          nonase : nonase         ,$
           _extra : _extra}
 
 
