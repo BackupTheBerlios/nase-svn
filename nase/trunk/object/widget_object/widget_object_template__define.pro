@@ -43,7 +43,7 @@ Function widget_MyClass::init, _REF_EXTRA=_ref_extra
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, _EXTRA=_ref_extra) then return, 0
+   If not Init_Superclasses(self, "widget_MyClass", _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -78,7 +78,7 @@ End
 
 Pro widget_MyClass::cleanup, _REF_EXTRA = _ref_extra
    message, /Info, "I'm dying!"
-   Cleanup_Superclasses, self, _EXTRA=_ref_extra
+   Cleanup_Superclasses, self, "widget_template", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
    ;; Now do what is needed to cleanup a MyClass object:

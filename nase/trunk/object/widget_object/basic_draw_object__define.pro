@@ -85,6 +85,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/03/12 17:00:41  kupper
+;        Adjusted to new classname argument of Init/Cleanup_Superclasses.
+;
 ;        Revision 1.5  2000/03/12 15:16:10  kupper
 ;        Extended object.
 ;        Now including save_colors/ignore_colors and allow_paint/prevent_paint methods.
@@ -102,10 +105,10 @@ Pro BDO_Notify_Realize, id
    On_Error, 2
    Widget_Control, id, Get_Uvalue=object
 
-   showit_open, self.w_showit
-   self->initial_paint_hook_
-   self->paint_hook_
-   showit_close, self.w_showit, Save_Colors=self.save_colors
+   showit_open, object->showit()
+   object->initial_paint_hook_
+   object->paint_hook_
+   showit_close, object->showit(), Save_Colors=object->save_colors_()
 
    Widget_Control, object->showit(), Timer=object->paint_interval()
 End
@@ -166,7 +169,7 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, _EXTRA=_ref_extra) then return, 0
+   If not Init_Superclasses(self, "basic_draw_object", _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -216,7 +219,7 @@ End
 
 Pro basic_draw_object::cleanup, _REF_EXTRA = _ref_extra
    message, /Info, "I'm dying!"
-   Cleanup_Superclasses, self, _EXTRA=_ref_extra
+   Cleanup_Superclasses, self, "basic_draw_object", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
    ;; Now do what is needed to cleanup a MyClass object:
@@ -227,10 +230,13 @@ End
 
 ;; ------------ Public --------------------
 Pro basic_draw_object::paint
-   If not self.prevent_paint_flag then begin
+   If self.prevent_paint_flag then begin
+      self.delayed_paint_request_flag = 1;store the request
+   endif else begin ;;paint
       showit_open, self.w_showit
       self->paint_hook_
       showit_close, self.w_showit, Save_Colors=self.save_colors
+   endelse
 End
 
 Pro basic_draw_object::prevent_paint
@@ -238,6 +244,11 @@ Pro basic_draw_object::prevent_paint
 End
 Pro basic_draw_object::allow_paint
    self.prevent_paint_flag = 0
+   ;; did any paint requests arrive while painting was prohibited?
+   if self.delayed_paint_request_flag then begin
+      self->paint
+      self.delayed_paint_request_flag = 0
+   endif
 End
 
 Pro basic_draw_object::save_colors
@@ -258,6 +269,10 @@ Pro basic_draw_object::initial_paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
 End
 
+Function basic_draw_object::save_colors_
+   return, self.save_colors
+End
+
 ;; ------------ Object definition ---------------------------
 Pro basic_draw_object__DEFINE
    dummy = {basic_draw_object, $
@@ -270,6 +285,6 @@ Pro basic_draw_object__DEFINE
             paint_interval: 0.0, $
             $
             prevent_paint_flag: 0b, $
-            delayed_paint_request_flag: 0b
+            delayed_paint_request_flag: 0b $
            }
 End
