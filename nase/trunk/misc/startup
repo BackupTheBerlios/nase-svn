@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.37  2000/09/01 13:33:14  saam
+;             didn't work with idl3
+;
 ;       Revision 1.36  2000/08/25 16:54:22  kupper
 ;       Split startup procedure to protect from double execution of startup.
 ;
@@ -119,17 +122,16 @@
 NASEPATH = GetEnv("NASEPATH")
 If NASEPATH eq "" then begin message, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%",/INFO & message, "%%%% NASE Error: Environment variable 'NASEPATH' not set! %%%%%",/INFO & message, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" & end
    
+;; If this startup is executed for the second time, !NASEPATH is already defined:
+DefSysV, "!NASEPATH", EXISTS=nase_startup_executed
+If nase_startup_executed then Message, "Trying to execute NASE startup for the second time.", /INFO
+If nase_startup_executed then Message, "Skipping most of startup procedure.", /INFO
+
+If not(nase_startup_executed) then DefSysV, '!NASEPATH', NASEPATH, 0
+
 PushD, NASEPATH; cd to nase
 .run misc/startup_ctd
 PopD ;Return to old dir
-
-;; If this startup is executed for the second time, !NASEPATH is already defined:
-DefSysV, "!NASEPATH", EXISTS=nase_startup_executed
-If nase_startup_executed then message, /Info, "Trying to execute NASE startup for the second time."
-If nase_startup_executed then message, /info, "Skipping most of startup procedure."
-
-If not(nase_startup_executed) then DefSysV, '!NASEPATH', NASEPATH, 0
 If not(nase_startup_executed) then startup_ctd
 
 @precompile ;;Compile some modules that cannot be compiled automatically
-
