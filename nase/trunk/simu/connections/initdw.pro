@@ -120,8 +120,6 @@ end
 
 
 
-if HasDelay then if Where(DelMat.Weights) ne -1 then DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
-
 return, DelMat
 
 end
