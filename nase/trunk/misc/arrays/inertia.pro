@@ -15,9 +15,9 @@
 ;
 ; OPTIONAL INPUTS:   origin: Ursprung, bezüglich dessen das Trägheitsmoment
 ;                            berechnet werden soll. 
-;                            Ein zweidimensionales Array, das vom Typ Integer
-;                            sein sollte. (Nachkommastellen werden
-;                            abgeschnitten.)
+;                            Ein zweidimensionales Array, das auch gebrochene
+;                            Werte enthalten darf. Origin muß nicht
+;                            notwendigerweise innerhalb des Arrays liegen.
 ;                            Default: Scherpunkt der Verteilung.
 ;
 ; OUTPUTS:           I  : das resultierende Traegheitsmoment
@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/03/23 14:35:13  kupper
+;        origin Parameter darf jetzt auch gebrochen sein.
+;
 ;        Revision 1.6  2000/03/23 13:11:24  kupper
 ;        Now using new QUADRATIC keyword to Distance().
 ;
@@ -78,8 +81,8 @@ FUNCTION Inertia, A, in_com, COM=com
    r = FLTARR(dims)
 
    If n_params() eq 2 then $
-    com = round(in_com) else $
-    com = round(Schwerpunkt(A))
+    com = in_com else $
+    com = Schwerpunkt(A)
    
    IF com(0) NE !NONE THEN BEGIN
       IF (tA eq 0.0) THEN $
