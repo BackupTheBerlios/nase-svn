@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/05/04 09:15:51  saam
+;           various changes
+;
 ;     Revision 1.2  2000/01/31 09:19:18  saam
 ;           print, message -> console
 ;
@@ -58,6 +61,7 @@
 FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, LOGIC=op, RATE=rate, FRAC=frac
 
    COMMON COMMON_random, seed
+   COMMON ATTENTION
    ON_ERROR, 2
 
    Default, mode,  1          ; i.e. step
@@ -83,7 +87,7 @@ FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
                delta_t  : delta_t                   ,$
                sim_time : .0d                        }
          
-          console, P.CON, STR(rate),' Hz, fraction of neurons: ', STR(frac)         
+          console, P.CON, STR(rate)+' Hz, fraction of neurons: '+STR(frac)         
       END
       
       ; STEP
