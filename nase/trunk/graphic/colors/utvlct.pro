@@ -28,7 +28,12 @@
 ;  <*>0...!TOPCOLOR</*>, therefore it is advisable
 ;  to compress the colormap when loading, or to
 ;  define the colormap using only
-;  <*>!TOPCOLOR+1</*> entries.
+;  <*>!TOPCOLOR+1</*> entries. <BR>
+;  Unlike IDL's <C>TVLCT</C>, <C>UTvLct</C> does not break if it is
+;  called on the NULL device. The call is simply skipped. <BR>
+;  The call is skipped also, if the current device is the X device,
+;  and connecting to the X server is not allowed during this session
+;  (see <A>XAllowed()</A> for details).
 ;                                          
 ; CATEGORY:
 ;  Color
@@ -57,59 +62,83 @@
 ;              HLS::    see IDL Help for tvlct
 ;              HSV::    see IDL Help for tvlct
 ;
-; SEE ALSO:            <A>ULoadCt</A>, <A>UTvScl</A>
+; SEE ALSO:
+;  <A>ULoadCt</A>, <A>UTvScl</A>, <A>XAllowed()</A>.
 ;
 ;-
 
 PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
+
+   ;; ----------------------------
+   ;; Do absolutely nothing in the following cases, as code will break
+   ;; otherwise:
+   ;;
+   ;; Device is the NULL device:
+   If Contains(!D.Name, 'NULL', /IGNORECASE) then begin
+      printf, -2, "% WARN: (UTVLCT) "+ $
+        "Skipping call on 'NULL' device."
+      flush, -2
+      return
+   endif
+   ;; Device is the X device, but connecting to the X-Server is forbidden:
+   If (!D.Name eq 'X') and not XAllowed() then begin
+      printf, -2, "% WARN: (UTVLCT) "+ $
+        "Connecting to X server is forbidden. Skipping call on 'X' device."
+      flush, -2
+      return
+   endif
+   ;; ----------------------------
+
+
+
    default, sclct, 0
-   IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
-      if not extraset(extra,'get') then begin
-       
-          assert, (N_Params() GE 1) AND (N_Params() LE 4), 'wrong number of arguments'
-          
-          if N_Params() GE 3 then v = [ [v1], [v2], [v3] ] else v = v1
-          
-          if sclct eq 1 then begin
-              _v = BYTARR(256, 3)
-              utvlct, _V, /get
-              
-              _v(*, 0)= [ congrid(v(*, 0), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 0)]
-              _v(*, 1)= [ congrid(v(*, 1), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 1)]
-              _v(*, 2)= [ congrid(v(*, 2), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 2)]
-          end else begin
+
+   if not extraset(extra,'get') then begin
+      
+      assert, (N_Params() GE 1) AND (N_Params() LE 4), 'wrong number of arguments'
+      
+      if N_Params() GE 3 then v = [ [v1], [v2], [v3] ] else v = v1
+      
+      if sclct eq 1 then begin
+         _v = BYTARR(256, 3)
+         utvlct, _V, /get
+         
+         _v(*, 0)= [ congrid(v(*, 0), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 0)]
+         _v(*, 1)= [ congrid(v(*, 1), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 1)]
+         _v(*, 2)= [ congrid(v(*, 2), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 2)]
+      end else begin
 ;              _v = v           ;if set(v) then _v = v  this is always fulfilled because of line:  if N_Params() GE 3 then v = [ [v1], [v2], [v3] ] else v = v1
                                 ; cut table if required, because it
                                 ; MUST NOT overwrite !TOPCOLOR+1...
 
-             IF NOT KEYWORD_SET(OVER) THEN BEGIN
-                CASE N_Params() OF 
-                   1: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
-                   2: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v2]),*)
-                   3: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
-                   4: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v4]),*)
-                END
-             END ELSE _V =  V
-          end
+         IF NOT KEYWORD_SET(OVER) THEN BEGIN
+            CASE N_Params() OF 
+               1: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
+               2: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v2]),*)
+               3: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR]),*)                     
+               4: _v = v(0:MIN([(SIZE(v))(1)-1, !TOPCOLOR-v4]),*)
+            END
+         END ELSE _V =  V
+      end
 
-          CASE N_Params() OF
-             1 : TvLCt, _v,     _EXTRA=extra
-             2 : TvLCt, _v, v2, _EXTRA=extra
-             3 : TvLCt, _v,     _EXTRA=extra
-             4 : TvLCt, _v, v4, _EXTRA=extra
-          ENDCASE
-         
-      END ELSE BEGIN
+      CASE N_Params() OF
+         1 : TvLCt, _v,     _EXTRA=extra
+         2 : TvLCt, _v, v2, _EXTRA=extra
+         3 : TvLCt, _v,     _EXTRA=extra
+         4 : TvLCt, _v, v4, _EXTRA=extra
+      ENDCASE
+      
+   END ELSE BEGIN
 
-         CASE N_Params() OF
-            1 : TvLCt, v1,             _EXTRA=extra
-            2 : TvLCt, v1, v2,         _EXTRA=extra
-            3 : TvLCt, v1, v2, v3,     _EXTRA=extra
-            4 : TvLCt, v1, v2, v3, v4, _EXTRA=extra
-            ELSE: Message, 'wrong number of arguments'
-         ENDCASE
+      CASE N_Params() OF
+         1 : TvLCt, v1,             _EXTRA=extra
+         2 : TvLCt, v1, v2,         _EXTRA=extra
+         3 : TvLCt, v1, v2, v3,     _EXTRA=extra
+         4 : TvLCt, v1, v2, v3, v4, _EXTRA=extra
+         ELSE: Message, 'wrong number of arguments'
+      ENDCASE
 
-      ENDELSE
-   END
+   ENDELSE
+   
    
 END
