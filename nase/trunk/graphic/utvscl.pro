@@ -78,6 +78,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.36  2000/09/01 09:17:44  gabriel
+;           !D.{X|Y}_PX_CM instead of hardcoding 40.0 isn't correct for postscript.
+;           Exception included!
+;
 ;     Revision 2.35  2000/08/30 22:33:49  kupper
 ;     Chaged to use !D.{X|Y}_PX_CM instead of hardcoding 40.0, as it has
 ;     different value on WIN device!
@@ -336,6 +340,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
+
    ; don't modify the original image
    Image = __Image
 
@@ -375,8 +380,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          ysize = FLOAT(y_size)
          xsize = y_size*(((SIZE(Image))(1))/FLOAT((SIZE(Image))(2)))
       END ELSE BEGIN
-         xsize = (SIZE(Image))(1)/!D.X_PX_CM
-         ysize = (SIZE(Image))(2)/!D.Y_PX_CM
+            IF !D.NAME EQ "PS" THEN BEGIN
+               xsize = (SIZE(Image))(1)/40.
+               ysize = (SIZE(Image))(2)/40.
+            END ELSE begin 
+               xsize = (SIZE(Image))(1)/!D.X_PX_CM
+               ysize = (SIZE(Image))(2)/!D.Y_PX_CM
+            ENDELSE
       END
    END
    xsize = xsize*stretch*h_stretch
