@@ -43,9 +43,9 @@
 ;
 ; EXAMPLE: LayerData ( FEEDING=MyFeeding, POTENTIAL=MyMembranpotential )
 ;
-; SEE ALSO: <A HREF="#INITLAYER_1">InitLayer_1()</A>,   <A HREF="#INITLAYER_2">InitLayer_2()</A>,       <A HREF="#INITLAYER_3">InitLayer_3()</A>, 
-;           <A HREF="#INITPARA_1">InitPara_1()</A>,     <A HREF="#INITPARA_2">InitPara_2()</A>,     <A HREF="#INITPARA_3">InitPara_3()</A>,  
-;           <A HREF="#LAYERWIDTH">LayerWidth()</A>, <A HREF="#LAYERHEIGHT">LayerHeight()</A>, <A HREF="#LAYERSIZE">LayerSize()</A>, 
+; SEE ALSO: <A HREF="#INITLAYER_1">InitLayer_1()</A>,  <A HREF="#INITLAYER_2">InitLayer_2()</A>,  <A HREF="#INITLAYER_3">InitLayer_3()</A>, 
+;           <A HREF="#INITPARA_1">InitPara_1()</A>,   <A HREF="#INITPARA_2">InitPara_2()</A>,   <A HREF="#INITPARA_3">InitPara_3()</A>,  
+;           <A HREF="#LAYERWIDTH">LayerWidth()</A>,   <A HREF="#LAYERHEIGHT">LayerHeight()</A>,  <A HREF="#LAYERSIZE">LayerSize()</A>, 
 ;           <A HREF="#INPUTLAYER_1">InputLayer_1</A>,   <A HREF="#INPUTLAYER_2">InputLayer_2</A>, 
 ;           <A HREF="#PROCEEDLAYER_1">ProceedLayer_1</A>, <A HREF="#PROCEEDLAYER_2">ProceedLayer_2</A>, <A HREF="#PROCEEDLAYER_3">ProceedLayer_3</A>, 
 ;           <A HREF="#OUT2VECTOR">Out2Vector()</A>
@@ -53,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/01/28 15:55:46  kupper
+;               Nur Header-Kosmetik.
+;
 ;        Revision 2.1  1998/01/28 15:50:02  kupper
 ;               Schöpfung.
 ;
