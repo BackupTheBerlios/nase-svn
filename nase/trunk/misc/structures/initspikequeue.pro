@@ -1,58 +1,49 @@
 ;+
 ; NAME: 		InitSpikeQueue
 ;
-; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 30 Zeitschritten
+; PURPOSE:		Initialisierung einer Bounded Queue zur Realisierung eines Spike-Delays
 ;
 ; CATEGORY:		MISC/STRUCTURES
 ;
-; CALLING SEQUENCE:	My_Queue = InitSpikeQueue ( INIT_DELAYS = Delay_Array )
+; CALLING SEQUENCE:	Queue = InitSpikeQueue ( INIT_DELAYS = Delay_Array )
 ;
-; KEYWORD PARAMETERS:	INIT_DELAYS: Wird dieser Parameter angegeben, so wird ein leere Queue erzeugt.
-;				     Die Dimension des Arrays gibt an, wieviele Spiketrains die Queue fassen soll.
+; KEYWORD PARAMETERS:	INIT_DELAYS: Die Dimension des Arrays gibt an, wieviele Spiketrains die Queue fassen soll.
 ;				     Die Werte geben das Delay für jeden Spiketrain in Zeitschritten (=Aufrufschritten)
-;				     an. Erlaubte Werte sind 0..15. (Für 0 wird der Input sofort wieder ausgegeben!)
+;				     an. Erlaubte Werte sind alle natuerlichen Zahlen. (Für 0 wird der Input sofort wieder ausgegeben!)
 ;	
-; OUTPUTS:		My_Queue: Eine leere Queue mit entsprechenden Delays
+; OUTPUTS:		Queue: Eine leere Queue mit entsprechenden Delays
 ;
-; RESTRICTIONS: 	Input darf nur 0 oder 1 enthalten und muß gleiche Dimension wie INIT_DELAYS haben.
-;			INIT_DELAYS darf nur Integer im Bereich 0..30 enthalten!		
+; EXAMPLE:              Queue        = InitSpikeQueue( INIT_DELAYS=[0,5,7,100,442,2] )
+;                       OutputSpikes = SpikeQueue( Queue, [1,0,1,0,1,0] ) 
+;                       FreeSpikeQueue, Queue
 ;
-; EXAMPLE: Ruedigers_Qeueu   = InitSpikeQueue( INIT_DELAYS=[0,5,7] )  ; erzeugt eine Queue für drei Spiketrains mit den Delays 0, 5 und 7
-;          Ankommende_Spikes = SpikeQueue( Ruedigers_Queue, [1,0,1] ) ; Steckt in die erste und dritte Queue einen Spike,
-;									und liest am anderen Ende je einen Spike aus.
-; SEE ALSO:             <A HREF="#SPIKEQUEUE">SpikeQueue</A>
+; PROCEDURE:            Diese Routinen benutzen die BasicSpikeQueues, indem sie entsprechend viele davon hintereinanderschalten.
+;                       Die Aufrufsyntax wurde erhalten, lediglich die Beschraenkung auf eine maximales Delay von 30 faellt weg.
+;
+; SEE ALSO:             <A HREF="#SPIKEQUEUE">SpikeQueue</A>, <A HREF="#FREESPIKEQUEUE">FreeSpikeQueue</A>, <A HREF="#INITBASICSPIKEQUEUE">InitBasicSpikeQueue</A>
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
-;       Revision 1.3  1997/12/01 11:38:20  saam
-;             Bearbeitet jetzt auch Delays bis maximal 30 Bins
+;       Revision 1.4  1997/12/02 09:42:24  saam
+;            n->o->i->s->r->e->v->r->U
 ;
-;
-;       Mon Aug 18 16:33:26 1997, Mirko Saam
-;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
-;		Fehler bei Belegung von starts korrigiert, fix(2^x) != 2^(fix(x))
-;
-;       Thu Aug 14 16:06:05 1997, Mirko Saam
-;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
-;		Urversion, entstanden aus spikequeue.pro Version 1.1
-;                       
 ;
 ;-
 FUNCTION InitSpikeQueue, INIT_DELAYS=init_delays
 
-   IF MAX(init_delays) GT 30 THEN Message, 'maximal delay is 30'
+   tmpDelay = init_delays
+   md       = MAX(tmpDelay)
+   
+   numQu = (md-1)/30 + 1
+   
+   Qu    = LonArr(numQu+1)
+   Qu(0) = numQu
 
-   IF MAX(init_delays) LE 15 THEN BEGIN
-      Queue={Q     : intarr(n_elements(init_delays)), $
-             starts: 2^round(init_delays)}
-   END ELSE BEGIN
-      Queue={Q     : lonarr(n_elements(init_delays)), $
-             starts: 2l^round(init_delays)}
+   FOR i=1,numQu DO BEGIN
+      Qu(i) = Handle_Create(VALUE=InitBasicSpikeQueue(INIT_DELAYS=(tmpDelay < 30)))
+      tmpDelay = tmpDelay - (tmpDelay < 30)
    END
 
-   RETURN, Queue
-
-end
+   RETURN, Qu
+END
