@@ -119,7 +119,7 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    _called_by = (split(m,' <'))(0)
 
 
-   yell = '('+str(level)+')'+strupcase(_called_by)+':'+_message
+   yell = '('+str(level)+')'+strupcase(_called_by)+': '+_message
    
 
    viz = getHTag(_console, 'viz')
