@@ -12,16 +12,24 @@
 ;
 ; CALLING SEQUENCE:   SavDW = SaveDW(DW)
 ;
-; INPUTS:             DW: Eine mit RESTORE eingelesene DelayWeigh-Struktur
+; INPUTS:             DW:: Eine mit RESTORE eingelesene DelayWeigh-Struktur
 ;
-; OUPUTS:             SavDW: eine Struktur, die z.B. mit der IDL-Routine SAVE
+; OUTPUTS:             SavDW:: eine Struktur, die z.B. mit der IDL-Routine SAVE
 ;                            gespeichert werden kann
+;
+; SEE ALSO: RestoreDW
 ;
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2003/08/27 15:39:47  michler
+;
+;     Modified Files:
+;     	savedw.pro
+;     some header corrections
+;
 ;     Revision 2.5  2000/09/25 16:49:13  thiel
 ;         AIMS added.
 ;
