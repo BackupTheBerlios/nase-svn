@@ -26,7 +26,7 @@
 ;                             [, /NEUTRAL]
 ;                             [, /POLYGON]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
-;                             [, SETCOL=0]
+;                             [, SETCOL=0] [, PLOTCOL=PlotColor]
 ;
 ; INPUTS: Array : klar!
 ;
@@ -65,6 +65,8 @@
 ;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
 ;                     SETCOL    : Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
 ;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
+;                     PLOTCOL   : Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
+;                                 wird versucht, eine passende Farbe zu raten.
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
@@ -92,6 +94,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.41  1999/06/06 14:52:54  kupper
+;     Added PLOTCOL-Keyword.
+;
 ;     Revision 2.40  1999/06/06 14:24:48  kupper
 ;     Added SETCOL KeyWord.
 ;
@@ -243,6 +248,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGMARGIN=LEGMARGIN,$
                TOP=top,$
                SETCOL=setcol, $
+               PLOTCOL=plotcol, $
                _EXTRA=_extra
 
 
@@ -258,16 +264,17 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    oldYMinor   = !Y.Minor
    
 
-   ;-----Optimale Farbe fuer die Achsen ermitteln:
-   bg = GetBGColor()
-   ; if device is !PSGREY and !REVERTPS is on 
-   If !PSGREY then begin
-      save_rpsc = !REVERTPSCOLORS
-      !REVERTPSCOLORS = 0
-   EndIf
-   sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-   If !PSGREY then !REVERTPSCOLORS = save_rpsc
-   
+   If set(PLOTCOL) then sc = plotcol else begin
+      ;-----Optimale Farbe fuer die Achsen ermitteln:
+      bg = GetBGColor()
+      ; if device is !PSGREY and !REVERTPS is on 
+      If !PSGREY then begin
+         save_rpsc = !REVERTPSCOLORS
+         !REVERTPSCOLORS = 0
+      EndIf
+      sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
+      If !PSGREY then !REVERTPSCOLORS = save_rpsc
+   EndElse
    Get_Color = sc
    
    Default, SETCOL, 1
@@ -482,7 +489,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
              Max=MaxW, Min=MinW, Mid='0',$
              CHARSIZE=Charsize, $
              NOSCALE=NoScale, $
-             /Vertical, /Center 
+             /Vertical, /Center, COLOR=sc
          END ELSE BEGIN
             MinW = 0
             TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
@@ -491,7 +498,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
              Max=MaxW, Min=MinW,$
              CHARSIZE=Charsize, $
              NOSCALE=NoScale, $
-             /Vertical, /Center 
+             /Vertical, /Center, COLOR=sc
          END
       END ELSE BEGIN
          Default, LEG_MAX, MAX(w)
@@ -508,7 +515,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
           V_Stretch=TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
           Max=LEG_MAX, Min=LEG_MIN, $
           CHARSIZE=Charsize, $
-          /Vertical, /Center 
+          /Vertical, /Center, COLOR=sc 
       END
    END
 
