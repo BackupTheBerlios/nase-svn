@@ -8,7 +8,6 @@ body { margin-top:10px; margin-bottom:10px; margin-left:0px; background-color:#F
 
 
 p,h1,h2,h3,h4,ul,ol,li,div,td,th,address,blockquote,nobr,b,i
-     { font-family:Arial,sans-serif; }
 
 /* font-family = Schriftart fuer Textelemente */
 /* Arial,sans-serif = Arial und serifenlose Schrift, Wert aenderbar */
@@ -68,7 +67,7 @@ p,ul,ol,li,div,td,th,address,nobr,b,i { font-size:10pt; }
 /* 10pt = 10 Punkt, Wert aenderbar */
 
 
-pre { font-family:Courier New,Courier; font-size:12pt; color:#0000C0; }
+pre { font-family:Courier New,Courier; font-size:10pt; color:#0000C0; }
 
 /* Quelltext-Beispiele */
 /* font-family = Schriftart */
@@ -79,7 +78,10 @@ pre { font-family:Courier New,Courier; font-size:12pt; color:#0000C0; }
 /* #0000C0 = blau, Wert aenderbar */
 
 
-tt { font-family:Courier New,Courier; font-size:12pt; color:#0000C0; }
+tt { font-family:Courier New,Courier; font-size:10pt; color:#0000C0; }
+tt.command { font-family:Arial,sans-serif; font-size:10pt; color:#0000C0; }
+/* this should have the same formatting as a.link and a.visited */
+
 
 /* Quelltext-Befehle im normalen Fliesstext */
 /* font-family = Schriftart */
@@ -155,9 +157,8 @@ pre.normal { color:#000000; }
 /* a:link { color:#AA5522; text-decoration:underline; } */
 /* a:visited { color:#772200; text-decoration:underline; } */
 /* a:active { color:#000000; text-decoration:none; } */
-a:nase { color:#FFFFFF; text-decoration:none; } 
-a:link { color:#0000C0; text-decoration:underline; }
-a:visited { color:#0000C0; text-decoration:underline; }
+a:link { color:#0000C0; text-decoration:underline; } 
+a:visited { color:#0000C0; text-decoration:underline; } 
 a:active { color:#0000C0; text-decoration:underline; }
 
 
