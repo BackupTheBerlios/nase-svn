@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/03/23 13:11:24  kupper
+;        Now using new QUADRATIC keyword to Distance().
+;
 ;        Revision 1.5  2000/03/22 16:11:11  kupper
 ;        Added origin parameter.
 ;
@@ -81,7 +84,7 @@ FUNCTION Inertia, A, in_com, COM=com
    IF com(0) NE !NONE THEN BEGIN
       IF (tA eq 0.0) THEN $
        return, 0.0 ELSE $
-       return, total( A * Distance(h, w, com(0), com(1))^2 ) / tA
+       return, total( A * Distance(/QUADRATIC, h, w, com(0), com(1)) ) / tA
    END ELSE RETURN, !NONE
 
 END
