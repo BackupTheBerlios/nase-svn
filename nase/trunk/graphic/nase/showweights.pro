@@ -110,6 +110,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.14  1998/02/05 13:22:39  saam
+;             Anpassung an neue DW-Struktur
+;
 ;       Revision 2.13  1998/02/04 17:23:48  kupper
 ;              Showweights benutzt jetzt brav objektorientiert die Weights(), Delays() und DWDim()-Funktionen.
 ;              Das MAXSIZE-Schlüsselwort wurde implementiert, weil ich mich immer geärgert habe, daß die Fenster
@@ -209,13 +212,13 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    ;;                     (das hat natürlich historische Gründe...) 
    if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
       
-      IF info(__Matrix) EQ 'DW_WEIGHT' THEN BEGIN
+      IF info(__Matrix) EQ 'DW_WEIGHT' OR info(__Matrix) EQ 'SDW_WEIGHT' THEN BEGIN
          Matrix = {Weights : Transpose(Weights(__Matrix)), $
                    source_w: DWDim(__Matrix, /TW), $
                    source_h: DWDim(__Matrix, /TH), $
                    target_w: DWDim(__Matrix, /SW), $
                    target_h: DWDim(__Matrix, /SH)}
-      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          Matrix = {Weights : Transpose(Weights(__Matrix)), $
                    Delays : Transpose(Delays(__Matrix)),$
                    source_w: DWDim(__Matrix, /TW), $
