@@ -9,6 +9,7 @@
 ; CATEGORY:           GRAPHIC
 ;
 ; CALLING SEQUENCE:   UTvScl, Image [,XNorm] [,YNorm] [,/CENTER]
+;                             [,X_SIZE=x_size] [,Y_SIZE=y_size]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;                             [,DIMENSIONS=dimensions]
 ;
@@ -18,6 +19,12 @@
 ;                                   bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
 ;
 ; KEYWORD PARAMETERS: CENTER    : Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
+;                     X_SIZE    ,
+;                     Y_SIZE    : Es kann die gewuenschte Groesse des Bildes in CM angegeben werden,
+;                                 wobei 1cm 40 Pixeln entspricht. Wird nur einer der beiden Parameter
+;                                 angegeben, so wird der andere so gewaehlt, dass keine Verzerrungen
+;                                 auftreten. Achtung, die Stretch-Keywords koennen die endgueltige
+;                                 Groesse noch veraendern, daher besser nicht zusammen verwenden.
 ;                     STRETCH   : Vergroessert bzw. verkleinert das Originalbild um Faktor
 ;                     H_STRETCH ,
 ;                     V_STRETCH : Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
@@ -34,10 +41,14 @@
 ;          UTvScl, bild
 ;          UTVScl, bild, /CENTER, STRETCH=2.0
 ;          UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
+;          UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/06 18:47:17  saam
+;           Keyword X_Size und Y_Size hinzugefuegt
+;
 ;     Revision 2.2  1997/11/06 15:22:26  saam
 ;           schaut nicht zu viel TV, UTvScl ist besser
 ;
@@ -46,6 +57,7 @@
 PRO UTvScl, _Image, XNorm, YNorm $
             , CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
+            , X_SIZE=x_size, Y_SIZE=y_size $
             , DIMENSIONS=dimensions $
             , _EXTRA=e
 
@@ -65,9 +77,24 @@ PRO UTvScl, _Image, XNorm, YNorm $
 
    ; 40 Pixels are One-Centimeter
    ; size in Centimeters
-   xsize =  (SIZE(Image))(1)/40.*stretch*h_stretch
-   ysize =  (SIZE(Image))(2)/40.*stretch*v_stretch 
-      
+   IF Keyword_Set(X_SIZE) AND Keyword_Set(Y_SIZE) THEN BEGIN
+      xsize = FLOAT(x_size)
+      ysize = FLOAT(y_size)
+   END ELSE BEGIN
+      IF Keyword_Set(X_SIZE) THEN BEGIN
+         xsize = FLOAT(x_size)
+         ysize = x_size*(((SIZE(Image))(2))/FLOAT((SIZE(Image))(1)))
+      END ELSE IF Keyword_Set(Y_SIZE) THEN BEGIN
+         ysize = FLOAT(y_size)
+         xsize = y_size*(((SIZE(Image))(1))/FLOAT((SIZE(Image))(2)))
+      END ELSE BEGIN
+         xsize = (SIZE(Image))(1)/40.
+         ysize = (SIZE(Image))(2)/40.
+      END
+   END
+   xsize = xsize*stretch*h_stretch
+   ysize = ysize*stretch*v_stretch
+
    ; pos in Centimeters
    xpos = (xnorm * !D.X_Size / !D.X_PX_CM)
    ypos = (ynorm * !D.Y_Size / !D.Y_PX_CM)
