@@ -142,7 +142,6 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       ; update the learning potential if needed
       IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
          DelMat.lp =  (DelMat.lp*delmat.dp) + DelMat.vp*spikes
-         print, DelMat.lp(5,5)
       END
       RETURN, TOTAL(res, 2)
    END   
