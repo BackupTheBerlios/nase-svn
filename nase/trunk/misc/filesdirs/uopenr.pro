@@ -23,6 +23,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/06/19 13:21:58  saam
+;           + print goes console
+;           + lun's are not aquired via /FREE_LUN
+;             because their number is restricted to max 32.
+;             another mechanism now provides up to 97 luns.
+;             the maximal lun number is increased respectively.
+;           + new keyword FORCE in uopenw to create nonexisting
+;             directories
+;
 ;     Revision 2.6  1998/11/13 21:21:16  saam
 ;           now uses readfilename
 ;
@@ -45,7 +54,7 @@
 FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
 
    COMMON UOPENR, llun
-   MaxFiles = 40
+   MaxFiles = 97
 
 
    On_Error, 2
@@ -61,35 +70,43 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
    END
 
    IF llun.act EQ MaxFiles THEN BEGIN
-      Print, 'UOpenR: sorry, already maximum number of files (',STRCOMPRESS(MaxFiles,/REMOVE_ALL),') open'
-      RETURN, !NONE
+       Console, 'sorry, already maximum number of files ('+STR(MaxFiles)+') open', /WARN
+       RETURN, !NONE
    END
-
+   
    rfile = RealFileName(file)
    exists = ZipStat(rfile, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
    IF exists THEN BEGIN
-
+       
       ; get a free entry
-      idx = MIN(WHERE(llun.lun EQ !NONE, c))
-      IF c EQ 0 THEN Message, 'this should not happen'
+       idx = MIN(WHERE(llun.lun EQ !NONE, c))
+       IF c EQ 0 THEN Message, 'this should not happen'
+       
+       llun.zip(idx) = 0
+       IF zf(0) NE '-1' THEN BEGIN
+           IF Keyword_Set(Verbose) THEN Console, 'UOpenR: no unzipped version found...unzipping'
+           UnZip, rfile
+           llun.zip(idx) = 1
+       END
+       
+       ; probe for unused lun
+       lun = 2 ; reserved for stdin/stdout/stderr
+       REPEAT BEGIN
+           lun = lun + 1
+           OpenR, lun, rfile, Err=err, _EXTRA=e 
+       END UNTIL ((lun GT 2+MaxFiles) OR (NOT err))
+       IF (lun GT 2+MaxFiles) THEN Console, 'unable to aquire a lun: '+!ERR_STRING, /FATAL
 
-      llun.zip(idx) = 0
-      IF zf(0) NE '-1' THEN BEGIN
-         IF Keyword_Set(Verbose) THEN print, 'UOpenR: no unzipped version found...unzipping'
-         UnZip, rfile
-         llun.zip(idx) = 1
-      END
-      OpenR, lun, rfile, /GET_LUN, _EXTRA=e 
-      
-      llun.lun(idx)  = lun & llun.act=llun.act+1
-      llun.file(idx) = rfile
-
-      
-      RETURN, lun
+       
+       llun.lun(idx)  = lun & llun.act=llun.act+1
+       llun.file(idx) = rfile
+       
+       
+       RETURN, lun
    END ELSE BEGIN
-      print, 'UOpenR: ', rfile
-      print, 'UOpenR: neither unzipped nor zipped version found!'
-      RETURN, !NONE
+       Console, 'UOpenR: '+rfile
+       Console, 'UOpenR: neither unzipped nor zipped version found!', /WARN
+       RETURN, !NONE
    END
-
+   
 END

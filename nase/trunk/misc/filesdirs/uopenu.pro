@@ -24,6 +24,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/06/19 13:21:58  saam
+;           + print goes console
+;           + lun's are not aquired via /FREE_LUN
+;             because their number is restricted to max 32.
+;             another mechanism now provides up to 97 luns.
+;             the maximal lun number is increased respectively.
+;           + new keyword FORCE in uopenw to create nonexisting
+;             directories
+;
 ;     Revision 1.1  1999/02/16 15:32:13  thiel
 ;            Entsprechung der IDL-Routine OpenU
 ;            Abgeleitet von UOpenW.
@@ -39,7 +48,7 @@
 FUNCTION UOpenU, file, VERBOSE=verbose, ZIP=zip, _EXTRA=e
 
    COMMON UOPENR, llun
-   MaxFiles = 40
+   MaxFiles = 97
 
    Default, ZIP, 0
 
@@ -56,7 +65,7 @@ FUNCTION UOpenU, file, VERBOSE=verbose, ZIP=zip, _EXTRA=e
    END
 
    IF llun.act EQ MaxFiles THEN BEGIN
-      Print, 'UOpenW: sorry, already maximum number of files (',STRCOMPRESS(MaxFiles,/REMOVE_ALL),') open'
+      Consoole, 'UOpenW: sorry, already maximum number of files ('+STRCOMPRESS(MaxFiles,/REMOVE_ALL)+') open', /WARN
       RETURN, !NONE
    END
 
@@ -66,7 +75,16 @@ FUNCTION UOpenU, file, VERBOSE=verbose, ZIP=zip, _EXTRA=e
    IF c EQ 0 THEN Message, 'this should not happen'
 
    llun.zip(idx) = zip
-   OpenU, lun, file, /GET_LUN, _EXTRA=e 
+
+
+   ; probe for unused lun
+   lun = 2 ; reserved for stdin/stdout/stderr
+   REPEAT BEGIN
+       lun = lun + 1
+       OpenU, lun, file, Err=err, _EXTRA=e 
+   END UNTIL ((lun GT 2+MaxFiles) OR (NOT err))
+   IF (lun GT 2+MaxFiles) THEN Console, 'unable to aquire a lun: '+!ERR_STRING, /FATAL
+
    
    llun.lun(idx)  = lun & llun.act=llun.act+1
    llun.file(idx) = file

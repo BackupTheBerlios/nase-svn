@@ -6,12 +6,16 @@
 ;
 ; CATEGORY:            FILES+DIRS ZIP
 ;
-; CALLING SEQUENCE:    lun = UOpenW(file [,/VERBOSE] [,/ZIP])
+; CALLING SEQUENCE:    lun = UOpenW(file [,/VERBOSE] [,/ZIP] [,/FORCE])
 ;
 ; INPUTS:              file: die zu oeffnende Datei (ohne ZIP-Endung)
 ;
 ; KEYWORD PARAMETERS:  VERBOSE: die Routine wird geschwaetzig
 ;                      ZIP    : das File wird nach dem Schliessen gezippt
+;                      FORCE  : non-existent directories will be
+;                               created. This behaviour may be set to
+;                               the default, by setting the system
+;                               variable !CREATEDIR to 1.
 ;
 ; OUTPUTS:             lun : die lun des Files bzw. !NONE falls die Aktion fehlschlug
 ;
@@ -24,6 +28,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/06/19 13:21:58  saam
+;           + print goes console
+;           + lun's are not aquired via /FREE_LUN
+;             because their number is restricted to max 32.
+;             another mechanism now provides up to 97 luns.
+;             the maximal lun number is increased respectively.
+;           + new keyword FORCE in uopenw to create nonexisting
+;             directories
+;
 ;     Revision 2.3  1999/02/16 17:23:45  thiel
 ;            Bloﬂ ein kleiner Druckfehler im Header.
 ;
@@ -35,16 +48,17 @@
 ;
 ;
 ;-
-FUNCTION UOpenW, file, VERBOSE=verbose, ZIP=zip, _EXTRA=e
+FUNCTION UOpenW, file, VERBOSE=verbose, ZIP=zip, FORCE=force, _EXTRA=e
 
    COMMON UOPENR, llun
-   MaxFiles = 40
-
-   Default, ZIP, 0
-
    On_Error, 2
 
-   IF N_Params() NE 1 THEN Message,' exactly one argument expected'
+   MaxFiles = 97
+   Default, ZIP, 0
+   Default, FORCE, !CREATEDIR
+
+
+   IF N_Params() NE 1 THEN CONSOLE,' exactly one argument expected', /FATAL
    
 
    IF NOT Set(llun) THEN BEGIN
@@ -55,17 +69,33 @@ FUNCTION UOpenW, file, VERBOSE=verbose, ZIP=zip, _EXTRA=e
    END
 
    IF llun.act EQ MaxFiles THEN BEGIN
-      Print, 'UOpenW: sorry, already maximum number of files (',STRCOMPRESS(MaxFiles,/REMOVE_ALL),') open'
+      Console, 'UOpenW: sorry, already maximum number of files (',STRCOMPRESS(MaxFiles,/REMOVE_ALL),') open', /WARN
       RETURN, !NONE
    END
 
 
    ; get a free entry
    idx = MIN(WHERE(llun.lun EQ !NONE, c))
-   IF c EQ 0 THEN Message, 'this should not happen'
+   IF c EQ 0 THEN Console, 'this should not happen', /FATAL
 
    llun.zip(idx) = zip
-   OpenW, lun, file, /GET_LUN, _EXTRA=e 
+
+
+   ; create non-existing dirs if wanted
+   IF Keyword_Set(FORCE) THEN BEGIN
+       pf = FileSplit(file)
+       IF pf(0) NE '' THEN mkdir, pf(0)
+   END
+
+
+   ; probe for unused lun
+   lun = 2 ; reserved for stdin/stdout/stderr
+   REPEAT BEGIN
+       lun = lun + 1
+       Openw, lun, file, ERROR=err
+   END UNTIL ((lun GT 2+MaxFiles) OR (err EQ 0))
+   IF (lun GT 2+MaxFiles) THEN Console, 'unable to aquire a lun: '+!ERR_STRING, /FATAL
+
    
    llun.lun(idx)  = lun & llun.act=llun.act+1
    llun.file(idx) = file
