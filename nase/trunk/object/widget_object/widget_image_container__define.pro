@@ -67,6 +67,10 @@
 ;   imageptr()                   : returns a pointer to the image array, such
 ;                                  that image data can be modified "outside the
 ;                                  object".
+;   size([KEYWORDS_TO_SIZE])     : returns the result of IDL's
+;                                  <C>SIZE()</C> function applied to
+;                                  the image data. Any Keywords are
+;                                  passed on to <C>SIZE()</C>.
 ;   renew_scaling [,keywords=kw] : requests the re-intialization of color
 ;                                  scaling when the display is next updated. All 
 ;                                  keywords will be passed to <A HREF="../../nase/graphic/#PLOTTVSCL">, together
@@ -144,6 +148,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2001/09/17 14:05:07  kupper
+;        Implemented size() method.
+;
 ;        Revision 1.8  2001/08/02 14:30:01  kupper
 ;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
 ;
@@ -233,6 +240,10 @@ Pro widget_image_container::image, image, NO_COPY=no_copy
    If Keyword_Set(NO_COPY) then *self.contents = Temporary(image) $
    else *self.contents = image
    self->paint
+End
+
+Function widget_image_container::size, _extra = _extra
+   return, size(*self.contents, _extra=_extra)
 End
 
 Pro widget_image_container::renew_scaling, _EXTRA=_extra
