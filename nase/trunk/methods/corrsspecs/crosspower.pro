@@ -1,6 +1,8 @@
 ;+
 ; NAME:                  CrossPower
 ;
+; AIM:                   computes the crosspower beetween two given signals
+;
 ; PURPOSE:               Berechnet die CrossPower aus zwei Zeitreihen
 ;                        + Zeitreihen muessen eine Aufloesung von 1 BIN haben 
 ;                           (bei Marburger Modellneuronen eh nur moeglich!)
@@ -65,10 +67,13 @@
 ;
 ;
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.7  2000/09/28 13:58:57  gabriel
+;      AIM, console <> message
+;
 ; Revision 1.6  1998/08/24 10:34:00  saam
 ;       think i programmed perl a little bit too much
 ;
@@ -90,7 +95,7 @@
 ;
 ; 
 ;
-;-
+;
 
 
 
@@ -102,18 +107,18 @@ FUNCTION CrossPower, xseries, yseries, xaxis, hamming=HAMMING,$
 
    IF Set(SAMPLPERIOD) THEN BEGIN
       SamplePeriod = SamplPeriod
-      print, 'CROSSPOWER:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
+      console,/warning, 'CROSSPOWER:  BEWARE! keyword SAMPLPERIOD is out of date, its now called SAMPLEPERIOD'
    END
 
    
-   IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN Message, 'wrong number of arguments'
-   IF (Size(xseries))(0) NE 1                 THEN Message, 'wrong format for x-signal'
-   IF (Size(yseries))(0) NE 1                 THEN Message, 'wrong format for y-signal'
-   IF set(TRUNC_PHASE) AND NOT set(PHASE)   THEN Message, 'Keyword TRUNC_PHASE must be set with Keyword PPHASE'
-   IF N_Elements(xseries) NE N_Elements(yseries) THEN Message, 'x-signal and y-signal must have same length'
+   IF (N_PARAMS() GT 3) OR (N_Params() LT 2) THEN console,/fatal, 'wrong number of arguments'
+   IF (Size(xseries))(0) NE 1                 THEN console,/fatal, 'wrong format for x-signal'
+   IF (Size(yseries))(0) NE 1                 THEN console,/fatal, 'wrong format for y-signal'
+   IF set(TRUNC_PHASE) AND NOT set(PHASE)   THEN console,/fatal, 'Keyword TRUNC_PHASE must be set with Keyword PPHASE'
+   IF N_Elements(xseries) NE N_Elements(yseries) THEN console,/fatal, 'x-signal and y-signal must have same length'
    N = N_Elements(xseries)
    IF (N LT 10) THEN BEGIN
-      Print, 'PowerSpec WARNING: time series to short'
+      console,/warning, 'PowerSpec WARNING: time series to short'
       RETURN, -1
    END
 
