@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/05/14 13:52:22  saam
+;           again problems with idl5, hopefully fixed
+;
 ;     Revision 2.1  1997/11/13 14:47:03  saam
 ;           Creation
 ;
@@ -37,7 +40,7 @@ PRO UWset, id, status
 
    status = 0
    
-   IF !D.Window NE -1 THEN BEGIN
+   IF (!D.Window NE -1) OR fix(!VERSION.Release) GT 4 THEN BEGIN
       WSet, id
       status = 1
    END
