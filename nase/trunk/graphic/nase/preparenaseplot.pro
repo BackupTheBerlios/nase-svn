@@ -6,13 +6,15 @@
 ;
 ; PURPOSE: Einstellen der Plot-Parameter für das Plotten von NASE-Arrays
 ;
-; CATEGORY: Graphik, Darstellung
+; CATEGORY:
+;  Graphic
 ;
-; CALLING SEQUENCE: PrepareNASEPlot, { (Height, Width [,/CENTER] [,/OFFSET] [,/NONASE]
-;                                             [,/X_ONLY | ,/Y_ONLY] 
-;                                       [, XTICKNAMESHIFT=xshift] [,YTICKNAMESHIFT=yshift]       
-;                                             [,GET_OLD=alteParameter])
-;                                     | (RESTORE_OLD=alteParameter) }
+; CALLING SEQUENCE:
+;* PrepareNASEPlot, Height, Width [,/CENTER] [,/OFFSET] [,/NONASE]
+;                    [,/X_ONLY | ,/Y_ONLY] 
+;                    [, XTICKNAMESHIFT=xshift] [,YTICKNAMESHIFT=yshift]       
+;                    [,GET_OLD=alteParameter]
+;* PrepareNASEPlot, RESTORE_OLD=alteParameter
 ;
 ; INPUTS: Height,Width: Ausmaße des Arrays (beachte Reihenfolge!)
 ;
@@ -25,7 +27,7 @@
 ;                                  Soll zB die Null in der Mitte der X-Achse stehen,
 ;                                  wuerde XTICKNAMESHIFT = -width/2 den Job tun.
 ;
-; KEYWORD PARAMETERS: /CENTER: Wenn gesetzt, werden die Tickmarks so
+; KEYWORD PARAMETERS: /CENTER:: Wenn gesetzt, werden die Tickmarks so
 ;                              verschoben, daß sie in die Mitte der
 ;                              ArrayPunkte zeigen ( 0 liegt also
 ;                              nicht im Koordinatenursprung, sondern
@@ -34,16 +36,16 @@
 ;                              oder für das Beschriften eines TV, wenn 
 ;                              die Achsen unmittelbar am Array anliegen.
 ;                              (s.OFFSET)
-;                     /OFFSET: Ähnlich CENTER, wenn gesetzt werden die 
+;                     /OFFSET:: Ähnlich CENTER, wenn gesetzt werden die 
 ;                              Tickmarks geeignet gesetzt für die
 ;                              Beschriftung eines TV, wenn die Achsen
 ;                              einen halben "Pixel" vom Array entfernt 
 ;                              gezeichnet werden sollen.
-;                     /?_ONLY: Parametzer werden nur für x- oder nur
+;                     /?_ONLY:: Parametzer werden nur für x- oder nur
 ;                              für y-Achse gesetzt.
-;                     /NONASE: Tickbeschriftungen werden IDL-üblich gesetzt.
+;                     /NONASE:: Tickbeschriftungen werden IDL-üblich gesetzt.
 ;
-; OPTIONAL OUTPUTS:      alteParameter in GET_OLD: Die Plotparameter, so, wie
+; OPTIONAL OUTPUTS:      alteParameter in GET_OLD:: Die Plotparameter, so, wie
 ;                                         sie vor dem Aufruf waren,
 ;                                         zur späteren
 ;                                         Wiederherstellung mit RESTORE_OLD.
@@ -56,42 +58,15 @@
 ;
 ; PROCEDURE: Knifflige Rumrechnerei mit Tickzahlen und -werten...
 ;
-; EXAMPLE: array=gauss_2d( 31, 31 )
-;          PrepareNASEPlot, 31, 31
-;          Surface, array, ax=80, az=10
-;
-;          PrepareNASEPlot, 31, 31, /CENTER    ;für die LEGO-Option
-;                                              ;müssen die Ticks
-;                                              verschoben werden!
-;          Surface, array, ax=80, az=10, /LEGO
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.8  2000/10/01 14:51:09  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 2.7  1998/06/30 20:38:14  thiel
-;               Neue Keywords X/YTICKNAMESHIFT eingebaut.
-;
-;        Revision 2.6  1998/04/17 15:24:02  kupper
-;               fix statt round...
-;
-;        Revision 2.5  1998/04/01 14:32:47  kupper
-;               Bug in OFFSET-Behandlung.
-;
-;        Revision 2.4  1998/03/30 23:30:17  kupper
-;               OFFSET-Schlüsselwort hinzugefügt.
-;
-;        Revision 2.3  1998/03/30 23:04:20  kupper
-;               X/Y-Range wird jetzt auch richtig gesetzt.
-;
-;        Revision 2.2  1998/03/29 18:48:51  kupper
-;               NONASE-Keyword hinzugefügt.
-;
-;        Revision 2.1  1998/03/29 16:11:08  kupper
-;               Schöpfung - endlich! Oft hab ich's mir schon gewünscht...
-;
+; EXAMPLE: 
+;*array=gauss_2d( 31, 31 )
+;*PrepareNASEPlot, 31, 31
+;*Surface, array, ax=80, az=10
+;*
+;*PrepareNASEPlot, 31, 31, /CENTER    ;für die LEGO-Option
+;*                                    ;müssen die Ticks
+;*                                    verschoben werden!
+;*Surface, array, ax=80, az=10, /LEGO
 ;-
 
 Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
@@ -100,13 +75,33 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
                  XTICKNAMESHIFT = xticknameshift, YTICKNAMESHIFT = yticknameshift
 
    If Keyword_Set(RESTORE_OLD) then begin
-      !X = restore_old.old_X
-      !Y = restore_old.old_Y
+      !X.MINOR = restore_old.old_X_MINOR
+      !X.TICKS = restore_old.old_X_TICKS
+      !X.STYLE = restore_old.old_X_STYLE
+      !X.TICKV = restore_old.old_X_TICKV
+      !X.RANGE = restore_old.old_X_RANGE
+      !X.TICKNAME = restore_old.old_X_TICKNAME
+      !Y.MINOR = restore_old.old_Y_MINOR
+      !Y.TICKS = restore_old.old_Y_TICKS
+      !Y.STYLE = restore_old.old_Y_STYLE
+      !Y.TICKV = restore_old.old_Y_TICKV
+      !Y.RANGE = restore_old.old_Y_RANGE
+      !Y.TICKNAME = restore_old.old_Y_TICKNAME
       return
    endif
    
-   get_old = {old_X : !X, $
-              old_Y : !Y}
+   get_old = {old_X_MINOR : !X.MINOR, $
+              old_X_TICKS : !X.TICKS, $
+              old_X_STYLE : !X.STYLE, $
+              old_X_TICKV : !X.TICKV, $
+              old_X_RANGE : !X.RANGE, $
+              old_X_TICKNAME : !X.TICKNAME, $
+              old_Y_MINOR : !Y.MINOR, $
+              old_Y_TICKS : !Y.TICKS, $
+              old_Y_STYLE : !Y.STYLE, $
+              old_Y_TICKV : !Y.TICKV, $
+              old_Y_RANGE : !Y.RANGE, $
+              old_Y_TICKNAME : !Y.TICKNAME}
 
    Default, xticknameshift, 0
    Default, yticknameshift, 0
