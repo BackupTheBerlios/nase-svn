@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/03/15 18:38:31  kupper
+;        Added resultptr method.
+;
 ;        Revision 1.6  2000/03/10 14:35:10  kupper
 ;        added method asymptote().
 ;
@@ -99,6 +102,9 @@ End
 
 Function leaky_integrator_array::result
    return, *self.data
+End
+Function leaky_integrator_array::resultptr
+   return, self.data
 End
 
 Function leaky_integrator_array::asymptote, constin
