@@ -1,53 +1,53 @@
 ;+
-; NAME:                TYPEOF
+; NAME:
+;  TypeOf()
 ;
-; AIM:                 returns the type of an arbitrary variable
+; AIM:
+;  returns the type of an arbitrary variable
 ;
-; PURPOSE:             Ermittelt den Typ einer beliebigen Variable und gibt 
-;                      NAME sowie INDEX zurueck. Folgende Zuordnung wird
-;                      IDL-conform definiert:
-;                           0 : UNDEFINED
-;                           1 : BYTE
-;                           2 : INT
-;                           3 : LONG
-;                           4 : FLOAT
-;                           5 : DOUBLE
-;                           6 : COMPLEX
-;                           7 : STRING
-;                           8 : STRUCT
-;                           9 : DCOMPLEX 
-;                          10 : POINTER
-;                          11 : OBJECT
+; PURPOSE:
+;  returns the type of an arbitrary variable and returns a STRING as
+;  well the INDEX. Following IDL conform strings are returned
+;* 0 : UNDEFINED
+;* 1 : BYTE
+;* 2 : INT
+;* 3 : LONG
+;* 4 : FLOAT
+;* 5 : DOUBLE
+;* 6 : COMPLEX
+;* 7 : STRING
+;* 8 : STRUCT
+;* 9 : DCOMPLEX 
+;* 10 : POINTER
+;* 11 : OBJECT
+;* 12 : UINT
+;* 13 : ULONG
+;* 14 : LONG64 
 ;
-; CATEGORY:            MISC 
+; CATEGORY:
+;  DataStructures
+;  Help
 ;
-; CALLING SEQUENCE:    ti = TYPEOF(t [,INDEX=index])
+; CALLING SEQUENCE:
+;* ti = TypeOf(t [,INDEX=...])
 ;
-; INPUTS:              t : eine beliebige Variable
+; INPUTS:
+;  t :: arbitrary variable
 ;
-; OUTPUTS:             ti: der Variablentyp als STRING, s.o.
+; OUTPUTS:
+;  ti:: variable type as string (see above)
 ;
-; OPTIONAL OUTPUTS:    Index: der Variablentyp als Index 
+; OPTIONAL OUTPUTS:
+;  INDEX:: if set, the corresponding index will be returned (see above)
 ;
-; EXAMPLE:             a={a:1}
-;                      print, typeof(a, index=b) & print, b
-;                      ;STRUCT
-;                      ;8
+; EXAMPLE:
+;* a={a:1}
+;* print, typeof(a, index=b) & print, b
+;* >STRUCT
+;* >8
 ;
-; SEE ALSO:            SIZE (IDL-Doku)
-;
-;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.2  2000/09/25 09:10:32  saam
-;     * appended AIM tag
-;     * some routines got a documentation update
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  1998/11/17 11:25:17  saam
-;           it was necessary
-;
+; SEE ALSO:
+;  <C>SIZE</C> (IDL-Doku)
 ;
 ;-
 FUNCTION TYPEOF, V, INDEX=index
@@ -59,9 +59,9 @@ FUNCTION TYPEOF, V, INDEX=index
       Index = 0
    END
    
-   DATATYPES = ['UNDEFINED','BYTE','INT','LONG','FLOAT', 'DOUBLE', 'COMPLEX', 'STRING', 'STRUCT', 'DCOMPLEX', 'POINTER', 'OBJECT']
+   DATATYPES = ['UNDEFINED','BYTE','INT','LONG','FLOAT', 'DOUBLE', 'COMPLEX', 'STRING', 'STRUCT', 'DCOMPLEX', 'POINTER', 'OBJECT', 'UINT', 'ULONG', 'LONG64']
 
-   IF Index LT 0 OR Index GT 11 THEN Message, 'unknown type....this should not happen'
+   IF Index LT 0 OR Index GT 14 THEN Message, 'unknown type....this should not happen'
    NAME = DATATYPES(Index)
    RETURN, NAME
 
