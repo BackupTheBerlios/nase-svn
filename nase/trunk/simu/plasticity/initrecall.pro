@@ -18,6 +18,7 @@
 ;                                       { [,LINEAR='['Amplitude, Decrement']'] | 
 ;                                         [,EXPO='['Amplitude, Zeitkonstante']'] } 
 ;                                      [/NOACCUMULATION]
+;                                      [/SUSTAIN]
 ;
 ; INPUTS:             UNverzoegerte Verbindungen:
 ;                               Struc: Layer            (mit Init_Layer? initialisiert)
@@ -40,7 +41,11 @@
 ;                                     praesynaptischer Aktivitaet verhindert. Trotzdem
 ;                                     'merkt' scih das Lernpotential, wie lange
 ;                                     der letzte praesynaptische Spike zurueckliegt.
-;                     
+;                     SUSTAIN: Beginnt das Abklingen des Lernpotentials um einen
+;                              Zeitschritt verzoegert, um absolut gleichzeitiges
+;                              Lernen und um einen Zeitschritt verzoegertes (kausales)
+;                              Lernen gleich zu gewichten.
+;
 ; OUTPUTS:            LP: die initialisierte Lernpotential-Struktur zur weiteren Behandlung mit TotalRecall
 ;
 ; EXAMPLE:
@@ -74,9 +79,10 @@
 ;-
 
 FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
-                     NOACCUMULATION=noaccumulation
+                     NOACCUMULATION=noaccumulation, SUSTAIN=sustain
 
    Default, NOACCUMULATION, 0
+   Default, SUSTAIN, 0
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
@@ -104,8 +110,10 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
              v        : expo(0) ,$
              dec      : exp(-1./expo(1)) ,$
              values   : FltArr( size ) ,$
-             noacc    : NOACCUMULATION }
-             
+             noacc    : NOACCUMULATION ,$
+             last     : -1l, $
+             sust     : SUSTAIN }
+      
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
@@ -119,8 +127,10 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
              v      : linear(0) ,$
              dec    : linear(1) ,$
              values : FltArr( size ), $
-             noacc  : NOACCUMULATION }
-      
+             noacc  : NOACCUMULATION ,$
+             last   : -1l ,$
+             sust   : SUSTAIN }
+
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 

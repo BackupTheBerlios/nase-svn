@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  1998/04/30 12:30:16  thiel
+;              Neues Schluesselwort SUSTAIN.
+;
 ;       Revision 2.8  1998/04/29 12:32:03  thiel
 ;              Neues Schluesselwort NOACCUMULATION
 ;
@@ -69,42 +72,39 @@
 ;		Schoepfung
 ;
 ;-
+
 PRO TotalRecall, _LP, _DW
 
    Handle_Value, _LP, LP, /NO_COPY
 
-   IF LP.info EQ 'e' THEN BEGIN
-      active = WHERE(LP.values GT !NoMercyForPot, count)
-      IF count NE 0 THEN BEGIN
-         LP.values(active) = LP.values(active) * LP.dec
-         toosmall = WHERE(LP.values(active) LT !NoMercyForPot, count)
-         IF count NE 0 THEN LP.values(active(toosmall)) = 0.0
-      END
+   IF LP.sust AND NOT Handle_Info(LP.last) THEN LP.Last = Handle_Create(!MH, VALUE=[0,0])
+
+   nottoosmall = WHERE(LP.values GT !NoMercyForPot, count)
+
+   IF count NE 0 THEN BEGIN
+      IF Handle_Info(LP.last) THEN Handle_Value, LP.last, lastspikes ELSE lastspikes = [0]
+      IF lastspikes(0) NE 0 THEN BEGIN 
+         i = [nottoosmall,lastspikes(2:lastspikes(0)+1)]
+         i = i(Sort(i))
+         w = Where((i NE Shift(i,1)) AND (i NE shift(i,-1)), count)
+         IF count EQ 0 THEN i = -1 ELSE i = i(w)
+      ENDIF ELSE i = nottoosmall
+      IF i(0) NE -1 THEN BEGIN
+         IF LP.info EQ 'e' THEN LP.values(i) = LP.values(i) * LP.dec ELSE LP.values(i) = LP.values(i) - LP.dec
+      ENDIF
+            
+      toosmall = WHERE(LP.values(nottoosmall) LT !NoMercyForPot, count)
+      IF count NE 0 THEN LP.values(nottoosmall(toosmall)) = 0.0
+   END
       
-      IF N_Params() GT 1 THEN BEGIN
-         In = LearnAP(_DW)
-         IF In(0) NE 0 THEN $
-            IF LP.noacc THEN LP.values(In(2:In(0)+1)) = LP.v $
-            ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
-      END
+   IF N_Params() GT 1 THEN BEGIN
+      In = LearnAP(_DW)
+      IF In(0) NE 0 THEN $
+       IF LP.noacc THEN LP.values(In(2:In(0)+1)) = LP.v $
+      ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+      IF Handle_Info(LP.last) THEN Handle_Value, LP.last, In, /SET
    END
 
-   IF LP.info EQ 'l' THEN BEGIN
-      active = WHERE(LP.values GE LP.dec, count)
-      IF count NE 0 THEN BEGIN
-         LP.values(active) = LP.values(active) - LP.dec
-         toosmall = WHERE( LP.values(active) LT LP.dec, count )
-         IF count NE 0 THEN LP.values(active(toosmall)) = 0.0
-      END
-
-      IF N_Params() GT 1 THEN BEGIN
-         In = LearnAP(_DW)
-         IF In(0) NE 0 THEN $
-            IF LP.noacc THEN LP.values(In(2:In(0)+1)) = LP.v $
-            ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
-      END
-  END
-
-  Handle_Value, _LP, LP, /NO_COPY, /SET
+   Handle_Value, _LP, LP, /NO_COPY, /SET
 
 END
