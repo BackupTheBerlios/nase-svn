@@ -48,7 +48,7 @@ Function CamCord, Video, Frame, Anzahl, VERBOSE=verbose
    
    If Video.VideoMode ne 'RECORD' then message, 'Das Video ist nicht zum Schreiben geöffnet!'
 
-   If a_ne(size(Frame), Video.FrameSize) then message, 'Frame ist inkompatibel mit dem in InitVideo() angegebenen Muster!'
+   If a_ne(size([Frame]), Video.FrameSize) then message, 'Frame ist inkompatibel mit dem in InitVideo() angegebenen Muster!'
 
    Default, Anzahl, 1
    If Anzahl ne 1 then message, 'Das "Anzahl"-Argument ist noch nicht implementiert!'
