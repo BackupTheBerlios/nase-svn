@@ -6,7 +6,7 @@
 ;
 ; CATEGORY:            FILES+DIRS ZIP
 ;
-; CALLING SEQUENCE:    lun = UOpenR(file [,/VERBOSE])
+; CALLING SEQUENCE:    lun = UOpenR(file [,/VERBOSE] [,/ZIP])
 ;
 ; INPUTS:              file: die zu oeffnende Datei (ohne ZIP-Endung)
 ;
@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/10/26 13:54:35  saam
+;           returns if an error occurs
+;
 ;     Revision 2.2  1998/10/18 16:47:46  saam
 ;           now works and has a docheader
 ;
@@ -36,7 +39,7 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
    MaxFiles = 20
 
 
-;   On_Error, 2
+   On_Error, 2
 
    IF N_Params() NE 1 THEN Message,' exactly one argument expected'
    
@@ -74,6 +77,7 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
       
       RETURN, lun
    END ELSE BEGIN
+      print, 'UOpenR: ', file
       print, 'UOpenR: neither unzipped nor zipped version found!'
       RETURN, !NONE
    END
