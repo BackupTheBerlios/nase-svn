@@ -190,7 +190,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
                  Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
                  Delays  : Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ),$
-                 Queue   : SpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ), $
+                 Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ), $
                  VP      : FLOAT(learn_vp),$
                  DP      : exp(-1.0/FLOAT(learn_taup)),$
                  LP      : lp $
