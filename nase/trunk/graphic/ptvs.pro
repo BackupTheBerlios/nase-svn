@@ -24,7 +24,7 @@
 ;*      [,/QUADRATICPIXEL]
 ;*      [,/FITPLOT]
 ;*      [,/NOSCALE]
-;*      [,/LEGEND] [,LEGMARGIN=...] [,LEG_MIN=...] [, LEG_MAX=...]
+;*      [,/LEGEND] [,LEGMARGIN=...] [,LEG???=...] 
 ;*      [,XRANGE=...] [,YRANGE=...] [,ZRANGE=...]
 ;*      [,CHARSIZE=...]
 ;*      [,/ORDER]
@@ -51,11 +51,14 @@
 ;             option, the bitmap will touch the axes, instead, with
 ;             the tickmarks plotted above the bitmap.
 ;  LEGEND   :: displays a legend on the very right of the plot (using <A>TvSclLegend</A>) 
-;  LEGMARGIN:: set the space that is used for the legend in normal
-;              coordinates of the plot region (<*>/LEGEND</*>
-;              has to be set, default: 0.15) 
-;  LEGMIN,LEGMAX:: alternative labels for the legend (<*>/LEGEND</*>
-;                  has to be set)
+;  LEGMARGIN:: reserves space on the right side of the plot, that can
+;              be used to plot the a legend, in percent of the total
+;              plot width (<*>/LEGEND</*> will set this value to 0.15
+;              but you can overwrite this). 
+;  LEG???   :: all other keywords beginning with a <*>LEG</*> will be
+;              passed to <A>TvSclLegend</A> without the leading
+;              <*>LEG</*>. This can be used to adjust the legend to
+;              your personal needs. 
 ;  NOSCALE :: Turns off scaling. Please use <A>PTv</A> instead. 
 ;  ORDER     :: If specified, ORDER overrides the current setting of
 ;               the !ORDER system variable for the current image only.
@@ -109,8 +112,8 @@
 ;*plots, [0,299], [0,19], COLOR=RGB("white")
 ;
 ;
-; SEE ALSO: <A>PTV</A>, <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>,
-;           <A>Plottvscl_update</A>            
+; SEE ALSO: <A>PTV</A>, <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>
+;          
 ;-
 ;;;;
 ;;;;!!!!!!! PLEASE ALSO UPDATE THE HEADER OF PTV ACCORDINGLY  !!!!!!!!!!
@@ -123,11 +126,11 @@ PRO PTvS, data, XPos, YPos, $
           ORDER=Order, $
           Color=color, CHARSIZE=_Charsize, $
           XRANGE=_xrange, YRANGE=_yrange, ZRANGE=_zrange, $
-          LEGEND=Legend, LEGMARGIN=LEGMARGIN, LEGMIN=legmin, LEGMAX=legmax, $
+          LEGEND=Legend, LEGMARGIN=LEGMARGIN, $
           POLYGON=POLYGON, $
           CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           GET_Position=Get_Position, GET_PIXELSIZE=Get_PixelSize, $
-          _REF_EXTRA=_extra
+          _EXTRA=_extra
 
    On_Error, 2
 
@@ -140,6 +143,24 @@ PRO PTvS, data, XPos, YPos, $
    hdata = (size(reform(data)))(2)
    wdata = (size(reform(data)))(1)
    
+
+   ;;;
+   ;;; extract parameters for the legend
+   ;;;
+   LEGEXTRA = ExtraDiff(_extra, 'LEG', /SUBSTRING)
+                                ; remove all LEG strings from the tagnames
+   IF TypeOf(LEGEXTRA) NE 'STRUCT' THEN undef, legextra ; extradiff returns !NONE if nothing could be extracted
+   IF Set(LEGEXTRA) THEN BEGIN
+       tn = Tag_Names(LEGEXTRA)
+                                ; this can't be easiliy done in one
+                                ; single loop, because DelTag changes
+                                ; the order of tags arranged in the
+                                ; structure and LEGEXTRA.(I) would
+                                ; access wrong data
+       FOR i=0, N_TAGS(LEGEXTRA)-1 DO SetTag, LEGEXTRA, strreplace(tn(i), 'LEG', '', /g, /i), LEGEXTRA.(i) 
+       FOR i=0, N_Elements(tn)-1 DO DelTag, LEGEXTRA, tn(i)
+   END
+
 
    ;;;   
    ;;; assure default settings
@@ -156,7 +177,11 @@ PRO PTvS, data, XPos, YPos, $
    Default, _YRANGE, [0, hdata-1]
 
    Default, COLOR, GetForeground()
-   Default, LEGMARGIN, 0.15
+
+                                ; reverse space for the legend, either
+                                ; if the user wants us to plot one,
+                                ; or if he reserves some space for whatever 
+   IF Keyword_Set(LEGEND) THEN Default, LEGMARGIN, 0.15 ELSE Default, LEGMARGIN, 0.0
 
    DEFAULT, top, !TOPCOLOR
 
@@ -168,14 +193,6 @@ PRO PTvS, data, XPos, YPos, $
    default, MINUS_ONE, 0
 
 
-   ;; save orginal plot parameters for a later restore 
-   ;;  i don't really know why we should need this ?! [MS]
-;   oldRegion   = !P.Region
-;   oldXTicklen = !X.TickLen 
-;   oldYTicklen = !Y.TickLen 
-;   oldXMinor   = !X.Minor
-;   oldYMinor   = !Y.Minor
-   
 
    ;; set ticks and their lengths
    !X.TickLen = 0.02            ; temporarily set ticklen to a reasonable value, it may contain strange values  
@@ -208,16 +225,16 @@ PRO PTvS, data, XPos, YPos, $
               ;;; NOTE: xyrange_??? = ([x,y,z],[lower_left_corner,upper_right_corner])
    
 
-   ;; Visual is the total place available for the plot (device coordinates)
+   ;; Visual is the total place available for the plot including labels...(device coordinates)
    Visual = DOUBLE([!D.X_VSIZE, !D.Y_VSIZE])
    IF ((!P.MULTI(1) GT 1) AND (!P.MULTI(2) GT 1)) THEN BEGIN
        Visual(0) = Visual(0)/DOUBLE(!P.MULTI(1))
        Visual(1) = Visual(1)/DOUBLE(!P.MULTI(2))
    ENDIF
-   
-   ;; legwidth: width that is reserved for the legend
-   IF Keyword_Set(LEGEND) THEN legwidth_dev = LEGMARGIN*Visual(0) $
-                          ELSE legwidth_dev = 0.0
+
+
+   ;; legwidth: width that is reserved for the legend (may be zero)
+   legwidth_dev = LEGMARGIN*Visual(0) 
    legwidth_norm = UConvert_Coord([legwidth_dev,0], /Device, /To_Normal)
    
 
@@ -238,12 +255,7 @@ PRO PTvS, data, XPos, YPos, $
    RandNormal = Origin_norm + UpRight_Norm
    
    
-   PlotPositionDevice = FltArr(4)
-   PlotPositionDevice(0) = Origin_dev(0)
-   PlotPositionDevice(1) = Origin_dev(1)
-   
-   
-   
+
   
    ;;
    ;; calculate the future size of a pixel
@@ -257,11 +269,10 @@ PRO PTvS, data, XPos, YPos, $
 
    IF Keyword_Set(QUADRATIC) THEN BEGIN
       pixel_ratio = pixel_dev(1)/double(pixel_dev(0))
-      pixel_norm(pixel_dev(1) GE pixel_dev(0)) = pixel_norm(pixel_dev(1) LT pixel_dev(0))  
+      IF pixel_ratio GT 1 THEN pixel_norm(1)=pixel_norm(1)/pixel_ratio ELSE  pixel_norm(0)=pixel_norm(0)*pixel_ratio
       pixel_dev(pixel_dev(1) GE pixel_dev(0))  = pixel_dev(pixel_dev(1) LT pixel_dev(0))  
       pixel_data(pixel_dev(1) GE pixel_dev(0)) = pixel_data(pixel_dev(1) LT pixel_dev(0))  
    END ELSE pixel_ratio =  1.
-
 
 
    ;; now we can finally set the ticklen, because we now know the
@@ -270,12 +281,15 @@ PRO PTvS, data, XPos, YPos, $
    ;; abszissa ticks
    w_dev = Double(xyrange_dev(0,1)-xyrange_dev(0,0)-legwidth_dev)
    h_dev = Double(xyrange_dev(1,1)-xyrange_dev(1,0))
-   IF w_dev GT h_dev THEN !Y.Ticklen = !Y.Ticklen*h_dev/w_dev $ 
-                     ELSE !X.Ticklen = !X.Ticklen*w_dev/h_dev  
+   IF w_dev GT h_dev THEN !Y.Ticklen = !Y.Ticklen*h_dev/w_dev/MIN([pixel_ratio,1.]) $ 
+                     ELSE !X.Ticklen = !X.Ticklen*w_dev/h_dev/MIN([1./pixel_ratio,1.])
 
-   ticklen_data = uconvert_coord((xyrange_norm(0,1)-xyrange_norm(0,0))*[!Y.Ticklen,2*!Y.ticklen],$
-                                 (xyrange_norm(1,1)-xyrange_norm(1,0))*[!X.Ticklen,2*!X.Ticklen],/NORM,/TO_DATA)
+   ticklen_norm = [(xyrange_norm(0,1)-xyrange_norm(0,0))*!Y.Ticklen,$
+                   (xyrange_norm(1,1)-xyrange_norm(1,0))*!X.Ticklen]
+   ticklen_data = uconvert_coord([ticklen_norm(0), 2*ticklen_norm(0)],$
+                                 [ticklen_norm(1), 2*ticklen_norm(1)], /NORM, /TO_DATA)
    ticklen_data = ABS([(ticklen_data(0,1)-ticklen_data(0,0)),(ticklen_data(1,1)-ticklen_data(1,0))])
+
 
    ;;
    ;; calculate the [XY]Ranges
@@ -325,22 +339,14 @@ PRO PTvS, data, XPos, YPos, $
    IF Keyword_Set(FITPLOT) THEN mystyle = 5 ELSE mystyle = 1
    PTMP = !P.MULTI
    !P.MULTI(0) = 1
-   IF Keyword_Set(QUADRATIC) THEN BEGIN 
-      Plot, indgen(2), /NODATA,$
-       xrange=XBeschriftung, xstyle=mystyle, xtickformat=xtf,$
-       yrange=YBeschriftung, ystyle=mystyle, ytickformat=ytf,$
-       charsize=Charsize,COLOR=color,$
-       Position=[Origin_norm(0),Origin_norm(1),$
-                 Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
-                 Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
-       _EXTRA=_extra
-   ENDIF ELSE BEGIN
-      Plot, indgen(2), /NODATA, $ 
-       Position=[Origin_norm(0),Origin_norm(1),xyrange_norm(0,1)-legwidth_norm(0),xyrange_norm(1,1)], $
-       xrange=XBeschriftung, xstyle=mystyle, xtickformat=xtf, $
-       yrange=YBeschriftung, ystyle=mystyle, ytickformat=ytf, $
-       charsize=Charsize,COLOR=color, _EXTRA=_extra
-   END
+   Plot, indgen(2), /NODATA,$
+     xrange=XBeschriftung, xstyle=mystyle, xtickformat=xtf,$
+     yrange=YBeschriftung, ystyle=mystyle, ytickformat=ytf,$
+     charsize=Charsize,COLOR=color,$
+     Position=[Origin_norm(0),Origin_norm(1),$
+               Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
+               Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
+     _EXTRA=_extra
    !P.MULTI = PTMP
    
    
@@ -363,7 +369,6 @@ PRO PTvS, data, XPos, YPos, $
        posbitmap_norm = [npp(0,0)-pixel_norm(0)/2.+borderthick_norm(0), npp(1,0)-pixel_norm(1)/2.+borderthick_norm(1)]
    END
    bitmap_dev = long(uConvert_Coord([wbitmap_norm,hbitmap_norm], /Normal, /To_Device))
-   
    
    
    ;;;
@@ -432,12 +437,15 @@ PRO PTvS, data, XPos, YPos, $
              ORDER=UpSideDown, POLYGON=POLYGON, $
              CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
 
-           IF ch GT 0 THEN Plots, cuthi MOD wdata , cuthi / wdata, PSYM=3, COLOR=color
-           IF cl GT 0 THEN Plots, cutlo MOD wdata , cutlo / wdata, PSYM=3, COLOR=color
+           IF ch GT 0 THEN Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cuthi MOD wdata)/(wdata-1) , $
+                                  _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cuthi  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
+           IF cl GT 0 THEN Plots, _XRANGE(0)+(_XRANGE(1)-_XRANGE(0))*(cutlo MOD wdata)/(wdata-1) , $
+                                  _YRANGE(0)+(_YRANGE(1)-_YRANGE(0))*(cutlo  /  wdata)/(hdata-1) , PSYM=7, COLOR=color, SYMSIZE=30*MIN(pixel_norm)
                                 ; clipped positions are marked by a
-                                ; small dot
+                                ; small x, symsize is just
+                                ; empirical...not to prominent
            
-           IF (warnstr NE "") THEN Inscription, 'WARNING: '+warnstr+' clipped', /RIGHT, /MIDDLE, COLOR=color
+           IF (warnstr NE "") THEN Inscription, 'WARNING: '+warnstr+' clipped', /MIDDLE, /RIGHT, /OUTSIDE, COLOR=color
            
        END ELSE BEGIN
            UTVSCL, data, posbitmap_norm(0), posbitmap_norm(1), $
@@ -452,24 +460,14 @@ PRO PTvS, data, XPos, YPos, $
    IF Keyword_Set(FITPLOT) THEN BEGIN
        PTMP = !P.MULTI
        !P.MULTI(0) = 1
-       IF Keyword_Set(QUADRATIC) THEN BEGIN 
-           Plot, indgen(2), /NODATA, /NOERASE,$
-             xrange=XBeschriftung, xstyle=1, xtickformat=xtf,$
-             yrange=YBeschriftung, ystyle=1, ytickformat=ytf,$
-             charsize=Charsize,$
-             COLOR=color,$
-             Position=[Origin_norm(0),Origin_norm(1),$
-                       Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
-                       Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
-             _EXTRA=_extra
-       ENDIF ELSE BEGIN
-           Plot, indgen(2), /NODATA, /NOERASE,$ 
-             Position=[Origin_norm(0),Origin_norm(1),xyrange_norm(0,1)-legwidth_norm(0),xyrange_norm(1,1)], $
-             xrange=XBeschriftung, xstyle=1, xtickformat=xtf, $
-             yrange=YBeschriftung, ystyle=1, ytickformat=ytf, $
-             COLOR=color,$
-             charsize=Charsize, _EXTRA=_extra
-       END
+       Plot, indgen(2), /NODATA,$
+         xrange=XBeschriftung, xstyle=1, xtickformat=xtf,$
+         yrange=YBeschriftung, ystyle=1, ytickformat=ytf,$
+         charsize=Charsize,COLOR=color,$
+         Position=[Origin_norm(0),Origin_norm(1),$
+                   Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
+                   Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
+         _EXTRA=_extra
        !P.MULTI = PTMP
    END
 
@@ -487,24 +485,14 @@ PRO PTvS, data, XPos, YPos, $
                                 ; the data
 
        
-       ; these values seem quite empirically to me, however they seem be quite ok
-       TVSclLegend, xyrange_norm(0,1)-0.7*legwidth_norm(0),Origin_norm(1)+Hbitmap_Norm/2.0, $
+       ; these values are a bit empirical, however they seem be quite ok
+       TVSclLegend, Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.])+0.05*legwidth_norm(0),Origin_norm(1)+Hbitmap_Norm/2.0, $
          V_Stretch=hbitmap_Norm/4.*Visual(1)/(!D.Y_PX_CM), $
          H_Stretch=wbitmap_Norm/20.*Visual(0)/(!D.X_PX_CM), $
          Max=LEGMAX, Min=LEGMIN, $
          CHARSIZE=Charsize, $
-         /Vertical, /Center, TOP=top, COLOR=color 
+         /Vertical, /YCenter, TOP=top, COLOR=color, _EXTRA=LEGEXTRA
    END
-
-
-   ;; restore original device parameters
-   ;;  i don't really know why we should need this ?! see above [MS]
-;   !P.Region  = oldRegion 
-;   !X.TickLen = oldXTicklen 
-;   !Y.TickLen = oldYTicklen 
-;   !X.Minor   = oldXMinor  
-;   !Y.Minor   = oldYMinor   
-   
 
 
    ;; return optional output
