@@ -52,12 +52,24 @@
 ;
 ; MODIFICATION HISTORY: Erste Version vom 25. Juli '97, Andreas.
 ;                       Diese Version (Verbesserte Parameterabfrage) vom 28. Juli '97, Andreas
-;
+;                       Versucht, Keyword FROMS zuzufügen, Rüdiger, 30.7.1997
 ;-
 
 
-PRO ShowWeights, Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR
+PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, FROMS=froms
 
+Matrix = _Matrix
+
+if keyword_set(FROMS) then begin                   ; Source- und Targetlayer vertauschen:
+   Matrix.Weights = Transpose(_Matrix.Weights)
+   Matrix.source_w = _Matrix.target_w
+   Matrix.source_h = _Matrix.target_h
+   Matrix.target_w = _Matrix.source_w
+   Matrix.target_h = _Matrix.source_h
+end
+                             
+
+   
 If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
 If Not Set(GROESSE) Then Begin 
     XGroesse = 1
