@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  plots error values as a colored area around data.
+;  Plots error values as a colored area around data.
 ;  
 ; PURPOSE:
 ;  Plots onedimensional data and depicts supplied error values
@@ -49,11 +49,11 @@
 ;             underlying <*>Plot</*> and <*>Axis</*> procedures.
 ;  
 ; RESTRICTIONS:
-;  X-, YTITLE and X-, YTICKFORMAT can only used for left and bottom
-;  axes, labeling of right and top axes is suppressed.
+;  <*>X-/YTITLE</*> and <*>X-/YTICKFORMAT</*> can only be used for
+;  left and bottom axes, labeling of right and top axes is suppressed.
 ;
 ; PROCEDURE:
-;  + plot empty coordinate system<BR>
+;  + establish coordinate system<BR>
 ;  + error area via PolyFill<BR>
 ;  + mean via oplot<BR>
 ;  + plot axes again to overwrite error area<BR>
@@ -67,7 +67,7 @@
 ;*   , MCOLOR=RGB(200,100,100), SDCOLOR=RGB(100,50,50)
 ;  
 ; SEE ALSO:
-;  <C>OPLOTERR</C>, <C>PLOT</C>, <C>PLOTERR</C>
+;  IDL's own routines <C>OPLOTERR</C>, <C>PLOT</C>, <C>PLOTERR</C>.
 ;-
 
 
@@ -76,12 +76,16 @@ PRO MSPLOT, z, zz, zzz $
             , MCOLOR=mcolor, SDCOLOR=sdcolor, XRANGE=xrange $
             , SDMEAN=sdmean $
             , BW=bw, OPLOT=oplot $
+            , XSTYLE=xstyle, YSTYLE=ystyle $ 
             , _EXTRA=e
 
    On_Error, 2
 
    Default, SDCOLOR, RGB(100,100,200)
    Default, MCOLOR, GetForeground()
+   
+   Default, xstyle, 0
+   Default, ystyle, 0
 
    IF N_Params() LT 2 THEN Message, 'wrong number of arguments'
    n = N_Elements(z)
@@ -121,7 +125,9 @@ PRO MSPLOT, z, zz, zzz $
    ENDELSE
 
 
-   IF NOT KEyword_Set(OPLOT) THEN  Plot, x, m, YRANGE=yr, /NODATA, XRANGE=xrange, _EXTRA=e
+   IF NOT Keyword_Set(OPLOT) THEN $
+    Plot, x, m, YRANGE=yr, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4 $
+    , YSTYLE=ystyle+4, _EXTRA=e
 
    IF Keyword_Set(BW) THEN BEGIN
        OPlot, x, m+sd(1,*), LINESTYLE=1
@@ -134,11 +140,9 @@ PRO MSPLOT, z, zz, zzz $
        OPlot, x, m, COLOR=mcolor
    END
 
-   emptytickn = Make_Array(30, /STRING, VALUE=' ')
-
    IF NOT KEYWORD_Set(OPLOT) THEN BEGIN
-       Axis, XRANGE=xrange, XAXIS=0, _EXTRA=e
-       Axis, YRANGE=yr, YAXIS=0, _EXTRA=e
+       Axis, XRANGE=xrange, XAXIS=0, XSTYLE=xstyle, _EXTRA=e
+       Axis, YRANGE=yr, YAXIS=0, YSTYLE=ystyle, _EXTRA=e
        IF set(e) THEN BEGIN
            DelTag, e, 'xtitle'
            DelTag, e, 'ytitle'
@@ -146,8 +150,10 @@ PRO MSPLOT, z, zz, zzz $
            DelTag, e, 'ytickformat'
        ENDIF
        
-       Axis, XRANGE=xrange, XAXIS=1, XTICKN=emptytickn, _EXTRA=e
-       Axis, YRANGE=yr, YAXIS=1, YTICKN=emptytickn, _EXTRA=e
+       Axis, XRANGE=xrange, XAXIS=1, XTICKFORMAT='noticks' $
+        , XSTYLE=xstyle, _EXTRA=e
+       Axis, YRANGE=yr, YAXIS=1, YTICKFORMAT='noticks' $
+        , YSTYLE=ystyle, _EXTRA=e
    END
 
 END
