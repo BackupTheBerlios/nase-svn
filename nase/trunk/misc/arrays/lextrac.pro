@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/02/23 12:32:02  thiel
+;         Maybe this routine is obsolete. Added message to find out.
+;
 ;     Revision 1.2  1998/03/23 14:51:06  saam
 ;           new keyword COMPLEMENT
 ;           Docu still INCOMPLETE!!!!!!!!!
@@ -58,6 +61,9 @@
 ;-
 
 FUNCTION lExtrac, A, subscript, array, COMPLEMENT=complement
+
+
+   Message, /INFO, 'Do you really need this routine??? It uses a very slow FOR-statement.'
 
    IF N_Params() NE 3 THEN Message, 'wrong number of arguments'
 
