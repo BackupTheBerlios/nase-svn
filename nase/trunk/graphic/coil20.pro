@@ -56,7 +56,10 @@
 ;
 ; RESTRICTIONS:
 ;  The COIL-20 database needs to be installed in the local file system,
-;  and the variable <*>!COILPATH</*> must point to its location.
+;  and the variable <*>!COILPATH</*> must point to its location. (The
+;  actual *.pgm files are expected to be found in directory
+;  <*>!COILPATH/coil-20/processed_images</*>, which accords to the directory
+;  structure in which the database comes when downloaded.)<BR>
 ;  The <*>!COILPATH</*> system variable is initialized to a value
 ;  suitable for use at location in Marburg, but can be user-adjusted.<BR>
 ;  The COIL-20 and COIL-100 databases can be obtained from
