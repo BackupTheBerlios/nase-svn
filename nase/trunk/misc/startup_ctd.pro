@@ -39,8 +39,9 @@ Pro Startup_ctd
 
    ;; warning: FilePath changes the variable passed to ROOT_DIR
    ;;          argument! Hence, using read-only !NASEPATH.
-   NASEDIRS = FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["alien"]) + separator
-   NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control"]) + separator
+
+;   NASEDIRS = FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["alien"]) + separator
+   NASEDIRS = FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control"]) + separator
    NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control","counter"]) + separator
    NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control","loops"]) + separator
    NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control","output"]) + separator
