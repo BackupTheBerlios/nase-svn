@@ -76,14 +76,20 @@
 ;                          cases, e.g. when frequent updates happen, or when
 ;                          connecting to an X server accross a
 ;                          network.
-;   ct, n                : set the color table that is to be used for
+;   ct, n, ...           : set the color table that is to be used for
 ;                          the display (see IDL's <C>LoadCT</C> for an
 ;                          overview of available color tables). <BR>
 ;                          The color table is initialized to <*>0</*>
-;                          (linear grey ramp) upon construction of the object.<BR> 
+;                          (linear grey ramp) upon construction of the
+;                          object.<BR>
+;                          Takes all additional arguments that
+;                          <A>ULoadCT</A> takes.
 ;   ct()                 : return the current color table.<BR>
 ;                          The color table is initialized to <*>0</*>
-;                          (liear grey ramp) upon construction of the object.<BR>                      
+;                          (liear grey ramp) upon construction of the
+;                          object.<BR>   
+;                          Additional keywords passed to the ct
+;                          setting method are currently not returned.                   
 ;
 ;   -plus those inherited from class <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A> (see there for details)-
 ;
@@ -164,7 +170,7 @@ Pro BDO_Notify_Realize, id
    Widget_Control, id, Get_Uvalue=object
 
    showit_open, object->showit()
-   ULoadCt, object->ct()
+   object->set_ct_
    object->initial_paint_hook_
    showit_close, object->showit(), Save_Colors=object->save_colors_()
 
@@ -276,6 +282,9 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                                              [1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1], $
                                              [1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1], $
                                              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]))
+   ;; let pointer point to something:
+   self.ct_extra = ptr_new({dummy:0b})
+
    ;; 
    ;; add showit to present picture
    self.w_showit = widget_showit(w_column, Private_Colors=private_colors, $
@@ -329,9 +338,7 @@ Pro basic_draw_object::cleanup, _REF_EXTRA = _ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
    ;; Now do what is needed to cleanup a MyClass object:
-   ;;
-   ;; insert code here
-   ;;
+   ptr_free, self.ct_extra
 End
 
 ;; ------------ Public --------------------
@@ -378,15 +385,23 @@ Pro basic_draw_object::ignore_colors
    self.save_colors = 0
 End
 
-Pro basic_draw_object::ct, n
-   self.ct = n
-
-   If Widget_Info(self.widget, /Realized) then begin
+;;private:
+Pro basic_draw_object::set_ct_
       showit_open, self.w_showit
-      ULoadCt, n
+      ULoadCt, self.ct, _EXTRA=*(self.ct_extra)
       showit_close, self.w_showit, Save_Colors=self.save_colors
       self->paint, /XCT_CALLBACK_
-   Endif else begin
+End
+;;public:
+Pro basic_draw_object::ct, n, _EXTRA=_extra
+   default, _extra, {dummy:0b}
+
+   self.ct = n
+   *(self.ct_extra) = _extra
+
+   If Widget_Info(self.widget, /Realized) then begin
+      self->set_ct_
+  Endif else begin
       console, /Debug, "Postponed ct request for unrealized " + $
           "widget-object."
    endelse
@@ -456,6 +471,7 @@ Pro basic_draw_object__DEFINE
             delayed_paint_request_flag: 0b, $
             $
             ct: 0l, $ ;; color table
+            ct_extra: ptr_new(), $ ;; extra keywords for ct method
             $
             b_xct: 0l $ ;; button for interactive palette selection
            }
