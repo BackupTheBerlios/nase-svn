@@ -32,20 +32,25 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.7  1998/04/06 16:06:52  saam
+;             now leaves procedure when an error occurs
+;
+;
 ;       Sun Sep 7 17:16:49 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		Nimmt jetzt auch Skalare richtig auf.
+;	      Nimmt jetzt auch Skalare richtig auf.
 ;
 ;       Wed Aug 27 17:05:23 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
-;
-;	  Urversion.	
+;	      Urversion.	
 ;
 ;-
 
 Function CamCord, Video, Frame, Anzahl, VERBOSE=verbose
    
+   On_Error, 2
+
    If Video.VideoMode ne 'RECORD' then message, 'Das Video ist nicht zum Schreiben geöffnet!'
 
    If a_ne(size([Frame]), Video.FrameSize) then message, 'Frame ist inkompatibel mit dem in InitVideo() angegebenen Muster!'
