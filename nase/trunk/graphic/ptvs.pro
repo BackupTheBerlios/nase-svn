@@ -212,7 +212,6 @@ PRO PTvS, data, XPos, YPos, $
        Visual(1) = Visual(1)/DOUBLE(!P.MULTI(2))
    ENDIF
    
-   
    ;; legwidth: width that is reserved for the legend
    IF Keyword_Set(LEGEND) THEN legwidth_dev = LEGMARGIN*Visual(0) $
                           ELSE legwidth_dev = 0.0
@@ -395,21 +394,30 @@ PRO PTvS, data, XPos, YPos, $
            warnstr = ''
 
            _data = data
-           print, _zrange(1), !nonel, long(_zrange(1)) NE !nonel
-           IF (LONG(_zrange(1)) NE !NONEl) THEN _data = _data < _zrange(1) 
-           IF (LONG(_zrange(0)) NE !NONEl) THEN _data = _zrange(0) > _data 
-;           _data = _zrange(0) > (data < _zrange(1))
+           ZRANGE=DOUBLE(_zrange)
+                                ; this is needed because if ZRANGE has
+                                ; a lower precision than data, the
+                                ; comparison  
+                                ; MAX(data) GT ZRANGE(1) fails (or at
+                                ; least failed for my demo [MS] 
+                                
+           IF (LONG(_zrange(1)) NE !NONEl) THEN BEGIN
+               _data = _data < _zrange(1) 
+           END ELSE ZRANGE(1) = MAX(data)
+           IF (LONG(_zrange(0)) NE !NONEl) THEN BEGIN
+               _data = _zrange(0) > _data 
+           END ELSE ZRANGE(0) = MIN(data)
 
-           IF MAX(data) GT _zrange(1) THEN warnstr = warnstr + 'maxima'
-           IF MIN(data) LT _zrange(0) THEN BEGIN
-               IF (MAX(data) GT _zrange(1)) THEN warnstr = warnstr + ' and '
+           IF MAX(data) GT ZRANGE(1) THEN warnstr = warnstr + 'maxima'
+           IF MIN(data) LT ZRANGE(0) THEN BEGIN
+               IF (MAX(data) GT ZRANGE(1)) THEN warnstr = warnstr + ' and '
                warnstr = warnstr + 'minima'
            END
 
            ;;;
            ;;; plot the clipped data 
            ;;;
-           UTV, Scl(_data, [0, top], _ZRANGE), posbitmap_norm(0), posbitmap_norm(1), $
+           UTV, Scl(_data, [0, top], ZRANGE), posbitmap_norm(0), posbitmap_norm(1), $
              X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
              ORDER=UpSideDown, POLYGON=POLYGON, $
              CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
@@ -457,8 +465,12 @@ PRO PTvS, data, XPos, YPos, $
    ;;
    IF Keyword_Set(LEGEND) THEN BEGIN
        Default, _ZRANGE, [min(data), max(data)]
-       Default, LEGMAX, _ZRANGE(1)
-       Default, LEGMIN, _ZRANGE(0)
+       IF (LONG(_ZRANGE(1)) NE !NONEl) THEN Default, LEGMAX, _ZRANGE(1) ELSE Default, LEGMAX, MAX(data)
+       IF (LONG(_ZRANGE(0)) NE !NONEl) THEN Default, LEGMIN, _ZRANGE(0) ELSE Default, LEGMIN, MIN(data)
+                                ; if user specifies ZRANGE as !NONE he
+                                ; wants it to be scaled to MIN/MAX of
+                                ; the data
+
        
        ; these values seem quite empirically to me, however they seem be quite ok
        TVSclLegend, xyrange_norm(0,1)-0.7*legwidth_norm(0),Origin_norm(1)+Hbitmap_Norm/2.0, $
