@@ -62,6 +62,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2003/08/14 09:16:19  michler
+;
+;     Modified Files:
+;     	simtimeinit.pro
+;
+;     changed stat.step from INT to LONGINT
+;
 ;     Revision 1.6  2001/03/08 16:24:20  thiel
 ;       SimTime supports Console now.
 ;       New header.
@@ -99,7 +106,7 @@ PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps ,CLEAR=CLEAR $
    stat = { tpi     : DblArr(maxsteps+1),$ ; time per iteration i
             lst     : 0d                ,$ ; last system time (internal)
             ast     : 0d                ,$ ; latest system time (internal)
-            step    : 0                 ,$ 
+            step    : 0L                 ,$ 
             maxsteps: maxsteps          ,$ ; maximal number of iterations
             print   : print             ,$ ; print time after each step
             clear   : clear             ,$ ; clear term after each step
