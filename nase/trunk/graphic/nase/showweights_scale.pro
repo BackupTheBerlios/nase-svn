@@ -110,8 +110,8 @@
 ;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*></I>.<BR>
 ;<BR>
 ;                 Zur Information: Es gilt die Beziehung<BR>
-;*  GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,
-;*                = [0, max(Array)]  sonst.
+;*  GET_RANGE_IN  = [0, Range_In       ], falls Range_In angegeben wurde,
+;*                = [0, max(abs(Array))]  sonst.
 ;*  GET_RANGE_OUT = [0, !TOPCOLOR]
 ;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
