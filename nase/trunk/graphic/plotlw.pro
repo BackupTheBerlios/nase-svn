@@ -20,14 +20,14 @@
 ;*plotLW,lwin [,TITLE=title] [,FILENAME=filename]
 ;
 ; INPUTS:
-;  lwin: a learn window in the format [prelength,postlength,predata,postdata]  
+;  lwin:: a learn window in the format [prelength,postlength,predata,postdata]  
 ;
 ; OPTIONAL INPUTS:
 ;  none
 ;
 ; INPUT KEYWORDS:
-;  TITLE: a title for the plot.
-;  FILENAME: if FILENAME is specified the plot goes to an EPS,
+;  TITLE:: a title for the plot.
+;  FILENAME:: if FILENAME is specified the plot goes to an EPS,
 ;            otherwise the current window is used.
 ;  
 ;
