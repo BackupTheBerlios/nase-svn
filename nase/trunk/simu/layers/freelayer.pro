@@ -1,13 +1,9 @@
 ;+
 ; NAME:               FreeLayer
 ;
-; PURPOSE:            Gibt eine Neuronenschicht frei. 
+; PURPOSE:            Gibt eine Neuronenschicht beliebigen Typs frei. 
 ;
-;                     FreeLayer ist lediglich eine Rahmenfunktion, die
-;                     selbständig die für den jeweiligen Neuronentyp
-;                     spezifische <A HREF="#FREELAYER_1">FreeLayer_i</A>-Funktion aufruft.
-;
-; CATEGORY:           SIMULATION / LAYERS
+; CATEGORY:           SIMULATION LAYERS
 ;
 ; CALLING SEQUENCE:   FreeLayer, L
 ;
@@ -24,6 +20,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.4  1998/11/08 17:22:43  saam
+;             frees new layer-handle for all neuron-types
+;             freelayer_x is obsolete
+;
 ;       Revision 2.3  1998/11/06 14:27:41  thiel
 ;              Hyperlinks.
 ;
@@ -32,8 +32,24 @@
 ;
 ;-
 
-PRO FreeLayer, Layer
+PRO FreeLayer, _L
 
-	Call_Procedure, 'FreeLayer_'+Layer.type, Layer
+;   Handle_Value, _LAYER, LAYER, /NO_COPY
+;   type = LAYER.TYPE
+;   Handle_Value, _LAYER, LAYER, /NO_COPY,/SET
+;   Call_Procedure, 'FreeLayer_'+type, _Layer
+;
+; at the moment all layers use same freeing mechanism
 
+   TestInfo, _L, 'LAYER'
+   Handle_Value, _L, L, /NO_COPY
+   
+   IF NOT Set(L) THEN Message, 'invalid layer structure'
+   IF N_Params() NE 1 THEN Message, 'syntax error: check parameters'
+   
+   IF Handle_Info(L.o) THEN Handle_Free, L.o ELSE Message, 'i dont understand'
+   
+   Handle_Value, _L, L, /NO_COPY, /SET
+   Handle_Free, _L
+   
 END 
