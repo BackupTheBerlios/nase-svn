@@ -28,6 +28,7 @@
 ;*     [,CHARSIZE=...]
 ;*     [,/ORDER]
 ;*     [,/POLYGON]
+;*     [,TRUE=...]
 ;*     [,CUBIC=...] [, /INTERP] [, /MINUS_ONE]
 ;*     [,GET_POSITION=...] [,GET_PIXELSIZE=...]
 ;*
@@ -69,6 +70,16 @@
 ;  QUADRATIC :: the pixels of the bitmap will be quadratic  
 ;  [XY]RANGE :: array containing two elements (minimum, maximum value)
 ;               for an alternative [XY]-axis labeling. 
+;  TRUE      :: Set this keyword to a nonzero value to indicate that a
+;               TrueColor (16-, 24-, or 32-bit) image is to be
+;               displayed. The value assigned to TRUE specifies the
+;               index of the dimension over which color is
+;               interleaved. The image parameter must have three
+;               dimensions, one of which must be equal to three. For
+;               example, set <*>TRUE</*> to 1 to display an image that
+;               is pixel interleaved and has dimensions of (3, m, n).
+;               Specify 2 for row-interleaved images, of size (m, 3,
+;               n), and 3 for band-interleaved images of the form (m, n, 3).
 ;  CUBIC, INTERP, MINUS_ONE:: will be passed to IDL routine
 ;                            <C>ConGrid</C>, to smooth the
 ;                            bitmap. This only works, if
