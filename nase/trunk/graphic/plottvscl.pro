@@ -102,7 +102,9 @@
 ;     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung:
 ;                das erste Element gibt das Minimum,
 ;                das zweite das Maximum der Achse an 
-;     LEGMARGIN:: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
+;     LEGMARGIN:: Zusätzlicher rechter rand fuer die Legende. Wird auf
+;                 !X.MARGIN[1] aufaddiert. Einheit ist die
+;                 Schriftgröße, s. IDL-Doku von !X.MARGIN
 ;     leg_(max|min):: alternative Beschriftung der Legende 
 ;     POLYGON:: Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;                 /POLYGON setzt /CUBIC, /INTERP
@@ -309,9 +311,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       Default, NOSCALE, 0
       Default, ORDER, 0
       Default, LEGEND, 0
-      Default, legmargin,0.25
+      Default, legmargin, 25
       Default, Polygon,0
       DEFAULT, top, !TOPCOLOR
+      Default, ISOTROPIC, 1-Keyword_Set(FULLSHEET)
+
 
       ;; Added for passing to PlotTvScl_update, R Kupper, Sep 22 1999
       default, CUBIC, 0
@@ -338,12 +342,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;print,charcor
       xcoord = lindgen(ArrayWidth)
       ycoord = lindgen(ArrayHeight)
-      PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=GetBackground(), Charsize=Charsize*charcor,_EXTRA=_extra
+;;;;;;;      PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=GetBackground(), Charsize=Charsize*charcor,_EXTRA=_extra
 
-      plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
-      ;;only whole pixel or points exist
-      plotregion_device = (convert_coord(plotregion_norm,/NORM,/TO_DEVICE))
-      plotregion_norm = uconvert_coord(plotregion_device,/TO_NORM,/DEVICE)
+;;;;;;;      plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
+;;;;;;;      plotregion_norm = [[0.1,0.1],[0.9,0.9]] 
+;;;;;;;      ;;only whole pixel or points exist
+;;;;;;;      plotregion_device = (convert_coord(plotregion_norm,/NORM,/TO_DEVICE))
+;;;;;;;      plotregion_norm = uconvert_coord(plotregion_device,/TO_NORM,/DEVICE)
+
 
       VisualWidth = !D.X_VSIZE
       VisualHeight = !D.Y_VSIZE
@@ -400,31 +406,31 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       
 
       ;;-----Raender und Koordinaten des Ursprungs:
-      IF Keyword_Set(LEGEND) THEN LegendRandDevice = LEGMARGIN*VisualWidth ELSE LegendRandDevice = 0.0
-      
-          
-      IF N_Params() EQ 3 THEN OriginDevice = (uConvert_Coord([XPos,YPos], /Normal, /To_Device)) $
-      ELSE OriginDevice = [plotregion_device(0,0),plotregion_device(1,0)]
-   
-     
-      UpRightDevice = ([VISUALWIDTH -(plotregion_device(0,1)- plotregion_device(0,0)), $
-                        VISUALHEIGHT-(plotregion_device(1,1)-plotregion_device(1,0))]+[LegendRandDevice,0])
-       
-      LegendRandNorm = uConvert_Coord([LegendRandDevice,0], /Device, /To_Normal)
-      OriginNormal = uConvert_Coord(OriginDevice, /Device, /To_Normal)
-      UpRightNormal = uConvert_Coord(UpRightDevice, /Device, /To_Normal)
-      
-      RandNormal = OriginNormal + UpRightNormal
-      
-      PlotPositionDevice = FltArr(4)
-      PlotPositionDevice(0) = OriginDevice(0)
-      PlotPositionDevice(1) = OriginDevice(1)
-      
-     
-      PixelSizeNormal = [(plotregion_norm(0,1)-OriginNormal(0)-LegendRandNorm(0,0))/float(ArrayWidth+1),$
-                         (plotregion_norm(1,1)-OriginNormal(1))/float(ArrayHeight+1)]
-      
-      PixelSizeDevice = (uconvert_coord(PixelSizeNormal, /normal, /to_device))
+;;;;;;;      IF Keyword_Set(LEGEND) THEN LegendRandDevice = LEGMARGIN*VisualWidth ELSE LegendRandDevice = 0.0
+;;;;;;;      
+;;;;;;;          
+;;;;;;;      IF N_Params() EQ 3 THEN OriginDevice = (uConvert_Coord([XPos,YPos], /Normal, /To_Device)) $
+;;;;;;;      ELSE OriginDevice = [plotregion_device(0,0),plotregion_device(1,0)]
+;;;;;;;   
+;;;;;;;     
+;;;;;;;      UpRightDevice = ([VISUALWIDTH -(plotregion_device(0,1)- plotregion_device(0,0)), $
+;;;;;;;                        VISUALHEIGHT-(plotregion_device(1,1)-plotregion_device(1,0))]+[LegendRandDevice,0])
+;;;;;;;       
+;;;;;;;      LegendRandNorm = uConvert_Coord([LegendRandDevice,0], /Device, /To_Normal)
+;;;;;;;      OriginNormal = uConvert_Coord(OriginDevice, /Device, /To_Normal)
+;;;;;;;      UpRightNormal = uConvert_Coord(UpRightDevice, /Device, /To_Normal)
+;;;;;;;      
+;;;;;;;      RandNormal = OriginNormal + UpRightNormal
+;;;;;;;      
+;;;;;;;      PlotPositionDevice = FltArr(4)
+;;;;;;;      PlotPositionDevice(0) = OriginDevice(0)
+;;;;;;;      PlotPositionDevice(1) = OriginDevice(1)
+;;;;;;;      
+;;;;;;;     
+;;;;;;;      PixelSizeNormal = [(plotregion_norm(0,1)-OriginNormal(0)-LegendRandNorm(0,0))/float(ArrayWidth+1),$
+;;;;;;;                         (plotregion_norm(1,1)-OriginNormal(1))/float(ArrayHeight+1)]
+;;;;;;;      
+;;;;;;;      PixelSizeDevice = (uconvert_coord(PixelSizeNormal, /normal, /to_device))
     
 
       ;;-----Plotten des Koodinatensystems:
@@ -433,28 +439,32 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       if __isfloat(XRANGE) then xtf = ''
       if __isfloat(YRANGE) then ytf = ''
 
-      PTMP = !P.MULTI
-      !P.MULTI(0) = 1
-      IF NOT Keyword_Set(FullSheet) THEN BEGIN 
-         MinPixelSizeDevice = min(PixelSizeDevice(0:1)) ;;PixelSizeDevice contains Z-Value=0
-         PlotPositionDevice(2) = MinPixelSizeDevice*(ArrayWidth+1)+OriginDevice(0)
-         PlotPositionDevice(3) = MinPixelSizeDevice*(ArrayHeight+1)+OriginDevice(1)
-        
-         Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, $;Color=sc, $
-          xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
-          yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
-          XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
-      ENDIF ELSE BEGIN
-         
-         Plot, indgen(2), /NODATA, $;Color=sc, $
-          Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-LegendRandNorm(0),plotregion_norm(1,1)], $
-          xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
-          yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
-          XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
-      ENDELSE
-      !P.MULTI = PTMP
+;;;;;;      PTMP = !P.MULTI
+;;;;;;      !P.MULTI(0) = 1
+
+      ;;-----zusätzlicher xmargin für die legende:
+      XTMP = !X.MARGIN
+
+      IF keyword_set(LEGEND) then !X.MARGIN[1] = !X.MARGIN[1]+LEGMARGIN
+
+      Plot, indgen(2), /NODATA, $ ;Position=PlotPositionDevice,;/Device, $;Color=sc, $
+            Isotropic=ISOTROPIC, $
+            xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
+            yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
+            XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
+
+;;;;;;;      !P.MULTI = PTMP
+
+      !X.MARGIN = XTMP
+
+
       Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
       
+
+      OriginNormal = [(!X.Window)[0], (!Y.Window)[0]]
+
+
+
       TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
       TotalPlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
  
