@@ -76,7 +76,7 @@
 ;		Urversion erstellt, im wesentlichen durch kopieren von
 ;		GetWeight().
 ;
-;      
+;-  
 
 Function GetDelay, V_Matrix, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
