@@ -17,6 +17,7 @@
 ;                                       [, GET_BASE=Widget_ID] [, GROUP=Leader_Widget_ID ]
 ;                                       [, KILL_NOTIFY=KillPro ]
 ;                                       [, DELIVER_EVENTS=Array_of_Widget_IDs ]
+;                                       [, /BUTTON_EVENTS]
 ;                                       [, MULTI=Multi-Array ]
 ;                                       [, GET_DRAWID=Array_of_Draw-Widget-IDs]
 ;                                       [, /PRIVATE_COLORS] [, NO_BLOCK=0])
@@ -57,6 +58,10 @@
 ;                     DELIVER_EVENTS          : Hier kann ein Array
 ;                                               von Widget-Indizes übergeben werden, an die alle 
 ;                                               ankommenden Events weitergereicht werden.
+;                     BUTTON_EVENTS           : Wird dieses Schlüsselwort gesetzt, so generiert das im ScrollIt enthaltene
+;                                               DrawWidget bei Mausklicks in seinem Bereich entsprechende Events, die
+;                                               dann an die in DELIVER_EVENTS aufgeführten Widgets weitergegeben werden.
+;                                               Default: 0.
 ;                     MULTI                   : Implementiert eine Funktionalität ähnlich der
 ;                                               IDL-!P.Multi-Variable (mehrere "Fensterchen" in einem Fenster).
 ;                                               In MULTI kann ein maximal fünfelementiges Array angegeben werden, das
@@ -153,6 +158,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.23  1999/08/16 16:37:56  thiel
+;           Now delivers button-presses if wanted.
+;
 ;       Revision 2.22  1999/06/15 17:36:38  kupper
 ;       Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
 ;       und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
@@ -215,71 +223,77 @@
 
 Pro ScrollIt_Event, Event
 
-   WIDGET_CONTROL, Event.Top, GET_UVALUE=base_uval
+   WIDGET_CONTROL, Event.Handler, GET_UVALUE=base_uval
 
-   If TAG_NAMES(Event, /STRUCTURE_NAME) eq "WIDGET_BASE" then begin ;Resize-Event
-      If base_uval.fullscroll then begin ;Resize TLB
-         WIDGET_CONTROL, Event.Top, SCR_XSIZE=Event.X, SCR_YSIZE=Event.Y
-      endif else begin          ;Resize all draw-widgets
-         WIDGET_CONTROL, Event.Top, UPDATE=0 ;Prevent Screen-Update
+   CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
+      "WIDGET_BASE" : begin  ;Resize-Event
+         If base_uval.fullscroll then begin ;Resize TLB
+            WIDGET_CONTROL, Event.Top, SCR_XSIZE=Event.X, SCR_YSIZE=Event.Y
+         endif else begin       ;Resize all draw-widgets
+            WIDGET_CONTROL, Event.Top, UPDATE=0 ;Prevent Screen-Update
+            
+            New_XSize = (Event.X-base_uval.wincols*2*2)/base_uval.wincols ;Framedicke=2!
+            New_YSize = (Event.Y-base_uval.winrows*2*2)/base_uval.winrows ;Framedicke=2!
          
-         New_XSize = (Event.X-base_uval.wincols*2*2)/base_uval.wincols ;Framedicke=2!
-         New_YSize = (Event.Y-base_uval.winrows*2*2)/base_uval.winrows ;Framedicke=2!
-         
-         SubBase = WIDGET_INFO(Event.Top, /CHILD) ;das ist unsere erste SubBase
-         while SubBase ne 0 do begin
-            Draw = WIDGET_INFO(SubBase, /CHILD) ;das ist unser erstes Draw-Widget in der SubBase!
-            while Draw ne 0 do begin
-               WIDGET_CONTROL, Draw, SCR_XSIZE=New_XSize, SCR_YSIZE=New_YSize
-               Draw = WIDGET_INFO(Draw, /SIBLING) ;das ist unser nächstes Draw-Widget!         
-            endwhile
-            SubBase = WIDGET_INFO(SubBase, /SIBLING) ;das ist unsere nächste SubBase!
-         EndWhile
-         WIDGET_CONTROL, Event.Top, UPDATE=1 ;Allow Screen-Update
-      Endelse                     ;resize all draw-widgets
-   Endif
+            SubBase = WIDGET_INFO(Event.Top, /CHILD) ;das ist unsere erste SubBase
+            while SubBase ne 0 do begin
+               Draw = WIDGET_INFO(SubBase, /CHILD) ;das ist unser erstes Draw-Widget in der SubBase!
+               while Draw ne 0 do begin
+                  WIDGET_CONTROL, Draw, SCR_XSIZE=New_XSize, SCR_YSIZE=New_YSize
+                  Draw = WIDGET_INFO(Draw, /SIBLING) ;das ist unser nächstes Draw-Widget!         
+               endwhile
+               SubBase = WIDGET_INFO(SubBase, /SIBLING) ;das ist unsere nächste SubBase!
+            EndWhile
+            WIDGET_CONTROL, Event.Top, UPDATE=1 ;Allow Screen-Update
+         Endelse                ;resize all draw-widgets
+      End
 
-   If TAG_NAMES(Event, /STRUCTURE_NAME) eq "WIDGET_TRACKING" then begin ;Pointer entered or left a (sub)-widget
-      ;;-----------Check if pointer entered widget and set color table----------
-      WIDGET_CONTROL, Event.ID, GET_UVALUE=draw_uval
-      If (Event.ENTER eq 1) then begin ;It's an ENTRY-event!
-         ;save current palette:
-         UTVLCT, /GET, Red, Green, Blue
-         draw_uval.YourPalette.R = Red
-         draw_uval.YourPalette.G = Green
-         draw_uval.YourPalette.B = Blue
-         WIDGET_CONTROL, Event.ID, SET_UVALUE=draw_uval
-         ;set private palette:
-         UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
-         ;message, /INFO, "Setting private palette"
-      Endif else begin ;It's an LEAVE-event
-         ;reset old palette:
-         UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B 
-         ;message, /INFO, "Resetting private palette"
-      EndElse
-      ;;-----------End: Check if pointer entered widget and set color table-----
-   EndIf Else begin; Tracking events shall not be delivered!
-      ;;-----------Deliver Events to other Widgets?-------------------------
-      if base_uval.deliver_events(0) ne -1 then begin
-         valid = WIDGET_INFO(base_uval.deliver_events, /VALID_ID)
-         For wid=1, n_elements(base_uval.deliver_events) do $
-          If valid(wid-1) then begin
-            sendevent = Event
-            sendevent.ID = base_uval.deliver_events(wid-1)
-            next = base_uval.deliver_events(wid-1)
-            repeat begin
-               top = next
-               next = WIDGET_INFO(top, /PARENT)
-            endrep until next eq 0
-            sendevent.TOP = top
-            sendevent.HANDLER = 0
-            WIDGET_CONTROL, base_uval.deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
-         EndIf
-      endif
-      ;;-----------End: Deliver Events to other Widgets?-------------------------
-   EndElse
+      "WIDGET_TRACKING" : begin ;Pointer entered or left a (sub)-widget
+         ;;-----------Check if pointer entered widget and set color table----------
+         WIDGET_CONTROL, Event.ID, GET_UVALUE=draw_uval
+         If (Event.ENTER eq 1) then begin ;It's an ENTRY-event!
+                                ;save current palette:
+            UTVLCT, /GET, Red, Green, Blue
+            draw_uval.YourPalette.R = Red
+            draw_uval.YourPalette.G = Green
+            draw_uval.YourPalette.B = Blue
+            WIDGET_CONTROL, Event.ID, SET_UVALUE=draw_uval
+                                ;set private palette:
+            UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
+                                ;message, /INFO, "Setting private palette"
+         Endif else begin       ;It's an LEAVE-event
+                                ;reset old palette:
+            UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B 
+                                ;message, /INFO, "Resetting private palette"
+         EndElse
+         ;;-----------End: Check if pointer entered widget and set color table-----
+      END
+
+      ELSE : begin                ; Tracking events shall not be delivered!
+         ;;-----------Deliver Events to other Widgets?-------------------------
+         if base_uval.deliver_events(0) ne -1 then begin
+            valid = WIDGET_INFO(base_uval.deliver_events, /VALID_ID)
+            For wid=1, n_elements(base_uval.deliver_events) do $
+             If valid(wid-1) then begin
+               sendevent = Event
+               sendevent.ID = base_uval.deliver_events(wid-1)
+               next = base_uval.deliver_events(wid-1)
+               repeat begin
+                  top = next
+                  next = WIDGET_INFO(top, /PARENT)
+               endrep until next eq 0
+               sendevent.TOP = top
+               sendevent.HANDLER = 0
+               WIDGET_CONTROL, base_uval.deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
+            EndIf
+         endif
+         ;;-----------End: Deliver Events to other Widgets?-------------------------
+      ENDELSE
+
+   ENDCASE
   
-End
+END
+
 
 Function ScrollIt, Parent, $
                    XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
@@ -289,7 +303,9 @@ Function ScrollIt, Parent, $
                    PIXMAP=pixmap, $
                    RETAIN=retain, COLORS=colors, $
                    GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify, $
-                   DELIVER_EVENTS=deliver_events, MULTI=multi, GET_DRAWID=get_drawid, $
+                   DELIVER_EVENTS=deliver_events, $
+                   BUTTON_EVENTS=button_events, $
+                   MULTI=multi, GET_DRAWID=get_drawid, $
                    PRIVATE_COLORS=private_colors, NO_BLOCK=no_block
 
    Default,  no_block, 1
@@ -305,6 +321,13 @@ Function ScrollIt, Parent, $
    Default,  retain, 1
    Default,  kill_notify, ''
    Default,  deliver_events, [-1]
+   Default, button_events, 0
+
+   button_events = button_events * Set(deliver_events) 
+   ; Tell DrawWidget to generate BUTTON_EVENTS which can then be 
+   ; delivered to other widgets, but if deliverevents is not set
+   ; creating events is useless
+
    Default,  multi, [1, 1, 1, 1, 0]
    If n_elements(multi) lt 5 then multi = [fix(multi), intarr(5-n_elements(multi))]
 
@@ -383,7 +406,8 @@ Function ScrollIt, Parent, $
                                        X_SCROLL_SIZE=xsize, Y_SCROLL_SIZE=ysize, $
                                        FRAME=2, $
                                        RETAIN=retain, COLORS=colors, KILL_NOTIFY=kill_notify, $
-                                       TRACKING_EVENTS=private_colors)
+                                       TRACKING_EVENTS=private_colors, $
+                                       BUTTON_EVENTS=button_events)
             count = count+1
          EndIf
       Endfor
