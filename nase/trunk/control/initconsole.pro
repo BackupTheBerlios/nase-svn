@@ -35,6 +35,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.6  2000/10/10 15:03:09  kupper
+;     Now using Fixed String Queue for storing the messages. Much simpler
+;     now. Should behave exactly the same.
+;
 ;     Revision 2.5  2000/09/28 13:23:55  alshaikh
 ;           added AIM
 ;
@@ -67,11 +71,11 @@ IF _mode EQ 'nowin' THEN mode = 0
 IF _mode EQ 'win' THEN mode = 1
 IF Keyword_Set(WIN) THEN mode=1
 
-viz = strarr(length)
+viz = InitFQueue(length, "")
 
 IF mode EQ 1 THEN BEGIN 
    base = widget_base(title=title,/column)
-   cons = widget_text(base,xsize=80,ysize=15,/scroll,value=viz)
+   cons = widget_text(base,xsize=80,ysize=15,/scroll,value=Queue(viz))
    timewid = widget_text(base,xsize=80,ysize=1,value='')
    widget_control,base,/realize  
 END ELSE BEGIN
@@ -86,7 +90,6 @@ h = { $
       timewid : timewid, $
       acttime_steps : 0l ,$
       acttime_ms : 0.0,$
-      act   : 0 ,$
       mode : mode ,$
       length : length, $
       threshold: threshold ,$

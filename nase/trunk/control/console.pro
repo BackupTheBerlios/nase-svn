@@ -71,6 +71,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.13  2000/10/10 15:03:09  kupper
+;     Now using Fixed String Queue for storing the messages. Much simpler
+;     now. Should behave exactly the same.
+;
 ;     Revision 2.12  2000/10/10 13:22:25  kupper
 ;     Put checking for level as much to front as possible.
 ;     Replaced "stopp" my a "message" command.
@@ -124,6 +128,8 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
 
    ON_ERROR,2 
 
+   Assert, Set(__console), "At least one argument expected."
+
    Default, Msg , 1             ; Message Mode
    Default, debug , 0
    Default, warning,0
@@ -169,24 +175,19 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
    yell = '('+str(level)+')'+strupcase(_called_by)+':'+_message
    
 
-   IF Keyword_Set(UP) THEN status.act=status.act - 1
-   status.viz(status.act) = yell
-   status.act =  status.act + 1
+   viz = status.viz
 
-   IF status.act GE status.length THEN BEGIN 
-      FOR i=0, status.length-2 DO BEGIN
-         status.viz(i) = status.viz(i+1)
-      ENDFOR 
-      status.viz(status.length-1) =  ' '
-      status.act =  status.length-1
-   ENDIF 
-   
+   IF Keyword_Set(UP) THEN dummy = DeQueue(viz)
+   EnQueue, viz, yell
+
    CASE status.mode OF
-      0: print, status.viz(status.act-1)
-      1: Widget_Control,status.cons,set_value=status.viz, SET_TEXT_TOP_LINE=MAX([0,status.act-10])
+      0: print, yell
+      1: Widget_Control,status.cons,set_value=queue(viz, /valid), $
+       SET_TEXT_TOP_LINE=MAX([0,ContainerElements(viz, /VALID)-10])
    END
    
 
+   status.viz = Temporary(viz)
 
    fatal = status.tolerance
    Handle_Value,_console,status,/no_copy,/set
