@@ -1,29 +1,46 @@
 ;+
 ; NAME:               InitRecall
 ;
-; PURPOSE:            InitRecall initialisiert Lernpotentiale fuer unverzoegerte und verzoegerte Gewichtsstrukturen.
-;                     Im unverzoegerten Fall wird jedem Neuron, im verzeogerten Fall jeder Verbindung ein Lernpotential
-;                     zugewiesen. Die Lernpotentiale werden mit TotalRecall 'upgedated' werden. Es kann zwischen mehreren 
+; PURPOSE:            InitRecall initialisiert Lernpotentiale fuer 
+;                     unverzoegerte und verzoegerte Gewichtsstrukturen.
+;                     Im unverzoegerten Fall wird jedem Neuron, im 
+;                     verzoegerten Fall jeder Verbindung ein Lernpotential
+;                     zugewiesen, das z.B. fuer die Lernregel <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
+;                     gebraucht wird.
+;                     Die Lernpotentiale werden mit <A HREF="#TOTALRECALL">TotalRecall</A>
+;                     'upgedated' (geupdated). Es kann zwischen mehreren 
 ;                     Abklingfunktionen ausgewaehlt werden.
 ;                     
 ;
-; CATEGORY:           LEARNING
+; CATEGORY:           SIMULATION / PLASTICITY
 ;
 ; CALLING SEQUENCE:   LP = InitRecall( {Struc | HEIGHT=Höhe, WIDTH=Breite} 
-;                                           { [,LINEAR='['Amplitude, Decrement']'] | [,EXPO='['Amplitude, Zeitkonstante']'] } 
+;                                       { [,LINEAR='['Amplitude, Decrement']'] | 
+;                                         [,EXPO='['Amplitude, Zeitkonstante']'] } 
+;                                      [/NOACCUMULATION]
 ;
 ; INPUTS:             UNverzoegerte Verbindungen:
 ;                               Struc: Layer            (mit Init_Layer? initialisiert)
 ;                     verzoegerte Verbindungen:
 ;                               Struc: Gewichtsstruktur (mit InitDW erzeugt)
 ;                     ODER:  Hoehe und Breite explizit in HEIGHT,WIDTH 
-;                            (wobei eigentlich nur das Produkt entscheidend ist, also die Anzahl der Lernpotentiale)                                                                    
+;                            (wobei eigentlich nur das Produkt entscheidend ist, also 
+;                            die Anzahl der Lernpotentiale)
 ;
 ; KEYWORD PARAMETERS: 
-;                     LINEAR: linearer Abfall des Lernpotentials mit Decrement, ein eintreffender Spike erhoeht das Potential um Amplitude
-;                     EXPO  : exponentieller Abfall des Lernpotentials mit der Zeitkonstante, ein eintreffender Spike erhoeht das
-;                               Potential um Amplitude
-;
+;                     LINEAR: linearer Abfall des Lernpotentials mit Decrement, ein 
+;                             eintreffender Spike erhoeht das Potential um Amplitude
+;                     EXPO: exponentieller Abfall des Lernpotentials mit der 
+;                           Zeitkonstante, ein eintreffender Spike erhoeht das
+;                           Potential um Amplitude
+;                     NOACCUMULATION: Das Potential wird bei Eintreffen eines Spikes
+;                                     nicht um Amplitude erhoeht, sondern nur
+;                                     auf Amplitude gesetzt. Dadurch wird ein 
+;                                     Aufsummieren des Lernpotentials bei starker
+;                                     praesynaptischer Aktivitaet verhindert. Trotzdem
+;                                     'merkt' scih das Lernpotential, wie lange
+;                                     der letzte praesynaptische Spike zurueckliegt.
+;                     
 ; OUTPUTS:            LP: die initialisierte Lernpotential-Struktur zur weiteren Behandlung mit TotalRecall
 ;
 ; EXAMPLE:
@@ -32,6 +49,8 @@
 ;
 ;                     LAYER = InitLayer_1(...)
 ;                     LP = InitRecall( LAYER, EXPO=[1.0, 10.0])
+;
+; SEE ALSO: <A HREF="#TOTALRECALL">TotalRecall</A>, <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
 ;
 ; MODIFICATION HISTORY:
 ;
@@ -54,8 +73,10 @@
 ;
 ;-
 
-FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo
+FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, $
+                     NOACCUMULATION=noaccumulation
 
+   Default, NOACCUMULATION, 0
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
@@ -82,8 +103,9 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo
       LP = { info     : 'e'     ,$
              v        : expo(0) ,$
              dec      : exp(-1./expo(1)) ,$
-             values   : FltArr( size )}
-
+             values   : FltArr( size ) ,$
+             noacc    : NOACCUMULATION }
+             
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
@@ -96,7 +118,8 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo
       LP = { info   : 'l'     ,$
              v      : linear(0) ,$
              dec    : linear(1) ,$
-             values : FltArr( size )}
+             values : FltArr( size ), $
+             noacc  : NOACCUMULATION }
       
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END

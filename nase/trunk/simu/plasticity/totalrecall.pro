@@ -1,18 +1,21 @@
 ;+
 ; NAME:               TotalRecall
 ;
-; PURPOSE:            Die Prozedur erhaelt als Input die (verzoegert oder nicht) praesynaptischen 
-;                     Aktionspotentiale und updated alle Lernpotentiale, die in einer mit InitRecall 
-;                     erzeugten Struktur enthalten sind. Der Aufruf dieser Routine erfolgt eigentlich 
-;                     nur aus einer Lernregel. Wird kein In-Handle uebergeben, so werden die Potentiale
+; PURPOSE:            Die Prozedur erhaelt als Input die 
+;                     (verzoegerten oder unverzoegerten) praesynaptischen 
+;                     Aktionspotentiale (VORSICHT: das passiert
+;                     bereits in DelayWeigh!) und aktualisiert alle 
+;                     Lernpotentiale, die in der mit <A HREF="#INITRECALL">InitRecall</A>
+;                     erzeugten Struktur enthalten sind. Wird kein 
+;                     In-Handle uebergeben, so werden die Potentiale 
 ;                     nur abgeklungen.
 ;
-; CATEGORY:           LEARNING
+; CATEGORY:           SIMULATION / PLASTICITY
 ;
 ; CALLING SEQUENCE:   TotalRecall, LP [, DW]
 ;
 ; INPUTS:             LP: Eine mit InitRecall erzeugte Struktur
-;                     IN: die zugehoerige DW-Struktur
+;                     DW: die zugehoerige DW-Struktur
 ;
 ; SIDE EFFECTS:       LP wird beim Aufruf veraendert
 ;
@@ -31,13 +34,18 @@
 ;                  InputForMyLayer = DelayWeigh( My_DWS, My_Layer.O)
 ;                  TotalRecall, LP, My_DWS
 ;                  <Learn Something between My_Layer and My_layer>
-;                  LayerProceed(My_Layer, ....)
+;                  ProceedLayer_1(My_Layer, ....)
 ;                  <Simulationsschleife STOP>
+;
+; SEE ALSO: <A HREF="#INITRECALL">InitRecall</A>, <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  1998/04/29 12:32:03  thiel
+;              Neues Schluesselwort NOACCUMULATION
+;
 ;       Revision 2.7  1998/02/05 14:26:51  saam
 ;             huge bug in docu corrected
 ;
@@ -75,7 +83,9 @@ PRO TotalRecall, _LP, _DW
       
       IF N_Params() GT 1 THEN BEGIN
          In = LearnAP(_DW)
-         IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+         IF In(0) NE 0 THEN $
+            IF LP.noacc THEN LP.values(In(2:In(0)+1)) = LP.v $
+            ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
       END
    END
 
@@ -89,7 +99,9 @@ PRO TotalRecall, _LP, _DW
 
       IF N_Params() GT 1 THEN BEGIN
          In = LearnAP(_DW)
-         IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+         IF In(0) NE 0 THEN $
+            IF LP.noacc THEN LP.values(In(2:In(0)+1)) = LP.v $
+            ELSE LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
       END
   END
 
