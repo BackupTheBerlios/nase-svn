@@ -17,7 +17,7 @@
 ;       Stat
 ;
 ; CALLING SEQUENCE:
-;       CrossCor,x,y,PShift,Cxy,CorrBranch=Branch,OverlapNorm=ONorm
+;       Cxy = CrossCor,x,y,PShift,CorrBranch=Branch,OverlapNorm=ONorm
 ;
 ; INPUTS:
 ;       x      - FltArr(N)
@@ -59,6 +59,12 @@
 ;
 ;
 ; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 1.2  1997/10/31 17:27:29  saam
+;             Umwandlung in Funktion
+;
+;
 ;       Written by:     Thomas Wölbern, 23.09.94
 ;-
 
