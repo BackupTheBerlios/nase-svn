@@ -10,7 +10,9 @@
 ; CATEGORY:           MIND XPLORE CORRELATION
 ;
 ; CALLING SEQUENCE:   cc = CCI(nt [,nt2] [,/R] [,FILE=file] 
-;                           [,CORRLENGTH=corrlength], [/NOSAVE])
+;                           [,CORRLENGTH=corrlength] [,/NOSAVE])
+;                           [,SAMPLE=sample]
+;                           [,/SYNC | ,/FULL]
 ;
 ; INPUTS:             nt: array of arbitrary dimension (the last
 ;                         dimension is interpreted as time); may be undefined
@@ -23,6 +25,8 @@
 ;                                   specific values
 ;                     CORRLENGTH : the distance how much signals are shifted positive
 ;                                  and negative in time, default is 20 
+;                     SAMPLE     : the temporal resoultion of the
+;                                  signal in seconds
 ;                     NOSAVE     : don't save the results
 ;
 ;                     SYNC       : correlation for nt(i) and nt2(i)
@@ -35,142 +39,156 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/06/20 13:26:09  saam
+;           + nearly completely rewritten
+;           + fully functional now
+;
 ;     Revision 1.1  2000/04/07 10:09:45  saam
 ;           + converted from CCHS and adapated
 ;           + new documentation
 ;
 ;
 ;
-FUNCTION CCI, nt, sig,$
+FUNCTION doCC, s1, s2, pshift, SLIDING=sliding
+
+IF sliding(0) GT 0 THEN BEGIN
+    rcc = slidcc(REFORM(s1,/OVERWRITE),REFORM(s2,/OVERWRITE),pshift,SSIZE=LONG(sliding(0)*pshift), SSHIFT=sliding(0)*pshift*sliding(1))
+    ; average data with fisher-z 
+    rcc=fzt(rcc,-1)
+    _m=imoment(rcc,2)
+    m=fzt(_m,1)
+    RETURN, REFORM(m(*,0))
+END ELSE RETURN, CrossCor(s1, s2, pshift)
+
+END
+
+
+
+
+
+FUNCTION CCI, nt, nt2,$
               FILE=file,$
-              CORRLENGTH=corrLength, PSHIFT=pshift,$
+              CORRLENGTH=_corrLength, PSHIFT=pshift, SAMPLE=sample, $
               NOSAVE=nosave,$
-              SYNC=sync,$
-              ITERATE=iterate,$
+              SYNC=sync, SINGLE=single, FULL=full, AUTO=auto, $
+              SLIDING=sliding,$
+              INFO=info,$
               R=R,$
               _EXTRA=extra
 
 COMMON ATTENTION
 
-   EACH = 0
-   ONE  = 1
-   AUTO = 2
-   ONEF = 3 ;one foreign
-
-
    Default, file, ''              ; special extension
    Default, PShift, 20
-   Default, corrLength, PShift
-   Default, ITERATE, EACH
+   Default, _corrLength, PShift
+   Default, SAMPLE, P.SIMULATION.SAMPLE
+   Default, SLIDING, [-1,-1]
+
+   corrLength = LONG(_corrLength/(1000.*FLOAT(sample)))
+   
    
 
 
    IF Keyword_Set(R) THEN BEGIN
        Console, 'loading...'
-       V = LoadVideo(TITLE=P.File+file+'.cc', GET_STARRING=log, /SHUTUP, ERROR=err)
+       V = LoadVideo(TITLE=P.File+file+'.cc', GET_STARRING=info, GET_COMPANY=log2, /SHUTUP, ERROR=err)
        IF err THEN BEGIN
            Console, 'data doesnt exist...'+P.File+file+'.cc', /WARN
            CONSOLE, 'stopping', /FATAL
        END
        cc = Replay(V)
        Eject, V, /NOLABEL, /SHUTUP
-       Console, 'loading...'+log+'...done', /UP
+       Console, 'loading...done', /UP
+       Console, info
+       IF log2 NE '' THEN Console, log2
    END ELSE BEGIN
 
-       Console, 'using a correlation length of '+STRCOMPRESS(corrLength, /REMOVE_ALL)
-       
        s = SIZE(nt)
        tCount = S(S(0))
        nCount = N_Elements(nt)/tCount
-;   IF s(0) NE 2 THEN Message, 'first argument has wrong array dimensions'
-       
        Iter = 0l
        
        
        IF Keyword_Set(SYNC) THEN BEGIN
-           IF TOTAL(Size(nt) NE Size(sig)) NE 0 THEN Console, '1st and 2nd argument must have same dimension for /SYNC', /FATAL
-           sig = REFORM(sig,nCount, tCount, /OVERWRITE)  
+           IF TOTAL(Size(nt) NE Size(nt2)) NE 0 THEN Console, '1st and 2nd argument must have same dimension for /SYNC', /FATAL
+           nt2 = REFORM(nt2,nCount, tCount, /OVERWRITE)  
            nt = REFORM(NT, nCount, tCount, /OVERWRITE) ; handle various dimensions
            maxIter = nCount-1
            cc = FltArr(nCount, 2*corrLength+1) 
-           log = 'correlations, SIG1 and SIG2, n='+STR(maxIter)+', '+STR(corrLength)+' ms'
+           log = 'correlations, SIG1 and SIG2, n='+STR(maxIter)+', '+STR(_corrLength)+' ms, dt='+STR(P.SIMULATION.SAMPLE) 
            Console, log+'...'
            FOR source=0,nCount-1 DO BEGIN
-                                ;cc(source,*) = CrossCor(nt(source,*), sig(source,*), corrLength)               
-               cc(source,*) = CrossCor(nt(source,*), sig(source,*), corrLength)               
+               cc(source,*) = doCC(nt(source,*), nt2(source,*), corrLength, SLIDING=sliding)               
                Iter =  Iter+1
                IF ((Iter MOD 100) EQ 0) THEN Console, log+'...'+STR(100*Iter/maxIter)+' %', /UP
            ENDFOR
            nt = REFORM(nt, S(1:S(0)), /OVERWRITE)  
-           sig = REFORM(sig, S(1:S(0)), /OVERWRITE)  
+           nt2 = REFORM(nt2, S(1:S(0)), /OVERWRITE)  
            cc = REFORM(cc, [S(1:S(0)-1), 2*corrLength+1], /OVERWRITE)
            Console, log+'...done', /UP
            
-       END ELSE BEGIN 
-           Console, 'entering possibly outdated code section', /WARN
-           IF ITERATE(0) EQ EACH THEN BEGIN
-               cc = FltArr(nCount, nCount, 2*corrLength+1) 
-               maxIter = (nCount-1)*nCount/2
-               log = 'full correlations, n='+STR(maxIter)+', '+STR(corrLength)+' ms'
-               Console, log+'...'
-               FOR source=0,nCount-1 DO BEGIN
-                   FOR target=source, nCount-1 DO BEGIN
-                       cc(source,target,*) = CrossCor(nt(source,*), nt(target,*), corrLength)               
-                       Iter =  Iter+1
-                   ENDFOR
-                   Console, log+'...'+STR(100*Iter/maxIter)+' %', /UP
-               ENDFOR
-               Console, log+'...done'
-                                ; only the non-redundant cases were computed,
-                                ; the rest is now assigned via cch(x,y,tau) = cch(y,x,-tau)
-               Console, 'using symmetries...'
-               FOR source=0l,nCount-1 DO BEGIN
-                   FOR target=source,nCount-1 DO BEGIN
-                       cc(target,source,*) = REVERSE(REFORM(cc(source,target,*)))
-                   ENDFOR
-               ENDFOR
-               Console, 'using symmetries...done', /UP
-               
-               
-           END ELSE IF ITERATE(0) EQ ONE THEN BEGIN
-               print, 'CCI: computing  correlations for a fixed neuron'
-               print, ''
-               cc = FltArr(nCount, 1, 2*corrLength+1) 
-               maxIter = (nCount-1)
-               FOR source=0,nCount-1 DO BEGIN
-                   cc(source,0,*) = CrossCor(nt(source,*), nt(ITERATE(1),*), corrLength)               
+       END ELSE IF Keyword_Set(SINGLE) THEN BEGIN
+           nt = REFORM(NT, nCount, tCount, /OVERWRITE) ; handle various dimensions
+           nt2 = nt(flatindex(S, single),*)
+           maxIter = (nCount-1)
+           cc = FltArr(nCount, 2*corrLength+1) 
+           log = 'correlations, SINGLE '+PrettyArr(SINGLE)+', n='+STR(maxIter)+', '+STR(corrLength)+' ms, dt='+STR(P.SIMULATION.SAMPLE)
+           Console, log+'...'
+           FOR source=0,nCount-1 DO BEGIN
+               cc(source,*) = doCC(nt2, nt(source,*), corrLength, SLIDING=sliding)
+               Iter =  Iter+1
+               IF ((Iter MOD 100) EQ 0) THEN Console, log+'...'+STR(100*Iter/maxIter)+' %', /UP
+           ENDFOR
+           nt = REFORM(nt, S(1:S(0)), /OVERWRITE)  
+           cc = REFORM(cc, [S(1:S(0)-1), 2*corrLength+1], /OVERWRITE)
+           Console, log+'...done', /UP
+           
+       END ELSE IF Keyword_Set(FULL) THEN BEGIN 
+           nt = REFORM(NT, nCount, tCount, /OVERWRITE) ; handle various dimensions
+           maxIter = (nCount+1)*nCount/2
+           cc = FltArr(nCount, nCount, 2*corrLength+1) 
+           log = 'correlations, FULL, n='+STR(maxIter)+', '+STR(corrLength)+' ms, dt='+STR(P.SIMULATION.SAMPLE)
+           Console, log+'...'
+           FOR source=0,nCount-1 DO BEGIN
+               FOR target=source,nCount-1 DO BEGIN
+                   cc(source,target,*) = doCC(nt(source,*), nt(target,*), corrLength, SLIDING=sliding)
+                   cc(target,source,*) = REVERSE(REFORM(cc(source,target,*)))
                    Iter =  Iter+1
-                   print, !KEY.UP+'CCI: calculating data... '+STRCOMPRESS(100*Iter/maxIter, /REMOVE_ALL),' %'
+                   IF ((Iter MOD 100) EQ 0) THEN Console, log+'...'+STR(100*Iter/maxIter)+' %', /UP
                ENDFOR
-               
-           END ELSE IF ITERATE(0) EQ ONEF THEN BEGIN
-               print, 'CCI: computing  correlations with an external signal'
-               print, ''
-               cc = FltArr(nCount, 1, 2*corrLength+1) 
-               maxIter = (nCount-1)
-               FOR source=0,nCount-1 DO BEGIN
-                   cc(source,0,*) = CrossCor(nt(source,*), sig, corrLength)               
-                   Iter =  Iter+1
-                   print, !KEY.UP+'CCI: calculating data... '+STRCOMPRESS(100*Iter/maxIter, /REMOVE_ALL),' %'
-               ENDFOR
-               
-           END ELSE IF ITERATE(0) EQ AUTO THEN BEGIN
-               print, 'CCI: computing the ACHs'
-               cc = FltArr(nCount, 2*corrLength+1) 
-               maxIter = (nCount-1)
-               
-               FOR source=0,nCount-1 DO BEGIN
-                   cc(source,*) = CrossCor(nt(source,*), nt(source,*), corrLength)               
-                   Iter =  Iter+1
-                   print, !KEY.UP+'CCI: calculating data... '+STRCOMPRESS(100*Iter/maxIter, /REMOVE_ALL),' %'
-               ENDFOR
-       
-           END ELSE Message, 'cant handle '+ITERATE(0)+' method for iteration'
+           END
+           Console, log+'...done', /UP
+
+           nt = REFORM(nt, S(1:S(0)), /OVERWRITE)  
+           cc = REFORM(cc, [S(1:S(0)-1), S(1:S(0)-1), 2*corrLength+1], /OVERWRITE)
+           
+       END ELSE IF Keyword_Set(AUTO)  THEN BEGIN
+           nt = REFORM(NT, nCount, tCount, /OVERWRITE) ; handle various dimensions
+           maxIter = (nCount-1)
+           cc = FltArr(nCount, 2*corrLength+1) 
+           log = 'correlations, SINGLE '+PrettyArr(SINGLE)+', n='+STR(maxIter)+', '+STR(corrLength)+' ms, dt='+STR(P.SIMULATION.SAMPLE)
+           Console, log+'...'
+           FOR source=0,nCount-1 DO BEGIN
+               cc(source,*) = doCC(nt2, nt(source,*), corrLength, SLIDING=sliding)
+               Iter =  Iter+1
+               IF ((Iter MOD 100) EQ 0) THEN Console, log+'...'+STR(100*Iter/maxIter)+' %', /UP
+           ENDFOR
+           nt = REFORM(nt, S(1:S(0)), /OVERWRITE)  
+           cc = REFORM(cc, [S(1:S(0)-1), 2*corrLength+1], /OVERWRITE)
+           Console, log+'...done', /UP
+           
+       END ELSE BEGIN
+           Console, 'one known iteration method must be specified', /FATAL
        END
        
        IF NOT Keyword_Set(NOSAVE) THEN BEGIN
+           log2=''
+           IF sliding(0) GT 0 THEN BEGIN
+               log2= 'averaged, win='+STR(Sliding(0)*_corrlength)+' ms, shift='+STR(_corrLength*Sliding(0)*Sliding(1))+' ms'
+               Console, log2
+           END
            Console, 'saving data...'
-           V = InitVideo( cc, TITLE=P.File+file+'.cc', STARRING=log, COMPANY='', /SHUTUP)
+           V = InitVideo( cc, TITLE=P.File+file+'.cc', STARRING=log, COMPANY=log2, /SHUTUP)
            dummy = CamCord(V, cc)
            Eject, V, /NOLABEL, /SHUTUP
            Console, 'saving data...done', /UP
