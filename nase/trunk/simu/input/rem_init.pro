@@ -17,8 +17,9 @@
 ;                            CUTWIDTH=auschnittsbreite, CUTHEIGHT=ausschnittsheohe, 
 ;                            SACCTIME=sakkadenintervall 
 ;                            [, FIXTIME=festzeit]
-;                            [, SMALLMOVE=distanz]
-;                            [, INTERESTING=interessant)
+;                            [, SMALLMOVE=[xrichtung, yrichtung]]
+;                            [, INTERESTING=interessant]
+;                            [, /FORCE]
 ;
 ;
 ; INPUTS: bildarray : Das Array, aus dem die Ausschnitte ausgesucht werden sollen.
@@ -37,19 +38,28 @@
 ;                             irgendeine Verschiebung zurueckgeliefert wird.
 ;                             Default = 1, d.h. nach jedem <A HREF="#REM_STEP">REM_Step</A>-Aufruf
 ;                             findet eine Verschiebung statt.
-;                  distanz : Verschiebung des Bildausschnitts nach einem 
-;                            Festzeit-Intervall ist sowohl in X- als auch in
-;                            Y-Richtung eine Zufallszahl aus dem Intervall 
-;                            [-distanz,+distanz] (gleichverteilt gezogen)
-;                            Default = 1
+;                  xrichtung, yrichtung : Verschiebung des Bildausschnitts nach einem 
+;                            Festzeit-Intervall. Bei gesetztem FORCE-Schluesselwort
+;                            gibt das Array [xrichtung, yrichtung] die jeweilige
+;                            Verschiebung an. Ist FORCE nicht gesetzt, wird die Verschiebung
+;                            sowohl in X- als auch in Y-Richtung durch eine Zufallszahl aus 
+;                            dem Intervall [- abs(richtung),+ abs(richtung)] bestimmt 
+;                            (gleichverteilt gezogen). 
+;                            Default = [1,1]
 ;                  interessant : falls das Maximum des nach einer Sakkade ermittelten
 ;                                Ausschnitts kleiner als der hier angegebene Wert ist,
 ;                                wird ein neuer Ausschnitt gewaehlt.
 ;                                Default = Min(bildarray), d.h. jeder Ausschnitt
 ;                                wird zurueckgeliefert.
 ;
+; KEYWORD PARAMTERES: FORCE: Erzwingt die Verschiebung in die mit x/y-richtung angegebene
+;                            Richtung nach einem Festzeitintervall. Vorsicht am Bildrand!
+;                            Hier wird eventuell immer der gleiche Ausschnitt zurueckgeliefert,
+;                            wenn eine weitere Verschiebung in die angegebene Richtung nicht
+;                            moeglich ist.
+;
 ; OUTPUTS: remstructure : Eine Datenstruktur, die spaeter von <A HREF="#REM_STEP">REM_Step</A>
-;                         verwendet wird. Enthaelt im einzelne folgende Tags:
+;                         verwendet wird. Enthaelt im einzelnen folgende Tags:
 ;                         REM_Structure = { ti : 0l ,$                  ; Zahl der REM_Step-Aufrufe
 ;                                           xp : 0l ,$                  ; Aktueller Ausschnitt
 ;                                           yp : 0l ,$    
@@ -61,7 +71,8 @@
 ;                                           st : sacctime ,$
 ;                                           ft : fixtime ,$
 ;                                           sm : smallmove ,$
-;                                           ia : interesting }
+;                                           ia : interesting, $
+;                                           fo : force }  
 ;
 ; SIDE EFFECTS: Das Bildarray wird innerhalb der Struktur gespeichert. 
 ;               Falls das urspruengliche Bildarray nicht mehr gebraucht wird, 
@@ -75,7 +86,7 @@
 ; EXAMPLE: bitmap = FadeToGrey(Getenv('NASEPATH')+'/graphic/nonase/alison.bmp')
 ;          
 ;          remstruc = REM_Init(PICARRAY=bitmap, CUTWIDTH=50, CUTHEIGHT=50, $
-;                              SACCTIME=5, FIXTIME=1, SMALLMOVE=5)
+;                              SACCTIME=5, FIXTIME=1, SMALLMOVE=[5,5])
 ;
 ;          bitmap = 0
 ;
@@ -91,6 +102,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/05/11 13:32:21  thiel
+;               Neues Schluesselwort FORCE
+;
 ;        Revision 2.1  1998/04/09 14:02:45  thiel
 ;               Da wird sich der Mike Stipe freuen...
 ;
@@ -100,7 +114,8 @@ FUNCTION REM_Init, PICARRAY=picarray, $
               CUTWIDTH=cutwidth, CUTHEIGHT=cutheight, $
               SACCTIME=sacctime, FIXTIME=fixtime, $
               SMALLMOVE=smallmove, $
-              INTERESTING=interesting
+              INTERESTING=interesting, $
+              FORCE=force
 
 
 
@@ -109,8 +124,9 @@ IF NOT Set(CUTWIDTH) OR NOT Set(CUTHEIGHT) THEN Message, 'Specify width and heig
 IF NOT Set(SACCTIME) THEN Message, 'Specify Saccade-Interval.'
 
 Default, fixtime, 1
-Default, smallmove, 1
+Default, smallmove, [1,1]
 Default, interesting, Min(picarray)
+Default, force, 0
 
 picheight = (Size(picarray))(2)
 picwidth = (Size(picarray))(1)
@@ -126,7 +142,8 @@ REM_Structure = { ti : 0l ,$
                   st : sacctime ,$
                   ft : fixtime ,$
                   sm : smallmove ,$
-                  ia : interesting }
+                  ia : interesting, $
+                  fo : force}
 
 RETURN, REM_Structure
 

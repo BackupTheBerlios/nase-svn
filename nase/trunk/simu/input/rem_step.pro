@@ -27,7 +27,7 @@
 ; EXAMPLE: bitmap = FadeToGrey(Getenv('NASEPATH')+'/graphic/nonase/alison.bmp')
 ;          
 ;          remstruc = REM_Init(PICARRAY=bitmap, CUTWIDTH=50, CUTHEIGHT=50, $
-;                              SACCTIME=5, FIXTIME=1, SMALLMOVE=5)
+;                              SACCTIME=5, FIXTIME=1, SMALLMOVE=[5,5])
 ;
 ;          bitmap = 0
 ;
@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/05/11 13:32:20  thiel
+;               Neues Schluesselwort FORCE
+;
 ;        Revision 2.1  1998/04/09 14:21:17  thiel
 ;               Michael Stipe laesst gruessen...
 ;
@@ -62,8 +65,8 @@ IF (REM_Structure.ti MOD REM_Structure.st) EQ 0 THEN BEGIN
    Return, ausschnitt
 ENDIF ELSE BEGIN
    IF (REM_Structure.ti MOD REM_Structure.ft) EQ 0 THEN BEGIN
-      xpos = REM_Structure.xp + Round((2.0*RandomU(seed)-1.0)*REM_Structure.sm)
-      ypos = REM_Structure.yp + Round((2.0*RandomU(seed)-1.0)*REM_Structure.sm)
+      xpos = REM_Structure.xp + (1-REM_Structure.fo)*(Round((2.0*RandomU(seed)-1.0)*Abs(REM_Structure.sm(0)))) + (REM_Structure.fo)*(REM_Structure.sm(0))
+      ypos = REM_Structure.yp + (1-REM_Structure.fo)*(Round((2.0*RandomU(seed)-1.0)*Abs(REM_Structure.sm(1)))) + (REM_Structure.fo)*(REM_Structure.sm(1))
    ENDIF ELSE BEGIN
       xpos = REM_Structure.xp
       ypos = REM_Structure.yp
@@ -71,7 +74,7 @@ ENDIF ELSE BEGIN
 ENDELSE
 
 xpos = xpos > 0 < (REM_Structure.pw-REM_Structure.cw-1)
-ypos = ypos > 0 < (REM_Structure.pw-REM_Structure.ch-1)
+ypos = ypos > 0 < (REM_Structure.ph-REM_Structure.ch-1)
 
 ausschnitt = REM_Structure.pa(XPos:Xpos+REM_Structure.cw-1,YPos:Ypos+REM_Structure.ch-1,*)
 
