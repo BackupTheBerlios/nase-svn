@@ -26,7 +26,7 @@
 ;  Color
 ;
 ; CALLING SEQUENCE:
-;*ULoadCt, nr [,/REVERT] [,/NASE] [,IDLKEYWORDS]
+;*ULoadCt, nr [,/REVERT] [GAMMA=...] [,/NASE] [,IDLKEYWORDS]
 ;
 ; INPUTS:
 ;  nr:: index of the color table
@@ -37,6 +37,8 @@
 ;
 ;  REVERT:: The loaded colormap will be reverted. This is especially
 ;           useful with postscript output. 
+;  GAMMA :: Gamma correction of the given value will be applied to the
+;           color table. See also IDL's <C>GAMMA_CT</C> command.
 ;  /NASE :: Setting this switch is equivalent to passing
 ;           <*>FILE=!NASEPATH+"/graphic/nase/NaseColors.tbl"</*>. It is
 ;           provided for convenience only.<BR>
@@ -46,10 +48,13 @@
 ;*ULoadCt, 5 ,/NASE
 ;
 ; SEE ALSO:
-;   <A>UTvLct</A>, <A>UXLoadCT</A>, <A>XAllowed()</A>.
+;   <A>UTvLct</A>, <A>UXLoadCT</A>, <A>XAllowed()</A>, IDL's <C>GAMMA_CT</C>.
 ;-
 
-PRO ULoadCt, nr, NCOLORS=ncolors, BOTTOM=bottom, REVERT=revert, FILE=file, NASE=nase, _Extra=e
+PRO ULoadCt, nr, NCOLORS=ncolors, BOTTOM=bottom, REVERT=revert, $
+             GAMMA=gamma, FILE=file, NASE=nase, _Extra=e
+
+   common colors
 
    ;; ----------------------------
    ;; Do absolutely nothing in the following cases, as code will break
@@ -94,4 +99,11 @@ PRO ULoadCt, nr, NCOLORS=ncolors, BOTTOM=bottom, REVERT=revert, FILE=file, NASE=
    
   IF Keyword_Set(REVERT) THEN RevertCT
 
+  ;; gamma scaling:
+  if set(GAMMA) then begin
+     R_CURR[0:!TOPCOLOR] = (R_CURR[0:!TOPCOLOR]/255.0)^gamma * 255 > 0 < 255
+     G_CURR[0:!TOPCOLOR] = (G_CURR[0:!TOPCOLOR]/255.0)^gamma * 255 > 0 < 255
+     B_CURR[0:!TOPCOLOR] = (B_CURR[0:!TOPCOLOR]/255.0)^gamma * 255 > 0 < 255
+     utvlct, R_CURR, G_CURR, B_CURR
+  endif
 END
