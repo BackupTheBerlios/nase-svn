@@ -24,7 +24,7 @@
 ;* rate = Instantrate( spikes [,SAMPLEPERIOD=...]  
 ;*                            [,SSIZE=...] [,SSHIFT=...]
 ;*                            [,TVALUES=...] [,TINDICES=...] 
-;*                            [,AVARAGED=...]
+;*                            [,AVERAGE=...]
 ;*                            [,/GAUSS] [,/TFIRST] )
 ;
 ;
@@ -63,7 +63,7 @@
 ;  TINDICES:: Array containing the starting indices of the windows
 ;            used for rate calculation relative to the original
 ;            array. (See also <A>Slices()</A>.)
-;  AVARAGED:: Array containing the firing rate avaraged over all 
+;  AVERAGE:: Array containing the firing rate averaged over all 
 ;            neurons/trials.
 ;
 ; PROCEDURE: 
@@ -76,8 +76,8 @@
 ;*  a=fltarr(1000,10)
 ;*  a(0:499,*)=Randomu(s,500,10) le 0.01    ; 10 Hz 
 ;*  a(500:999,*)=Randomu(s,500,10) le 0.05  ; 50 Hz
-;*  r=instantrate(a, ssize=100, sshift=10, tvalues=axis, avaraged=av)
-;*  rg=instantrate(a, /GAUSS, ssize=20, tvalues=axisg, avaraged=avg)
+;*  r=instantrate(a, ssize=100, sshift=10, tvalues=axis, average=av)
+;*  rg=instantrate(a, /GAUSS, ssize=20, tvalues=axisg, average=avg)
 ;*  !p.multi=[0,1,4,0,0] 
 ;*  trainspotting, Transpose(a) 
 ;*  plot, axis+50, r(*,0) ; axis contains starting times of windows.
@@ -95,6 +95,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2002/01/29 15:44:22  thiel
+;           Corrected misspelling of AVERAGE-Keyword.
+;
 ;        Revision 1.6  2001/06/12 11:41:55  thiel
 ;           Now uses new NASE spiketrain array convention: first index: time.
 ;           Still can be turned to old behavior by TFIRST=0.
@@ -119,7 +122,7 @@
 FUNCTION InstantRate, _nt, SAMPLEPERIOD=sampleperiod $
                       , SSIZE=ssize, SSHIFT=sshift $
                       , TVALUES=tvalues, TINDICES=tindices $
-                      , AVARAGED=avaraged, GAUSS=gauss, TFIRST=tfirst
+                      , AVERAGE=average, GAUSS=gauss, TFIRST=tfirst
 
    Default, gauss, 0
    Default, sampleperiod, 0.001
@@ -162,9 +165,9 @@ FUNCTION InstantRate, _nt, SAMPLEPERIOD=sampleperiod $
    ENDELSE ;; Keyword_Set(GAUSS) 
    
    IF (Size(nt))(0) NE 1 THEN $
-    avaraged= Total(result,2)/(Size(result))(2) $ ;; two dimensional array
+    average= Total(result,2)/(Size(result))(2) $ ;; two dimensional array
    ELSE $
-    avaraged = result ;; one dimensional array
+    average = result ;; one dimensional array
    
    IF NOT Keyword_Set(TFIRST) THEN result = Temporary(Transpose(result))
 
