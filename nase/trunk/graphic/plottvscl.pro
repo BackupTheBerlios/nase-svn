@@ -132,7 +132,10 @@
 ;                 scaling that are part of the PLOTTVSCL_INFO
 ;                 struct. However, the new scaling is valid for
 ;                 this call only, and is not stored in the
-;                 struct, unless you also specify /INIT.
+;                 struct, unless you also specify /INIT.<BR> 
+;                 <I>Note: if used in conjunction with UPDATE_INFO and
+;                       LEGEND, inconsistencies will arise, as the
+;                       legend is not correctly updated (todo).</I>
 ;   UPDATE_INFO:: When omitted, undefined, or passend an empty
 ;                 PLOTTVSCL_INFO structure, the call acts like
 ;                 a normal PlotTvScl call. Axes as well as the
@@ -212,6 +215,11 @@
 ; SIDE EFFECTS:
 ;  If <C>/NASE</C> or <C>/NSCALE</C> is set, and unless <C>SETCOL</C><*>=0</*> is passed, the
 ;  appropriate NASE color table is loaded.
+;
+; RESTRICTIONS:
+;  If RANGE_IN is used in conjunction with UPDATE_INFO and LEGEND,
+;  inconsistencies will arise, as the legend is not correctly updated
+;  (todo).
 ;
 ; EXAMPLE: 
 ;*          width = 25
@@ -540,35 +548,16 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;; draw. This must only be done, when /INIT is set!
    If keyword_set(INIT) then begin
 
-      IF (Keyword_Set(UPDATE_INFO.NSCALE) OR Keyword_Set(UPDATE_INFO.NEUTRAL)) THEN BEGIN
-         maxW = Max(_W)
-         minW = Min(NoNone_Func(_W))
-      END
+      ;; if nothing was explicitely specified, we lable the legend
+      ;; according to the range our array has been scaled to.
+      ;; UPDATE_INFO.range_in has been updated accordingly by the
+      ;; above PlotTvScl_update call:
+      Default, LEG_MIN, UPDATE_INFO.range_in[0]
+      Default, LEG_MAX, UPDATE_INFO.range_in[1]
 
-      IF Keyword_Set(UPDATE_INFO.NSCALE) THEN BEGIN
-         IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-            Default, LEG_MAX,  MAX([ABS(MaxW), ABS(MinW)])
-            Default, LEG_MIN, -MAX([ABS(MaxW), ABS(MinW)])
-            If LEG_MIN eq -LEG_MAX then leg_mid_str = '0' else $
-              leg_mid_str = ''
-         ENDIF ELSE BEGIN
-            Default, LEG_MAX, MaxW
-            Default, LEG_MIN, 0
-            If LEG_MIN eq -LEG_MAX then leg_mid_str = '0' else $
-              leg_mid_str = ''
-         ENDELSE
-      ENDIF  ELSE BEGIN;; No-NASE
-         Default, LEG_MAX, MAX(_w)
-         Default, LEG_MIN, MIN(_w)
-         
-         IF Keyword_Set(UPDATE_INFO.NEUTRAL) THEN BEGIN
-            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-               LEG_MAX = MAX([ABS(MaxW), ABS(MinW)])
-               LEG_MIN = -LEG_MAX
-            ENDIF ELSE LEG_MIN = 0
-         ENDIF
-         leg_mid_str = ''
-      ENDELSE
+      If LEG_MIN eq -LEG_MAX then leg_mid_str = '0' else $
+        leg_mid_str = ''
+
 
       ;; store these values in the UPDATE_INFO struct:
       UPDATE_INFO.leg_min = LEG_MIN
