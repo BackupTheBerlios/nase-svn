@@ -3,16 +3,16 @@
 #
 package NASE::globals;
 
-#use diagnostics;
-#use strict;
+use diagnostics;
+use strict;
 use CGI::Carp;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @hentry %pro %catl $dbh);
 use DBI;
 use Tie::DBI;
 
 use constant DATABASE => 'nase';
-use constant AUSER    => 'root';
-use constant APASSWD  => 'hds23wkP';
+use constant AUSER    => 'chiefnase';
+use constant APASSWD  => 'misfitme';
 
 require Exporter;
 
@@ -20,7 +20,7 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir KeyByNameHTML KeyByCountHTML KeyByName KeyByCount getDocURL @hentry myHeader myBody getCVS setCVS %pro %catl $dbh); 
+@EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir KeyByNameHTML KeyByCountHTML KeyByName KeyByCount getDocURL @hentry myHeader myBody getCVS setCVS %pro %catl $dbh createTablesIfNotExist ); 
 $VERSION = '1.1';
 
 
@@ -101,15 +101,14 @@ sub createTablesIfNotExist {
 BEGIN {
   chop ($hostname = `uname -a`);
   {
-#      $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-#    			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
-#    			       $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
-#       			       $INDEXDIR="$DOCDIR"};
+   $CVSROOT="/vol/neuro/nase/IDLCVS"; 
+   $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
+   $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+   $INDEXDIR="$DOCDIR"; #should be unused
     
-#    			       last;};
-    $DOCDIR="/mhome/saam/sim"; 
-    $DOCURL="http://localhost/nase/"; 
-    $INDEXDIR="/tmp";
+#    $DOCDIR="/mhome/saam/sim"; 
+#    $DOCURL="http://localhost/nase/"; 
+#    $INDEXDIR="/tmp";
   }
   
   $BASEURL  = "http://neuro.physik.uni-marburg.de/cgi-bin-neuro/nasedocu.pl";
