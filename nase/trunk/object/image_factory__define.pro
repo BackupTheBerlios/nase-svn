@@ -43,7 +43,10 @@ Pro image_factory::size, value
 End
 
 ;; ------------ Constructor & Destructor --------------------
-Function image_factory::init, height, width
+Function image_factory::init, HEIGHT=height, WIDTH=width
+   message, /Info, "I am created."
+   Default, height, 32
+   Default, width, 32
    self.height = height
    self.width = width
    self.size = 1.0
@@ -52,7 +55,8 @@ Function image_factory::init, height, width
    return, 1                    ;TRUE
 End
 
-Pro image_factory::cleanup
+Pro image_factory::cleanup, _dummy=_dummy
+   message, /Info, "I'm dying!"
    PTR_FREE, self.image
 End
 
