@@ -1,80 +1,60 @@
 ;+
-; NAME: RFScan_Return()
+; NAME:
+;  RFScan_Return()
 ;
-; AIM:     results the RF-Cinematogramm of simulated neurons
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Liefert das Ergebnis eines RF-Scans zurück.
-;          siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
+; AIM:
+;  Get the (simplified) RF-Cinematogramm of simulated neurons.
 ;
-; CALLING SEQUENCE: Scanned_RFs = RFScan_Return( My_RFScan )
+; PURPOSE:
+;  Liefert das Ergebnis eines RF-Scans zurück
+;          (siehe <A>RFScan_Init</A>).
+;
+; CATEGORY:
+;  NASE
+;  Statistics
+;  Signals
+;  Simulation
+;
+; CALLING SEQUENCE:
+;*Scanned_RFs = RFScan_Return(My_RFScan)
 ;
 ; INPUTS:
-;         My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
-;                    RFScan-Struktur.
-;
+;  My_RFScan:: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
+;              RFScan-Struktur.
+;  
 ; OUTPUTS:
-;          Scanned_RFs: Eine DW-Struktur, die die geschätzten RFs
-;                       enthält. ACHTUNG! Dies ist eine dynamische
-;                       Datenstruktur, die nach Gebrauch vom BENUTZER
-;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A>
-;                       freigegeben werden muß!
-;                       Die Gewichte sind auf die Anzahl der
-;                       beobachteten Outputs normiert. (D.h. im Falle
-;                       von /OBSERVE_SPIKES liegen alle Gewichte
-;                       zwischen Null und Eins.)
+;  Scanned_RFs:: Eine DW-Struktur, die die geschätzten RFs
+;                enthält.<BR>
+;                <B>ACHTUNG! Dies ist eine dynamische
+;                Datenstruktur, die nach Gebrauch vom BENUTZER
+;                mit <A>FreeDW</A>
+;                freigegeben werden muß!</B><BR>
+;                Die Gewichte sind auf die Anzahl der
+;                beobachteten Outputs normiert. (D.h. im Falle
+;                von <*>/OBSERVE_SPIKES</*> liegen alle Gewichte
+;                zwischen Null und Eins.)
+;  
 ;
-; RESTRICTIONS: ACHTUNG! Der Output  ist eine dynamische
-;                       Datenstruktur, die nach Gebrauch vom BENUTZER
-;                       mit <A HREF="../simu/connections/#FREEDW">FreeDW</A>
-;                       freigegeben werden muß!
-;                       
-;                       Mit dem Aufruf von RFScan_Return() ist der
-;                       Scanvorgang abgeschlossen! Ein weiterer Aufruf 
-;                       von RFScan_Schaumal führt zwar zu keinem
-;                       Fehler, liefert aber ungültige Ergebnisse!
+; RESTRICTIONS:
+;  <B>ACHTUNG! Der Output  ist eine dynamische
+;     Datenstruktur, die nach Gebrauch vom BENUTZER
+;     mit <A HREF="../simu/connections/#FREEDW">FreeDW</A>
+;     freigegeben werden muß!</B><BR>
 ;
-; EXAMPLE: ShowWeights, RFScan_Return( My_RFScan ), /RECEPTIVE
+;     Mit dem Aufruf von RFScan_Return() ist der
+;     Scanvorgang abgeschlossen! Ein weiterer Aufruf 
+;     von RFScan_Schaumal führt zwar zu keinem
+;     Fehler, liefert aber ungültige Ergebnisse!
 ;
-; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>
+; EXAMPLE:
+;*ShowWeights, RFScan_Return( My_RFScan ), /RECEPTIVE
 ;
+; SEE ALSO: <A>RFScan_Init</A>, <A>RFScan_Zeigmal</A>, <A>RFScan_Schaumal</A>
 ;-
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.8  2000/09/28 12:25:35  gabriel
-;             AIM tag added , message <> console
-;
-;        Revision 1.7  2000/09/27 15:59:28  saam
-;        service commit fixing several doc header violations
-;
-;        Revision 1.6  1998/03/14 11:26:46  kupper
-;               Inputkantentypen -1 und -2 implementiert.
-;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
-;
-;        Revision 1.5  1998/03/06 11:35:10  kupper
-;               Bug korrigiert, der bei IDL-Versionen kleiner 5 auftrat,
-;                wenn beim Aufruf kein Fenster geöffnet war.
-;
-;        Revision 1.4  1998/03/03 14:44:20  kupper
-;               RFScan_Schaumal ist jetzt viel schneller, weil es
-;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
-;                   Das ist zwar unelegant, aber schnell.
-;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
-;                   macht und daher nur für die tatsächlich feuernden Neuronen
-;                   Berechnungen durchführt.
-;
-;        Revision 1.3  1998/02/16 14:59:48  kupper
-;               VISUALIZE ist jetzt implementiert. WRAP auch.
-;
-;        Revision 1.2  1998/01/30 17:02:50  kupper
-;               Header geschrieben und kosmetische Veränderungen.
-;                 VISULAIZE ist noch immer nicht implementiert.
-;
-;        Revision 1.1  1998/01/29 14:45:09  kupper
-;               Erste Beta-Version.
-;                 Header mach ich noch...
-;                 VISUALIZE-Keyword ist noch nicht implementiert...
-;
+
 
 Function RFScan_Return, RFS, FILENAME=filename
 
