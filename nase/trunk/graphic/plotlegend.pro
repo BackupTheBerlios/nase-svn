@@ -24,10 +24,13 @@
 ;*            [,LTGAP=...][,TBASE=...]
 ;*            [,/BOX]
 ;*            [,BCOLOR=...][,BSEP=...][,BSTYLE=...][,BTHICK=...]
+;*            [/DATA]
 ;
 ; INPUTS:
-;  xo:: Left corner of annotation given in normal coordinates.
-;  yo:: Lower corner of annotation in normal coordinates.
+;  xo:: Left corner of annotation given in normal or data
+;       coordinates. See switch <*>/DATA</*>.
+;  yo:: Lower corner of annotation in normal or data coordinates. See
+;       switch <*>/DATA</*>. 
 ;  texts:: Array of strings containing the descriptions starting with
 ;          the lowest line.
 ;
@@ -59,7 +62,13 @@
 ;  BCOLOR:: Color index used for drawing the box. Default: <A>GetForeground()</A>.
 ;  BSTYLE:: Box linestyle. Default: 0.
 ;  BTHICK:: Thickness of line used for drawing the box. Default: 1.0.
-;
+;  DATA:: Tells the routine to interpret the coordinates <*>xo</*> and
+;         <*>yo</*> as
+;         given in data ccordinates. Otherwise, they are interpreted
+;         as normal coordinates. Supplying data coordinates may be
+;         useful for positioning legends inside a particular plot when
+;         working with <*>!P.MULTI</*>. 
+;  
 ; RESTRICTIONS:
 ;  For <C>PlotLegend</C> to function properly, the plotting device
 ;  must have been established, e.g. by opening a window or of course
@@ -73,7 +82,7 @@
 ;  there seems no possibility to determine this factor, since the
 ;  !D.Y_CH_SIZE gives only the linespacing, not the actual height of
 ;  chars. 
-;
+;  
 ; PROCEDURE:
 ;  + Determine charsize for given device.<BR>
 ;  + Calculate line positions.<BR>
@@ -90,10 +99,7 @@
 ;
 ; SEE ALSO:
 ;  <A>TVSclLegend</A>, <A>GetForeground()</A>.
-;
 ;-
-
-
 
 PRO PlotLegend, xo, yo, texts $
                 , CHARSIZE=charsize $
@@ -105,8 +111,15 @@ PRO PlotLegend, xo, yo, texts $
                 , LTGAP=ltgap $
                 , TBASE=tbase $
                 , BOX=box $
-                , BCOLOR=bcolor, BSEP=bsep, BSTYLE=bstyle, BTHICK=bthick
+                , BCOLOR=bcolor, BSEP=bsep, BSTYLE=bstyle, BTHICK=bthick $
+, DATA=data
    
+   IF Keyword_Set(DATA) THEN BEGIN
+      dummy = Convert_Coord([xo, yo], /DATA, /TO_NORMAL)
+      xo = dummy[0]
+      yo = dummy[1]
+   ENDIF
+
    number = N_Elements(texts)
 
    ;; use user's charsize if supplied and !P's if its not 0.
