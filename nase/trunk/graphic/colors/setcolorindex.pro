@@ -1,7 +1,10 @@
 ;+
 ; NAME: SetColorIndex
 ;
-; PURPOSE: Setzt einen Eintrag des aktuellen Colortables
+; PURPOSE: Setzt einen Eintrag des aktuellen Colortables - AUCH auf
+;          TrueColor Displays. (Dort kann die Verwendung der
+;          Farbtabelle allerdings abgeschaltet werden, mit
+;          Device, BYPASS_TRANSLATION=0)
 ;
 ; CATEGORY: Graphik
 ;
@@ -31,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1998/02/26 14:33:36  kupper
+;              Setzt jetzt wieder IMMER die Farbtabelle - auch auf 24bit Displays.
+;
 ;       Revision 1.5  1998/02/26 14:12:46  saam
 ;             Aenderungen der letzten Revision wegen Probleme
 ;             mit 32-Bit-Diplay zurueckgenommen
@@ -50,11 +56,13 @@ Pro SetColorIndex, Nr, R, G, B
    
    if Nr gt !D.Table_Size-1 then message, "Der Farbindex ist nicht verfügbar!"
 
-    My_Color_Map = intarr(256,3) 
+   If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
+
+;    My_Color_Map = intarr(!D.Table_Size,3) 
+    My_Color_Map = [0]
+ 
     TvLCT, My_Color_Map, /GET  
     My_Color_Map (Nr,*) = [R,G,B]
     TvLCT,  My_Color_Map
-
-;   dummy = RGB(INDEX=Nr, R, G, B)
 
 End
