@@ -13,7 +13,7 @@
 ;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE | LESSTHAN=Abschneidewert ] ]
-;                                   [,TRANSPARENT])
+;                                   [,TRANSPARENT][,INITSDW])
 ;
 ;
 ; 
@@ -37,8 +37,8 @@
 ;                                  werden duerfen, bevor sie auf !NONE gesetzt werden 
 ;                                  ( TRUNC_VALUE wird dann auf !NONE gesetzt !!!)
 ;
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT ,INITSDW: s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
 ;
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT : s. SetWeight!
 ;
 ; OUTPUTS: ---
 ;
@@ -70,8 +70,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
-;       Revision 1.8  1997/11/11 19:43:05  gabriel
-;             Hinzufuegen des KeyWords LessThan (!NONE Verbindungen setzen)
+;       Revision 1.9  1997/11/17 17:45:45  gabriel
+;             INITSDW Keyword eingefuegt
+;
+;       Revision 1.8  1997/11/11  19:43:05  gabriel
+;       Hinzufuegen des KeyWords LessThan (!NONE Verbindungen setzen)
 ;
 ;       Revision 1.7  1997/11/10 19:03:30  gabriel
 ;             Option: /NORM fuer Volumennormierte Gaussmaske
@@ -103,7 +106,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                       TRANSPARENT=transparent
+                       TRANSPARENT=transparent, _EXTRA=extra
 
    Default, Amp, 1
    IF Keyword_Set(Norm) THEN Amp = 1
@@ -121,7 +124,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
        ENDIF
 
        SetWeight, DWS, S_ROW=s_row, S_COL=s_col, GaussMask, $
-        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,TRANSPARENT=transparent
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,TRANSPARENT=transparent,_EXTRA=extra
 
    endif else begin             ; Wir definieren FROMS:
 
@@ -136,7 +139,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
 
        SetWeight, DWS, T_ROW=t_row, T_COL=t_col, GaussMask,$
         ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-        TRANSPARENT=transparent
+        TRANSPARENT=transparent,_EXTRA=extra
 
    endelse
 

@@ -8,7 +8,7 @@
 ;
 ;          Diese Prozedur ist das Gegenstück zu GetWeight().
 ;          Die Aufrufe sind kompatibel, bis auf den Unterschied, daß
-;          SetWeight eine Prozedur ist, und hier als zweites Argument das (die) Gewicht(e)
+;          SetWeight eine Prozedur ist, und hier als zweites Argument das (die) Gewicht(e) 
 ;          angegeben wird.
 ;
 ;
@@ -23,7 +23,7 @@
 ;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                         }
 ;                                         [ ,ALL [,LWX ,LWY] [,TRUNCATE [,TRUNC_VALUE]] ]
-;                                         [ ,TRANSPARENT]
+;                                         [ ,TRANSPARENT][,INITSDW]
 ;                                       )
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: siehe GetWeight()!
@@ -72,7 +72,10 @@
 ;                                  nachgeschoben. (Kann jedoch in
 ;                                  TRUNC_VALUE explizit angegeben werden.)
 ;
-;                     alles andere: siehe GetWeight()
+;                     INITSDW: Initialisiert die dyn. Listen der D_W_Struktur neu (Default: keine Initialisierung)
+;                               
+;
+;                     alles andere: <A HREF="#GETWEIGHT">siehe GetWeight()</A>
 ;
 ;
 ;
@@ -109,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1997/11/17 17:46:24  gabriel
+;             INITSDW Keyword eingefuegt
+;
 ;       Revision 1.9  1997/10/30 12:57:54  kupper
 ;              Bug beim ALL-Schlüsselwort behoben (Integerdivision durch Fließkomma ersetzt.)
 ;
@@ -143,7 +149,7 @@
 Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
                                     ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                                    TRANSPARENT=transparent
+                                    TRANSPARENT=transparent,INITSDW=initsdw
    if set(TRANSPARENT) then Default, trunc_value, transparent
    s = size(Weight)
 
@@ -247,7 +253,7 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
       V_Matrix.Weights(t_index, s_index) = Weight
 
    end
-
+   IF set(INITSDW) THEN INIT_SDW,V_Matrix
 end   
 
 

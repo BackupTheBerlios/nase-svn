@@ -11,7 +11,7 @@
 ;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
-;                                   [,TRANSPARENT] )
+;                                   [,TRANSPARENT] [,INITSDW])
 ;
 ;
 ; 
@@ -34,7 +34,7 @@
 ;                                        Merke: Für On_Sigma < Off_Sigma erhält man ein ON-Center/OFF-Surround - Feld.
 ;                                               Für On_Sigma > Off_SIgma erhält man ein OFF-Center/ON-Surround - Feld.
 ;
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT : s. SetWeight!
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT, INITSDW : s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
 ;
 ; OUTPUTS: ---
 ;
@@ -80,7 +80,7 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
                   S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                   T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                   ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                  TRANSPARENT=transparent
+                  TRANSPARENT=transparent, _EXTRA=extra
 
    Default, Amp, 1
 
@@ -100,7 +100,7 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
       SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
        dog, $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-       TRANSPARENT=transparent
+       TRANSPARENT=transparent, _EXTRA=extra
 
    endif else begin             ; Wir definieren FROMS:
 
@@ -117,7 +117,7 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
       SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
        dog, $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-       TRANSPARENT=transparent
+       TRANSPARENT=transparent, _EXTRA=extra
 
    endelse
 
