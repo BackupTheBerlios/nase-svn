@@ -1,6 +1,8 @@
 ;+
 ; NAME:               EXTRASET
 ;
+; AIM:                checks if a structure contains certain tag names
+;
 ; PURPOSE:            Checks if a structure contains a certain tag and
 ;                     returns TRUE or FALSE.
 ;
@@ -39,9 +41,16 @@
 ;                       
 ;                       Keyword TEST NOT set in extra (Fuck)
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/25 09:13:08  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.3  2000/04/04 14:44:14  saam
 ;           + added TAGNR optional output
 ;           + changed doc header to english
@@ -53,8 +62,6 @@
 ;     Revision 2.1  1998/01/21 23:31:34  saam
 ;           Creation
 ;
-;
-;-
 FUNCTION ExtraSet, extra, keyword, TAGNR=tagnr
 
    IF N_Params() NE 2 THEN Message, 'wrong syntax'

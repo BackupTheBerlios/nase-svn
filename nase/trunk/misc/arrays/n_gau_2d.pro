@@ -1,6 +1,7 @@
 ;+
 ; NAME: N_Gau_2D()
 ;
+; AIM: unclear, superceded by Gauss_2d?
 ;
 ;
 ; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Volumennormierten Gauﬂverteilung.

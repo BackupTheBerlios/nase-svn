@@ -1,6 +1,8 @@
 ;+
 ; NAME: RoofArray
 ;
+; AIM: two dimensional version of hill?
+;
 ; PURPOSE: Belegen eines Arrays mit stufenfoermig abfallenden
 ;          Werten, bei quadratischen Arrays sieht das aus wie
 ;          eine Pyramide.
@@ -43,6 +45,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1998/05/28 16:01:46  thiel
 ;               Neu!
 ;

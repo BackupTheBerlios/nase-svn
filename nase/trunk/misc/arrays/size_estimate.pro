@@ -2,6 +2,8 @@
 ; NAME:
 ;  Size_Estimate()
 ;  
+; AIM: estimate size of a visual object in an image array 
+;
 ; PURPOSE:
 ;  Estimate the size of a single object contained in an image array.
 ;  Several estimation algorithms can be selected.
@@ -80,6 +82,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  2000/03/24 14:28:48  kupper
 ;        Updated header.
 ;

@@ -1,6 +1,7 @@
 ;+
 ; NAME: FreeStack          ( Gegenstück zu InitStack(). )
 ;
+; AIM: frees a stack initialized with <A>InitStack</A>
 ;          s.a. Push, Pop(), Top(), FreeStack
 ;
 ; PURPOSE: Löschen eines gesamten Stacks und freigeben des (dynamischen) Speichers.
@@ -39,6 +40,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/11/12 17:11:05  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!

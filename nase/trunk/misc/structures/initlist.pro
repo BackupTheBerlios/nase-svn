@@ -1,6 +1,8 @@
 ;+
 ; NAME: InitList()
 ;
+; AIM: initializes a general list
+;
 ;             s.a. <A HREF="#INSERT">Insert</A>, <A HREF="#RETRIEVE">Retrieve()</A>, <A HREF="#KILL">Kill</A>, <A HREF="#FREELIST">FreeList()</A>
 ;
 ; PURPOSE: Initialisierung einer Listenstruktur.
@@ -52,9 +54,16 @@
 ;
 ;          FreeList, MyList
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  1997/11/14 18:08:07  kupper
 ;               Noch mehr Hyperlinks.
 ;
@@ -67,7 +76,7 @@
 ;               (Positions-Parameter fehlen noch.)
 ;               Stacks & Queues sollten hoffentlich vollständig sein.
 ;
-;-
+
 
 Function InitList
 

@@ -2,7 +2,7 @@
 ; NAME:
 ;  MultoTotal()
 ;
-; AIM: Return sum or mean over several dimensions of an array
+; AIM: returns sum or mean over several dimensions of an array (obsolete! use IMOMENT)
 ;
 ; PURPOSE: This is a generalization of the IDL TOTAL() function. IDL's
 ;          TOTAL() allows to sum over one given dimension of an
@@ -33,6 +33,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  2000/06/14 14:07:04  kupper
 ;        Checked in at last!
 ;

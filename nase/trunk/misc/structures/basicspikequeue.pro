@@ -1,6 +1,8 @@
 ;+
 ; NAME: 		BasicSpikeQueue
 ;
+; AIM:                  en- and dequeues data from queue initialized with <A>InitBasicSpikeQueue</A>
+;
 ; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 30 Zeitschritten
 ;
 ; CATEGORY:		MISC/STRUCTURES
@@ -29,6 +31,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/25 09:13:12  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.1  1997/12/02 09:26:40  saam
 ;             Umbenennung von SpikeQueue, Header-Update
 ;

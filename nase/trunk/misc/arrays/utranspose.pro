@@ -1,6 +1,7 @@
 ;+
 ; NAME: UTRANSPOSE
 ;
+; AIM: IDLs modern transpose function for IDL 3.6
 ;
 ; PURPOSE: The UTRANSPOSE function returns the transpose of Array. 
 ;          If an optional permutation vector is provided, the dimensions of Array are rearranged as well.
@@ -79,6 +80,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/25 09:12:56  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.3  1999/04/28 15:11:53  gabriel
 ;          Hat bei 2-dim Arrays immer transponiert egal ob p=[0,1] oder p=[1,0]
 ;

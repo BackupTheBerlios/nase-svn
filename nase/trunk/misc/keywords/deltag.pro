@@ -1,6 +1,8 @@
 ;+
 ; NAME:               DelTag 
 ;
+; AIM:                deletes a tag from a structure
+;
 ; PURPOSE:            Loescht einen Tag aus einer Struktur. War der Tag ein Handle,
 ;                     so wird dieser freigegeben.
 ;
@@ -28,11 +30,17 @@
 ;                     ;    A               INT              1
 ;                     ;    C               INT              3
 ;
-; SEE ALSO:           <A HREF="#SETTAG">SetTag</A>
+; SEE ALSO:           <A>SetTag</A>, <A>ExtraDiff</A> 
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:13:08  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  2000/01/17 14:29:52  kupper
 ;     Typo!
 ;     Must have been AGES ODL!
@@ -40,8 +48,6 @@
 ;     Revision 1.1  1999/03/19 14:10:35  saam
 ;           a little, cute routine
 ;
-;
-;-
 PRO DelTag, S, TN
 
    On_Error, 2

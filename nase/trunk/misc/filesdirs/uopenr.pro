@@ -1,6 +1,8 @@
 ;+
 ; NAME:                UOpenR
 ;
+; AIM:                 generalized version of IDL's openr function (allows zipping)
+;
 ; PURPOSE:             Erweitert die Funktionalitaet von OpenR, um die 
 ;                      Faehigkeit auf gezippte Files zuzugreifen.
 ;
@@ -23,6 +25,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.7  2000/06/19 13:21:58  saam
 ;           + print goes console
 ;           + lun's are not aquired via /FREE_LUN

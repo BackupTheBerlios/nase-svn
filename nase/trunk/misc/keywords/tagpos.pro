@@ -1,6 +1,8 @@
 ;+
 ; NAME:               TagPos
 ;
+; AIM:                returns positions of tags in a structure
+;
 ; PURPOSE:            Ermittelt an welcher Stelle in einer Struktur sich ein oder mehrere
 ;                     Tags befinden. Damit wird ein Zugriff via STRUCT.(i) moeglich.
 ;
@@ -23,14 +25,19 @@
 ;                     print, TagPos(S,T)
 ;                     ;      1           0          -1          -1
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/25 09:13:08  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.1  1998/11/16 14:13:51  saam
 ;           damn, another function for structures, other are to come ...soon
 ;
-;
-;-
 FUNCTION TagPos, S, T
 
    ON_ERROR, 2

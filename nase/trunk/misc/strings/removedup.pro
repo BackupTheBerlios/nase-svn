@@ -1,6 +1,8 @@
 ;+
 ; NAME:                RemoveDup
 ;
+; AIM:                 removes duplicate, adjacent substrings from a string 
+;
 ; PURPOSE:             Entfernt in einem String bestimmte, aufeinander-
 ;                      folgende Teilstrings
 ;
@@ -24,6 +26,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/25 09:13:11  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.1  1998/04/06 16:50:21  saam
 ;           schtrings
 ;

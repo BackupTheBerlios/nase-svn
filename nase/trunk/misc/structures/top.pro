@@ -1,6 +1,8 @@
 ;+
 ; NAME: Top()
 ;
+; AIM: retrieves a stack's top element without removing it (initialize with <A>InitStack</A>)
+;
 ;          s.a. Push, Pop(), Top(), FreeStack
 ;
 ; PURPOSE: Das obere Datum eines Stacks ansehen. (Was liegt oben?)
@@ -34,16 +36,23 @@
 ;
 ;          FreeStack, MyStack
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:14  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/11/12 17:11:11  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!
 ;               (Positions-Parameter fehlen noch.)
 ;               Stacks & Queues sollten hoffentlich vollständig sein.
 ;
-;-
+
 
 Function Top, Stack
 

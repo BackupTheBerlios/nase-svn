@@ -1,6 +1,8 @@
 ;+
 ; NAME:               FileOpen
 ;
+; AIM:                checks, if an existing file is already opened
+;
 ; PURPOSE:            Testet, ob ein BESTEHENDES File geoffnet ist.
 ;
 ; CATEGORY:           FILES
@@ -23,6 +25,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.2  1998/04/10 12:13:54  saam
 ;           fuser was not in every users PATH, so
 ;           the PATH variable was completed

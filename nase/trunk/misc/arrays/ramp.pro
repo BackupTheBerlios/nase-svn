@@ -2,7 +2,7 @@
 ; NAME:
 ;  Ramp()
 ;
-; AIM: Return array filled with a linear ramp
+; AIM: constructs one dimensional array filled with a linear ramp
 ;  
 ; PURPOSE:
 ;  Ramp() is a generalization of the IDL INDGEN() function. It returns
@@ -61,6 +61,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.4  2000/08/09 17:06:33  kupper
 ;        Added some examples.
 ;

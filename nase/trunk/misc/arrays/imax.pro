@@ -1,6 +1,8 @@
 ;+
 ; NAME:                 IMax
 ;
+; AIM:                  computes maximum function for arbitrary array dimensions
+;
 ; PURPOSE:              Die MAX-Routine von IDL bildet das Maximum
 ;                       von der gesamten uebergebenen Matrix. IMax
 ;                       bildet das Maximum ueber einen laufenden
@@ -57,6 +59,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.6  1999/11/18 14:28:07  gabriel
 ;           ITER Keyword added (s.a. imoment)
 ;

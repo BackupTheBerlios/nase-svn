@@ -1,3 +1,6 @@
+;+
+; AIM: demonstrates widget problems (and probably kills IDL)
+;-
 PRO Bug4
    Print, 'Bug Nummer 4 handelt von ScrollIts/Sheets,'
    Print, 'die Kinder in einer Widget-Hierarchie sind:'

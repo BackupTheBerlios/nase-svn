@@ -1,6 +1,8 @@
 ;+
 ; NAME:               InSet
 ;
+; AIM:                checks if an element is part of a set (array)
+;
 ; PURPOSE:            Ist so ne Art Erweiterung des EQ-Vergleichs.
 ;                     InSet schaut ob ein Element I in einem Array
 ;                     (einer Menge) vorhanden ist; liefert TRUE, wenn
@@ -24,6 +26,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.3  1999/09/22 12:41:28  kupper
 ;     Changed algorithm from a loop (uargh!) to an array-operation.
 ;

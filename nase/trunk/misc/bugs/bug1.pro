@@ -1,3 +1,6 @@
+;+
+; AIM: demonstrates problems occurring with arrays contained in structures 
+;-
 print
 print, "Vorsicht mit Arrays, die in Strukturen eingebunden sind!"
 print

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                UClose
 ;
+; AIM:                 generalized version of IDL's close function (allows zipping)
+;
 ; PURPOSE:             Der Gegenspieler von UOpenR. Beide Routinen ermoeglichen
 ;                      das transparente Arbeit mit gezippten Dateien.
 ; 
@@ -20,6 +22,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.3  1999/01/14 14:11:31  saam
 ;           + error message -> warning message
 ;

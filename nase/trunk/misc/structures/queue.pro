@@ -1,6 +1,8 @@
 ;+
 ; NAME: Queue()
 ;
+; AIM: returns all elements of a fixed queue initialized with <A>InitFQueue</A>
+;
 ;          s.a. InitQueue(), InitFQueue(), EnQueue, DeQueue(), Head(), Tail(), FreeQueue
 ;
 ; PURPOSE: Auslesen einer gesamten Fixed-Queue als Array.
@@ -45,9 +47,16 @@
 ;
 ;             FreeQueue, Ergebnisse    
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:13:14  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  1998/06/20 13:51:11  kupper
 ;               Funktionierte nicht bei Queues der Laenge 1 (offensichtlich gings mit IDL4 aus irgendwelchen Gruenden...)
 ;
@@ -60,7 +69,7 @@
 ;               (Positions-Parameter fehlen noch.)
 ;               Stacks & Queues sollten hoffentlich vollständig sein.
 ;
-;-
+
 
 Function Queue, Queue, VALID=valid
 

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                SaveStruc
 ;
+; AIM:                 stores a structure in a given LUN
+;
 ; PURPOSE:             Arrays und skalare Datentypen lassen sich einfach
 ;                      per PrintF oder WriteU speichern. Dies geht fuer
 ;                      Structures nur, wenn man beim Laden die Tags und
@@ -47,6 +49,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.3  1998/03/13 14:43:20  saam
 ;           much faster saving now
 ;

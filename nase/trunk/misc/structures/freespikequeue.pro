@@ -1,6 +1,8 @@
 ;+
 ; NAME: 		FreeSpikeQueue
 ;
+; AIM:                  frees queue initialized with <A>InitSpikeQueue</A>
+;
 ; PURPOSE:		Gibt den von einer SpikeQueue allokierten Speicher wieder frei
 ;
 ; CATEGORY:		MISC/STRUCTURES
@@ -18,6 +20,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/25 09:13:13  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.1  1997/12/02 09:42:25  saam
 ;            n->o->i->s->r->e->v->r->U
 ;

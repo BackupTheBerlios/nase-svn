@@ -1,8 +1,7 @@
 ;+
 ; NAME: Gauss_2D()
 ;
-; AIM: Array with 2-dim gaussian profile. Scaling and warping
-;      possible.
+; AIM: constructs array containing a two dimensional Gaussian
 ;
 ; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gauﬂverteilung mit Maximum 1.
 ;
@@ -172,6 +171,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.24  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.23  2000/09/08 22:51:35  kupper
 ;        Result contained NaNs, if one of the sigmas was 0. Now this is checked
 ;        and a array of zeros is returned instead.

@@ -1,6 +1,8 @@
 ;+
 ; NAME: InitQueue()
 ;
+; AIM: initializes a general queue with dynamic length
+;
 ;          s.a. EnQueue, DeQueue(), Head(), Tail(), FreeQueue
 ;
 ; PURPOSE: Initialisierung einer Queue
@@ -40,6 +42,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/11/12 17:11:07  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Path2Host
 ;
+; AIM:                returns the hostname for a given path, where the actual harddisk originates (UNIX,MR)
+;
 ; PURPOSE:            Ermittelt aus dem uebergebenen Pfadnamen den Host, auf dem
 ;                     sich das Verzeichnis befindet. Dies funktioniert fuer die
 ;                     Alphas (ax1302,ax1303,ax1315,gonzo,retsim,fozzy) und fuer 
@@ -24,6 +26,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.7  2000/08/31 17:22:00  saam
 ;           now also knows /vol/data
 ;

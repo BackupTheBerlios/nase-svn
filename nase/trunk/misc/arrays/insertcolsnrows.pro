@@ -1,6 +1,8 @@
 ;+
 ; NAME: InsertColsnRows
 ;
+; AIM: inserts regularly spaced columns and rows into an array
+;
 ; PURPOSE: Fuegt in ein zweidimensionales Array
 ;          in regelmaessigem Abstand eine gewuenschte
 ;          Anzahl Zeilen und Spalten ein und gibt ein 
@@ -61,6 +63,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1998/06/28 11:22:51  thiel
 ;               Bugfix: eindimensionale Arrays funktionieren jetzt auch.
 ;

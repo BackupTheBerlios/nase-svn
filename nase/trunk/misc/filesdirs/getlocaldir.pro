@@ -1,6 +1,8 @@
 ;+
 ; NAME:               GetLocalDir
 ;
+; AIM:                creates a local working directory (UNIX, MR)
+;
 ; PURPOSE:            Auf dem Rechner, auf dem IDL laeuft wird ein
 ;                     lokales (temporaeres) Verzeicnis erstellt. Als
 ;                     optionales Argument kann ein Wunschverzeichnis
@@ -37,6 +39,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.7  1998/11/13 21:19:40  saam
 ;            now return on error
 ;

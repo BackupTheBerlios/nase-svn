@@ -2,8 +2,7 @@
 ; NAME:
 ;  Distance()
 ;
-; AIM: Array containing distance from a given point
-;      (cone). Scaling/shearing possible.
+; AIM: generates array containing distance from a given point. Scaling/shearing possible.
 ;
 ; PURPOSE: 
 ;  1. Basic usage: 
@@ -187,6 +186,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.7  2000/09/01 14:16:24  saam
 ;              replaced [] by () array calls
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Grid
 ;  
+; AIM:                generates indices addressing a subgrid of a two dimensional array 
+;
 ; PURPOSE:            Extracts indices for positions placed
 ;                     on a two-dimensional evenly spaced grid.
 ;                     In the current version the grid is center
@@ -43,6 +45,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.4  2000/06/28 17:01:23  saam
 ;              returns one dimensional in every case, now
 ;

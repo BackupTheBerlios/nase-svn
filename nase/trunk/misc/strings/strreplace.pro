@@ -1,6 +1,8 @@
 ;+
 ; NAME:               StrReplace
 ;
+; AIM:                replaces a certain substring by another one
+;
 ; PURPOSE:            Ersetzt einen Teilstring ORG in einem String STRING durch einen
 ;                     anderen Teilstring NEW
 ;
@@ -33,6 +35,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:13:11  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1999/03/02 14:01:31  saam
 ;           unbelievable it doesn't already exist
 ;

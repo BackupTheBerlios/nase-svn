@@ -1,6 +1,8 @@
 ;+
 ; NAME: GaussRing()
 ;
+; AIM: contructs a two dimensional array containing a gaussian shaped ring
+;
 ; PURPOSE: Belegt ein Array mit einem Ring aus Gäußen. (klingt komisch...)
 ;
 ; CATEGORY: Arrays, Simulation, miscellaneous
@@ -29,6 +31,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1998/05/26 12:30:34  kupper
 ;               Meine persönliche GaussRing-Routine ist jetzt auf Andreas` Wunsch
 ;                Teil der NASE-Distribution... viel Spaß damit!

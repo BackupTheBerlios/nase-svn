@@ -1,3 +1,6 @@
+;+
+; AIM: demonstrates problems occurring with variables contained in structures 
+;-
 print
 print, "Vorsicht mit ALLEN VARIABLEN, die in Strukturen eingebunden sind!"
 print

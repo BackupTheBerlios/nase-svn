@@ -1,6 +1,8 @@
 ;+
 ; NAME:                 IARR
 ;
+; AIM:                  constructs array A with A(i,j)=[i,j]
+;
 ; PURPOSE:              Creates an array A that fulfilles the following
 ;                       condition:  A(i,j) = [i,j]  for arbitrary i,j  
 ;                       The Array therefore has the dimension (m,n,2),
@@ -25,6 +27,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/25 09:12:55  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.1  2000/06/19 14:48:21  saam
 ;             its was already documented
 ;

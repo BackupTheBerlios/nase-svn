@@ -1,6 +1,7 @@
 ;+
 ; NAME: NOROT_SHIFT
 ;
+; AIM: edge truncating version of IDL's SHIFT function
 ;
 ;
 ; PURPOSE: 
@@ -92,6 +93,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.5  2000/03/17 15:16:14  kupper
 ;     Shiftsize-warning-message now is informational!
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Remote2Local
 ;
+; AIM:                copies a remote directory to a local location (using rcp,tar)
+;
 ; PURPOSE:            Ein auf einem anderen Rechner liegendes Verzeichnis wird
 ;                     auf eine lokale Platte geschoben. Dabei brauchen die
 ;                     Verzeichnisse nicht ueber NFS sichtbar sein. Das kopieren
@@ -36,6 +38,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.3  1998/11/13 21:20:56  saam
 ;           now uses readfilename
 ;

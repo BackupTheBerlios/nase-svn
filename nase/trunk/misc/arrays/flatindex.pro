@@ -1,6 +1,8 @@
 ;+
 ; NAME:              FlatIndex
 ;
+; AIM:               converts a multi dimensional array index into the corresponding one dimensional one
+;
 ; PURPOSE:           Returns the corresponding onedimensional array index for a
 ;                    multidimensional array index. This is particular
 ;                    useful if you work on reformed arrays.
@@ -29,6 +31,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  2000/04/07 13:52:17  saam
 ;              + can be very useful
 ;              + extensive error checking

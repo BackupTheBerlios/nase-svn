@@ -1,6 +1,8 @@
 ;+
 ; NAME: 		SpikeQueue
 ;
+; AIM:                  en- and dequeues data from spike queue initialized with <A>InitSpikeQueue></A>
+;
 ; PURPOSE:		En- und Dequeue einer Bounded Queue zur Realisierung eines Spike-Delays
 ;
 ; CATEGORY:		MISC/STRUCTURES
@@ -20,11 +22,17 @@
 ;                       OutputSpikes = SpikeQueue( Queue, [1,0,1,0,1,0] ) 
 ;                       FreeSpikeQueue, Queue
 ;
-; SEE ALSO:             <A HREF="#INITSPIKEQUEUE">InitSpikeQueue</A>, <A HREF="#FREESPIKEQUEUE">FreeSpikeQueue</A>, <A HREF="#BASICSPIKEQUEUE">BasicSpikeQueue</A>
+; SEE ALSO:             <A>InitSpikeQueue</A>, <A>FreeSpikeQueue</A>, <A>BasicSpikeQueue</A>
 ;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  2000/09/25 09:13:14  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.7  2000/04/12 15:57:05  thiel
 ;           Variable name 'Queue' changed to 'Q' because it was colliding with
 ;           function name 'Queue'.
@@ -35,8 +43,7 @@
 ;       Revision 1.5  1997/12/02 09:42:25  saam
 ;            n->o->i->s->r->e->v->r->U
 ;
-;
-;-
+
 FUNCTION SpikeQueue, Q, In
 
    QIn = In

@@ -1,6 +1,8 @@
 ;+
 ; NAME: XMatEdit
 ;
+; AIM: interactive tool for editing two dimensional arrays
+;
 ; PURPOSE: Interaktives Editieren eines zweidimensionalen Arrays
 ;
 ; CATEGORY: Misc, Arrays
@@ -26,6 +28,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/09/25 09:12:56  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.4  1998/02/21 15:30:17  kupper
 ;               Grummel... altes IDL 3.6... Mist...
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                StrJoin
 ;
+; AIM:                 concatenates string array to a single string
+;
 ; PURPOSE:             Konkatentiert ein Array von Strings zu einem einzigen
 ;                      String und fuegt Separatoren zwischen den Strings ein.
 ;                      Standard-Separator ist ein Leerzeichen.
@@ -24,6 +26,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:13:11  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1999/02/22 11:14:39  saam
 ;           new & cool
 ;

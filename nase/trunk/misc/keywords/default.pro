@@ -1,7 +1,7 @@
 ;+
 ; NAME:             Default
 ;
-; AIM:              Define default values for unspecified parameters
+; AIM:              defines a default value for an unspecified parameter
 ;
 ; PURPOSE:          Sets a variable VAR to specified value VAL, if VAR is
 ;                   undefined. If defined, the variable will not be touched.
@@ -30,6 +30,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/09/25 09:13:08  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.5  2000/06/21 14:33:34  saam
 ;              + corrected a silly typo
 ;

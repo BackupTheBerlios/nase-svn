@@ -1,6 +1,8 @@
 ;+
 ; NAME: ExtractColsnRows
 ;
+; AIM: extracts rows and columns with a fixed distance from a two dimensional array
+;
 ; PURPOSE: Schneidet aus einem zweidimensionalen Array
 ;          jede xte Spalte und jede yte Zeile aus und
 ;          gibt ein aus diesen Spalten und Zeile bestehendes
@@ -57,6 +59,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1998/06/15 19:09:59  thiel
 ;               Header korrigiert.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               CutTorus                
 ;
+; AIM:                sets all elements in an arrays outside a specified torus
+;
 ; PURPOSE:            Setzt alle Elemente eines Arrays ausserhalb eines Kreisrings (Torus)
 ;                     auf einen bestimmten Wert. Der Mittelpunkt des Kreisrings ist standardmaeesig
 ;                     in der Mitte des Arrays.
@@ -46,6 +48,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/25 09:12:54  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.4  1999/01/18 21:24:59  saam
 ;           + allows the return of the surviving indices instead
 ;             of the whole array with new keyword WHERE

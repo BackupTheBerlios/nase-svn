@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Seconds2String
 ;
+; AIM:                converts seconds to a string, eg. "5h 20m 4s"
+;
 ; PURPOSE:            Konvertiert Sekunden in einen String aus Stunden/Minuten und Sekunden
 ;
 ; CATEGORY:           MISC
@@ -17,6 +19,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:13:11  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1997/10/26 18:41:57  saam
 ;           vom Himmel gefallen
 ;

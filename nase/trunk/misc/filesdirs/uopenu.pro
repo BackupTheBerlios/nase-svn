@@ -1,6 +1,8 @@
 ;+
 ; NAME:                UOpenU
 ;
+; AIM:                 generalized version of IDL's openu function (allows zipping)
+;
 ; PURPOSE:             Erweitert die Funktionalitaet von OpenU um die 
 ;                      Faehigkeit gezippte Files zu erzeugen.
 ;
@@ -24,6 +26,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  2000/06/19 13:21:58  saam
 ;           + print goes console
 ;           + lun's are not aquired via /FREE_LUN

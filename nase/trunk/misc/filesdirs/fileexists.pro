@@ -1,6 +1,8 @@
 ;+
 ; NAME:                FileExists
 ;
+; AIM:                 tests the existence of a given file
+;
 ; PURPOSE:             Testet, ob der uebergebene Filename existiert und
 ;                      gibt auf Wunsch die FStat(IDL-Struktur)- und die file
 ;                      -Information(Shell Kommando) zurueck.
@@ -27,6 +29,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.2  1998/03/16 17:42:46  saam
 ;           now hopefully works with IDL5
 ;

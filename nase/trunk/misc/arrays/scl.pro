@@ -1,6 +1,8 @@
 ;+
 ; NAME: Scl
 ;
+; AIM: linear rescaling of an array
+;
 ; PURPOSE: Lineares Skalieren eines Arrayinhaltes, vergleichbar
 ;          dem, was die TvScl-Routine macht, doch etwas allgemeiner.
 ;
@@ -93,6 +95,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.6  1999/10/11 12:10:30  kupper
 ;        Changed return value for homogeneous Arrays to P1', to be
 ;        compatible to the behaviour of PlotTvScl known until now.

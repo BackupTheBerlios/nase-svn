@@ -1,6 +1,8 @@
 ;+
 ; NAME: insert          ( Das Gegenstück zu retrieve(). )
 ;
+; AIM: inserts data at arbitrary positions in a general list initialized with <A>InitList</A>
+;
 ;             s.a. InitList(), retrieve(), kill, FreeList
 ;
 ; PURPOSE: Einfügen eines Datums in eine Liste.
@@ -64,16 +66,22 @@
 ;
 ;          FreeList, MyList
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/11/12 17:11:08  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!
 ;               (Positions-Parameter fehlen noch.)
 ;               Stacks & Queues sollten hoffentlich vollständig sein.
 ;
-;-
+
 
 Pro Insert, List, Wert, Pos, FIRST=first, LAST=last, NO_COPY=no_copy
 

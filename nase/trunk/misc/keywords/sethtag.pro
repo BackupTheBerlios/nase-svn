@@ -1,6 +1,8 @@
 ;+
 ; NAME:                 SetHTag
 ;  
+; AIM:                  changes tag in a linked list of structures and handles
+;
 ; PURPOSE:              This Routine provides a rather comfortable
 ;                       scheme to set structure tags in a linked list
 ;                       of handles.structures. This occurs quite
@@ -33,12 +35,17 @@
 ;                       and retrieve HI in value by:
 ;                         GetHTag, e, "HI/a/b/c/d", value
 ;
-; SEE ALSO:             <A HREF="#GETHTAG">GetHTag</A>, <A HREF="#SETTAG">SetTag</A>
+; SEE ALSO:             <A>GetHTag</A>, <A>SetTag</A>
 ;
 ;-  
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:08  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  2000/04/04 12:50:53  saam
 ;              it finally works
 ;

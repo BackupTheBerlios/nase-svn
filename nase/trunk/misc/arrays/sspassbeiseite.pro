@@ -3,7 +3,7 @@
 ;  SSpassBeiseite
 ;
 ; AIM:
-;  Generate complete binary array from sparse version.
+;  generate complete binary array from sparse version.
 ;  
 ; PURPOSE:
 ;  SSpassBeiseite returns a normal byte array containing 0s and 1s
@@ -52,6 +52,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  2000/09/25 09:12:55  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.1  2000/08/01 16:33:15  thiel
 ;           Moved from SIMU/LAYERS dir and added dimensions support.
 ;

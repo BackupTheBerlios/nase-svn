@@ -1,6 +1,8 @@
 ;+
 ; NAME: Regler()
 ;
+; AIM: operates a control loop initialized with <A>InitRegler</A> 
+;
 ;      s.a. InitRegler()
 ;
 ; PURPOSE: Betreiben eines mit InitRegler() initialisierten Regelkreises.
@@ -147,6 +149,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/09/25 09:13:10  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 2.3  1998/05/19 19:05:03  kupper
 ;               Ein /VALID für den I-Teil...
 ;

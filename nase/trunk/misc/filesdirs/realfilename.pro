@@ -1,6 +1,8 @@
 ;+
 ; NAME:               RealFileName
 ;
+; AIM:                cleans a pathname from automounter artifacts (UNIX,MR)
+;
 ; PURPOSE:            Bereinigt einen Pfadnamen um laestige/fehlerhafte
 ;                     Automounter-Pade wie /tmp_mnt, /a/
 ;
@@ -21,6 +23,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/25 09:13:03  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.3  1999/07/28 08:38:12  saam
 ;           fixed a bug with slashes
 ;

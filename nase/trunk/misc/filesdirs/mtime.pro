@@ -1,6 +1,8 @@
 ;+
 ; NAME:                MTime
 ;
+; AIM:                 returns date of last modification for a file, link or directory (UNIX)
+;
 ; PURPOSE:             Ermittelt fuer ein File/Directory die Zeit der letzten
 ;                      Modifikation. 
 ;
@@ -39,6 +41,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  2000/08/04 14:37:12  kupper
 ;     Removed absolute reference to /vol/lib/nase.so.
 ;     Replaced by !NASE_LIB.

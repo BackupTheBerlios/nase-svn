@@ -1,6 +1,8 @@
 ;+
 ; NAME: DeQueue()
 ;
+; AIM: dequeues data from queue initialized with <A>InitQueue</A>, <A>InitFQueue</A>
+;
 ;          s.a. EnQueue, DeQueue(), Head(), Tail(), FreeQueue
 ;
 ; PURPOSE: Ausreihen eines Datums aus einer Queue. (Der Nächste bitte!)
@@ -44,6 +46,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/11/12 17:11:03  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!

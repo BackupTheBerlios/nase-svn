@@ -1,6 +1,8 @@
 ;+
 ; NAME:               DiffSet
 ;
+; AIM:                returns the difference of two sets (arrays)
+;
 ; PURPOSE:            Bildet die Differenzmenge aus zwei Mengen (Arrays).
 ;
 ; CATEGORY:           MISC ARRAY SET
@@ -22,6 +24,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:12:54  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1998/07/21 13:21:27  saam
 ;           urgently needed
 ;

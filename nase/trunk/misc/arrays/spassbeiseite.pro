@@ -1,6 +1,8 @@
 ;+
 ; NAME: SpassBeiseite
 ;
+; AIM: generate complete array from sparse version
+;
 ; PURPOSE: Konvertiert die mit Spassmacher erzeugte Liste wieder zurueck in 
 ;          ein Array.
 ;          Format des Sparse-Arrays:
@@ -63,6 +65,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1999/12/04 12:14:41  thiel
 ;            Stupid /SAMETYPE changed to TYPE.
 ;

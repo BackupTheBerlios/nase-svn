@@ -1,6 +1,8 @@
 ;+
 ; NAME: InitFQueue()
 ;
+; AIM: initializes a general queue with fixed length
+;
 ;          s.a. EnQueue, Head(), Tail(), Queue(), FreeQueue
 ;
 ; PURPOSE: Initialisierung einer Fixed Queue (Queue mit vorgegebener,
@@ -86,6 +88,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1998/05/19 19:03:33  kupper
 ;               VALID für Fixed-Queues implementiert.
 ;

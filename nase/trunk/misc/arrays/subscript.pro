@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Subscript
 ;
+; AIM:                converts one dimensional arrays into the corresponding multi dimensional ones
+;
 ; PURPOSE:            returns the corresponding multi-dimensional indices
 ;                     for a list of one-dimensional array indices.
 ;
@@ -34,6 +36,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  2000/05/22 09:43:18  saam
 ;              + expanded to process multiple indices at once
 ;              + enhanced error processing

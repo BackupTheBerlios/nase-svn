@@ -1,6 +1,8 @@
 ;+
 ; NAME: Contains()
 ;
+; AIM: checks the occurrence of a substring in a given string
+;
 ; PURPOSE: Prüft einen String auf Vorkommen eines Substrings
 ;          Insbesondere bei Info-Tags zu verwenden (s. Beispiel)
 ;          Dafür gibt es inzwischen sogar noch komfortabler die
@@ -28,6 +30,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  1998/01/28 16:46:46  kupper
 ;               /IGNORECASE ist jetzt Default!
 ;               CASE-Schlüsselwort hinzugefügt.

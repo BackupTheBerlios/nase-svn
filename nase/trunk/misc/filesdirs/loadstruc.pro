@@ -1,6 +1,8 @@
 ;+
 ; NAME:                LoadStruc
 ;
+; AIM:                 restores a structure saved with <A>SaveStruc</A> from a LUN
+;
 ; PURPOSE:             Arrays und skalare Datentypen lassen sich einfach
 ;                      per PrintF oder WriteU speichern. Dies geht fuer
 ;                      Structures nur, wenn man beim Laden die Tags und
@@ -48,6 +50,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.2  1997/12/17 16:22:23  saam
 ;           Umwandlung in Funktion
 ;

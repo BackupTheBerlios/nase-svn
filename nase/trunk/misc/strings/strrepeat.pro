@@ -1,6 +1,8 @@
 ;+
 ; NAME: StrRepeat()
 ;
+; AIM: repeats a string (IDL provides this?!)
+;
 ; PURPOSE: Liefert string, der aus lauter Verkettungen eines gegebenen 
 ;          Strings besteht.
 ;
@@ -22,6 +24,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/25 09:13:11  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 2.1  1998/03/23 17:45:59  kupper
 ;               Aus der Hebe getauft!
 ;

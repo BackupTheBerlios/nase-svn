@@ -1,6 +1,7 @@
 ;+
 ; NAME: ORIENT_2D
 ;
+; AIM: constructs a Canny-Edge orientation filter
 ;
 ;
 ; PURPOSE: The ORIENT_2D Function creates a filtermask  

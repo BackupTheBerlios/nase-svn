@@ -1,6 +1,8 @@
 ;+
 ; NAME:              Inertia
 ;
+; AIM:               computes inertia for a two dimensional distribution relative to the center of gravity
+;
 ; PURPOSE:           Liefert das Traegheitsmoment einer zweidimensionalen
 ;                    (Massen-)Verteilung relativ zu einem gegebenen Punkt oder
 ;                    ihrem Schwerpunkt.
@@ -40,6 +42,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.7  2000/03/23 14:35:13  kupper
 ;        origin Parameter darf jetzt auch gebrochen sein.
 ;

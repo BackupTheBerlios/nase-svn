@@ -1,6 +1,8 @@
 ;+
 ; NAME:               SetTag
 ;
+; AIM:                changes or creates tag in a structure
+;
 ; PURPOSE:            Setzt einen Tag in einer Struktur auf einen Wert. Existiert
 ;                     der Tag noch nicht, so wird er angelegt. Ein bestehender Tag
 ;                     wird ueberschrieben.
@@ -31,11 +33,18 @@
 ;                       C               INT              3
 ;                       B               STRING    'bloedi'
 ;
-; SEE ALSO:           <A HREF="#DELTAG">DelTag</A>
+; SEE ALSO:           <A>DelTag</A>
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/25 09:13:08  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.5  2000/04/04 14:25:40  saam
 ;           one implemented condition could never be fulfilled
 ;           -> erased
@@ -54,8 +63,7 @@
 ;     Revision 1.1  1999/07/28 08:46:41  saam
 ;           there has to be a settag if there is a deltag!
 ;
-;
-;-
+
 PRO SetTag, S, TN, TV
 
    ON_Error, 2

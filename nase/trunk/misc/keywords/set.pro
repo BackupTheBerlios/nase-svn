@@ -1,6 +1,7 @@
 ;+
 ; NAME: Set()
 ;
+; AIM:  checks if a variable is defined
 ;
 ;
 ; PURPOSE: Fragt ab, ob eine Variable definiert ist.

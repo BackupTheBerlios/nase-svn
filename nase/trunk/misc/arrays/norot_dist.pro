@@ -1,6 +1,8 @@
 ;+
 ; NAME: NoRot_Dist
 ;
+; AIM: superceded by distance
+; 
 ; PURPOSE: Belegen eines Arrays mit dem euklidischen Abstand des jeweiligen
 ;          Eintrags von einem zentralen Punkt des Arrays ohne zyklische 
 ;          Randbedingungen.
@@ -45,6 +47,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  2000/03/22 16:24:48  kupper
 ;        Now passing call to Distance().
 ;        Added informational message.

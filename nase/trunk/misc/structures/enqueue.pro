@@ -1,6 +1,8 @@
 ;+
 ; NAME: EnQueue
 ;
+; AIM: enqueues data in queue initialized with <A>InitQueue</A> or <A>InitQueue</A> 
+;
 ;          s.a. EnQueue, DeQueue(), Head(), Tail(), FreeQueue
 ;
 ; PURPOSE: Einreihen eines Datums in eine Queue. (Hinten anstellen!)
@@ -54,9 +56,16 @@
 ;
 ;          FreeQueue, MyQueue 
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1998/05/19 19:03:33  kupper
 ;               VALID für Fixed-Queues implementiert.
 ;
@@ -66,7 +75,6 @@
 ;               (Positions-Parameter fehlen noch.)
 ;               Stacks & Queues sollten hoffentlich vollständig sein.
 ;
-;-
 
 Pro EnQueue, Queue, Wert, NO_COPY=no_copy
 

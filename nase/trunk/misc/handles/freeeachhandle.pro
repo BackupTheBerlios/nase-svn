@@ -1,6 +1,8 @@
 ;+
 ; NAME:               FreeEachHandle
 ;
+; AIM:                frees all children handles of !MH
+;
 ; PURPOSE:            Im Startup-Skript wird ein Handle !MH
 ;                     erstellt, der als Vater aller neu 
 ;                     erzeugten Handles verwendet werden kann/soll.
@@ -26,6 +28,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 09:13:06  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.2  1998/02/05 13:25:34  saam
 ;           kleiner BugFix
 ;

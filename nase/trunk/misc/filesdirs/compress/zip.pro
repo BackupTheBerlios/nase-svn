@@ -1,6 +1,8 @@
 ;+
 ; NAME:                Zip
 ;
+; AIM:                 compresses files using gzip (UNIX)
+;
 ; PURPOSE:             Komprimiert Files. 
 ;                       - Original wird geloescht
 ;                       - neue Endung '.gz'
@@ -31,11 +33,18 @@
 ;                      Auswertung
 ;                      ZipFix, Data
 ;
-; SEE ALSO:            <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPFIX">ZipFix</A>, <A HREF="#ZIPSTAT">ZipStat</A>
+; SEE ALSO:            <A>UnZip</A>, <A>ZipFix</A>, <A>ZipStat</A>
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/09/25 09:13:05  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.7  1998/07/21 16:04:36  saam
 ;           just a small bug
 ;
@@ -59,8 +68,7 @@
 ;     Revision 2.1  1998/02/24 08:40:53  saam
 ;           zip-zip-zippi-die-dip
 ;
-;
-;-
+
 PRO Zip, filepattern, KEEPORG=keeporg, BZ2=bz2
 
    

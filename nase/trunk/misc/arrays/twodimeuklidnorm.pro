@@ -1,6 +1,8 @@
 ;+
 ; NAME: TwoDimEuklidNorm
 ;
+; AIM: euclidian norm for multidimensional arrays
+;
 ; PURPOSE: Euklidische Norm eines zwei- oder mehrdimensionalen
 ;          Arrays berechnen. Die IDL_Funktion Norm berechnet
 ;          diese nur fuer eindimensionale Arrays, bei zweidimensionalen
@@ -36,6 +38,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:12:56  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1998/06/14 16:35:23  thiel
 ;               Einfache Verpackung fuer die IDL-Norm-Routine.
 ;

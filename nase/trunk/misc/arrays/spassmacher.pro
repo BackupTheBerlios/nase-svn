@@ -1,6 +1,8 @@
 ;+
 ; NAME: Spassmacher
 ;
+; AIM: reduce array to a sparse version
+;
 ; PURPOSE: Konvertiert ein Float-Array in eine Liste mit folgendem
 ;          Format:
 ;             sparse(0,0) : Zahl der Elemente ungleich Null in Sparse
@@ -62,6 +64,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  2000/09/08 16:55:59  kupper
 ;        Now catching floating underflows (can appear if TYPE is float, which
 ;        is default, and the array is double.)

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               FileSplit()
 ;
+; AIM:                splits a filepath in a directory and a file part (UNIX only)
+;
 ; PURPOSE:            Splits a filepath in a directory and a file
 ;                     part.
 ;                     WARNING: Filepath may be modified by a call to
@@ -36,6 +38,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.3  2000/09/08 13:51:13  kupper
 ;     Added warning regarding RealFilename().
 ;

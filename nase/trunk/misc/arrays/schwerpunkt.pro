@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Schwerpunkt()
 ;
+; AIM:                center of gravtity (violates naming convention)
+;
 ; PURPOSE:            Liefert die Koordinaten des (Masse-)Schwerpunktes in einem
 ;                     Array beliebiger Dimension. 
 ;
@@ -33,6 +35,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1999/07/28 08:35:35  saam
 ;              allow computation of COM only for significant values,
 ;              by the new SIG-Keyword

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                ZipStat
 ;
+; AIM:                 checks existence of zipped and nonzipped files matching a pattern
+;
 ; PURPOSE:             Ermittelt, ob gezippte/ungezippte Files
 ;                      fuer das uebergebene Filepattern existieren
 ;                      und gibt diese nach Wunsch zurueck. Die Unter-
@@ -27,11 +29,18 @@
 ; EXAMPLE:  
 ;                      print, ZipStat('*',/VERBOSE,ZIPFILES=zf,NOZIPFILES=nzf,BOTHFILES=bf)
 ;
-; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPFIX">ZipFix</A>
+; SEE ALSO:            Zip, UnZip, ZipFix
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ; 
 ;     $Log$
+;     Revision 2.6  2000/09/25 09:13:05  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.5  1998/12/15 12:48:06  saam
 ;           small bug fixed
 ;
@@ -49,7 +58,6 @@
 ;           hard work
 ;
 ;
-;-
 FUNCTION ZipStat, filepattern, VERBOSE=verbose, ZIPFILES=zipfiles, NOZIPFILES=nozipfiles, BOTHFILES=bothfiles
 
    Default, suffix, 'gz'

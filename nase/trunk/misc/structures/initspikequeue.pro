@@ -1,6 +1,8 @@
 ;+
 ; NAME: InitSpikeQueue
 ;
+; AIM: initializes queue for efficient storage of binary arrays
+;
 ; PURPOSE: Initialisierung einer Bounded Queue zur Realisierung eines 
 ;          Spike-Delays.
 ;
@@ -38,6 +40,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/25 09:13:13  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.6  1999/07/28 12:53:53  thiel
 ;           Returned array now also contains the overall delays.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               FracRandom
 ;
+; AIM:                draws k (k<=n) random pairwise different numbers for a set of n numbers
+;
 ; PURPOSE:            Erzeugt ein Array aus m paarweise verschiedenen Zufallszahlen,
 ;                     die aus dem Intervall [0,n) gezogen werden. Dies kann z.B. als
 ;                     fuer ein anderes Array benutzt werden.
@@ -45,6 +47,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  1999/07/14 16:53:58  gabriel
 ;            NEW Method implemented:
 ;            +uses sort and randomu for indexing

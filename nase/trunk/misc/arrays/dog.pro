@@ -1,6 +1,8 @@
 ;+
 ; NAME: DOG()
 ;
+; AIM: constructs a difference of gaussians
+;
 ; SEE ALSO: <A HREF="#GAUSS_2D">Gauss_2D()</A>
 ;
 ; PURPOSE: Liefert eine DOG-Maske ('Difference of Gaussians') zurück.
@@ -31,6 +33,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  2000/09/25 09:12:54  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.3  1998/03/09 15:24:02  kupper
 ;              Nur interne Änderung, wegen nichtfunktionierender _EXTRA-Implementation.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               BakRotate
 ;
+; AIM:                creates, rotates and compresses backup files
+;
 ; PURPOSE:            Realisiert ein einfaches Backupsystem fuer Files.
 ;                     Das Prinzip ist das einer Queue. Alte Backups werden
 ;                     nach hinten geschoben. Wird die maximale Anzahl ueber-
@@ -40,6 +42,11 @@ I
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1999/02/22 11:14:37  saam
 ;           new & cool
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: FreeQueue          ( Gegenstück zu Init(F)Queue(). )
 ;
+; AIM: frees queue initialized with <A>InitQueue</A> or <A>InitFQueue</A>
+;
 ;             s.a. Init(F)Queue(), EnQueue, DeQueue(), Head(), Tail()
 ;
 ; PURPOSE: Löschen einer gesamten Queue und freigeben des (dynamischen) Speichers.
@@ -39,6 +41,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/11/12 17:11:05  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!

@@ -1,6 +1,8 @@
 ;+
 ; NAME: PLOTTVSCL_INFO__Define
 ;
+; AIM: defines a <A>PlotTVScl</A> support structure (internal)
+;
 ; PURPOSE: Support: Definiert den PLOTTVSCL_INFO Struktur.
 ;
 ; CATEGORY: Support
@@ -22,6 +24,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:13:13  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  2000/03/07 17:01:04  kupper
 ;        Removed x0, yo tags from structure (have never been used!)
 ;        Added "defined" tag.

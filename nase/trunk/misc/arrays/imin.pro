@@ -1,6 +1,8 @@
 ;+
 ; NAME:                 IMin
 ;
+; AIM:                  computes minimum function for arbitrary array dimensions
+;
 ; PURPOSE:              Die MIN-Routine von IDL bildet das Minimum
 ;                       von der gesamten uebergebenen Matrix. IMax
 ;                       bildet das Maximum ueber einen laufenden

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               lExtrac
 ;
+; AIM:                to be deleted !?
+;
 ; PURPOSE:            Extraktion einer Submatrix aus einer n-dimensionalen Matrix 
 ;                     n-dimensionalen Matrix. Diese Routine hebt die Beschraenkung
 ;                     der IDL-internen Routine EXTRAC auf rechteckige Untermatrazen
@@ -47,6 +49,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.3  2000/02/23 12:32:02  thiel
 ;         Maybe this routine is obsolete. Added message to find out.
 ;

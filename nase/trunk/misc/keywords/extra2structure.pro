@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Extra2Structure
 ;
+; AIM:                replaces tags in a structure by equally named tags of another structure
+;
 ; PURPOSE:            Ersetzt spez. Tag-Werte einer Structure S mit den Werten 
 ;                     gleichennamiger Tags einer anderen Structure E.
 ; 
@@ -44,16 +46,21 @@
 ;                      F               INT              0
 ;                      HALLO           STRING    'shit'
 ;
-; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/keywords/#EXTRADIFF">ExtraDiff</A>
+; SEE ALSO:            <A>ExtraDiff</A>
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/25 09:13:08  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.1  1998/08/14 11:32:09  saam
 ;           yes!
 ;
-;
-;-
 PRO Extra2Structure, e, s, WARN=warn, LEAVE=leave, VERBOSE=verbose
 
    On_Error, 2

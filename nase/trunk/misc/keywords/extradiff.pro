@@ -1,6 +1,8 @@
 ;+
 ; NAME:                ExtraDiff
 ;
+; AIM:                 extracts tags from a structur eand puts them into another
+;
 ; PURPOSE:             Extrahiert bestimmte Tags aus einer Struktur A und fuegt diese zu einer 
 ;                      neuen Struktur B zusammen. Die passenden Tags werden defaultmaessig aus A
 ;                      geloescht. 
@@ -41,11 +43,18 @@
 ;
 ;                      A = {a:1, b:2, z:'Haha'}
 ;                      
-; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#DIFFSET">DiffSet</A>, <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/#UNDEF">UNDEF</A>
+; SEE ALSO:            <A>DiffSet</A>, <A>UNDEF</A>
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/25 09:13:08  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.5  1999/07/28 08:45:06  saam
 ;          dunno whats changed, but there had to be a reason...
 ;
@@ -61,8 +70,6 @@
 ;     Revision 2.1  1998/07/21 13:06:19  saam
 ;           long needed, never time to write...
 ;
-;
-;-
 FUNCTION ExtraDiff, extra, keywords, LEAVE=leave, SUBSTRING=substring
 
    IF N_Params() NE 2 THEN Message, 'wrong syntax'

@@ -1,6 +1,8 @@
 ;+
 ; NAME: Str()
 ;
+; AIM: removes all leading and trailing white spaces from a string
+;
 ; PURPOSE: Wrapper-Prozedur für String() (Standard-IDL)
 ;          Macht genau das gleiche wie String(), entfernt aber
 ;          zusätzlich alle führenden oder folgenden Leerzeichen beim Ergebnis.
@@ -30,6 +32,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/25 09:13:11  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 2.1  1998/03/29 16:19:47  kupper
 ;               Schöpfung aus Bequemlichkeit...
 ;

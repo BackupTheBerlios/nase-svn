@@ -3,7 +3,7 @@
 ;  SSpassmacher
 ;
 ; AIM:
-;  Convert binary array into sparse version.
+;  reduce binary array to sparse version
 ;  
 ; PURPOSE:
 ;  SSpassmacher converts an array containing 0s and 1s
@@ -60,6 +60,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/25 09:12:55  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.2  2000/08/02 09:58:33  thiel
 ;           Forgot Log info.
 ;

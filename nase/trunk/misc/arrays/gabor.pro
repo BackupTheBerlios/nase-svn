@@ -1,6 +1,8 @@
 ;+
 ; NAME: Gabor
 ;
+; AIM: constructs a gabor patch
+;
 ; PURPOSE: Liefert ein Array mit einem Gabor-Patch bel. Frequenz,
 ;          phase, Groesse und Orientierung
 ;
@@ -101,6 +103,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  1999/11/19 15:35:18  kupper
 ;        Added a "temporary" here and there.
 ;        Implemented NICEDETECTOR option.

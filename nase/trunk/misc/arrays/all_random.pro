@@ -1,7 +1,9 @@
 ;+
 ; NAME:             All_Random
 ;
-; PURPOSE:          Erzeugt ein Array mit paarweis verschiedenen Zufallszahlen. 
+; AIM:              draws n random pairwise different numbers for a set of n numbers
+;
+; PURPOSE:          Erzeugt ein Array mit paarweis verschiedenen Zufallszahlen. uses frac_random
 ;
 ; CATEGORY:         MISC ARRAYS
 ;
@@ -23,6 +25,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.2  1999/02/17 19:28:02  saam
 ;              just calls fracrandom
 ;

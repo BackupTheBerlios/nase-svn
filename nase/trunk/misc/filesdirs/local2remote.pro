@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Local2Remote
 ;
+; AIM:                copies a local directory to a remote location (using rcp,tar)
+;
 ; PURPOSE:            Ein lokales Verzeichnis wird auf einen anderen Rechner kopiert. 
 ;                     Dabei brauchen die Verzeichnisse nicht ueber NFS sichtbar sein. 
 ;                     Das kopieren erfolgt ueber TGZ-Files, um Zeit- und Netzaufwand zu 
@@ -30,6 +32,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2000/09/25 09:13:02  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.10  1998/12/15 12:47:17  saam
 ;           - if local dir is not local only a warning
 ;             is plotted (instead of a complete stop)

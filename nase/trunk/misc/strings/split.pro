@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Split
 ;
+; AIM:                divides a string into pieces as designated by a separator string (superceded by IDL>=5 STR_SEP!?)
+;
 ; PURPOSE:            Splits a string into substrings. The separator
 ;                     string can be chosen.
 ;
@@ -23,6 +25,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:13:11  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  2000/06/19 13:38:47  saam
 ;           + unbelievable it does not already exist
 ;

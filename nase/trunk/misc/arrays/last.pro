@@ -1,6 +1,7 @@
 ;+
 ; NAME: LAST
 ;
+; AIM: returns last element(s) of an array or a specified array dimension
 ;
 ; PURPOSE:               This function results the last element(s) of an array.
 ;
@@ -31,6 +32,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.2  1999/03/12 14:43:01  gabriel
 ;          Error bei index EQ 1 entfernt
 ;

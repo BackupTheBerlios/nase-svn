@@ -1,6 +1,8 @@
 ;+
 ; NAME:                ZipFix
 ;
+; AIM:                 ensures that only the zipped version of a file exists (UNIX)
+;
 ; PURPOSE:             Stellt sicher, dass nach der 
 ;                      beliebigen Benutzung von [Un]Zip
 ;                      nur noch gezippte Files erhalten bleibt.
@@ -32,6 +34,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/25 09:13:05  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.5  1999/07/28 08:40:37  saam
 ;           better conflict handling
 ;

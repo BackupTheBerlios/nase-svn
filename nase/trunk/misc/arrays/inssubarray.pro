@@ -1,7 +1,7 @@
 ;+
 ; NAME:                InsSubArray
 ;
-; AIM:                 Insert array into another array (two dimensional)
+; AIM:                 inserts an array into another array (two dimensional)
 ;
 ; PURPOSE:             Inserts a two dimensional array into another
 ;                      two dimensional array. It allows convenient
@@ -44,6 +44,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.4  2000/07/04 13:59:51  saam
 ;           extended positional argument syntax
 ;           for 1d positions

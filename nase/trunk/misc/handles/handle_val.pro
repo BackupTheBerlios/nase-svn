@@ -1,6 +1,8 @@
 ;+
 ; NAME:              Handle_Val
 ;
+; AIM:               returns the value of a handle
+;
 ; PURPOSE:           Gibt den Wert eines Handles als Funktionsergebnis zurueck.
 ;                    Die IDL-Prozedur Handle_Value kann nur eine Variable mit 
 ;                    dem Ergebnis belegen.
@@ -19,6 +21,8 @@
 ;                    print, result
 ;           jetzt:   print, Handle_Val(handle)  
 ;                   
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       Fri Sep 12 11:36:26 1997, Mirko Saam
@@ -27,7 +31,6 @@
 ;		
 ;             Schoepfung 
 ;
-;-
 FUNCTION Handle_Val, handle
 
    On_Error, 2

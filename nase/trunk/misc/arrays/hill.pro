@@ -2,7 +2,7 @@
 ; NAME:
 ;  Hill()
 ;
-; AIM: Return array filled with hill-shaped values (two adjacent ramps)
+; AIM: contructs one dimensional array filled with hill-shaped values (two adjacent ramps)
 ;  
 ; PURPOSE:
 ;  Hill() returns a one-dimensional array filled with values
@@ -84,6 +84,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  2000/08/09 17:16:53  kupper
 ;        Added some examples.
 ;

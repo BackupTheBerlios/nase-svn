@@ -1,6 +1,8 @@
 ;+
 ; NAME: get_fd()
 ;
+; AIM: returns the associated UNIX file descriptor to IDL's logical unit number (LUN)
+;
 ; PURPOSE: Returns the associated UNIX-File-Descriptor to a IDL Logacal Unit Number
 ;
 ; CATEGORY: I/O
@@ -29,6 +31,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/25 09:13:02  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 2.2  1999/03/05 20:25:39  kupper
 ;        Also:
 ;        1) Get_fd() und non_block_readable() können jetzt wie "brave" IDL-Routinen

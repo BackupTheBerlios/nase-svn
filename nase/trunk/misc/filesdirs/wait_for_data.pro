@@ -1,6 +1,8 @@
 ;+
 ; NAME: wait_for_data()
 ;
+; AIM: waits for data on severals logical unit numbers (LUNs)
+;
 ; PURPOSE: Check, if data is waiting on one or several LUNs, wait if specified.
 ;          I.e. the next attempt to read from the LUN wil *not* block IDL.
 ;		  (Blocking appears on device-special files like pipes or FIFOs, if no data ist ready to read.
@@ -64,6 +66,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/09/25 09:13:03  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 2.3  1999/09/13 13:46:59  kupper
 ;        Added warning about buffered streams and use of select(). (See Restrictions)
 ;

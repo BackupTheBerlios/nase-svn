@@ -1,6 +1,8 @@
 ;+
 ; NAME:                UnZip
 ;
+; AIM:                 uncompresses zipped files (UNIX)
+;
 ; PURPOSE:             Dekomprimiert Files. 
 ;                       - Zipfile bleibt erhalten
 ;                       - "Sinnvolles" Fehlerhandling.
@@ -39,6 +41,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/09/25 09:13:05  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.6  1999/07/28 08:39:26  saam
 ;           uses Command-routine for spawns now
 ;

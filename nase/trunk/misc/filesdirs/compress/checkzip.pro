@@ -1,6 +1,8 @@
 ;+
 ; NAME:                CheckZip
 ;
+; AIM:                 checks, if a file and its zipped version differ 
+; 
 ; PURPOSE:             Test die Integritaet eines Zip-Files, indem es
 ;                      das gezippte und das nicht-gezippte File vergleicht.
 ;                      Das ganze funktionoert auch fuer filepatterns.
@@ -42,16 +44,23 @@
 ;
 ;
 ;
-; SEE ALSO:            <A HREF="#ZIP">Zip</A>, <A HREF="#UNZIP">UnZip</A>, <A HREF="#ZIPFIX">ZipFix</A>, <A HREF="#ZIPSTAT">ZipStat</A>
+; SEE ALSO:            Zip, UnZip, ZipFix, ZipStat
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/25 09:13:05  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 2.1  1998/06/16 11:55:19  saam
 ;           lange ersehnt, endlich gemacht
 ;
 ;
-;-
+;
 FUNCTION CheckZip, filepattern, VERBOSE=verbose, DETAIL=detail
 
 

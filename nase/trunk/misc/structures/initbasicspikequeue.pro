@@ -1,6 +1,8 @@
 ;+
 ; NAME: 		InitBasicSpikeQueue
 ;
+; AIM:                  initializes queue for efficient storage of up to 30 binary arrays.
+;
 ; PURPOSE:		Bounded Queue zur realisierung eines Spike-Delays von bis zu 30 Zeitschritten
 ;
 ; CATEGORY:		MISC/STRUCTURES
@@ -29,6 +31,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.4  2000/09/25 09:13:13  saam
+;       * added AIM tag
+;       * update header for some files
+;       * fixed some hyperlinks
+;
 ;       Revision 1.3  1999/08/05 14:21:14  thiel
 ;           Changed maximal length for integer-queue from 15 to 14.
 ;

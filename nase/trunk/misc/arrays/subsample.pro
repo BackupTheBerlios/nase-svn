@@ -2,6 +2,8 @@
 ; NAME:
 ;   subsample()
 ;
+; AIM: resamples an already discrete two dimensional array 
+;    
 ; PURPOSE:
 ;   Subsample a two-dimensional array, respecting the sampling theorem.
 ;   The original array is low-pass filtered prior to resampling.
@@ -59,6 +61,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/09/25 09:12:55  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.3  2000/03/16 14:28:57  kupper
 ;        Now using Congrid, allowing for fractional "fraction".
 ;

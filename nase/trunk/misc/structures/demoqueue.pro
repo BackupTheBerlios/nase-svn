@@ -1,4 +1,11 @@
+; AIM: demonstrates usage of the <A>SpikeQueue</A> (no header!)
+;
 ;          $Log$
+;          Revision 1.3  2000/09/25 09:13:13  saam
+;          * added AIM tag
+;          * update header for some files
+;          * fixed some hyperlinks
+;
 ;          Revision 1.2  1997/09/17 10:25:45  saam
 ;          Listen&Listen in den Trunk gemerged
 ;

@@ -1,6 +1,7 @@
 ;+
 ; NAME: searchdups
 ;
+; AIM: searches an array for subsequences (wrong naming) 
 ;
 ; PURPOSE: Such in einem Array (eindimensional) eine beliebige Elementfolge und gibt die Stellen zurueck,
 ;          an denen diese im Array auftaucht.
@@ -49,6 +50,11 @@
 ;              erweitert.          Hans Joerg
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:12:55  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  1998/11/16 13:04:28  brinks
 ;     *** empty log message ***
 ;

@@ -2,6 +2,9 @@
 ; NAME:                
 ;        GetSubArray()
 ;
+; AIM: returns a rectangular two-dimensional area of a supplied array
+; 
+;
 ; PURPOSE: Returns a two-dimensional sub-array of a suppled array, using a
 ;          convenient call.
 ;
@@ -41,6 +44,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/25 09:12:54  saam
+;     * added AIM tag
+;     * update header for some files
+;     * fixed some hyperlinks
+;
 ;     Revision 1.1  2000/02/29 13:51:22  kupper
 ;     Should work.
 ;

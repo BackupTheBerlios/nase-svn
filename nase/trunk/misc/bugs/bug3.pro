@@ -1,3 +1,6 @@
+;+
+; AIM: demonstrates problems with random numbers 
+;-
 Pro Zufall, S
    zufallszahl = RandomU(S)
    print, zufallszahl

@@ -1,7 +1,7 @@
 ;+
 ; NAME: A_NE ()
 ;
-; PURPOSE: Vergleich von zwei Variablen, insbes. von Arrays
+; AIM: checks if two variables/arrays differ
 ;
 ; CATEGORY: misc
 ;
@@ -16,6 +16,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/09/25 09:12:54  saam
+;        * added AIM tag
+;        * update header for some files
+;        * fixed some hyperlinks
+;
 ;        Revision 1.1  1997/10/08 15:22:39  kupper
 ;               Schöpfung!
 ;               (Hoffentlich gibts das nicht eh schon...)
