@@ -117,26 +117,26 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
        G = intarr(cid)
        B = intarr(cid)
 
-       IF Keyword_Set(TOPRED)   THEN R = puf
-       IF Keyword_Set(TOPGREEN) THEN G = puf
-       IF Keyword_Set(TOPBLUE)  THEN B = puf
+       IF Keyword_Set(TOPRED)   THEN R = R + puf
+       IF Keyword_Set(TOPGREEN) THEN G = G + puf
+       IF Keyword_Set(TOPBLUE)  THEN B = B + puf
 
-       IF Keyword_Set(BOTTOMRED)   THEN R = nuf
-       IF Keyword_Set(BOTTOMGREEN) THEN G = nuf
-       IF Keyword_Set(BOTTOMBLUE)  THEN B = nuf
+       IF Keyword_Set(BOTTOMRED)   THEN R = R + nuf
+       IF Keyword_Set(BOTTOMGREEN) THEN G = G + nuf
+       IF Keyword_Set(BOTTOMBLUE)  THEN B = B + nuf
 
    END ELSE BEGIN
        R = ndf+pdf-MIN(ndf+pdf)
        G = ndf+pdf-MIN(ndf+pdf)
        B = ndf+pdf-MIN(ndf+pdf)
 
-       IF Keyword_Set(TOPRED)   THEN R = ndf
-       IF Keyword_Set(TOPGREEN) THEN G = ndf
-       IF Keyword_Set(TOPBLUE)  THEN B = ndf
+       IF Keyword_Set(TOPRED)   THEN R = R + ndf
+       IF Keyword_Set(TOPGREEN) THEN G = G + ndf
+       IF Keyword_Set(TOPBLUE)  THEN B = B + ndf
 
-       IF Keyword_Set(BOTTOMRED)   THEN R = pdf
-       IF Keyword_Set(BOTTOMGREEN) THEN G = pdf
-       IF Keyword_Set(BOTTOMBLUE)  THEN B = pdf
+       IF Keyword_Set(BOTTOMRED)   THEN R = R + pdf
+       IF Keyword_Set(BOTTOMGREEN) THEN G = G + pdf
+       IF Keyword_Set(BOTTOMBLUE)  THEN B = B + pdf
    END
    UTVLCT, R, G, B
    
