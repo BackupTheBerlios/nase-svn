@@ -6,7 +6,8 @@
 ;  $Id$
 ;
 ; AIM:
-;  sets a color in the color table by specifying color name
+;  sets a color in the color table by specifying color name (since
+;  this is a low level routine, better use <A>RGB</A> to set a color)
 ;
 ; PURPOSE:
 ;  Sets a color in the color table by specifying color name.
