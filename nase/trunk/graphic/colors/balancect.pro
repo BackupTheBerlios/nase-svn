@@ -60,6 +60,7 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
 
    ON_ERROR, 2
 
+
    IF Set(bottomred)+Set(bottomgreen)+Set(bottomblue) GT 1 THEN Console, 'only one bottom color a time', /FATAL
    IF Set(bottomred)+Set(bottomgreen)+Set(bottomblue) EQ 0 THEN bottomblue=1
    IF Set(topred)+Set(topgreen)+Set(topblue) GT 1 THEN Console, 'only one top color a time', /FATAL
