@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  1997/10/26 18:35:10  saam
+;              Schleifenindex zu Long konvertiert, da u.U. groesser als INT
+;
 ;       Revision 1.8  1997/09/17 10:35:31  saam
 ;            Kontrollausgaben rausgeworfen
 ;
@@ -78,7 +81,7 @@ IF count NE 0 THEN BEGIN
    soc =  die / (DW.target_w*DW.target_h)
    toc =  die MOD (DW.target_w*DW.target_h)
    
-   FOR i=0, count-1 DO BEGIN
+   FOR i=0l, LONG(count)-1 DO BEGIN
       wtn = WHERE(DW.Weights(*,soc(i)) NE !NONE, tcount)
       IF tcount NE 0 THEN Handle_Value, DW.STarget(soc(i)), wtn, /SET ELSE BEGIN
          IF DW.STarget(soc(i)) NE -1 THEN BEGIN
