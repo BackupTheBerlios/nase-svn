@@ -13,8 +13,8 @@ echo ' <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <P><!-- Changed by: saam, 23-May-1996 --><NEXTID N=A12> 
 <HR></P> 
 <H1>Alphabetical List of Routines</H1><P><UL>' > $DIR/aindex.html
-
-for i in $(find $DIR -name "*.html") ; do
+cd $DIR
+for i in $(find . -name "*.html") ; do
 if [ ! $i = $DIR/aindex.html -a ! $i = $DIR/index.html  ] ; then
 PFAD=$(echo $i | sed "s/\//\\\\\//g" )
 grep HREF $i | grep -v Routine  | grep -v ";  " | sed "s/.*<A //g" | sed 's/">.*$//g'  \
@@ -25,4 +25,4 @@ done
 sort -d -f -u -k 2 -t '#'  /tmp/alphrout.html  >>  $DIR/aindex.html
 echo "</UL></P><HR></BODY></HTML>" dynamical created at $(date) >> $DIR/aindex.html
 #rm -f /tmp/alphrout.html
-
+cd -
