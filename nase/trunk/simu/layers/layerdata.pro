@@ -2,116 +2,98 @@
 ; NAME:
 ;  LayerData
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM:
 ;  Return information about state of given layer.
 ;
-; PURPOSE:         Liefert Informationen über einen Layer zurück
-;                  (s.u. OPTIONAL OUTPUTS)
-; 
-;                   Für Breite und Höhe des Layers stehen außerdem die Funktionen
-;                   <A HREF="#LAYERWIDTH">LayerWidth()</A> und <A HREF="#LAYERHEIGHT">LayerHeight()</A> zur Verfügung,
-;                   die ein klein wenig schneller sein dürften, weil dort keine Arrays herumkopiert werden.
+; PURPOSE:
+;  Obtain information about the state of neurons in a given
+;  layer. All data is returned via keywords, e.g. synapse and membrane
+;  potentials, threshold or parameters. To determine width and height
+;  of layers, <A>LayerWidth()</A> and <A>LayerHeight()</A> should be
+;  used because they work faster.
 ;
-; CATEGORY:         SIMULATION / LAYERS
+; CATEGORY:
+;  Layers
+;  NASE 
+;  Simulation
 ;
-; CALLING SEQUENCE: LayerData, Layer 
-;                              [,TYPE=Type]
-;                              [,WIDTH=Width] [,HEIGHT=Height]
-;                              [,PARAMETERS=Parameters] 
-;                              [,FEEDING=Feeding] [,FEEDING1=Feeding1][,FEEDING2=Feeding2] [,LINKING=Linking] [,INHIBITION=Inhibition]
-;                              [,POTENTIAL=Potential]
-;                              [,SCHWELLE=schnelle_Schwelle] [,LSCHWELLE=langsame_Schwelle]
-;                              [,LERNPOTENTIAL=Lernpotential]
-;                              [,OUTPUT=Output]
+; CALLING SEQUENCE: 
+;  LayerData, Layer [,TYPE=Type]
+;                   [,WIDTH=Width] [,HEIGHT=Height]
+;                   [,PARAMETERS=Parameters] 
+;                   [,FEEDING=Feeding] 
+;                   [,FFEEDING1=ffeeding1][,SFEEDING=sfeeding] 
+;                   [,LINKING=linking][,ILINKING=ilinking]  
+;                   [,INHIBITION=Inhibition]
+;                   [,SNHIBITION=sinhibition][,FINHIBITION=finhibition]
+;                   [,POTENTIAL=Potential]
+;                   [,THRESHOLD=threshold] 
+;                   [,STHRESHOLD=slow_threshold]
+;                   [,OUTPUT=Output]
 ;
-; INPUTS:           Layer: Eine mit <A HREF="#INITLAYER">InitLayer</A> initialisierte NASE-Layer-Struktur
+; INPUTS:
+;  Layer: Structure initialized by <A>InitLayer</A>.
 ;
-; OPTIONAL OUTPUTS: Alle Daten werden in Schlüssesworten
-;                   zurückgegeben. 
-;                 
-;                   Type             : Der Neuronentyp (String)
-;                   Width, Height    : Ausmaße des Layers (Integer)
-;                   Parameters       : Parameter, wie mit InitPara erzeugt
-;                   
-;                   Feeding,
-;                   Feeding1,
-;                   Feeding2 
-;                   Linking,
-;                   Inhibition       : Stand der entsprechenden
-;                                      Leckintegratoren (DoubleArray[HeightxWidth])
-;                   Potential        : Membranpotentiale (DoubleArray[HeightxWidth])
-;                                      für Layer, die aus Typ-8-Neuronen bestehen,
-;                                      wird in POTENTIAL ein FltArr(width,height,5)
-;                                      zurückgegeben, das die Potentiale aller 
-;                                      Compartments und den Zustand der Recovery-
-;                                      Variablen enthält:
-;                                      Potential(*,*,0) = n  (Recovery) 
-;                                      Potential(*,*,1) = Vs  (Soma)
-;                                      Potential(*,*,2) = V3  (Dendrit 3) 
-;                                      Potential(*,*,3) = V2  (Dendrit 2)
-;                                      Potential(*,*,4) = V1  (Dendrit 1)
+; OPTIONAL OUTPUTS: 
+;  type:: Type of neurons in this layer (string).
+;  width, height:: Dimensions of layer (integer).
+;  parameters:: Parameters as described by the InitPara function used
+;               to create the layer.
+;  feeding,
+;  ffeeding1, sfeeding 
+;  linking, ilinking
+;  inhibition, sinhibition, finhibition:: State of corresponding leaky
+;                                         integrators
+;                                         (doublearray[HeightxWidth]) 
+;  potential:: Membrane potentials (doublearray[HeightxWidth])
+;              In case the layer is of type '8' (four compartment) neurons,
+;              potential returns a FltArr(width,height,5) of the
+;              following structure:
+;              Potential(*,*,0) = n  (Recovery) 
+;              Potential(*,*,1) = Vs  (Soma)
+;              Potential(*,*,2) = V3  (Dendrite 3) 
+;              Potential(*,*,3) = V2  (Dendrite 2)
+;              Potential(*,*,4) = V1  (Dendrit 1)
 ;
-;                   schnelle_Schwelle,
-;                   langsame_Schwelle: Stand der entsprechenden
-;                                      Leckinteergratoren (DoubleArray[HeightxWidth])
-;                   Lernpotential    : Lernpotentiale (DoubleArray[HeightxWidth])
-;                   Output           : Output-Spikes (ByteArray[HeightxWidth])
+;  threshold:: State of threshold. This is the sum of offset and
+;              one or two dynamic parts (DoubleArray[HeightxWidth]).
 ;
+;  slow_threshold:: The state of the slow part of the dynamic
+;                   threshold can be obtained separately
+;                   (DoubleArray[HeightxWidth]).
+;
+;  output:: Output spikes (ByteArray[HeightxWidth]), they can also be
+;           obtained seperately by <A>LayerSpikes</A>.
 ;
 ; EXAMPLE:
-;                    LP = InitPara_1()
-;                    L = InitLayer(5,5,TYPE=LP)
-;                    LayerData, L, FEEDING=MyFeeding, POTENTIAL=MyMembranpotential
+;* LP = InitPara_1()
+;* L = InitLayer(5,5,TYPE=LP)
+;* LayerData, L, FEEDING=MyFeeding, POTENTIAL=MyMembranpotential
+;* Print, myfeeding
 ;
-; SEE ALSO:          <A HREF="#INITPARA_1">InitPara_i</A> (i=1..7), <A HREF="#INITLAYER">InitLayer</A>,  
-;                    <A HREF="#INPUTLAYER">InputLayer</A>, <A HREF="#PROCEEDLAYER">ProceedLayer</A>,
-;                    <A HREF="#LAYERWIDTH">LayerWidth</A>, <A HREF="#LAYERHEIGHT">LayerHeight</A>,  <A HREF="#LAYERSIZE">LayerSize</A>, 
-;                    <A HREF="#OUT2VECTOR">Out2Vector()</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.9  2000/09/28 13:05:26  thiel
-;            Added types '9' and 'lif', also added AIMs.
-;
-;        Revision 2.8  2000/06/06 15:02:33  alshaikh
-;              new layertype 11
-;
-;        Revision 2.7  1999/03/08 10:04:51  thiel
-;               Typ-8-Behandlung ergänzt.
-;
-;        Revision 2.6  1999/01/14 14:20:39  saam
-;              + works now for one-neuron-layers, too
-;
-;        Revision 2.5  1998/11/08 17:33:27  saam
-;              + wrong procedure name LAYERDATATEST in last revision
-;              + keywords INHIBITION[12], FEEDING[12] renamed to [FS]INHIBITITON,
-;                [FS]FEEDING
-;              + adapted to new layer definition
-;
-;        Revision 2.4  1998/11/05 18:07:35  niederha
-;               funktioniert jetzt auch für Neuronentyp 7
-;
-;        Revision 2.3  1998/05/27 13:58:15  kupper
-;               SCHWELLE2-Keyword aus gruenden eindeutiger Abkuerzung in
-;                LSCHWELLE umbenannt.
-;
-;        Revision 2.2  1998/01/28 15:55:46  kupper
-;               Nur Header-Kosmetik.
-;
-;        Revision 2.1  1998/01/28 15:50:02  kupper
-;               Schöpfung.
-;
+; SEE ALSO:
+;  <A HREF=InitPara_1>InitPara_i</A> (i=1..11), <A>InitLayer</A>,
+;  <A>LayerWidth</A>, <A>LayerHeight</A>, <A>LayerSize</A>,
+;  <A>LayerSpikes</A>. 
 ;-
+
+
+
 PRO LayerData, _Layer, $
                TYPE=type, $
-               WIDTH=width, HEIGHT=height, $
-               PARAMETERS=parameters, $
-               FEEDING=feeding, FFEEDING1=ffeeding, SFEEDING=sfeeding, LINKING=linking, ILINKING=ilinking, INHIBITION=inhibition, $
+               WIDTH=width, HEIGHT=height, PARAMETERS=parameters $
+               , FEEDING=feeding $
+               , FFEEDING1=ffeeding, SFEEDING=sfeeding $
+               , LINKING=linking $
+               , ILINKING=ilinking $
+               , INHIBITION=inhibition, $
                FINHIBITION=finihibition, SINHIBITION=sinhibition,$
                POTENTIAL=potential, $
-               SCHWELLE=schwelle, LSCHWELLE=lschwelle, $
-               LERNPOTENTIAL=lernpotential, $
+               SCHWELLE=schwelle, LSCHWELLE=lschwelle $
+               , THRESHOLD=threshold, STHRESHOLD=sthreshold, $
                OUTPUT=output
 
    TestInfo, _Layer, "Layer"
@@ -193,17 +175,29 @@ PRO LayerData, _Layer, $
 
 ;--- handle THRESHOLD
    CASE Layer.TYPE OF
-      '6' : IF n GT 1 THEN schwelle = REFORM(Layer.R + Layer.S + Layer.Para.th0, Layer.H, Layer.W) ELSE schwelle = Layer.R + Layer.S + Layer.Para.th0
-      '8' : schwelle = !NONE
-      '9' : schwelle = !NONE
-      ELSE: IF n GT 1 THEN schwelle = REFORM(Layer.S, Layer.H, Layer.W) ELSE schwelle = Layer.S
+      '2' : IF n GT 1 $
+       THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+       ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+      '6' : IF n GT 1 $
+       THEN threshold=REFORM(Layer.R+Layer.S+Layer.Para.th0,Layer.H,Layer.W) $
+       ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
+      '8' : threshold = !NONE
+      '9' : threshold = !NONE
+      'lif' : threshold = layer.para.th0
+      ELSE: IF n GT 1 THEN $
+       threshold = REFORM(layer.S+layer.para.th0, Layer.H, Layer.W) $
+      ELSE threshold = layer.S+layer.para.th0
    ENDCASE
+
+   schwelle = threshold ; use new english keywords but be compatible
 
 
    ; handle SPECIAL TAGS
-   IF Layer.Type EQ '2' THEN BEGIN
-      IF n GT 1 THEN lschwelle = Reform(Layer.R, Layer.H, Layer.W) ELSE lschwelle = Layer.R
+   IF (Layer.Type EQ '2') OR (Layer.Type EQ '6') THEN BEGIN
+      IF n GT 1 THEN sthreshold = Reform(Layer.R, Layer.H, Layer.W) ELSE sthreshold = Layer.R
    END
+
+   lschwelle = sthreshold ; use new english keywords but be compatible
 
 ;--- Type 3 (learning potential neuron) was obsolete has been removed 
 ;   IF Layer.Type EQ '3' THEN BEGIN
