@@ -7,7 +7,8 @@
 ;
 ; PURPOSE:
 ;   This function returns true (1B), if the argument contains other elements
-;   than the representatives of empty sets, i.e. '' for string arguments or !none for number arguments.;
+;   than the representatives of empty sets,
+;   i.e. <*>''</*> for string arguments or <*>!none</*> for number arguments.;
 ;
 ; CATEGORY:
 ;   Array
@@ -26,9 +27,10 @@
 ; OPTIONAL OUTPUTS:
 ;   cnt:: A longinteger containing the number of distinct elements of the argument,
 ;         i.e. multiple instances of the same value are only considered once. <BR>
-;         In contrast to <A>Elements</A>, here <*>cnt</*> is set to zero, if the elements exclusively represent
-;         empty sets. If <*>SetA</*> is not empty <*>cnt</*> represents the number of distinct elements <i>including</i>
-;         representatives of empty sets (cf. example no.4).
+;         In contrast to <A>Elements</A>, here <*>cnt</*> is set to zero,
+;         if the elements exclusively represent empty sets.
+;         If <*>SetA</*> is not empty <*>cnt</*> represents the number of distinct elements
+;         <i>including</i> representatives of empty sets (cf. example no.4).
 ;
 ; RESTRICTIONS:
 ;  none
@@ -42,7 +44,6 @@
 ;*     >  0  3
 ;*     Print, EmptySet(['','a','b'],cnt),   cnt
 ;*     >  0  3
-
 ;
 ; SEE ALSO:
 ;  <A>Elements</A>, <A>CutSet</A>, <A>UniSet</A>, <A>DiffSet</A>, <A>SubSet</A>
