@@ -12,6 +12,10 @@
 ;  Defines a bunch of system variables, used by several NASE routines.
 ;  This routine is part of the NASE startup sequence and you will
 ;  generally not call it by hand.<BR>
+;  <*>!CHANGEFILENAME</*>:: A string that determines the behavior of
+;  <A>RealFilename()</A>. Possible values at the moment are 'marburg'
+;  (execute filename cleaning according to Marburg UNIX environment)
+;  and 'off' (don't change the filename).
 ;  <*>!CREATEDIR</*>:: if set to 1, <A>UOpenW</A> will automatically create
 ;  non-existent directories. Default is not to do so.   
 ;  <*>!FILESEP</*>:: contains the operating system dependent file
@@ -31,10 +35,10 @@
 ;  <A>Background</A> respect these
 ;  settings. <*>!TOPCOLOR <= !D.Table_Size-3</*> must apply, default
 ;  value is <*>!D.Table_Size-11</*> reserving 10 colors for NASE.<BR> 
-;  <*>!CHANGEFILENAME</*>:: A string that determines the behavior of
-;  <A>RealFilename()</A>. Possible values at the moment are 'marburg'
-;  (execute filename cleaning according to Marburg UNIX environment)
-;  and 'off' (don't change the filename).<BR> 
+;  <*>!TRUE</*>,<*>!FALSE</*>:: defines the well known boolean values
+;  for integer types. String (<*>!TRUEs</*>,<*>!FALSEs</*>), float
+;  (<*>!TRUEf</*>,<*>!FALSEf</*>) and double
+;  (<*>!TRUEd</*>,<*>!FALSEd</*>) variants are also available.<BR>
 ;  <*>NOTE!</*>:: several variables are still undocumented
 ;
 ; CATEGORY:
@@ -54,6 +58,16 @@ PRO DefGlobVars
 DefSysV, '!NONE' , -999999.0, 1
 DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
+
+DefSysV, '!TRUE'  , (1 EQ 1), 1 ; odd ints are true
+DefSysV, '!TRUEs' , '...'   , 1 ; each nonzero string is true
+DefSysV, '!TRUEf' , 1.      , 1 ; each nonzero float is true
+DefSysV, '!TRUEd' , 1.d     , 1 ; each nonzero double is true
+
+DefSysV, '!FALSE'  , (1 EQ 0), 1 ; even ints are false
+DefSysV, '!FALSEs' , ''      , 1 ; zero string is false
+DefSysV, '!FALSEf' , 0.      , 1 ; a zero float is false
+DefSysV, '!FALSEd' , 0.d     , 1 ; a zero double is false
 
 
 
