@@ -18,7 +18,7 @@
 ; CALLING SEQUENCE:
 ;*  MSPlot [,x] ,mean ,sd 
 ;*         [,/SDMEAN]
-;*         [{[,MCOLOR=...] [,SDCOLOR=...]} | /BW ]
+;*         [,MCOLOR=...] [,SDCOLOR=...][, /SIMPLE ]
 ;*         [,/OPLOT]
 ;*         [,_EXTRA=...]
 ;
@@ -36,9 +36,10 @@
 ;      (default is equidistant ranging from 0 to n-1).
 ;
 ; INPUT KEYWORDS:
-;  BW      :: Creates output for black/white devices. The errors are
-;             plotted as dotted lines. <*>MCOLOR</*> and
-;             <*>SDCOLOR</*> are ignored. 
+;  SIMPLE:: Creates output without using polygons, instead indicating the
+;           error by dotted curves (<*>LINESTYLE=1</*>). This may be
+;           useful if polygons would cover other important data or if
+;           extra small Postscript output is needed. 
 ;  MCOLOR  :: Colorindex used for plotting the data (default:
 ;             foreground color).
 ;  OPLOT   :: plots data into an already existing window 
@@ -76,13 +77,17 @@ PRO MSPLOT, z, zz, zzz $
             , MCOLOR=mcolor, SDCOLOR=sdcolor $
             , XRANGE=xrange, YRANGE=yrange $
             , SDMEAN=sdmean $
-            , BW=bw, OPLOT=oplot $
+            , BW=bw, SIMPLE=simple, OPLOT=oplot $
             , XSTYLE=xstyle, YSTYLE=ystyle $
             , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
             , _EXTRA=extra
 
    On_Error, 2
 
+   IF Keyword_Set(BW) THEN $
+    Console, /WARN, '/BW has been disabled and substituted by /SIMPLE.'
+
+   Default, simple, 0
    Default, SDCOLOR, RGB(100,100,200)
    Default, MCOLOR, GetForeground()
    
@@ -149,11 +154,11 @@ PRO MSPLOT, z, zz, zzz $
     Plot, x, m, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4 $
     , YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=extra
 
-   IF Keyword_Set(BW) THEN BEGIN
+   IF Keyword_Set(SIMPLE) THEN BEGIN
 
-      OPlot, x, m+sd[1,*], LINESTYLE=1
-      OPlot, x, m-sd[0,*], LINESTYLE=1
-      OPlot, x, m 
+      OPlot, x, m+sd[1,*], LINESTYLE=1, COLOR=SDCOLOR
+      OPlot, x, m-sd[0,*], LINESTYLE=1, COLOR=SDCOLOR
+      OPlot, x, m, COLOR=MCOLOR 
 
    END ELSE BEGIN
       ;; divide polygon for sd into seperate parts each polysize long,
