@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/02/05 11:21:17  saam
+;           problems concerning automount dir '/tmp_mnt' fixed
+;
 ;     Revision 1.1  1997/10/29 11:36:32  saam
 ;           aus getlocaldir extrahiert
 ;
@@ -42,6 +45,9 @@ FUNCTION Path2Host, Path
    IF Contains(Path, '/usr/ax1319')                                   THEN Host = 'ax1319'
    IF Contains(Path, '/usr/neuro') OR Contains(Path, '/home/neuro')   THEN Host = 'neuro'
    IF Host EQ 'dummy' THEN Message, 'could not get host where path "'+Path+'" resides'
+
+
+   IF Contains(Path, '/tmp_mnt/') THEN Path = StrMid(Path, 8, 500)
    
    RETURN, Host
 
