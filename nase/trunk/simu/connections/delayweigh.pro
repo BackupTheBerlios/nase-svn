@@ -22,6 +22,11 @@
 ;                         TARGET_CL          : Target-Cluster                           ODER ALTERNATIV
 ;                         TARGET_W, TARGET_H : Breite und Hoehe des Target-Clusters    
 ;
+;                         VP, TAUP           : jeder Verbindung wird ein Lernpotential (Leckintegrator 1. Ordnung) mit Verst"arkung VP und
+;                                              Zeitkonstante TAUP zugeordnet
+;                                              diese Option ist nur zum Lernen verzoegerte Verbindungen SINNVOLL
+;                                              wenn, dann muessen immer beide Parameter angegeben werden
+;
 ; OUTPUTS:                wenn INIT_WEIGHTS  angegeben wurde:
 ;                                 Output:  die initialisierte Matrix-Struktur
 ;                         wurde INIT_WEIGHTS  NICHT angegeben:
@@ -56,12 +61,14 @@
 ;                         Ergaenzung der zentralen Struktur um Breite und Hoehe der Source- und Target-Cluster, 25.7.97 
 ;                         automatischer cast von INIT_WEIGHTS auf DOUBLE, Mirko Saam, 1.8.97
 ;                         Fehlermeldung, wenn delays zu gross, Mirko, 3.8.97
+;                         jeder verzoegerten Verbindung kann ein Lernpotential zugeordnet werden, Mirko, 4.8.97
 ;
 ;-
 FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_delays,$
                      SOURCE_CL=source_cl, TARGET_CL=target_cl,$ 
                      SOURCE_W=source_w, SOURCE_H=source_h,$
-                     TARGET_W=target_w, TARGET_H=target_h
+                     TARGET_W=target_w, TARGET_H=target_h,$
+                     TAUP=taup, VP=vp
    
    
    IF N_Elements(init_weights) NE 0 THEN BEGIN
@@ -85,6 +92,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                    Delays  : [-1]          }
       END ELSE BEGIN         
          IF Max(init_delays) GE 15 THEN Message, 'sorry, delays are too big'
+         IF Keyword_Set(taup) AND Keyword_Set(vp) THEN lp = FltArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ELSE lp = -1
          DelMat = { source_w: source_w,$
                     source_h: source_h,$
                     target_w: target_w,$
@@ -92,7 +100,10 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                     Weights : DOUBLE(init_weights) ,$
                     Matrix  : BytArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ,$
                     Delays  : init_delays  ,$
-                    Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) )}
+                    Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) )$
+                    VP      : FLOAT(vp),$
+                    DP      : exp(-1./taup),$
+                    LP      : lp}
          DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
       END
       RETURN, DelMat
@@ -111,9 +122,14 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
       tmpQU = DelMat.Queue
       ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
-      res = DelMat.weights * SpikeQueue( tmpQu, tmp )
+      spikes = SpikeQueue( tmpQu, tmp )
+      res = DelMat.weights * spikes
       DelMat.Queue = tmpQu
       
+      ; update the learning potential if needed
+      IF SIZE(lp) NE 0 THEN BEGIN
+         lp =  lp*dp + vp*spikes
+      END
       RETURN, TOTAL(res, 2)
    END   
 END   
