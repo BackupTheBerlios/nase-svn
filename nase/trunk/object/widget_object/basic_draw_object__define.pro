@@ -127,6 +127,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  2000/03/14 15:42:53  kupper
+;        Paint requests for unrealized widgets are now ignored.
+;
 ;        Revision 1.10  2000/03/13 16:36:18  kupper
 ;        Polished header (needs mor polishing!)
 ;
@@ -271,7 +274,7 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
 End
 
 Pro basic_draw_object::cleanup, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   message, /Informational, "I'm dying!"
    Cleanup_Superclasses, self, "basic_draw_object", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
@@ -286,9 +289,14 @@ Pro basic_draw_object::paint
    If self.prevent_paint_flag then begin
       self.delayed_paint_request_flag = 1;store the request
    endif else begin ;;paint
-      showit_open, self.w_showit
-      self->paint_hook_
-      showit_close, self.w_showit, Save_Colors=self.save_colors
+      If Widget_Info(self.widget, /Realized) then begin
+         showit_open, self.w_showit
+         self->paint_hook_
+         showit_close, self.w_showit, Save_Colors=self.save_colors
+      Endif else begin
+         message, /Informational, "Warning: Ignored paint request for unrealized " + $
+          "widget-object."
+      endelse
    endelse
 End
 
