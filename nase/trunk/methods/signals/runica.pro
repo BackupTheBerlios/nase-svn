@@ -83,6 +83,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/06/08 10:19:43  gabriel
+;             Floating underflow corrected (changed data to double)
+;
 ;     Revision 1.1  1999/07/20 08:16:15  gabriel
 ;            ICA (Independent Component Analysis) ported from MatLab-Code
 ;            Perform Independent Component Analysis (ICA) decomposition
@@ -141,10 +144,10 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
                 weights=weights_in,lrate=lrate,block=block,annealstep=annealstep,annealdeg=annealdeg,$
                 nochange=nochange,maxsteps=maxsteps,bias=biasflag,momentum=momentum,$
                 extended=extended,posact=posactflag,verbose=verbose
-   ;;On_Error, 2
+   On_Error, 2
    np = N_Params()
    IF (np LT 1) OR (np GT 7)THEN Message, 'wrong number of arguments'
-   data = _data
+   data = double(_data)
    data_size = size(data)
    nchans = data_size(1)
    urchans = nchans
@@ -215,7 +218,7 @@ FUNCTION runica,_data,weights,sphere,activations,bias,signs,lrates,sphering=sphe
       ELSE IF kurtsize GT frames THEN BEGIN  ;;length of kurtosis calculation
          kurtsize = frames
          IF kurtsize LT  MIN_KURTSIZE THEN $
-          print,'runica() warning: kurtosis values inexact for << '+str()+' points.'
+          print,'runica() warning: kurtosis values inexact for << '+str(MIN_KURTSIZE)+' points.'
       END
    END
    IF NOT extended THEN default,annealstep , 0.90 $     ;; anneal by multiplying lrate by this
