@@ -20,14 +20,16 @@
 ;                       print, Count(DigitalUhrMitSekunden)
 ;                    END
 ;
-; SEE ALSO:          </A HREF=#COUNT>Count</A>
+; SEE ALSO:          </A HREF=#COUNT>Count</A>, </A HREF=#COUNT>ResetCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/11/25 09:11:33  saam
+;           Hyperlinks aktualisiert
+;
 ;     Revision 2.1  1997/11/24 16:23:24  saam
 ;           Erstellt fuer Looping
-;
 ;
 ;-
 FUNCTION InitCounter, MaxCount
