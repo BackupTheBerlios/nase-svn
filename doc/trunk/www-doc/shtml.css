@@ -39,6 +39,7 @@ h2.sh2 { font-size:16pt; }
 
 
 
+
 h3,h3.xmp,h3.xpl,h3.inf,h3.tip { font-size:12pt; }
 
 /* Zwischenueberschriften wie 'Beispiel', 'Erlaeuterung' */
@@ -65,7 +66,7 @@ p,ul,ol,li,div,td,th,address,nobr,b,i { font-size:10pt; }
 /* 10pt = 10 Punkt, Wert aenderbar */
 
 
-pre { font-family:Courier New,Courier; font-size:10pt; color:#0000C0; }
+pre { font-family:Courier New,Courier; font-size:12pt; color:#0000C0; }
 
 /* Quelltext-Beispiele */
 /* font-family = Schriftart */
@@ -88,7 +89,9 @@ tt { font-family:Courier New,Courier; font-size:10pt; color:#0000C0; }
 
 
 
-td.xmpcode { border-width:1pt; border-style:solid; border-color:#999999; background-color:#FFFFE0; }
+td.xmpcode { background-color:#FFFFE0 }
+
+td.keycode { background-color:#CCCCCC }
 
 /* Bereiche mit Beispiel-Quelltexten */
 /* nur MS IE 4, Netscape 4.0 ignoriert diese Angaben */
