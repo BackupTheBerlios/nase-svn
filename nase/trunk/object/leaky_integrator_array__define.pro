@@ -10,6 +10,13 @@
 ;
 ; CALLING SEQUENCE: 
 ;
+; PUBLIC METHODS:
+;   input, val
+;
+;   result()
+;
+;   asymptote(const_in): returns asymptotic value expected for a constant input.
+;
 ; INPUTS: 
 ;
 ; OPTIONAL INPUTS: -please remove any sections that do not apply-
@@ -35,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/03/10 14:35:10  kupper
+;        added method asymptote().
+;
 ;        Revision 1.5  2000/03/09 17:23:41  kupper
 ;        corrected tau() method.
 ;
@@ -91,6 +101,9 @@ Function leaky_integrator_array::result
    return, *self.data
 End
 
+Function leaky_integrator_array::asymptote, constin
+   return, float(constin)/(1-self.decay_factor)
+End
 ;; ------------ Private --------------------
 
 
