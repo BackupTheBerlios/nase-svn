@@ -10,7 +10,10 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
-;       $Log
+;       $Log$
+;       Revision 1.2  2000/01/11 14:19:14  saam
+;             $ in log was missing
+;
 ;
 ;-
 PRO UpdateDOC
