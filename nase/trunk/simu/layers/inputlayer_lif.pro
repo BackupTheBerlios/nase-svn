@@ -25,7 +25,7 @@
 ; CALLING SEQUENCE:
 ;* InputLayer_LIF, layer_hdl 
 ;*                  [,FEEDING=...] [,LINKING=...] [,INHIBITION=...]
-;*                  [,NOISE=...]
+;*                  [,NOISE=...] [,/CORRECT]
 ;
 ; INPUTS: 
 ;  layer_hdl:: A handle pointing to a layer structure initialized
@@ -39,6 +39,11 @@
 ;  INHIBITION:: Sparse vector added to the inhibition potential (see
 ;               <A>Spassmacher()</A>).
 ;  NOISE:: Multiplicative noise acting on the feeding potential.
+;  /CORRECT:: Numerically solve leaky integrator differential equations
+;             using the Exponential Euler Method. This has the advantage
+;             of being invariant when changing time resolution and
+;             gives a steady state that is independent of the leaky
+;             intergator's time constant.
 ;
 ; COMMON BLOCKS:
 ;  common_random
@@ -66,7 +71,10 @@
 
 
 PRO InputLayer_LIF, _Layer, FEEDING=feeding, LINKING=linking $
-                    , INHIBITION=inhibition, NOISE=noise
+                    , INHIBITION=inhibition, NOISE=noise, CORRECT=correct
+
+   Default, noise, 0.
+   Default, correct, 0
 
    COMMON COMMON_random, seed
 
@@ -82,33 +90,39 @@ PRO InputLayer_LIF, _Layer, FEEDING=feeding, LINKING=linking $
    IF Set(feeding) THEN BEGIN
       IF Feeding(0,0) GT 0 THEN BEGIN
          neurons = Feeding(0,1:Feeding(0,0))
-         IF Set(NOISE) THEN BEGIN
-            Layer.F(neurons) = Layer.F(neurons) + Feeding(1,1:Feeding(0,0))*(1+noise*RandomN(seed, Feeding(0,0)))
-         END ELSE BEGIN
-            Layer.F(neurons) = Layer.F(neurons) + Feeding(1,1:Feeding(0,0))
-         END
+;         IF Set(NOISE) THEN BEGIN
+;            Layer.F(neurons) = Layer.F(neurons) + Feeding(1,1:Feeding(0,0))*(1+noise*RandomN(seed, Feeding(0,0)))
+;         END ELSE BEGIN
+;            Layer.F(neurons) = Layer.F(neurons) + Feeding(1,1:Feeding(0,0))
+;         END
+         ;; arithmetic if-clauses:
+         ;; if NOISE eq 0. then multiplication with 1 takes place,
+         ;; if CORRECT eq 0 then second factor has no effect
+         layer.f(neurons) = layer.f(neurons) + $
+          feeding(1,1:feeding(0,0)) * $
+          (1.+noise*RandomN(seed, feeding(0,0))) * $
+          (1.-correct*layer.para.df)
       END
    END
 
    IF Set(linking) THEN BEGIN
       IF Linking(0,0) GT 0 THEN BEGIN
          neurons = Linking(0,1:Linking(0,0))
-;         IF Keyword_Set(CORRECT) THEN BEGIN
-;            Layer.L(neurons) = Layer.L(neurons) + Linking(1,1:Linking(0,0))*(1.-Layer.para.dl)
-;         END ELSE BEGIN
-            Layer.L(neurons) = Layer.L(neurons) + Linking(1,1:Linking(0,0))
-;         END
+         layer.l(neurons) = layer.l(neurons) + $
+          linking(1,1:linking(0,0)) * $
+          (1.+noise*RandomN(seed, linking(0,0))) * $
+          (1.-correct*layer.para.dl)
+            
       END
    END
          
    IF Set(inhibition) THEN BEGIN
       IF Inhibition(0,0) GT 0 THEN BEGIN
          neurons = Inhibition(0,1:Inhibition(0,0))
-;         IF Keyword_Set(CORRECT) THEN BEGIN
-;            Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0))*(1.-Layer.para.di)
-;         END ELSE BEGIN            
-            Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0))
-;         END
+         layer.i(neurons) = layer.i(neurons) + $
+          inhibition(1,1:inhibition(0,0)) * $
+          (1.+noise*RandomN(seed, inhibition(0,0))) * $
+          (1.-correct*layer.para.di)
       END
    END
 
