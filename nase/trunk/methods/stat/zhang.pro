@@ -255,6 +255,8 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
 
    sp = Size(prior)
 
+   dummy = Where(prior LE 0., count)
+   IF count NE 0 THEN Console, /WARN, Str(count)+' stimulus bins empty.'
 
    IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Computing likelihoods.'
 
@@ -323,33 +325,42 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          ;; stimulus bin not empty?
          IF srevidx(sbinidx) NE srevidx(sbinidx+1) THEN BEGIN
             flatf = FlatIndex(sf, [Subscript(sbinidx, SIZE=sp), rdimidx])
-            current = $
+            f[flatf] = $
              (UMoment(rate(srevidx(srevidx(sbinidx):srevidx(sbinidx+1)-1) $
                            , rdimidx), ORDER=0))(0)
-            f(flatf) = current
-         ENDIF ;; stimulus bin not empty?
+         ENDIF ;; stimulus bin not empty
+;            Console, /WARN, 'Empty stimulus bin '+Str(sbinidx)+'. No tuning information here!'
+;         ENDELSE ;; stimulus bin not empty?
       ENDFOR ;; sbinidx
 
       ;; 1dim array with slice consisting of f(*,*,rdimidx)
       sliceidx = IndGen(sp(sp(0)+2))+rdimidx*sp(sp(0)+2)
-      fcurrent = Reform(f(sliceidx), sp(1:sp(0)))
+      fcurrent = Reform(f[sliceidx], sp(1:sp[0]))
 
       IF smeartuning GT 0. THEN BEGIN
          fnew = Convol(fcurrent, mask, /EDGE_TRUNC)
          f(sliceidx) = fnew
-         sum = sum+fnew    
+         sum = Temporary(sum)+fnew    
       ENDIF ELSE BEGIN
-         sum = sum+fcurrent
+         sum = Temporary(sum)+fcurrent
          ENDELSE ;; smeartuning GT 0.
 
    ENDFOR ;; rdimidx
 
-   ;; This adds offset activity to all tuning curves, see header   
-   ;;   feq0 = Where(f EQ 0.)
-   ;;   f(feq0) = 0.1
+   ;; Avoid empty
+   ;; and therefore zero tuning bins that cannot be evaluated when
+   ;; taking the logarithm  
+   feq0 = Where(f EQ 0., count)
+   IF count NE 0 THEN BEGIN
+      fne0 = DiffSet(LIndgen(N_Elements(f)), feq0)
+      ;; Offset is minimum of "real" tuning values divided by 1000 
+      f[feq0] = 1.E-3*Min(f[fne0])
+   ENDIF
 
-   esum = Exp(-tau*0.001*sum)
-   ep = esum*prior
+;   esum = Exp(-tau*0.001*sum)
+;   ep = esum*prior
+   bias = ALog(prior)-tau*0.001*sum
+   lnf = ALog(f)
 
    ;; use length of probe response instead of length of training
    ;; response 
@@ -366,27 +377,35 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    sdimidx = IndGen(sdim)
 
    FOR t=0l, lr-1 DO BEGIN
-      prod = Make_Array(SIZE=sp, VALUE=1., /DOUBLE)
+;      prod = Make_Array(SIZE=sp, VALUE=1., /DOUBLE)
+      lnsum = Make_Array(SIZE=sp, VALUE=0., /DOUBLE)
       ;; loop of response dimensions
       FOR rdimidx=0, nr-1 DO BEGIN
          ;; 1dim array with slice consisting of f(*,*,rdimidx)
          sliceidx = IndGen(sp(sp(0)+2))+rdimidx*sp(sp(0)+2)
-         fcurrent = Reform(f(sliceidx), sp(1:sp(0)))
-         prod = Temporary(prod)*fcurrent^ni(t, rdimidx)
+;         fcurrent = Reform(f(sliceidx), sp(1:sp(0)))
+         fcurrent = Reform(lnf[sliceidx], sp[1:sp[0]])
+;         prod = Temporary(prod)*fcurrent^ni(t, rdimidx)
+         lnsum = Temporary(lnsum)+fcurrent*ni[t, rdimidx]
 
-         ;; smear products, tuning curve gets broader when no spikes
-         ;; arrive, similar to Jäkel, but without continuity???
-         ;; prod = Convol(prod, Gauss_2D(5, 5, 0.2, /NORM), /EDGE_TRUNC)
-
-         IF Min(Finite(prod)) LT 1 THEN Console, /FATAL $
+         IF Min(Finite(lnsum)) LT 1 THEN Console, /FATAL $
           , 'Overflow during potentiation. Try lower TAU.'
       ENDFOR ;; rdimidx
 
-      posterior = prod*ep
+;      IF Total(prod) EQ 0. THEN BEGIN
+;         Console, /FATAL, 'Product of tuning functions is zero.'
+;         prod = Make_Array(SIZE=sp, VALUE=1., /DOUBLE)
+;      ENDIF
+
+;      posterior = prod*ep
+      lnposterior = lnsum+bias
+
+;print, Total(Abs(posterior-Exp(lnposterior)))
 
       ;; determine index of maximum or mean of posterior
       IF Keyword_Set(OPTIMAL) THEN BEGIN
          ;; normalization needed for optimal estimator
+         posterior = Exp(lnposterior)
          posterior = posterior/Total(posterior)
          smultidimidx = CenterOfMass(posterior)
          IF smultidimidx(0) EQ !NONE THEN BEGIN
@@ -397,9 +416,9 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          ;; integer array indices, to result in smoother estimate
          estimate[t, *] = smin+smultidimidx*sbinsize
       ENDIF ELSE BEGIN
-         dummy = Max(posterior, estidx)
+         dummy = Max(lnposterior, estidx)
          smultidimidx = Subscript(estidx, SIZE=sp)
-         ;; select stimulus values by smultidimidx and return estimate
+        ;; select stimulus values by smultidimidx and return estimate
          estimate[t, *] = sbinval[smultidimidx+1,sdimidx]
       ENDELSE
 
