@@ -55,7 +55,7 @@
 Pro ShowNoMercy, Matrix, LESSTHAN=LessThan
 
 
-If Not Set(LESSTHAN) Then Return, Matrix
+If Not Set(LESSTHAN) Then message, 'Also, LESSTHAN müßte schon angegeben werden...'
 
 die = where((abs(Matrix.weights) LT LessThan), count)
 

@@ -90,7 +90,7 @@ Pro Check_LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,
 
 
    spaltenindex = where(Target_CL.O,count)
-   If count EQ 0 Then Return, Matrix
+   If count EQ 0 Then Return
 
 
    ;-----Matrixmultiplikation ist bei wenigen Spikes langsamer...
