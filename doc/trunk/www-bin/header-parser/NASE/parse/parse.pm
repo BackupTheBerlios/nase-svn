@@ -94,6 +94,8 @@ BEGIN {
 	    "RBRACE"   => '\)',
 	    "CLBRACE"  => '{',
 	    "CRBRACE"  => '}',
+	    "ALBRACE"  => '\[',
+	    "ARBRACE"  => '\]',
 	    "EOL"      => '\n',
 	    "DCOLON"   => "::",
 	    "COLON"    =>  ":",
@@ -364,7 +366,7 @@ sub showHeader {
     print 
       h1($entry{rname}." (Check)"), 
       "\n".'<TABLE VALIGN=TOP><COLGROUP SPAN=2></COLGROUP>'."\n",
-      $entry{aim};
+      $entry{header};
   }    
 
   print "</TABLE>\n";
@@ -404,6 +406,7 @@ sub scanFile {
   eval {
     $parser->yyparse(\*IDLSOURCE);
   };
+  # returns a defined hentry [,rname,aim,cat,header]
   if ($@) {
     @hentry = (undef, $p{'file'}, "_error", "_Error", "An error has occurred while parsing the doc header. Please check for correct syntax!");
   }
@@ -420,7 +423,7 @@ sub scanFile {
 	$hentry[2]="_error";
       } 
     }
-    return ("dir"=>$hentry[0], "fname"=>$hentry[1], "rname"=>$hentry[2], "cats"=>$hentry[3], "aim"=>$hentry[4]);
+    return ("dir"=>$hentry[0], "fname"=>$p{file}, "rname"=>$hentry[1], "aim"=>$hentry[2], "cats"=>$hentry[3], "header"=>$hentry[4]);
   } else {
     # insert routine into pro
     delete $pro{$p{'file'}} if exists $pro{$p{'file'}}; # next command is not atomar
