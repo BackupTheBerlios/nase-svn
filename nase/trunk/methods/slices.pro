@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/06/08 09:36:53  saam
+;           debug messages removed
+;
 ;     Revision 1.1  1998/06/08 09:33:28  saam
 ;           hope it works
 ;
@@ -52,7 +55,7 @@ FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD
    B =  Make_Array(ssize,steps+1,TYPE=S(2))
    FOR slice=0,steps DO BEGIN
       B(*,slice) = A(slice*SSHIFT: slice*SSHIFT+SSIZE-1)
-      print, slice*SSHIFT, ':', slice*SSHIFT+SSIZE-1
+;      print, slice*SSHIFT, ':', slice*SSHIFT+SSIZE-1
    END
    RETURN, B
 END
