@@ -46,9 +46,15 @@
 ;  
 ;
 ; EXAMPLE:
-;*
-;*>
-;
+;*a = bytarr(4) 
+;*help, a
+;*>A               BYTE      = Array[4]
+;*a[0]=3 
+;*a[1]=20 
+;*a[2]=2 
+;*a[3]=7 
+;*print, wordtolongint(a) 
+;*>   117576707
 ; SEE ALSO:
 ;-
 
