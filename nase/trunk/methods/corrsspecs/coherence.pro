@@ -1,6 +1,7 @@
 ;+
 ; NAME:    COHERENCE
 ;
+; AIM:          computes the coherence beetween two given signals
 ;
 ; PURPOSE:      The coherence function is a good method to make an estimation, 
 ;               how strong two signals are coupled in phase and amplitude over several trials.
@@ -57,11 +58,14 @@
 ;
 ; EXAMPLE:
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 14:11:57  gabriel
+;          AIM tag added
+;
 ;     Revision 1.2  1998/11/20 17:17:35  gabriel
 ;          Confidence Berechnung  neu
 ;
@@ -69,7 +73,7 @@
 ;           Dem N.A.S.E Standard angepasst (Org. von A. Bruns)
 ;
 ;
-;-
+;
 
 
 
@@ -118,6 +122,8 @@ FUNCTION  COHERENCE,  SignalX, SignalY,   CXY, confidence , cfvalue=cfvalue ,$
    CXY = TOTAL(SpektrenX * CONJ(SpektrenY), Dimension)
    CXX = TOTAL(ABS(SpektrenX)^2           , Dimension)
    CYY = TOTAL(ABS(SpektrenY)^2           , Dimension)
+   undef, SpektrenX
+   undef, SpektrenY
 
    K = ABS(CXY)^2 / (CXX*CYY)
    IF  KEYWORD_SET(correction)  THEN  K = K - (1-K)/AnzTrials
