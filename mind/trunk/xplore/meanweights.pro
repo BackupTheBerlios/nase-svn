@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/02/16 13:37:06  saam
+;           now works with new dww system
+;
 ;     Revision 1.1  2000/01/11 14:16:47  saam
 ;           now use the new readdw routine for data aquisition
 ;
@@ -63,14 +66,16 @@ PRO _MeanWeights, WAIT=wait, DWIndex, CENTER=CENTER, STOP=stop, _EXTRA=e
 
    DW = ReadDW(DWIndex, FILE=file, _EXTRA=e)
 
-   IF P.DWW(DWindex).bound EQ 'TOROID' THEN WRAP = 1 ELSE WRAP = 0
-   IF P.DWW(DWindex).T2S THEN BEGIN 
+   CDW = Handle_Val(P.DWW(DWindex))
+   IF CDW.bound EQ 'TOROID' THEN WRAP = 1 ELSE WRAP = 0
+   IF CDW.T2S THEN BEGIN 
       PROJECTIVE = 0
       RECEPTIVE = 1
    END ELSE BEGIN
       PROJECTIVE = 1
       RECEPTIVE = 0
    END
+stop
    Matrix = MiddleWeights(DW, sd, PROJECTIVE=PROJECTIVE, RECEPTIVE=RECEPTIVE, WRAP=WRAP)
 
    IF keyword_set(CENTER) THEN Matrix = Shift(Matrix, P.LW((P.DWW(DWindex).SOURCE)).h/2+1, P.LW((P.DWW(DWindex).SOURCE)).w/2+1)
