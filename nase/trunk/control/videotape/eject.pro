@@ -1,17 +1,20 @@
 ;+
 ; NAME: Eject
 ;
-; PURPOSE: Schließen eines mit InitVideo oder LoadVideo geöffneten Array-Videos.
+; PURPOSE: Schließen eines mit InitVideo oder LoadVideo geöffneten Array-Videos und
+;          Anfügen eines informativen Labeltextes an das Videoinfo-File.
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: Eject, Video [,/VERBOSE]
+; CALLING SEQUENCE: Eject, Video [,/VERBOSE] [,/NOLABEL]
 ; 
 ; INPUTS: Video: eine mit InitVideo oder LoadVideo initialisierte Videostruktur
 ;
 ; OPTIONAL INPUTS: ---
 ;	
 ; KEYWORD PARAMETERS: VERBOSE: Für mehr Freude an der Simulation...
+;                     NOLABEL: Unterdrückt die interaktive Abfrage
+;                              eines Labeltextes.
 ;
 ; OUTPUTS: ---
 ;
@@ -26,7 +29,8 @@
 ; PROCEDURE: War das Video zur Aufnahme geöffnet, so wird an das .vidinf-File noch die FrameAnzahl angehängt.
 ;            .vid und .vidinf werden geschlossen.
 ;
-; EXAMPLE: Eject, MyVideo, /VERBOSE
+; EXAMPLE: 1. Eject, MyVideo, /VERBOSE
+;          2. Eject, MyVideo, /NOLABEL
 ;
 ; MODIFICATION HISTORY:
 ;
@@ -37,7 +41,7 @@
 ;
 ;-
 
-Pro Eject, Video, VERBOSE=verbose
+Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel
 
    If Video.VideoMode eq 'RECORD' then begin
       writeu, Video.infounit, Video.FramePointer
@@ -49,6 +53,17 @@ Pro Eject, Video, VERBOSE=verbose
          print, 'Closing Video "'+Video.title+'". Recorded Frames: '+strtrim(string(Video.FramePointer),1)
       end
       
+      if not keyword_set(NOLABEL) then begin ; Label schreiben
+         print
+         print, "Please enter a Label for this Video (End with '*') -"
+         l = ""
+         Read, l, PROMPT="LABEL: "
+         While l ne "*" do begin
+            Writeu, Video.infounit, l
+            Writeu, Video.infounit, 10b ;LineFeed
+            Read, l, PROMPT="LABEL: "
+         endwhile 
+      endif
       close, Video.unit
       close, Video.infounit
       
