@@ -28,11 +28,12 @@ Function basic_widget_object::widget
 End
 
 ;; ------------ Constructor & Destructor --------------------
-Function basic_widget_object::init, PARENT=Parent
+Function basic_widget_object::init, PARENT=Parent, _REF_EXREA=_extra
    message, /Info, "I am created."
    self.widget = widget_base(Parent, /Column, $
                              UName="basic_widget_object", $
-                             Func_Get_Value="basic_widget_object_get_value")
+                             Func_Get_Value="basic_widget_object_get_value", $
+                             _EXTRA=_extra)
    ;; Our widget uses a child as a container for the
    ;; object reference. The user can query it as the VALUE of
    ;; the main widget:
