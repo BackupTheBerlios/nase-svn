@@ -306,6 +306,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , RANGE_IN=range_in $
             , _EXTRA=e
 
+
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
@@ -433,7 +434,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                                   , MINUS_ONE=minus_one)
          Image = Temporary(_Image)
       ENDIF ELSE BEGIN
-         IF Set(CUBIC) OR Keyword_Set(INTERP) OR $
+         IF (CUBIC NE 0) OR Keyword_Set(INTERP) OR $
           Keyword_Set(MINUS_ONE) THEN BEGIN
             ;; Congrid when POLYGON is set but INTERPOLATION is desired
             _Image = DblArr((xsize*_smooth(0)) > 1 $

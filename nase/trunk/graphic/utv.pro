@@ -15,6 +15,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2003/08/21 14:50:11  thiel
+;        PTVS always produced interpolated images, because it sets
+;        CUBIC=0, which in turn caused the IF SET(CUBIC) statement in UTVScl
+;        to be true,
+;        which is not desired by default. CUBIC=0 should not interpolate, as
+;        it does not do so in Congrid either.
+;
 ;     Revision 2.5  2000/10/01 14:50:42  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -38,6 +45,7 @@ PRO UTv, Image, XNorm, YNorm, Dimension, CUBIC=cubic, INTERP=interp, MINUS_ONE=m
 ;Don't ask me why CUBIC,INTERP,MINUS_ONE have to be passed
 ;explicitely. My IDL crashes, if not! (Segmentation Fault)...
 ; Rüdiger
+
    CASE N_Params() OF
       0: Message, 'incorrect number of arguments'
       1: UTvScl, /NOSCALE, Image, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, _EXTRA=e
