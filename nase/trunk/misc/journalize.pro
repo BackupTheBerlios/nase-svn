@@ -105,8 +105,8 @@ function JZ__prefix
 end
 
 function JZ__suffix
-   s = JZ__oneof(["Letters", "Reviews"])
-   s = JZ__oneof(["", "Research "])+s
+   s = JZ__oneof(["Letters", "Reviews", "Research", $
+                  "Research Letters", "Research Reviews"])
    return, s
 End
 
