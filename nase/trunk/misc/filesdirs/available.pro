@@ -6,14 +6,14 @@
 ;  $Id$
 ;
 ; AIM:
-;  checks, if data is available for read on a logical unit number
+;  checks if data is available for reading on a logical unit number
 ;  (LUN)
 ;
 ; PURPOSE: 
 ; Check, if data is waiting on a LUN. I.e. the next attempt to read
 ; from the LUN wil <B>not</B> block IDL. (Blocking appears on
 ; device-special files like pipes or FIFOs, if no data ist ready to
-; read. In that case no EOF is generated!)
+; be read. In that case no EOF is generated!)
 ;
 ; CATEGORY:
 ;  ExecutionControl
@@ -29,7 +29,8 @@
 ;
 ; INPUT KEYWORDS:
 ;
-;  HELP      :: If set, display informational message
+;  HELP      :: Set this keyword to display information on hwo to use
+;               thid function.
 ;
 ;  USE_SELECT:: By default, this procedure calls the C++-implemented
 ;               function <C>non_block_readable()</C>, which determines
@@ -47,8 +48,9 @@
 ;                     restrictions below.)
 ; 
 ; OUTPUTS:
-;   ready:: (array of) BOOLEAN: TRUE or FALSE, indicating if a read
-;           attempt on the LUN will not block.
+;   ready:: (array of) boolean: TRUE if a read attempt on the LUN will
+;           not block, i.e., at least one byte may be safely read from
+;           the file.
 ;
 ; RESTRICTIONS:
 ;   LUN has to be valid and open for reading.<BR>
@@ -69,9 +71,10 @@
 ;
 ; PROCEDURE:
 ;  <C>CALL_EXTERNAL( ... )</C><BR>
-;  (Obtain file-descriptors, set NON-BLOCKING-flag on it, attempt to
+;  Standard procedure: Obtain file-descriptors, set NON-BLOCKING-flag on it, attempt to
 ;  read a character, push it back if seccessfull, reset
-;  NON-Blocking-flag)
+;  NON-Blocking-flag.<BR>
+;  Alternative procedure: Call UNIX <*>select()</*> function.
 ;
 ; EXAMPLE:
 ;*if available(23) then readf, 23, data
