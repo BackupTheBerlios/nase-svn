@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1999/07/28 07:37:32  saam
+;           + return on error
+;
 ;     Revision 2.9  1999/06/16 12:51:11  kupper
 ;     Fixed minor programming bug caused by new .DrawID tag in PS-sheets.
 ;
@@ -105,6 +108,7 @@
 ;-
 PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
 
+   On_Error, 2
    Default, save_colors, 1
 
    Handle_Value, __sheet, _sheet, /NO_COPY
