@@ -1,59 +1,77 @@
 ;+
-; NAME:               LoopName
+; NAME:
+;  LoopName()
 ;
-; AIM: Generates an individual string for a given loop structure
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            Generates an individual string for a given loop
-;                     structure. This may serve as basis for a
-;                     filename to save iteration specific data.
-;                     The strings contains of the tag names and values
-;                     of the variable loop parameters.
-;                         
-; CATEGORY:           CONTROL
+; AIM:
+;  Generates an individual string for a given loop structure.
 ;
-; CALLING SEQUENCE:   s = LoopName(LS [,/NOLONG] [,/PRINT] [,SEP=sep])
+; PURPOSE:
+;  Generates an individual string for a given loop structure. This may
+;  serve as basis for a filename to save iteration specific data. The
+;  string contains the tag names and values of the variable loop parameters.
 ;
-; INPUTS:             LS: a loop structure, initialized with InitLoop
+; CATEGORY:
+;  DataStructures
+;  ExecutionControl
 ;
-; OUTPUTS:            S : the generated string 
-;                              
-; KEYWORD PARAMETERS: NOLONG: omits tag names in the string (only the
-;                             values will be used)
-;                     PRINT:  if set, S returns a string suitable for
-;                             printing to the sreen
-;                     SEP:    the loop separator (Default: '_'), only
-;                             functional, if you have more than one
-;                             loop variable.
+; CALLING SEQUENCE:
+;* s = LoopName(ls [,/NOLONG] [,/PRINT] [,SEP=...])
+;
+; INPUTS:
+;  ls:: A loop structure, initialized with <A>InitLoop()</A>.
+;
+; INPUT KEYWORDS:
+;  NOLONG:: Omits tag names in the string (only the values will be used).
+;  PRINT::  If set, <*>s</*> returns a string suitable for printing to
+;          the screen. 
+;  SEP:: The loop separator (Default: '_'), only functional if you
+;        have more than one loop variable.
+;
+; OUTPUTS:
+;  s:: The generated string. 
+;
+; PROCEDURE:
+;  String juggling.
 ;
 ; EXAMPLE:
-;                         myParameters={ a: 0.5, b:1.5432, $
-;                                          c:[1,2], $
-;                                          d:['A','C'] }
-;                         LS = InitLoop(myParameters)
-;                         REPEAT BEGIN
-;                           print, LoopName(LS)
-;                           print, LoopName(LS,/NOLONG)
-;                           tmpStruc = LoopValue(LS)
-;                           dummy = Get_Kbrd(1)
-;                           Looping, LS, dizzy
-;                         END UNTIL dizzy
+;* myParameters={ a: 0.5, b:1.5432, $
+;*                c:[1,2], $
+;*                d:['A','C'] }
+;* LS = InitLoop(myParameters)
+;* REPEAT BEGIN
+;*    print, LoopName(LS)
+;*    print, LoopName(LS,/NOLONG)
+;*    print, LoopName(LS,/PRINT)
+;*    tmpStruc = LoopValue(LS)
+;*    Looping, LS, dizzy
+;* END UNTIL dizzy
+;*
+;*> A_0.500000_B_1.54320_C_1_D_A_
+;*> _0.500000__1.54320__1__A_
+;*> A : 0.500000    B : 1.54320    C : 1    D : A
+;*> A_0.500000_B_1.54320_C_1_D_C_
+;*> _0.500000__1.54320__1__C_
+;*> A : 0.500000    B : 1.54320    C : 1    D : C
+;*> A_0.500000_B_1.54320_C_2_D_A_
+;*> _0.500000__1.54320__2__A_
+;*> A : 0.500000    B : 1.54320    C : 2    D : A
+;*> A_0.500000_B_1.54320_C_2_D_C_
+;*> _0.500000__1.54320__2__C_
+;*> A : 0.500000    B : 1.54320    C : 2    D : C
 ;
-;                    ScreenShot:
-;                           _C_1_D_A
-;                           _1_A
-;                           _C_1_D_C
-;                           _1_C
-;                           _C_2_D_A
-;                           _2_A
-;                           _C_2_D_C
-;                           _2_C                                   
-;      
-; SEE ALSO:          InitLoop, Looping, LoopValue
-;
+; SEE ALSO:
+;  <A>InitLoop</A>, <A>Looping</A>, <A>LoopValue</A>.
 ;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2001/09/03 14:08:20  thiel
+;        I was bored so I updated the header.
+;
 ;     Revision 1.10  2000/10/03 13:29:18  saam
 ;     + extended to process several values simultaneously
 ;     + new syntax still undocumented
@@ -129,3 +147,32 @@ FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print, SEP=sep
    END ELSE CONSOLE, 'no valid loop structure passed', /FATAL
 
 END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
