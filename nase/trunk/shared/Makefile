@@ -59,7 +59,8 @@ tidy :
 clean :
 	rm -f *.o *.so *.sl *.a so_locations
 	rm -rf sunos_sparc
-
+	rm -rf linux_x86
+	rm -rf OSF_alpha
 
 #  Rules for building the object files.
 
