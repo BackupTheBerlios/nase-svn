@@ -21,6 +21,7 @@
 ;                     (- Spule zu einer bestimmten Stelle mit Rewind() )
 ;                      - Spiele beliebig viele Frames ab mit  Replay() 
 ;                      - Beende die Wiedergabe mit            Eject
+;                     (- Erzeuge nachträglich ein Label mit   Label )
 ;                          
 ;
 ; CATEGORY: Simulation
