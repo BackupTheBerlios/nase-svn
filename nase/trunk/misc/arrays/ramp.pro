@@ -67,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/06/14 18:55:28  kupper
+;        Oops! +/-1 error!
+;
 ;        Revision 1.1  2000/06/14 14:07:42  kupper
 ;        First version.
 ;
@@ -80,16 +83,16 @@ Function Ramp, len, LEFT=left, RIGHT=right, MIN=min, MAX=max, $
 
    ;; Mean was given, not Min/Max:
    If Set(MEAN) then begin
-      min = mean-(len/2.0)*abs(slope)
+      min = mean-((len-1)/2.0)*abs(slope)
    EndIf
 
    ;; Min/Slope was given:
    If Set(MIN) and Set(SLOPE) then begin
       If slope gt 0 then begin
          left = min
-         right = min + len*abs(slope)
+         right = min + (len-1)*abs(slope)
       Endif Else begin
-         left = min + len*abs(slope)
+         left = min + (len-1)*abs(slope)
          right = min
       Endelse
    EndIf
@@ -98,21 +101,21 @@ Function Ramp, len, LEFT=left, RIGHT=right, MIN=min, MAX=max, $
    If Set(MAX) and Set(SLOPE) then begin
       If slope gt 0 then begin
          right = max
-         left  = max - len*abs(slope)
+         left  = max - (len-1)*abs(slope)
       Endif Else begin
-         right = max - len*abs(slope)
+         right = max - (len-1)*abs(slope)
          left = max
       Endelse
    EndIf
 
    ;; Left/Slope was given:
    If Set(LEFT) and Set (SLOPE) then begin
-      right = left + len*slope
+      right = left + (len-1)*slope
    EndIf
    
    ;; Right/Slope was given:
    If Set(RIGHT) and Set (SLOPE) then begin
-      left = right - len*slope
+      left = right - (len-1)*slope
    EndIf
    
    ;; At this point, left & right are defined.
