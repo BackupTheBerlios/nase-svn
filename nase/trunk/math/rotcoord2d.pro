@@ -66,13 +66,13 @@ PRO  RotCoord2D, X, Y, Phi_,  $
    IF  NOT(Set(X) AND Set(Y))  THEN  Console, '   X or Y are not defined.', /fatal
    Default, Phi, 0.0
 
-   IF  ((Size(X))[0] NE (Size(Y))[0]) OR (Max(Size(X,/dim) NE Size(Y,/dim)) EQ 1)  THEN  Console, '  X and Y must have the same size.', /fatal
+   IF  ((Size(X))(0) NE (Size(Y))(0)) OR (Max(Size(X,/dim) NE Size(Y,/dim)) EQ 1)  THEN  Console, '  X and Y must have the same size.', /fatal
 
    IF  (Size(X  ,/type) GE 6) AND (Size(X,  /type) LE 11)  THEN  Console, '  X is of wrong type', /fatal
    IF  (Size(Y  ,/type) GE 6) AND (Size(Y,  /type) LE 11)  THEN  Console, '  Y is of wrong type', /fatal
    IF  (Size(Phi,/type) GE 6) AND (Size(Phi,/type) LE 11)  THEN  Console, '  Phi is of wrong type', /fatal
 
-   Phi = Float(Phi_[0])   ; If Phi is an array, only the first value is taken seriously.
+   Phi = Float(Phi_(0))   ; If Phi is an array, only the first value is taken seriously.
    IF  Keyword_Set(degrees)  THEN  Phi = Phi * !pi / 180.
 
    ;----------------------------------------------------------------------------------------------------------------------

@@ -68,7 +68,7 @@ FUNCTION  NextPowerOf2,   N,   upper = upper, lower = lower
    ; Checking parameters and errors:
    IF  N_Params() LT 1  THEN  Console, '  Wrong number of arguments.', /FATAL
    SizeN = Size(N)
-   TypeN = SizeN[SizeN[0]+1]
+   TypeN = SizeN(SizeN(0)+1)
    IF  (TypeN GE 6) AND (TypeN LE 11)  THEN  Console, '  Argument is of wrong type', /fatal
    Valid = (N GE 1) AND (N LE Long64(2)^62)   ; is =1 where N is within the acceptable range of the algorithm
    IF  TOTAL(1-Valid) NE 0  THEN  Console, '  Argument contains values out of acceptable range.', /warning

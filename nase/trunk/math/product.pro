@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/12/20 09:56:08  bruns
+;     * replaced [] by () for compatibility with lower IDL versions
+;
 ;     Revision 2.4  2000/11/28 13:22:18  bruns
 ;     * translated doc header
 ;     * fixed syntax violations in the doc header
@@ -70,10 +73,10 @@ FUNCTION Product, A, dim, DOUBLE=DOUBLE
    On_Error, 2
 
    S = Size(A)
-   AType = S[S[0]+1]
+   AType = S(S(0)+1)
    IF N_Params() EQ 1 THEN dim = 0
    IF N_Params() GT 2 THEN Console, '   Too many arguments.', /fatal
-   IF dim GT S[0]     THEN Console, '   Dimension index too large for array.', /fatal
+   IF dim GT S(0)     THEN Console, '   Dimension index too large for array.', /fatal
 
    CASE  AType  OF
      4   : IF  Keyword_Set(DOUBLE)  THEN  PType = 5  ELSE  PType = 4
@@ -86,15 +89,15 @@ FUNCTION Product, A, dim, DOUBLE=DOUBLE
 
    IF dim EQ 0 THEN BEGIN   ; no dimension given
 
-      Prod = (Make_Array(dimension = [1], type = PType, value = 1))[0]   ; generate a scalar 1 of the desired type
-      FOR i=0,S[S[0]+2]-1 DO Prod = Prod * A[i]   ; calculate the product over all elements
+      Prod = (Make_Array(dimension = [1], type = PType, value = 1))(0)   ; generate a scalar 1 of the desired type
+      FOR i=0,S(S(0)+2)-1 DO Prod = Prod * A(i)   ; calculate the product over all elements
 
       Return, Prod
 
    END ELSE BEGIN
 
       ; generate an array of the desired dimensional structure and type
-      Prod = Make_Array(dimension = S[ Where( (IndGen(S[0])+1) NE dim ) + 1 ], type = PType, value = 1)
+      Prod = Make_Array(dimension = S( Where( (IndGen(S(0))+1) NE dim ) + 1 ), type = PType, value = 1)
       CASE  dim  OF   ; calculate the product over the specified dimension
         1: FOR  i=0,S(dim)-1  DO  Prod(*) = A(i,*,*,*,*,*,*) * Prod(*)
         2: FOR  i=0,S(dim)-1  DO  Prod(*) = A(*,i,*,*,*,*,*) * Prod(*)

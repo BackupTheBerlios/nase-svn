@@ -92,12 +92,12 @@ FUNCTION  SincerpolateFFT, Signal, Factor
    IF  N_Params()    LT 2  THEN  Console, '  Wrong number of arguments.', /fatal
    SizeSignal = Size([Signal])
    DimsSignal = Size([Signal], /dim)
-   TypeSignal = SizeSignal[SizeSignal[0]+1]
-   NSignal    = SizeSignal[1]    ; number of data points in one signal epoch
+   TypeSignal = SizeSignal(SizeSignal(0)+1)
+   NSignal    = SizeSignal(1)    ; number of data points in one signal epoch
    IF  (TypeSignal GE 7) AND (TypeSignal LE 11) AND (TypeSignal NE 9)  THEN  Console, '  Signal is of wrong type', /fatal
    IF  NSignal       LT 2  THEN  Console, '  Signal epoch must have more than one element.', /fatal
-   IF  SizeSignal[0] EQ 1  THEN  NEpochs = 1  $
-                           ELSE  NEpochs = Product(DimsSignal[1:*])   ; number of signal epochs in the whole array
+   IF  SizeSignal(0) EQ 1  THEN  NEpochs = 1  $
+                           ELSE  NEpochs = Product(DimsSignal(1:*))   ; number of signal epochs in the whole array
 
    NInterp = Round(Factor * NSignal)   ; number of data points in one interpolated signal epoch
 
@@ -109,7 +109,7 @@ FUNCTION  SincerpolateFFT, Signal, Factor
    ENDIF
 
    SizeInterp    = SizeSignal   ; copy of IDL size vector of the signal array
-   SizeInterp[1] = NInterp      ; artificially created IDL size vector for the interpolated signal array defined below
+   SizeInterp(1) = NInterp      ; artificially created IDL size vector for the interpolated signal array defined below
    IntSignal     = MAKE_ARRAY(size = SizeInterp, /nozero)   ; the interpolated signal array
 
    ;----------------------------------------------------------------------------------------------------------------------
@@ -124,16 +124,16 @@ FUNCTION  SincerpolateFFT, Signal, Factor
      i1 = e  * NInterp
      i2 = i1 + NInterp - 1
      ; The interpolation itself:
-     FFT_S = FFT(Signal[s1:s2],-1)
-     FFT_S[NSignal/2] = 0.5 * FFT_S[NSignal/2]
-     IntSignal[i1:i2] = FFT([ FFT_S[0:NSignal/2] , ComplexArr(NInterp-NSignal-1) , FFT_S[NSignal/2:*]   ], 1)
+     FFT_S = FFT(Signal(s1:s2),-1)
+     FFT_S(NSignal/2) = 0.5 * FFT_S(NSignal/2)
+     IntSignal(i1:i2) = FFT([ FFT_S(0:NSignal/2) , ComplexArr(NInterp-NSignal-1) , FFT_S(NSignal/2:*)   ], 1)
    ENDFOR  ELSE  FOR  e = 0, NEpochs-1  DO  BEGIN
      s1 = e  * NSignal
      s2 = s1 + NSignal - 1
      i1 = e  * NInterp
      i2 = i1 + NInterp - 1
-     FFT_S = FFT(Signal[s1:s2],-1)
-     IntSignal[i1:i2] = FFT([ FFT_S[0:NSignal/2] , ComplexArr(NInterp-NSignal)   , FFT_S[NSignal/2+1:*] ], 1)
+     FFT_S = FFT(Signal(s1:s2),-1)
+     IntSignal(i1:i2) = FFT([ FFT_S(0:NSignal/2) , ComplexArr(NInterp-NSignal)   , FFT_S(NSignal/2+1:*) ], 1)
    ENDFOR
 
    RETURN, IntSignal

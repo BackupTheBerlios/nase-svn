@@ -109,22 +109,22 @@ FUNCTION  Correlation,   X_, Y_, Dimension,  $
    SizeY = Size([Y_])
    DimsX = Size([X_], /dim)
    DimsY = Size([Y_], /dim)
-   TypeX = SizeX[SizeX[0]+1]
-   TypeY = SizeY[SizeY[0]+1]
-   IF  (SizeX[0] NE SizeY[0]) OR (Max(DimsX NE DimsY) EQ 1)  THEN  Console, '  x and y must have the same size', /fatal
+   TypeX = SizeX(SizeX(0)+1)
+   TypeY = SizeY(SizeY(0)+1)
+   IF  (SizeX(0) NE SizeY(0)) OR (Max(DimsX NE DimsY) EQ 1)  THEN  Console, '  x and y must have the same size', /fatal
    IF  (TypeX GE 6) AND (TypeX LE 11)  THEN  Console, '  x is of wrong type', /fatal
    IF  (TypeY GE 6) AND (TypeY LE 11)  THEN  Console, '  y is of wrong type', /fatal
 
    ; Checking the argument DIMENSION:
    IF  Set(Dimension)  THEN  BEGIN
      IF  (Size(Dimension, /type) GE 6) AND (Size(dimension, /type) LE 11)  THEN  Console, '  Dimension variable is of wrong type', /fatal
-     Dim = Round(Dimension[0])   ; If DIMENSION is an array, only the first value is taken seriously.
+     Dim = Round(Dimension(0))   ; If DIMENSION is an array, only the first value is taken seriously.
    ENDIF  ELSE  $
      Dim = 0L
-   IF  (Dim LT 0) OR (Dim GT SizeX[0])  THEN  Console, '  Specified dimension out of allowed range', /fatal
+   IF  (Dim LT 0) OR (Dim GT SizeX(0))  THEN  Console, '  Specified dimension out of allowed range', /fatal
 
-   IF  Dim EQ 0  THEN  N = SizeX[SizeX[0]+2]  $
-                 ELSE  N = SizeX[Dim]       ; number of elements in the specified dimension
+   IF  Dim EQ 0  THEN  N = SizeX(SizeX(0)+2)  $
+                 ELSE  N = SizeX(Dim)       ; number of elements in the specified dimension
    ; If the number of elements in the specified dimension is 1, subtracting the mean is equivalent to subtracting X
    ; from itself, since for each epoch the mean value is the (only one) value itself. This will be explicitly computed,
    ; but a warning message is given here:
@@ -153,7 +153,7 @@ FUNCTION  Correlation,   X_, Y_, Dimension,  $
      YEnergy    = Total(Y^2, Dim)   ; energy of signal y
      ; Only those epochs are valid whose energy is greater than zero (otherwise the correlation is left zero):
      Valid      = Where(XEnergy NE 0  AND  YEnergy NE 0)
-     Cxy[Valid] = Cxy[Valid] / Sqrt(XEnergy[Valid] * YEnergy[Valid])
+     Cxy(Valid) = Cxy(Valid) / Sqrt(XEnergy(Valid) * YEnergy(Valid))
    ENDIF  ELSE  $
      IF  Keyword_Set(lengthnorm)  THEN  Cxy = Cxy / N
 

@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/12/20 10:02:13  bruns
+;     * replaced [] by () for compatibility with lower IDL versions
+;
 ;     Revision 2.4  2000/11/28 13:24:07  bruns
 ;     * translated doc header
 ;     * fixed syntax violations in the doc header
@@ -74,7 +77,7 @@ FUNCTION  FileExists, file,   STAT = STAT, INFO = INFO
      IF  Keyword_Set(stat)  THEN  Stat = FStat(lun)
      IF  Keyword_Set(info) AND (StrUpCase(!Version.OS_Family) EQ 'UNIX')  THEN  BEGIN
        Spawn, 'file '+file, r
-       Info = r[0]
+       Info = r(0)
      END
      Close, lun
      Free_Lun, lun

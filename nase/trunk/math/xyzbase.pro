@@ -97,26 +97,26 @@ PRO  XYZBase, IntX_, wX, X,   IntY_, wY, Y,   IntZ_, wZ, Z
    ;----------------------------------------------------------------------------------------------------------------------
 
    ; To avoid integer division traps, the arguments are converted to float type:
-                              IntX = Float(IntX_[0:1])
-   IF  N_Params() GE 6  THEN  IntY = Float(IntY_[0:1])
-   IF  N_Params() GE 9  THEN  IntZ = Float(IntZ_[0:1])
-                              NX   = Floor((Max(IntX)-Min(IntX)) / Float(wX[0])) + 1
-   IF  N_Params() GE 6  THEN  NY   = Floor((Max(IntY)-Min(IntY)) / Float(wY[0])) + 1
-   IF  N_Params() GE 9  THEN  NZ   = Floor((Max(IntZ)-Min(IntZ)) / Float(wZ[0])) + 1
+                              IntX = Float(IntX_(0:1))
+   IF  N_Params() GE 6  THEN  IntY = Float(IntY_(0:1))
+   IF  N_Params() GE 9  THEN  IntZ = Float(IntZ_(0:1))
+                              NX   = Floor((Max(IntX)-Min(IntX)) / Float(wX(0))) + 1
+   IF  N_Params() GE 6  THEN  NY   = Floor((Max(IntY)-Min(IntY)) / Float(wY(0))) + 1
+   IF  N_Params() GE 9  THEN  NZ   = Floor((Max(IntZ)-Min(IntZ)) / Float(wZ(0))) + 1
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Generating the X and Y planes:
    ;----------------------------------------------------------------------------------------------------------------------
 
-   IF  N_Params() EQ 3  THEN  X = Float(wX[0]) * FIndGen(NX) + Min(IntX)
+   IF  N_Params() EQ 3  THEN  X = Float(wX(0)) * FIndGen(NX) + Min(IntX)
    IF  N_Params() EQ 6  THEN  BEGIN
-     X =           ReBin( Float(wX[0]) * FIndGen(NX) + Min(IntX) , NX, NY , /sample )
-     Y = Transpose(ReBin( Float(wY[0]) * FIndGen(NY) + Min(IntY) , NY, NX , /sample ))
+     X =           ReBin( Float(wX(0)) * FIndGen(NX) + Min(IntX) , NX, NY , /sample )
+     Y = Transpose(ReBin( Float(wY(0)) * FIndGen(NY) + Min(IntY) , NY, NX , /sample ))
    ENDIF
    IF  N_Params() EQ 9  THEN  BEGIN
-     X =           ReBin( Float(wX[0]) * FIndGen(NX) + Min(IntX) , NX, NY, NZ , /sample )
-     Y = Transpose(ReBin( Float(wY[0]) * FIndGen(NY) + Min(IntY) , NY, NX, NZ , /sample ), [1,0,2])
-     Z = Transpose(ReBin( Float(wZ[0]) * FIndGen(NZ) + Min(IntZ) , NZ, NX, NY , /sample ), [1,2,0])
+     X =           ReBin( Float(wX(0)) * FIndGen(NX) + Min(IntX) , NX, NY, NZ , /sample )
+     Y = Transpose(ReBin( Float(wY(0)) * FIndGen(NY) + Min(IntY) , NY, NX, NZ , /sample ), [1,0,2])
+     Z = Transpose(ReBin( Float(wZ(0)) * FIndGen(NZ) + Min(IntZ) , NZ, NX, NY , /sample ), [1,2,0])
    ENDIF
 
 
