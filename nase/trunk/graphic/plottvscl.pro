@@ -1,6 +1,8 @@
 ;+
 ; NAME: PlotTVScl
 ;
+; VERSION: $Id$
+;
 ; AIM:
 ;  Color coded display of a two-dimensional array in a coordinate
 ;  system.
@@ -8,93 +10,97 @@
 ; PURPOSE: TVScl-Darstellung eines Arrays zusammen mit einem
 ;          Koordinatensystem, Achsenbeschriftung und Legende
 ;
-; CATEGORY: GRAPHICS / GENERAL
+; CATEGORY: 
 ;
-; CALLING SEQUENCE: PlotTvScl, Array 
-;                             [, XNorm] [, YNorm]
-;                             [, CHARSIZE=Schriftgroesse]
-;                             [, /FULLSHEET]
-;                             [, /NOSCALE]
-;                             [, /LEGEND]
-;                             [, /ORDER]
-;                             [, /NASE]
-;                             [, XRANGE=xrange] [, YRANGE=yrange]
-;                             [, GET_POSITION=PlotPosition]
-;                             [, GET_COLOR=Farbe]
-;                             [, GET_XTICKS=XTicks]
-;                             [, GET_YTICKS=YTicks]
-;                             [, GET_PIXELSIZE=Pixelgroesse]
-;                             [, GET_INFO=PlotDaten]
-;                             [, LAGMARGIN=LEGMARGIN]
-;                             [, /NEUTRAL]
-;                             [, /POLYGON]
-;                             [, CUBIC=cubic] [, /INTERP] [, /MINUS_ONE]
-;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
-;                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
-;                             [, TOP=Farbindex]
-;                             [, RANGE_IN=[a,b] ]
-;                             [, UPDATE_INFO=Update_struct [, /INIT ] ]
+; Graphics
+; General
 ;
-;                            - all other Keywords are passed to the PLOT -
-;                            - command, using the _REF_EXTRA mechanism,  -
-;                            - for example: [X|Y]TITLE, SUBTITLE, ...    -
+; CALLING SEQUENCE: 
+;*                     PlotTvScl, Array 
+;*                             [, XNorm] [, YNorm]
+;*                             [, CHARSIZE=Schriftgroesse]
+;*                             [, /FULLSHEET]
+;*                             [, /NOSCALE]
+;*                             [, /LEGEND]
+;*                             [, /ORDER]
+;*                             [, /NASE]
+;*                             [, XRANGE=xrange] [, YRANGE=yrange]
+;*                             [, GET_POSITION=PlotPosition]
+;*                             [, GET_COLOR=Farbe]
+;*                             [, GET_XTICKS=XTicks]
+;*                             [, GET_YTICKS=YTicks]
+;*                             [, GET_PIXELSIZE=Pixelgroesse]
+;*                             [, GET_INFO=PlotDaten]
+;*                             [, LAGMARGIN=LEGMARGIN]
+;*                             [, /NEUTRAL]
+;*                             [, /POLYGON]
+;*                             [, CUBIC=cubic] [, /INTERP] [, /MINUS_ONE]
+;*                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
+;*                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
+;*                             [, TOP=Farbindex]
+;*                             [, RANGE_IN=[a,b] ]
+;*                             [, UPDATE_INFO=Update_struct [, /INIT ] ]
+;*
+;*                            - all other Keywords are passed to the PLOT -
+;*                            - command, using the _REF_EXTRA mechanism,  -
+;*                            - for example: [X|Y]TITLE, SUBTITLE, ...    -
 ;
-; INPUTS: Array : klar!
+; INPUTS: 
+;           Array:: klar!
 ;
-; OPTIONAL INPUTS: XNorm, YNorm : Position der unteren linken Ecke des Plotkastens
+; OPTIONAL INPUTS: XNorm, YNorm:: Position der unteren linken Ecke des Plotkastens
 ;                                 in Normalkoordinaten.
 ;                                 Werden diese Werte angegeben, so hat der Anwender
 ;                                 selbst fuer ausreichenden Rand fuer Beschriftungen 
 ;                                 zu sorgen. Ohne Angabe von XNorm und YNorm wird
 ;                                 der Rand um den Plotkasten analog zur IDL-Plot-Routine
 ;                                 ermittelt.  
-;                  Abszissen-, Ordinatentext : klar!
-;                  Schriftgroesse: Faktor, der die Schriftgroesse in Bezug auf die
-;                                  Standardschriftgroesse (1.0) angibt
+;                  Abszissen-, Ordinatentext:: klar!
+;                  Schriftgroesse:: Faktor, der die Schriftgroesse in Bezug auf die
+;                                   Standardschriftgroesse (1.0) angibt
 ;
-; KEYWORD PARAMETERS: FULLSHEET: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
+; KEYWORD PARAMETERS: FULLSHEET:: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
 ;                                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
 ;                                der Regel nicht quadratisch.
-;                     NOSCALE:   Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
+;                     NOSCALE::   Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
 ;                                mit dem Aufruf von <A HREF="#PLOTTV">PlotTV</A>
 ;                                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
 ;                                TVSCL und TV.
-;                     LEGEND:    Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
+;                     LEGEND::    Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
 ;                                an. 
-;                     ORDER:     der gleiche Effekt wie bei Original-TVScl
-;                     NASE:      Bewirkt die richtig gedrehte Darstellung von Layerdaten 
+;                     ORDER::     der gleiche Effekt wie bei Original-TVScl
+;                     NASE::      Bewirkt die richtig gedrehte Darstellung von Layerdaten 
 ;                                (Inputs, Outputs, Potentiale, Gewichte...).
 ;                                D.h. z.B. werden Gewichtsmatrizen in der gleichen
 ;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
-;                     [XY]RANGE: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
+;                     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
 ;                                das erste Element gibt das Minimum, das zweite das Maximum der Achse an                      
-;                     LEGMARGIN: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
-;                     leg_(max|min): alternative Beschriftung der Legende 
-;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
+;                     LEGMARGIN:: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
+;                     leg_(max|min):: alternative Beschriftung der Legende 
+;                     NEUTRAL::   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
-;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
+;                     POLYGON:: Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;                                 /POLYGON setzt /CUBIC, /INTERP
 ;                                 und /MINUS_ONE außer Kraft.
-;                     TOP       : Benutzt nur die Farbeintraege
+;                     TOP::       Benutzt nur die Farbeintraege
 ;                                 von 0..TOP (siehe IDL5-Hilfe von TvSCL)
 ;                                 Dieses Schlüsselwort hat nur
 ;                                 Bedeutung, wenn nicht eines
 ;                                 der Schlüsselworte NASE,
 ;                                 NEUTRAL oder NOSCALE gesetzt ist.
-;                     CUBIC,
-;                     INTERP,
-;                     MINUS_ONE : werden an ConGrid weitergereicht (s. IDL-Hilfe)
-;                     COLORMODE : Wird an Showweights_scale
+;                     CUBIC, INTERP, MINUS_ONE:: 
+;                                 werden an ConGrid weitergereicht (s. IDL-Hilfe)
+;                     COLORMODE:: Wird an Showweights_scale
 ;                                 weitergereicht. Mit diesem Schlüsselwort kann unabhängig 
 ;                                 von den Werten im Array die
 ;                                 schwarz/weiss-Darstellung (COLORMODE=+1) 
 ;                                 oder die rot/grün-Darstellung
 ;                                 (COLORMODE=-1) erzwungen werden.
-;                     SETCOL    : Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
+;                     SETCOL::    Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
 ;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
-;                     PLOTCOL   : Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
+;                     PLOTCOL::   Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
 ;                                 wird versucht, eine passende Farbe zu raten.
-;                     RANGE_IN  : When passed, the two-element array is taken as the range to
+;                     RANGE_IN:: When passed, the two-element array is taken as the range to
 ;                                 scale to the plotting colors. (I.e. the first element is scaled to
 ;                                 color index 0, the scond is scaled to the highest available
 ;                                 index (or to TOP in the no-NASE, no-NEUTRAL, no-NOSCALE 
@@ -109,12 +115,12 @@
 ;                                 struct. However, the new scaling is valid for
 ;                                 this call only, and is not stored in the
 ;                                 struct, unless you also specify /INIT.
-;                    UPDATE_INFO: When omitted, undefined, or passend an empty
+;                    UPDATE_INFO:: When omitted, undefined, or passend an empty
 ;                                 PLOTTVSCL_INFO structure, the call acts like
 ;                                 a normal PlotTvScl call. Axes as well as the
 ;                                 array are plotted.
 ;                                   This keyword acts as an optional output
-;                                 also. A <A HREF="../misc/structures#PLOTTVSCL_INFO__DEFINE">PLOTTVSCL_INFO</A> struct is returned,
+;                                 also. A <A>PLOTTVSCL_INFO</A> struct is returned,
 ;                                 containing information on keywords, plot
 ;                                 positions and color scaling. When this strict
 ;                                 is passed with the next call to PlotTvScl,
@@ -142,7 +148,7 @@
 ;                                 passed by value in IDL. You need to use a
 ;                                 temporary variable. (See IDL Reference Manual,
 ;                                 chapter "Parameter Passing with Structures", sic!)
-;                           INIT: When passing a structure in UPDATE_INFO, array 
+;                           INIT:: When passing a structure in UPDATE_INFO, array 
 ;                                 values are scaled according to the values
 ;                                 contained in the PLOTTVSCL_INFO struct. /INIT
 ;                                 forces the color scaling to be re-initialized, 
@@ -152,20 +158,20 @@
 ;                                 The new scling is stored in the PLOTTVSCL_INFO 
 ;                                 struct for subsequent calls.
 ;
-; OPTIONAL OUTPUTS: GET_POSITION: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
+; OPTIONAL OUTPUTS: GET_POSITION:: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
 ;                                 zurueckgibt.
-;                   GET_COLOR   : Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
-;                   GET_[XY]Ticks:Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
+;                   GET_COLOR:: Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
+;                   GET_[XY]Ticks:: Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
 ;                                 ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
 ;                                 beschriftet worden waere. 
-;                   GET_PIXELSIZE:Ein zweielementiges Array [XSize, YSize], das die Groesse der
+;                   GET_PIXELSIZE:: Ein zweielementiges Array [XSize, YSize], das die Groesse der
 ;                                 TV-Pixel in Normalkoordinaten
 ;                                 zurueckliefert.
-;                 ( GET_INFO    : Kept for compatibility reasons. This keyword
+;                   GET_INFO::    Kept for compatibility reasons. This keyword
 ;                                 is obsolete. The value returned is the same as 
 ;                                 returned by the UPDATE_INFO keyword. Use
-;                                 UPDATE_INFO instead. )
+;                                 UPDATE_INFO instead.
 ;
 ;
 ; PROCEDURE: 1. Ermitteln des fuer die Darstellung zur Verfuegung stehenden Raums.
@@ -173,21 +179,25 @@
 ;            3. Ausfuellen mit einer entsprechend grossen UTVScl-Graphik
 ;            4. Legende hinzufuegen 
 ;
-; EXAMPLE: width = 25
-;          height = 50
-;          W = gauss_2d(width, height)+0.01*randomn(seed,width, height)
-;          window, xsize=500, ysize=600
-;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
+; EXAMPLE: 
+;*          width = 25
+;*          height = 50
+;*          W = gauss_2d(width, height)+0.01*randomn(seed,width, height)
+;*          window, xsize=500, ysize=600
+;*          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-;          ; Using the UPDATE_INFO keyword:
-;          PlotTvScl, 
+;*          ; Using the UPDATE_INFO keyword:
+;*          PlotTvScl, 
 ;
-; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A>, <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="../#NASETVSCL">NaseTVScl</A>,
-;           <A HREF="#PLOTTVSCL_UPDATE">PlotTVScl_update</A>            
-;
+; SEE ALSO: <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>, <A>NaseTVScl</A>,
+;           <A>PlotTVScl_update</A>            
+;-
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.67  2000/11/02 15:48:43  gabriel
+;          many bugs fixed: fg color , arry origin positioning , doc header
+;
 ;     Revision 2.66  2000/10/01 14:50:42  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -420,7 +430,7 @@
 ;            Die erste scheinbar fertige Version.
 ;
 ;
-;-
+;
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
                XRANGE=xrange, YRANGE=yrange, $
@@ -485,7 +495,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
             save_rpsc = !REVERTPSCOLORS
             !REVERTPSCOLORS = 0
          EndIf
-         sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
+         sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2))
          If !PSGREY then !REVERTPSCOLORS = save_rpsc
       EndElse
       Get_Color = sc
@@ -497,7 +507,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       Default, LEGEND, 0
       Default, legmargin,0.25
       Default, Polygon,0
-      DEFAULT, top, !D.TABLE_SIZE-1
+      DEFAULT, top, !TOPCOLOR
 
       ;; Added for passing to PlotTvScl_update, R Kupper, Sep 22 1999
       default, NASE, 0
@@ -530,21 +540,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       xcoord = lindgen(ArrayWidth)
       ycoord = lindgen(ArrayHeight)
       PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize*charcor,_EXTRA=e
-      
 
-      ;; Commented out following line, as it is instantly overwritten
-      ;; by the next one anyway (left over somehow??)
-      ;; Rüdiger, Nov 15 1999
-
-      ;;   plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
       plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
-      ;; convert_coord macht bei !P.MULTI Fehler Y Koordinate muss korregiert werden
-      ;;   IF FLOAT(!P.MULTI(2)) GT 0 AND (ArrayHeight GT ArrayWidth) THEN BEGIN
-      ;;      plotregion_norm(1,1) = !Y.S(0)+ !Y.S(1)*ycoord(N_ELEMENTS(ycoord)-1)*  ArrayWidth/FLOAT(ArrayHeight)
-      ;;print,"hallo",plotregion_norm(1,1)
-      ;;   ENDIF
-      plotregion_device = convert_coord(plotregion_norm,/NORM,/TO_DEVICE)
-      
+      ;;only hole pixel or points exist
+      plotregion_device = (convert_coord(plotregion_norm,/NORM,/TO_DEVICE))
+      plotregion_norm = uconvert_coord(plotregion_device,/TO_NORM,/DEVICE)
 
       VisualWidth = !D.X_VSIZE
       VisualHeight = !D.Y_VSIZE
@@ -597,19 +597,17 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;-----Raender und Koordinaten des Ursprungs:
       IF Keyword_Set(LEGEND) THEN LegendRandDevice = LEGMARGIN*VisualWidth ELSE LegendRandDevice = 0.0
       
-      ;;print,LegendRandDevice
-      ;;IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
-      ;;ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
-      
-      IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
+           
+      IF N_Params() EQ 3 THEN OriginDevice = (uConvert_Coord([XPos,YPos], /Normal, /To_Device)) $
       ELSE OriginDevice = [plotregion_device(0,0),plotregion_device(1,0)]
-      
-      ;;UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
-      UpRightDevice = [VISUALWIDTH -(plotregion_device(0,1)- plotregion_device(0,0)), VISUALHEIGHT-(plotregion_device(1,1)-plotregion_device(1,0))]+[LegendRandDevice,0]
-      
-      LegendRandNorm = Convert_Coord([LegendRandDevice,0], /Device, /To_Normal)
-      OriginNormal = Convert_Coord(OriginDevice, /Device, /To_Normal)
-      UpRightNormal = Convert_Coord(UpRightDevice, /Device, /To_Normal)
+   
+     
+      UpRightDevice = ([VISUALWIDTH -(plotregion_device(0,1)- plotregion_device(0,0)), $
+                        VISUALHEIGHT-(plotregion_device(1,1)-plotregion_device(1,0))]+[LegendRandDevice,0])
+       
+      LegendRandNorm = uConvert_Coord([LegendRandDevice,0], /Device, /To_Normal)
+      OriginNormal = uConvert_Coord(OriginDevice, /Device, /To_Normal)
+      UpRightNormal = uConvert_Coord(UpRightDevice, /Device, /To_Normal)
       
       RandNormal = OriginNormal + UpRightNormal
       
@@ -617,11 +615,12 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       PlotPositionDevice(0) = OriginDevice(0)
       PlotPositionDevice(1) = OriginDevice(1)
       
-      ;;PixelSizeNormal = [(plotregion_norm(0,1))/float(ArrayWidth+1),(plotregion_norm(1,1))/float(ArrayHeight+1)]
-      PixelSizeNormal = [(plotregion_norm(0,1)-OriginNormal(0)-LegendRandNorm(0,0))/float(ArrayWidth+1),(plotregion_norm(1,1)-OriginNormal(1))/float(ArrayHeight+1)]
-      ;;print,PixelSizeNormal,plotregion_device
-      PixelSizeDevice = convert_coord(PixelSizeNormal, /normal, /to_device)
+     
+      PixelSizeNormal = [(plotregion_norm(0,1)-OriginNormal(0)-LegendRandNorm(0,0))/float(ArrayWidth+1),$
+                         (plotregion_norm(1,1)-OriginNormal(1))/float(ArrayHeight+1)]
       
+      PixelSizeDevice = (uconvert_coord(PixelSizeNormal, /normal, /to_device))
+    
 
       ;;-----Plotten des Koodinatensystems:
       IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
@@ -632,14 +631,15 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          MinPixelSizeDevice = min(PixelSizeDevice(0:1)) ;;PixelSizeDevice contains Z-Value=0
          PlotPositionDevice(2) = MinPixelSizeDevice*(ArrayWidth+1)+OriginDevice(0)
          PlotPositionDevice(3) = MinPixelSizeDevice*(ArrayHeight+1)+OriginDevice(1)
-
+        
          Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
           xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
           yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
           XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
       ENDIF ELSE BEGIN
-         ;;print,LEGEND*0.2*Charsize,LegendRandNorm(0),"Hallo legende"
-         Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-LegendRandNorm(0),plotregion_norm(1,1)], $
+         
+         Plot, indgen(2), /NODATA, Color=sc, $
+          Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-LegendRandNorm(0),plotregion_norm(1,1)], $
           xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
           yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
           XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize*charcor,_EXTRA=_extra
@@ -649,13 +649,17 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       
       TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
       TotalPlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
-      ;;TotalPlotWidthNormal = (plotregion_norm(0,1)-plotregion_norm(0,0)-LegendRandNorm(0,0))
-      ;;TotalPlotHeightNormal = (plotregion_norm(1,1)-plotregion_norm(1,0))
-
+ 
       PlotWidthNormal = TotalPlotWidthNormal - TotalPlotWidthNormal*2*!Y.Ticklen
       PlotHeightNormal = TotalPlotHeightNormal - TotalPlotHeightNormal*2*!X.Ticklen
       
-      PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
+      PlotAreaDevice = (uConvert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device))
+
+      
+      ;; it seems that Ticklen is measured without the border line
+      ;; so we have to add one pixel (point) for the right positioning
+      borderthick_norm = uConvert_Coord([1., 1.], /DEVICE, /to_normal)
+
 
       ;;------------------> Optional Outputs
       Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
@@ -673,10 +677,10 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;              y00     : long((OriginNormal(1)+TotalPlotWidthNormal*!Y.Ticklen)*!D.Y_SIZE),$ 
       ;;   Changed it to:                   
       ;;
-      x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
+       x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
        y00     : long((OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen)*!D.Y_SIZE),$ 
-       x00_norm: OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
-       y00_norm: OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen,$ 
+       x00_norm:  OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen+borderthick_norm(0),$
+       y00_norm:  OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen+borderthick_norm(1),$ 
        tvxsize : long(PlotAreaDevice(0)),$
        tvysize : long(PlotAreaDevice(1)),$
        subxsize: long(2.0*TotalPlotWidthNormal*!Y.Ticklen*!D.X_SIZE),$
@@ -737,7 +741,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                   LEG_MIN = -LEG_MAX
                END ELSE LEG_MIN = 0
             END
-            
+           
+           
             TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
              H_Stretch=TotalPlotWidthNormal/15.*VisualWidth/(0.5*!D.X_PX_CM), $
              V_Stretch=TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
