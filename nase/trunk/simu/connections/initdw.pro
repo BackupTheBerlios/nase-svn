@@ -8,7 +8,8 @@
 ; CALLING SEQUENCE: My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
 ;                                   [,DELAY  | ,D_RANDOM | ,D_NRANDOM | ,D_LINEAR | ,D_GAUSS]
 ;                                   [,WEIGHT | ,W_RANDOM | ,W_NRANDOM | ,W_LINEAR | ,W_GAUSS]
-;                                   [,D_NONSELF] [,W_NONSELF] )
+;                                   [,D_NONSELF] [,W_NONSELF]
+;                                   [,TRUNCATE [,TRUNC_VALUE]] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;
@@ -39,6 +40,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Aug 5 18:00:21 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		TRUNCATE, TRUNC_VALUE zugefügt.
+;
 ;       Mon Aug 4 01:31:42 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -58,7 +64,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                    D_NRANDOM=d_nrandom, W_NRANDOM=w_nrandom, $
                    D_GAUSS=d_gauss,     W_GAUSS=w_gauss, $
                    D_LINEAR=d_linear,   W_LINEAR=w_linear, $
-                   D_NONSELF=d_nonself, W_NONSELF=w_nonself
+                   D_NONSELF=d_nonself, W_NONSELF=w_nonself, $
+                   TRUNCATE=truncate,  TRUNC_VALUE=trunc_value
    
    IF set(S_LAYER) THEN BEGIN
       s_width = s_layer.w
@@ -103,7 +110,7 @@ if set (D_RANDOM) then DelMat.Delays  = d_random(0) + (d_random(1)-d_random(0)) 
 if set (W_NRANDOM) then DelMat.Weights = w_nrandom(0) + w_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
 if set (D_NRANDOM) then DelMat.Delays  = d_nrandom(0) + d_nrandom(1) * RandomN(seed,t_width*t_height, s_width*s_height) 
 
-if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=0, S_COL=0, T_HS_ROW=0, T_HS_COL=0, /ALL
+if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
 ;if set (D_GAUSS) then
 
 
