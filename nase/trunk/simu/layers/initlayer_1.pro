@@ -31,6 +31,7 @@
 ;
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;
+;
 ;                       alternative Keyword-Parameter zugefügt,
 ;                       Rüdiger Kupper, 24.7.97 verbindliche
 ;                       Keyword-Parameter, Mirko Saam, 25.7.97
@@ -40,6 +41,12 @@
 ;
 ;               Strukturnamen "Layer_1" entfernt, da Srukturen für unterschiedliche Layer unterschiedliche Feldgrößen brauchen.		
 ;
+;       Wed Jul 30 15:57:54 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Statt des Strukturnamens enthält die Struktur jetzt
+;		ein Stringfeld mit der Neuronentypnummer ('1').
+;
 
 ;-
 FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
@@ -48,7 +55,8 @@ FUNCTION InitLayer_1, WIDTH=width, HEIGHT=height, TYPE=type
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   Layer = { w      : width                ,$
+   Layer = { Type   : '1'                  ,$
+             w      : width                ,$
              h      : height               ,$
              para   : type                 ,$
              F      : DblArr(width*height) ,$
