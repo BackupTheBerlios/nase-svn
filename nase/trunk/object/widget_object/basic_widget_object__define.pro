@@ -80,6 +80,16 @@ Function basic_widget_object::uvalue, NO_COPY=no_copy
    return, val
 End
 
+Pro basic_draw_object::realize
+   Widget_Control, self->widget(), /Realize
+End
+
+Pro basic_draw_object::register, TITLE = title, _ref_extra = e
+   Default, title, Obj_Class(self)
+   widget_Control, Tlb_Set_Title=title, self->widget()
+   Xmanager, title, self->widget(), _EXTRA=e
+End
+
 ;; ------------ Private --------------------
 
 
