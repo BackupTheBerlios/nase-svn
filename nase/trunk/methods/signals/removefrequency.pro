@@ -100,6 +100,8 @@
 ;
 ;-
 
+
+
 FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
 
 
@@ -111,15 +113,15 @@ FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
 
    IF  N_Params() LT 3  THEN  Console, '  Wrong number of arguments.', /fatal
    SizeSignal = Size([Signal])
-   TypeSignal = SizeSignal[SizeSignal[0]+1]
+   TypeSignal = SizeSignal(SizeSignal(0)+1)
    DimsSignal = Size([Signal], /dim)
-   NSignal = DimsSignal[0]          ; number of data points in one signal epoch
-   fRemove = Float(FreqRemove[0])   ; If FreqRemove is an array, only the first value is taken seriously
-   fSample = Float(FreqSample[0])   ; If FreqSample is an array, only the first value is taken seriously
+   NSignal = DimsSignal(0)          ; number of data points in one signal epoch
+   fRemove = Float(FreqRemove(0))   ; If FreqRemove is an array, only the first value is taken seriously
+   fSample = Float(FreqSample(0))   ; If FreqSample is an array, only the first value is taken seriously
    IF  (TypeSignal GE 6) AND (TypeSignal LE 11)  THEN  Console, '  Signal is of wrong type', /fatal
    IF  NSignal       LT 2  THEN  Console, '  Signal epoch must have more than one element.', /fatal
-   IF  SizeSignal[0] EQ 1  THEN  NEpochs = 1  $
-                           ELSE  NEpochs = Product(DimsSignal[1:*])   ; number of signal epochs in the whole array
+   IF  SizeSignal(0) EQ 1  THEN  NEpochs = 1  $
+                           ELSE  NEpochs = Product(DimsSignal(1:*))   ; number of signal epochs in the whole array
 
    ; NShift is the amount of data points by which the reference signal exceeds one signal epoch in length; it is
    ; therefore also the length of the usable part of the correlation function. This length should correspond to an
@@ -138,9 +140,9 @@ FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
    RefSignal = Cosine(fRemove, 0, fSample, NSignal+NShift)   ; the reference signal for the cross-correlation
 
    SizeCorr    = SizeSignal   ; copy of IDL size vector of the signal array
-   SizeCorr[1] = NShift       ; artificially created size vector for the correlation function array
+   SizeCorr(1) = NShift       ; artificially created size vector for the correlation function array
    IF  NEpochs EQ 1  THEN  DimsEpochs = [1]  $
-                     ELSE  DimsEpochs = DimsSignal[1:*]   ; dimension vector describing the dimensional structure of the epoch(s)
+                     ELSE  DimsEpochs = DimsSignal(1:*)   ; dimension vector describing the dimensional structure of the epoch(s)
    CorrFunct = MAKE_ARRAY(size = SizeCorr  , /nozero)     ; array for the correlation function epoch(s)
    RemSignal = MAKE_ARRAY(size = SizeSignal, /nozero)     ; array for the signal epoch(s) after removing the fRemove component(s)
    Amplitude = MAKE_ARRAY(dim  = DimsEpochs, /float, /nozero)   ; array for the amplitude(s) of the fRemove component(s)
@@ -157,7 +159,7 @@ FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
      c1 = e  * NShift
      c2 = c1 + NShift - 1
      ; Two "Reverse" calls are needed because the convolution routine "Convol" is used to calculate the cross-correlation:
-     CorrFunct[c1:c2] = (Reverse(Convol(Reverse(RefSignal), Signal[s1:s2], NSignal, center = 0)))[0:NShift-1]
+     CorrFunct(c1:c2) = (Reverse(Convol(Reverse(RefSignal), Signal(s1:s2), NSignal, center = 0)))(0:NShift-1)
    ENDFOR
    CorrFunct  = SincerpolateFFT(CorrFunct, FInt)
    NCorrFunct = FInt * NShift   ; number of data points in one interpolated epoch of the correlation function
@@ -176,7 +178,7 @@ FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
      c1 = e  * NCorrFunct
      c2 = c1 + NCorrFunct - 1
      ; The current epoch of the correlation function is isolated:
-     CorrFunctEpoch = CorrFunct[c1:c2]
+     CorrFunctEpoch = CorrFunct(c1:c2)
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; The phase of the sinusoidal correlation function is most precisely estimated not from the positions of its maxima,
@@ -184,22 +186,22 @@ FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
    ;----------------------------------------------------------------------------------------------------------------------
 
      ; Determine the indices followed by an "ascending zero" (with positive slope) of the correlation function.
-     Zero_Ind = Where( ((CorrFunctEpoch[1:*] GT 0) - (CorrFunctEpoch[0:NCorrFunct-2] GT 0)) EQ 1 )
+     Zero_Ind = Where( ((CorrFunctEpoch(1:*) GT 0) - (CorrFunctEpoch(0:NCorrFunct-2) GT 0)) EQ 1 )
      ; If obviously no fRemove component is present, the current signal epoch is left unchanged, and the rest
      ; of the processing for the current epoch is skipped.
      IF  N_Elements(Zero_Ind) LT 7  THEN  BEGIN
        NErrors          = NErrors + 1
-       RemSignal[s1:s2] = Signal[s1:s2]
-       Amplitude[e]     = -1
-       Phase[e]         =  0
+       RemSignal(s1:s2) = Signal(s1:s2)
+       Amplitude(e)     = -1
+       Phase(e)         =  0
        GOTO, LoopEnd
      ENDIF
      ; The exact positions (Zero_Pos) of the ascending zeroes are obtained by linear interpolation; the values have to
      ; be devided by the interpolation factor FInt in order to be compatible with the initial variables:
-     Zero_Pos = (Zero_Ind - CorrFunctEpoch[Zero_Ind] / (CorrFunctEpoch[Zero_Ind+1]-CorrFunctEpoch[Zero_Ind])) / FInt
+     Zero_Pos = (Zero_Ind - CorrFunctEpoch(Zero_Ind) / (CorrFunctEpoch(Zero_Ind+1)-CorrFunctEpoch(Zero_Ind))) / FInt
      ; The first two and the last two zero positions are ignored, because they are possibly distorted due to the
      ; interpolation; the remaining positions are converted to phase values (Zero_Chi):
-     Zero_Chi = 2*!pi*fRemove/fSample * Zero_Pos[2:N_Elements(Zero_Pos)-3]
+     Zero_Chi = 2*!pi*fRemove/fSample * Zero_Pos(2:N_Elements(Zero_Pos)-3)
      ; For correct averaging of the phase values, they are represented by complex numbers with modulus 1; the complex
      ; mean (Zero_ChiCpxMean) is then converted back to a phase value (Zero_ChiMean):
      Zero_ChiCpxMean = Total(Complex(Cos(Zero_Chi), Sin(Zero_Chi))) / N_Elements(Zero_Chi)
@@ -252,9 +254,9 @@ FUNCTION  RemoveFrequency,   Signal, FreqRemove, FreqSample, Amplitude, Phase
    ; are the optional arguments in the calling sequence).
    ;----------------------------------------------------------------------------------------------------------------------
 
-     RemSignal[s1:s2] = Signal[s1:s2] - s0 * Cosine(fRemove, Psi, fSample, NSignal)
-     Amplitude[e]     = s0
-     Phase[e]         = Psi
+     RemSignal(s1:s2) = Signal(s1:s2) - s0 * Cosine(fRemove, Psi, fSample, NSignal)
+     Amplitude(e)     = s0
+     Phase(e)         = Psi
 
      LoopEnd:
 

@@ -101,15 +101,15 @@ FUNCTION  Envelope,   Signal, fS_,  $
    IF  NOT(Set(Signal) AND Set(fS_))  THEN  Console, '   Not all arguments defined.', /fatal
    SizeSignal = Size([Signal])
    DimsSignal = Size([Signal], /dim)
-   NSignal    = DimsSignal[0]    ; number of data points in one signal epoch
-   TypeSignal = SizeSignal[SizeSignal[0]+1]
+   NSignal    = DimsSignal(0)    ; number of data points in one signal epoch
+   TypeSignal = SizeSignal(SizeSignal(0)+1)
    TypefS     = Size(fS_, /type)
    IF  (TypeSignal GE 6) AND (TypeSignal LE 11)  THEN  Console, '  Signal is of wrong type', /fatal
    IF  (TypefS     GE 6) AND (TypefS     LE 11)  THEN  Console, '  fS is of wrong type', /fatal
    IF  NSignal     LT 2  THEN  Console, '  Array epoch must have more than one element.', /fatal
-   IF  SizeSignal[0] EQ 1  THEN  NEpochs = 1  $
-                           ELSE  NEpochs = Product(DimsSignal[1:*])   ; number of signal epochs in the whole array
-   fS = Float(fS_[0])   ; If fS is an array, only the first value is taken seriously.
+   IF  SizeSignal(0) EQ 1  THEN  NEpochs = 1  $
+                           ELSE  NEpochs = Product(DimsSignal(1:*))   ; number of signal epochs in the whole array
+   fS = Float(fS_(0))   ; If fS is an array, only the first value is taken seriously.
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Preparing the filter function and the array for the result:
@@ -126,7 +126,7 @@ FUNCTION  Envelope,   Signal, fS_,  $
      Filter = CosFlankFilter(NSignal, fS,   fl = flow, fh = fhigh, wl = wlow, wh = whigh, h = hertz, att = attenuation)
    ENDIF
    SizeFilter = Size(Filter)
-   IF  (SizeFilter[0] NE 1) OR (SizeFilter[1] NE NSignal)  THEN  Console, '  Filter length does not match signal length.', /fatal
+   IF  (SizeFilter(0) NE 1) OR (SizeFilter(1) NE NSignal)  THEN  Console, '  Filter length does not match signal length.', /fatal
 
    EnvSignal = Make_Array(size = SizeSignal, /nozero)   ; array for the filtered signal epochs
 
@@ -141,10 +141,10 @@ FUNCTION  Envelope,   Signal, fS_,  $
      s1 = e  * NSignal
      s2 = s1 + NSignal - 1
      ; The actual procedure for computing the envelope signal:
-     BPSpectrum           = Filter * FFT(Signal[s1:s2])   ; the bandpass spectrum of the signal epoch ...
-     BPSpectrum[1:nNyq]   = 2*BPSpectrum[1:nNyq]          ; ... mulitplied by 2 for positive frequencies
-     BPSpectrum[nNyq+1:*] = 0                             ; ... set to zero for negative frequencies
-     EnvSignal[s1:s2]     = Abs(FFT(BPSpectrum,1))        ; modulus of the corresponding time-domain signal (= envelope)
+     BPSpectrum           = Filter * FFT(Signal(s1:s2))   ; the bandpass spectrum of the signal epoch ...
+     BPSpectrum(1:nNyq)   = 2*BPSpectrum(1:nNyq)          ; ... mulitplied by 2 for positive frequencies
+     BPSpectrum(nNyq+1:*) = 0                             ; ... set to zero for negative frequencies
+     EnvSignal(s1:s2)     = Abs(FFT(BPSpectrum,1))        ; modulus of the corresponding time-domain signal (= envelope)
    ENDFOR
 
    Return, EnvSignal
