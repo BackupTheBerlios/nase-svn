@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2003/08/25 16:02:04  kupper
+;        sorry, had debug messages left. removed.
+;
 ;        Revision 1.6  2003/08/25 15:51:34  kupper
 ;        showits now also store the palette that was set when they were opened,
 ;        and restore it when being closed. So they do not interfere with the
@@ -74,7 +77,6 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
    
    ;; decrease opencount
    uservalue.opencount = uservalue.opencount-1
-dmsg, "open count "+str(uservalue.opencount)
 
    ;; opencount must always be 0 or positive:
    if (uservalue.opencount lt 0) then begin
@@ -84,7 +86,6 @@ dmsg, "open count "+str(uservalue.opencount)
    endif else begin
       ;; do only restore values, if opencount equals 0:
       If (uservalue.opencount eq 0) then begin
-dmsg, "...closed."
          UWset, uservalue.oldwin
          
          new = !P

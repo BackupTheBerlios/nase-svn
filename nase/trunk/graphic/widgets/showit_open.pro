@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2003/08/25 16:02:04  kupper
+;        sorry, had debug messages left. removed.
+;
 ;        Revision 1.8  2003/08/25 15:51:34  kupper
 ;        showits now also store the palette that was set when they were opened,
 ;        and restore it when being closed. So they do not interfere with the
@@ -79,11 +82,9 @@ PRO ShowIt_Open, widid
 
    ;; increase opencount
    uservalue.opencount = uservalue.opencount+1
-dmsg, "open count "+str(uservalue.opencount)
 
    ;; do only store values, if opencount equals 1:
    If (uservalue.opencount eq 1) then begin
-dmsg, "...opened."
       uservalue.oldwin = !D.window
       UWSet, winid
       
