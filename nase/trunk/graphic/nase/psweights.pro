@@ -5,7 +5,6 @@
 ; PURPOSE: Ausgabe einer Gewichtsmatrix in einer PostScript-Datei
 ;          Grosse Gewichte werden hier im Gegensatz zu ShowWeights
 ;          dunkel dargestellt, kleine Gewichte hell.
-;          !None-Verbindungen sind weiss, also unsichtbar.
 ;
 ; CATEGORY: GRAPHIC
 ;
@@ -15,6 +14,7 @@
 ;                               [, WIDTH=Breite] [, HEIGHT=Hoehe,]
 ;                               [, PSFILE='Filename']
 ;                               [, /EPS] [,BPP=bitsperpixel]
+;                               [, /COLOR]
 ;
 ; INPUTS: Matrix : eine DW-Struktur
 ;      
@@ -38,9 +38,12 @@
 ; KEYWORD PARAMETERS: FROMS / TOS : siehe ShowWeights
 ;                     DELAYS      : siehe ShowWeights
 ;                     EPS         : erzeugt eine Encapsulated PostScript-Datei
+;                     COLOR       : das PostScript-Bild ist farbig,
+;                                   aehnlich der ShowWeights-Darstellung
+;                                   (!none=dunkelblau, postiv=gruen)   
 ;
 ; OUTPUTS: Eine Postscript- (.ps) bzw Encapsulated PostScript- (.eps)
-;                           Datei, die ein Bild der Gewichtsmatrix enthaelt. 
+;          Datei, die ein Bild der Gewichtsmatrix enthaelt. 
 ;
 ; OPTIONAL OUTPUTS: ---
 ;
@@ -48,7 +51,11 @@
 ;
 ; SIDE EFFECTS: ---
 ;
-; RESTRICTIONS: Arbeitet bisher nur mit positiven Gewichten
+; RESTRICTIONS: Wird das Schluesselwort COLOR nicht angegeben, so
+;               erzeugt die Prozedur ein Schwarz/Weiss-Bild der
+;               Gewichtsmatrix. Bei dieser Darstellung werden nur die absoluten
+;               Gewichtsgroessen gezeigt, d.h. starke negative Gewichte erscheinen
+;               genauso wie starke positive Gewichte dunkel.
 ;
 ; PROCEDURE: Set()
 ;
@@ -57,10 +64,21 @@
 ;
 ;          Hier wird eine Gewichtsmatrix initialisiert und
 ;          anschliessend in einem PostScript-File namens 'beispiel'
-;          ausgegeben. Das resultierende Bild ist 10 cm breit und
+;          ausgegeben. Das resultierende Bild schwarzweiss, 10 cm breit und
 ;          quadratisch.
-
+;
+;          Oder in bunt:
+;
+;          TestMatrix=InitDw(S_width=10,S_height=12,t_width=11,t_height=13,W_DOG=[1,2,4],W_NOCON=7,/W_TRUNCATE)
+;          w=GetWeight(TestMatrix,S_ROW=6,S_COL=5)
+;          w(where(w ne !NONE))=-w(where(w ne !NONE))
+;          SetWeight, TestMatrix ,w ,S_ROW=6, S_COL=5
+;	   PSWeights, TestMatrix, PSFILE='buntesbeispiel', /froms, /COLOR
+;
 ; MODIFICATION HISTORY:
+;
+;       Tue Aug 26 14:36:13 1997, Andreas Thiel
+;		Keyword /COLOR eingebaut.
 ;
 ;       Tue Aug 26 11:40:11 1997, Andreas Thiel
 ;		Erste Version kreiert.
@@ -69,7 +87,7 @@
 
 
 
-PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, EPS=eps, BPP=bpp
+PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, EPS=eps, BPP=bpp, COLOR=Color
 
 If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
@@ -120,17 +138,33 @@ max = max(MatrixMatrix)
 
 if min eq 0 and max eq 0 then max = 1; Falls Array nur Nullen enthält!
 
-if min ge 0 then begin
-   MatrixMatrix = (254)-MatrixMatrix/double(max)*(254)
-endif else begin
-   g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
-   tvlct, rotate(g, 2), g, bytarr(ts)         ;Rot-Grün
-   MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-   MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
-endelse
+If Not Set(COLOR) Then Begin ;-----Schwarzweissbild
 
-;-----nichtexistente Verbindungen sind weiss:
-IF count NE 0 THEN MatrixMatrix(no_connections) = 255
+    MatrixMatrix = abs(MatrixMatrix) ;nur die absolute Staerke der Gewichte wird beachtet
+    MatrixMatrix = (254)-MatrixMatrix/double(max)*(254)
+    IF count NE 0 THEN MatrixMatrix(no_connections) = 255
+    Linienfarbe = 0
+
+Endif Else Begin ;-----Farbild
+    ts = 2^bpp-1 ;----Anzahl der Farben haengt von der gewaehlten Farbtiefe ab
+    if min ge 0 then begin
+        g = 255-indgen(ts)/double(ts-1)*255
+        tvlct, g, g, g          ;Grauwerte
+        MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
+    endif else begin
+        g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
+        tvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
+        MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
+        MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
+    endelse
+
+    IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
+
+    SetColorIndex, ts-2, 0, 0, 200 ;Blau sei die Farbe für nichtexistente Verbindungen
+    SetColorIndex, ts-1, 255, 100, 0  ;Orange die für die Trennlinien
+    Linienfarbe = ts-1
+EndElse
+
 
 
 
@@ -142,7 +176,9 @@ If Not Set(EPS) Then Begin
     Endif Else Begin
         DEVICE, Filename = PSFile+'.eps'
         DEVICE, /Encapsulated
-    EndElse
+    Endelse
+
+If Set(COLOR) Then DEVICE, /Color
 
 DEVICE, Bits_per_pixel=bpp
 
@@ -167,11 +203,11 @@ for YY= 0, Matrix.source_h-1 do begin
       plots, [1000.0*(XX*(Unterbildbreite+Strichbreite)-Strichbreite/2.0), $
               1000.0*((XX+1)*(Unterbildbreite+Strichbreite)-Strichbreite/2.0)], $
                [1000.0*((Matrix.source_h-1-YY)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0), $
-                1000.0*((Matrix.source_h-1-YY)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=0, /DEVICE 
+                1000.0*((Matrix.source_h-1-YY)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=Linienfarbe, /DEVICE 
       plots, [1000.0*(XX*(Unterbildbreite+Strichbreite)-Strichbreite/2.0), $
               1000.0*(XX*(Unterbildbreite+Strichbreite)-Strichbreite/2.0)], $
                [1000.0*((Matrix.source_h-1-YY)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0), $
-                1000.0*((Matrix.source_h-1-YY+1)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=0, /DEVICE 
+                1000.0*((Matrix.source_h-1-YY+1)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=Linienfarbe, /DEVICE 
 
   end
 end
@@ -179,10 +215,10 @@ end
 ;-----Linien oben und rechts:
 plots, [-1000.0*Strichhoehe/2.0, 1000.0*(Matrix.Source_w*(Unterbildbreite+Strichbreite)-Strichbreite/2.0)], $
          [1000.0*((Matrix.source_h)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0), $
-          1000.0*((Matrix.source_h)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=0, /DEVICE 
+          1000.0*((Matrix.source_h)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=Linienfarbe, /DEVICE 
 plots, [1000.0*(Matrix.Source_w*(Unterbildbreite+Strichbreite)-Strichbreite/2.0), $
         1000.0*(Matrix.Source_w*(Unterbildbreite+Strichbreite)-Strichbreite/2.0)], $
-         [-1000.0*Strichhoehe/2.0, 1000.0*((Matrix.source_h)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=0, /DEVICE 
+         [-1000.0*Strichhoehe/2.0, 1000.0*((Matrix.source_h)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=Linienfarbe, /DEVICE 
 
 
 
