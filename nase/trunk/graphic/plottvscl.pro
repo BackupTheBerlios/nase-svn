@@ -81,6 +81,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.27  1998/07/09 12:42:52  saam
+;           the axis labelling for keyword nase was swapped (X/Y)
+;
 ;     Revision 2.26  1998/05/26 13:16:08  kupper
 ;            Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
 ;               Änderungen an der Postcript-Sheet-Verarbeitung.
@@ -227,9 +230,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    VisualWidth = !D.X_VSIZE
    VisualHeight = !D.Y_VSIZE
    
-
-   Default, XRANGE, [0, ArrayWidth-1]
-   Default, YRANGE, [0, ArrayHeight-1]
+   IF Keyword_Set(NASE) THEN BEGIN
+      Default, YRANGE, [0, ArrayWidth-1]
+      Default, XRANGE, [0, ArrayHeight-1]
+   END ELSE BEGIN
+      Default, XRANGE, [0, ArrayWidth-1]
+      Default, YRANGE, [0, ArrayHeight-1]
+   END
 
    IF N_Elements(XRANGE) NE 2 THEN Message, 'wrong XRANGE argument'
    IF N_Elements(YRANGE) NE 2 THEN Message, 'wrong YRANGE argument'
