@@ -84,21 +84,34 @@ PRO PolyTV, image $
    Default, device, 0
    Default, order, 0
 
+   ;; --- Defaults for origin and size:
+   ;; we need a little hack to get right defaults: If /DEVICE was set,
+   ;; all values that are (or are NOT) specified are in device
+   ;; coordinates. For origin, default is zero in both cases, but for
+   ;; normal, default differs:
+   devicemax = Convert_Coord([1.0, 1.0], /NORMAL, /TO_DEVICE)
    ;; Overall size in normal coordinates
-   Default, xsize, 1.
-   Default, ysize, 1.
+   IF Keyword_Set(DEVICE) THEN BEGIN
+      Default, xsize, devicemax[0]
+      Default, ysize, devicemax[1]
+   endif else begin
+      Default, xsize, 1.
+      Default, ysize, 1.
+   endelse
    si = [xsize, ysize]
-
    ;; Position of origin
    Default, xorpos, 0.
-   Default, yorpos, 0
+   Default, yorpos, 0.
    orpos = [xorpos, yorpos]
+
 
    ;; Coordinate conversion
    IF Keyword_Set(DEVICE) THEN BEGIN
       si = Convert_Coord(si, /DEVICE, /TO_NORMAL)
       orpos = Convert_Coord(orpos, /DEVICE, /TO_NORMAL)
    ENDIF
+
+
 
    ;; Number of pixels
    nxp = (Size(image))(1)
@@ -120,7 +133,7 @@ PRO PolyTV, image $
          xbox = [ix, ix+1, ix+1, ix]
          ybox = [iy, iy, iy+1, iy+1]
          PolyFill, xpsize*xbox+orpos(0), ypsize*ybox+orpos(1) $
-          , COLOR=image(ix, order*(nyp-1)+(-2*order+1)*iy), /NORM
+          , COLOR=image(ix, order*(nyp-1)+(-2*order+1)*iy), /Normal
       ENDFOR
    ENDFOR
 
