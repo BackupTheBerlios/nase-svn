@@ -40,6 +40,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;  $Log$
+;  Revision 2.5  2000/03/17 13:24:38  kupper
+;  Now checks and ignores floating underflows.
+;  (This means floating underflows will not be reported any more when !EXCEPT=1,
+;  which is the default. Set !EXCEPT=2 to report floating underflow errors.)
+;
+;  Note: In versions of IDL up to and including IDL 4.0.1, the default exception
+;  handling was functionally identical to setting !EXCEPT=2.
+;
 ;  Revision 2.4  1998/11/08 17:27:17  saam
 ;        the layer-structure is now a handle
 ;
@@ -59,6 +67,9 @@ PRO InputLayer, _Layer, _EXTRA=_extra
    Handle_Value, _LAYER, LAYER, /NO_COPY, /SET
 
    Call_Procedure, 'InputLayer_'+type, _Layer, _EXTRA=_extra
+
+   ;; Ignore any floating underflows:
+   dummy = Check_Math(Mask=32)
 
 END
 

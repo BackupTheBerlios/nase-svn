@@ -42,6 +42,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/03/17 13:24:27  kupper
+;        Now checks and ignores floating underflows.
+;        (This means floating underflows will not be reported any more when !EXCEPT=1,
+;        which is the default. Set !EXCEPT=2 to report floating underflow errors.)
+;
+;        Note: In versions of IDL up to and including IDL 4.0.1, the default exception
+;        handling was functionally identical to setting !EXCEPT=2.
+;
 ;        Revision 1.7  2000/03/15 18:38:31  kupper
 ;        Added resultptr method.
 ;
@@ -97,7 +105,10 @@ Pro leaky_integrator_array::input, a
    If a_ne(size(a, /Dimensions), size(*self.data,  /Dimensions)) then $
     message, "Array  has incompatible dimensions."
 
-   *self.data = *self.data * self.decay_factor + a
+   *self.data = Temporary(*self.data) * self.decay_factor + a
+ 
+  ;; Ignore any floating underflows:
+   dummy = Check_Math(Mask=32)
 End
 
 Function leaky_integrator_array::result
