@@ -9,9 +9,10 @@
 ;  Displays spiketrains as spike raster diagram.
 ;
 ; PURPOSE:
-;  Displays numerous spike trains as a commonly spike raster
-;  diagram. The Ordinate lists neuron indides, the abszissa is
-;  interpreted as time and each spike is displayed as a dot.
+;  Displays numerous spike trains as a commonly used spike raster
+;  diagram. The ordinate lists neuron indices, the abszissa is
+;  interpreted as time and each spike is displayed as a vertical line
+;  or as a dot.
 ;
 ; CATEGORY:
 ;  Graphic
@@ -35,19 +36,19 @@
 ;       array, and set the <*>SPASS</*> keyword.
 ;
 ; INPUT KEYWORDS:
-;    XRANGE/YRANGE:: Area of the hole spike raster that is
+;  XRANGE/YRANGE:: Area of the whole spike raster that is
 ;                    displayed. Note that the values given here
 ;                    correspond to the actual axis annotation, not to
 ;                    array indices. If <*>OVERSAMPLING</*> is set,
 ;                    <*>XRANGE</*> may have to be adjusted properly.
-;    TITLE:: Title of the plot, default: 'Spikeraster'
-;    XTITLE:: Annotation of the x-axis, default: 'Time / ms'
-;    YTITLE:: Annotation of the y-axis, default: 'Neuron #' 
-;    WIN:: Opens and uses window no. <*>WIN</*> to display
+;  TITLE:: Title of the plot, default: 'Spikeraster'
+;  XTITLE:: Annotation of the x-axis, default: 'Time / ms'
+;  YTITLE:: Annotation of the y-axis, default: 'Neuron #' 
+;  WIN:: Opens and uses window no. <*>WIN</*> to display
 ;          rasterplot.
-;    LEVEL:: Specifys the value an entry in <*>tn</*> must at least have to
+;  LEVEL:: Specifys the value an entry in <*>tn</*> must at least have to
 ;            be displayed. Default: 0.0, ie all entries GT 0.0 are plotted.
-;    OFFSET:: Value added to the x-axis annotation. This may be useful
+;  OFFSET:: Value added to the x-axis annotation. This may be useful
 ;             if only a part of the original array is to be displayed
 ;             and passed to <C>Trainspotting</C> in the form of eg
 ;             <*>tn(*,500:1000)</*>. With appropriate <*>OFFSET</*>,
@@ -56,35 +57,38 @@
 ;             annotation, not the data actually displayed. To avoid
 ;             confusion, it is recommended to use <*>XRANGE</*>
 ;             as in common IDL.
-;    OVERSAMPLING::   Gewaehrleistet eine korrekte Darstellung von Neuronen
-;                    mit Oversampling, BIN <-> ms. Mit oversampling kann
-;                    aber auch elegant die Achsenbeschriftung geändert 
-;                    werden, ohne daß sich die Beziehung BIN-ms geändert
-;                    haben muss. ZB liefert oversampling=1000 eine 
-;                    Beschriftung in Sekunden, falls ein BIN weiterhin eine 
-;                    Millisekunde lang ist.   
-;    XSYMBOLSIZE::   Die Breite der zur Darstellung der Spikes verwendeten
-;                    Symbole in Bruchteilen der verfuegbaren Plotbreite.
-;                    (Diese seltsame Einheit wurde gewaehlt, um eine einheit-
-;                    liche Darstellung auf unterschiedlichen Sheets zu 
-;                    erzielen.) Default: ein Pixel
-;    YSYMBOLSIZE::    Die Hoehe der zur Darstellung der Spikes verwendeten
-;                    Symbole in Bruchteilen der verfuegbaren Plothoehe.
-;                    Default: 1 / Anzahl der dargestellten Neuronen 
-;    OVERPLOT::      Plots data into the already existing coordinate system
-;    CLEAN :: unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
-;             (fuer Weiterbearbeitungen mit anderen Programmen)
-; MCOLOR:: Color index used for the <*>/MUA</*> option (default is red).
-; /MUA:: Shades the plot with the time-resolved total spike
+;  OVERSAMPLING:: If binsize is not 1 ms, the value passed with this
+;                   keyword is used to correct the abscissa
+;                   annotation. Additionally, annotation can be
+;                   changed easily with this keyword even if the
+;                   relation between bins and time is the same. For
+;                   example, setting <*>OVERSAMPLING=1000</*> yields
+;                   annotation in seconds, if bins are still 1 ms long.   
+;  XSYMBOLSIZE/YSYMBOLSIZE:: Width and height of the symbols used
+;                              to draw the spikes as a fraction of the
+;                              total plot width respectively
+;                              height. This strange unit was chosen to
+;                              guarantee the same size of symbols on
+;                              different <A NREF=DEFINSHEET>sheets</A>. Defaults:
+;                              <*>XSYMBOLSIZE=1 pixel</*>,
+;                              <*>YSYMBOLSIZE=1/number of neurons</*>.
+;  OVERPLOT:: Plots the data into an already existing coordinate system
+;  CLEAN :: Supresses all annotation and axes and draws only
+;             spikes. This is useful for importing the graphics into other
+;             programs.
+;  MCOLOR:: Color index used for the <*>/MUA</*> option (default is red).
+;  /MUA:: Shades the plot with the time-resolved total spike
 ;            activity scaled using the already existing ordinate. This
 ;            cannot be done in advance (e.g. before the call of
 ;            <C>Trainspotting</C> because the coordinate doesn't yet
-;            exist.) Setting both the <*>/MUA</*> and the <*>/SPASS</*> option
-;            is not yet supported. 
-; /SPASS:: Gibt an, ob das übergebene nt-Array als Sparse interpretiert werden
-;           soll. Dazu muß das Sparse-Array allerdings Infromation über die
-;           Dimension enthalten. Siehe dazu /DIMENSIONS - Keyword in 
-;           <A>Spassmacher</A>.
+;            exist).
+;  /SPASS:: Setting this keyword lets <C>Trainspotting</C> interpret
+;          its input as an array in <A NREF=SPASSMACHER>sparse</A>
+;          format. To enable correct plotting, the 
+;          sparse array has to include information about the
+;          dimensions of the original array, i.e. it has to be
+;          generated with the <*>/DIMENSIONS</*> option of
+;          <A>Spassmacher</A> set. 
 ; /NTOLDSTYLE:: Force <C>Trainspotting</C> to interpret its input in the
 ;               old format of <*>tn(neuron index, time)</*>, violating the
 ;               NASE convention of time being the first index. This
@@ -92,10 +96,6 @@
 ;               not support setting the <*>/SPASS</*> keyword simultaneously. 
 ;
 ; RESTRICTIONS:
-;  Setting both the <*>/MUA</*> and the <*>/SPASS</*> option is not
-;  yet supported. This should be changed in the future, but is not
-;  trivial since the <*>Total</*> operation used to compute the MUA
-;  does only work for "real" arrays.<BR>
 ;  <*>/NTOLDSTYLE</*> does not support setting the <*>/SPASS</*>
 ;  keyword simultaneously. As <*>/NTOLDSTYLE</*> is for compatibility
 ;  anyway, this is not a large problem. In the future,
@@ -104,13 +104,12 @@
 ;  original input, which is very memory consuming.
 ;
 ; PROCEDURE:
-;            1. Konventionelles oder Sparse-Array? Größen entsprechend 
-;               auslesen.<BR>
-;            2. Defaults und Ranges setzen.<BR>
-;            3. Achsen plotten.<BR>
-;            4. Usersymbol für Spikes definieren, vorher Größe dafür berechnen.<BR>
-;            5. Indizes der Spikes auslesen.<BR>
-;            6. Plot der Spikes, die innerhalb der Ranges liegen.<BR>
+;  1. Conventional or sparse array? Determine sizes accordingly.<BR>
+;  2. Set defaults and xyranges.<BR>
+;  3. Plot axes.<BR>
+;  4. Define usersymbol for spikes, compute size in advance.<BR>
+;  5. Read indices of spikes from array.<BR>
+;  6. Plot spikes which are inside the xyranges.<BR>
 ;
 ; EXAMPLE:               
 ;* tn = randomu(seed,200,20) GE 0.8    
@@ -159,7 +158,8 @@ PRO Trainspotting, _nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
       IF Keyword_Set(SPASS) THEN Console, /FATAL, 'Setting both SPASS and NTOLDSYTLE is not supported.'
    ENDIF ELSE BEGIN
       nt = _nt
-      Console, /WARN, 'Did you consider NASE convention of time = first index?'
+      IF (Size(nt))(1) LT (Size(nt))(2) THEN $
+       Console, /WARN, 'Did you consider NASE convention of time = first index?'
    ENDELSE
 
    
@@ -182,7 +182,8 @@ PRO Trainspotting, _nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
          s = [s(0:1), 1, s(2:*)]
       END ELSE BEGIN
 ;         modified = 0
-         IF s(0) NE 2 THEN Console, /FATAL, 'First argument must be a 2-dim array.'
+         IF s(0) NE 2 THEN Console, /FATAL $
+          , 'First argument must be a 2-dim array.'
       END
    ENDELSE
 
@@ -259,16 +260,6 @@ PRO Trainspotting, _nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
 
 
 
-   ;;----------------> plot shaded mua 
-   IF Keyword_Set(MUA) THEN BEGIN
-      IF Keyword_Set(SPASS) THEN Console, /FATAL, 'MUA and SPASS option do not work simultaneously yet!'
-      Default, mcolor, RGB(200,0,0)
-;       Polyfill, offset+[0,LIndgen((SIZE(nt))(2)), (SIZE(nt))(2),0], [0,TOTAL(nt,1), 0, 0], COLOR=mcolor
-      Polyfill, offset+[0,LIndgen((SIZE(nt))(1)), (SIZE(nt))(1),0]/oversampling, [0,Total(nt,2), 0, 0], COLOR=mcolor
-   END
-
-
-
    ;;----------------> define UserSymbol: filled square
    PlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
    PlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
@@ -317,25 +308,56 @@ PRO Trainspotting, _nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
 ;      IF modified THEN nt = REFORM(nt, /OVERWRITE)
    ENDELSE
 
+
+   ;;----------------> plot shaded mua (old code, new version happens below)
+;   IF Keyword_Set(MUA) THEN BEGIN
+;      IF Keyword_Set(SPASS) THEN Console, /FATAL, 'MUA and SPASS option do not work simultaneously yet!'
+;      Default, mcolor, RGB(200,0,0)
+;;       Polyfill, offset+[0,LIndgen((SIZE(nt))(2)), (SIZE(nt))(2),0], [0,TOTAL(nt,1), 0, 0], COLOR=mcolor
+;      Polyfill, offset+[0,LIndgen((SIZE(nt))(1)), (SIZE(nt))(1),0]/oversampling, [0,Total(nt,2), 0, 0], COLOR=mcolor
+;   END
+
+
+
    ;; now procedure is the same for sparse and conventional:
    IF (doplot NE 0) THEN BEGIN
+
       ;; extract color from _EXTRA tag
-      IF ExtraSet(_extra, 'COLOR') THEN color = _extra.color ELSE color = getforeground()
+      IF ExtraSet(_extra, 'COLOR') THEN color = _extra.color $
+      ELSE color = getforeground()
+
       ;; Determine coords from indices:
 ;      x = FLOAT(spikes / (allneurons+1)) / oversampling
 ;      y = spikes MOD (allneurons+1)
-      y = Long(spikes / (s(1)))
-      x = Float(spikes MOD (s(1))) / oversampling
-      ; Use only coords that are in x/y-range:
+      y = Long(spikes/(s(1)))
+      x = Float(spikes MOD (s(1)))/oversampling
+
+      ;; Use only coords that are in x/y-range:
       yi = Where(y GT yr(0) AND y LT yr(1), no)
       IF no NE 0 THEN BEGIN
          x = Temporary(x(yi))
          y = Temporary(y(yi))
          xi = Where(x GT xr(0) AND x LT xr(1), no)
-         IF no NE 0 THEN PlotS, x(xi) + offset, y(xi), PSYM=8, SYMSIZE=1.0, COLOR=color
-      ENDIF
+         IF no NE 0 THEN BEGIN
 
-   ENDIF
+            ;; Plot shaded MUA before spikes are plottet
+            IF Keyword_Set(MUA) THEN BEGIN
+               Default, mcolor, RGB(200,0,0)
+               tot = LonArr(s(1))
+               FOR idx=0, s(1)-1 DO BEGIN
+                  dummy = Where(x(xi) EQ idx, count)
+                  tot(idx) = count
+               ENDFOR
+               Polyfill, offset+[0,LIndgen(s(1)),s(1),0]/oversampling $
+                , [0,tot,0, 0], COLOR=mcolor
+            ENDIF ;; Keyword_Set(MUA)
+
+            ;; Plot spikes
+            PlotS, x(xi) + offset, y(xi), PSYM=8, SYMSIZE=1.0, COLOR=color
+
+         ENDIF
+      ENDIF
+   ENDIF ;; (doplot NE 0)
       
 
 END
