@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/02/19 14:16:29  saam
+;          wieder zurueck
+;
 ;     Revision 2.5  1998/02/19 14:02:56  saam
 ;           Aenderung an der Farbpalette
 ;
@@ -64,7 +67,7 @@ PRO Plotcilloscope, PS, value
    IF xpos GT 0 THEN BEGIN
       FOR ray=0,PS.rays-1 DO BEGIN
          IF xpos LT PS.time-1 THEN PlotS, [xpos/Float(PS.os),(xpos+1)/Float(PS.os)], [PS.y(ray,xpos),PS.y(ray,xpos+1)], COLOR=!P.Background, NOCLIP=0
-         PlotS, [(xpos-1)/Float(PS.os),xpos/Float(PS.os)], [PS.y(ray,xpos-1),value(ray)], NOCLIP=0, COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray))
+         PlotS, [(xpos-1)/Float(PS.os),xpos/Float(PS.os)], [PS.y(ray,xpos-1),value(ray)], NOCLIP=0, COLOR=RGB(rayRed(ray),rayGreen(ray),rayBlue(ray),/NOALLOC)
       END
    END
    PS.y(*,xpos) = value
