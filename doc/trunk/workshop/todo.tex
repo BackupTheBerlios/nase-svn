@@ -163,8 +163,14 @@ Rüdiger\\[2cm]
       \item In interactive palette selection, when ``function'' is
         selected, the next paint event plots into XLOADCT's window.
     \end{itemize}
-  \item 
-    Modify widgets to consisently use the new global font {\texttt!NASEWIDGETFONT}.
+  \item \texttt{SHOWWEIGHTS_SCALE}: Breaks if called inside the FaceIt
+    widget and says:\\
+    (30)SHOWWEIGHTS_SCALE: FAILED ASSERTION: 'Range gt 0' in line
+    169.\\
+    (30)SHOWWEIGHTS_SCALE: Reason: Range_In must be a positive scalar
+    value for this routine.\\
+    Is this a general bug or only inside Faceit? Find out where the
+    bug is and kill it..
 \end{itemize}
 
 
@@ -264,9 +270,13 @@ compatibility need not be maintained in this case.
   only. [implemented semantically clear replacement keywords NORDER
   and NSCALE, done, RK]
 \item 
-  In Windows, ExamineIt gives an error message {\texttt
-    WIDGET_CONTROL: Microsoft Windows Error: font name too long.}
+  In Windows, ExamineIt gives an error message 
+  \texttt{WIDGET_CONTROL: Microsoft Windows Error: font name too long.}
   [font definition is now done OS specific in DefGlobVars, AT] 
+\item 
+  Modify widgets to consisently use the new global font
+  \texttt{!NASEWIDGETFONT}.[Apart from ExamineIt, only FaceIt used
+  MyFont, which has been changed, AT.] 
 \end{itemize}
 
 
