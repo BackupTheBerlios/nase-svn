@@ -180,7 +180,7 @@ if ($P::mode){
 			if ($P::show eq "rbyn"  ) { RoutinesByName(); } else {
 			  if ($P::show eq "rbyc" ) { RoutinesByCat(); } else {
 			    if (($sub eq '/')||($sub eq '/nase')||($sub eq '/mind')){
-			      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
+			      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.sql");
 			      while(<IDX>){print;};
 			      close(IDX) || die "can't close index: $!\n";
 			    } else {
