@@ -50,7 +50,14 @@
 ;               Double, wenn das Ausgangsarray vom Typ Double
 ;               war, sonst vom Typ Float.
 ;
-; RESTRICTIONS: P1 und P2 dürfen nicht identisch sein.
+; RESTRICTIONS: Falls P1 und P2 identisch sind, ist die
+;               Skalierung nicht definiert. Dies ist z.B. der
+;               Fall für Arrays, welche lauter identische Werte
+;               enthalten, sofern "Range_In" nicht explizit
+;               angegeben wird.
+;               Als Rückgabewert wird hier das mehr oder weniger 
+;               sinnvolle Ergebnis eines Float-Arrays geliefert, das
+;               den konstanten Wert (P1'+P2')/2 enthält.               
 ;
 ; PROCEDURE: Elementare mathematische Operationen auf dem Arrayinhalt.
 ;
@@ -86,6 +93,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  1999/10/08 12:52:20  kupper
+;        Now catches the case (Range_In(0) eq Range_In(1)).
+;
 ;        Revision 1.4  1999/09/22 14:42:24  kupper
 ;        Grrr. Hyperling again.
 ;
@@ -106,10 +116,14 @@ Function Scl, A, Range, Range_In
    Default, Range,    [0     , !D.Table_Size-1]  
    Default, Range_In, [min(A), max(A)       ]
 
-   Return, (A - Range_In(0)) $
-            * FLOAT(Range(1)-Range(0)) $
-            / (Range_In(1)-Range_In(0)) $
-            + Range(0)
+   If Range_In(0) eq Range_In(1) then begin
+      return, Make_Array(/FLOAT, SIZE=size(A), VALUE=(Range(0)+Range(1))/2.)
+   endif else begin
+      Return, (A - Range_In(0)) $
+                * FLOAT(Range(1)-Range(0)) $
+                / (Range_In(1)-Range_In(0)) $
+                + Range(0)
+   endelse
 
 End
 
