@@ -11,7 +11,9 @@
 ; PURPOSE:
 ;  Saves IDL vars in a file. Allows them to be renamed during <A>restore2</A>.
 ;  This routine was originally written by R. Sterner,
-;  Johns Hopkins University Applied Physics Laboratory.
+;  Johns Hopkins University Applied Physics Laboratory. Note that
+;  <A>UWriteU</A> is more powerful in function and performance at the
+;  cost of non-human readable data files.
 ;   
 ; CATEGORY:
 ;  DataStorage
@@ -37,7 +39,7 @@
 ;* save2, 'test.tmp', d, e, f
 ;
 ; SEE ALSO:
-;  <A>Restore2</A>
+;  <A>Restore2</A>, <A>UWriteU</A>
 ;
 ;-
 
