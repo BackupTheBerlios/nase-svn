@@ -110,6 +110,8 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
                                     ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
     
+   if v_matrix.Delays(0) eq -1 then message, "Die übergebene Delay-Weight-Struktur enthält gar keine Delays!"
+
    s = size(Delay)
 
     if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
