@@ -1,8 +1,9 @@
 ;+
 ; NAME:               SIFpoisson
 ;
-; PURPOSE:            Erzeugt poissonverteilte Spiketrains einer mittleren
-;                     Rate als Input fuer eine Layer oder eine DW-Struktur.
+; PURPOSE:            Generates poisson distributed spike-trains for a complete layer of
+;                     neurons. The average rate is chosen uniformly for all neurons. The
+;                     output is binary.
 ;
 ; CATEGORY:           MIND INPUT
 ;
@@ -38,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/19 17:55:45  saam
+;           forgot to translate to purpose
+;
 ;     Revision 1.1  2000/01/19 09:05:21  saam
 ;           derived from poissoninput.pro
 ;
