@@ -1,62 +1,46 @@
 ;+
-; NAME:               EJECT
+; NAME:
+;  Eject
 ;
-; AIM: closes a video, opened by <A>initvideo</A> or <A>loadvideo</A>.
+; AIM:
+;  closes a video opened by <A>initvideo</A> or <A>loadvideo</A>
 ;
-; PURPOSE:            Schließen eines mit InitVideo oder LoadVideo geöffneten Array-Videos und
-;                     Anfügen eines informativen Labeltextes an das Videoinfo-File.
+; PURPOSE:
+;  Closes a video created with <A>InitVideo</A> or opened by
+;  <A>LoadVideo</A>. The video can be labelled with useful informations.
 ;
-; CATEGORY:           SIMULATION 
+; CATEGORY:
+;  DataStorage
+;  DataStructures
+;  Files
+;  IO
 ;
-; CALLING SEQUENCE:   Eject, Video [,/VERBOSE] [,/NOLABEL] [,/SHUTUP]
+; CALLING SEQUENCE:
+;  Eject, Video [,/NOLABEL]  [,UDS=...] [, {/VERBOSE | /SHUTUP }] 
 ; 
-; INPUTS:             Video: eine mit InitVideo oder LoadVideo initialisierte Videostruktur
+; INPUTS:
+;  V:: a valid video structure
 ;
-; KEYWORD PARAMETERS: VERBOSE: Für mehr Freude an der Simulation...
-;                     NOLABEL: Unterdrückt die interaktive Abfrage
-;                              eines Labeltextes.
-;                     SHUTUP:  Unterdrueckt jegliche Ausgabe
+; KEYWORD PARAMETERS: 
+;   NOLABEL:: supresses interactive labelling of the video
+;   VERBOSE:: talks about everything no one will want to hear about...
+;   SHUTUP:: supresses every informational messages
 ;
-; SIDE EFFECTS:       Schliesst das .vid- und ev. das .vidinf-File
+; INPUT KEYWORDS:
+;   UDS   :: an arbitrary structure that will also be saved on
+;            disk. It can be used to preserve simulation or other
+;            relevant parameters. Please set this option only if you
+;            haven't set a value for it, when calling <A>InitVideo</A>.
 ;
-; PROCEDURE:          War das Video zur Aufnahme geöffnet, so wird an das .vidinf-File noch die FrameAnzahl angehängt.
-;                     .vid und .vidinf werden geschlossen.
+; SIDE EFFECTS:
+;  closes .vid and .vidinf files
 ;
-; EXAMPLE:            1. Eject, MyVideo, /VERBOSE
-;                     2. Eject, MyVideo, /NOLABEL
-;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 2.9  2000/09/28 13:23:27  alshaikh
-;             added AIM
-;
-;       Revision 2.8  1998/11/08 14:51:36  saam
-;             + video-structure made a handle
-;             + ZIP-handling replaced by UOpen[RW]
-;
-;       Revision 2.7  1998/05/13 12:38:20  kupper
-;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
-;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
-;               Aber man sollte immer wissen, was man tut...
-;
-;       Revision 2.6  1998/04/29 17:35:19  kupper
-;              sagt jetzt, wenns zippt.
-;
-;       Revision 2.5  1998/03/14 13:32:45  saam
-;             now handles zipped and non-zipped videos
-;
-;
-;       Fri Aug 29 18:14:59 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Free_Luns zugefügt, die ich sträflicherweise vergaß...
-;
-;       Wed Aug 27 17:09:55 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Urversion
+; EXAMPLE:
+;* Eject, MyVideo, /VERBOSE
+;* Eject, MyVideo, /NOLABEL
 ;
 ;-
-Pro Eject, _Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
+Pro Eject, _Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup, UDS=uds
 
    ON_Error, 2
 
@@ -64,7 +48,16 @@ Pro Eject, _Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
 
    If Video.VideoMode eq 'RECORD' or Video.VideoMode eq 'EDIT' then begin
       If Video.VideoMode eq 'EDIT' then writeu, Video.infounit, max([Video.FramePointer, Video.Length]) else writeu, Video.infounit, Video.FramePointer
+
+      ;; UDS part
+      IF (Set(UDS) OR ExtraSet(VIDEO, "UDS")) THEN BEGIN
+          IF (Set(UDS) AND ExtraSet(VIDEO, "UDS")) THEN Console, 'you specified UDS twice, taking the most recent version',/WARN
+          IF NOT Set(UDS) THEN Default, UDS, Video.UDS ;;  UDS remains an IN parameter, since if the THEN part is executed, the user didn't specify UDS
+          IF TypeOf(UDS) NE "STRUCT" THEN Console, "UDS must be a structure", /FATAL
+          SaveStruc, Video.infounit, UDS
+      END
       
+
       if keyword_set(VERBOSE) then begin
          print
          print, 'KLAPPE! Die Dreharbeiten zu "'+Video.Title+'" sind nach '+strtrim(string(Video.FramePointer),1)+' Einstellungen beendet.'

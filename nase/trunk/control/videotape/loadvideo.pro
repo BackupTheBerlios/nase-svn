@@ -1,105 +1,59 @@
 ;+
-; NAME: LoadVideo()
+; NAME:
+;  LoadVideo()
 ;
-; AIM: opens a stored array-video.
+; AIM:
+;  opens an existing video
 ;
-; PURPOSE: Öffnen eines zuvor aufgezeichneten Array-Videos, die Routine erkennt
-;          dabei automatisch, ob das Video gezippt ist oder nicht.
+; PURPOSE:
+;  Opens an existing video on hard disk. This routine automatically
+;  detects if the video is compressed.
 ;
-; CATEGORY: Simulation
+; CATEGORY:
+;  DataStorage
+;  DataStructures
+;  Files
+;  IO
 ;
-; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO] [,/EDIT]
-;                                         [,GET_LENGTH] [,GET_SIZE]
-;                                         [,GET_TITLE] [,GET_SYSTEM] [,GET_STARRING]
-;                                         [,GET_COMPANY] [,GET_PRODUCER] [,GET_YEAR] 
-;                                         [,/SHUTUP] [,ERROR=error])
+; CALLING SEQUENCE:
+;*  V = LoadVideo ( [Title] [,TITLE=...]  [,/INFO] [,/EDIT]
+;*                  [,GET_LENGTH=...] [,GET_SIZE=...] [,GET_TITLE=...]
+;*                  [,GET_SYSTEM=...] [,GET_STARRING=...]
+;*                  [,GET_COMPANY=...] [,GET_PRODUCER=...] [,GET_YEAR=...] 
+;*                  [, UDS=...]
+;*                  [, {/VERBOSE | /SHUTUP}] [,ERROR=error])
 ; 
-; INPUTS:  Title     : Filename und Videotitel. Dieser Parameter hat
-;                      exakt die gleiche Funktion wie das
-;                      TITLE-Keyword. Nur eines von beiden muß (und
-;                      sollte) angegeben werden! (Bzw. keines für den Defaulttitel.)
+; INPUTS:
+;  title      :: filename and title of the video. This parameter is
+;                identical with the TITLE keyword. You should only set
+;                one of both.
 ;
-; KEYWORD PARAMETERS: TITLE:  Filename, der auch der Videotitel ist.
-;                             Bei nichtangabe wird der Defaulttitel
-;                             benutzt.
-;                     INFO :  Wird dieses Keyword gesetzt, so wird eine
-;                             Information über das Format und den
-;                             Inhalt des Videos ausgegeben.
-;                         Hinweis: In diesem Fall wird das Video NICHT
-;                                  geöffnet, und die Funktion liefert
-;                                  den Wert 0 zurück.
-;                     EDIT:   Ein bestehendes Video wird zum Editieren geöffnet.
-;                             (Z.B. um Frames anzuhängen oder zu ändern.
-;                             VORSICHT! Anhängen muss immer als letzte Operation vor dem eject erfolgen!)
-;                     SHUTUP: falls gesetzt, gibt es ueberhaupt keine
-;                             Informationen aus
+; KEYWORD PARAMETERS:
+;   TITLE:: filename and title of the video. This parameter is
+;           identical with the title parameter. You should only set
+;           one of both.
+;   INFO :: Only information about format and content of the
+;           video will be displayed. The video will not be opened!
+;   EDIT :: The Video will be opened for EDITING (e.g. to append or
+;           modify certain frames). TAKE CARE! Appending must be the 
+;           last operation before the final <A>Eject</A>.
+;   SHUTUP:: supresses every informational messages
 ; 
+; OUTPUTS: 
+;  V:: a valid video structure
+;
 ; OPTIONAL OUTPUT:
-;                     error: ist TRUE(=1), falls ein Fehler auftrat und
-;                            FALSE(=0) falls nicht
+;   ERROR:: true if an error occurred during opening
+;   UDS  :: will contain parameters (saved as structur) saved during video creation
+;           This can be used to preserve simulation or other
+;           relevant parameters.
 ;
-; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
+; SIDE EFFECTS:
+;   open .vid and .vidinf files for read (write with /EDIT)
 ;
-; SIDE EFFECTS: Öffnet .vid und .vidinf Files zum Lesen
-;
-; PROCEDURE: Aus dem .vidinf-File die Arrayinformationen lesen und in
-;               die Struktur schreiben.
-;
-; EXAMPLE: 1. MyVideo = LoadVideo (TITLE = 'The quiet Neuron', /VERBOSE)
-;          2. Dummy   = LoadVideo (TITLE = 'The unforgettable Firing', /INFO)
-;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 2.15  2000/09/28 13:23:28  alshaikh
-;             added AIM
-;
-;       Revision 2.14  1998/11/09 09:48:37  saam
-;             function instead of procedure call for uclose
-;
-;       Revision 2.13  1998/11/08 14:51:38  saam
-;             + video-structure made a handle
-;             + ZIP-handling replaced by UOpen[RW]
-;
-;       Revision 2.12  1998/05/13 12:38:21  kupper
-;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
-;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
-;               Aber man sollte immer wissen, was man tut...
-;
-;       Revision 2.11  1998/04/29 17:36:35  kupper
-;              Sagt jetzt, wenns zippt.
-;
-;       Revision 2.10  1998/03/31 12:27:38  saam
-;             if zipped and unzipped version exists
-;             now the zipped version is the reference
-;
-;       Revision 2.9  1998/03/19 14:53:09  saam
-;             new keyword 'ERROR'
-;
-;       Revision 2.8  1998/03/14 13:32:45  saam
-;             now handles zipped and non-zipped videos
-;
-;
-;       Tue Sep 9 21:37:38 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Der übergebene Titel wird jetzt nicht mehr verändert.
-;
-;       Tue Sep 9 13:02:45 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Title-Parameter zugefügt.
-;
-;       Tue Sep 2 19:05:51 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Free_Luns zugefügt, die ich sträflicherweise vergaß...
-;
-;       Thu Aug 28 15:55:11 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		TITEL-Keyword verarbeitet jetzt Pfade richtig.
-;                   INFO-Keyword zugefügt.
-;
-;       Wed Aug 27 17:49:54 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;		Urversion
+; EXAMPLE:
+;* V = LoadVideo (TITLE = 'The quiet Neuron', /VERBOSE)
+;* dummy = LoadVideo (TITLE = 'The unforgettable Firing', /INFO)
 ;
 ;-
 
@@ -107,7 +61,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
                     GET_LENGTH=get_length, GET_SIZE=get_size, $
                     GET_TITLE=get_title ,GET_SYSTEM=get_system, GET_STARRING=get_starring, $
                     GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year, $
-                    EDIT=edit, SHUTUP=shutup, ERROR=error
+                    EDIT=edit, SHUTUP=shutup, ERROR=error, UDS=uds
    
 
    ON_ERROR, 2
@@ -149,6 +103,11 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    year     = strtrim(lyear, 2)       & GET_YEAR=year
 
    Length = 0l & readu, infounit, Length & GET_LENGTH=length ;Anzahl der Frames
+
+   ;; UDS part
+   IF NOT EOF(infounit) THEN UDS = LoadStruc(infounit) ELSE BEGIN
+       IF Set(UDS) THEN Undef, UDS
+   END
 
 ;---------------- Video Info anzeigen
    type = ["Undefined", "Byte", "Integer", "Longword Integer", "Floating Point", "Double-Precision Floating Point", "Complex Floating Point", "String", "Structure", "Double-precision Complex"]

@@ -57,7 +57,8 @@
 ;   ZIPPED:: the video will be gzipped on the hard disk.
 ;   UDS   :: an arbitrary structure that will also be saved on
 ;            disk. It can be used to preserve simulation or other
-;            relevant parameters.
+;            relevant parameters. You can also specifiy the UDS
+;            structure when you <A>Eject</A> the video. 
 ;
 ; OUTPUTS:
 ;  V:: a valid video structure
