@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.20  2000/08/16 16:34:36  kupper
+;       Added directory "object/widget_object".
+;
 ;       Revision 1.19  2000/02/21 17:16:22  kupper
 ;       Added "object" directory.
 ;
@@ -74,7 +77,7 @@ SubDirs   = ['alien',$
              'math',$
              'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$ $
              'misc','misc/arrays','misc/files+dirs','misc/files+dirs/compress','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
-             'object', $
+             'object','object/widget_object', $
              'simu','simu/input','simu/connections','simu/layers','simu/plasticity']
 HTMLFile  = 'index.html'
 
