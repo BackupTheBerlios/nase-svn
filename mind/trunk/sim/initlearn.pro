@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.13  2000/08/11 14:11:29  thiel
+;         Now shows delays on demand.
+;
 ;     Revision 1.12  2000/01/28 15:16:44  saam
 ;           changend console call by putting the console
 ;           data from the common block into the ap structure
@@ -68,15 +71,18 @@
 ;
 ; COMMON TAGS:
 ; ------------
-;               RULE    : learning rule specified below ['NONE', 'LHLP2', 'LHLP4', 'BIPOO']
-;               WIN     : learning window type          ['NONE', 'ALPHA', 'EXPO']
-;               CONTROL : learning control system       ['NONE', 'MEANWEIGHTS']
-;               DW      : index to Matrix to be learned
-;               RECCON  : check,plot & save convergence of learning every RECCON's timestep
-;               SHOWW   : showweights every SHOWW ms
-;               ZOOM    : showweights zoom
-;               TERM    : terminate if a weight exceeds TERM
-;               NOMERCY : show no mercy after NOMERCY ms (0: disabled)
+;    RULE    : learning rule specified below ['NONE', 'LHLP2',
+;              'LHLP4', 'BIPOO', 'EXTERN']
+;    WIN     : learning window type ['NONE', 'ALPHA', 'EXPO']
+;    CONTROL : learning control system       ['NONE', 'MEANWEIGHTS']
+;    DW      : index to Matrix to be learned
+;    RECCON  : check,plot & save convergence of learning every
+;              RECCON's timestep 
+;    SHOWW   : showweights every SHOWW ms
+;    ZOOM    : showweights zoom
+;    DELAYS  : ShowWeights with /DELAYS option.
+;    TERM    : terminate if a weight exceeds TERM
+;    NOMERCY : show no mercy after NOMERCY ms (0: disabled)
 ;
 ; RULE='LHLP2':
 ; -------------
@@ -93,22 +99,26 @@
 ;             
 ; RULE='EXTERN':
 ; --------------
-;        Definition-Syntax :
-;                 RULE  : 'EXTERN'  ,$
-;                 INIT  : {$
-;                          NAME   :'e.g. lrinithebblp2' ,$
-;                          PARAMS : {EXPO : [1.0,10.0] } }, $   ; directly passed to lrinithebblp2
-;                 STEP   : { $
-;                          NAME : 'e.g. lrprochebblp2' ,$
-;                          PARAMS: {void : 0} },$               ; directly passed to lrprochebblp2
-;                 EXEC   : { $
-;                          NAME : 'e.g. lrhebblp2' ,$           ;   "         "
-;                          PARAMS : { $
-;                                     ALPHA : 0.25 ,$
-;                                     GAMMA : 0.0001, $
-;                                     MAXIMUM : 0.003 $
-;                                    } $
-;                          } ,$
+;  Definition-Syntax :
+;   RULE  : 'EXTERN'  ,$
+;   INIT  : {$
+;            NAME   :'e.g. lrinithebblp2' ,$
+;            PARAMS : {EXPO : [1.0,10.0] } }, $   ; directly passed to lrinithebblp2
+;   STEP   : {$
+;             NAME : 'e.g. lrprochebblp2' ,$
+;             PARAMS: {void : 0} },$               ; directly passed to lrprochebblp2
+;   EXEC   : {$
+;             NAME : 'e.g. lrhebblp2' ,$           ;   "         "
+;             PARAMS : {$
+;                       ALPHA : 0.25 ,$
+;                       GAMMA : 0.0001, $
+;                       MAXIMUM : 0.003 $
+;                      } $
+;            }, $
+;   FREE  : {NAME : 'e.g. freerecall' ,$
+;            PARAMS : {void:0}} ,$
+;            } ,$
+;
 ;                         ...
 ;  
 ; WIN='ALPHA':
@@ -168,6 +178,7 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    IF NOT ExtraSet(LS, 'RULE')  THEN console,P.CON, 'tag RULE undefined!',/fatal
    IF NOT ExtraSet(LS, 'DW')    THEN console,P.CON, 'tag DW undefined!',/fatal
    IF NOT ExtraSet(LS, 'INDEX') THEN console,P.CON, 'tag INDEX undefined!',/fatal
+   IF NOT ExtraSet(LS, 'DELAYS') THEN Settag, LS, 'delays', 0
    ;Default, MaxWin, 1
 
   
@@ -250,7 +261,7 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
       temp1 =  LS.INIT
       name = temp1.NAME
       params = temp1.PARAMS
-      win = CALL_FUNCTION(name,LW=P.LW(curDW.SOURCE),_EXTRA=params)
+      win = CALL_FUNCTION(name,LW=P.LW(curDW.SOURCE),DW=_con(0),_EXTRA=params)
       SetTag, LS, 'TYPE', lrule
       SetTag, LS, '_WIN', win
       END ELSE BEGIN 
