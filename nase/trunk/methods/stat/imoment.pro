@@ -47,6 +47,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1999/09/13 12:56:20  saam
+;             array called sdev conflicted with function sdev in
+;             the alien directory and was therefore renamed to
+;             sdeviation
+;
 ;       Revision 1.4  1999/04/28 15:13:37  gabriel
 ;            Keyword Iter new
 ;
@@ -62,7 +67,7 @@
 ;
 ;-
 
-FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max, iter=iter
+FUNCTION imoment, A, i, mdev = mdev, sdev = sdeviation, min=min, max=max, iter=iter
 
    ;ON_ERROR, 2
    default, iter,0
@@ -77,13 +82,13 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max, iter=iter
       IF iter EQ 1 THEN BEGIN
          ;; wo ist denn der boese index
          ind = where(indgen(s(0)) NE (i-1))
-         ;; dimensionen bestimmen fuer m , sdev , mdev ohne den zu mittelnden index
+         ;; dimensionen bestimmen fuer m , sdeviation , mdev ohne den zu mittelnden index
          new_s1 = [s(0),s(ind+1),4,4,product([s(ind+1),4])]
          new_s2 = [s(0)-1,s(ind+1),4,product(ind+1)]
          ;; arrays basteln
          m = make_array(size=new_s1)
          mdev = make_array(size=new_s2)
-         sdev = make_array(size=new_s2)
+         sdeviation = make_array(size=new_s2)
 
          ;;hier tauschen wir den zu mittelnden index an die letzte stelle
          Atmp = utranspose(A,[ind,i-1])
@@ -108,7 +113,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max, iter=iter
                   IF c NE 0 THEN Atmp2 = Atmp2(ltMax) ELSE Atmp2 = [!NONE]
                END
                m(x,*) = UMOMENT( Atmp2, SDEV=sd, MDEV=md)
-               sdev(x) = sd
+               sdeviation(x) = sd
                mdev(x) = md
             ENDELSE 
          END
@@ -118,7 +123,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max, iter=iter
          
          m    = FltArr(s(i),4)
          mdev = FltArr(s(i))
-         sdev = FltArr(s(i))
+         sdeviation = FltArr(s(i))
          FOR x=0,s(i)-1 DO BEGIN
             CASE i OF  
                1: Atmp = A(x,*) 
@@ -140,7 +145,7 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max, iter=iter
             
             
             m(x,*) = UMOMENT( Atmp, SDEV=sd, MDEV=md)
-            sdev(x) = sd
+            sdeviation(x) = sd
             mdev(x) = md
          END
          
