@@ -6,9 +6,12 @@
 ;                         
 ; CATEGORY:           CONTROL
 ;
-; CALLING SEQUENCE:   tmpStruc = LoopValue(LS)
+; CALLING SEQUENCE:   tmpStruc = LoopValue(LS [,iter])
 ;
 ; INPUTS:             LS: eine mit InitLoop initialisierte LoopStructure
+;
+; OPTIONAL OUTPUTS:  iter: enthaelt nach dem Aufruf die Gesamtzahl
+;                           bereits durchgefuehrter Schleifendurchlaeufe
 ;
 ; OUTPUTS:            tmpStruc: eine Struktur mit der Belegung des aktuellen
 ;                               Zaehlerzustandes
@@ -52,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/01/20 12:03:59  saam
+;           Erweiterung um optionalen Ouput Iterationszahl
+;
 ;     Revision 1.2  1997/12/02 10:12:57  saam
 ;           Inkompatiblitaet von IDL3.6 zu 4,5 bei Klammersetzungen
 ;           korrigiert.
@@ -61,9 +67,9 @@
 ;
 ;
 ;-
-FUNCTION LoopValue, LS
+FUNCTION LoopValue, LS, iter
 
-   IF Contains(LS.Info,'Loop') THEN BEGIN
+   IF Contains(LS.Info,'Loop', /IGNORECASE) THEN BEGIN
 
       ; names for new structure      
       TagNames   = Tag_Names(LS.struct)
@@ -75,6 +81,8 @@ FUNCTION LoopValue, LS
       FOR tag = 1, LS.n-1 DO BEGIN 
         newStruct = Create_Struct(newStruct, TagNames(tag),(LS.struct.(tag))(latestLoop(tag)) )
       END
+
+      dummy = CountValue(LS.counter, iter)
 
       IF LS.info EQ 'LoopStruc' THEN RETURN, newStruct ELSE RETURN, newStruct.huhu
 
