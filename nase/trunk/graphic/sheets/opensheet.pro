@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.25  2000/11/02 09:31:37  gabriel
+;          uset_plot instead of set_plot
+;
 ;     Revision 2.24  2000/10/01 14:51:35  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -160,8 +163,9 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
    IF sheet.type EQ 'X' THEN BEGIN ;this means it is a window (X or WIN)
-      Set_Plot, ScreenDevice()
-
+     
+      uSet_Plot, ScreenDevice()
+     
       ; does window already exist?? then set it active
       exists = 0
 ;      IF sheet.winid NE -2 THEN BEGIN
@@ -238,10 +242,10 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
       End
 
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN
-      Set_Plot, 'ps'
+      uSet_Plot, 'ps'
       IF NOT sheet.open THEN BEGIN
          sheet.open = 1
-         Set_Plot, 'ps'
+         uSet_Plot, 'ps'
 
          file = sheet.filename
          IF Set(Multi_Nr) THEN file = file + '_' + STRCOMPRESS(Multi_nr, /REMOVE_ALL)
@@ -278,7 +282,7 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
       !REVERTPSCOLORS = NOT(sheet.color)
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
-      Set_Plot, 'NULL'
+      uSet_Plot, 'NULL'
       Plot, Indgen(10) ; to establish a coordinate system, that PlotS will work
    END ELSE Message, 'no initialized sheet???'
 
