@@ -80,6 +80,10 @@
 ;                       Bug bei WSet korrigiert, wenn WinNR uebergeben wird, Mirko, 3.8.97
 ;                       wird WINNR nicht gesetzt, so wird NEUES Fenster aufgemacht, Mirko, 3.8.97
 ;                       Matrizen mit negativen Gewichten werden jetzt in rot/grün dargestellt. Rüdiger, 5.8.97
+;
+;                       gibt man WINNR an, und das Fenster ist zu klein fuer die Darstellung, bricht die Routine mit
+;                       unverstaendlichem Fehler ab. Das wird nun abgefangen, indem die Gewichte mit kleinster GROESSE (=1)
+;                       dargestellt werden (und somit zum Teil abgeschnitten); ausserdem wird ne Warnung ausgegeben, Mirko, 13.8.97
 ;-
 
 
@@ -111,6 +115,15 @@ If Not Set(WINNR) Then Begin
                       WSet, WinNr
                       XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
                       YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
+
+                      IF XGroesse EQ 0 THEN BEGIN
+                         XGroesse = 1
+                         Print, 'ShowWeights: ACHTUNG, horizontale Darstelleung unvollstaendig !!'
+                      END
+                      IF YGroesse EQ 0 THEN BEGIN
+                         YGroesse = 1
+                         Print, 'ShowWeights: ACHTUNG, vertikale Darstelleung unvollstaendig !!'
+                      END
                   EndElse    
 
 
