@@ -34,27 +34,27 @@
 ;       spike. Alternatively, you may specify a sparse version of the
 ;       array, using <*>SPASS</*> keyword.
 ;
-; OPTIONAL INPUTS:
+; INPUT KEYWORDS:
 ;    XRANGE/YRANGE:: Bereich aus dem gesamten Spikeraster, der in der 
 ;                    Darstellung erscheinen soll. Man beachte, daﬂ diese
 ;                    Werte den tats‰chlichen Achsenbeschriftungen entsprechen,
 ;                    falls also OVERSAMPLING benutzt wird, m¸ssen die
 ;                    xrange-Werte angepaﬂt werden.
-;    title::         der Titel des Plots, Default: 'Spikeraster'
-;    xtitle::        Beschriftung der X-Achse, Default: 'Time / ms'
-;    ytitle::        Beschriftung der Y-Achse, Default: 'Neuron #' 
-;    win::           oeffnet und benutzt Fenster NR. Win zur Darstellung
+;    TITLE::         der Titel des Plots, Default: 'Spikeraster'
+;    XTITLE::        Beschriftung der X-Achse, Default: 'Time / ms'
+;    YTITLE::        Beschriftung der Y-Achse, Default: 'Neuron #' 
+;    WIN::           oeffnet und benutzt Fenster NR. Win zur Darstellung
 ;    CHARSIZE:: die Grˆﬂe der Achsenbeschriftung.
-;    offset::         Zahlenwert, der zur x-Achsenbeschriftung addiert wird
+;    OFFSET::         Zahlenwert, der zur x-Achsenbeschriftung addiert wird
 ;                    (beachte also OVERSAPMPLING); 
 ;                    sinnvoll, wenn man nur einen Teil der Zeitachse 
 ;                    darstellen will und der Prozedur, z.B. nt(*,500:1000) 
 ;                    uebergibt; dann kann man mit OFFSET=500 die Darstellung 
 ;                    korrigieren
-;    level::          gibt an, wie groﬂ ein Eintrag in nt sein muss, um 
+;    LEVEL::          gibt an, wie groﬂ ein Eintrag in nt sein muss, um 
 ;                    dargestellt zu werden. Default: 0.0, dh alle 
 ;                    Eintr‰ge GT 0 werden dargestellt. 
-;    oversampling::   Gewaehrleistet eine korrekte Darstellung von Neuronen
+;    OVERSAMPLING::   Gewaehrleistet eine korrekte Darstellung von Neuronen
 ;                    mit Oversampling, BIN <-> ms. Mit oversampling kann
 ;                    aber auch elegant die Achsenbeschriftung ge‰ndert 
 ;                    werden, ohne daﬂ sich die Beziehung BIN-ms ge‰ndert
@@ -70,9 +70,6 @@
 ;                    Symbole in Bruchteilen der verfuegbaren Plothoehe.
 ;                    Default: 1 / Anzahl der dargestellten Neuronen 
 ;    OVERPLOT::      Plots data into the already existing coordinate system
-;                     
-;
-; INPUT KEYWORDS: 
 ;    CLEAN :: unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
 ;             (fuer Weiterbearbeitungen mit anderen Programmen)
 ;    MCOLOR:: color index used for the <*>/MUA</*> option (default is red)
@@ -217,7 +214,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
 ;----------------> plot shaded mua 
    IF Keyword_Set(MUA) THEN BEGIN
        Default, MCOLOR, RGB(200,0,0)
-       Polyfill, [0,LIndgen((SIZE(nt))(2)), (SIZE(nt))(2),0], [0,TOTAL(nt,1), 0, 0], COLOR=mcolor
+       Polyfill, offset+[0,LIndgen((SIZE(nt))(2)), (SIZE(nt))(2),0], [0,TOTAL(nt,1), 0, 0], COLOR=mcolor
    END
 
 
@@ -272,6 +269,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
 
    ; now procedure is the same for sparse and conventional:
    IF (doplot NE 0) THEN BEGIN
+      ; extract color from _EXTRA tag
+      IF ExtraSet(_extra, 'COLOR') THEN color = _extra.color ELSE color = getforeground()
       ; Determine coords from indices:
       x = spikes / FLOAT(allneurons+1) / oversampling
       y = spikes MOD (allneurons+1)
@@ -281,7 +280,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
          x = Temporary(x(yi))
          y = Temporary(y(yi))
          xi = Where(x GT xr(0) AND x LT xr(1), no)
-         IF no NE 0 THEN PlotS, x(xi) + offset, y(xi), PSYM=8, SYMSIZE=1.0
+         IF no NE 0 THEN PlotS, x(xi) + offset, y(xi), PSYM=8, SYMSIZE=1.0, COLOR=color
       ENDIF
 
    ENDIF
