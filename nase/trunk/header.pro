@@ -16,6 +16,7 @@
 ;  Connections
 ;  DataStorage
 ;  DataStructures
+;  Demonstration
 ;  Dirs
 ;  ExecutionControl
 ;  Files
@@ -39,7 +40,6 @@
 ;  Structures
 ;  Widgets
 ;  Windows
-;  Demonstration
 ;
 ; CALLING SEQUENCE:
 ;  
