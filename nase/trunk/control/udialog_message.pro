@@ -21,6 +21,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/05/21 10:31:52  kupper
+;               Message-Box jetzt in IDL3 ungefähr auf Bildschirmmitte.
+;
 ;        Revision 2.1  1998/05/20 14:58:20  kupper
 ;               Schöpfung.
 ;
@@ -62,7 +65,9 @@ Function UDialog_Message, Text, CANCEL=cancel, ERROR=error, INFORMATION=informat
    
    ;IDL 3 - Do it yourself...
 
-   Base = Widget_Base(/COLUMN, TITLE=title, SPACE=0, XPAD=0, YPAD=0)
+   Device, GET_SCREEN_SIZE=screensize
+
+   Base = Widget_Base(/COLUMN, XOFFSET=screensize(0)-100, YOFFSET=screensize(1)-100, TITLE=title, SPACE=0, XPAD=0, YPAD=0)
    SubBase = Widget_Base(Base, /COLUMN, FRAME=1, SPACE=0, XPAD=0, YPAD=0)
    For i=1, n_elements(Text) do TextWid = Widget_Label(SubBase, FRAME=0, VALUE=Text(i-1))
 
