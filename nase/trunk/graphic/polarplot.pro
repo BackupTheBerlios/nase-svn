@@ -97,6 +97,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.23  2000/09/01 20:24:50  saam
+;              bug with extradiff
+;
 ;        Revision 2.22  2000/09/01 19:51:45  saam
 ;              fixed several confusions with SMOOTH,
 ;              CLOSE und arrays larger 30 elements
@@ -237,17 +240,18 @@ plotregion_device_new = [[plotregion_device(*,0)]-shift_plotregion_device,$
                          [plotregion_device(*,0)+xy_dim*corr_fac]-shift_plotregion_device]
 
 IF SET(e) THEN BEGIN
-    e2 = ExtraDiff(e, ["ORIGPT","SMOOTH","THICK","DELTA","MCOLOR","DCOLOR","SDCOLOR"], /LEAVE) 
-    IF TypeOF(e2) NE 'STRUCT' THEN BEGIN
+    e2 = e
+    dummy = ExtraDiff(e2, ["ORIGPT","SMOOTH","THICK","DELTA","MCOLOR","DCOLOR","SDCOLOR"]) 
+    IF Set(e2) THEN BEGIN
         plot, radiusarray, anglearray,/POLAR, $
           XSTYLE=xstyle, YSTYLE=ystyle, $
           XRANGE=xrange, YRANGE=yrange, $
-          TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA
+          TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA, _EXTRA=e2
     END ELSE BEGIN
         plot, radiusarray, anglearray,/POLAR, $
           XSTYLE=xstyle, YSTYLE=ystyle, $
           XRANGE=xrange, YRANGE=yrange, $
-          TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e2
+          TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA
     END
 END ELSE BEGIN
     plot, radiusarray, anglearray,/POLAR, $
