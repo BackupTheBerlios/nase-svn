@@ -20,6 +20,9 @@
 ;  function, which was currupted by a change in IDL's buffering
 ;  behaviour in version IDL 5.4. If <A>Available()</A> does not work
 ;  correctly on your system, use <C>TryReadF()</C> instead.</I><BR>
+;  Note: since Rev. 1.4, <C>TryReadF()</C> calls <A>Available()</A>
+;        with the keyword <C>/USE_SELECT</C> set. This should work
+;        without a problem, as long as the file is line buffered.<BR>
 ;  <BR> 
 ;  <SUP>*)</SUP> This means, there is nothing to read, although the file is not
 ;  EOF, which is very often the case when reading from a UNIX pipe or
@@ -61,8 +64,7 @@
 ;  <C>OPEN[RWU</C>] for this routine to work.
 ;
 ; PROCEDURE:
-;  Call <A>SetNonblocking</A>, try to <C>READF</C>, catch any I/O
-;  error, call <A>SetBlocking</A>, and return.
+;  Call <A>Available</A>, if true, <C>READF</C>.
 ;
 ; EXAMPLE:
 ;*$mkfifo testfifo
@@ -78,7 +80,7 @@
 ;*>line3
 ;
 ; SEE ALSO:
-;  <A>SetNonblocking</A>, <A>SetBlocking</A>, <A>Available()</A>,
+;  <A>Available()</A>, <A>SetNonblocking</A>, <A>SetBlocking</A>
 ;  <C>ON_IOERROR</C>, <C>READF</C>.
 ;-
 
@@ -86,35 +88,65 @@ Function TryReadF, lun, var2, var3, var4, var5, var6, var7, var8, $
                    verbose=verbose, $
                    _extra=_extra
 
-   On_ioerror, readerr
+
+;;; --- old version: This breaks, if data chunk to be read is too ---------
+;;;     big to fit into buffer, or if the whole chunk can not be
+;;;     written as fast as IDL tries to read. In this case, EOF
+;;;     appears somewhere durin the read!
+;;;     I leave the old version commented out in case we need to get
+;;;     back to something like this later...
+
+;   On_ioerror, readerr
 
    
-   dummy = Call_External (!NASE_LIB, "set_nonblocking", lun)
+;   dummy = Call_External (!NASE_LIB, "set_nonblocking", lun)
 
-   case n_params() of
-      1: ReadF, lun, _extra=_extra 
-      2: ReadF, lun, var2, _extra=_extra
-      3: ReadF, lun, var2, var3, _extra=_extra
-      4: ReadF, lun, var2, var3, var4, _extra=_extra
-      5: ReadF, lun, var2, var3, var4, var5, _extra=_extra
-      6: ReadF, lun, var2, var3, var4, var5, var6, _extra=_extra
-      7: ReadF, lun, var2, var3, var4, var5, var6, var7, _extra=_extra
-      8: ReadF, lun, var2, var3, var4, var5, var6, var7, var8, _extra=_extra
-   endcase
+;   case n_params() of
+;      1: ReadF, lun, _extra=_extra 
+;      2: ReadF, lun, var2, _extra=_extra
+;      3: ReadF, lun, var2, var3, _extra=_extra
+;      4: ReadF, lun, var2, var3, var4, _extra=_extra
+;      5: ReadF, lun, var2, var3, var4, var5, _extra=_extra
+;      6: ReadF, lun, var2, var3, var4, var5, var6, _extra=_extra
+;      7: ReadF, lun, var2, var3, var4, var5, var6, var7, _extra=_extra
+;      8: ReadF, lun, var2, var3, var4, var5, var6, var7, var8, _extra=_extra
+;   endcase
 
-   dummy = Call_External (!NASE_LIB, "set_blocking", lun)
+;   dummy = Call_External (!NASE_LIB, "set_blocking", lun)
 
-   return, 1
+;   return, 1
 
    
-   readerr: ;; a read error occured
-   If Keyword_Set(verbose) then begin
-      Dmsg, "No data available. ("+!error_state.MSG+")"
-      If !error_state.SYS_MSG ne "" then Dmsg, "System error " + $
-        "'"+!error_state.SYS_MSG+"'."
-   Endif
+;   readerr: ;; a read error occured
+;   If Keyword_Set(verbose) then begin
+;      Dmsg, "No data available. ("+!error_state.MSG+")"
+;      If !error_state.SYS_MSG ne "" then Dmsg, "System error " + $
+;        "'"+!error_state.SYS_MSG+"'."
+;   Endif
 
-   dummy = Call_External (!NASE_LIB, "set_blocking", lun)
+;   dummy = Call_External (!NASE_LIB, "set_blocking", lun)
 
-   return, 0
+;   return, 0
+
+;;; ---------- end of old version ----------------------------
+
+
+
+   available = available(lun, /Use_Select)
+
+   if available then begin
+      case n_params() of
+         1: ReadF, lun, _extra=_extra 
+         2: ReadF, lun, var2, _extra=_extra
+         3: ReadF, lun, var2, var3, _extra=_extra
+         4: ReadF, lun, var2, var3, var4, _extra=_extra
+         5: ReadF, lun, var2, var3, var4, var5, _extra=_extra
+         6: ReadF, lun, var2, var3, var4, var5, var6, _extra=_extra
+         7: ReadF, lun, var2, var3, var4, var5, var6, var7, _extra=_extra
+         8: ReadF, lun, var2, var3, var4, var5, var6, var7, var8, _extra=_extra
+      endcase
+   endif
+
+   return, available
+
 End
