@@ -40,7 +40,7 @@
 ;                     EPS         : erzeugt eine Encapsulated PostScript-Datei
 ;                     COLOR       : das PostScript-Bild ist farbig,
 ;                                   aehnlich der ShowWeights-Darstellung
-;                                   (!none=dunkelblau, postiv=gruen)   
+;                                   (!none=blau, postiv=gruen)   
 ;
 ; OUTPUTS: Eine Postscript- (.ps) bzw Encapsulated PostScript- (.eps)
 ;          Datei, die ein Bild der Gewichtsmatrix enthaelt. 
@@ -76,6 +76,9 @@
 ;	   PSWeights, TestMatrix, PSFILE='buntesbeispiel', /froms, /COLOR
 ;
 ; MODIFICATION HISTORY:
+;
+;       Wed Aug 27 14:15:02 1997, Andreas Thiel
+;		Farbe der !NONEs ist jetzt hellblau.
 ;
 ;       Tue Aug 26 14:36:13 1997, Andreas Thiel
 ;		Keyword /COLOR eingebaut.
@@ -134,6 +137,19 @@ min = min(MatrixMatrix)
 max = max(MatrixMatrix)
 
 
+SET_PLOT, 'PS'
+
+If Not Set(EPS) Then Begin
+    DEVICE, Filename = PSFile+'.ps'
+    DEVICE, Encapsulated=0
+    Endif Else Begin
+        DEVICE, Filename = PSFile+'.eps'
+        DEVICE, /Encapsulated
+    Endelse
+
+If Set(COLOR) Then DEVICE, /Color Else DEVICE, Color=0
+
+DEVICE, Bits_per_pixel=bpp
 
 
 if min eq 0 and max eq 0 then max = 1; Falls Array nur Nullen enthält!
@@ -146,7 +162,7 @@ If Not Set(COLOR) Then Begin ;-----Schwarzweissbild
     Linienfarbe = 0
 
 Endif Else Begin ;-----Farbild
-    ts = 2^bpp-1 ;----Anzahl der Farben haengt von der gewaehlten Farbtiefe ab
+    ts = !D.TABLE_SIZE-1 ;----Anzahl der Farben haengt von der gewaehlten Farbtiefe ab
     if min ge 0 then begin
         g = 255-indgen(ts)/double(ts-1)*255
         tvlct, g, g, g          ;Grauwerte
@@ -160,7 +176,7 @@ Endif Else Begin ;-----Farbild
 
     IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
 
-    SetColorIndex, ts-2, 0, 0, 200 ;Blau sei die Farbe für nichtexistente Verbindungen
+    SetColorIndex, ts-2, 200, 200, 255 ;Blau sei die Farbe für nichtexistente Verbindungen
     SetColorIndex, ts-1, 255, 100, 0  ;Orange die für die Trennlinien
     Linienfarbe = ts-1
 EndElse
@@ -168,19 +184,6 @@ EndElse
 
 
 
-SET_PLOT, 'PS'
-
-If Not Set(EPS) Then Begin
-    DEVICE, Filename = PSFile+'.ps'
-    DEVICE, Encapsulated=0
-    Endif Else Begin
-        DEVICE, Filename = PSFile+'.eps'
-        DEVICE, /Encapsulated
-    Endelse
-
-If Set(COLOR) Then DEVICE, /Color
-
-DEVICE, Bits_per_pixel=bpp
 
 ;-----Zwischenraeume sind 10% der Kaestchengroesse:
 Strichbreite = Width / (Matrix.Source_w) /10.0
