@@ -37,7 +37,7 @@
 ;   loop names and values have to be valid
 ;
 ; EXAMPLE:
-;* > SetEach, __STIMORIENT=0.0, __STIMPHASE=180.
+;* SetEach, __STIMORIENT=0.0, __STIMPHASE=180.
 ;
 ; SEE ALSO:
 ;  <A>ForEach</A>, <A>FakeEach</A>
