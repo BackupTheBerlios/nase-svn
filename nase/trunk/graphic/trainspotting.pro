@@ -6,14 +6,16 @@
 ; CATEGORY: GRAPHICS
 ;
 ; CALLING SEQUENCE: Trainspotting, nt 
-;                                  [, TITLE=title] [, WIN=win], [CHARSIZE=Schriftgroesse]
+;                                  [, TITLE=title] [,XTITLE=xtitle]
+;                                  [, WIN=win], [CHARSIZE=Schriftgroesse]
 ;                                  [, LEVEL=level] [, OFFSET=offset]
 ;                                  [, XSYMBOLSIZE=Symbolbreite] [YSYMBOLSIZE=Symbolhoehe]
 ;                                  [, OVERSAMPLING=Oversampling]
 ;                                  [,/CLEAN]
 ; INPUTS: nt: 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
 ;
-; OPTIONAL INPUTS: Title:          der Titel des Plots 
+; OPTIONAL INPUTS: Title:          der Titel des Plots
+;                  xtitle:         Beschriftung der X-Achse, Default: 'Time / ms' 
 ;                  Win:            oeffnet und benutzt Fenster NR. Win zur Darstellung
 ;                  Schriftgroesse: die Groesse der Achsenbeschriftung.
 ;                  Level:          gibt an, wie gro"s ein Eintrag in nt sein muss, um 
@@ -48,11 +50,14 @@
 ;          Trainspotting, nt, TITLE='Dickere Spikes', XSYMBOLSIZE=0.02
 ;          Trainspotting, nt, TITLE='Niedliche Spikes', YSYMBOLSIZE=0.02
 ;          Trainspotting, nt, TITLE='Richtig Fette Spikes', XSYMBOLSIZE=0.02, YSYMBOLSIZE=0.1
-
+;
 ;
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.8  1998/06/30 12:19:28  thiel
+;            Schluesselwort XTITLE hinzugefuegt.
+;
 ;     Revision 1.7  1998/05/14 08:59:13  saam
 ;          keyword oversamp renamed to oversampling
 ;          and added to the header
@@ -82,7 +87,8 @@
 
 PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, $
                    STRETCH=stretch, V_STRETCH=v_stretch, CHARSIZE=Charsize, $
-                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSampling=OverSampling
+                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSampling=OverSampling, $
+                   XTITLE=xtitle
 
 ;-----Keine alten Keywords mehr verwenden:
 IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_STRETCH werden ab sofort per Order di Mufti X- und YSYMBOLSIZE verwendet. Die momentane Darstellung erfolgt mit deren Default-Werten. Noch Fragen???'
@@ -102,6 +108,7 @@ IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
    
    
 Default, title  , 'Spikeraster'
+Default, xtitle, 'Time / ms'
 Default, level  , 1.0
 Default, offset , 0.0
 Default, Charsize, 1.0
@@ -127,7 +134,7 @@ END ELSE BEGIN
     XRANGE=[offset,time+offset], $
     YRANGE=[-1,neurons+1], $
     XSTYLE=1, YSTYLE=1, $
-    XTITLE='Time / ms', YTITLE='Neuron #', TITLE=title, $
+    XTITLE=xtitle, YTITLE='Neuron #', TITLE=title, $
     XTICKLEN=0.00001, YTICKLEN=0.00001, $
     YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks'
 ENDELSE 
