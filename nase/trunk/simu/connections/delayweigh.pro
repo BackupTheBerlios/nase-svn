@@ -63,6 +63,7 @@
 ;                         Fehlermeldung, wenn delays zu gross, Mirko, 3.8.97
 ;                         jeder verzoegerten Verbindung kann ein Lernpotential zugeordnet werden, Mirko, 4.8.97
 ;                         IDL-bug bei Array-Zuweisung umgangen, Mirko, 4.8.97
+;                         Delays werden im nicht-Delay-Fall mit [-1,-1] initialisiert. Das ist ebenfalls wegen des Array/Skalar-Bugs, dem auch Mirko schon begegnet war. Rüdiger, 5.8.1997
 ;
 ;-
 FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_delays,$
@@ -90,7 +91,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                    target_w: target_w,$
                    target_h: target_h,$
                    Weights : DOUBLE(init_weights) ,$
-                   Delays  : [-1]          }
+                   Delays  : [-1, -1]          }
       END ELSE BEGIN         
          IF Max(init_delays) GE 15 THEN Message, 'sorry, delays are too big'
          IF (Keyword_Set(taup) AND Set(vp)) THEN BEGIN
