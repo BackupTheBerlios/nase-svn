@@ -48,6 +48,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Mon Aug 18 04:49:35 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Tippfehler korrigiert.
+;
 ;       Sun Aug 17 23:42:47 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -127,9 +132,10 @@ common common_cvs, name
          file = parts((size(parts))(1)-1); Das gibt den reinen Filenamen ohne Pfad!
          CD, path, CURRENT=olddir
          Spawn, "cvs add """+file+""""
-         Spawn, "cvs commit "+file+""""
+         Spawn, "cvs commit """+file+""""
          CD, olddir
          Print, "============= done."
+         if name eq "nase" then NASE_Special ;do some nosy things
       endif
       END
   'BUTTON23': BEGIN              ;Commit All
@@ -146,7 +152,6 @@ common common_cvs, name
          Print
          Print, "=========== Committing File "+file
          Spawn, "cvs commit "+file
-         print, "Name:"+name
          Print, "============= done."
          if name eq "nase" then NASE_Special ;do some nosy things
       endif
