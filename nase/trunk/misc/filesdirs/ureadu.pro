@@ -35,7 +35,7 @@
 ;  _EXTRA:: all keywords will be passed to <A>UOpenR</A>
 ;
 ; OUTPUTS:
-;  r :: restored data structure  
+;  r :: restored data structure
 ;
 ; SIDE EFFECTS:
 ;* modifies the position index of the <*>lun</*>
@@ -63,7 +63,7 @@ FUNCTION _UReadU, lun, _EXTRA=e
   sx=LonArr(nsx)
   ReadU, lun, sx
 
-  
+
   IF ((sx(N_Elements(sx)-2) EQ 8) AND (sx(N_Elements(sx)-1) EQ 1)) THEN BEGIN
       ; we have a scalar structure
       nTags = 0l
@@ -71,14 +71,14 @@ FUNCTION _UReadU, lun, _EXTRA=e
 
       ; name of the structure, empty string if anonymous
       sName = _ureadu(lun)
-      
+
 
       FOR tag=0, nTags-1 DO BEGIN
           tagName = _ureadu(lun)
           IF TypeOF(tagName) NE "STRING" THEN Console, 'error in file (no tag name string)'
 
           tagVal = _ureadu(lun)
-          
+
           IF tag EQ 0 THEN BEGIN
               x = Create_Struct(tagName, tagVal)
           END ELSE BEGIN
@@ -103,7 +103,7 @@ FUNCTION _UReadU, lun, _EXTRA=e
               x = Make_Array(SIZE=sx)
           END
       END
-      
+
       ;; finally read the scalar or array
       CASE sx(N_Elements(sx)-2) OF
           7 : BEGIN             ; string
@@ -119,16 +119,16 @@ FUNCTION _UReadU, lun, _EXTRA=e
           END
           8 : BEGIN             ; struct
               x = _ureadu(lun)   ; read first struc
-              
+
               x = Replicate(x, Product(sx(1:sx(0)))) ; fucking REPLICATE doesn't accept a vector of dimensions!
-              x = REFORM(x, sx(1:sx(0)), /OVERWRITE) 
-              
+              x = REFORM(x, sx(1:sx(0)), /OVERWRITE)
+
               FOR i=1,N_Elements(x)-1 DO x(i)=UReadU(lun)
           END
           ELSE: ReadU, lun, x
       END
   END
-  
+
   RETURN, x
 END
 
@@ -143,7 +143,7 @@ FUNCTION UReadU, _lun, _EXTRA=e
   version = ''
   readf, lun, version
 
-  if not STRCMP(version, 'UWriteU/', 8) THEN Console, "data not written using UWriteU, can't restore", /FATAL
+  if not (STRMID(version, 0, 8) EQ 'UWriteU/') THEN Console, "data not written using UWriteU, can't restore", /FATAL
 
   x = _ureadu(lun)
 
