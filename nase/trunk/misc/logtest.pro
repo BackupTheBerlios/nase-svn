@@ -28,52 +28,13 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;       Fri Sep 12 12:52:50 1997, Ruediger Kupper
+;       Fri Sep 12 12:54:30 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		$Log$
-;		Revision 1.3  1997/09/12 10:52:34  kupper
+;		Revision 1.4  1997/09/12 10:54:08  kupper
 ;		Hallo!
 ;		Halli!
-;		xxxxxxx
 ;
 ;
-;       Fri Sep 12 12:50:50 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		$Log$
-;		Revision 1.3  1997/09/12 10:52:34  kupper
-;		Hallo!
-;		Halli!
-;		xxxxxxx
-;
-;		Revision 1.2  1997/09/12 10:50:40  kupper
-;		Hallo!
-;		Logtest!
-;
-;
-;       Fri Sep 12 12:47:32 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		$Log$
-;		Revision 1.3  1997/09/12 10:52:34  kupper
-;		Hallo!
-;		Halli!
-;		xxxxxxx
-;
-;		Revision 1.2  1997/09/12 10:50:40  kupper
-;		Hallo!
-;		Logtest!
-;
-;		Revision 1.1  1997/09/12 10:48:29  kupper
-;		Dies ist ein Log-Test
-;		fürn Test-Log.
-;
-;
-;       Thu Sep 11 17:17:33 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		Urversion.
-;
-;-
 
