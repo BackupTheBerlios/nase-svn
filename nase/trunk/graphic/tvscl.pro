@@ -6,11 +6,14 @@
 ;
 ; PROCEDURE:          Aufruf von UTvScl mit Schluesselwort /NOSCALE
 ;
-; SEE ALSO:           <A HREF="#UTVSCL#">UTvScl</A>
+; SEE ALSO:           <A HREF="#UTVSCL">UTvScl</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/12/17 14:41:57  saam
+;           Wieder mal ein Bug bei den HREFs
+;
 ;     Revision 2.1  1997/12/17 14:38:01  saam
 ;           Eigentlich nur zur Symmetrie & Klarheit erstellt...
 ;           in Analogie zum Paar TvScl & Tv

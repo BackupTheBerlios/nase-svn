@@ -50,11 +50,14 @@
 ;          UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
 ;          UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
-; SEE ALSO:           <A HREF="#TVSCL#">TvScl</A>
+; SEE ALSO:           <A HREF="#TVSCL">TvScl</A>
 ; 
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  1997/12/17 14:41:58  saam
+;           Wieder mal ein Bug bei den HREFs
+;
 ;     Revision 2.11  1997/12/17 14:38:22  saam
 ;           Header geupdated
 ;
