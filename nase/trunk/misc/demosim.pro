@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.15  1998/11/08 19:33:47  saam
+;             TrainspottingScope and new Layer types included
+;
 ;       Revision 1.14  1998/11/06 13:59:45  thiel
 ;              Jetzt wieder auf dem aktuellen Stand.
 ;
@@ -91,7 +94,7 @@
 ;-
  
 Window, 1, TITLE='weights', XSIZE=320, YSIZE=320
-Window, 2, XSIZE=800, YSIZE=400
+SH2 = DefineSheet(/WINDOW, XSIZE=800, YSIZE=250, MULTI=[3,1,3], TITLE='Diverses')
 
 
 
@@ -113,10 +116,6 @@ Window, 2, XSIZE=800, YSIZE=400
    ; initialize layer consististing of 1 interneuron
    L2 = InitLayer(WIDTH=1, HEIGHT=1, TYPE=Layer2)
 
-
-   ; will contain cluster outputs
-   O_L1    = BytArr(w*h, 500)
-   O_L2    = BytArr(1, 500)
 
 
 
@@ -147,6 +146,17 @@ Window, 2, XSIZE=800, YSIZE=400
     
     
 
+    OpenSheet, SH2, 0
+    TSS1 = InitTrainspottingScope(NEURONS=w*h, TIME=500)
+    CloseSheet, SH2, 0
+    OpenSheet, SH2, 1
+    TSS2 = InitTrainspottingScope(NEURONS=1, TIME=500)
+    CloseSheet, SH2, 1
+    OpenSheet, SH2, 2
+    PS = InitPlotcilloscope(RAYS=3, TIME=500)
+    CloseSheet, SH2, 2
+      
+
 
 
 
@@ -156,7 +166,7 @@ Window, 2, XSIZE=800, YSIZE=400
 ;------------->
    Print, 'Starting main simulation loop...'
    SimTimeInit      
-   FOR t=0l,10000l DO BEGIN
+   FOR t=0l,9700l DO BEGIN
 
 ;-------------> CREATE INPUT
       ; generate two static squares
@@ -168,9 +178,9 @@ Window, 2, XSIZE=800, YSIZE=400
 
 
 ;-------------> PROCEED CONNECTIONS
-      I_L1_L = DelayWeigh( CON_L1_L1, L1.O)
-      I_L2_F = DelayWeigh( CON_L1_L2, L1.O)
-      I_L1_I = DelayWeigh( CON_L2_L1, L2.O)
+      I_L1_L = DelayWeigh( CON_L1_L1, LayerOut(L1))
+      I_L2_F = DelayWeigh( CON_L1_L2, LayerOut(L1))
+      I_L1_I = DelayWeigh( CON_L2_L1, LayerOut(L2))
 
       
 ;-------------> LEARN SOMETHING
@@ -187,18 +197,25 @@ Window, 2, XSIZE=800, YSIZE=400
       InputLayer, L2, FEEDING=I_L2_F
       ProceedLayer, L2
 
-      O_L1(*,t MOD 500) = Out2Vector(L1.O)
-      O_L2(*,t MOD 500) = Out2Vector(L2.O)
+
+      OpenSheet, SH2, 2
+      LayerData, L1, INHIBITION=i, POTENTIAL=m, SCHWELLE=theta
+      Plotcilloscope, PS, [i(12),m(12),theta(12)]
+      CloseSheet, SH2, 2
+      
       
 
+
 ;-------------> DISPLAY RESULTS
+
+    OpenSheet, SH2, 0
+    TrainSpottingScope, TSS1, LayerOut(L1)
+    CloseSheet, SH2, 0
+    OpenSheet, SH2, 1
+    TrainSpottingScope, TSS2, LayerOut(L2)
+    CloseSheet, SH2, 1
+
       IF (t MOD 500 EQ 0 AND t GT 1) THEN BEGIN
-         WSet, 2
-         !P.Multi = [0,1,2,0,0]
-         ; plot output activities as spikeraster
-         TrainSpotting, O_L1, TITLE='Output L1', OFFSET=t-500
-         TrainSpotting, O_L2, TITLE='Output L2', OFFSET=t-500
-         
          ShowWeights, CON_L1_L1,TITEL='Gewichte', /TOS, WINNR=1
       END
       IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MaxWeight(CON_L1_L1)
@@ -207,7 +224,7 @@ Window, 2, XSIZE=800, YSIZE=400
    SimTimeStop
 
    Print, 'Main Simulation Loop done'
-
+   stop
 
    FreeDw, CON_L1_L1
    FreeDw, CON_L1_L2
