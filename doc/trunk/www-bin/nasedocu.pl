@@ -109,13 +109,24 @@ sub showdir {
 ###################################################################################
 ###################################################################################
 ###################################################################################
-print "Content-Type: text/html\n\n", myHeader();
+#print "Content-Type: text/html\n\n", '<HTML>
+#<HEAD>
+#  <meta http-equiv="expire" content="0">
+#  <meta http-equiv="refresh" content="0; URL=http://www.physik.uni-marburg.de/neuro/frames/index.html target=main" >
+#</HEAD>
+#<body>
+#UMLEITUNG
+#</body>
+#</HTML>';
+#exit 0;
+print "Content-Type: text/html\n\n";
 if ($P::mode){
   $_ = $P::mode;
  TRUNK: {
-    /update/i && do { updatedoc();
+    /update/i && do { print myHeader();
+		      updatedoc();
 		      last TRUNK;};
-    /list/i   && do { print myBody();
+    /list/i   && do { print myHeader(), myBody();
 		      print 
 			'<TABLE cellspacing=5 border=0><TR><TD>',
 			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center><TR><TD>',
@@ -172,31 +183,33 @@ if ($P::mode){
 			"</TD></TR>",
 			"</TABLE>";
 		      last TRUNK;};
-    /text/i   && do { print myBody();
-		      if ($P::file){if ($P::show eq "header") { showHeader(key=>$P::file); };
-				    if ($P::show eq "source") { showSource($P::file); };
-				    if ($P::show eq "log"   ) { showLog($P::file);    };
+    /text/i   && do { 
+		      if ($P::file){if ($P::show eq "header") { print myHeader(), myBody(); showHeader(key=>$P::file); };
+				    if ($P::show eq "source") { print myHeader(), myBody(); showSource($P::file); };
+				    if ($P::show eq "log"   ) { print myHeader(), myBody(); showLog($P::file);    };
 		      } else {
-			if ($P::show eq "rbyn"  ) { RoutinesByName(); } else {
-			  if ($P::show eq "rbyc" ) { RoutinesByCat(); } else {
+			
+			if ($P::show eq "rbyn"  ) { print myHeader(), myBody(); RoutinesByName(); } else {
+			  if ($P::show eq "rbyc" ) { print myHeader(), myBody(); RoutinesByCat(); } else {
 			    if (($sub eq '/')||($sub eq '/nase')||($sub eq '/mind')){
-			      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.sql");
-			      while(<IDX>){print;};
-			      close(IDX) || die "can't close index: $!\n";
+#			      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.sql");
+#			      while(<IDX>){print;};
+#			      close(IDX) || die "can't close index: $!\n";
+			      print '<HEAD><meta http-equiv="expire" content="0"><meta http-equiv="refresh" content="0; URL=/nase/doc/www-doc/mainpage.sql">';
 			    } else {
-			      DirAim($sub);
+			      print myHeader(), myBody(); DirAim($sub);
 			    }
 			  }
 			}
 		      }
 		      last TRUNK;
 		    };
-    /search/i   && do { print myBody();
+    /search/i   && do { print myHeader(), myBody();
 			quickSearch($P::QuickSearch, param('sfields'));
 			last TRUNK;
                       };
     /check/i    && do {
-			print myBody();
+			print myHeader(), myBody();
 			chomp (my $chkfile = `/bin/mktemp /tmp/nasedocu_checkXXXXXX`);
 			open (CHK, ">$chkfile") || die "can't open $chkfile: $!\n";
                         my $filename = param('filename');
@@ -209,7 +222,7 @@ if ($P::mode){
 			unlink $chkfile || die "can't unlink $chkfile: $!\n";
                         last TRUNK;
                       };
-    /dir/i   && do { print '<frameset cols="250,*">';
+    /dir/i   && do { print myHeader(), '<frameset cols="250,*">';
 		     print frame({src=>"$fullurl?mode=list", name=>"list"});
 		     print frame({src=>"$fullurl?mode=text&show=aim", name=>"text"});
 		     print '</frameset>';
@@ -218,7 +231,7 @@ if ($P::mode){
 		   }
   }
 } else {
-  print '<frameset cols="250,*">';
+  print myHeader(), '<frameset cols="250,*">';
   print frame({src=>"$fullurl?mode=list", name=>"list"});
   print frame({src=>"$fullurl?mode=text", name=>"text"});
   print '</frameset>';
