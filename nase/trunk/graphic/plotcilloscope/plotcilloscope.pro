@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1998/10/29 12:16:18  saam
+;           now checks passed arguements
+;
 ;     Revision 2.9  1998/05/16 16:28:42  kupper
 ;            Stürzt nun nicht mehr ab bei TIME=1
 ;
@@ -66,6 +69,9 @@
 ;-
 PRO Plotcilloscope, PS, value
 
+   On_Error, 2
+
+   TestInfo, PS, 'T_PLOT'
 
    rayRed   = [  0, 200,   0, 200, 200, 200,   0]
    rayGreen = [200,   0,   0, 200, 200,   0, 200]
