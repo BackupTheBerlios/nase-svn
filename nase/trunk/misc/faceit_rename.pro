@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/09/13 15:59:42  kupper
+;        Now changing filenames to lower case.
+;
 ;        Revision 1.2  1999/09/13 15:16:08  kupper
 ;        Cosmetic change: Now using PUSHD/POPD.
 ;
@@ -47,13 +50,13 @@ PRO Faceit_Rename, dir, oldname, newname
 
    Spawn, "perl -e 's/"+oldname+"/"+newname+"/gi' -p -i *.pro"
 
-   Spawn, "perl -e 'while (<*.pro>) {$n=$_; s/"+oldname+"/"+newname+"/gi; rename $n, $_}'"
+   Spawn, "perl -e 'while (<*.pro>) {$n=$_; s/"+oldname+"/"+StrLowcase(newname)+"/gi; rename $n, $_}'"
 
 
    popd                         ;return to old dir
 
-   Message, /INFO, 'Renamed files in '+dir+' from '+oldname+ $
-    '* to '+newname+'* and substituted occurences of '+oldname+ $
+   Message, /INFO, 'Renamed files in '+dir+' from '+StrLowcase(oldname)+ $
+    '* to '+StrLowcase(newname)+'* and substituted occurences of '+oldname+ $
     ' to '+newname+'.'
 
 END
