@@ -27,7 +27,14 @@
 ;
 ; EXAMPLE:              MkHTML
 ;
-; MODIFICATION HISTORY: initial version, Mirko Saam, 25.7.97
+; MODIFICATION HISTORY: 
+;
+;       Tue Aug 19 21:16:01 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Ergaenzung um stat-Ordner
+;
+;                       initial version, Mirko Saam, 25.7.97
 ;                       Aufruf nur im Haupt-Nasen-Verzeicnis sinnvoll, Mirko, 13.8.97
 ;-
 
@@ -36,7 +43,7 @@
 PRO MkHTML
 
 Spawn, 'pwd', MainDir
-SubDirs   = ['graphic', 'misc', 'simu']
+SubDirs   = ['graphic', 'misc', 'simu', 'stat']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
