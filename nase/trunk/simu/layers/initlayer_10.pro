@@ -34,12 +34,15 @@
 ; EXAMPLE: para10 = InitPara_10(tauf=10.0)     
 ;          layer = InitLayer_10(PROBABILITY=[0.5,0.7], TYPE=para10)
 ;
-; SEE ALSO: <A HRE <A HREF="#INPUTLAYER_10">InputLayer_10</A>,F="#INITPARA_10">InitPara_10</A>, <A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>,
-;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>
+; SEE ALSO: <A HREF="#INPUTLAYER_10">InputLayer_10</A>, <A HREF="#INITPARA_10">InitPara_10</A>, <A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>,
+;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>.
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.3  1999/07/28 14:59:21  thiel
+;           Header updates.
+;
 ;       Revision 1.2  1999/05/07 13:26:28  thiel
 ;           .para-Tag vergessen.
 ;

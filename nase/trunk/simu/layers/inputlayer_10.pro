@@ -9,12 +9,12 @@
 ;
 ; CATEGORY: SIMULATION / LAYERS
 ;
-; CALLING SEQUENCE: InputLayer_10, Layer [,FEEDING=feeding]
+; CALLING SEQUENCE: InputLayer_10, Layer [,FEEDING=feeding] [,/CORRECT]
 ;
 ; INPUTS: Layer : eine mit <A HREF="#INITLAYER_10">InitLayer_10</A> erzeugte Struktur
 ;
-; INPUTS:  feeding : Sparse-Vektor, der auf das entsprechende Potential 
-;                     addiert wird.
+; OPTIONAL INPUTS:  feeding : Sparse-Vektor, der auf das entsprechende Potential
+;                             addiert wird.
 ;
 ; KEYWORD PARAMETERS: CORRECT: Die Iterationsformel fuer einen Leckintegrator
 ;                              erster Ordnung lautet korrekterweise: 
@@ -30,7 +30,7 @@
 ;                                
 ; SIDE EFFECTS: wie so oft wird die Layer-Struktur verändert
 ;
-; RESTRICTIONS: keine Überpuefung der Gültigkeit des Inputs (Effizienz!)
+; RESTRICTIONS: keine Überpüfung der Gültigkeit des Inputs (Effizienz!)
 ;
 ; EXAMPLE:
 ;          para10 = InitPara_10(tauf=10.0)
@@ -39,12 +39,15 @@
 ;          InputLayer_10, InputLayer, FEEDING=FeedingIn
 ;          ProceedLayer_10, InputLayer
 ;
-; SEE ALSO: <A HREF="#INITPARA_10">InitPara_10</A>, <A HREF="#INITLAYER_10">InitLayer_10</A>, <A HREF="#PROCEEDLAYER_10">PROCEEDLAYER_10</A>, 
+; SEE ALSO: <A HREF="#INITPARA_10">InitPara_10</A>, <A HREF="#INITLAYER_10">InitLayer_10</A>, <A HREF="#PROCEEDLAYER_10">ProceedLayer_10</A>, 
 ;           <A HREF="../input/#POISSONINPUT">PoissonInput</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1999/07/28 14:59:21  thiel
+;           Header updates.
+;
 ;       Revision 1.1  1999/05/07 12:43:21  thiel
 ;              Neu. Neu. Neu.
 ;
