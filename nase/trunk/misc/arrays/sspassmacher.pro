@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;  <C>SSpassmacher</C> converts an array containing 0s and 1s
-;  (e.g. spiketrains) into a sprase version that saves indices of
+;  (e.g. spiketrains) into a sparse version that saves indices of
 ;  elements that are NE 0.<BR>
 ;  Advantages:<BR>
 ;  + Lower memory consumption in case of few elements
@@ -66,7 +66,7 @@
 ;*
 ;
 ; SEE ALSO:
-;  <A>SSpassBeiseite()</A>, <A>Spassmacher</A>, <A>SpassBeiseite</A>.
+;  <A>SSpassBeiseite</A>, <A>Spassmacher</A>, <A>SpassBeiseite</A>.
 ;
 ;-
 
