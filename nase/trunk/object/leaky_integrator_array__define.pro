@@ -35,6 +35,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/03/09 17:10:26  kupper
+;        Corrected comparison of array dimensions.
+;        Corrected reset method.
+;
 ;        Revision 1.2  2000/03/09 16:04:53  kupper
 ;        First version.
 ;        should work.
@@ -64,14 +68,14 @@ Pro leaky_integrator_array::cleanup, _dummy=_dummy
 End
 
 Pro leaky_integrator_array::reset
-   *self.data = 0
+   *self.data(*) = 0
 End
 
 
 ;; ------------ Public --------------------
 Pro leaky_integrator_array::input, a
-   On_Error, 2                  ;retutn to caller
-   If size(a, /Dimensions) ne size(*self.data,  /Dimensions) then $
+;   On_Error, 2                  ;retutn to caller
+   If a_ne(size(a, /Dimensions), size(*self.data,  /Dimensions)) then $
     message, "Array  has incompatible dimensions."
 
    *self.data = *self.data * self.decay_factor + a
