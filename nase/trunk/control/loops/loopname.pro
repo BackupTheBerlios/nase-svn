@@ -47,9 +47,18 @@
 ;      
 ; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPING">Looping</A>, <A HREF="#LOOPVALUE">LoopValue</A>
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/04/04 13:02:34  saam
+;           + added PNAME keyword to get the name for the next
+;             higher loop order but deactivated it, because i'm
+;             solving my problem by another method...its working
+;             anyway
+;           + added some spaces to print output
+;           + uses console
+;
 ;     Revision 1.5  1998/06/29 13:11:32  saam
 ;           \n removed in string result
 ;
@@ -68,30 +77,35 @@
 ;           vom Hundertsten ins Tausendste
 ;
 ;
-;-
-FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print
+
+FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print;, PNAME=pname
+
+ON_ERROR, 2
 
    IF Contains(LS.Info,'Loop') THEN BEGIN
       
       Name = ''
-      
+;      PName = ''
+
       tagNames = Tag_Names(LS.struct)
       countVal = CountValue(LS.counter)
 
       FOR tag = 0, LS.n-1 DO BEGIN 
-         tagSize = SIZE(LS.struct.(tag))
-         IF tagSize(N_Elements(tagSize)-1) GT 1 THEN BEGIN
-            IF Keyword_Set(PRINT) THEN BEGIN
-               Name = Name + STRCOMPRESS(STRING(tagNames(tag)))  + '  :  ' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
-            END ELSE BEGIN
-               IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
-               Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
-            END
-         END 
+;          PName = Name
+          tagSize = SIZE(LS.struct.(tag))
+          IF tagSize(N_Elements(tagSize)-1) GE 1 THEN BEGIN
+              IF Keyword_Set(PRINT) THEN BEGIN
+                  Name = Name + STR(tagNames(tag))  + ' : ' + STR(STRING((LS.struct.(tag))(countVal(tag)))) + '    '
+              END ELSE BEGIN
+                  IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
+                  Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)               
+              END
+          END 
       END
       IF (Name EQ '') AND NOT Keyword_Set(PRINT) THEN Name = '_'
+;      IF (PName EQ '') AND NOT Keyword_Set(PRINT) THEN PName = '_'
       RETURN, Name
 
-   END ELSE Message, 'no valid loop structure passed'
+   END ELSE , CONSOLE, 'no valid loop structure passed', /FATAL
 
 END
