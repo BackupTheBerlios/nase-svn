@@ -32,7 +32,10 @@
 ;               <*>0</*>.
 ;
 ; OUTPUTS:
-;  result:: The scaled image.
+;  result:: The scaled image. The result has the same dimensions as
+;           the input image. I.e., overlapping portions of an enlarged
+;           image are clipped, new portions of a shrunken image are
+;           filled in with value <C>BACKGROUND</C>.
 ;
 ; PROCEDURE:
 ;  Combine <C>CONGRID</C> and <A>GetSubArray</A>/<A>InsSubArray</A>.
@@ -40,7 +43,7 @@
 ; EXAMPLE:
 ;* PlotTvScl, coil20(1,0)
 ;* PlotTvScl, ImageScale( coil20(1,0), 0.5 )
-;* PlotTvScl, ImageScale( coil20(1,0), 1.5 )
+;* PlotTvScl, ImageScale( coil20(1,0), 1.5 )the scaled
 ;* PlotTvScl, ImageScale( coil20(1,0), 0.5, BACKGROUND=100 )
 ;*>
 ;
