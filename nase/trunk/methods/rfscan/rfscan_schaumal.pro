@@ -26,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  1999/06/07 16:11:41  kupper
+;        Wasnt working with OBSERVE_SPIKES as layers are handles now. Fixed.
+;
 ;        Revision 1.7  1998/03/23 17:44:09  kupper
 ;               NOVISUALIZE implementiert.
 ;
@@ -66,8 +69,8 @@ Pro RFScan_Schaumal, RFS, OutLayer, NOVISUALIZE=novisualize
    RFS.divide = RFS.divide+1
 
    If RFS.OBSERVE_SPIKES     then begin
-      Handle_Value, OutLayer.O, SSOut
-      Out = Out2Vector(OutLayer, /DIMENSIONS)
+      Handle_Value, LayerOut(OutLayer), SSOut
+      Out = LayerSpikes(OutLayer, /DIMENSIONS)
    End
    If RFS.OBSERVE_POTENTIALS then LayerData, OutLayer, POTENTIAL=Out
    
