@@ -8,10 +8,10 @@
 ;
 ; CATEGORY: Grafik
 ;
-; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,/SETCOL] ,[/PRINTSTYLE]
+; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,SETCOL={1|2}] ,[/PRINTSTYLE]
 ;                                                       [,COLORMODE=mode]
 ;                                                       [,RANGE_IN=upper_boundary]
-;                                                       [,GET_COLORMODE={+1,-1}]
+;                                                       [,GET_COLORMODE={+1|-1}]
 ;
 ;                                                       [,GET_MAXCOL=Farbindex]
 ;                                                       [,GET_RANGE_IN =scaling_boundaries_in ]
@@ -21,11 +21,23 @@
 ;                NASE-Array. (D.h. es darf auch !NONE-Werte
 ;                enthalten..., ganz positiv oder positiv/negativ sein.)
 ;
-; KEYWORD PARAMETERS: SETCOL: Wird dieses Schlüsselwort gesetzt, so
+; KEYWORD PARAMETERS: SETCOL: Wird dieses Schlüsselwort auf 1 gesetzt, so
 ;                             initialisiert die Routine auch die
-;                             Farbtabelle.
+;                             Farbtabelle und paßt die Werte von 
+;                             !P.Background und Set_Shading
+;                             entsprechend an.
 ;                             (Graustufen für positive Arrays,
 ;                             Rot/Grün für gemischtwertige.)
+;
+;                             Wird dieses Schlüsselwort auf 2
+;                             gesetzt, so initialisiert die
+;                             Routine NUR die Farbtabelle und
+;                             paßt die Werte von !P.Background
+;                             und Set_Shading entsprechend
+;                             an. Das Array wird NICHT
+;                             skaliert. Der Rückgabewert ist in
+;                             diesem Fall 0.
+;
 ;                             Hat nur Effekt, wenn /NASE oder
 ;                             /NEUTRAL angegeben wurde.
 ;                  COLORMODE: Mit diesem Schlüsselwort kann unabhängig 
@@ -88,6 +100,9 @@
 ;                     GET_RANGE_OUT = [0, GET_MAXCOL]
 ;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
+;        	    Außerdem setzt es !P.BACKGROUND stets auf den Farbindex für schwarz
+;               und initialisiert SET_SHADING geeignet, damit folgende Surface-Plots nicht
+;               seltsam aussehen.
 ;
 ; PROCEDURE: Aus Showweights, Rev. 2.15 ausgelagert.
 ;
@@ -111,6 +126,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.16  1999/11/12 16:39:35  kupper
+;        Updated Docu.
+;        Added SETCOL=2 - Mode.
+;
 ;        Revision 2.15  1999/09/23 14:15:20  kupper
 ;        Range_In=0 is now interpreted as not set, not as literal 0 as
 ;        before.
@@ -174,29 +193,10 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
                     RANGE_IN=range_in, $
                     GET_RANGE_IN=get_range_in, GET_RANGE_OUT=get_range_out
 
+
+   Default, SETCOL, 0
+
    
-   ;;------------------> Make local copy and wipe out !NONEs
-   MatrixMatrix = NoNone_Func( Matrix, NONES=no_connections, COUNT=count )
-   ;;Named MatrixMatrix for historical reasons...
-   ;;--------------------------------
-
-   min = min(MatrixMatrix)
-   max = max(MatrixMatrix)
-
-   ;;------------------> The Range value will be scaled to white/green:
-   If Keyword_Set(Range_In) then Range = Range_In ;Range_In should not be changed.
-                                ;cannot use "Default", by the way,
-                                ;as Range_In=0 should be
-                                ;interpreted as not set (not as
-                                ;literal 0)
-   Default, Range, max([max, -min]); for positive Arrays this equals max.
-   If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
-      message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
-      Range = Range(1)
-   End
-   ;;--------------------------------
-
-
    If not Keyword_set(PRINTSTYLE) then begin
       ts = !TOPCOLOR+1          ;ehemals !D.Table_Size
       GET_MAXCOL = ts-3
@@ -205,12 +205,39 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_MAXCOL = ts-1
    endelse
 
-   ;;------------------> Optional Outputs
-   GET_RANGE_IN  = [0, Range]
-   GET_RANGE_OUT = [0, GET_MAXCOL]
-   ;;--------------------------------
 
-   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
+      ;;------------------> Make local copy and wipe out !NONEs
+      MatrixMatrix = NoNone_Func( Temporary(Matrix), NONES=no_connections, COUNT=count )
+      ;;Named MatrixMatrix for historical reasons...
+      ;;--------------------------------
+      
+      min = min(MatrixMatrix)
+      max = max(MatrixMatrix)
+
+      ;;------------------> The Range value will be scaled to white/green:
+      If Keyword_Set(Range_In) then Range = Range_In ;Range_In should not be changed.
+                                ;cannot use "Default", by the way,
+                                ;as Range_In=0 should be
+                                ;interpreted as not set (not as
+                                ;literal 0)
+      Default, Range, max([max, -min]) ; for positive Arrays this equals max.
+      If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
+         message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
+         Range = Range(1)
+      End
+      ;;--------------------------------
+
+      ;;------------------> Optional Outputs
+      GET_RANGE_IN  = [0, Range]
+      GET_RANGE_OUT = [0, GET_MAXCOL]
+      ;;--------------------------------
+
+      if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
+
+
+
+
+
 
    If not Keyword_Set(COLORMODE) then $
     If min ge 0 then COLORMODE = 1 else COLORMODE = -1
@@ -242,8 +269,9 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.POS,NCOLORS=GET_MAXCOL+1;utvlct, g, g, g ;Grauwerte
          IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = 0 ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
-      EndIf
-      MatrixMatrix = Temporary(MatrixMatrix)/double(Range)*GET_MAXCOL
+      Endif
+      
+      If (SETCOL eq 1) then MatrixMatrix = Temporary(MatrixMatrix)/double(Range)*GET_MAXCOL
 
    endif else begin             ;pos/neg Array
 
@@ -260,8 +288,11 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
-      MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(Range)
-      MatrixMatrix = (Temporary(MatrixMatrix)+0.5)*GET_MAXCOL
+
+      If (SETCOL eq 1) then begin
+         MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(Range)
+         MatrixMatrix = (Temporary(MatrixMatrix)+0.5)*GET_MAXCOL
+      EndIf
 
    endelse
 
@@ -275,5 +306,5 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       Endif
    EndIf
 
-   Return, MatrixMatrix
+   If (SETCOL lt 2) then Return, MatrixMatrix else Return, 0
 End
