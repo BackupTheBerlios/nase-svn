@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.42  2001/02/13 10:48:01  saam
+;       removed annoying "product placement"
+;
 ;       Revision 1.41  2001/02/08 18:32:15  kupper
 ;       Packed NASE plotting related system variables into a struct names !NASEP.
 ;
@@ -159,6 +162,4 @@ Background, "black"          ; default background is black
 SelectNASETable, /STANDARD   ; default NASE color table set
 !NASEP.INTERPOLATION=0       ; 0:none, 1:linear, 2:cubic, 3:none(polygons)
 
-;;bit of product placement... ;-)
-!P.Title = "Graphics by NASE" ; default window title    
 !PROMPT="IDL/NASE> "
