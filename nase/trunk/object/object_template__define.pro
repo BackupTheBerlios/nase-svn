@@ -66,7 +66,7 @@
 ; ABSTRACT METHODS:
 ;
 ;  Abstract methods are used to indicate that a class is designed to have a
-;  respective member function, but that functionality needs to be defined
+;  respective method, but that functionality needs to be defined
 ;  in a derived class. Abstract methods must be overriden in derived classes.
 ;  Classes containing abstract methods (so-called abstract classes) are designed
 ;  for derivation only. Instantiation of abstract classes is an error.
