@@ -152,8 +152,8 @@ FUNCTION  Correlation,   X_, Y_, Dimension,  $
      XEnergy    = Total(X^2, Dim)   ; energy of signal x
      YEnergy    = Total(Y^2, Dim)   ; energy of signal y
      ; Only those epochs are valid whose energy is greater than zero (otherwise the correlation is left zero):
-     Valid      = Where(XEnergy NE 0  AND  YEnergy NE 0)
-     Cxy(Valid) = Cxy(Valid) / Sqrt(XEnergy(Valid) * YEnergy(Valid))
+     Valid      = Where(XEnergy NE 0  AND  YEnergy NE 0, cValid)
+     IF CValid NE 0 THEN Cxy(Valid) = Cxy(Valid) / Sqrt(XEnergy(Valid) * YEnergy(Valid))
    ENDIF  ELSE  $
      IF  Keyword_Set(lengthnorm)  THEN  Cxy = Cxy / N
 
