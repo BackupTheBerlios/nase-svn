@@ -6,6 +6,9 @@
 ; MODIFICATION HISTROY:
 ;
 ;       $Log$
+;       Revision 1.3  1999/12/22 10:35:27  saam
+;             internal directory added
+;
 ;       Revision 1.2  1999/12/14 16:07:53  alshaikh
 ;             Jetzt auch IDL3-kompatibel!
 ;
@@ -33,6 +36,7 @@ MINDDIRS = FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["control"]) + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["demo"])    + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["graphic"]) + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["input"])   + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["internal"])+ separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["sim"])     + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["xplore"])
 
