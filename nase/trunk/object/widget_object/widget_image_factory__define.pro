@@ -52,12 +52,6 @@ Pro widget_image_factory::brightness, value
    self->paint_
 End
 
-Pro widget_image_factory::prevent_update
-   self.prevent_update_flag = 1
-End
-Pro widget_image_factory::allow_update
-   self.prevent_update_flag = 0
-End
 
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
@@ -185,9 +179,7 @@ Pro widget_image_factory__DEFINE
             $
             w_size: 0l, $
             w_brightness: 0l, $
-            w_type: 0l, $
-            $
-            prevent_update_flag: 0b $
+            w_type: 0l $
            }
 End
 
