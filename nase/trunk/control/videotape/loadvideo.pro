@@ -40,6 +40,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Sep 2 19:05:51 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Free_Luns zugefügt, die ich sträflicherweise vergaß...
+;
 ;       Thu Aug 28 15:55:11 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -62,7 +67,8 @@ Function LoadVideo, TITLE=title, VERBOSE=verbose, INFO=info
    Parts = str_sep(title, '/')
    title = Parts(n_elements(Parts)-1)
 
-   openr, infounit, /GET_LUN, infoname
+   Get_Lun, infounit
+   openr, infounit, infoname
    
    dims = 0l & readu, infounit, dims
    rest = lonarr(dims+2) & readu, infounit, rest
@@ -124,12 +130,15 @@ Function LoadVideo, TITLE=title, VERBOSE=verbose, INFO=info
       endelse
 
       close, infounit
+      Free_Lun, infounit
       return, 0
    endif
 ;------------------------------------   
    close, infounit
+   Free_Lun, infounit
 
-   openr, unit, /GET_LUN, filename
+   Get_Lun, unit
+   openr, unit, filename
            
 
    If Keyword_set(VERBOSE) then begin
@@ -160,3 +169,13 @@ Function LoadVideo, TITLE=title, VERBOSE=verbose, INFO=info
             FramePointer: 0l}
    
 End
+
+
+
+
+
+
+
+
+
+
