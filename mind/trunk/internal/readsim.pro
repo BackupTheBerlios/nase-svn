@@ -9,11 +9,12 @@
 ;  Read various simulation data created by <A>Sim</A>. You probably
 ;  want to use the <A>ReadSimu</A>, instead.
 ;
-; PURPOSE:            Reads SUA or membrane potentials saved via MIND
-;                     allows specific neurons and times to be read.
-;                     this routine doesn't care for oversampling.
-;                     There is a high level routine called <A>ReadSimu</A>
-;                     you probably want to use instead!
+; PURPOSE:
+;   Restores several signal types saved via MIND
+;   and allows specific neurons and times to be read.
+;   This routine doesn't care for oversampling.
+;   There is a high level routine called <A>ReadSimu</A>
+;   you probably want to use instead!
 ;
 ; CATEGORY:
 ;  DataStorage
@@ -21,38 +22,47 @@
 ;  MIND
 ;  Simulation
 ;
-; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT]
-;                                 [,/MEMBRANE] [,/MUA] [,/LFP] 
-;                                 [,/NONE]
-;                                 [,TIME=time] [,SELECT=select] 
-;                                 [,INFO=info]
-;                                 [,UDS=uds]
+; CALLING SEQUENCE:
+;* o = ReadSim(file [,/INPUT] [,/OUTPUT]
+;*             [,/MEMBRANE] [,/MUA] [,/LFP] 
+;*             [,/NONE]
+;*             [,TIME=time] [,SELECT=select] 
+;*             [,INFO=info]
+;*             [,UDS=uds]
 ;
 ;
-; INPUTS:             file: path/file to be read (without suffices)
+; INPUTS:
+;  file:: path/file to be read (without suffices)
 ;
-; KEYWORD PARAMETERS: IINPUT  : read input for layer
-;                     OUTPUT  : read spike output of layer (this is default)
-;                     MEMBRANE: read membrane potentials of layer
-;                     LFP     : read local field potentials of layer
-;                     MUA     : read multiple unit activity
-;                     NONE    : read arbitrary data
-;                     TIME    : reads the simulation from BIN start to BIN end specified
-;                               as [start,end]. if end is negative,
-;                               data is read to the (-end)-last
-;                               element. Therefore end=-1 reads to
-;                               the file's end. If end is omitted,
-;                               data is read from 0 to start.
-;                     SELECT  : an array of neuron indices to be read
+; INPUT KEYWORDS:
+;   IINPUT  :: read input for layer
+;   OUTPUT  :: read spike output of layer (this is default)
+;   MEMBRANE:: read membrane potentials of layer
+;   LFP     :: read local field potentials of layer
+;   MUA     :: read multiple unit activity
+;   NONE    :: read arbitrary data
+;   TIME    :: reads the simulation from BIN start to BIN end specified
+;             as [start,end]. if end is negative,
+;             data is read to the (-end)-last
+;             element. Therefore end=-1 reads to
+;             the file's end. If end is omitted,
+;             data is read from 0 to start.
+;   SELECT  :: an array of neuron indices to be read
 ;
-; OPTIONAL OUTPUTS:   INFO    : returns the VIDEO informations
+; OPTIONAL OUTPUTS:
+;   INFO    :: returns the VIDEO informations
+;   UDS     :: restores an additional data structure, saved
+;              together with the data 
 ;
-; OUTPUTS:            O: array (neuronindex,time) containing the data read
+; OUTPUTS:
+;   O:: array (neuronindex,time) containing the data read
 ;
-; EXAMPLE:            o = ReadSim('~/sim/local_assemblies/bar/gap/v1/_', $
-;                                  /MEMBRANE, TIME=[0,1000], SELECT=[0,5,7,3,9])
+; EXAMPLE:
+;* o = ReadSim('~/sim/local_assemblies/bar/gap/v1/_', $
+;               /MEMBRANE, TIME=[0,1000], SELECT=[0,5,7,3,9])
 ;
-; SEE ALSO:           <A>ReadSimu</A>
+; SEE ALSO:
+;  <A>ReadSimu</A>
 ;        
 ;-
 FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, RMUA=rmua, TIME=time, INFO=info, SELECT=select, UDS=uds
@@ -92,7 +102,7 @@ FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE
       console, 'loading MUA...'
    END
    IF Keyword_Set(LFP) THEN BEGIN
-      filename = file
+      filename = file+'.lfp.sim'
       console, 'loading LFP...'
    END
    IF Keyword_Set(RMUA) THEN BEGIN
@@ -124,7 +134,13 @@ FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE
       END
       anz =  N_Elements(SELECT)
    END
-   IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) OR Keyword_Set(RMUA) OR KEYWORD_Set(NONE) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
+
+   
+   IF Keyword_Set(MEMBRANE) THEN xt = FltArr(anz, TIME(1)-TIME(0)+1)
+   IF Keyword_Set(LFP)      THEN xt = FltArr(1, TIME(1)-TIME(0)+1)        
+   IF Keyword_Set(MUA)      THEN xt = LonArr(1, TIME(1)-TIME(0)+1)
+   IF NOT Set(xt)           THEN xt = BytArr(anz, TIME(1)-TIME(0)+1)
+
 
    TIME = LONG(TIME)
    REWIND, Video, TIME(0), /SHUTUP
@@ -150,5 +166,5 @@ FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE
    IF Keyword_Set(RMUA)     THEN console, 'loading RMUA...done', /UP
    IF Keyword_Set(LFP)      THEN console, 'loading LFP...done', /UP
 
-   RETURN, xt
+   RETURN, REFORM(xt)
 END
