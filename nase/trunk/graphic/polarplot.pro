@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  1999/04/29 09:17:26  gabriel
+;             Interpolation der Winkel war falsch
+;
 ;        Revision 2.5  1999/04/28 17:10:41  gabriel
 ;             Keyword DELTA neu
 ;
@@ -124,7 +127,8 @@ IF DELTA GT 1 THEN BEGIN
       _sdev = _sdev - _radiusarray
    ENDIF
 
-   _winkelarray = _winkelarray(0)+findgen(delta*(N_ELEMENTS(_winkelarray))+close)/FLOAT((N_ELEMENTS(_winkelarray))*DELTA-1+close)*(last(_winkelarray)+close*(_winkelarray(1)-_winkelarray(0)))
+   _winkelarray = (last(_winkelarray)+close*abs(_winkelarray(1)-_winkelarray(0))-_winkelarray(0))*findgen(delta*(N_ELEMENTS(_winkelarray))+close)/FLOAT(N_ELEMENTS(_winkelarray)*DELTA+close-1)+_winkelarray(0)
+
 END ELSE BEGIN
 
    IF CLOSE EQ 1 THEN BEGIN
