@@ -1,81 +1,68 @@
 ;+
-; NAME:    COHERENCE
+; NAME:
+;   Coherence()
 ;
-; AIM:          computes the coherence beetween two given signals
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:      The coherence function is a good method to make an estimation, 
-;               how strong two signals are coupled in phase and amplitude over several trials.
-;               The result is an array of cohrenceindexes Values:[0..1] as a function of the frequency.
-;               If time slices of signals are used, the result is an two dimensonal array of 
-;               cohrenceindexes [0..1] as a function of frequency and time.
+; AIM:
+;   computes the coherence beetween two given signals
 ;
-;               SignalX    | equal       | unequal
-;               SignalY    | amplitude   | amplitude
-;               N Trials   | modulation  | modulation
-;               --------------------------------------
-;               equal      | high        |  medium
-;               phase      | coherence   |  coherence
-;               difference |             |
-;               --------------------------------------
-;               unequal    | medium      |  low
-;               phase      | coherence   |  coherence
-;               difference |             |          
+; PURPOSE:
+;   The coherence function is a good method to make an estimation, 
+;   how strong two signals are coupled in phase and amplitude over several trials.
+;   The result is an array of cohrenceindexes Values:[0..1] as a function of the frequency.
+;   If time slices of signals are used, the result is an two dimensonal array of 
+;   cohrenceindexes [0..1] as a function of frequency and time.
+;
+;*  SignalX    | equal       | unequal
+;*  SignalY    | amplitude   | amplitude
+;*  N Trials   | modulation  | modulation
+;*  --------------------------------------
+;*  equal      | high        |  medium
+;*  phase      | coherence   |  coherence
+;*  difference |             |
+;*  --------------------------------------
+;*  unequal    | medium      |  low
+;*  phase      | coherence   |  coherence
+;*  difference |             |          
 ;
 ;
-; CATEGORY: Corrs + Specs
-;
+; CATEGORY:
+;  Signals
 ;
 ; CALLING SEQUENCE:  
-;                       result =  coherence( SignalX, SignalY, CXY , confidence
-;                                          [dimension = dimension], 
-;                                          [SAMPLEPERIOD = SAMPLEPERIOD],
-;                                          [F=F], [NEGFREQ=NEGFREQ],
-;                                          [correction = correction],
-;                                          [cfvalue=cfvalue])
+;* result =  coherence( signalX, signalY, cxy , confidence
+;                       [, DIMENSION=...] [, SAMPLEPERIOD=...]
+;                       [, F=...] [, NEGFREQ=...]
+;                       [, CORRECTION=...] [, CFVALUE=cfvalue] )
 ;
-; 
-; INPUTS:               SignalX:   Array of time signal channel 1 (first dimension is the time)
-;                       SignalY:   Array of time signal channel 2 (first dimension is the time)
-;                                  (Max allowed dimension of input signals is 4)
+; INPUTS:
+;   signalX::   Array of time signal channel 1 (first dimension is the time)
+;   signalY::   Array of time signal channel 2 (first dimension is the time)
+;              (Max allowed dimension of input signals is 4)
 ;
 ;
 ;	
-; KEYWORD PARAMETERS:
-;                       dimension:    The Dimension in which the trials in SignalX or SignalY are hold (default: 2) 
-;                       correction:   Correction of coherence in respect to the number of trials     
-;                       sampleperiod: The time period of data sampling [ms] (default: 0.001)
-;                       negfreq:      The result includes also the negative frequencies (in the manner of FFT)
-;                                     and CXY is the crossspectrum (complex!!)
-;                       cfvalue:      the confidencevalue for the result (default: 0.95)  
+; INPUT KEYWORDS:
+;   DIMENSION::    The Dimension in which the trials in SignalX or SignalY are hold (default: 2) 
+;   CORRECTION::   Correction of coherence in respect to the number of trials     
+;   SAMPLEPERIOD:: The time period of data sampling [ms] (default: 0.001)
+;   NEGFREQ::      The result includes also the negative frequencies (in the manner of FFT)
+;                  and CXY is the crossspectrum (complex!!)
+;   CFVALUE::      the confidencevalue for the result (default: 0.95)  
 ;                                     
 ; OUTPUTS:
-;                       Coherence between SIgnalX und SignalY
+;   result:: Coherence between SIgnalX und SignalY
 ;
 ; OPTIONAL OUTPUTS:
-;                       CXY: CrossPower of SIgnalX und SignalY
-;;                      F: Array with the values of the frequence axis [Hz]
-;                       confidence: an array with the confidence interval for each coherencevalue.
+;   CXY::        CrossPower of SIgnalX und SignalY
+;   F::          Array with the values of the frequence axis [Hz]
+;   confidence:: an array with the confidence interval for each coherencevalue.
 ;
 ; EXAMPLE:
 ;
 ;-
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 1.3  2000/09/28 14:11:57  gabriel
-;          AIM tag added
-;
-;     Revision 1.2  1998/11/20 17:17:35  gabriel
-;          Confidence Berechnung  neu
-;
-;     Revision 1.1  1998/08/11 10:31:32  gabriel
-;           Dem N.A.S.E Standard angepasst (Org. von A. Bruns)
-;
-;
-;
-
-
 
 FUNCTION  __HAMMING,   N,   nonorm = nonorm
 
