@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1997/11/13 13:15:16  saam
+;           Device Null wird nun unterstuetzt
+;
 ;     Revision 2.4  1997/11/11 16:56:43  saam
 ;           Bug im Example der Docu
 ;
@@ -60,6 +63,8 @@ PRO TvSclLegend, xnorm, ynorm $
                  ,LEFT=left, RIGHT=right, TOP=top, BOTTOM=bottom $
                  ,_EXTRA = e
    
+   
+   IF !D.NAME EQ 'NULL' THEN RETURN
    
    Default, xnorm, 0.5
    Default, ynorm, 0.5
