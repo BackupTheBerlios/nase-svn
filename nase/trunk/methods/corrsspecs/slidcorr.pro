@@ -105,6 +105,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  1998/05/12 17:50:30  gabriel
+;          falsches Argument bei ubar_plot
+;
 ;     Revision 1.2  1998/05/12 14:10:55  gabriel
 ;          code bei ubar_plot geaendert
 ;
@@ -349,7 +352,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
          ubar_plot,tdata,energiearr,COLORS=RGB(255,0,0,/NOALLOC),YTICKS=2,YRANGE=[0,1.]  , /YSTYLE,$
          ;poly_plot,tdata,showweight,COLORS=RGB(255,0,0,/NOALLOC),YTICKS=2,YRANGE=[0,1.]  , /YSTYLE,$
           YTITLE="Energy [perc]",CHARSIZE=1.,$
-          TITLE="Energy of Frequenceband",DIST=0,$
+          TITLE="Energy of Frequenceband",BARSPACE=0,$
           POSITION=[ PlotPosition(0), 1.3*PlotPosition(1), PlotPosition(2), 0.9*PLOTPOSITION(3)]
          
 
