@@ -92,6 +92,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.19  2000/07/24 10:22:09  saam
+;              + supresses labelling of tickmarks <1E-10
+;                using new absoluteNZticks routine
+;
 ;        Revision 2.18  2000/07/19 12:16:17  saam
 ;              + removed _EXTRA in one plot call to avoid
 ;                vagabondizing text strings
@@ -223,7 +227,6 @@ plot, radiusarray, anglearray,/POLAR, $
   TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e
 
 
-
 ; now, we can do the data plot
 IF Set(sdevarray) THEN opolarplot, radiusarray, anglearray, sdevarray, RADIUSINTERPOL=radiusinterpol, WINKELINTERPOL=winkelinterpol, _EXTRA=e $
                   ELSE opolarplot, radiusarray, anglearray, RADIUSINTERPOL=radiusinterpol, WINKELINTERPOL=winkelinterpol, _EXTRA=e
@@ -233,9 +236,10 @@ IF Set(sdevarray) THEN opolarplot, radiusarray, anglearray, sdevarray, RADIUSINT
 
 
 ; plot the axes
-Axis, 0,0, xax=0, /DATA, XTICKFORMAT=('AbsoluteTicks'), XRANGE=xrange, CHARSIZE=charsize, XTICK_GET=TA
-Axis, 0,0, yax=0, /DATA, YTICKFORMAT=('AbsoluteTicks'), YRANGE=yrange, CHARSIZE=charsize
+Axis, 0,0, xax=0, /DATA, XTICKFORMAT=('AbsoluteNZTicks'), CHARSIZE=charsize, XTICK_GET=TA, XRANGE=xrange
+Axis, 0,0, yax=0, /DATA, YTICKFORMAT=('AbsoluteNZTicks'), CHARSIZE=charsize, YRANGE=yrange
 
+stop
 ; plot a solid circle (constant radius) at each tick position
 ; avoids problems with double plotting of -x, x and circles near zero
 ; radius (this often produced incriptions like 0.343434E-17 which was
