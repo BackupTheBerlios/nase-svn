@@ -54,8 +54,15 @@
 ;                     CUBIC,
 ;                     INTERP,
 ;                     MINUS_ONE : werden an ConGrid uebergeben (s. IDL_Hilfe)
+;                                 Man beachte, daﬂ die Interpolation eines Arrays, das !NONE-Elemente enth‰lt,
+;                                 nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
+;
 ;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
+;
+;                     Man beachte, daﬂ die Interpolation (Keyw. CUBIC oder INTERP) eines Arrays,
+;                     das !NONE-Elemente enth‰lt,
+;                     nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
 ;                
 ; EXAMPLE:
 ;          bild = FIndgen(100,100)
@@ -70,6 +77,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.30  1999/07/16 14:22:58  kupper
+;     Bug fix: Min & Max of array were allways recomputed, not only in the
+;     case of CUBIC interpolation. This led to vanishing NONEs and
+;     misbehaviour of showweights/tomwaits. Fixed.
+;
 ;     Revision 2.29  1999/06/10 12:35:27  kupper
 ;     Added Correction of Minimum/Maximum if CUBIC Interpolation was used (to prevent color-table-artefacts!)
 ;
@@ -382,9 +394,11 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
                                 ;congrid. This may produce color
                                 ;artefacts. So rescale to have the
                                 ;same min and max as before:
-            Image = Image-min(Image)
-            Image = Image/float(max(Image))*(im_max-im_min)
-            Image = Image+im_min
+            If Keyword_Set(CUBIC) then begin
+               Image = Image-min(Image)
+               Image = Image/float(max(Image))*(im_max-im_min)
+               Image = Image+im_min
+            EndIf
          EndIf
          IF N_Params() EQ 2 THEN BEGIN ;; position implicitely
             IF Keyword_Set(NOSCALE) THEN BEGIN
