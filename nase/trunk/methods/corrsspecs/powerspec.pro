@@ -9,7 +9,7 @@
 ;
 ; CATEGORY:              STATISTICS
 ;
-; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE]        $
+; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE] , [SMAMPLPERIOD=samplperiod]  $
 ;                                        [,PHASE=phase] [,TRUNC_PHASE=trunc_phase][,KERNEL=kernel])
 ;
 ; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
@@ -23,6 +23,11 @@
 ;                                     auf Null gesetzt.
 ;                        KERNEL:      Filterkernel zum Smoothen des CrossSpectrums, empfehlenswert bei 
 ;                                     KEYWORD PHASE
+;                        SAMPLPERIOD: Sampling-Periode (default: 0.001 sec) der Zeitreihe
+;
+;                        COMPLEX:     als Output komplexes PowerSpec
+;
+;                        NEGFREQ:     Output mit negativen Frequenzen (default ist: nur pos. freq.)
 ;
 ;
 ; OUTPUTS:               ps      : das berechnete Powerspektrum
@@ -58,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.8  1998/05/04 17:55:29  gabriel
+;       COMPLEX Keyword neu
+;
 ; Revision 1.7  1998/01/27 18:48:35  gabriel
 ;      Kosmetische Korrektur
 ;
@@ -81,10 +89,11 @@
 
 
 
-FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel
+FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double ,Phase=Phase ,NEGFREQ=NegFreq ,$
+                    TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD,COMPLEX=Complex
  
- PSpec = crosspower( series, series, xaxis, hamming=HAMMING,$
-                     DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel)
+ PSpec = crosspower( series, series, xaxis, hamming=HAMMING,NEGFREQ=NegFreq ,$
+                     DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE,KERNEL=kernel,SAMPLPERIOD=SAMPLPERIOD,COMPLEX=Complex)
 
  Return,PSpec
 END
