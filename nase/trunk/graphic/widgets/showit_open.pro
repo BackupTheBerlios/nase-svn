@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1999/11/23 14:03:27  kupper
+;        corrected copy-and-paste-error.
+;
 ;        Revision 1.3  1999/11/16 17:05:13  kupper
 ;        Incorporated changes previously made to the sheet/scrollit routines:
 ;        Will not produce tracking events for TrueColor or DirectColor
@@ -70,7 +73,7 @@ PRO ShowIt_Open, widid
    !Z = uservalue.z
    uservalue.z = old
 
-   If keyword_set(SETCOL) and not(PseudoColor_Visual()) then begin
+   If not(PseudoColor_Visual()) then begin
                                 ;we've got a True-Color-Display, so
                                 ;we have to set the private color table:
       UTVLCT, uservalue.MyPalette.R, uservalue.MyPalette.G, uservalue.MyPalette.B 
