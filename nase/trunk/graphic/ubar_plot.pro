@@ -38,6 +38,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.4  1998/07/20 14:30:01  gabriel
+;          Verbessert und an die Routine hist angepasst
+;
 ;     Revision 2.3  1998/05/12 17:48:24  gabriel
 ;          kleinen !P.MULTI Fehler behoben
 ;
@@ -89,7 +92,9 @@ FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN
    x = [ xdata(i)-stepl,xdata(i)-stepl,xdata(i)+stepr,xdata(i)+stepr ]
    y = [ offset ,ydata(i),ydata(i),offset ]
    polyfill,x,y,COLOR=COLORS(i),NOCLIP=0
+
 END
+
 ;;Und Nochmal Drueber
 ;print,!P.MULTI
 !P.MULTI = PTMP 
