@@ -1,8 +1,6 @@
 ;+
 ; NAME: SetWeight
 ;
-;
-;
 ; PURPOSE: Schreibt ein oder mehrere Gewichte in eine
 ;          Delay_Weight-Struktur.
 ;
@@ -11,11 +9,7 @@
 ;          SetWeight eine Prozedur ist, und hier als zweites Argument das (die) Gewicht(e) 
 ;          angegeben wird.
 ;
-;
-;
 ; CATEGORY: SIMULATION, CONNECTIONS 
-;
-;
 ;
 ; CALLING SEQUENCE:          SetWeight ( D_W_Struktur, Gewicht,
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -29,19 +23,11 @@
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: siehe GetWeight()!
 ;
-;
-; 
 ; INPUTS: Gewicht: Gewicht(sarray), das gesetzt werden soll.
 ;         alles andere: siehe GetWeight()
 ;
-;
-;
-;
-;
 ; OPTIONAL INPUTS:siehe GetWeight()
 ;
-;
-;	
 ; KEYWORD PARAMETERS: ALL: Wird dieses Keyword gesetzt, so werden
 ;                          nicht nur die Gewichte für das angegebene
 ;                          Neuron gesetzt, sondern auch die aller
@@ -81,41 +67,23 @@
 ;
 ;                     alles andere: <A HREF="#GETWEIGHT">siehe GetWeight()</A>
 ;
-;
-;
-; OUTPUTS: ---
-;
-;
-;
-; OPTIONAL OUTPUTS: ---
-;
-;
-;
-; COMMON BLOCKS: ---
-;
-;
-;
-; SIDE EFFECTS: ---
-;
-;
-;
 ; RESTRICTIONS: Die übergebenen Gewichte müssen je nach Kontext
 ;               entweder ein Skalar oder ein Array mit entsprechenden
 ;               Dimensionen (s. GetWeight() ) sein!
 ;
-;
-;
 ; PROCEDURE:siehe GetWeight()
 ;
-;
-;
 ; SEE ALSO: <A HREF="#GETWEIGHT">GETWEIGHT</A>
-;
-;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  1997/12/10 15:53:46  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.12  1997/12/08 17:31:03  gabriel
 ;             noch ein paar fehler in der docu
 ;
@@ -156,10 +124,13 @@
 ;		Urversion erstellt.
 ;-
 
-Pro SetWeight, V_Matrix, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
+Pro SetWeight, _V_Matrix, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
                                     LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
                                     TRANSPARENT=transparent,INITSDW=initsdw
+
+   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY
+   
    if set(TRANSPARENT) then Default, trunc_value, transparent
    s = size(Weight)
 
@@ -264,6 +235,9 @@ Pro SetWeight, V_Matrix, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_in
 
    end
    IF set(INITSDW) THEN INIT_SDW,V_Matrix
+
+   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
+
 end   
 
 

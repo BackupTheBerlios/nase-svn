@@ -17,7 +17,7 @@
 ;          Ist dies der Fall, so wird die Verbindung geschwaecht
 ;          (Subtraktion des alten Gewichts),falls kein praesynaptischer Spike vorliegt.
 ;
-; CATEGORY: SIMULATION
+; CATEGORY: SIMULATION PLASTICITY
 ;
 ; CALLING SEQUENCE:   LearnHebbSharp, G, TARGET_CL=TargetCluster, 
 ;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
@@ -56,6 +56,12 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.6  1997/12/10 15:56:49  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.5  1997/09/17 10:25:53  saam
 ;       Listen&Listen in den Trunk gemerged
 ;
@@ -82,11 +88,12 @@
 ; erste Version vom 5. August '97. Andreas.
 ;
 ;-
-PRO LearnHebbSharp, DW, SOURCE_CL=Source_Cl, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
+PRO LearnHebbSharp, _DW, SOURCE_CL=Source_Cl, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    Default, rate, entlernrate
    Default, alpha, lernrate/entlernrate
 
+   Handle_Value, _DW, DW, /NO_COPY
 
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then Return
@@ -130,6 +137,8 @@ PRO LearnHebbSharp, DW, SOURCE_CL=Source_Cl, TARGET_CL=Target_CL,RATE=Rate,ALPHA
          
       END ELSE Message, 'illegal first argument'
    END
+
+   Handle_Value, _DW, DW, /NO_COPY, /SET
    
 END
 

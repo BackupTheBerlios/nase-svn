@@ -11,11 +11,7 @@
 ;          SetDelay eine Prozedur ist, und hier als zweites Argument das (die) Delay(s)
 ;          angegeben wird.
 ;
-;
-;
-; CATEGORY: Simulation
-;
-;
+; CATEGORY: SIMU/CONNECTIONS
 ;
 ; CALLING SEQUENCE:           SetDelay ( D_W_Struktur, Delay,
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -27,16 +23,11 @@
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: siehe GetDelay()!
 ;
-;
-; 
 ; INPUTS: Delay: Delay(array), das gesetzt werden soll.
 ;         alles andere: siehe GetDelay()
 ;
-;
 ; OPTIONAL INPUTS:siehe GetDelay()
 ;
-;
-;	
 ; KEYWORD PARAMETERS: ALL: Wird dieses Keyword gesetzt, so werden
 ;                          nicht nur die Delays für das angegebene
 ;                          Neuron gesetzt, sondern auch die aller
@@ -57,19 +48,19 @@
 ;               Das alles geht natürlich nur, wenn die Struktur mit
 ;               Delays initialisiert wurde!
 ;
-;
-;
 ; PROCEDURE:siehe GetDelay()
 ;
-;
-;
-; EXAMPAMPLE:siehe GetDelay()
-;
-;
+; EXAMPLE:siehe GetDelay()
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1997/12/10 15:53:42  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.7  1997/10/30 12:57:52  kupper
 ;              Bug beim ALL-Schlüsselwort behoben (Integerdivision durch Fließkomma ersetzt.)
 ;
@@ -98,10 +89,12 @@
 ;
 ;-
 
-Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
+Pro SetDelay, _V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
                                     ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
                                     TRANSPARENT=transparent
+
+   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY
     
    if v_matrix.Delays(0) eq -1 then message, "Die übergebene Delay-Weight-Struktur enthält gar keine Delays!"
 
@@ -198,5 +191,7 @@ Pro SetDelay, V_Matrix, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
       V_Matrix.Delays(t_index, s_index) = Delay
 
    end
+
+   Handle_Value, _V_Matrix, V_Matrix, /NO_COPY, /SET
 
 end   

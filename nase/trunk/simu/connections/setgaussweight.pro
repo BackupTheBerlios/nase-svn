@@ -14,8 +14,6 @@
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE | LESSTHAN=Abschneidewert ] ]
 ;                                   [,TRANSPARENT][,INITSDW])
-;
-;
 ; 
 ; INPUTS: DWS  :    Eine (initialisierte!) Delay-Weight-Struktur
 ;
@@ -40,18 +38,8 @@
 ;
 ; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT ,INITSDW: s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
 ;
-;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Die Gewichte der Delay-Weight-Struktur werden entsprechend geändert.
 ;               Beim setzen von Abschneidewert wird  TRUNC_VALUE auf !NONE gesetzt
-;
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Default, Setweight
 ;
@@ -71,6 +59,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  1997/12/10 15:53:44  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.10  1997/12/08 17:33:02  gabriel
 ;            paar bugs entfernt, elliptische gaussmaske, XHWB YHWB Keywords
 ;
@@ -112,6 +106,13 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
                        TRANSPARENT=transparent, INITSDW=initsdw
 
+   Handle_Value, DWS, _DWS, /NO_COPY
+   tw = _DWS.target_w
+   th = _DWS.target_h
+   sw = _DWS.source_w
+   sh = _DWS.source_h
+   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+
    Default, Amp, 1
    IF Keyword_Set(Norm) THEN Amp = 1
    
@@ -121,7 +122,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
    
       if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
-       GaussMask = Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
+       GaussMask = Amp * Gauss_2D(th, tw, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
                                   Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
        IF set(lessthan) THEN BEGIN
           g_index = where(GaussMask LT lessthan,g_count)
@@ -136,7 +137,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
       if not(set(t_row)) or not(set(t_col)) or not(set(s_hs_row)) or not(set(s_hs_col)) then $
        message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
 
-       GaussMask =Amp * Gauss_2D(DWS.source_h, DWS.source_w, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
+       GaussMask =Amp * Gauss_2D(sh, sw, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
                                  Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
        IF set(lessthan) THEN BEGIN
           g_index = where(GaussMask LT lessthan,g_count)

@@ -32,15 +32,7 @@
 ;	
 ; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE : s. SetDelay!
 ;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Die Delays der Delay-Weight-Struktur werden entsprechend geändert.
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Default, SetDelay, Gauss_2D()
 ;
@@ -59,6 +51,14 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.4  1997/12/10 15:53:45  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
+;
 ;       Tue Sep 2 00:51:40 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -76,7 +76,14 @@ Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
 
-   Default, Range, DWS.target_h/6
+   Handle_Value, DWS, _DWS, /NO_COPY
+   tw = _DWS.target_w
+   th = _DWS.target_h
+   sw = _DWS.source_w
+   sh = _DWS.source_h
+   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+
+   Default, Range, th/6
    Default, Amp, 1
    Default, min, 0
    Default, trunc_value, Amp
@@ -87,7 +94,7 @@ Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
 
       SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
-       min + (Amp-min)/double(Range)*(Range < Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
+       min + (Amp-min)/double(Range)*(Range < Shift(Dist(th, tw), t_hs_row, t_hs_col)), $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
 
    endif else begin             ; Wir definieren FROMS:
@@ -96,7 +103,7 @@ Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
        message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
 
       SetDelay, DWS, T_ROW=t_row, T_COL=t_col, $
-       min + (Amp-min)/double(Range)*(Range < Shift(Dist(DWS.source_h, DWS.source_w), s_hs_row, s_hs_col)), $
+       min + (Amp-min)/double(Range)*(Range < Shift(Dist(sh, sw), s_hs_row, s_hs_col)), $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
       
    endelse

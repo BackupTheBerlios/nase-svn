@@ -13,8 +13,6 @@
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
 ;                                   [,TRANSPARENT])
 ;
-;
-; 
 ; INPUTS: DWS  :    Eine (initialisierte!) Delay-Weight-Struktur
 ;         S_ROW:    Zeilennr des Sourceneurons im Sourcelyer
 ;         S_COL:    Spaltennr
@@ -26,15 +24,7 @@
 ;	
 ; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE, TRANSPARENT : s. SetWeight!
 ;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Die Delays der Delay-Weight-Struktur werden entsprechend geändert.
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Default, Setweight
 ;
@@ -53,24 +43,37 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.3  1997/12/10 15:53:45  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
+;
 ;       Wed Aug 6 16:51:48 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		Urversion erstellt, im wesentlichen Durch Übernahme von SetGaussWeight und SetLinearDelay
 ;
 ;-
-
-Pro SetLinearWeight, DWS, Amp, Range, $
+PRO SetLinearWeight, DWS, Amp, Range, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
                        TRANSPARENT=transparent
 
-   Default, Range, DWS.target_h/6  
+
+   Handle_Value, DWS, _DWS, /NO_COPY
+   tw = _DWS.target_w
+   th = _DWS.target_h
+   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+
+   Default, Range, th/6  
    Default, Amp, 1
 
    SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
-              Amp - Amp/double(Range)*(Range < Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
+              Amp - Amp/double(Range)*(Range < Shift(Dist(th, tw), t_hs_row, t_hs_col)), $
               ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
               TRANSPARENT=transparent
 
-end
+END

@@ -98,6 +98,12 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.9  1997/12/10 15:57:55  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 2.8  1997/12/08 12:48:02  kupper
 ;       *** empty log message ***
 ;
@@ -156,11 +162,14 @@
 ;-
 
 
-PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
+PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
                  NOWIN = nowin
+
+   Handle_Value, __Matrix, _Matrix, /NO_COPY 
+
 
    IF !D.Name EQ 'NULL' THEN RETURN
 
@@ -187,6 +196,22 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
                    target_h: _Matrix.source_h}
       END ELSE Message, 'keine gueltige DelayWeigh-Struktur uebergeben'
    ENDIF ELSE Matrix = _Matrix
+
+
+;;;;;;;
+;;;;;;; MIRKO -> 1D-Darstellung 
+;;;;;;;
+;   minIndex = MIN([Matrix.source_w, Matrix.source_h])
+;   IF minIndex EQ 1 THEN BEGIN
+;      print, 'Mapping Row/Column to Square'
+;      tmpWidth = ROUND(SQRT(Matrix.source_w*Matrix.source_h))
+;      tmpHeight = (Matrix.source_w*Matrix.source_h) / tmpWidth
+;      tmpHeight = 
+
+;   END
+;;;;;;;
+;;;;;;; MIRKO -> ENDE
+;;;;;;;
 
 
 ;no_connections = WHERE(Matrix.Weights EQ !NONE, count)
@@ -287,6 +312,9 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
          Default, get_base, Base ;Base-ID-zurückgeben, falls ein Widget mit SLIDE erstellt wurde.
       endif
    endif
+
+
+   Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
    
 END        
         

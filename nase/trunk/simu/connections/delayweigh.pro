@@ -32,6 +32,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.27  1997/12/10 15:53:37  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.26  1997/11/12 09:46:11  saam
 ;             Inkompatibilitaet mit IDL5 korrigiert
 ;
@@ -122,9 +128,9 @@
 ;                         waren im foldenden auch wirksam sind, Mirko, 5.8.97
 ;
 ;-
-FUNCTION DelayWeigh, DelMat, InHandle
+FUNCTION DelayWeigh, _DelMat, InHandle
    
-   
+Handle_Value, _DelMat, DelMat, /NO_COPY 
 Handle_Value, InHandle, In
 
 ;----- Der Teil ohne Delays:   
@@ -137,7 +143,8 @@ Handle_Value, InHandle, In
       IF In(0) EQ 0 THEN BEGIN
          result = FltArr(2,1)
          result(1,0) = DeLMat.target_w*DelMat.Target_h
-         Return, result
+         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
+         RETURN, result
                                 ;aus der Funktion rausspringen, wenn
                                 ;ohnehin keine Aktivitaet im Input vorliegt:
       END
@@ -155,7 +162,8 @@ Handle_Value, InHandle, In
             vector(tn) = vector(tn) + DelMat.Weights( tn, asn )
          END
       END
-      
+
+      Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
       RETURN, Spassmacher(vector)
       
       
@@ -221,9 +229,11 @@ Handle_Value, InHandle, In
                IF nel GT cutoff THEN acilo = acilo(cutoff+1:nel) ELSE source = snc
             END
          END
-         
+
+         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
          RETURN, Spassmacher(vector)
       END ELSE BEGIN
+         Handle_Value, _DelMat, DelMat, /NO_COPY, /SET 
          RETURN, [0, tnc]
       END
               

@@ -4,7 +4,7 @@
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
 ;          Verbindungen Mexica-Hat-förmig. (DOG="Difference of Gaussians")
 ;
-; CATEGORY: Simulation
+; CATEGORY: SIMU/CONNECTIONS
 ;
 ; CALLING SEQUENCE: SetDOGWeight ( DWS
 ;                                   [,Maximum] [,On_Sigma | ,ON_HWB=Halbwertsbreite] [,Off_Sigma | ,OFF_HWB=Halbwertsbreite]
@@ -13,8 +13,6 @@
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
 ;                                   [,TRANSPARENT] [,INITSDW])
 ;
-;
-; 
 ; INPUTS: DWS  :    Eine (initialisierte!) Delay-Weight-Struktur
 ;
 ;         dann ENTWEDER     S_ROW:    Zeilennr des Sourceneurons im Sourcelayer
@@ -36,15 +34,7 @@
 ;
 ; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT, INITSDW : s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
 ;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Die Gewichte der Delay-Weight-Struktur werden entsprechend geändert.
-;
-; RESTRICTIONS: ---
 ;
 ; PROCEDURE: Default, Setweight, Gauss_2D()
 ;
@@ -64,6 +54,14 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.5  1997/12/10 15:53:43  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
+;
 ;       Mon Sep 8 17:23:16 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -82,14 +80,21 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
                   ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
                   TRANSPARENT=transparent, _EXTRA=extra
 
+   Handle_Value, DWS, _DWS, /NO_COPY
+   tw = _DWS.target_w
+   th = _DWS.target_h
+   sw = _DWS.source_w
+   sh = _DWS.source_h
+   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+
    Default, Amp, 1
 
 
    If set(s_row) or set(s_col) or set(t_hs_row) or set(t_hs_col) then begin ;Wir definieren TOS:
       
-      on = Gauss_2D(DWS.target_h, DWS.target_w, On_Sigma, HWB=on_hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
+      on = Gauss_2D(th, tw, On_Sigma, HWB=on_hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
       on = on/total(on)         ; auf Volumen 1 normieren!
-      off = Gauss_2D(DWS.target_h, DWS.target_w, Off_Sigma, HWB=off_hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
+      off = Gauss_2D(th, tw, Off_Sigma, HWB=off_hwb, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
       off = off/total(off)      ; auf Volumen 1 normieren!
       dog = on-off              ; => dog hat Gesamtvolumen 0.
       dog = dog/max([max(dog), -min(dog)])*Amp ; Zentrum auf Amp normieren!
@@ -104,9 +109,9 @@ Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb,
 
    endif else begin             ; Wir definieren FROMS:
 
-      on = Gauss_2D(DWS.source_h, DWS.source_w, On_Sigma, HWB=on_hwb, Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
+      on = Gauss_2D(sh, sw, On_Sigma, HWB=on_hwb, Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
       on = on/total(on)         ; auf Volumen 1 normieren!
-      off = Gauss_2D(DWS.source_h, DWS.source_w, Off_Sigma, HWB=off_hwb, Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
+      off = Gauss_2D(sh, sw, Off_Sigma, HWB=off_hwb, Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
       off = off/total(off)      ; auf Volumen 1 normieren!
       dog = on-off              ; => dog hat Gesamtvolumen 0.
       dog = dog/max([max(dog), -min(dog)])*Amp ; Zentrum auf Amp normieren!

@@ -51,6 +51,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1997/12/10 15:53:41  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.7  1997/12/08 13:42:23  thiel
 ;              Keyword-Verwirrung erstmal behoben.
 ;              Beispiel in der Doku aktualisiert.
@@ -73,55 +79,59 @@
 ;		Urversion erstellt, durch Modifikation von setlinearweight.pro von Ruediger
 ;
 ;-
-
 PRO SetConstWeight, DWS, Amp, Range, $
                     S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                     T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                     ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
                     TRANSPARENT=transparent, INVERSE=inverse, INITSDW=InitSDW
 
+   Handle_Value, DWS, _DWS, /NO_COPY
+   tw = _DWS.target_w
+   th = _DWS.target_h
+   sw = _DWS.source_w
+   sh = _DWS.source_h
+   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+   
+   Default, Range, tw/6  
+   Default, Amp, 1
 
-Default, Range, DWS.target_h/6  
-Default, Amp, 1
 
-
-IF set(s_row) OR set(s_col) OR set(t_hs_row) OR set(t_hs_col) THEN BEGIN  ;Wir definieren TOS:
+   IF set(s_row) OR set(s_col) OR set(t_hs_row) OR set(t_hs_col) THEN BEGIN ;Wir definieren TOS:
       
       if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
-
+      
       IF Keyword_Set(INVERSE) THEN BEGIN
-         SetWeight, DWS, (Amp*(Range LE Shift(Dist(DWS.Target_h, DWS.Target_w), t_hs_row, t_hs_col))), $
+         SetWeight, DWS, (Amp*(Range LE Shift(Dist(th, tw), t_hs_row, t_hs_col))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent, INITSDW=InitSDW
       ENDIF ELSE BEGIN
-         help, extra,/struct
-         SetWeight, DWS, (Amp*(Range GT Shift(Dist(DWS.Target_h, DWS.Target_w), t_hs_row, t_hs_col))), $
+         SetWeight, DWS, (Amp*(Range GT Shift(Dist(th, tw), t_hs_row, t_hs_col))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent, INITSDW=InitSDW
       ENDELSE
-
-
-ENDIF ELSE BEGIN ; Wir definieren FROMS:
-
+      
+      
+   ENDIF ELSE BEGIN             ; Wir definieren FROMS:
+      
       if not(set(t_row)) or not(set(t_col)) or not(set(s_hs_row)) or not(set(s_hs_col)) then $
        message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
       
       IF Keyword_Set(inverse) THEN BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
-          Amp*((Range LE Shift(Dist(DWS.source_h, DWS.source_w), s_hs_row, s_hs_col))), $
+          Amp*((Range LE Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent, INITSDW=InitSDW
       END ELSE BEGIN
          SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
-          Amp*(Range GT Shift(Dist(DWS.source_h, DWS.source_w), s_hs_row, s_hs_col)), $
+          Amp*(Range GT Shift(Dist(sh, sw), s_hs_row, s_hs_col)), $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent, INITSDW=InitSDW
       ENDELSE 
       
-
-ENDELSE 
-
+      
+   ENDELSE 
+   
 END

@@ -16,24 +16,12 @@
 ;                     verzoegerte Verbindungen:
 ;                               Struc: Gewichtsstruktur (mit InitDW erzeugt)
 ;
-; OPTIONAL INPUTS:    ---
-;
 ; KEYWORD PARAMETERS: 
 ;                     LINEAR: linearer Abfall des Lernpotentials mit Decrement, ein eintreffender Spike erhoeht das Potential um Amplitude
 ;                     EXPO  : exponentieller Abfall des Lernpotentials mit der Zeitkonstante, ein eintreffender Spike erhoeht das
 ;                               Potential um Amplitude
 ;
 ; OUTPUTS:            LP: die initialisierte Lernpotential-Struktur zur weiteren Behandlung mit TotalRecall
-;
-; OPTIONAL OUTPUTS:   ---
-;
-; COMMON BLOCKS:      ---
-;
-; SIDE EFFECTS:       ---
-; 
-; RESTRICTIONS:       ---
-;
-; PROCEDURE:          ---
 ;
 ; EXAMPLE:
 ;                     CONN = InitDW(....)
@@ -63,7 +51,9 @@
 ;
 ;-
 
-FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
+FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
+
+   Handle_Value, _Struc, Struc, /NO_COPY
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
@@ -91,7 +81,8 @@ FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
              source_s : xsize,$
              target_s : ysize}
 
-      RETURN, LP
+      Handle_Value, _Struc, Struc, /NO_COPY, /SET
+      RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
 
@@ -107,7 +98,8 @@ FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
              source_s : xsize,$
              target_s : ysize}
       
-      RETURN, LP
+      Handle_Value, _Struc, Struc, /NO_COPY, /SET
+      RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
    

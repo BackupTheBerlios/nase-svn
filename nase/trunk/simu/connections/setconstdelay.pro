@@ -4,7 +4,7 @@
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
 ;          Delays konstant bis zu einer maximalen Reichweite.
 ;
-; CATEGORY: Simulation
+; CATEGORY: SIMU/CONNECTIONS
 ;
 ; CALLING SEQUENCE: SetConstDelay ( DWS
 ;                                   [,Wert] [,Range=Reichweite]
@@ -12,26 +12,17 @@
 ;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ], [,/INVERSE] )
 ;
-;
-; 
 ; INPUTS: DWS  :    Eine (initialisierte!) Delay-Weight-Struktur
 ;         S_ROW:    Zeilennr des Sourceneurons im Sourcelyer
 ;         S_COL:    Spaltennr
 ;         T_HS_ROW: Zeilennr des Targetneurons im Targetlayer, das das Zentrum des Kreises enthaelt
 ;         T_HS_COL: Spaltennr
 ;         INVERSE : Setzt Verbindungen ab einer minimalen Reichweite
-;         
 ;
 ; OPTIONAL INPUTS: Wert   : Verzoegerung der Verbindungen
 ;                  Range  : Reichweite in Gitterpunkten. (Reichweite (Radius) des Kreises) (Default ist 1/6 der Targetlayerhöhe)
 ;	
 ; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE : s. SetWeight!
-;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
 ;
 ; SIDE EFFECTS: Die Delays der Delay-Weight-Struktur werden entsprechend geändert.
 ;
@@ -55,6 +46,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1997/12/10 15:53:41  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.4  1997/09/17 10:25:55  saam
 ;       Listen&Listen in den Trunk gemerged
 ;
@@ -81,16 +78,24 @@ Pro SetConstDelay, DWS, Amp, Range, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, INVERSE=inverse,$
                        TRANSPARENT=transparent
 
-   Default, Range, DWS.target_h/6  
+   Handle_Value, DWS, _DWS, /NO_COPY
+   tw = _DWS.target_w
+   th = _DWS.target_h
+   sw = _DWS.source_w
+   sh = _DWS.source_h
+   Handle_Value, DWS, _DWS, /NO_COPY, /SET
+
+   Default, Range, th/6  
    Default, Amp, 1
 
    IF Keyword_Set(inverse) THEN BEGIN
       SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
-       Amp*(Range LE Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
+       Amp*(Range LE Shift(Dist(th, tw), t_hs_row, t_hs_col)), $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
    END ELSE BEGIN
       SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
-       Amp*(Range GT Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
+       Amp*(Range GT Shift(Dist(th, tw), t_hs_row, t_hs_col)), $
        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
    END
-end
+
+END

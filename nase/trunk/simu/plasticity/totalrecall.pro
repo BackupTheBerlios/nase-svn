@@ -14,21 +14,7 @@
 ; INPUTS:             LP: Eine mit InitRecall erzeugte Struktur
 ;                     IN: Vektor, der die praesynaptischen (auch gewichteten) Aktionspotentiale enthaelt
 ;
-; OPTIONAL INPUTS:    ---
-;
-; KEYWORD PARAMETERS: ---
-;
-; OUTPUTS:            ---
-;
-; OPTIONAL OUTPUTS:   ---
-;
-; COMMON BLOCKS:      ---
-;
 ; SIDE EFFECTS:       LP wird beim Aufruf veraendert
-;
-; RESTRICTIONS:       ---
-;
-; PROCEDURE:          ---
 ;
 ; EXAMPLE:            
 ;                  My_Neuronentyp = InitPara_1()
@@ -52,6 +38,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  1997/12/10 15:56:50  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 2.5  1997/09/18 14:25:43  saam
 ;              Bug bei exponentiellem Abklingen beseitigt
 ;              In-Handle nun optional
@@ -66,8 +58,9 @@
 ;		Schoepfung
 ;
 ;-
-PRO TotalRecall, LP, InHandle
+PRO TotalRecall, _LP, _DW
 
+   Handle_Value, _LP, LP, /NO_COPY
 
    IF LP.info EQ 'e' THEN BEGIN
       active = WHERE(LP.values GT !NoMercyForPot, count)
@@ -78,7 +71,7 @@ PRO TotalRecall, LP, InHandle
       END
       
       IF N_Params() GT 1 THEN BEGIN
-         Handle_Value, InHandle, In
+         In = LearnAP(_DW)
          IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
       END
    END
@@ -92,10 +85,11 @@ PRO TotalRecall, LP, InHandle
       END
 
       IF N_Params() GT 1 THEN BEGIN
-         Handle_Value, InHandle, In
+         In = LearnAP(_DW)
          IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
       END
   END
 
+  Handle_Value, _LP, LP, /NO_COPY, /SET
 
 END

@@ -25,7 +25,7 @@
 ;             mit: ENTLERNRATE=Rate,  LERNRATE=Rate*alpha
 ;          
 ;
-; CATEGORY: SIMULATION
+; CATEGORY: SIMULATION PLASTICITY
 ;
 ; CALLING SEQUENCE:     LearnHebbLP, G, LP, TARGET_CL=TargetCluster, 
 ;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
@@ -69,6 +69,12 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.15  1997/12/10 15:56:48  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 1.14  1997/11/03 17:33:46  saam
 ;             Variable st war etwas sinnentleert -> rausgeworfen
 ;
@@ -126,12 +132,14 @@
 ;                '97. Andreas.  neue Keyword-Abfrage und
 ;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
 ;-
-PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
+PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
                     LERNRATE=lernrate, ENTLERNRATE=entlernrate
   
 
    If Not Set(RATE) Then Rate = Entlernrate
    If Not Set(ALPHA) Then Alpha = Lernrate/Entlernrate
+
+   Handle_Value, _DW, DW, /NO_COPY
 
    ; update learning potentials
    ; TotalRecall, LP, DW.Learn
@@ -152,7 +160,7 @@ PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
          tn = Post(ti)
          IF DW.SSource(tn) NE -1 THEN BEGIN
             Handle_Value, DW.SSource(tn), tsn
-            deltaw = Alpha*LP.values(tsn) - DW.Weights(tn, tsn)
+            deltaw = Alpha*(GetRecall(LP))(tsn) - DW.Weights(tn, tsn)
             IF Set(NONSELF) THEN BEGIN
                self = WHERE(tsn EQ tn, count)
                IF count NE 0 THEN deltaw(self) = 0.0
@@ -168,7 +176,7 @@ PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
             tn = Post(ti)
             IF DW.SSource(tn) NE -1 THEN BEGIN
                Handle_Value, DW.SSource(tn), tsn
-               deltaw = Alpha*LP.values(tn, tsn) - DW.Weights(tn, tsn)
+               deltaw = Alpha*(GetRecall(LP))(tn, tsn) - DW.Weights(tn, tsn)
                IF Set(NONSELF) THEN BEGIN
                   self = WHERE(tsn EQ tn, count)
                   IF count NE 0 THEN deltaw(self) = 0.0
@@ -180,5 +188,7 @@ PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
          
       END ELSE Message, 'illegal first argument'
    END
+
+   Handle_Value, _DW, DW, /NO_COPY, /SET
 
 END

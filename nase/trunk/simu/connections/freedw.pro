@@ -18,6 +18,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  1997/12/10 15:53:38  saam
+;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;             nur noch Tags. Das hat den Vorteil, dass man mehrere
+;             DelayWeigh-Strukturen in einem Array speichern kann,
+;             was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ;       Revision 2.5  1997/12/02 10:04:55  saam
 ;             Funktionalitaet der SpikeQueue wurde auf dynamische
 ;             Speicherbelegung umgestellt. Deshalb muss im ver-
@@ -32,7 +38,9 @@
 ;	      Schoepfung 
 ;
 ;-
-PRO FreeDW, DW
+PRO FreeDW, _DW
+
+   Handle_Value, _DW, DW, /NO_COPY
 
    FOR source=0, DW.source_w*DW.source_h-1 DO IF DW.STarget(source) NE -1 THEN BEGIN
       Handle_Free, DW.STarget(source) 
@@ -47,5 +55,7 @@ PRO FreeDW, DW
    IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN FreeSpikeQueue, DW.Queue 
 
    IF DW.Learn NE -1 THEN Handle_Free, DW.Learn
+
+   Handle_Free, _DW
 
 END

@@ -74,6 +74,12 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.3  1997/12/10 15:56:47  saam
+;       Es werden jetzt keine Strukturen mehr uebergeben, sondern
+;       nur noch Tags. Das hat den Vorteil, dass man mehrere
+;       DelayWeigh-Strukturen in einem Array speichern kann,
+;       was sonst nicht moeglich ist, da die Strukturen anonym sind.
+;
 ; Revision 2.2  1997/11/14 16:44:55  thiel
 ;        Pseudo-HTML-Tags aus dem Header entfernt.
 ;
@@ -84,7 +90,7 @@
 ;-
 
 
-PRO LearnABS, DW, $
+PRO LearnABS, _DW, $
               SOURCE_CL=Source_Cl, TARGET_CL=Target_Cl, $
               RATE=Rate, ALPHA=Alpha, $
               LERNAMPLITUDE=Lernamplitude, ENTLERNAMPLITUDE=Entlernamplitude, $
@@ -94,6 +100,8 @@ PRO LearnABS, DW, $
 ;-----Die Prozedur muss nichts tun, wenn keine praesynaptischen Spikes vorliegen: 
    Handle_Value, Source_Cl.O, Prae 
    If Prae(0) EQ 0 Then Return
+
+   Handle_Value, _DW, DW, /NO_COPY
 
    ; si : index to source neuron
    ; sn : to si belonging source neuron
@@ -141,5 +149,7 @@ PRO LearnABS, DW, $
          
       END ELSE Message, 'illegal first argument'
    END
+
+   Handle_Value, _DW, DW, /NO_COPY, /SET
 
 END
