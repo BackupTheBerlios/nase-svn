@@ -1,44 +1,35 @@
 ;+
-; NAME:               FileSplit
+; NAME:               File_Split
 ;
 ; PURPOSE:            Splits a filepath in a directory and a file part.
 ;
-; CATEGORY:           MISC FILES DIRS
+; CATEGORY:
+;  Files
+;  Dirs
 ;
-; CALLING SEQUENCE:   PathFile = FileSplit(filepath)
+; CALLING SEQUENCE:
+;*PathFile = FileSplit(filepath)
 ;
-; INPUTS:             filepath: an arbitrary path to a file
+; INPUTS:             filepath:: an arbitrary path to a file
 ;
-; OUTPUTS:            PathFile: a two element string array, containing
+; OUTPUTS:            PathFile:: a two element string array, containing
 ;                               first the path and second the file
 ;                               name.
 ;
 ; RESTRICITIONS:      The filename has to have a correct syntax.
 ;
 ; EXAMPLE:            
-;                     print, FileSplit('/usr/ax1303/saam/test.tex')
-;                     ['/usr/ax1303/saam/', 'test.tex']
+;* print, FileSplit('/usr/ax1303/saam/test.tex')
+;* ['/usr/ax1303/saam/', 'test.tex']
+;*
+;* print, FileSplit('/usr/ax1303/saam/')
+;* ['/usr/ax1303/saam/', '']
+;*
+;* print, FileSplit('test.tex')
+;* ['', 'test.tex']
 ;
-;                     print, FileSplit('/usr/ax1303/saam/')
-;                     ['/usr/ax1303/saam/', '']
-;
-;                     print, FileSplit('test.tex')
-;                     ['', 'test.tex']
-;           
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.1  2000/09/08 13:54:03  kupper
-;     Now using new File_Split(), as old FileSplit() modified the path to !NASE_LIB.
-;
-;     Revision 1.2  2000/06/19 13:30:08  saam
-;           + doc header translated
-;           + uses split now
-;
-;     Revision 1.1  1999/02/22 11:14:37  saam
-;           new & cool
-;
-;
+; SEE ALSO:
+;  <A>FileSplit</A>
 ;-
 FUNCTION File_Split, filepath
 
