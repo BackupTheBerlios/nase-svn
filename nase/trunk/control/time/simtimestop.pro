@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1997/11/13 14:00:50  saam
+;           Bug bei Ausgabe korrigiert
+;
 ;     Revision 1.3  1997/11/13 13:57:21  saam
 ;           Anpassung an NULL-Device
 ;
@@ -58,7 +61,7 @@ PRO SimTimeStop
       
       IF !D.Name EQ 'NULL' THEN RETURN
 
-      IF stat.step GT 0 THEN BEGIN
+      IF stat.graphic AND stat.step GT 0 THEN BEGIN
          oldmulti = !P.Multi
          !P.Multi = [0,0,1,0,0]
          Plot, stat.tpi(0:stat.step-1), /NODATA, XTITLE='Iteration', YTITLE='Seconds'         
