@@ -38,11 +38,14 @@
 ;
 ;                      A = {a:1, b:2, z:'Haha'}
 ;                      
-; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#DIFFSET> DiffSet </A>
+; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#DIFFSET">DiffSet</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/08/14 10:10:13  saam
+;           doc header errors corrected
+;
 ;     Revision 2.1  1998/07/21 13:06:19  saam
 ;           long needed, never time to write...
 ;
