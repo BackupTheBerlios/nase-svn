@@ -3,11 +3,13 @@
 ;
 ; PURPOSE:             Addiert Input vom Typ Sparse (siehe Spassmacher) auf die Neuronenpotentiale und klingt
 ;                      diese vorher ab. Ein mehrmaliger Aufruf von InputLayer_6 ist moeglich.
-;                      Danach sollte man auf jeden Fall ProceedLayer_6 aufrufen.
+;                      Danach sollte man auf jeden Fall ProceedLayer_6 aufrufen. 
+;                      Die Direct-Synpase addiert den Input direkt auf das Feeding-Potential ohne Umweg
+;                      ueber die Synapsen.
 ;
 ; CATEGORY:            SIMU
 ;
-; CALLING SEQUENCE:    InputLayer_6, Layer [,FEEDING=feeding] [,LINKING=linking] [,INHIBITION=inhibition]   
+; CALLING SEQUENCE:    InputLayer_6, Layer [,FEEDING=feeding] [,LINKING=linking] [,INHIBITION=inhibition] [,DIRECT=direct]
 ;
 ; INPUTS:              Layer : eine mit InitLayer_6 erzeugte Struktur
 ;
@@ -27,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 2.3  1999/12/02 18:11:56  saam
+;            new "SYNPASE" DIRECT
+;
 ;      Revision 2.2  1998/11/08 17:27:20  saam
 ;            the layer-structure is now a handle
 ;
@@ -35,7 +40,7 @@
 ;
 ;
 ;-
-PRO InputLayer_6, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
+PRO InputLayer_6, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition, DIRECT=direct
 
    Handle_Value, _Layer, Layer, /NO_COPY
 
@@ -47,6 +52,7 @@ PRO InputLayer_6, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibitio
       Layer.I  = Layer.I * Layer.para.di
       Layer.S  = Layer.S * Layer.para.ds
       Layer.R  = Layer.R * Layer.para.dr
+      Layer.DM(*) = 0.0d
       Layer.decr = 0
    END
 
@@ -70,6 +76,13 @@ PRO InputLayer_6, _Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibitio
       IF Inhibition(0,0) GT 0 THEN BEGIN
          neurons = Inhibition(0,1:Inhibition(0,0))
          Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0));*(1.-Layer.para.di)
+      END
+   END
+
+   IF Set(direct) THEN BEGIN
+      IF direct(0,0) GT 0 THEN BEGIN
+         neurons = direct(0,1:direct(0,0))
+         Layer.DM(neurons) = Layer.DM(neurons) + direct(1,1:direct(0,0));*(1.-Layer.para.di)
       END
    END
 

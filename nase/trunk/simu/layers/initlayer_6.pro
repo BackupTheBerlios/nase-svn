@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.5  1999/12/02 18:11:55  saam
+;            new "SYNPASE" DIRECT
+;
 ;      Revision 2.4  1998/11/09 10:53:38  saam
 ;            possible memory hole sealed up
 ;
@@ -54,6 +57,7 @@ FUNCTION InitLayer_6, WIDTH=width, HEIGHT=height, TYPE=type
              L1     : Double(RandomU(seed,width*height)) ,$
              L2     : Double(RandomU(seed,width*height)) ,$
              I      : Double(RandomU(seed,width*height)) ,$
+             DM     : DblArr(width*height) ,$
              M      : DblArr(width*height) ,$
              S      : type.ns*Double(1+RandomU(seed,width*height)) ,$
              R      : type.ns*Double(1+RandomU(seed,width*height)) ,$

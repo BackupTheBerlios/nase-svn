@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.3  1999/12/02 18:11:56  saam
+;            new "SYNPASE" DIRECT
+;
 ;      Revision 2.2  1998/11/08 17:27:25  saam
 ;            the layer-structure is now a handle
 ;
@@ -45,6 +48,7 @@ PRO ProceedLayer_6, _Layer, _EXTRA=e
       Layer.I  = Layer.I * Layer.para.di
       Layer.R  = Layer.R * Layer.para.dr
       Layer.S  = Layer.S * Layer.para.ds
+      Layer.DM(*) = 0.0d
    END
 
    firedLast = WHERE(Layer.AR EQ 1, count); neurons with abs refractory period gone
@@ -55,7 +59,8 @@ PRO ProceedLayer_6, _Layer, _EXTRA=e
    END
 
 
-   Layer.M = (Layer.para.corrAmpF*(Layer.F2-Layer.F1))*(1.+(Layer.para.corrAmpL*(Layer.L2-Layer.L1)))-Layer.I
+   Layer.M = (Layer.para.corrAmpF*(Layer.F2-Layer.F1)+Layer.DM)*(1.+(Layer.para.corrAmpL*(Layer.L2-Layer.L1)))-Layer.I
+
    IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w*Layer.h)
    
    ; do some spike noise by temporarily incresing membrane potential
