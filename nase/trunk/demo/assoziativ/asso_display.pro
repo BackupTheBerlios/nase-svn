@@ -3,9 +3,6 @@
 ;
 ; AIM: Module of assoziativ.pro  (see also  <A>faceit</A>)
 ;
-; PURPOSE: siehe assoziativ.pro
-; AIM: Module of assoziativ.pro (aakkefkef:dfrfre)
-;-
 ; PURPOSE: siehe <A>assoziativ</A> 
 ;
 ;-
@@ -14,6 +11,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/28 11:40:48  alshaikh
+;           AIM part III
+;
 ;     Revision 1.4  2000/09/28 11:34:10  alshaikh
 ;           AIM part II
 ;
