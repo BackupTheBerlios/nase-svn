@@ -28,13 +28,13 @@
 ; KEYWORD PARAMETERS: FULLSHEET: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
 ;                                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
 ;                                der Regel nicht quadratisch.
-;                     LEGEND: Zeigt zusaetzlich eine Legende rechts neben der TVScl-Graphik
+;                     LEGEND: Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
 ;                             an. 
 ;                     ORDER: der gleiche Effekt wie bei Original-TVScl
 ;                     NASE: Bewirkt die richtig gedrehte Darstellung von Layerdaten 
 ;                           (Inputs, Outputs, Potentiale, Gewichte...).
 ;                           D.h. z.B. werden Gewichtsmatrizen in der gleichen
-;                           Orientierung dargestellt, wie auch ShowWeigts sie ausgibt.
+;                           Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
 ;
 ; PROCEDURE: 1. Ermitteln des fuer die Darstellung zur Verfuegung stehenden Raums.
 ;            2. Zeichnen der Achsen an der ermittelten Position.
@@ -47,11 +47,14 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-; FNORD
-;       
+; SEE ALSO: <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/graphic/index.htm#NASETVSCL">NaseTVScl</A>
+;      
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.8  1997/12/08 15:02:18  thiel
+;            Jetzt auf vielfachen Wunsch mit Hyperdings.
+;
 ;     Revision 2.7  1997/12/02 11:27:30  saam
 ;           auch [XY]Minor und [XY]TickLen werden nun gesichert
 ;
