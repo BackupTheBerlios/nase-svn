@@ -95,25 +95,24 @@ If Not Set(WINNR) Then Begin
                       WSet, WinNr
                   EndElse    
 
+erase,  RGB(255, 100, 0)
 
-anzahl = Matrix.target_w*Matrix.target_h
+
+
+
 Max_Amp = max(Matrix.Weights)
 if Max_Amp eq 0 then Max_Amp = 1 ;falls Array nur Nullen enthält
-    
-Matrix_gesp = rotate(Matrix.Weights,4)
 
-Matrix_ref = reform(255*Matrix_gesp/Max_Amp,Matrix.source_w,Matrix.source_h,anzahl)	
+;MatrixMatrix= reform(Matrix.Weights/Max_Amp*255, Matrix.source_h, Matrix.source_w, Matrix.target_h, Matrix.target_w)
+MatrixMatrix= reform(Matrix.Weights/Max_Amp*255, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
 
-
-For nr = 0, (anzahl-1) Do Begin 
-        M = dblarr(XGroesse*Matrix.source_w+1,YGroesse*Matrix.source_h+1)+255
-
-        M(0:XGroesse*Matrix.source_w-1, 0:YGroesse*Matrix.source_h-1) = rebin(Matrix_ref(*,*,nr),XGroesse*Matrix.source_w,YGroesse*Matrix.source_h,/sample) 
-	Tv, M, nr ,/Order 
-EndFor
-
-
-
+for YY= 0, Matrix.target_h-1 do begin
+   for XX= 0, Matrix.target_w-1 do begin
+      m = reform(MatrixMatrix(YY, XX, *, *))
+      m =  transpose(rebin(/sample, M, yGroesse*Matrix.source_h,  xGroesse*Matrix.source_w) )
+      tv, M, /Order, XX*(1+Matrix.source_w*xGroesse), (Matrix.target_h-1-YY)*(1+Matrix.source_h*yGroesse)
+   end
+end
 
 END        
         
