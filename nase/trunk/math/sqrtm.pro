@@ -1,5 +1,5 @@
 ;+
-; NAME: SQRTM
+; NAME: SQRTM 
 ;
 ;
 ; PURPOSE: Matrix square root. B = sqrtm(A) is the matrix square root of A. 
@@ -47,6 +47,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/06/14 14:18:15  kupper
+;     Test checkin to test CVS watch.
+;
 ;     Revision 2.1  1999/07/15 16:08:40  gabriel
 ;           Eine neue Linalg Routine
 ;
