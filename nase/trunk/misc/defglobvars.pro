@@ -14,6 +14,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/08/04 15:13:01  kupper
+;     Added system variable !NASEDIR.
+;
+;     NASE C lib is now located in each users nase directory (no system wide
+;     install).
+;     The library is checked at startup and compiled if it doesn't exist.
+;
 ;     Revision 1.9  2000/06/19 13:23:45  saam
 ;           new sysv !CREATEDIR used by uopenw to be allowed
 ;           to create nonexistent dirs. default is NO.
@@ -49,6 +56,7 @@
 ;-
 PRO DefGlobVars
 
+DefSysV, '!NASEPATH', GetEnv("NASEPATH"), 0
 DefSysV, '!NONE' , -999999.0, 1
 DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
@@ -103,7 +111,8 @@ DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', '/usr/X11R6/bin', '/usr/bin/X11', '/vol/bin', '~/bin'], 1
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
-DefSysV, '!NASE_LIB', '/vol/lib/nase/nasec.so', 0
+DefSysV, '!NASE_LIB', !NASEPATH+'/shared/nasec.so', 0
+
 
 ; if set to 1, UOPENW will create directories if they dont exist
 DefSysV, '!CREATEDIR', 0, 0

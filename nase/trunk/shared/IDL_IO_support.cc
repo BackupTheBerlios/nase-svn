@@ -1,7 +1,3 @@
-#if __GNUG__ >= 2
-#  pragma implementation
-#endif
-
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>

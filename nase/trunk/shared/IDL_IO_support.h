@@ -2,11 +2,6 @@
 #ifndef IDL_IO_SUPPORT
 #define IDL_IO_SUPPORT
 
-#if __GNUG__ >= 2
-#  pragma interface
-#endif
-
-
 
 /**************************************************************
  *             Routines callable by CALL_EXTERNAL()           *
@@ -127,6 +122,13 @@
 ===============================================================================================================
 
         $Log$
+        Revision 1.3  2000/08/04 15:13:02  kupper
+        Added system variable !NASEDIR.
+
+        NASE C lib is now located in each users nase directory (no system wide
+        install).
+        The library is checked at startup and compiled if it doesn't exist.
+
         Revision 1.2  1999/03/05 14:28:32  kupper
         IDL-Wrapper-Routinen jetzt fertig.
 

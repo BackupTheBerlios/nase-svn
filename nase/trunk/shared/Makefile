@@ -2,6 +2,13 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.5  2000/08/04 15:13:02  kupper
+#         Added system variable !NASEDIR.
+#
+#         NASE C lib is now located in each users nase directory (no system wide
+#         install).
+#         The library is checked at startup and compiled if it doesn't exist.
+#
 #         Revision 1.4  1999/03/04 16:36:21  kupper
 #
 #         Erster Commit.
@@ -28,7 +35,7 @@ OBJECTS=mtime.o IDL_IO_support.o
 SHL_EXT=so
 SHL_LIBS=nasec.$(SHL_EXT)
 LIB_VER=0.0.1
-INSTALL_DIR=/vol/lib/nase
+# INSTALL_DIR=/vol/lib/nase
 
 
 
@@ -57,17 +64,17 @@ nasec.$(SHL_EXT) : $(OBJECTS)
 	$(C_LD) $(C_LD_FLAGS) -o nasec.$(SHL_EXT) $(OBJECTS) $(C_LD_POST)
 
 
-install: nasec.$(SHL_EXT)
-	@case `uname` in \
-		"OSF1" )  make _install "INSTALL=/usr/bin/installbsd" ;; \
-		"Linux" ) make _install "INSTALL=/usr/bin/install" ;;\
-		*) echo "This system is not supported" ;; \
-	esac
-
-_install:
-	$(INSTALL)  -m 0777 nasec.$(SHL_EXT) $(INSTALL_DIR)/nasec.$(SHL_EXT).$(LIB_VER)
-	ln -sf $(INSTALL_DIR)/nasec.$(SHL_EXT).$(LIB_VER) $(INSTALL_DIR)/nasec.$(SHL_EXT)
-
+# install: nasec.$(SHL_EXT)
+# 	  @case `uname` in \
+# 		  "OSF1" )  make _install "INSTALL=/usr/bin/installbsd" ;; \
+# 		  "Linux" ) make _install "INSTALL=/usr/bin/install" ;;\
+# 		  *) echo "This system is not supported" ;; \
+# 	  esac
+# 
+# _install:
+# 	  $(INSTALL)  -m 0777 nasec.$(SHL_EXT) $(INSTALL_DIR)/nasec.$(SHL_EXT).$(LIB_VER)
+# 	  ln -sf $(INSTALL_DIR)/nasec.$(SHL_EXT).$(LIB_VER) $(INSTALL_DIR)/nasec.$(SHL_EXT)
+ 
 
 tidy :
 	rm -f *.o
