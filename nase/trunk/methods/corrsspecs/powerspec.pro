@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 1.7  1998/01/27 18:48:35  gabriel
+;      Kosmetische Korrektur
+;
 ; Revision 1.6  1998/01/27 18:45:09  gabriel
 ;      Smooth Kernel Keyword neu
 ;
@@ -65,10 +68,7 @@
 ;      ruft jetzt crosspower auf
 ;
 ; Revision 1.4  1998/01/07 15:03:18  thiel
-;        Jetzt auch mit $Log: powerspec.pro,v $
-;        Jetzt auch mit Revision 1.5  1998/01/27 11:29:49  gabriel
-;        Jetzt auch mit      ruft jetzt crosspower auf
-;        Jetzt auch mit im Header.
+;      Jetzt auch mit im Header.
 ;
 ;
 ;       Tue Aug 19 20:58:57 1997, Mirko Saam
