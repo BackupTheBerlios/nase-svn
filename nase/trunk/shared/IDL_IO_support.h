@@ -122,6 +122,10 @@
 ===============================================================================================================
 
         $Log$
+        Revision 1.5  2001/08/22 16:16:25  kupper
+        added set_nonblocking and set_blocking calls.
+        non_block_readable does not work any more with IDL5.4 (buffering problems???)
+
         Revision 1.4  2001/08/16 17:26:03  kupper
         Added tmp_nam function for getting a temporary filename.
 
@@ -148,7 +152,9 @@ extern "C"
   IDL_LONG   get_fd             (int argc, void* argv[]);
   IDL_LONG   wait_for_data      (int argc, void* argv[]);
   IDLBool_t  non_block_readable (int argc, void* argv[]);
-  char* tmp_nam (int argc, void* argv[]);
+  IDL_LONG   set_nonblocking    (int argc, void* argv[]);
+  IDL_LONG   set_blocking       (int argc, void* argv[]);
+  char*      tmp_nam            (int argc, void* argv[]);
 }
 
 

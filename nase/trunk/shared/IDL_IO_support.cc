@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cassert>
 
 extern "C" {
 #include <unistd.h>
@@ -83,7 +84,7 @@ IDL_LONG wait_for_data (int argc, void *argv[])
   //-------------------------------
   
   // Check for file properties: ---
-  for (int i=0; i<n_elements; i++) IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun_array[i], IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_NOT_NOSTDIO);
+  for (int i=0; i<n_elements; i++) IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun_array[i], IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_STDIO);
   // ------------------------------
 
   // Get filedescriptors: ---------
@@ -148,8 +149,10 @@ IDLBool_t non_block_readable (int argc, void* argv[])
   //-------------------------------
   
   // Check for file properties: ---
-  IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun, IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_NOT_NOSTDIO);
+  IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun, IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_STDIO);
   // ------------------------------
+
+  IDL_FileFlushUnit(lun);
 
   // Get FILE and filedescriptor: -
   IDL_FILE_STAT file_info;
@@ -157,6 +160,7 @@ IDLBool_t non_block_readable (int argc, void* argv[])
 
   IDL_FileStat(lun, &file_info);    //Get file information for lun
   fptr = file_info.fptr;
+  assert(fptr != NULL);
   int fd = fileno(fptr) ; //Get FileDescriptor
   //-------------------------------
 
@@ -169,7 +173,7 @@ IDLBool_t non_block_readable (int argc, void* argv[])
   int c = getc(fptr); // try to read character
   if (!ferror(fptr)) // successful?
 	{
-	  ungetc(c, fptr); // push back character
+          ungetc(c, fptr); // push back character
 	  result = IDL_TRUE; // will return TRUE
 	}
   else
@@ -184,6 +188,70 @@ IDLBool_t non_block_readable (int argc, void* argv[])
   // ------------------------------
 
   return(result);
+}
+
+// -------------------------------------------------------------------------------------------------------
+
+IDL_LONG set_nonblocking (int argc, void* argv[])
+{
+  // Import arguments: ------------
+  IDL_LONG lun  = *static_cast<IDL_LONG*> (argv[0]); // argv[0] is a pointer to an IDL_LONG
+  //-------------------------------
+  
+  // Check for file properties: ---
+  IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun, IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_STDIO);
+  // ------------------------------
+
+  IDL_FileFlushUnit(lun);
+
+  // Get FILE and filedescriptor: -
+  IDL_FILE_STAT file_info;
+  FILE *fptr;
+
+  IDL_FileStat(lun, &file_info);    //Get file information for lun
+  fptr = file_info.fptr;
+  assert(fptr != NULL);
+  int fd = fileno(fptr) ; //Get FileDescriptor
+  //-------------------------------
+
+  // Set Non-Blocking-Flag on this fd:
+  int flags=fcntl(fd,F_GETFL);
+  fcntl(fd,F_SETFL,flags|O_NONBLOCK);
+  // ------------------------------
+  
+  return 0;
+}
+
+// -------------------------------------------------------------------------------------------------------
+
+IDL_LONG set_blocking (int argc, void* argv[])
+{
+  // Import arguments: ------------
+  IDL_LONG lun  = *static_cast<IDL_LONG*> (argv[0]); // argv[0] is a pointer to an IDL_LONG
+  //-------------------------------
+  
+  // Check for file properties: ---
+  IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun, IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_STDIO);
+  // ------------------------------
+
+  IDL_FileFlushUnit(lun);
+
+  // Get FILE and filedescriptor: -
+  IDL_FILE_STAT file_info;
+  FILE *fptr;
+
+  IDL_FileStat(lun, &file_info);    //Get file information for lun
+  fptr = file_info.fptr;
+  assert(fptr != NULL);
+  int fd = fileno(fptr) ; //Get FileDescriptor
+  //-------------------------------
+
+  // Clear Non-Blocking-Flag on this fd:
+  int flags=fcntl(fd,F_GETFL);
+  fcntl(fd,F_SETFL,flags & ~(O_NONBLOCK));
+  // ------------------------------
+  
+  return 0;
 }
 
 // -------------------------------------------------------------------------------------------------------
