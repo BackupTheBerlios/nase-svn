@@ -18,13 +18,13 @@
 ;* Erg = A_EQ (Arr1, Arr2)
 ;
 ; INPUTS: 
-;  Arr1, Arr2:: Arbitray arrays.
+;  Arr1, Arr2:: Arbitrary arrays.
 ;
 ; OUTPUTS:
 ;  Erg:: Boolean
 ;
 ; EXAMPLE: 
-;* if A_EQ (A, B) then Print, "are equal!"
+;* IF A_EQ (A, B) THEN Print, "are equal!"
 ;
 ; SEE ALSO:
 ;  <A>A_NE</A>.
@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2001/03/09 16:38:03  thiel
+;           Wrong spelling in header corrected.
+;
 ;        Revision 1.3  2001/03/09 16:36:45  thiel
 ;           Another header fixed.
 ;
