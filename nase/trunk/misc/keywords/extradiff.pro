@@ -1,75 +1,66 @@
 ;+
-; NAME:                ExtraDiff
+; NAME:
+;  ExtraDiff
 ;
-; AIM:                 extracts tags from a structur eand puts them into another
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  extracts tags from a structur eand puts them into another
 ;
-; PURPOSE:             Extrahiert bestimmte Tags aus einer Struktur A und fuegt diese zu einer 
-;                      neuen Struktur B zusammen. Die passenden Tags werden defaultmaessig aus A
-;                      geloescht. 
-;                      Nuetzlich ist das z.B. wenn aus dem  _EXTRA-Keyword nur bestimmte 
-;                      Keywords an FUNCTIONS/PRO weitergegeben werden sollen.
+; PURPOSE:
+;  Extrahiert bestimmte Tags aus einer Struktur A und fuegt diese zu einer 
+;  neuen Struktur B zusammen. Die passenden Tags werden defaultmaessig aus A
+;  geloescht. 
+;  Nuetzlich ist das z.B. wenn aus dem  _EXTRA-Keyword nur bestimmte 
+;  Keywords an FUNCTIONS/PRO weitergegeben werden sollen.
 ;
-; CATEGORY:            MISC KEYWORDS STRUCTURES
+; CATEGORY:
+;  DataStructures
+;  ExecutionControl
+;  Structures
 ;
-; CALLING SEQUENCE:    B = ExtraDiff(A, diff [,/LEAVE] [,/SUBSTRING])
+; CALLING SEQUENCE:
+;*B = ExtraDiff(A, diff [,/LEAVE] [,/SUBSTRING])
 ;
-; INPUTS:              A    : die Extra- oder eine andere Struktur
-;                      diff : ein Array von Strings, die aus A extrahiert werden sollen
+; INPUTS:
+;  A    :: die Extra- oder eine andere Struktur
+;  diff :: ein Array von Strings, die aus A extrahiert werden sollen
 ;
-; KEYWORD PARAMETERS:  LEAVE     : bewirkt, dass A unveraendert bleibt
-;                      SUBSTRING : Abschwaechung der Gleichheit der TagNames zwischen A und diff. 
-;                                  Alle Tags aus A deren Teilstrings in diff enthalten sind werden
-;                                  extrahiert.
+; INPUT KEYWORDS:
+;  LEAVE     :: bewirkt, dass A unveraendert bleibt
+;  SUBSTRING :: Abschwaechung der Gleichheit der TagNames zwischen A und diff. 
+;               Alle Tags aus A deren Teilstrings in diff enthalten sind werden
+;               extrahiert.
 ;
-; OUTPUTS:             B : eine anonyme Struktur mit den Tags aus diff, die in A enthalten
-;                          sind. Hat keines uebereingestimmt wird !NONE zurueckgegeben.
-;                      A : enthaelt die uebriggebliebenen Tags (falls /LEAVE nicht gesetzt),
-;                          bzw. ist undefiniert, wenn es keine mehr gibt
+; OUTPUTS:
+;  B :: eine anonyme Struktur mit den Tags aus diff, die in A enthalten
+;       sind. Hat keines uebereingestimmt wird !NONE zurueckgegeben.
+;  A :: enthaelt die uebriggebliebenen Tags (falls /LEAVE nicht gesetzt),
+;       bzw. ist undefiniert, wenn es keine mehr gibt
 ;
-; SIDE EFFECTS:        aus A werden ggf. Tags geloescht
+; SIDE EFFECTS:
+;  aus A werden ggf. Tags geloescht
 ;
-; RESTRICTIONS:        named-Structures werden zu anonymous-Structures
+; RESTRICTIONS:
+;  named-Structures werden zu anonymous-Structures
 ;
-; EXAMPLE:             A = {a:1, b:2, z:'Haha'}
-;                      B = ExtraDiff(A,['a','z'])
+; EXAMPLE:
+;*A = {a:1, b:2, z:'Haha'}
+;*B = ExtraDiff(A,['a','z'])
+;*
+;*help, A, /STR
+;*; Structure <4000a7c8>, 1 tags, length=2, refs=1:
+;*;  B               INT              2
+;*help, B, /STR
+;*; ** Structure <4002ec08>, 2 tags, length=24, refs=1:
+;*;  A               INT              1
+;*;  Z               STRING    'Haha'     
 ;
-;                      IDL> help, A, /STR
-;                      ** Structure <4000a7c8>, 1 tags, length=2, refs=1:
-;                      B               INT              2
-;                      IDL> help, B, /STR
-;                      ** Structure <4002ec08>, 2 tags, length=24, refs=1:
-;                      A               INT              1
-;                      Z               STRING    'Haha'     
-;
-;                      A = {a:1, b:2, z:'Haha'}
-;                      
-; SEE ALSO:            <A>DiffSet</A>, <A>UNDEF</A>
+; SEE ALSO:
+;  <A>DiffSet</A>, <A>UNDEF</A>
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.6  2000/09/25 09:13:08  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 2.5  1999/07/28 08:45:06  saam
-;          dunno whats changed, but there had to be a reason...
-;
-;     Revision 2.4  1998/11/08 17:54:49  saam
-;           new keyword SUBSTRING added
-;
-;     Revision 2.3  1998/08/14 11:15:30  saam
-;           now returns an undefined variable for B instead of !NONE
-;
-;     Revision 2.2  1998/08/14 10:10:13  saam
-;           doc header errors corrected
-;
-;     Revision 2.1  1998/07/21 13:06:19  saam
-;           long needed, never time to write...
-;
 FUNCTION ExtraDiff, extra, keywords, LEAVE=leave, SUBSTRING=substring
 
    IF N_Params() NE 2 THEN Message, 'wrong syntax'
