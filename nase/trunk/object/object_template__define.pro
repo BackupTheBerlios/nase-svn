@@ -89,13 +89,30 @@
 
 
 
-;; ------------ Static member declaration -------------------
-Common MyClass_static, MyStaticMember, MyOtherStaticMember
-;; (This is meant to be outside any procedure or function.)
-;; Static members should all be regarded private, just like the
-;; non-static data members.
-;; Is there any way to have static -methods-?
+;; ------------ Static member definition -------------------
+Pro MyClass__init_static
+   COMPILE_OPT IDL2, HIDDEN
+   ;; This member function is called from MyClass__DEFINE. However, we
+   ;; need it to be the /first/ procedure in the file, because it defines
+   ;; the common-block th other member functions will refer to.
+   ;; MyClass__DEFINE on the other hand needs to be the /last/
+   ;; procedure in the file. For this great IDL design, we need this
+   ;; special function...
 
+   Common MyClass_static, MyStaticMember, MyOtherStaticMember
+
+   MyStaticMember      = "foo"
+   MyOtherStaticMember = "bar"
+
+   ;; Static members should all be regarded private, just like the
+   ;; non-static data members.
+
+   ;; Note that this is no method, but a normal procedure: static
+   ;; class information is initialized as soon as this file was
+   ;; compiled, and exists independent of any object instantiations.
+
+   ;; Is there any way to have static -methods-?
+End
 
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
@@ -105,7 +122,9 @@ Function MyClass::init, KEYWORD = keyword, _REF_EXTRA=_ref_extra
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
-   ;; object. If it fails, exit returning false:
+   ;; object. If it fails, exit returning false.
+   ;; Note that here any keyword options to the superclass can be
+   ;; passed.
    If not Init_Superclasses(self, "MyClass", _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a MyClass object,
@@ -199,12 +218,10 @@ End
 ;; ------------ Object definition ---------------------------
 Pro MyClass__DEFINE
    COMPILE_OPT IDL2
+   Common MyClass_static
 
    ;; initialization of static members:
-   Common MyClass_static
-   MyStaticMember      = "foo"
-   MyOtherStaticMember = "bar"
-
+   MyClass__init_static
 
    ;; class definition
    dummy = {MyClass, $

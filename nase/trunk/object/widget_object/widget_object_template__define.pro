@@ -89,12 +89,41 @@
 ;-
 
 
+;; ------------ Static member definition -------------------
+Pro widget_MyClass__init_static
+   COMPILE_OPT HIDDEN, IDL2
+   ;; This member function is called from MyClass__DEFINE. However, we
+   ;; need it to be the /first/ procedure in the file, because it defines
+   ;; the common-block th other member functions will refer to.
+   ;; MyClass__DEFINE on the other hand needs to be the /last/
+   ;; procedure in the file. For this great IDL design, we need this
+   ;; special function...
+
+   Common widget_MyClass_static, MyStaticMember, MyOtherStaticMember
+
+   MyStaticMember      = "foo"
+   MyOtherStaticMember = "bar"
+
+   ;; Static members should all be regarded private, just like the
+   ;; non-static data members.
+
+   ;; Note that this is no method, but a normal procedure: static
+   ;; class information is initialized as soon as this file was
+   ;; compiled, and exists independent of any object instantiations.
+
+   ;; Is there any way to have static -methods-?
+End
+
+
+
 ;; ------------ Widget support routines ---------------------
-Pro MyWidget_Notify_Realize, id
+Pro widget_MyClass__Notify_Realize, id
    COMPILE_OPT HIDDEN, IDL2
    Widget_Control, id, Get_Uvalue=object
    ;;
-   ;; insert code here if necessary, remove procedure if not
+   ;; insert code here if necessary, remove procedure if not.
+   ;; If removed, also remove the NOTIFY_REALIZE keyword in the
+   ;; superclass initialization in widget_MyClass::init().
    ;;
 End
 
@@ -112,15 +141,6 @@ End
 
 
 
-;; ------------ Static member declaration -------------------
-Common widget_MyClass_static, MyStaticMember, MyOtherStaticMember
-;; (This is meant to be outside any procedure or function.)
-;; Static members should all be regarded private, just like the
-;; non-static data members.
-;; Is there any way to have static -methods-?
-
-
-
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function widget_MyClass::init, _REF_EXTRA=_ref_extra
    COMPILE_OPT IDL2
@@ -128,8 +148,14 @@ Function widget_MyClass::init, _REF_EXTRA=_ref_extra
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
-   ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, "widget_MyClass", _EXTRA=_ref_extra) then return, 0
+   ;; object. If it fails, exit returning false.
+   ;; Note that here any keyword options to the superclass can be
+   ;; passed.
+   ;; Note that this includes any keywords that are passed to the main
+   ;; WIDGET_BASE, like e.g. NOTIFY_REALIZE.
+   If not Init_Superclasses(self, "widget_MyClass", $
+                            NOTIFY_REALIZE = "widget_MyClass__Notify_Realize", $
+                            _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a widget_MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -238,12 +264,10 @@ End
 ;; ------------ Object definition ---------------------------
 Pro widget_MyClass__DEFINE
    COMPILE_OPT IDL2
+   Common widget_MyClass_static
 
    ;; initialization of static members:
-   Common widget_MyClass_static
-   MyStaticMember      = "foo"
-   MyOtherStaticMember = "bar"
-
+   widget_MyClass__init_static
 
    ;; class definition
    dummy = {widget_MyClass, $
