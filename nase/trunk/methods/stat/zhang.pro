@@ -9,9 +9,17 @@
 ;  Estimate stimulus from neuronal response using Bayesian inference.
 ;
 ; PURPOSE:
-;  (When referencing this very routine in the text as well as all IDL
-;  routines, please use <C>RoutineName</C>.)
-;  Reference: Zhang et al., J. Neurophysiol. 79:1017 (1998).
+;  <C>Zhang()</C> is based on the one-step probabilistic method proposed
+;  by Zhang et al. to reconstuct a rat's position from its
+;  hippocampal place cell activity (Zhang et al.,
+;  J. Neurophysiol. 79:1017, 1998). It statistically exploits the
+;  simultaneous occurences of certain stimuli and neural activity to
+;  estimate stimulus features from nerve cell responses. In doing so,
+;  quantitative results about the coding accuracy of the respective
+;  features may be obtained given the response measure. In its present
+;  form, <C>Zhang()</C> is able to use as its input multidimensional
+;  stimuli (as e.g. the position of an object in two-dimensional visual
+;  space) and action potentials from multiple nerve cells.
 ;
 ; CATEGORY:
 ;  CombinationTheory
@@ -22,16 +30,19 @@
 ; CALLING SEQUENCE:
 ;* estimate = Zhang( s, r, [,EXTPRIOR=...][,PROBE=...]
 ;*                         [,SNBINS=...][,TAU=...][,SMEARTUNING=...]
-;*                         [,/OPTIMAL][,/VERBOSE]
+;*                         [,/OPTIMAL][,/CENTER][,/VERBOSE]
 ;*                         [,GET_MEAN=...][,GET_PRIOR=...] )
 ;
 ; INPUTS:
-;  s:: stimulus
-;  r:: response
+;  s:: A floating point array containing the stimulus as a function of
+;      time. The stimulus may have multiple dimensions or features, in
+;      this case, the first dimension of the array <*>s</*> represents
+;      time, the second dimension contains the stimulus features.
+;  r:: Response, i.e. spike trains as a function of time.
 ;
 ; INPUT KEYWORDS:
 ;  extprior:: In case of evaluating multiple response arrays that
-;             share the same stimulus, the <i>a priori</i> distribution of
+;             share the same stimulus, the <I>a priori</I> distribution of
 ;             stimuli may be computed once and then supplied
 ;             externally using this keyword to save computational
 ;             time. See also optional output <*>get_prior</*>.   
@@ -40,12 +51,14 @@
 ;          of firing rates. This may be used to avoid
 ;          overfitting. When set, the result of the function is
 ;          determined by the <*>probe</*> response. Note that the
-;          algorithm considers the <i>a priori</i>
+;          algorithm considers the <I>a priori</I>
 ;          distribution of stimuli <*>s</*> used to obtain the mean responses
 ;          and the probe responses to be the same.   
-;  snbins:: array
+;  snbins:: Integer array specifying the number of bins to be used to
+;           discretize the stimulus. The array needs to have as many
+;           entries as there are stimulus features.
 ;  tau:: Width of the sliding time window that is used to count the
-;        spike numbers and mean firing rates from the neuronal
+;        spike numbers and copmute the mean firing rates from the neuronal
 ;        response. Small <*>tau</*> increases the temporal resolution
 ;        of the response, but choosing it too low results in bad
 ;        reconstruction because of the lack of spikes inside the
@@ -55,13 +68,23 @@
 ;        adapted to the timescale of stimulus changes. Furthermore,
 ;        extra large <*>tau</*> may result in mathematical overflows
 ;        because of the computation of <*>rate^(no. of spikes)</*>.
-;  smeartuning::
-;  /OPTIMAL:: Optimal estimation is not recommended with two-peak
-;             distributions because the second peak shifts the mean
+;  smeartuning:: Floating point value.
+;  /OPTIMAL:: As the final estimate, <C>Zhang()</C> may either use the
+;             maximum (MAP method) or
+;             the average of the <I>a posteriori</I> distribution (optimal
+;             method). By default, the MAP method is used, but by
+;             setting <*>/OPTIMAL</*>, the respective method is
+;             applied. Optimal estimation may yield smoother 
+;             results, as it is not restricted to the discrete
+;             stimulus bins. On the other hand, optimal estimation is
+;             not recommended with two-peak 
+;             distributions, because the second peak shifts the mean
 ;             towards lower values. MAP does not have this problem. If
-;             velocity is estimated, this effect becomes profound
+;             e.g. velocity and direction of motion is estimated, this
+;             effect becomes profound. Default: <*>OPTIMAL=0</*>
+;  /CENTER::           
 ;  /VERBOSE:: Print information about the routines progress into the
-;             <A NREF=INITCONSOLE>console</A>.
+;             <A NREF=INITCONSOLE>console</A>. Default: <*>VERBOSE=0</*>.
 ;
 ; OUTPUTS:
 ;  estimate::
@@ -70,22 +93,49 @@
 ;  get_mean::
 ;  get_prior::
 ;
-; COMMON BLOCKS:
-;  
-;
-; SIDE EFFECTS:
-;  
-;
 ; RESTRICTIONS:
 ;  Stimulus dimension GT 2 tested only marginally.
-;  
 ;
 ; PROCEDURE:
+;  Magic?
 ;  
-;
 ; EXAMPLE:
-;*
-;*>
+;* duration = 1000
+;* ;; Array to save spikes of 20 neurons in
+;* r = BytArr(duration, 20)
+;* ;; Stimulus moves in Cosine-wave along single dimension
+;* pos = 6.*Cos(FIndGen(duration)/duration*24.*!PI)+10.
+;* ;; Gaussian receptive field of the neurons, amplitude scales firing
+;* ;; rate
+;* rf = 0.1*Gauss_2D(9, 1, 3, 0, 0)
+;* 
+;* ;; generate responses, RFs of cells are positioned along stimulus
+;* ;; motion, cells are thus activated sequentially
+;* FOR t=0, duration-1 DO BEGIN
+;*    s = FltArr(20)
+;*    s(pos(t)) = 1.
+;*    r(t, *) = RandomU(seed, 20) LE Convol(s, rf, /EDGE_TRUNC)
+;* ENDFOR
+;* 
+;* ;; Compute estimate of position for the first 3 quarters of the
+;* ;; "experiment".
+;* e1 = Zhang(pos(0:duration/4*3-1) $
+;*            , r(0:duration/4*3-1, *) $
+;*            , SNBINS=[15], TAU=17)
+;* ;; "Training" of algorithm with first 3 quarters of the data, then
+;* ;; estimate the stimulus from reponses in the fourth quarter.
+;* e2 = Zhang(pos(0:duration/4*3-1) $
+;*            , r(0:duration/4*3-1, *) $
+;*            , PROBE=r(duration/4*3:duration-1, *) $
+;*            , SNBINS=[15], TAU=17)
+;* 
+;* ;; Display response spike trains, stimulus (white) and estimate
+;* ;; (green/yellow).
+;* !P.multi = [0, 1, 2, 0, 0]
+;* Trainspotting, r
+;* Plot, pos
+;* OPlot, IndGen(duration/4*3), e1(*, 0), COLOR=RGB('green')
+;* OPlot, IndGen(duration/4)+duration/4*3, e2(*, 0), COLOR=RGB('yellow')
 ;
 ; SEE ALSO:
 ;  <A>Instantrate()</A>
@@ -121,17 +171,18 @@
 
 
 FUNCTION Zhang, s, r, EXTPRIOR=extprior $
-                      , PROBE=probe, SNBINS=snbins, TAU=tau $
-                      , SMEARTUNING=smeartuning $
-                      , OPTIMAL=optimal, VERBOSE=verbose $
-                      , GET_MEAN=get_mean, GET_PRIOR=get_prior
+                , PROBE=probe, SNBINS=snbins, TAU=tau $
+                , SMEARTUNING=smeartuning $
+                , OPTIMAL=optimal, CENTER=center $
+                , VERBOSE=verbose $
+                , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
    Default, snbins, [11, 11]
    Default, tau, 11 ;; ms
    tau = Float(tau)
    Default, center, 0
    Default, optimal, 0
-   Default, verbose, 1
+   Default, verbose, 0
 
 
    ssize = Size(s)
