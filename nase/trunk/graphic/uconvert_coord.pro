@@ -1,6 +1,8 @@
 ;+
 ; NAME:  UCONVERT_COORD
 ;
+; VERSION: $Id$
+;         
 ; AIM:
 ;  Selectively transform coordinates to and from data, device, or
 ;  normal notation.
@@ -18,18 +20,18 @@
 ;           If the input points are in 3D data coordinates, be sure to set the T3D keyword.
 ;
 ;
-; CATEGORY: 
+; CATEGORY: graphic 
 ;
 ;
 ; CALLING SEQUENCE: 
-;                    UCONVERT_COORD, X [,Y][,Z][,DATA=DATA][,DEVICE=DEVICE][,NORMAL=NORMAL]
-;                                   [,T3D=T3D][,TO_DATA=TO_DATA][,TO_DEVICE=TO_DEVICE][,TO_NORMAL=TO_NORMAL]
-;                                   [,OX=OX][,OY=OY][,OZ=OZ]
+;*                    UCONVERT_COORD, X [,Y][,Z][,DATA=DATA][,DEVICE=DEVICE][,NORMAL=NORMAL]
+;*                                   [,T3D=T3D][,TO_DATA=TO_DATA][,TO_DEVICE=TO_DEVICE][,TO_NORMAL=TO_NORMAL]
+;*                                   [,OX=OX][,OY=OY][,OZ=OZ]
 ;
 ; 
 ; INPUTS:
 ;
-;              X        A vector or scalar argument providing the X components of the input coordinates. 
+;              X::      A vector or scalar argument providing the X components of the input coordinates. 
 ;                       If only one argument is specified, X must be an array of either two or three vectors 
 ;                       (i.e., (2,*) or (3,*)). In this special case, X[0,*] are taken as the X values, X[1,*] 
 ;                       are taken as the Y values, and, if present, X[2,*] are taken as the Z values.
@@ -37,30 +39,30 @@
 ;
 ; OPTIONAL INPUTS:
 ;
-;              Y        An optional argument providing the Y input coordinate(s).
-;              Z        An optional argument providing the Z input coordinate(s).
+;              Y::        An optional argument providing the Y input coordinate(s).
+;              Z::        An optional argument providing the Z input coordinate(s).
 ;	
 ; KEYWORD PARAMETERS:
 ;                     
-;              DATA
+;              DATA::
 ;              Set this keyword if the input coordinates are in data space (the default).
-;              DEVICE
+;              DEVICE::
 ;              Set this keyword if the input coordinates are in device space.
-;              NORMAL
+;              NORMAL::
 ;              Set this keyword if the input coordinates are in normalized space.
-;              T3D
+;              T3D::
 ;              Set this keyword if the 3D transformation !P.T is to be applied.
-;              TO_DATA
+;              TO_DATA::
 ;              Set this keyword if the output coordinates are to be in data space.
-;              TO_DEVICE
+;              TO_DEVICE::
 ;              Set this keyword if the output coordinates are to be in device space.
-;              TO_NORMAL
+;              TO_NORMAL::
 ;              Set this keyword if the output coordinates are to be in normalized space.
-;              OX
+;              OX::
 ;              Set this keyword if only the X-coordinate is to be converted
-;              OY
+;              OY::
 ;              Set this keyword if only the Y-coordinate is to be converted
-;              OZ
+;              OZ::
 ;              Set this keyword if only the Z-coordinate is to be converted
 ;
 ;
@@ -68,17 +70,21 @@
 ;
 ;
 ; EXAMPLE:
-;           Convert, using the currently established viewing transformation, 
-;           11 points along the parametric line x = t, y = 2t, z = t^2, along the interval [0, 1] 
-;           from data coordinates to device coordinates:
-;           X = FINDGEN(11)/10.                   ;Make a vector of X values.
-;           D = CONVERT_COORD(X, 2*X, X^2, /T3D, /TO_DEVICE)  ;Convert the coordinates. D will be an (3,11) element array.
+;*           Convert, using the currently established viewing transformation, 
+;*           11 points along the parametric line x = t, y = 2t, z = t^2, along the interval [0, 1] 
+;*           from data coordinates to device coordinates:
+;*           X = FINDGEN(11)/10.                   ;Make a vector of X values.
+;*           Convert the coordinates. D will be an (3,11) element array.
+;*           D = UCONVERT_COORD(X, 2*X, X^2, /T3D, /TO_DEVICE)
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.4  2000/11/02 10:27:57  gabriel
+;         bug fixed for x,y as n-dim vectors
+;
 ;     Revision 2.3  2000/10/01 14:50:42  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -89,7 +95,7 @@
 ;          jetzt kann man explizit coordinaten konvertieren
 ;
 ;
-;-
+;
 
 FUNCTION UCONVERT_COORD,X, Y, Z, DATA=DATA, DEVICE=DEVICE, NORMAL=NORMAL,$
                  T3D=T3D, TO_DATA=TO_DATA, TO_DEVICE=TO_DEVICE, TO_NORMAL=TO_NORMAL,OX=OX,OY=OY,OZ=OZ
@@ -117,7 +123,7 @@ FUNCTION UCONVERT_COORD,X, Y, Z, DATA=DATA, DEVICE=DEVICE, NORMAL=NORMAL,$
          dim = 2 
          erg = CONVERT_COORD(X, Y,  DATA=DATA, DEVICE=DEVICE, NORMAL=NORMAL,$
                              T3D=T3D, TO_DATA=TO_DATA, TO_DEVICE=TO_DEVICE, TO_NORMAL=TO_NORMAL)
-         erg = erg(0:1)
+         erg = erg(0:1,*)
       END
       set(X) OR (datadim GT 0): BEGIN 
          dim = datadim 
