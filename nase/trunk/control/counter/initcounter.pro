@@ -17,7 +17,8 @@
 ; EXAMPLE:
 ;                    DigitalUhrMitSekunden = InitCounter( [24,60,60] )
 ;                    FOR eineMinute=0,59 DO BEGIN
-;                       print, Count(DigitalUhrMitSekunden)
+;                       print, CountValue(DigitalUhrMitSekunden)  ; gibt den aktuellen zaehlerstand aus
+;                       Count, DigitalUhrMitSekunden              ; erhoeht den zaehlen um 1
 ;                    END
 ;
 ; SEE ALSO:          <A HREF="#COUNT">Count</A>, <A HREF="#RESETCOUNTER">ResetCounter</A>, <A HREF="#COUNTVALUE">CountValue</A>
@@ -25,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/03/16 12:55:21  saam
+;           corrected disfunctional example
+;
 ;     Revision 2.5  1997/11/25 10:39:39  saam
 ;           yes another HTML-Bug
 ;
