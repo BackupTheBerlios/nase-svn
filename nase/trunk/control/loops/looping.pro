@@ -55,11 +55,14 @@
 ;                           C               INT              2
 ;                           D               STRING    'C'
 ;      
-; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>
+; SEE ALSO:          <A HREF="#INITLOOP">InitLoop</A>, <A HREF="#LOOPNAME">LoopName</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1997/11/25 16:43:52  saam
+;           Hyperlink-Update
+;
 ;     Revision 1.3  1997/11/25 10:43:56  saam
 ;           a HTML-Bug
 ;
