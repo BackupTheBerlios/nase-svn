@@ -1,71 +1,55 @@
 ;+
-; NAME:                InsSubArray
+; NAME:
+;  InsSubArray
 ;
-; AIM:                 inserts an array into another array (two dimensional)
+; AIM:
+;  inserts an array into another array (two dimensional)
 ;
-; PURPOSE:             Inserts a two dimensional array into another
-;                      two dimensional array. It allows convenient
-;                      placement (including centering) and is aware
-;                      of toroidal boundary conditions. This routine
-;                      saves you from some sophisticated index magic.
+; PURPOSE:
+;  Inserts a two dimensional array into another
+;  two dimensional array. It allows convenient
+;  placement (including centering) and is aware
+;  of toroidal boundary conditions. This routine
+;  saves you from some sophisticated index magic.
 ;
-; CATEGORY:            MISC ARRAY
+; CATEGORY:
+;  Array
+;  Image
 ;
-; CALLING SEQUENCE:    c = InsSubArray(a, b [,i1] [,i2] [,/CENTER] [,/WRAP])
+; CALLING SEQUENCE:
+;*c = InsSubArray(a, b [,i1] [,i2] [,/CENTER] [,/WRAP])
 ;
-; INPUTS:              a: the array where b is inserted into
-;                      b: array inserted into a
+; INPUTS:
+;  a:: the array where <*>b</*> is inserted into
+;  b:: array inserted into <*>a</*>
 ;
-; OPTIONAL INPUTS:     i1/i2: relative position (i1,i2) according to the
-;                             array's origin (0,0) or the center (if
-;                             keyword CENTER is set). The default
-;                             value is zero for both, i1 and i2. You
-;                             can also omit i2, then the whole array
-;                             is inserted at the position specified by
-;                             the onedimensional index i1.
+; OPTIONAL INPUTS:
+;  i1/i2:: relative position (i1,i2) according to the
+;          array's origin (0,0) or the center (if
+;          keyword CENTER is set). The default
+;          value is zero for both, i1 and i2. You
+;          can also omit i2, then the whole array
+;          is inserted at the position specified by
+;          the onedimensional index i1.
 ; 
 ;
-; KEYWORD PARAMETERS: CENTER: array b will be centered in array a with a
-;                             relative offset (i1,i2)
-;                     WRAP:   toroidal boundary conditions will be
-;                             used, when inserting b.
+; INPUT KEYWORDS: 
+;  CENTER:: array <*>b</*> will be centered in array a with a
+;           relative offset (i1,i2)
+;  WRAP::   toroidal boundary conditions will be
+;           used, when inserting <*>b</*>.
 ;   
-; OUTPUTS:            c: resulting array with dimension identical to
-;                        array a. If b doesn't fit into a, exceeding
-;                        values will be cut, unless the keyword WRAP
-;                        is set.
+; OUTPUTS:
+;  c:: resulting array with dimension identical to
+;      array <*>a</*>. If <*>b</*> doesn't fit into <*>a</*>, exceeding
+;      values will be cut, unless the keyword <*>/WRAP</*>
+;      is set.
 ; 
 ;
 ; EXAMPLE:
-;                     a=IntArr( 8, 8)
-;                     b=Indgen(3,3)
-;                     print, InsSubArray(a,b, /CENTER)
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.5  2000/09/25 09:12:55  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.4  2000/07/04 13:59:51  saam
-;           extended positional argument syntax
-;           for 1d positions
-;
-;     Revision 1.3  2000/06/28 09:31:29  saam
-;           + B may exeed A's borders now
-;           + added new keyword WRAP
-;           + translated DOC header
-;           + messaged -> console
-;
-;     Revision 1.2  2000/02/29 12:55:31  kupper
-;     Corrected order of indexing which was confused,
-;     and added an informational message.
-;
-;     Revision 1.1  1998/06/03 14:27:59  saam
-;           Yeah Yeah Yeah
-;
+;*a=IntArr( 8, 8)
+;*b=Indgen(3,3)
+;*print, InsSubArray(a,b, /CENTER)
 ;
 ;-
 FUNCTION InsSubArray, _A, B, _y, _x, CENTER=CENTER, WRAP=wrap
