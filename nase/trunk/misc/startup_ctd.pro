@@ -32,10 +32,10 @@ Pro Startup_ctd
 
    if (fix(!VERSION.Release) ge 4) then OS_FAMILY=!version.OS_FAMILY else OS_FAMILY='unix'
 
-   if  OS_FAMILY eq "unix"    then separator=":"
-   if OS_FAMILY eq "Windows" then separator=";"
-   if  OS_FAMILY eq "vms"     then separator=","
-   if  OS_FAMILY eq "MacOS"   then separator=","
+   if  StrUpcase(OS_FAMILY) eq "UNIX"     then separator=":"
+   if  Strupcase(OS_FAMILY) eq "WINDOWS" then separator=";"
+   if  Strupcase(OS_FAMILY) eq "VMS"     then separator=","
+   if  Strupcase(OS_FAMILY) eq "MACOS"   then separator=","
 
    ;; warning: FilePath changes the variable passed to ROOT_DIR
    ;;          argument! Hence, using read-only !NASEPATH.
