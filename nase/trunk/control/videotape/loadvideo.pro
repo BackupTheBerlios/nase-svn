@@ -5,13 +5,22 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: MyVideo = LoadVideo ( [TITLE] [,/VERBOSE] )
+; CALLING SEQUENCE: MyVideo = LoadVideo ( [TITLE] [,/VERBOSE] [,/INFO] )
 ; 
 ; INPUTS: ---
 ;
 ; OPTIONAL INPUTS: ---
 ;	
-; KEYWORD PARAMETERS: TITLE: Filename und Videotitel
+; KEYWORD PARAMETERS: TITLE: Filename, der auch der Videotitel ist.
+;                            Bei nichtangabe wird der Defaulttitel
+;                            benutzt.
+;                     INFO : Wird dieses Keyword gesetzt, so wird eine
+;                            Information über das Format und den
+;                            Inhalt des Videos ausgegeben.
+;                         Hinweis: In diesem Fall wird das Video NICHT
+;                                  geöffnet, und die Funktion liefert
+;                                  den Wert 0 zurück.
+;
 ;
 ; OUTPUTS: MyVideo: Eine initialisierte Videostruktur
 ;
@@ -26,9 +35,16 @@
 ; PROCEDURE: Aus dem .vidinf-File die Arrayinformationen lesen und in
 ;               die Struktur schreiben.
 ;
-; EXAMPLE: MyVideo = LoadVideo (TITLE = 'The quiet Neuron', /VERBOSE)
+; EXAMPLE: 1. MyVideo = LoadVideo (TITLE = 'The quiet Neuron', /VERBOSE)
+;          2. Dummy   = LoadVideo (TITLE = 'The unforgettable Firing', /INFO)
 ;
 ; MODIFICATION HISTORY:
+;
+;       Thu Aug 28 15:55:11 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		TITEL-Keyword verarbeitet jetzt Pfade richtig.
+;                   INFO-Keyword zugefügt.
 ;
 ;       Wed Aug 27 17:49:54 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -37,13 +53,14 @@
 ;
 ;-
 
-Function LoadVideo, TITLE=title, VERBOSE=verbose
+Function LoadVideo, TITLE=title, VERBOSE=verbose, INFO=info
    
    Default, title, "The Spiking Neuron"   
  
    filename = title+".vid"
    infoname = title+".vidinf"
-
+   Parts = str_sep(title, '/')
+   title = Parts(n_elements(Parts)-1)
 
    openr, infounit, /GET_LUN, infoname
    
@@ -67,13 +84,53 @@ Function LoadVideo, TITLE=title, VERBOSE=verbose
    year     = strtrim(lyear, 2)
 
    Length = 0l & readu, infounit, Length ;Anzahl der Frames
-   
+
+;---------------- Video Info anzeigen
+   type = ["Undefined", "Byte", "Integer", "Longword Integer", "Floating Point", "Double-Precision Floating Point", "Complex Floating Point", "String", "Structure", "Double-precision Complex"]
+
+   If keyword_set(INFO) then begin
+      print, '**'
+      print, '** Video Information for "'+title+'":'
+      print, '**'
+      print, '** This Video contains '+strtrim(string(Length), 2)+' Frames'
+      print, '**      of a '+strtrim(string(dims), 2)+'-dimensional '+Type(FrameSize(n_elements(FrameSize)-2))+' Array'
+      s = "("
+      for i=1, n_elements(FrameSize)-3 do s = s+strtrim(string(FrameSize(i)), 2)+","
+      s = strmid(s, 0, strlen(s)-1)+")"
+      print, '**      of size '+s+'.'
+      print, '**'
+      print, "** The Video Data File is named  '"+filename+"',"
+      print, "**  the Video Info File is named '"+infoname+"'."
+      print, '**'
+      print, '** Miscellaneous Data Tags:'
+      print, '**    SYSTEM  : '+system
+      print, '**    COMPANY : '+company
+      print, '**    PRODUCER: '+producer
+      print, '**    YEAR    : '+year
+      print, '**    STARRING: '+starring
+      if not eof(infounit) then begin
+         print, '**'
+         print, '** The Video-Cassette is labeled:'
+         print, '**    -----------------------------------------------------------------------------------------'
+         l = ""
+         while not eof(infounit) do begin
+            readf, infounit, l
+            print, '**   | '+l
+         endwhile
+         print, '**    -----------------------------------------------------------------------------------------'
+      endif else begin
+        print, '**'
+        print, '** The Video-Cassette is not labeled.'
+      endelse
+
+      close, infounit
+      return, 0
+   endif
+;------------------------------------   
    close, infounit
 
    openr, unit, /GET_LUN, filename
-
-  
-            
+           
 
    If Keyword_set(VERBOSE) then begin
       print
