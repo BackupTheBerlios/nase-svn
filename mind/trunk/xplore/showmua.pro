@@ -18,6 +18,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/04 11:06:46  saam
+;           + DOC-header updated
+;           + file- and layer-titles are displayed
+;
 ;     Revision 1.1  1999/12/21 09:58:31  saam
 ;           ok
 ;
@@ -62,7 +66,7 @@ PRO _ShowMUA, STOP=stop, _EXTRA=e
 
    ;------> SUCCESSIVELY READ DATA
    FOR i=0, MUAmax DO BEGIN
-      ReadSimu, tmp, LAYER=MUA(i), /MUA, _EXTRA=e
+      tmp = ReadSimu(LAYER=MUA(i), /MUA, _EXTRA=e)
       IF Set(SIGNAL) THEN Signal = [Signal,tmp] ELSE Signal = tmp
    END
 
@@ -71,7 +75,8 @@ PRO _ShowMUA, STOP=stop, _EXTRA=e
    FOR i=0, MUAmax DO BEGIN 
       OpenSheet, SM_1, i
       L = Handle_Val(P.LW(MUA(i)))
-      Plot, FIndGen(N_Elements(SIGNAL(i,*)))*(1000*P.SIMULATION.SAMPLE), SIGNAL(i,*), TITLE='MUA '+L.NAME, XTITLE='t [ms]'
+      Plot, FIndGen(N_Elements(SIGNAL(i,*)))*(1000*P.SIMULATION.SAMPLE), SIGNAL(i,*), TITLE='MUA: '+L.NAME, XTITLE='t [ms]'
+      Inscription, AP.ofile, /OUTSIDE, /RIGHT, /TOP, CHARSIZE=0.4, CHARTHICK=1
       CloseSheet, SM_1, i
    END
 END

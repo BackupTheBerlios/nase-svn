@@ -18,11 +18,18 @@
 ;                     EXTRA : all Keywords are passed to VCR/TrainSpotting
 ;                             selectively
 ;
+; COMMON BLOCKS:      ATTENTION
+;                     SH_SS     : sheets
+;
 ; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic#VCR>vcr</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic#TRAINSPOTTING>trainspotting</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#READSIMU>readsimu</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/04 11:06:46  saam
+;           + DOC-header updated
+;           + file- and layer-titles are displayed
+;
 ;     Revision 1.1  2000/01/04 10:37:21  saam
 ;           ok
 ;
@@ -32,6 +39,7 @@ PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, _EXTRA=e
 
    On_Error, 2
 
+   COMMON ATTENTION
    COMMON SH_SS, SSwins, SS_1
    
    ;-----> ORGANIZE THE SHEETS
@@ -56,7 +64,9 @@ PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, _EXTRA=e
 
    OpenSheet, SS_1
    s = SIZE(NT)
-   Trainspotting, Reform(Nt, s(1)*s(2), s(3)), OFFSET=0
+   L = Handle_Val(P.LW(LayerIndex))
+   Trainspotting, Reform(Nt, s(1)*s(2), s(3)), OFFSET=0, TITLE='Spikeraster: '+L.NAME
+   Inscription, AP.ofile, /OUTSIDE, /RIGHT, /TOP, CHARSIZE=0.4, CHARTHICK=1 
    CloseSheet, SS_1
 
    IF Keyword_Set(VCR) THEN BEGIN
