@@ -1,4 +1,17 @@
 
+;; --tell XEmacs to use idlwave-mode for *.pro files--
+;; -- this is probably already done in the user's .emacs file,
+;; -- but it won't hurt if it is two times in the list.
+(autoload 'idlwave-mode "idlwave" "IDLWAVE Mode" t)
+(autoload 'idlwave-shell "idlw-shell" "IDLWAVE Shell" t)
+(setq auto-mode-alist (cons '("\\.pro\\'" . idlwave-mode) auto-mode-alist))
+;; --End: tell XEmacs to use idlwave-mode for *.pro files--
+
+;; --tell idlwave mode to use font lock--
+(add-hook 'idlwave-mode-hook 'turn-on-font-lock)
+;; --End: tell idlwave mode to use font lock--
+
+
 ;; --define NASE-specific functions--
 ;; --templates--
 (defun idlwave-nase-doclink ()
@@ -21,8 +34,22 @@
    (idlwave-rw-case "<*>")
    (idlwave-rw-case "</*>")
    "insert typewriter text"))
-;; --end templates--
-;; --end define NASE-specific functions--
+
+(defun idlwave-nase-commonrandom ()
+  (interactive)
+  (idlwave-template
+   (idlwave-rw-case "common commonrandom, seed\n")
+   (idlwave-rw-case "")
+   "common block inserted"))
+
+(defun idlwave-nase-commentedblock ()
+  (interactive)
+  (idlwave-template
+   (idlwave-rw-case ";;-- ")
+   (idlwave-rw-case " --\n;;-- End:  --")
+   "type description"))
+;; --End: templates--
+;; --End: define NASE-specific functions--
 
 
 	
@@ -40,7 +67,9 @@
   (local-set-key "\C-nl" 'idlwave-nase-doclink)
   (local-set-key "\C-nc" 'idlwave-nase-commandref)
   (local-set-key "\C-nt" 'idlwave-nase-typewriterface)
-  ;; --end add key bindings--
+  (local-set-key "\C-nr" 'idlwave-nase-commonrandom)
+  (local-set-key "\C-n;" 'idlwave-nase-commentedblock)
+  ;; --End: add key bindings--
   
   ;; --Add Menus - using easymenu.el--
   (defvar idlwave-mode-nase-menu-def
@@ -49,6 +78,9 @@
       ["Documentation Link" idlwave-nase-doclink t]
       ["Command Reference" idlwave-nase-commandref t]
       ["Typewriter Face" idlwave-nase-typewriterface t]
+      "--"
+      ["Insert commonrandom" idlwave-nase-commonrandom t]
+      ["Commented Block" idlwave-nase-commentedblock t]
       )
     )
   
@@ -63,16 +95,16 @@
   (when (featurep 'easymenu)
     (easy-menu-add idlwave-mode-nase-menu idlwave-mode-map)
     )
-  ;; --end Add Menus--
+  ;; --End: Add Menus--
 
 
   ;; --set location of the document header template--
   (setq headerfile (concat (getenv "NASEPATH") "/header.pro") )
   (setq idlwave-file-header (list headerfile "") )
-  ;; --end set location of the document header template--
+  ;; --End: set location of the document header template--
 
 
-  (message "NASE idlwave extention $Revision$.")
+  (message "NASE idlwave extention ($Revision$).")
 
   )
 
@@ -82,5 +114,5 @@
 
 
 
-;; --end define nase hook--
+;; --End: define nase hook--
  
