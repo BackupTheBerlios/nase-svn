@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.12  1999/09/22 09:55:44  kupper
+;        Added a "Temporary" here and there to save memory.
+;
 ;        Revision 2.11  1998/06/12 14:04:00  saam
 ;              path for nase color tables had changed
 ;
@@ -157,7 +160,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = 0 ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
-      MatrixMatrix = MatrixMatrix/double(max)*GET_MAXCOL
+      MatrixMatrix = Temporary(MatrixMatrix)/double(max)*GET_MAXCOL
    endif else begin             ;pos/neg Array
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
@@ -172,8 +175,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
-      MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-      MatrixMatrix = (MatrixMatrix+0.5)*GET_MAXCOL
+      MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(max([max, -min]))
+      MatrixMatrix = (Temporary(MatrixMatrix)+0.5)*GET_MAXCOL
    endelse
 
    If not keyword_set(PRINTSTYLE) then begin
