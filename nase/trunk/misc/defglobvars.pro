@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.17  2000/10/12 14:53:11  saam
+;     there was a strange character in the windows checkout
+;
 ;     Revision 1.16  2000/10/12 14:01:23  saam
 ;     added !FILESEP for os independent usage
 ;
@@ -157,5 +160,5 @@ DefSysV, '!CONSOLE', InitConsole(TITLE='Standard Output')
 ; os independent file separator
 DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
 
-ä
+
 END
