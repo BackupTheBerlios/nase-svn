@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/27 10:48:25  saam
+;           illegal char was in program text
+;
 ;     Revision 1.3  2000/01/26 16:18:08  saam
 ;           doc header written
 ;
@@ -103,7 +106,7 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
          
          ; read the current output
          R = TV.ja(TV.ji, *, *) 
-ü
+
          ; clear this time step
          TV.ja(TV.ji, *, *) = 0
 
