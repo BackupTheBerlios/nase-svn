@@ -52,6 +52,12 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.6  1997/12/02 11:03:22  saam
+;           BUG: !P.Region wurde umdefiniert, damit veraendern
+;                sich alle nachfolgenden Plots...
+;           Daher wird jetzt die Region gesichert und am Ende
+;            wieder restauriert
+;
 ;     Revision 2.5  1997/11/30 17:56:50  thiel
 ;            Ich dacht, da waer ein Fehler drin, war aber nich...
 ;
@@ -79,6 +85,10 @@ END
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                   LEGEND=Legend, ORDER=Order, NASE=Nase, _EXTRA=_extra
+
+
+;-----Sichern der urspruenglichen Region
+oldRegion = !P.Region
 
 ;-----Optimale Farbe fuer die Achsen ermitteln:
 bg = GetBGColor()
@@ -196,6 +206,10 @@ IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,Origi
  Max=Max(W), Min=Min(W), $
  CHARSIZE=Charsize, $
  /Vertical, /Center 
+
+
+;-----Restauration der urspruenglichen Region
+!P.Region = oldRegion
 
 
 ;-----ENDE:
