@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/09/15 08:48:01  thiel
+;            Added FreeDW befor restoring.
+;
 ;        Revision 1.2  1999/09/02 14:38:18  thiel
 ;            Improved documentation.
 ;
@@ -68,6 +71,9 @@ PRO haus2_FILEOPEN, dataptr, displayptr, group
    filename = DIALOG_PICKFILE(/READ, FILTER='*.dat', $
       TITLE='haus2. Select File', $
       GROUP=group, /MUST_EXIST)
+
+
+   FreeDW, (*dataptr).con_pre_pre
 
    ; Restore data contained in chosen file:
    Restore, filename 
