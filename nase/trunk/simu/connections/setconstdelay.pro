@@ -54,6 +54,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Sun Sep 7 23:31:36 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;               Keyword Transparent analog zu SetConstWeight.pro implementiert		
+;
 ;       Sun Sep 7 16:36:30 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -68,7 +73,8 @@
 
 Pro SetConstDelay, DWS, Amp, Range, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
-                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, INVERSE=inverse
+                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, INVERSE=inverse,$
+                       TRANSPARENT=transparent
 
    Default, Range, DWS.target_h/6  
    Default, Amp, 1
@@ -76,10 +82,10 @@ Pro SetConstDelay, DWS, Amp, Range, $
    IF Keyword_Set(inverse) THEN BEGIN
       SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
        Amp*(Range LE Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
-       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
    END ELSE BEGIN
       SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
        Amp*(Range GT Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
-       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
    END
 end
