@@ -35,6 +35,9 @@
 ;                     WIDTH     : width of the input to be created
 ;                     LOGIC     : logical operation :
 ;                                 NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
+;                                 allowed values are
+;                                 AND, OR, ADD
+;
 ;                     {various filter options}: to be added by the author
 ;
 ;
@@ -47,6 +50,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/20 10:37:02  alshaikh
+;           changes in header
+;
 ;     Revision 1.1  2000/01/20 10:31:37  alshaikh
 ;           initial version... keyword LOGIC
 ;
