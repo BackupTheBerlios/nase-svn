@@ -11,6 +11,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/04/06 09:40:58  saam
+;           killed useless debugging message
+;
 ;     Revision 1.3  2000/01/14 14:10:38  alshaikh
 ;           bugfix
 ;
@@ -33,7 +36,6 @@ IF (IN.TYPE EQ 11) THEN  BEGIN
    pattern = 0.0
    FOR i=0, number_filter-1 DO BEGIN
       Handle_Value,IN.filters(i),act_filter 
-      print,'INPUT:Filter ->',act_filter.NAME,'<- freeing'
       pattern = CALL_FUNCTION(act_filter.NAME,MODE=2,temp_vals=IN.temps(i)) 
       IF pattern EQ 0 THEN print,'done'
    ENDFOR 
