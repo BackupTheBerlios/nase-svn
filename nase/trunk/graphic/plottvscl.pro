@@ -24,7 +24,7 @@
 ;*           [, /NOSCALE]
 ;*           [, /LEGEND]
 ;*           [, /ORDER]
-;*           [, /NASE]
+;*           {[,/NORDER] [,/NSCALE]} | [,/NASE]
 ;*           [, XRANGE=...] [, YRANGE=...]
 ;*           [, GET_POSITION=...]
 ;*           [, GET_COLOR=...]
@@ -75,6 +75,8 @@
 ;                                (Inputs, Outputs, Potentiale, Gewichte...).
 ;                                D.h. z.B. werden Gewichtsmatrizen in der gleichen
 ;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
+;                     NORDER   ::
+;                     NSCALE   ::
 ;                     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung:
 ;                                das erste Element gibt das Minimum,
 ;                                das zweite das Maximum der Achse an 
@@ -199,12 +201,14 @@
 ;-
 
 function __isfloat, value
+   COMPILE_OPT HIDDEN
    type =  last(size(value),pos=-1)
    return, (type eq 4) or (type eq 5)     
 end 
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
+               NORDER=norder, NSCALE=nscale, $
                XRANGE=_xrange, YRANGE=_yrange, $
                GET_Position=Get_Position, $
                GET_COLOR=Get_Color, $
@@ -241,8 +245,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;This is a normal PlotTvScl-Call
 
       INIT = 1
-      
-      Default, SETCOL, 1
 
       ;;-----Sichern der urspruenglichen Device-Parameter
       oldRegion   = !P.Region
@@ -254,6 +256,12 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
       Get_Color = !P.COLOR ;;kept for compatibility
       
+
+      ;;NASE implies NORDER and NSCALE:
+      Default, NASE, 0
+      Default, NORDER, NASE
+      Default, NSCALE, NASE
+
       Default, SETCOL, 1
       Default, Charsize, 1.0
       Default, NOSCALE, 0
@@ -264,7 +272,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       DEFAULT, top, !TOPCOLOR
 
       ;; Added for passing to PlotTvScl_update, R Kupper, Sep 22 1999
-      default, NASE, 0
       default, CUBIC, 0
       default, INTERP, 0
       default, MINUS_ONE, 0
@@ -275,12 +282,12 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;; copying of _W is no longer necessary (it is done by
       ;; PlotTvScl_update), R Kupper, Sep 22 1999
       ;;   W = _W 
-      IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
+      IF (Keyword_Set(NSCALE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
          maxW = Max(_W)
          minW = Min(NoNone_Func(_W))
       END
 
-      IF Keyword_Set(NASE) THEN BEGIN
+      IF Keyword_Set(NORDER) THEN BEGIN
          ArrayHeight = (size(_w))(1)
          ArrayWidth  = (size(_w))(2)
       END ELSE BEGIN
@@ -334,11 +341,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
          UpSideDown = 0
          YBeschriftung = YRANGE
       ENDELSE
-      IF (Keyword_Set(NASE)) AND (Keyword_Set(ORDER)) THEN BEGIN
+      IF (Keyword_Set(NORDER)) AND (Keyword_Set(ORDER)) THEN BEGIN
          UpsideDown = 0 
          YBeschriftung = YRANGE
       ENDIF
-      IF (Keyword_Set(NASE)) AND (NOT(Keyword_Set(ORDER)))THEN BEGIN
+      IF (Keyword_Set(NORDER)) AND (NOT(Keyword_Set(ORDER)))THEN BEGIN
          YBeschriftung = REVERSE(YRANGE)
          UpSideDown = 1 
       ENDIF 
@@ -453,6 +460,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                      $;; Keywords to be passed to PlotTvScl_update:
                      order   : ORDER, $
                      nase    : NASE, $
+                     norder  : NORDER, $
+                     nscale  : NSCALE, $
                      neutral : NEUTRAL, $
                      noscale : NOSCALE, $
                      polygon : POLYGON, $
@@ -491,7 +500,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
    ;;-----Legende, falls erwuenscht:
    IF Keyword_Set(LEGEND) THEN BEGIN
-      IF Keyword_Set(NASE) THEN BEGIN
+      IF Keyword_Set(NSCALE) THEN BEGIN
          IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
             Default, LEG_MAX,  MAX([ABS(MaxW),ABS(MinW)])
             Default, LEG_MIN, -MAX([ABS(MaxW),ABS(MinW)])
