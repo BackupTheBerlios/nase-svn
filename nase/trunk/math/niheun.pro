@@ -110,7 +110,7 @@
 ;*  OPlot, time2, y2, COLOR=RGB('red')
 ;
 ; SEE ALSO:
-;  <A>NIEuler()</A>, <A>NIExpEuler()</A>, <A>NIShuntDyn()</A>, IDL's
+;  <A>NIEuler()</A>, <A>NIExpEul()</A>, <A>NIShuntDyn()</A>, IDL's
 ;  <C>RK4()</C>. 
 ;-
 
