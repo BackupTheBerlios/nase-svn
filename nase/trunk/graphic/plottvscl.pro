@@ -76,6 +76,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.15  1997/12/31 11:49:58  thiel
+;            Kombination von XNorm/YNorm-Parametern und
+;            /FULLSHEET-Schluesselwort von Bugs befreit.
+;
 ;     Revision 2.14  1997/12/19 15:58:08  thiel
 ;            XNorm-, YNorm-Parameter beziehen sich jetzt auf
 ;            auf die linke untere Ecke des Plotkastens.
@@ -154,6 +158,7 @@ Get_Color = sc
 Default, Charsize, 1.0
 Default, NOSCALE, 0
 Default, ORDER, 0
+Default, LEGEND, 0
 
 W = _W
 IF (Keyword_Set(NASE)) THEN W = Transpose(W)
@@ -231,8 +236,7 @@ IF NOT Set(FullSheet) THEN BEGIN
       yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', $
       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
 ENDIF ELSE BEGIN
-   !P.Region = [XPos,YPos,0.75,1.0]
-   Plot, indgen(2), /NODATA, Color=sc, $
+   Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),0.95-(LEGEND*0.2*Charsize),0.95], $
       xrange=XBeschriftung, /xstyle, xtickformat='KeineNegativenUndGebrochenenTicks', $
       yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', $
       XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
