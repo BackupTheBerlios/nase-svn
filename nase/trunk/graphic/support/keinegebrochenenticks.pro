@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/06/23 11:13:52  saam
+;              FIX goes LONG
+;
 ;        Revision 2.1  1998/01/29 15:54:21  saam
 ;              created by modification of keineNegativenundGebrochenenTicks
 ;
@@ -43,7 +46,7 @@
 ;-
 
 FUNCTION KeineGebrochenenTicks, axis, index, value
-   IF ((Value - Fix(Value)) NE 0) THEN BEGIN
+   IF ((Value - long(Value)) NE 0) THEN BEGIN
       Return, '' 
       ENDIF ELSE BEGIN
          Return, String(Value, Format='(I)')

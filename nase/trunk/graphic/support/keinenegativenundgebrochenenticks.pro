@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/06/23 11:13:52  saam
+;              FIX goes LONG
+;
 ;        Revision 2.2  1997/12/10 17:45:24  thiel
 ;               Dokumentation verfasst.
 ;
@@ -46,7 +49,7 @@
 
 
 FUNCTION KeineNegativenUndGebrochenenTicks, axis, index, value
-   IF (Value LT 0) OR ((Value - Fix(Value)) NE 0) THEN BEGIN
+   IF (Value LT 0) OR ((Value - Long(Value)) NE 0) THEN BEGIN
       Return, '' 
       ENDIF ELSE BEGIN
          Return, String(Value, Format='(I)')
