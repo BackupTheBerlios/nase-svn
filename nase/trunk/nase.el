@@ -219,6 +219,7 @@
 
 This is the NASE version of the idlwave-template function. It differs
 only in that no case changes are done, and no new line is opened.
+In addition, it handles a possible active region in the way that is expected.
 
 S1 and S2 are strings.  S1 is inserted at point followed
 by S2.  Point is inserted between S1 and S2. If optional argument
