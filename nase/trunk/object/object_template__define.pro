@@ -49,10 +49,11 @@
 ;   foo(parameter)       : computes the meaning of life.
 ;   bar, parameter       : crashes the system. Delay: parameter.
 ;
-;   inherited from class MySuperClass:
-;     foobar(p)
+;   inherited from class MySuperClass (see there for details):
+;     foobar(p),
+;     foofoobar, p
 ;
-;   inherited from class MyOtherSuperClass:
+;   inherited from class MyOtherSuperClass (see there for details):
 ;     barfoo, p
 ;
 ;  protected: Protected methods may only be called from within a derived class's
