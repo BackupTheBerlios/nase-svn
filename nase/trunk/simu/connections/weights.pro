@@ -44,6 +44,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1998/03/24 12:55:41  kupper
+;            Völlig überflüssige Schleife im SDW-Teil ruasgeworfen.
+;             Sollte jetzt schneller sein.
+;
 ;     Revision 2.8  1998/03/19 11:36:45  thiel
 ;            Letzte Aenderung aus Geschwindigkeitsgruenden
 ;            rueckgaengig gemacht.
@@ -91,7 +95,8 @@ FUNCTION Weights, _DW, DIMENSIONS=dimensions
 
    Handle_Value, _DW, DW, /NO_COPY
    IF NOT (N_Elements(DW.W) EQ 1 AND DW.W(0) EQ !NONE) THEN BEGIN
-      FOR wi=0l, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
+;      FOR wi=0l, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
+      W(DW.c2t,DW.c2s) = DW.W
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
