@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1998/04/01 14:32:47  kupper
+;               Bug in OFFSET-Behandlung.
+;
 ;        Revision 2.4  1998/03/30 23:30:17  kupper
 ;               OFFSET-Schlüsselwort hinzugefügt.
 ;
@@ -85,10 +88,10 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
               old_Y : !Y}
 
 
-   If Keyword_Set(OFFSET) then begin
-      Height = Height+2
-      Width = Width+2
-   EndIf
+;   If Keyword_Set(OFFSET) then begin
+;      Height = Height+2
+;      Width = Width+2
+;   EndIf
 
    If not Keyword_Set(y_only) then begin
       !X.MINOR = (Width-1) / 30 +1
@@ -98,9 +101,13 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       If Keyword_Set(CENTER) then begin
          !X.TICKV = !X.TICKV + 0.5
          !X.RANGE = [0, Width]
+      endif else If Keyword_Set(OFFSET) then begin
+         !X.TICKV = !X.TICKV + 1
+         !X.RANGE = [0, Width+1]
       endif else !X.RANGE = [0, Width-1]
-      If Keyword_Set(OFFSET) then !X.TICKNAME = [' ', str(indgen(!X.TICKS-1)*!X.MINOR), ' '] $
-       else !X.TICKNAME = str(indgen(!X.TICKS+1)*!X.MINOR)
+;      If Keyword_Set(OFFSET) then !X.TICKNAME = [' ', str(!X.MINOR-1+indgen(!X.TICKS-1)*!X.MINOR), ' '] $
+;       else !X.TICKNAME = str(indgen(!X.TICKS+1)*!X.MINOR)
+      !X.TICKNAME = str(indgen(!X.TICKS+1)*!X.MINOR)
    endif
    If not Keyword_Set(x_only) then begin
       !Y.MINOR = (Height-1) / 30 +1
@@ -110,13 +117,18 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       If Keyword_Set(CENTER) then begin
          !Y.TICKV = !Y.TICKV + 0.5
          !Y.RANGE = [0, Height]
+      endif else If Keyword_Set(OFFSET) then begin
+         !Y.TICKV = !Y.TICKV + 1
+         !Y.RANGE = [0, Height+1]
       endif else !Y.RANGE = [0, Height-1]
       If Keyword_Set(NONASE) then begin
-         If Keyword_Set(OFFSET) then  !Y.TICKNAME = [' ', str(indgen(!Y.TICKS-1)*!Y.MINOR), ' '] $
-         else !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR)
+;         If Keyword_Set(OFFSET) then  !Y.TICKNAME = [' ', str(indgen(!Y.TICKS-1)*!Y.MINOR), ' '] $
+;         else !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR)
+         !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR)
       endif else begin
-         If Keyword_Set(OFFSET) then !Y.TICKNAME = [' ', str( Height-3-indgen(!Y.TICKS-1)*!Y.MINOR ), ' '] $
-         else !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
+;         If Keyword_Set(OFFSET) then !Y.TICKNAME = [' ', str( Height-3-indgen(!Y.TICKS-1)*!Y.MINOR ), ' '] $
+;         else !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
+         !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
       endelse
    endif
 end
