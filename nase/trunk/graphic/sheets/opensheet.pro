@@ -1,7 +1,7 @@
 ;+
 ; NAME:              OpenSheet
 ;
-; PURPOSE:           Oeffnet ein mit DefineSheet definiertes Sheet. Das bedeutet,
+; PURPOSE:           Öffnet ein mit DefineSheet definiertes Sheet. Das bedeutet,
 ;                    dass das Fenster aktiviert oder geoeffnet bzw das PS-File
 ;                    geoeffnet wird.
 ;
@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.18  1999/08/16 16:47:08  thiel
+;         Change to activate File-Watching.
+;
 ;     Revision 2.17  1999/07/28 08:14:07  saam
 ;          return on error
 ;
