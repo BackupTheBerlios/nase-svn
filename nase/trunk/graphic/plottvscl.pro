@@ -94,12 +94,15 @@
 ;                                 der Verwendung von <A HREF="#PLOTTVSCL_UPDATE">PlotTVScl_update</A>
 ;                                 angegeben werden.
 ;                                 Format:   
-;                                  GET_INFO = {x0      : 0                ,$
+;                                  GET_INFO = {PLOTTVSCL_INFO,
+;                                              x0      : 0                ,$
 ;                                              y0      : 0                ,$
 ;                                              x1      :                  ,$
 ;                                              y1      :                  ,$
 ;                                              x00     :                  ,$
 ;                                              y00     : --TO BE DUCUMENTED!--  ,$ 
+;                                              x00_norm:                  ,$
+;                                              y00_norm:                  ,$
 ;                                              tvxsize :                  ,$
 ;                                              tvysize :                  ,$
 ;                                              subxsize:                  ,$
@@ -122,6 +125,13 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.48  1999/09/21 16:18:58  kupper
+;     Changed something looking like copy&paste error in GET_INFO
+;     struct. If we encounter strange behaviour of any related
+;     routine, this should be re-changed. (If so, adjust
+;     PlotTvScl_update as well!)
+;     GET_INFO struct is now named.
+;
 ;     Revision 2.47  1999/09/21 15:53:41  kupper
 ;     Added documentation of GET_INFO and GET_COLOR that was missing.
 ;
@@ -513,12 +523,24 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
-   GET_INFO = {x0      : 0                ,$
+   GET_INFO = {PLOTTVSCL_INFO, 
+               x0      : 0                ,$
                y0      : 0                ,$
                x1      : long(PlotAreaDevice(0)),$
                y1      : long(PlotAreaDevice(1)),$
+;
+; R Kupper, Sep 21 1999:
+;   Found something looking like copy&paste-error.
+;   Don't know if it was meant to be so.
+;   It looked like this:
+;              x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
+;              y00     : long((OriginNormal(1)+TotalPlotWidthNormal*!Y.Ticklen)*!D.Y_SIZE),$ 
+;   Changed it to:                   
+;
                x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
-               y00     : long((OriginNormal(1)+TotalPlotWidthNormal*!Y.Ticklen)*!D.Y_SIZE),$ 
+               y00     : long((OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen)*!D.Y_SIZE),$ 
+               x00_norm: OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+               y00_norm: OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen,$ 
                tvxsize : long(PlotAreaDevice(0)),$
                tvysize : long(PlotAreaDevice(1)),$
                subxsize: long(2.0*TotalPlotWidthNormal*!Y.Ticklen*!D.X_SIZE),$
