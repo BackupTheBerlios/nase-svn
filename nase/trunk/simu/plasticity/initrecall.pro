@@ -60,7 +60,7 @@ FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
-   IF Struc.info EQ 'DW_WEIGHT' OR Struc.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+   IF Struc.info EQ 'DW_DELAY_WEIGHT' OR Struc.info EQ 'DW_WEIGHT' THEN BEGIN
       xsize = Struc.target_w*Struc.target_h
       ysize = Struc.source_w*Struc.source_h
    END ELSE BEGIN
