@@ -55,6 +55,10 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.9  1999/02/03 12:51:50  saam
+;           + problem with OFFSET corrected
+;           + works for a one-dimensional spiketrain, also
+;
 ;     Revision 1.8  1998/06/30 12:19:28  thiel
 ;            Schluesselwort XTITLE hinzugefuegt.
 ;
@@ -96,15 +100,19 @@ IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_ST
 
 ;---------------> check syntax
 IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
-IF ((Size(nt))(0) NE 2) THEN Message, 'first arg must be a 2-dim array'
-   
+
+s = SIZE(nt)
+IF S(0) EQ 1 THEN BEGIN ; correction for a single spiketrain
+   modified = 1
+   nt = REFORM(nt, 1, N_Elements(nt), /OVERWRITE)
+END ELSE BEGIN
+   modified = 0
+   IF s(0) NE 2 THEN Message, 'first arg must be a 2-dim array'
+END
+
 neurons = (SIZE(nt))(1)-1
 IF (neurons LT 0) THEN Message, 'keine Neuronen zum Darstellen'
 
-Default, OverSampling, 1.0
-Offset = Offset / FLOAT(OverSampling)
-time =  Float((SIZE(nt))(2)-1) / FLOAT(OverSampling)
-IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
    
    
 Default, title  , 'Spikeraster'
@@ -112,6 +120,11 @@ Default, xtitle, 'Time / ms'
 Default, level  , 1.0
 Default, offset , 0.0
 Default, Charsize, 1.0
+Default, OverSampling, 1.0
+
+Offset = Offset / FLOAT(OverSampling)
+time =  Float((SIZE(nt))(2)-1) / FLOAT(OverSampling)
+IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
 
 
 ;---------------> use own window if wanted
@@ -170,6 +183,8 @@ spikes = where(nt GE level, count)
 IF (count NE 0) THEN PlotS, LONG((spikes / FLOAT(neurons+1))/OverSampling + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
 
 
+; correction for a single spiketrain
+IF modified THEN nt = REFORM(nt, /OVERWRITE)
 
 END
 
