@@ -57,7 +57,7 @@
 ;               angegeben wird.
 ;               Als Rückgabewert wird hier das mehr oder weniger 
 ;               sinnvolle Ergebnis eines Float-Arrays geliefert, das
-;               den konstanten Wert (P1'+P2')/2 enthält.               
+;               den konstanten Wert P1' enthält.               
 ;
 ; PROCEDURE: Elementare mathematische Operationen auf dem Arrayinhalt.
 ;
@@ -93,6 +93,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  1999/10/11 12:10:30  kupper
+;        Changed return value for homogeneous Arrays to P1', to be
+;        compatible to the behaviour of PlotTvScl known until now.
+;
+;        Added a Temporary().
+;
 ;        Revision 1.5  1999/10/08 12:52:20  kupper
 ;        Now catches the case (Range_In(0) eq Range_In(1)).
 ;
@@ -117,7 +123,7 @@ Function Scl, A, Range, Range_In
    Default, Range_In, [min(A), max(A)       ]
 
    If Range_In(0) eq Range_In(1) then begin
-      return, Make_Array(/FLOAT, SIZE=size(A), VALUE=(Range(0)+Range(1))/2.)
+      return, Make_Array(/FLOAT, SIZE=size(Temporary(A)), VALUE=Range(0))
    endif else begin
       Return, (A - Range_In(0)) $
                 * FLOAT(Range(1)-Range(0)) $
