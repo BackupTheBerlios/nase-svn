@@ -40,6 +40,7 @@
 ;                        trainspotting, nt, WIN=2, STRETCH=0.5,  /CLEAN
 ;
 ; MODIFICATION HISTORY:  Urversion erstellt, Mirko, 13.8.97
+;                        TICKLEN minimal eingestellt, dass Achsenticks nicht mehr sichtbar sind, Mirko, 13.8.97
 ;
 ;-
 
@@ -74,7 +75,9 @@ PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSE
       for i=0,24 DO empty(i)=' '
       plot, nt, /NODATA, XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], XSTYLE=1, YSTYLE=1, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001
    END ELSE BEGIN
-      Plot, nt, /NODATA, CHARSIZE=1.5 ,XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], XSTYLE=1, YSTYLE=1, XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title
+      Plot, nt, /NODATA, CHARSIZE=1.5 ,XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], XSTYLE=1, YSTYLE=1, $
+       XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title, $
+       XTICKLEN=0.00001, YTICKLEN=0.00001
    END
 
 
