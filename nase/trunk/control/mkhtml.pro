@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.15  1998/06/10 16:32:48  neuroadm
+;             bug
+;
 ;       Revision 1.14  1998/06/10 16:31:04  neuroadm
 ;            big
 ;
@@ -59,7 +62,7 @@ SubDirs   = ['alien',$
 	     'math',$
              'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$
              'misc','misc/arrays','misc/files+dirs','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
-	     'simu','simu/input','simu/connections','simu/layers','simu/plsticity']
+	     'simu','simu/input','simu/connections','simu/layers','simu/plasticity']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
