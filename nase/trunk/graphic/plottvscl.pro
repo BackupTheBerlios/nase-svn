@@ -120,11 +120,15 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A>, <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="../#NASETVSCL">NaseTVScl</A> 
-;      
+; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A>, <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="../#NASETVSCL">NaseTVScl</A>,
+;           <A HREF="#PLOTTVSCL_UPDATE">PlotTVScl_update</A>      
+;
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.52  1999/09/22 08:54:07  kupper
+;     Added hyperling.
+;
 ;     Revision 2.51  1999/09/22 08:48:48  kupper
 ;     Removed unnecessary copying of _W. This is now done by
 ;     PlotTvScl_update.
