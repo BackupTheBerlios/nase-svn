@@ -84,6 +84,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.29  1998/07/21 15:31:25  saam
+;           bug with /NASE , without /FULLSHEET and rectangular arrays
+;
 ;     Revision 2.28  1998/07/11 20:21:25  saam
 ;           added NEUTRAL keyword
 ;
@@ -231,9 +234,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       minW = Min(NoNone(W))
    END
 
-   ArrayHeight = (size(w))(2)
-   ArrayWidth  = (size(w))(1)
-   
+   IF Keyword_Set(NASE) THEN BEGIN
+      ArrayHeight = (size(w))(1)
+      ArrayWidth  = (size(w))(2)
+   END ELSE BEGIN
+      ArrayHeight = (size(w))(2)
+      ArrayWidth  = (size(w))(1)
+   END
+
    VisualWidth = !D.X_VSIZE
    VisualHeight = !D.Y_VSIZE
    
