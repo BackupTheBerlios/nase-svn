@@ -63,6 +63,10 @@
 ;  The only restriction is that the return value is normalized to the array
 ;  dimensions, i.e. return values can be expected to be roughly inside the range 
 ;  of 0.0 .. 1.0.
+;  Examples for possible new algorithms include
+;    o size estimation by frequency analysis
+;    o size estimation in Meierfrankenfeld-style (Mexwalls). See diploma theses, 
+;      Götz Meierfrankenfeld, Marburg, 1997
 ;
 ; SEE ALSO:
 ;  <A HREF="#INERTIA">Inertia()</A>, <A HREF="#GETSUBARRAY()">GetSubarray()</A>
@@ -70,6 +74,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/23 17:06:32  kupper
+;        Updated header.
+;
 ;        Revision 1.1  2000/03/23 17:03:51  kupper
 ;        New and useful.
 ;        Intended to be extended.
