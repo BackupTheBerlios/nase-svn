@@ -7,19 +7,25 @@
 ; PURPOSE: Darstellung und interaktive Abfrage eines zweidimensionalen
 ;          Arrays. (S. auch PROCEDURE-Abschnitt)
 ;
-; CATEGORY: Visualisierung, Auswertung
+; CATEGORY:
+;  Array
+;  Graphic
+;  Help
+;  NASE
+;  Widgets
 ;
-; CALLING SEQUENCE: ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel]
-;                                        [,COLOR=PlotColor]
-;                                        [,XPOS=xoffset] [,YPOS=yoffset]
-;                                        [,/BOUND] [,/NASE]
-;                                        [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
-;                                        [,GET_BASE=BaseID]
-;                                        [,DELIVER_EVENTS=Array_of_Widget_IDs]
+; CALLING SEQUENCE: 
+;*  ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel]
+;*                   [,COLOR=PlotColor]
+;*                   [,XPOS=xoffset] [,YPOS=yoffset]
+;*                   [,/BOUND] [,/NASE]
+;*                   [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
+;*                   [,GET_BASE=BaseID]
+;*                   [,DELIVER_EVENTS=Array_of_Widget_IDs]
 ;  
 ; INPUTS: Array: Das zu untersuchende Array (ein numerischer Typ!)
 ;
-; OPTIONAL INPUTS: TV_Array: Die Version des Arrays, die tatsächlich
+; OPTIONAL INPUTS: TV_Array:: Die Version des Arrays, die tatsächlich
 ;                            mit TV auf den Bildschirm gebracht
 ;                            wird. Die kann sich ja eventuell vom
 ;                            Original unterscheiden, wenn
@@ -28,17 +34,17 @@
 ;                            sollen (man denke z.B. an
 ;                            N.A.S.E.-!NONE-Verbindungen).
 ;	
-; OPTIONAL OUTPUTS: GET_BASE: Hier kann die ID des produzierten Widgets erfahren werden.
+; OPTIONAL OUTPUTS: GET_BASE:: Hier kann die ID des produzierten Widgets erfahren werden.
 ;
-; KEYWORD PARAMETERS: ZOOM:   Vergrößerungsfaktor (Ein Arraypixel im
+; INPUT KEYWORDS:     ZOOM::   Vergrößerungsfaktor (Ein Arraypixel im
 ;                             TV-Feld wird als Quadrat der Größe ZOOM
 ;                             Bildschirmpixel dargestellt).
 ;                             Bei Nichtangabe wird ein mehr oder weniger
 ;                             guter Default gewählt.
-;                     TITLE:  Der Fenstertitel. Default: "Examine It!"
-;                     COLOR:  PlotFarbe für die Koordinatensysteme (Default: !P.Color)
-;                 XPOS,YPOS:  Position von der linken oberen Bildschirmecke (Default: 100,100)
-;                     BOUND:  Bei Angabe dieses Schlüsselwortes sind
+;                     TITLE::  Der Fenstertitel. Default: "Examine It!"
+;                     COLOR::  PlotFarbe für die Koordinatensysteme (Default: !P.Color)
+;                 XPOS,YPOS::  Position von der linken oberen Bildschirmecke (Default: 100,100)
+;                     BOUND::  Bei Angabe dieses Schlüsselwortes sind
 ;                             die Grenzen der Plotbereiche fest auf
 ;                             das Minimum/Maximum des Arrays
 ;                             eingestellt.
@@ -50,27 +56,27 @@
 ;                             irritierend wirken kann.
 ;                             The BOUND mode can also be toggled
 ;                             "online" via a widget menu entry.
-;                      NASE:  Wenn gesetzt, wird das Array als NASE-Array in richtiger Orientierung und
+;                      NASE::  Wenn gesetzt, wird das Array als NASE-Array in richtiger Orientierung und
 ;                             mit richtigen Farben dargestellt (Es braucht kein TV-Array angegeben zu werden.)
-;                     GROUP:  Eine Widget-ID des Widgets, das als
+;                     GROUP::  Eine Widget-ID des Widgets, das als
 ;                             Übervater dienen soll.
-;                     MODAL:  Wenn angegeben, ist das Widget modal,
+;                     MODAL::  Wenn angegeben, ist das Widget modal,
 ;                             d.h. alle anderen Widgets sind
 ;                             deaktiviert, solange dieses existiert.
 ;                             MODAL erfordert die Angabe eines
 ;                             Group-Leaders in GROUP.
-;                  JUST_REG:  Wird direkt an den XMANAGER
+;                  JUST_REG::  Wird direkt an den XMANAGER
 ;                             weitergereicht und dient dazu, mehrere
 ;                             Instanzen von ExamineIt gleichzeitig zu
 ;                             benutzen. (Vgl. <A HREF="#SURFIT">SurfIt</A> oder 
 ;                             Beispiel.)
-;                  NO_BLOCK:  Wird ab IDL 5 an den XMANAGER
+;                  NO_BLOCK::  Wird ab IDL 5 an den XMANAGER
 ;                             weitergegeben. (Beschreibung
 ;                             s. IDL-Hilfe)
 ;                             Der Default ist 1, also kein
 ;                             Blocken. Wird Blocken gewünscht, so muß
 ;                             NO_BLOCK explizit auf 0 gesetzt werden.
-;             DELIVER_EVENTS: Hier kann ein Array
+;             DELIVER_EVENTS:: Hier kann ein Array
 ;                             von Widget-Indizes übergeben werden, an die alle 
 ;                             ankommenden Events
 ;                             weitergereicht werden. (VORSICHT, BUGGY!
@@ -85,77 +91,17 @@
 ;            und Maximum sowie das Minimum/Maximum des gesamten Arrays
 ;            ausgegeben werden.
 ;
-; EXAMPLE: ExamineIt, Gauss_2D(20,30), ZOOM=10, /JUST_REG
-;          ExamineIt, DOG(40,30,5,10), /BOUND
+; EXAMPLE: 
+;* ExamineIt, Gauss_2D(20,30), ZOOM=10, /JUST_REG
+;* ExamineIt, DOG(40,30,5,10), /BOUND
 ;
-; SEE ALSO: <A HREF="#SURFIT">SurfIt</A>
-;
-; MODIFICATION HISTORY:
-;
-;       $Log$
-;       Revision 1.8  2000/10/01 14:51:58  kupper
-;       Added AIM: entries in document header. First NASE workshop rules!
-;
-;       Revision 1.7  2000/09/07 16:43:12  kupper
-;       confused x and y.
-;
-;       Revision 1.6  2000/09/05 16:44:49  kupper
-;       min/max output is now also read if BOUND is set.
-;
-;       Revision 1.5  2000/09/05 16:40:00  kupper
-;       Changed BOUND indicators to orange color.
-;
-;       Revision 1.4  2000/09/04 19:17:37  kupper
-;       Typo
-;
-;       Revision 1.3  2000/09/04 17:55:12  kupper
-;       Added red BOUND indicators.
-;
-;       Revision 1.2  2000/09/04 16:50:36  kupper
-;       Bound mode can now be toggled from a menu entry.
-;       Added hourglass cursor during plottvscl.
-;       re-structured some calls to sub-routines.
-;
-;       Revision 1.1  1999/09/01 16:43:53  thiel
-;           Moved from other directory.
-;
-;       Revision 2.9  1998/04/14 18:06:12  kupper
-;              Bug bei 2-dim. Arrays mit führender 1-Dim.
-;
-;       Revision 2.8  1998/04/08 16:05:53  kupper
-;              kleiner Bug.
-;
-;       Revision 2.7  1998/04/08 15:57:09  kupper
-;              COLOR-Keyword hinzugefügt.
-;
-;       Revision 2.6  1998/04/07 15:20:08  kupper
-;              Kleiner Darstellungsbug.
-;
-;       Revision 2.5  1998/04/06 17:12:27  kupper
-;              NASE, XPOS,YPOS hinzugefügt.
-;               Sorry für den NASE-Verarbeitungwust...
-;
-;       Revision 2.4  1998/03/31 15:12:25  kupper
-;            IDL-Versionskonflikt (MODAL)
-;
-;       Revision 2.3  1998/03/31 14:39:31  kupper
-;              Allerlei Schlüsselwörter hinzugefügt.
-;       	DELIVER_EVENTS funktioniert noch nicht ganz richtig bei
-;       	verschieden großen Fenstern (Umrechnungsfehler. Abhilfe
-;       	möglicherweise durch ein spezielles "Normalkoordinaten-Event")
-;       	Hab jetzt aber keine Lust, das zu beheben.
-;
-;       Revision 2.2  1998/03/31 13:38:22  kupper
-;              Sicherheits-Commit vor Änderung am Event-Handler.
-;
-;       Revision 2.1  1997/12/15 16:24:45  kupper
-;              Schöpfung.
-;
-;
+; SEE ALSO: <A>SurfIt</A>
 ;-
 
 
 Pro examineit_bound_on_handler, event
+   COMPILE_OPT HIDDEN
+
    ;here arrive button events of the menu buttons.
    uval = Uvalue(event.id)
 
@@ -169,6 +115,8 @@ Pro examineit_bound_on_handler, event
    widget_control, uval.other, sensitive=1
 End
 Pro examineit_bound_off_handler, event
+   COMPILE_OPT HIDDEN
+
    ;here arrive button events of the menu buttons.
    uval = Uvalue(event.id)
 
@@ -185,6 +133,7 @@ End
 pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
                  NOSCALE=noscale, GET_POSITION=get_position, GET_MINOR=get_minor, $
                  COLOR = color;_EXTRA=_extra
+   COMPILE_OPT HIDDEN
 
    height = (size(w))(2)
    width  = (size(w))(1)
@@ -226,6 +175,8 @@ pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
 end
 
 Pro examineit_refresh_plots, info, x_arr, y_arr
+   COMPILE_OPT HIDDEN
+
    default, x_arr, info.last_x_arr
    default, y_arr, info.last_y_arr
    
@@ -356,6 +307,7 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
 End
 
 Pro ExamineIt_Event, Event
+   COMPILE_OPT HIDDEN
    
 ;   Widget_Control, Event.ID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
    
@@ -498,20 +450,20 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                             SPACE=7, $
                             UVALUE={name:"lower_base"})
 
-   plot_row = WIDGET_DRAW(upper_base, RETAIN=1, $
+   plot_row = WIDGET_DRAW(upper_base, $
                           XSIZE=win_width, YSIZE=15*zoom, $ ;win_height/2, $
                           UVALUE={name:"plot_row"})
 
-   text     = WIDGET_DRAW(upper_base, RETAIN=1, $
+   text     = WIDGET_DRAW(upper_base, $
                           XSIZE=15*zoom, YSIZE=15*zoom, $ ; Pixel
                           UVALUE={name:"text"})
    
-   tv = WIDGET_DRAW(lower_base, RETAIN=1, $
+   tv = WIDGET_DRAW(lower_base, $
                     XSIZE=win_width, YSIZE=win_height, $
                     UVALUE={name  : "tv"}, $
                     /BUTTON_EVENTS)
 
-   plot_col = WIDGET_DRAW(lower_base, RETAIN=1, $
+   plot_col = WIDGET_DRAW(lower_base, $
                           XSIZE=15*zoom, $ ;win_width/2, $
                           YSIZE=win_height, $
                           UVALUE={name:"plot_col"})
