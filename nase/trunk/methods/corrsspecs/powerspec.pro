@@ -49,6 +49,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+; $Log$
+; Revision 1.4  1998/01/07 15:03:18  thiel
+;        Jetzt auch mit $Log:$ im Header.
+;
+;
 ;       Tue Aug 19 20:58:57 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
