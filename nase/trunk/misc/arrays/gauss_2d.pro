@@ -172,6 +172,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.31  2001/09/12 15:34:54  kupper
+;        removed compile_opt hiddens.
+;
 ;        Revision 1.30  2001/09/04 09:24:25  alshaikh
 ;              improvements concerning rotated gaussians... seems to work now.
 ;
@@ -274,23 +277,23 @@
 
 ;; The normal gauss function:
 Function Gauss_function, x, sigma
-   COMPILE_OPT HIDDEN
+;   COMPILE_OPT HIDDEN
    return, exp( -0.5 * ( double(x)^2 / sigma^2 ) )
 End
 ;; This one starts with x_quad=x^2 already computed:
 Function Gauss_function_quad, x_quad, sigma
-   COMPILE_OPT HIDDEN
+;   COMPILE_OPT HIDDEN
    return, exp( -0.5 * ( double(x_quad) / sigma^2 ) )
 End
 ;; This one starts with x already scaled by sigma (x_sigma=x/sigma):
 Function Gauss_function_x_sigma, x_sigma
-   COMPILE_OPT HIDDEN
+;   COMPILE_OPT HIDDEN
    return, exp( -0.5 * double(x_sigma)^2  )
 End
 ;; This one starts with x already scaled by sigma, and quadratic
 ;; (x_sigma_quad=(x/sigma)^2):
 Function Gauss_function_x_sigma_quad, x_sigma_quad
-   COMPILE_OPT HIDDEN
+;   COMPILE_OPT HIDDEN
    return, exp( -0.5 * x_sigma_quad  )
 End
 
