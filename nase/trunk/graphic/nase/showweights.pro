@@ -25,7 +25,7 @@
 ;                               [,TITEL='Titel'][,GROESSE=ZOOM=Fenstergroesse] 
 ;                               [,WINNR=FensterNr | ,/NOWIN] [,GET_WIN=FensterNr]
 ;                               [,/DELAYS]
-;                               [/SLIDE [,XVISIBLE=Fensterbreite] [,YVISIBLE=Fensterhöhe] [,GET_BASE=Base_ID] ]
+;                               [,SLIDE={1,2} [,XVISIBLE=Fensterbreite] [,YVISIBLE=Fensterhöhe] [,GET_BASE=Base_ID] ]
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
 ;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
@@ -101,6 +101,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.12  1998/02/04 16:31:13  kupper
+;              MAXSIZE-Keyword hinzugefügt.
+;
 ;       Revision 2.11  1998/02/03 17:29:15  kupper
 ;              Statt GROESSE kann nun alternativ ZOOM verwendet werden.
 ;              GET_WIN-Schlüsselwort zugefügt.
@@ -176,7 +179,8 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
                  SLIDE=slide, XVISIBLE=xvisible, YVISIBLE=yvisible, GET_BASE=get_base, $
                  FROMS=froms,  TOS=tos, DELAYS=delays, $
                  PROJECTIVE=projective, RECEPTIVE=receptive, $
-                 NOWIN = nowin, GET_WIN=get_win
+                 NOWIN = nowin, GET_WIN=get_win, $
+                 MAXSIZE=maxsize
 
    IF !D.Name EQ 'NULL' THEN RETURN
 
@@ -237,14 +241,29 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
       YGroesse = Groesse
    Endelse
 
+   ;;------------------> Auto-Slide ?
+   If keyword_set(MAXSIZE) then begin ;Showweights soll ein geeignetes Fenster öffnen
+      XS=(XGroesse*Matrix.target_w +1)*Matrix.source_w
+      YS=(YGroesse*Matrix.target_h +1)*Matrix.source_h
+      If (XS gt MAXSIZE(0)-10) or (YS gt MAXSIZE(1)-55) then begin ;Fensterränder ca. 10, 55 Pixel...
+         ;;Window would not fit an Screen - so make it a SLIDE-Window
+         SLIDE = 2
+         XVISIBLE = XS < MAXSIZE(0)
+         YVISIBLE = YS < MAXSIZE(1)
+      Endif
+   Endif
+   ;;--------------------------------
+
+
    Default, xvisible, 256
    Default, yvisible, 256
 
       If Not Set(WINNR) Then Begin
          If keyword_set(SLIDE) then begin
             case SLIDE of 1: Window, /PIXMAP, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
-               else: SlideWin = Scrollit (XDRAWSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YDRAWSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
-                                          XSIZE=xvisible, YSIZE=yvisible, TITLE=titel, GET_BASE=get_base)
+               else: GET_WIN = Scrollit (XDRAWSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YDRAWSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
+                                         XSIZE=xvisible, YSIZE=yvisible, TITLE=titel, GET_BASE=get_base, $
+                                         XPOS=0, YPOS=0)
             endcase
          endif else begin
             Window, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
@@ -319,7 +338,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
          Slide_Image, Image, /RETAIN, $
           XSIZE=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSIZE=(YGroesse*Matrix.target_h +1)*Matrix.source_h, $
           XVISIBLE=xvisible, YVISIBLE=yvisible, $
-          Title=titel, TOP_ID=Base
+          Title=titel, TOP_ID=Base, SLIDE_WINDOW=GET_WIN ;Fensternummer zurückliefern
          Default, get_base, Base ;Base-ID-zurückgeben, falls ein Widget mit SLIDE erstellt wurde.
       endif
    endif
@@ -328,7 +347,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
    Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
 
    ;;------------------> Fensternummer zurückliefern:
-   GET_WIN = !D.Window 
+   If not keyword_set(SLIDE) then GET_WIN = !D.Window 
    ;;--------------------------------
 
 END        
