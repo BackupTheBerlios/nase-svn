@@ -1,19 +1,32 @@
 ;+
-; NAME:               ReadSim
+; NAME:
+;  ReadSim
+;
+; VERSION:
+;  $Id$
+;
+; AIM:
+;  Read various simulation data created by <A>Sim</A>. You probably
+;  want to use the <A>ReadSimu</A>, instead.
 ;
 ; PURPOSE:            Reads SUA or membrane potentials saved via MIND
 ;                     allows specific neurons and times to be read.
 ;                     this routine doesn't care for oversampling.
-;                     There is a high level routine called ReadSimu
+;                     There is a high level routine called <A>ReadSimu</A>
 ;                     you probably want to use instead!
 ;
-; CATEGORY:           MIND INTERNAL
+; CATEGORY:
+;  DataStorage
+;  Internal
+;  MIND
+;  Simulation
 ;
 ; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT]
 ;                                 [,/MEMBRANE] [,/MUA] [,/LFP] 
 ;                                 [,/NONE]
-;                                 [,TIME=time] [,SELECT=select] $
+;                                 [,TIME=time] [,SELECT=select] 
 ;                                 [,INFO=info]
+;                                 [,UDS=uds]
 ;
 ;
 ; INPUTS:             file: path/file to be read (without suffices)
@@ -21,6 +34,7 @@
 ; KEYWORD PARAMETERS: IINPUT  : read input for layer
 ;                     OUTPUT  : read spike output of layer (this is default)
 ;                     MEMBRANE: read membrane potentials of layer
+;                     LFP     : read local field potentials of layer
 ;                     MUA     : read multiple unit activity
 ;                     NONE    : read arbitrary data
 ;                     TIME    : reads the simulation from BIN start to BIN end specified
@@ -38,43 +52,10 @@
 ; EXAMPLE:            o = ReadSim('~/sim/local_assemblies/bar/gap/v1/_', $
 ;                                  /MEMBRANE, TIME=[0,1000], SELECT=[0,5,7,3,9])
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/sim#READSIMU>readsimu</A>
+; SEE ALSO:           <A>ReadSimu</A>
 ;        
-; MODIFICATION HISTORY:
-;
-;      $Log$
-;      Revision 1.9  2000/06/19 14:59:29  saam
-;            + keyword NONE added
-;
-;      Revision 1.8  2000/05/18 08:16:58  saam
-;            small bug fix
-;
-;      Revision 1.7  2000/05/17 09:46:40  saam
-;           removed the reminder cause time is ok now
-;
-;      Revision 1.6  2000/05/16 16:16:20  saam
-;            extended TIME syntax
-;
-;      Revision 1.5  2000/04/06 09:34:24  saam
-;            + added loading of LFP signals
-;            + new info keyword
-;
-;      Revision 1.4  2000/01/05 13:55:14  saam
-;            minus in doc was missing
-;
-;      Revision 1.3  1999/12/21 09:55:29  saam
-;            keyword MUA was not documented
-;
-;      Revision 1.2  1999/12/21 09:42:38  saam
-;            return on error now
-;
-;      Revision 1.1  1999/12/21 09:02:52  saam
-;            moved to internal, but it can be used by
-;            the user anyway
-;
-;
 ;-
-FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, RMUA=rmua, TIME=time, INFO=info, SELECT=select
+FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, RMUA=rmua, TIME=time, INFO=info, SELECT=select, UDS=uds
 
    On_Error, 2
 
@@ -83,7 +64,7 @@ FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE
    END 
 
    IF N_Params() NE 1 THEN Message, 'filename expected'
-   kc = Set(INPUT)+Keyword_Set(OUTPUT)+Keyword_Set(MEMBRANE)+Keyword_Set(MUA)+Keyword_Set(RMUA)+Keyword_Set(NONE)
+   kc = Set(INPUT)+Keyword_Set(OUTPUT)+Keyword_Set(MEMBRANE)+Keyword_Set(MUA)+Keyword_Set(RMUA)+Keyword_Set(LFP)+Keyword_Set(NONE)
    IF kc EQ 0 THEN BEGIN
       OUTPUT = 1
       kc = 1
@@ -111,7 +92,7 @@ FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE
       console, 'loading MUA...'
    END
    IF Keyword_Set(LFP) THEN BEGIN
-      filename = file+'.lfp'
+      filename = file
       console, 'loading LFP...'
    END
    IF Keyword_Set(RMUA) THEN BEGIN
@@ -120,7 +101,7 @@ FUNCTION ReadSim, file, NONE=none, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE
    END
 
 
-   Video = LoadVideo( TITLE=filename, GET_SIZE=anz, GET_LENGTH=max_time, /SHUTUP, GET_STARRING=log1, GET_COMPANY=log2, ERROR=error)
+   Video = LoadVideo( TITLE=filename, GET_SIZE=anz, GET_LENGTH=max_time, /SHUTUP, GET_STARRING=log1, GET_COMPANY=log2, ERROR=error, UDS=uds)
    IF Error THEN BEGIN
        console, 'data doesnt exist...'+filename, /WARN
        console, 'stopping', /FATAL
