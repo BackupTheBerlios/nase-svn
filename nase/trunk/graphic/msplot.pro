@@ -2,7 +2,7 @@
 ; NAME:
 ;  MSPlot
 ;
-; VESRION:
+; VERSION:
 ;  $Id$
 ;
 ; AIM:
