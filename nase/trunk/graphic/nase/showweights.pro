@@ -95,7 +95,8 @@ If Not Set(WINNR) Then Begin
                       WSet, WinNr
                   EndElse    
 
-erase,  RGB(255, 100, 0)
+SetColorIndex, 255,  255,100,0
+erase,  255
 
 
 
@@ -104,7 +105,7 @@ Max_Amp = max(Matrix.Weights)
 if Max_Amp eq 0 then Max_Amp = 1 ;falls Array nur Nullen enthält
 
 ;MatrixMatrix= reform(Matrix.Weights/Max_Amp*255, Matrix.source_h, Matrix.source_w, Matrix.target_h, Matrix.target_w)
-MatrixMatrix= reform(Matrix.Weights/Max_Amp*255, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+MatrixMatrix= reform(Matrix.Weights/Max_Amp*254, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
 
 for YY= 0, Matrix.target_h-1 do begin
    for XX= 0, Matrix.target_w-1 do begin
