@@ -10,7 +10,21 @@
 ;
 ; PURPOSE:
 ;  <C>InputLayer_GRN</C> can be used to transfer inputs to the
-;  synapses of a layer of graded response neurons.
+;  synapses of a layer of graded response neurons. Graded response
+;  neurons generate 
+;  a continuous output activation as opposed to pulse coding
+;  neurons. The way in which their membrane potentials are transformed
+;  into their output is determined by a so called transfer
+;  function. Most commonly used are sigmoidal, piecewise linear or
+;  threshold transfer functions.<BR>
+;  Input can be added to seperate synapses of different type,
+;  e.g. feeding or linking synapses. If multiple inputs need to be
+;  passed to the same synapse type during one simulation timestep,
+;  <C>InputLayer_GRN</C> has to be called several times. Before adding
+;  the input, decay of the synapse potentials is performed, but only
+;  once per simulation step.<BR>
+;  It is also possible to use <A>InputLayer</A> instead, since this
+;  routine is able to automatically determine the correct neuron type.
 ;
 ; CATEGORY:
 ;  Input
@@ -19,90 +33,71 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;* InputLayer_GRN, layer [,FEEDING=...][,LINKING=...][,NOISE=...]
 ;
 ; INPUTS:
-;  
-;
-; OPTIONAL INPUTS:
-;  
+;  layer:: Handle on a graded response neuron layer structure,
+;          initialized by <A>InitLayer_GRN()</A>. 
 ;
 ; INPUT KEYWORDS:
-;  
-;
-; OUTPUTS:
-;  
-;
-; OPTIONAL OUTPUTS:
-;  
-;
+;  FEEDING:: Sparse version of the input that is added to the feeding
+;            potentials of the neurons in <*>layer</*>. If you need to
+;            transform your input to sparse notation, call
+;            <A>Spassmacher()</A>.
+;  LINKING:: Sparse version of the input that is added to the linking
+;            potentials of the neurons in <*>layer</*>. If you need to
+;            transform your input to sparse notation, call
+;            <A>Spassmacher()</A>.
+;  NOISE:: Amplitude of gaussian noise that acts multiplicatively on the
+;          feeding and linking inputs <I>before</I> they are added to
+;          the respective potentials. E.g. 
+;*          layer.f=layer.f+feeding*(1+noise*RandomN)
+;          Default: 0.
 ; COMMON BLOCKS:
-;  
+;  common_random
 ;
 ; SIDE EFFECTS:
-;  
+;  Actually, this is not a <I>side</I> effect but the purpose of the routine:
+;  The potentials in the given layer structure are updated with the
+;  respective inputs.
 ;
 ; RESTRICTIONS:
-;  
+;  The validity of the input is not checked for the sake of simulation
+;  speed.
 ;
 ; PROCEDURE:
-;  
+;  + Deacy potentials if this has not yet been done.<BR>
+;  + Add feeding input.<BR>
+;  + Add linking input.<BR>
 ;
 ; EXAMPLE:
+;  The example shows a neuron whose output is twice its
+;  positive input while negative input is set to zero: 
+;* ug=FltArr(100)
+;* og=FltArr(100)
 ;*
-;*>
+;* tf = {func:'grntf_threshlinear', tfpara:{slope:2.0, threshold:0.0}}
+;* p = InitPara_GRN(tf, TAUF=0., TAUL=0.)
+;*
+;* lg = InitLayer(WIDTH=1, HEIGHT=1, TYPE=p)
+;* 
+;* FOR t=0,99 DO BEGIN
+;*    feed=RandomN(seed)
+;*    InputLayer, lg, FEEDING=Spassmacher(feed)
+;*    ProceedLayer, lg
+;*    LayerState_GRN, lg, potential=p, output=o
+;*    ug(t)=p
+;*    og(t)=o
+;* ENDFOR
+;* 
+;* FreeLayer, lg
+;*
+;* OPlotMaximumFirst,[[ug],[og]],LINESTYLE=-1,COLOR=[RGB('yellow'),RGB('blue')]
 ;
 ; SEE ALSO:
-;  <A>InitLayer_GRN()</A>
+;  <A>InputLayer</A>, <A>InitPara_GRN()</A>, <A>InitLayer_GRN()</A>,
+;  <A>ProceedLayer_GRN</A>, <A>LayerState_GRN</A>, <A>Spassmacher()</A>.
 ;-
-
-;;; look in headerdoc.pro for explanations and syntax,
-;;; or view the NASE Standards Document
-
-
-
-;   
-;
-; PURPOSE:             Addiert Input vom Typ Sparse (siehe <A HREF="#SPASSMACHER">Spassmacher</A>) 
-;                      auf die Neuronenpotentiale und klingt diese vorher ab. 
-;                      Ein mehrmaliger Aufruf von InputLayer_1 ist möglich.
-;                      Danach sollte man auf jeden Fall <A HREF="#PROCEEDLAYER_1">ProceedLayer_1</A>
-;                      aufrufen.
-;
-; CATEGORY:            SIMULATION / LAYERS
-;
-; CALLING SEQUENCE:    InputLayer_1, Layer [,FEEDING=feeding] [,LINKING=linking] [,INHIBITION=inhibition]
-;                                          [,/CORRECT]  
-;
-; INPUTS:              Layer : eine mit <A HREF="#INITLAYER_1">InitLayer_1</A> erzeugte Struktur
-;
-; KEYWORD PARAMETERS:  feeding, linking, inhibition : Sparse-Vektor, der auf 
-;                          das entsprechende Potential addiert wird
-;                      CORRECT: Die Iterationsformel fuer einen Leckintegrator
-;                               erster Ordnung lautet korrekterweise: 
-;                                  F(t+dt)=F(t)*exp(-dt/tau)+Input*V*(1-exp(-dt/tau))
-;                               Die Multiplikation des Inputs mit dem Faktor
-;                               (1-exp(-1/tau)) wird aber in der gängigen
-;                               algorithmischen Formulierung des MMN weg-
-;                               gelassen. Dies kann störend sein, denn
-;                               diese Formulierung ist nicht invariant
-;                               gegenüber einer Änderung der Zeitauflösung.
-;                               Das Keyword CORRECT führt die Multiplikation
-;                               mit (1-exp(-1/tau)) explizit aus.
-;                                
-; SIDE EFFECTS:        wie so oft wird die Layer-Struktur verändert
-;
-; RESTRICTIONS:        keine Überpuefung der Gültigkeit des Inputs (Effizienz!)
-;
-; EXAMPLE:
-;                       para1         = InitPara_1(tauf=10.0, vs=1.0)
-;                       InputLayer    = InitLayer_1(WIDTH=5,HEIGHT=5, TYPE=para1)
-;                       FeedingIn     = Spassmacher( 10.0 + RandomN(seed, InputLayer.w*InputLayer.h))
-;                       InputLayer_1, InputLayer, FEEDING=FeedingIn
-;                       ProceedLayer_1, InputLayer
-;
-;
 
 PRO InputLayer_GRN, _Layer, FEEDING=feeding, LINKING=linking $
                     , NOISE=noise

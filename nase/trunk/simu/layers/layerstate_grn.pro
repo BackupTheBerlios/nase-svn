@@ -9,8 +9,15 @@
 ;  Return current state of Graded Response Neurons in a given layer.
 ;
 ; PURPOSE:
-;  <C>LayerState_GRN</C> can be used to determine internal potentials
-;  and output state of graded response neurons.
+;  <C>LayerState_GRN</C> can be used to determine internal membrane
+;  potentials and output states of graded response
+;  neurons. Graded response
+;  neurons generate 
+;  a continuous output activation as opposed to pulse coding
+;  neurons. The way in which their membrane potentials are transformed
+;  into their output is determined by a so called transfer
+;  function. Most commonly used are sigmoidal, piecewise linear or
+;  threshold transfer functions.
 ;
 ; CATEGORY:
 ;  Layers
@@ -18,42 +25,54 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;* LayerState_GRN, layer, [,/DIMENSIONS] $
+;*               [,OUTPUT=...][,POTENTIAL=...]
 ;
 ; INPUTS:
-;  
-;
-; OPTIONAL INPUTS:
-;  
+;  layer:: A handle on a layer of graded response neuron, initialized
+;          by <A>InitLayer_GRN()</A>.
 ;
 ; INPUT KEYWORDS:
-;  
-;
-; OUTPUTS:
-;  
+;  DIMENSIONS:: Turn this switch on to obtain the output and
+;               potentials of <*>layer</*> in its original rectangular
+;               dimensions. Otherwise, a one dimensional array is
+;               returned.
 ;
 ; OPTIONAL OUTPUTS:
-;  
-;
-; COMMON BLOCKS:
-;  
-;
-; SIDE EFFECTS:
-;  
-;
-; RESTRICTIONS:
-;  
+;  OUTPUT:: The output activation of the neurons in <*>layer</*>,
+;           i.e. the membrane potentials passed through the transfer
+;           function. 
+;  POTENTIAL:: The membrane potentials of the neurons in <*>layer</*>.
 ;
 ; PROCEDURE:
-;  
+;  Dereferencing of handle and a little reforming.
 ;
 ; EXAMPLE:
+;  The example shows a neuron whose output is twice its
+;  positive input while negative input is set to zero: 
+;* ug=FltArr(100)
+;* og=FltArr(100)
 ;*
-;*>
+;* tf = {func:'grntf_threshlinear', tfpara:{slope:2.0, threshold:0.0}}
+;* p = InitPara_GRN(tf, TAUF=0., TAUL=0.)
+;*
+;* lg = InitLayer(WIDTH=1, HEIGHT=1, TYPE=p)
+;* 
+;* FOR t=0,99 DO BEGIN
+;*    feed=RandomN(seed)
+;*    InputLayer, lg, FEEDING=Spassmacher(feed)
+;*    ProceedLayer, lg
+;*    LayerState_GRN, lg, potential=p, output=o
+;*    ug(t)=p
+;*    og(t)=o
+;* ENDFOR
+;* 
+;* FreeLayer, lg
+;*
+;* OPlotMaximumFirst,[[ug],[og]],LINESTYLE=-1,COLOR=[RGB('yellow'),RGB('blue')]
 ;
 ; SEE ALSO:
-;  <A>InitPara_GRN()</A>, <A>InitLayer_GRN()</A>,
+;  <A>LayerData</A>, <A>InitPara_GRN()</A>, <A>InitLayer_GRN()</A>,
 ;  <A>InputLayer_GRN</A>, <A>ProceedLayer_GRN()</A>,
 ;  <A>GRNTF_ThreshLinear()</A>.
 ;-
@@ -65,13 +84,13 @@ PRO LayerState_GRN, _L, DIMENSIONS=DIMENSIONS $
 
    Handle_Value, _L, L, /NO_COPY
    
-   o = SpassBeiseite(Handle_Val(l.o))
-;   potential = l.m
-   
-   IF Keyword_Set(DIMENSIONS) THEN o = REFORM(O, L.h, L.w, /OVERWRITE)
-   
-   potential = l.m
-   output = o
+   output = SpassBeiseite(Handle_Val(l.o))
+   potential = l.m 
+
+   IF Keyword_Set(DIMENSIONS) THEN BEGIN
+      output = Reform(output, l.h, l.w, /OVERWRITE)
+      potential = Reform(potential, l.h, l.w, /OVERWRITE)
+   ENDIF
 
    Handle_Value, _L, L, /NO_COPY, /SET
 

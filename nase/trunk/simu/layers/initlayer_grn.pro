@@ -72,6 +72,8 @@
 ;*    og(t)=o
 ;* ENDFOR
 ;* 
+;* FreeLayer, lg
+;*
 ;* OPlotMaximumFirst,[[ug],[og]],LINESTYLE=-1,COLOR=[RGB('yellow'),RGB('blue')]
 ;
 ; SEE ALSO:
