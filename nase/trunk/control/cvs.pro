@@ -94,8 +94,8 @@ common common_cvs, name
       Print, "=========== Updating CVS:"
       Spawn, "cvs update """+Name+""""
       Print, "============= done."
-      END
       if name eq "nase" then NASE_Special ;do some nosy things
+      END
   'BUTTON25': BEGIN             ;Edit
      n = name
       file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=n)
