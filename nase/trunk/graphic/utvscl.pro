@@ -85,13 +85,13 @@
 
 ; Gibt ein auf die vorhandene Palettengroesse (bzw. auf 0..top falls top gesetzt)
 ; skalierte Version eines Arrays A zurueck
-;Function __ScaleArray, A, TOP=top
+Function __ScaleArray, A, TOP=top
 
-;   Default, top, !D.TABLE_SIZE-1
-;   _top = top < (!D.TABLE_SIZE-1)
-;   Return, long(Scl(A, [0, _top]))
+   Default, top, !D.TABLE_SIZE-1
+   _top = top < (!D.TABLE_SIZE-1)
+   Return, long(Scl(A, [0, _top]))
 
-;End
+End
 
 
 
