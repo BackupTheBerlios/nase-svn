@@ -1,50 +1,72 @@
 ;+
-; NAME:                IDLVERSION
+; NAME:
+;  IDLVersion()
 ;
-; AIM:                 returns the used version of IDL
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:             Liefert die momentan laufende IDL-Version als LONG
-;                      zurueck.
+; AIM:
+;  Return the version of the IDL that is running.
 ;
-; CATEGORY:            MISC
+; PURPOSE:
+;  If <C>IDLversion</C> is called without arguments, the main version
+;  number (i.e. the number left to the first dot in <*>!VERSION.RELEASE</*>)
+;  is returned as a long value.
+;  If either the <*>/FLOAT</*> or the <*>/FULL</*> keyword is set, the
+;  version and subversion are returned as a floating number or an array
+;  of long values, respectively.
 ;
-; CALLING SEQUENCE:    ver = IDLVERSION([/FULL])
+; CATEGORY:
+;  ExecutionControl
+;  Help
 ;
-; KEYWORD PARAMETERS: 
-;           FULL:      Liefert die Haupt- und alle
-;                      Minor-Versionen als LONG-Array zurueck.
+; CALLING SEQUENCE:
+;*result = IDLVersion, [,/FLOAT] [,/FULL]
 ;
-; OUTPUTS:             
-;           ver: die IDL-Version als LONG, (momentan also 3,4 oder 5)
+; INPUT KEYWORDS:
+;  FLOAT:: Return the floating number that represents the main and the
+;          minor version of IDL.<BR>
+;          E.g. for version "5.4" the returned value is <*>5.4000</*>, for
+;          version "3.6.1a" the returned value is <*>3.6000</*>.
+;  FULL::  Return an array of LONG, containing the long
+;          representations of the main and all minor versions of IDL.<BR>
+;          E.g. for version "5.4" the returned value is <*>[5,4]</*>, for
+;          version "3.6.1a" the returned value is <*>[3,6,1]</*>.
+; 
+; OUTPUTS:
+;  A long value, a floating value or an array of long values, depending
+;  on the keywords set. <I>(See section INPUT KEYWORDS.)</I>
+;
+; PROCEDURE:
+;  Re-interpret the contents of the <*>!VERSION.RELEASE</*> system variable.
 ;
 ; EXAMPLE:
-;*  IDL> print, IDLVERSION()
-;*  > 5      ; hey, i'm running idl 5 :)
-;*                            
-;*  IDL> print, IDLVERSION(/FULL)
-;*  > 5 0 2  ; I'm running IDL 5.0.2
+;*print, IDLVersion()
+;*> 5      ; hey, i'm running idl 5 :)
+;*
+;*print, IDLVersion(/FLOAT)
+;*> 5.0000 ; more precisely, it is IDL5, minor version 0
+;*
+;*print, IDLVersion(/FULL)
+;*> 5 0 2  ; to be exact, I'm running IDL 5.0.2
 ;
+; SEE ALSO:
+;  The <*>!VERSION</*> system variable.
 ;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.4  2000/09/27 15:59:30  saam
-;     service commit fixing several doc header violations
-;
-;     Revision 1.3  2000/09/25 09:10:32  saam
-;     * appended AIM tag
-;     * some routines got a documentation update
-;     * fixed some hyperlinks
-;
-;     Revision 1.2  1999/11/04 16:24:03  kupper
-;     Added FULL keyword.
-;
-;     Revision 1.1  1998/10/28 17:41:38  saam
-;           short...
-;
-;
-;-
-FUNCTION IDLVERSION, FULL=full
-   if Keyword_set(FULL) then return, long(str_sep(!version.release, "."))
+
+
+FUNCTION IDLVERSION, FULL=full, FLOAT=FLOAT
+   if Keyword_set(FLOAT) then return, float(!version.release)
+
+   if Keyword_set(FULL) then begin
+      ;; we have a bootstrapping problem here:
+      ;; Versions up to IDL5.2 use STR_SEP for separating strings,
+      ;; later versions use STRSPLIT!
+      if IdlVersion(/Float) ge 5.3 then $
+        return, long(strsplit(!version.release, ".", /Extract)) $
+      else $
+        return, long(str_sep(!version.release, "."))
+   end
+   
    RETURN, long(!version.release)
 END
