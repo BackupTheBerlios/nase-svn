@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2003/08/25 13:43:50  kupper
+;        showits now count the number of closes / opens to protect against
+;        nested calls.
+;
 ;        Revision 1.4  2000/10/01 14:51:59  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -63,30 +67,44 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
 
    Widget_Control, firstchild, GET_UVALUE=uservalue, /NO_COPY
    
-   UWset, uservalue.oldwin
+   ;; decrease opencount
+   uservalue.opencount = uservalue.opencount-1
+dmsg, "open count "+str(uservalue.opencount)
 
-   new = !P
-   !P =  uservalue.p
-   uservalue.p = new
-   new = !X
-   !X =  uservalue.x
-   uservalue.x = new
-   new = !Y
-   !Y =  uservalue.y 
-   uservalue.y = new
-   new = !Z
-   !Z =  uservalue.z
-   uservalue.z = new
-
-   IF keyword_set(SAVE_COLORS) THEN BEGIN 
-   ;get current palette and Save it in Draw-Widget's UVAL:
-      UTVLCT, /GET, Red, Green, Blue
-      uservalue.MyPalette.R = Red
-      uservalue.MyPalette.G = Green
-      uservalue.MyPalette.B = Blue
-   ENDIF 
-
+   ;; opencount must always be 0 or positive:
+   if (uservalue.opencount lt 0) then begin
+      console, /Warning, "ShowIt widget closed more often than it was " + $
+      "opened! This is a programming error!"
+      uservalue.opencount = 0
+   endif else begin
+      ;; do only restore values, if opencount equals 0:
+      If (uservalue.opencount eq 0) then begin
+dmsg, "...closed."
+         UWset, uservalue.oldwin
+         
+         new = !P
+         !P =  uservalue.p
+         uservalue.p = new
+         new = !X
+         !X =  uservalue.x
+         uservalue.x = new
+         new = !Y
+         !Y =  uservalue.y 
+         uservalue.y = new
+         new = !Z
+         !Z =  uservalue.z
+         uservalue.z = new
+         
+         IF keyword_set(SAVE_COLORS) THEN BEGIN 
+                                ;get current palette and Save it in Draw-Widget's UVAL:
+            UTVLCT, /GET, Red, Green, Blue
+            uservalue.MyPalette.R = Red
+            uservalue.MyPalette.G = Green
+            uservalue.MyPalette.B = Blue
+         ENDIF
+      endif
+   endelse
+   
    Widget_Control, firstchild, SET_UVALUE=uservalue, /NO_COPY      
-
 
 END

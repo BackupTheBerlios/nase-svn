@@ -34,6 +34,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2003/08/25 13:43:50  kupper
+;        showits now count the number of closes / opens to protect against
+;        nested calls.
+;
 ;        Revision 1.6  2000/10/01 14:51:59  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -68,28 +72,36 @@ PRO ShowIt_Open, widid
    firstchild = Widget_Info(widid, /CHILD)
    Widget_Control, firstchild, GET_VALUE=winid, GET_UVALUE=uservalue, /NO_COPY
 
-   uservalue.oldwin = !D.window
-   UWSet, winid
+   ;; increase opencount
+   uservalue.opencount = uservalue.opencount+1
+dmsg, "open count "+str(uservalue.opencount)
 
-   old = !P
-   !P = uservalue.p
-   uservalue.p = old
-   old = !X
-   !X = uservalue.x
-   uservalue.x = old
-   old = !Y 
-   !Y = uservalue.y
-   uservalue.y = old
-   old = !Z
-   !Z = uservalue.z
-   uservalue.z = old
-
-   If not(PseudoColor_Visual()) then begin
+   ;; do only store values, if opencount equals 1:
+   If (uservalue.opencount eq 1) then begin
+dmsg, "...opened."
+      uservalue.oldwin = !D.window
+      UWSet, winid
+      
+      old = !P
+      !P = uservalue.p
+      uservalue.p = old
+      old = !X
+      !X = uservalue.x
+      uservalue.x = old
+      old = !Y 
+      !Y = uservalue.y
+      uservalue.y = old
+      old = !Z
+      !Z = uservalue.z
+      uservalue.z = old
+      
+      If not(PseudoColor_Visual()) then begin
                                 ;we've got a True-Color-Display, so
                                 ;we have to set the private color table:
-      UTVLCT, uservalue.MyPalette.R, uservalue.MyPalette.G, uservalue.MyPalette.B 
-   End
-
+         UTVLCT, uservalue.MyPalette.R, uservalue.MyPalette.G, uservalue.MyPalette.B 
+      endif
+   Endif
+   
    Widget_Control, firstchild, SET_UVALUE=uservalue, /NO_COPY
 
 END

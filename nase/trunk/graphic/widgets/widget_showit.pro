@@ -175,7 +175,8 @@ FUNCTION Widget_ShowIt, Parent, $
                   tracking_events : tracking_events, $
                   MyPalette   : {R: Red, G: Green, B: Blue}, $
                   YourPalette : {R: Red, G: Green, B: Blue}, $
-                  oldwin : 0l $
+                  oldwin : 0l, $
+                  opencount : 0 $
                 }
 
    ; create outer base to have free uservalue:
