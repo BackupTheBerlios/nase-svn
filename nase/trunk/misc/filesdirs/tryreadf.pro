@@ -46,15 +46,15 @@
 ;  VERBOSE :: If this keyword is set, <C>TryReadF</C> will issue debug
 ;             messages via <A>DMsg</A>, specifying the reason for a
 ;             failed read-attempt.
-;  KEYWORDS:: Any keywords given are passed by value to IDL's
+;  KEYWORDS:: Any other keywords given are passed by value to IDL's
 ;             <C>READF</C> command. Please see the IDL help for
 ;             documentation.
 ;
 ; OUTPUTS:
-;  result: <C>TRUE (1)</C>, if data was successfully read, <C>FALSE
-;          (0)</C>, if no data was available. If no data was
-;          available, the arguments passed to the function stay
-;          unchanged.
+;  result:: <C>TRUE (1)</C>, if data was successfully read, <C>FALSE
+;           (0)</C>, if no data was available. If no data was
+;           available, the arguments passed to the function stay
+;           unchanged.
 ;
 ; RESTRICTIONS:
 ;  A file needs to be opened with the <C>/STDIO</C> keyword to
