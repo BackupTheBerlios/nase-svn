@@ -47,11 +47,14 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-; SEE ALSO: <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/graphic/index.htm#NASETVSCL">NaseTVScl</A>
+; SEE ALSO: <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/graphic/index.html#NASETVSCL">NaseTVScl</A>
 ;      
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.9  1997/12/08 16:24:13  thiel
+;            Fehler im Hyperdings korrigiert.
+;
 ;     Revision 2.8  1997/12/08 15:02:18  thiel
 ;            Jetzt auf vielfachen Wunsch mit Hyperdings.
 ;
