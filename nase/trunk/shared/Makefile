@@ -2,6 +2,9 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.8  2001/07/17 14:06:27  kupper
+#         tried to implement SunOS platform. Not yet working.
+#
 #         Revision 1.7  2001/07/17 12:43:55  kupper
 #         now including export.h from $(IDL_DIR)/external, to alwys get the right version!
 #
@@ -56,6 +59,12 @@ all :
 			"C_LD_FLAGS=-S -shared" ;; \
 	   "Linux" ) make libs \
 			"CC=cc" \
+			"CXX=c++" \
+			"C_LD=ld" \
+			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
+			"C_LD_FLAGS=-shared" ;; \
+	   "SunOS" ) make libs \
+			"CC=c++" \
 			"CXX=c++" \
 			"C_LD=ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
