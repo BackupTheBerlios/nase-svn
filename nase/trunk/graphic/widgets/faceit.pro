@@ -139,6 +139,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.22  2003/02/06 15:42:20  kupper
+;        produced .png-Version of naselogo2_small.gif and incativated Basim's
+;        NOGIF-switch.
+;        (Switch remains for compatibility, but has no effect.)
+;
 ;        Revision 1.21  2003/01/21 16:54:05  alshaikh
 ;        added nogif tag
 ;
@@ -589,7 +594,6 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch, $
    COMMON WidgetSimulation, MyFont, MySmallFont
 
    Default, NO_BLOCK, 1
-   Default, NO_GIF,0
    DEBUGMODE = 1; XMANAGER will terminate on error, if DEBUGMODE is set
    
    Default, BATCH, ""
@@ -768,13 +772,13 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch, $
    FaceIt_Set_Duration, userstruct, duration
 
    ;--- display nase-logo:
-   if (nogif eq 0) then begin
+;;   if (nogif eq 0) then begin
        ShowIt_Open, userstruct.w_simlogo
-       Read_GIF, GETENV("NASEPATH")+"/graphic/naselogo2_small.gif", logo, r, g, b
+       Read_PNG, GETENV("NASEPATH")+"/graphic/naselogo2_small.png", logo, r, g, b
        Utvlct, r, g, b
        Utv, logo
        ShowIt_Close, userstruct.w_simlogo
-   end
+;;   end
    loadct, 0                    ;don't leave that ugly logo-colortable...
 
 
