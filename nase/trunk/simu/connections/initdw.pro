@@ -177,7 +177,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  NOCON=nocon, W_NOCON=w_nocon
 
    Default, w_nocon, nocon
-   if keyword_set(nocon) then message, /INFORMATIVE, "Das NOCON-Schlüsselwort ist übrigens seit Version 1.19 in W_NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
+   if keyword_set(nocon) then message, /INFORM, "Das NOCON-Schlüsselwort ist übrigens seit Version 1.19 in W_NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
 
 
    IF set(S_LAYER) THEN BEGIN
