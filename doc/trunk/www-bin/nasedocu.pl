@@ -8,6 +8,7 @@
 use CGI qw/:standard :html3 :netscape -no_debug/;
 use CGI::Carp qw(fatalsToBrowser);
 use File::Find;
+use File::Basename;
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -35,14 +36,29 @@ $fullurl = $myurl.$sub;
 
 
 
-
+# fix hyperlinks for a list of strings
+sub fixhl { 
+  @lines = @_;
+  @ridx = readRoutineIdx();
+  foreach (@lines){
+    s/<[^<>]*>//g; # remove HTML stuff
+    s/\s+//g;      # remove whitespaces    
+    my @url = split(',', $_);
+    foreach my $routine (@url){
+      @res = grep { /\/$routine\.pro/i  } @ridx; 
+      $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=header>$routine</A>" : $routine);
+    }
+    push(@fixed, join(', ', @url));
+  }
+  return @fixed;
+}
 
 sub readRoutineIdx {
 
   createRoutineIdx() unless -r $INDEX;
-  open (IDX, "<$INDEX") || die "can't open $! for read";
+  open (IDX, "<$INDEX") || die "can't open $INDEX for read: $!\n";
   @ridx = <IDX>; chomp @ridx;
-  close (IDX) || die "can't close $!";
+  close (IDX) || die "can't close $INDEX, $!\n";
 
   return @ridx;
 }
@@ -50,9 +66,9 @@ sub readRoutineIdx {
 
 sub createRoutineIdx {
 
-  open (IDX, ">$INDEX") || die "can't open $! for write";
+  open (IDX, ">$INDEX") || die "can't open $INDEX for write: $!\n";
   find(\&appendFile, $DOCDIR);
-  close (IDX) || die "can't close $!";
+  close (IDX) || die "can't close $INDEX: $!\n";
    
 
   sub appendFile {
@@ -68,9 +84,6 @@ sub createRoutineIdx {
 #    }
 
   }
-
-
-
 }
 
 
@@ -88,6 +101,7 @@ sub updatedoc {
 sub showheader {
 
   my $file = shift(@_);
+  $file .= ".pro" unless $file =~ /\.pro$/i;
   
   open(IN, "$file") || die "can't open $file";
   print "<PRE>";
@@ -98,9 +112,9 @@ sub showheader {
     last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
     s/^;//;
 
-    if (/NAME\s*:\s*(\w+)/i){
-      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1).".pro&mode=source>source</A> <A HREF=huhe2>modifications</A></FONT>");
-    } else {
+    {
+      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=source>source</A> <A HREF=huhe2>modifications</A></FONT>"); $namefound=1; } else {print;};  last;};
+      /(SEE\s+ALSO\s*:\s+)(.*)/i && do {print $1, fixhl($2); last; };
       print;
     }
   }
@@ -113,22 +127,19 @@ sub showheader {
 sub showsource {
 
   my $file = shift(@_);
+  $file .= ".pro" unless $file =~ /\.pro$/i;
   
   open(IN, "$file") || die "can't open $file";
   print "<PRE>";
-  while (<IN>){
-    if (/NAME\s*:\s*(\w+)/i){
-      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1).".pro&mode=header>header</A> <A HREF=huhe2>modifications</A></FONT>");
+  while ($line = <IN>){
+    if ((! $namefound) && ($line =~ /NAME\s*:\s*(\w+)/i)){
+      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=header>header</A> <A HREF=huhe2>modifications</A></FONT>");
+      $namefound = 1;
     }
-    last if (/^[^;]/i);
+    last if ($line =~ /^[PRO|FUNCTION]/i);
   }
-  while (<IN>){
-    last if (/(PRO)|(FUNCTION)/i);
-  }
-  print;
-  while (<IN>){
-    print;
-  }
+  print $line;
+  while (<IN>){print;}
   print "</PRE>";
   close(IN) || die "can't close $file";
   
@@ -180,6 +191,7 @@ sub showfiles {
   closedir DIR;  
 
   foreach $file (sort @file) {
+    $file =~ s/\.pro//i;
     ($base) = split(/\./,$file);
     print img({src=>"/icons/text.gif",alt=>"[DIR]"});
     print a({href=>"$fullurl?file=$file&mode=header"}, "  $base"), br;
@@ -193,6 +205,9 @@ print start_html('NASE/MIND Documentation System');
 print start_body;
 
 
+if (! -r $INDEX){
+  createRoutineIdx();
+}
 if ($P::mode eq "update"){
   updatedoc();
 } else {
@@ -208,8 +223,10 @@ if ($P::mode eq "update"){
   }
   print '</TD>';
   print '</TABLE>';
+  $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
+  print "<FONT SIZE=-1>last update: ".localtime($lastmod)."</FONT>, <A HREF=$myurl?mode=update>initiate update</A>";
   print hr;
-  print "<FONT SIZE=-1>last update: </FONT>, <A HREF=$myurl?mode=update>initiate update</A>";
+  print "<FONT SIZE=-1>$Id$</FONT>";
 }
 
 print end_body;
