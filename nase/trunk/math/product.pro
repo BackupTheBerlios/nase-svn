@@ -1,9 +1,11 @@
 ;+
 ; NAME:                PRODUCT
 ;
+; AIM:                 product over the elements of an array (index supported) 
+;
 ; PURPOSE:             Bildet das Produkt ueber alle Elemente eines uebergebenen Arrays
-;                      und bildet damit das Gegenstueck zu TOTAL. Dies Produktbildung
-;                      ueber einen speziellen Index wurde leider noch nicht implementiert.
+;                      und bildet damit das Gegenstueck zu TOTAL. 
+;                      
 ;
 ; CATEGORY:            MATH
 ;
@@ -22,10 +24,13 @@
 ;                      A = [5,4,7]
 ;                      print, product(A)
 ;                           140
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/28 08:59:32  gabriel
+;         AIM Tag added
+;
 ;     Revision 2.2  1998/07/28 08:11:16  gabriel
 ;          across index now integrated
 ;
