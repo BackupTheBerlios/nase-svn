@@ -5,9 +5,9 @@ Pro Check_NASE_LIB
    
    PushD, !NASEPATH+"/shared"
    If NOT Fileexists(!NASE_LIB) THEN $
-     Spawn, Command('cp')+' -p * '+LIBDIR ; -p doesn't change time stamp when copying from 
-                                          ; shared to LIBDIR and therefore
-                                          ; doesn't confuse make
+     Spawn, Command('cp')+' -pf * '+LIBDIR ; -p doesn't change time stamp when copying from 
+                                           ; shared to LIBDIR and therefore
+                                           ; doesn't confuse make
    PopD
    PushD, LIBDIR
    Spawn, ["make"], /Noshell              ; create or update library if necessary
