@@ -7,7 +7,7 @@ Function image_factory::image
       call_method, self.type+"_", self
       self.recompute = 0
    Endif
-   return, *self.image
+   return, *self.image*self.brightness
 End
 
 Function image_factory::width
@@ -40,6 +40,13 @@ End
 Pro image_factory::size, value
    self.size = value
    self.recompute = 1
+End
+
+Function image_factory::brightness
+   return, self.brightness
+End
+Pro image_factory::brightness, value
+   self.brightness = value
 End
 
 ;; ------------ Constructor & Destructor --------------------
@@ -98,6 +105,7 @@ Pro image_factory__DEFINE
             $
             type: "", $
             size: 0.0, $
+            brightness: 0.0, $
             $
             recompute: 0 $
            }
