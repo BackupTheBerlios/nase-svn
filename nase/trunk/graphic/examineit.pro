@@ -7,7 +7,8 @@
 ; CATEGORY: Visualisierung, Auswertung
 ;
 ; CALLING SEQUENCE: ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel] 
-;                                        [,/BOUND]
+;                                        [,XPOS=xoffset] [,YPOS=yoffset]
+;                                        [,/BOUND] [,/NASE]
 ;                                        [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
 ;                                        [,GET_BASE=BaseID]
 ;                                        [,DELIVER_EVENTS=Array_of_Widget_IDs]
@@ -31,6 +32,7 @@
 ;                             Bei Nichtangabe wird ein mehr oder weniger
 ;                             guter Default gewählt.
 ;                     TITLE:  Der Fenstertitel. Default: "Examine It!"
+;                 XPOS,YPOS:  Position von der linken oberen Bildschirmecke (Default: 100,100)
 ;                     BOUND:  Bei Angabe dieses Schlüsselwortes sind
 ;                             die Grenzen der Plotbereiche fest auf
 ;                             das Minimum/Maximum des Arrays
@@ -41,6 +43,8 @@
 ;                             stehenden Platz besser ausnutzt, aber
 ;                             beim "Durchfahren" des Arrays etwas
 ;                             irritierend wirken kann.
+;                      NASE:  Wenn gesetzt, wird das Array als NASE-Array in richtiger Orientierung und
+;                             mit richtigen Farben dargestellt (Es braucht kein TV-Array angegeben zu werden.)
 ;                     GROUP:  Eine Widget-ID des Widgets, das als
 ;                             Übervater dienen soll.
 ;                     MODAL:  Wenn angegeben, ist das Widget modal,
@@ -82,6 +86,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.5  1998/04/06 17:12:27  kupper
+;              NASE, XPOS,YPOS hinzugefügt.
+;               Sorry für den NASE-Verarbeitungwust...
+;
 ;       Revision 2.4  1998/03/31 15:12:25  kupper
 ;            IDL-Versionskonflikt (MODAL)
 ;
@@ -102,38 +110,45 @@
 ;-
 
 
-pro PlotWeights, w, xpos, ypos, zoom, GET_POSITION=get_position, GET_MINOR=get_minor, $
+pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
+                 NOSCALE=noscale, GET_POSITION=get_position, GET_MINOR=get_minor, $
                  _EXTRA=_extra
-   
+
    height = (size(w))(2)
    width  = (size(w))(1)
 
    ticklen = (convert_coord([zoom, zoom], /device, /to_normal))/1.6
+   devpos = [xpos-zoom/2, ypos-zoom/2, xpos+zoom*(width+0.5), ypos+zoom*(height+0.5)]
+
+   PrepareNASEPlot, height, width, /OFFSET, GET_OLD=oldplot, NONASE=nonase
+   plot, /NODATA, indgen(10), /DEVICE, POSITION=devpos
+   PrepareNASEPlot, RESTORE_OLD=oldplot
+   GET_POSITION = devpos
  
-   plotwx = (width+1)*zoom
-   plotwy = (height+1)*zoom
-   devplotpx = xpos-zoom/2
-   devplotpy = ypos-zoom/2
-   devplotpx1 = devplotpx+(width+1)*zoom
-   devplotpy1 = devplotpy+(height+1)*zoom
+;   plotwx = (width+1)*zoom
+;   plotwy = (height+1)*zoom
+;   devplotpx = xpos-zoom/2
+;   devplotpy = ypos-zoom/2
+;   devplotpx1 = devplotpx+(width+1)*zoom
+;   devplotpy1 = devplotpy+(height+1)*zoom
 
-   plotpx = (convert_coord([devplotpx, devplotpy], /device, /to_normal))(0)
-   plotpx1 = (convert_coord([devplotpx1, devplotpy1], /device, /to_normal))(0)
-   plotpy = (convert_coord([devplotpx, devplotpy], /device, /to_normal))(1)
-   plotpy1 = (convert_coord([devplotpx1, devplotpy1], /device, /to_normal))(1)
+;   plotpx = (convert_coord([devplotpx, devplotpy], /device, /to_normal))(0)
+;   plotpx1 = (convert_coord([devplotpx1, devplotpy1], /device, /to_normal))(0)
+;   plotpy = (convert_coord([devplotpx, devplotpy], /device, /to_normal))(1)
+;   plotpy1 = (convert_coord([devplotpx1, devplotpy1], /device, /to_normal))(1)
 
-   plot, indgen(2), /NODATA, position=[plotpx, plotpy, plotpx1, plotpy1], $
-    xrange=[-1, width], /xstyle, xtick_get=xt, $
-    yrange=[-1, height], /ystyle, ytick_get=yt, _EXTRA=_extra
-   plot, indgen(2), /NODATA, position=[plotpx, plotpy, plotpx1, plotpy1], $
-    xrange=[-1, width], /xstyle, xminor=xt(1), $
-    yrange=[-1, height], /ystyle, yminor=yt(1), $
-    xticklen=ticklen(0), yticklen=ticklen(1), _EXTRA=_extra
+;   plot, indgen(2), /NODATA, position=[plotpx, plotpy, plotpx1, plotpy1], $
+;    xrange=[-1, width], /xstyle, xtick_get=xt, $
+;    yrange=[-1, height], /ystyle, ytick_get=yt, _EXTRA=_extra
+;   plot, indgen(2), /NODATA, position=[plotpx, plotpy, plotpx1, plotpy1], $
+;    xrange=[-1, width], /xstyle, xminor=xt(1), $
+;    yrange=[-1, height], /ystyle, yminor=yt(1), $
+;    xticklen=ticklen(0), yticklen=ticklen(1), _EXTRA=_extra
 
-   get_position = [devplotpx, devplotpy, devplotpx1, devplotpy1]
-   get_minor = [xt(1), yt(1)]
+;   get_position = [devplotpx, devplotpy, devplotpx1, devplotpy1]
+;   get_minor = [xt(1), yt(1)]
 
-   tvscl, rebin(w, zoom*width, zoom*height, /sample), xpos, ypos
+   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale
 
 
 end
@@ -171,47 +186,106 @@ Pro ExamineIt_Event, Event
          maxrow = max(info.w(*, y_arr))
          mincol = min(info.w(x_arr, *))
          maxcol = max(info.w(x_arr, *))
+         value  = info.w(x_arr, y_arr)
+         allmin = info.wmin
+         allmax = info.wmax
 
+         If info.nase then begin ;Entschuldige mich für diesen Wust... sorry...
+            If minrow eq 999999 then minrow = "(none)" else minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
+            If maxrow eq 999999 then maxrow = "(none)" else maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
+            If mincol eq 999999 then mincol = "(none)" else mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)
+            If maxcol eq 999999 then maxcol = "(none)" else maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
+            If value  eq 999999 then value  = "(none)"
+            If allmin eq 999999 then allmin = "(none)" else allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
+            If allmax eq 999999 then allmax = "(none)" else allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
+            row_nr = info.height-y_arr-1
+            y_nr = x_arr
+            x_nr = info.height-y_arr-1
+         endif else begin
+            minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
+            maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
+            mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)            
+            maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
+            allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
+            allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
+            row_nr = y_arr
+            y_nr = y_arr
+            x_nr = x_arr
+         endelse
          wset, info.text_win
          erase
-         xyouts, /NORMAL, 0.01, 0.8, "ROW: "+strtrim(y_arr, 2), WIDTH=get_width
-         xyouts, /NORMAL, get_width/2+0.05, 0.7, "min = "+strtrim(string(minrow, FORMAT="(G20.3)"), 2)
-         xyouts, /NORMAL, get_width/2+0.05, 0.9, "max = "+strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
-         xyouts, /NORMAL, 0.5, 0.2, "COL: "+strtrim(x_arr, 2), ALIGNMENT=0.5
-         xyouts, /NORMAL, 0.5, 0.1, "min = "+strtrim(string(mincol, FORMAT="(G20.3)"), 2)+"  max = "+strtrim(string(maxcol, FORMAT="(G20.3)"), 2), ALIGNMENT=0.5
-         xyouts, /NORMAL, 0.5, 0.5, ALIGNMENT=0.5, "Array("+strtrim(x_arr, 2)+","+strtrim(y_arr, 2)+") = "+strtrim(info.w(x_arr, y_arr), 2)
-         xyouts, /NORMAL, 0.5, 0.4, "min = "+strtrim(string(info.wmin, FORMAT="(G20.3)"), 2)+"  max = "+strtrim(string(info.wmax, FORMAT="(G20.3)"), 2), ALIGNMENT=0.5
+         xyouts, /NORMAL, 0.01, 0.8, "ROW: "+str(row_nr), WIDTH=get_width
+         xyouts, /NORMAL, get_width/2+0.05, 0.7, "min = "+minrow
+         xyouts, /NORMAL, get_width/2+0.05, 0.9, "max = "+maxrow
+         xyouts, /NORMAL, 0.5, 0.2, "COL: "+str(x_arr), ALIGNMENT=0.5
+         xyouts, /NORMAL, 0.5, 0.1, "min = "+mincol+"  max = "+maxcol, ALIGNMENT=0.5
+         xyouts, /NORMAL, 0.5, 0.5, ALIGNMENT=0.5, "Array("+str(x_nr)+","+str(y_nr)+") = "+str(value)
+         xyouts, /NORMAL, 0.5, 0.4, "min = "+allmin+"  max = "+allmax, ALIGNMENT=0.5
 
          if keyword_set(info.bound) then begin ;Die Begrenzungswerte für die Plots
-            rowplotmin = info.wmin
-            colplotmin = info.wmin
-            rowplotmax = info.wmax
-            colplotmax = info.wmax
+            rowplotmin = info.range(0)
+            colplotmin = info.range(0)
+            rowplotmax = info.range(1)
+            colplotmax = info.range(1)
          endif else begin
-            rowplotmin = minrow
-            rowplotmax = maxrow
-            colplotmin = mincol
-            colplotmax = maxcol
+            rowplotmin = 0      ;minrow - Let Plot find it
+            rowplotmax = 0      ;maxrow
+            colplotmin = 0      ;mincol
+            colplotmax = 0      ;maxcol
          endelse
 
          wset, info.row_win     ;Reihe darstellen
+         PrepareNASEPlot, info.height, info.width, /OFFSET, GET_OLD=oldplot, NONASE=1-info.nase, /X_ONLY
          rowpos = info.position
          rowpos(3) = 15*info.zoom-rowpos(1)
-         plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
-          xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-          yrange=[rowplotmin, rowplotmax]
+         If keyword_set(info.nase) then begin
+            plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
+             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+             yrange=[rowplotmin, rowplotmax], MAX_VALUE=999998
+            endif else begin
+             plot, indgen(info.Width)+1, info.w(*, y_arr),  /DEVICE, POSITION=rowpos, $
+             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+             yrange=[rowplotmin, rowplotmax]
+          endelse
+;         If keyword_set(info.nase) then begin
+;            plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
+;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+;             yrange=[rowplotmin, rowplotmax], MAX_VALUE=999998
+;            endif else begin
+;             plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
+;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+;             yrange=[rowplotmin, rowplotmax]
+;          endelse
          rowrange = rowplotmax-rowplotmin
-         plots, [x_arr,x_arr], [rowplotmin-rowrange, rowplotmax+rowrange] ;ein (aber nicht zu langer!) Strich
+         plots, [1+x_arr,1+x_arr], [rowplotmin-rowrange, rowplotmax+rowrange] ;ein (aber nicht zu langer!) Strich
 
-         wset, info.col_win     ;Spalte darstellen
+         wset, info.pixcol_win     ;Spalte darstellen
          colpos = info.position
          colpos(2) = 15*info.zoom-colpos(0)
-         plot, info.w(x_arr, *), indgen(info.height), yrange=[-1, info.height], /YSTYLE, /DEVICE, POSITION=colpos, YMINOR=info.minor(1), $
-          xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-          xrange=[colplotmin, colplotmax]
+         pixcolpos = [info.win_height-colpos(3), $
+                      colpos(0), $
+                      info.win_height-colpos(1), $
+                      colpos(2)]
+;         t3d, /reset, translate=[-0.5, -0.5, -0.5], rotate=[0, 0, -90]
+;         t3d, translate=[0.5, 0.5, 0.5]
+;         t3d, translate=[colpos, rowpos, 0]
+         PrepareNASEPlot, info.width, info.height, /OFFSET, NONASE=1-info.nase, /X_ONLY
+         !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
+         If keyword_set(info.nase) then begin
+            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
+             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+             yrange=[colplotmin, colplotmax], MAX_VALUE=999998
+         endif else begin
+            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
+             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+             yrange=[colplotmin, colplotmax]
+         endelse
          colrange = colplotmax-colplotmin
-         plots, [colplotmin-colrange, colplotmax+colrange], [y_arr, y_arr]
-
+         plots, [info.Height-y_arr, info.Height-y_arr], [colplotmin-colrange, colplotmax+colrange]
+         tv = tvrd()
+         wset, info.col_win           ;copy and rotate
+         tv, rotate(tv, 3)
+         PrepareNASEPlot, RESTORE_OLD=oldplot
          wset, Actwin
                                 ;end
                                 ;       endcase
@@ -242,15 +316,43 @@ Pro ExamineIt_Event, Event
 
 End
 
-Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
+Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                GROUP=group, JUST_REG=just_reg, NO_Block=no_block, MODAL=modal, $
                GET_BASE=get_base, DELIVER_EVENTS=deliver_events, $
-               BOUND=bound
+               BOUND=bound, RANGE=range, NASE=nase, $
+               XPOS=xpos, YPOS=ypos
    
+   w = reform(_w)               ;Do not change Contents!
+   If Keyword_Set(_tv_w) then begin
+      tv_w = reform(_tv_w) 
+      noscale = 1 
+   endif else begin
+      If Keyword_Set(nase) then begin
+         tv_w = ShowWeights_Scale(w, /setcol)
+         noscale = 1
+      endif else begin
+         tv_w = w
+         noscale = 0
+      endelse
+   endelse
+
+   If keyword_set (nase) then begin
+      w = rotate(w, 3)
+      tv_w = rotate(tv_w, 3)
+      nones = where(w eq !NONE, count)
+      If count ne 0 then w(nones) = max(w) ;Finde min ausser NONES
+      Default, Range, [min(w), max(w)]
+      If count ne 0 then w(nones) = +999999 ;Weil IDL3 noch kein MIN_VALUE kennt
+   EndIf
+  
+   Default, nase, 0
+   Default, Range, [min(w), max(w)]
+   default, bound, 0
    Default, no_block, 1
    Default, modal, 0
    Default, deliver_events, [-1]
-   Default, tv_w, w
+   Default, xpos, 100
+   Default, ypos, 100
    w_width = (size(w))(1)
    w_height = (size(w))(2)
    if ((size(tv_w))(1) ne w_width) or ((size(tv_w))(2) ne w_height) then message, "Die TV-Version des Feldes muß die gleichen Ausmaße wie das Original-Feld haben!"
@@ -271,9 +373,11 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
     base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
                        MODAL=modal, $
                        SPACE=1, $
+                       XOFFSET=xpos, YOFFSET=ypos, $
                        UVALUE={name:"base"}) $
    else base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
                            SPACE=1, $
+                           XOFFSET=xpos, YOFFSET=ypos, $
                            UVALUE={name:"base"})
 
    GET_BASE = base
@@ -303,7 +407,11 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                           XSIZE=15*zoom, $ ;win_width/2, $
                           YSIZE=win_height, $
                           UVALUE={name:"plot_col"})
- 
+   WINDOW, /pixmap, /free, $
+    XSIZE=win_height, $
+    YSIZE=15*zoom
+   pixcol_win = !D.Window
+
    WIDGET_CONTROL, base, /REALIZE
    WIDGET_CONTROL, tv, GET_VALUE=tv_win
    WIDGET_CONTROL, plot_row, GET_VALUE=row_win
@@ -311,27 +419,30 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    WIDGET_CONTROL, text, GET_VALUE=text_win
 
    wset, tv_win
-   plotweights, tv_w, xmargin, ymargin, zoom, GET_POSITION=gp, GET_MINOR=gm
-
-   default, bound, 0
+   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, GET_POSITION=gp, GET_MINOR=gm
    WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
    WIDGET_CONTROL, tv, SET_UVALUE={name    : "tv", $
                                    width   : w_width, $
                                    height  : w_height, $
+                                  win_width: win_width, $
+                                 win_height: win_height, $
                                    zoom    : zoom, $
                                    position: gp, $
-                                   minor   : gm, $
+                                  ; minor   : gm, $
                                    tv_win  : tv_win, $
                                    row_win : row_win, $
                                    col_win : col_win, $
+                                 pixcol_win: pixcol_win, $
                                    text_win: text_win, $
                                    w       : w, $
                                    wmax    : max(w), $
                                    wmin    : min(w), $
                                    bound   : bound, $
+                                   range   : range, $
                                    deliver_events:deliver_events, $
                                    xsize   : win_width, $
-                                   ysize   : win_height}
+                                   ysize   : win_height, $
+                                   nase    : nase}
 
 ;   wset, row_win
 ;   plot, w(*, w_height/2), xrange=[0, w_width-1], /XSTYLE, POSITION=gp, XMINOR=gm(0)
