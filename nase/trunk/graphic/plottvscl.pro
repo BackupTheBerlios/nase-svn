@@ -193,7 +193,7 @@
 ;*          PlotTvScl, W, 0.0, 0.1, XTITLE='X-ACHSEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
 ;
-; SEE ALSO: <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>, <A>NaseTVScl</A>,
+; SEE ALSO: <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>,
 ;           <A>PlotTVScl_update</A>            
 ;-
 
