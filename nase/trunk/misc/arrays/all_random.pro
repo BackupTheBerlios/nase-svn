@@ -1,46 +1,36 @@
 ;+
-; NAME: All_Random()
+; NAME:             All_Random
 ;
-; PURPOSE: Erzeugt ein Array mit paarweis verschiedenen Zufallszahlen. 
+; PURPOSE:          Erzeugt ein Array mit paarweis verschiedenen Zufallszahlen. 
 ;
-; CATEGORY: Miscellaneous
+; CATEGORY:         MISC ARRAYS
 ;
 ; CALLING SEQUENCE: Array = All_Random (n)
 ;
-; INPUTS: n: Integer, n>0.
+; INPUTS:           n: Integer, n>0.
 ;
-; OUTPUTS: Array: Int-Array der Länge n, das jede ganze Zahl im
-;                  Intervall [0,n) genau einmal enthält. 
+; OUTPUTS:          Array: Long-Array der Länge n, das jede ganze Zahl im
+;                          Intervall [0,n) genau einmal enthält. 
 ;
-; COMMON BLOCKS: common_random  (Standard)
+; COMMON BLOCKS:    common_random
 ;
-; RESTRICTIONS: n>0
-;               Achtung, für n>1000 kann die Ausführungszeit schnell
-;               recht lange werden! (Dummer Brute Force-Algorithmus...)
+; RESTRICTIONS:     n>0
+; 
+; SEE ALSO:         <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#FRACRANDOM">FracRandom</A>
 ;
-; PROCEDURE: Brute Force: Für jedes Element solange Randoms erzeugen,
-;             bis eine "neue" Zahl gefunden ist
-;
-; EXAMPLE: Zufaellige_Reihenfolge = All_Random (100)
+; EXAMPLE:          Zufaellige_Reihenfolge = All_Random (100)
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/02/17 19:28:02  saam
+;              just calls fracrandom
+;
 ;        Revision 1.1  1997/10/06 16:25:00  kupper
-;        Aus der Traufe gehoben. Aeh.. Taufe. (Wiege?) Oder wie sagt man...?
+;              Aus der Traufe gehoben. Aeh.. Taufe. (Wiege?) Oder wie sagt man...?
 ;
 ;-
 
 Function All_Random, n
-   common common_random, seed
-
-   erg = intarr(n)-1
-   for i=0, n-1 do begin
-      repeat begin
-         x = fix(n*Randomu(seed)) < n
-         dumm = where (erg eq x, count)
-      endrep until count eq 0
-      erg(i) = x
-   end
-   return, erg
+   RETURN, FracRandom(n)
 End
