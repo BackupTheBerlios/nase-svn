@@ -77,6 +77,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.32  1999/09/23 13:20:57  kupper
+;     Added a long() in __ScaleArray.
+;     Removed double copying of Image!!!
+;
 ;     Revision 2.31  1999/09/23 12:23:19  kupper
 ;     Replaced weird looking __ScaleArray-Function.
 ;     Hope nothing broke...
@@ -215,7 +219,7 @@ Function __ScaleArray, A, TOP=top
 
    _top = top < (!D.TABLE_SIZE-1)
 
-   Return, Scl(A, [0, _top])
+   Return, long(Scl(A, [0, _top]))
 
 End
 
@@ -225,7 +229,7 @@ PRO __HelpTvScl, A, p1, p2, _EXTRA=e
 
    IF ExtraSet(e, 'TOP') THEN _A = __ScaleArray(A, TOP=e.top) ELSE _A = __ScaleArray(A)
    DelTag, e, 'TOP'
-
+help, max(_A)
    CASE N_Params() OF
       1: TV, _A, _EXTRA=e
       2: TV, _A, p1, _EXTRA = e
@@ -311,14 +315,16 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
 
    ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
-   _Image = __Image
+
+   ; don't modify the original image
+   Image = __Image
 
    IF N_Params() LT 1 THEN Message, 'argument expected'
-   IF (Size(_Image))(0) GT 2 THEN BEGIN
-      _Image = Reform(_Image)
-      IF (Size(_Image))(0) GT 2 THEN Message, 'array has more than 2 effective dimensions'
+   IF (Size(Image))(0) GT 2 THEN BEGIN
+      Image = Reform(Image, /OVERWRITE)
+      IF (Size(Image))(0) GT 2 THEN Message, 'array has more than 2 effective dimensions'
    END
-   IF (Size(_Image))(0) NE 1 AND (Size(_Image))(0) NE 2 THEN Message, 'array with one or two dimensions expected'
+   IF (Size(Image))(0) NE 1 AND (Size(Image))(0) NE 2 THEN Message, 'array with one or two dimensions expected'
    IF N_Params() LT 3 AND     Keyword_Set(CENTER) THEN YNorm = 0.5
    IF N_Params() LT 3 AND NOT Keyword_Set(CENTER) THEN YNorm = 0.0
    IF N_Params() LT 2 AND     Keyword_Set(CENTER) THEN XNorm = 0.5
@@ -334,9 +340,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    If Set(NORM_Y_SIZE) then Y_SIZE = (NORM_Y_SIZE * !D.Y_Size / !D.Y_PX_CM)
 
 
-   ; don't modify the original image
-   Image = _Image
-   IF (Size(Image))(0) EQ 1 THEN Image = Reform(Image, N_Elements(Image), 1)
+  IF (Size(Image))(0) EQ 1 THEN Image = Reform(/OVERWRITE, Image, N_Elements(Image), 1)
 
    ; 40 Pixels are One-Centimeter
    ; size in Centimeters
