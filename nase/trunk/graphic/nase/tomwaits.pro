@@ -1,3 +1,74 @@
+;+
+; NAME: TomWaits
+;
+; PURPOSE: Interaktive Darstellung einer NASE-DW-Matrix.
+;
+; CATEGORY: Graphic, Darstellung, Auswertung
+;
+; CALLING SEQUENCE: TomWaits, DW [,/DELAYS] [,(/FROMS|/PROJECTIVE) | ,(/TOS|/RECEPTIVE)]
+;                             [,(TITEL|TITLE)=Fenstertitel]
+;                             [,(GROESSE|ZOOM)=ZFaktor] [,MAGNIFY=MFaktor]
+;                             [,/COLORSCALING] [,/MAGINWIN]
+;                             [,GET_MAXCOL=weiß]
+;                             [,GROUP=GroupLeader] [,GET_BASE=BaseID]
+;                             [,/JUST_REG] [,NO_BLOCK=0]
+;
+; INPUTS: DW: Eine NASE DW- oder SDW-Struktur, mit oder ohne Delays.
+;
+; KEYWORD PARAMETERS: TITEL/TITLE  : Ein Fenstertitel für's Widget
+;                    GROESSE/ZOOM  : Vergrößerungsfaktor für die
+;                                    Darstellung mit ShowWeights (darf
+;                                    gebrochen sein)
+;                                    Default: 1
+;                         MAGNIFY  : Vergrößerungsfaktor für die
+;                                    Magnify-Option (linke Maustaste)
+;                                    Default: 12
+;                    COLORSCALING  : Wenn gesetzt (Default), wird für
+;                                    Magnify und Examineit
+;                                    individuelles ColorScaling
+;                                    verwendet, d.h. das größte
+;                                    Gewicht jedes einzelnen
+;                                    rezeptiven Feldes erscheint weiß
+;                                    in der Vergrößerung. Wird
+;                                    COLORSCALING explizit auf 0
+;                                    gesetzt, so sind die Farben genau 
+;                                    wie bei ShowWeights auf das
+;                                    Maximum der gesamten
+;                                    Verbindungsmatrix normiert.
+;                        MAGINWIN  : Wenn gesetzt, wird für die
+;                                    Magnify-Option ein Fenster
+;                                    verwendet, sonst ein Draw-Widget.
+;                                    Dieses Schlüsselwort wird unter
+;                                    IDL 3 stets als gesetzt
+;                                    betrachtet (Weil die
+;                                    DrawWidget-Variante nicht
+;                                    funktioniert)
+;                            GROUP : Ein GroupLeader für unser Widget.
+;                         JUST_REG : s. XMANAGER-Hilfe. Default 0
+;                         NO_BLOCK : ab
+;                                    IDL_5. s. XMANAGER-Hilfe. Default 1
+;                 
+;
+; OPTIONAL OUTPUTS:    GET_MAXCO  : Index der hellsten Farbe ("weiß")
+;                        GET_BASE : ID des Base-Widgets
+;
+; SIDE EFFECTS: Farbrtabelle wird verändert.
+;
+; PROCEDURE: Basiert auf <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="nonase/#SURFIT">Surfit</A>, <A HREF="nonase/#EXAMINEIT">Examineit</A>.
+;
+; EXAMPLE: Ausprobieren!
+;
+; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="nonase/#SURFIT">Surfit</A>, <A HREF="nonase/#EXAMINEIT">Examineit</A>.
+;
+; MODIFICATION HISTORY:
+;
+;        $Log$
+;        Revision 1.9  1998/04/08 16:30:17  kupper
+;               Beta 2
+;        	Sorry, hatte bisher keinen Header...
+;
+;-
+
 PRO TomWaits_Event, Event
 
    EventType = Tag_Names(Event, /STRUCTURE_NAME)
@@ -142,7 +213,7 @@ PRO TomWaits_Event, Event
                   endelse
 ;               nasetv, tv_w, ZOOM=data.magnify
                PrepareNASEPlot, (size(reform(w, /OVERWRITE)))(1), (size(reform(w, /OVERWRITE)))(2), /OFFSET, GET_OLD=oldplot
-               plot, indgen(10), /NODATA, POSITION=[0.1, 0.1, 0.9, 0.9]
+               plot, indgen(10), /NODATA, COLOR=data.colors(2), XTHICK=2, YTHICK=2, POSITION=[0.1, 0.1, 0.9, 0.9]
                nxpixelgr = (convert_coord(data.magnify, 0, 0, /DEVICE, /TO_NORMAL))(0)
                nypixelgr = (convert_coord(0, data.magnify, 0, /DEVICE, /TO_NORMAL))(1)
                NaseTv, tv_w, 0.1+nxpixelgr/2., 0.1+nypixelgr/2., ZOOM=data.magnify
@@ -150,12 +221,12 @@ PRO TomWaits_Event, Event
             Endif               ;Left Button
             
             If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
-                  Surfit, xpos=xpos, ypos=ypos, xsize=300, ysize=300, /NASE, w, $
+                  Surfit, COLOR=data.colors(2), xpos=xpos, ypos=ypos, xsize=300, ysize=300, /NASE, w, $
                    GROUP=Event.Top, TITLE=title, /JUST_REG
             Endif               ;Middle Button
 
             If (Event.Press and 4) eq 4 then begin ;Right Mouse Button
-                  ExamineIt, xpos=xpos, ypos=ypos, /NASE, TITLE=title, $
+                  ExamineIt, COLOR=data.colors(2), xpos=xpos, ypos=ypos, /NASE, /BOUND, TITLE=title, $
                    GROUP=Event.Top, w, tv_w, ZOOM=data.magnify, /JUST_REG
             Endif               ;Middle Button
 
@@ -173,11 +244,14 @@ PRO TomWaits, GROUP=Group, $
               GET_BASE=get_base, $
               FROMS=froms,  TOS=tos, DELAYS=delay, $
               PROJECTIVE=projective, RECEPTIVE=receptive, $
+              MAGNIFY=magnify, $
               COLORSCALING=colorscaling, MAGINWIN=maginwin, $
-              GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, $
-              JUST_REG=just_reg
+              GET_MAXCOL=get_maxcol, $
+              JUST_REG=just_reg, NO_BLOCK=no_block
 
   Default, GROUP, 0
+  Default, JUST_REG, 0
+  Default, NO_BLOCK, 1
   Default, TITLE, TITEL
   Default, TITLE, "Tom Waits"
   Default, ZOOM, GROESSE       ;Die Schlüsselworte können alternativ verwendet werden.
@@ -189,9 +263,8 @@ PRO TomWaits, GROUP=Group, $
   Default, RECEPTIVE, 1-PROJECTIVE               ;By Default show Receptive Fields
   Default, Delay, 0
   Default, GET_MAXCOL, -99
-  Default, GET_COLORMODE, -99
 
-  Default, MAGNIFY, 15
+  Default, MAGNIFY, 12
   Default, COLORSCALING, 1;individual Colorscaling
   If fix(!VERSION.Release) le 3 then maginwin = 1 else Default, maginwin, 0
 
@@ -201,13 +274,14 @@ PRO TomWaits, GROUP=Group, $
   ysize = DWDim(DW, /SH)*DWDim(DW, /TH)*zoom
   xsize = xsize+max([DWDim(DW, /TW), DWDim(DW, /SW)])
   ysize = ysize+max([DWDim(DW, /TH), DWDim(DW, /SH)])
-
+  xsize = xsize+50
+  ysize = ysize+50              ;erschlägt so ungefähr den Plot-Rand
   ;;------------------> Richtige Ausmaße für ?SIZE,?_SCROLL_SIZE bestimmen (knifflig!)
   x_scroll_size = xsize-27      ;27 Pixel sind sonst für Rollbalken vorgesehen!
   y_scroll_size = ysize-27
 
   x_else = 42+2*7+2*10          ;pixel, die nicht vom draw-Widget eingenommen werden: 42 Fensterrand,2*7 Rahmen, 2*10 XPAD
-  y_else = 42+4*10+3*53         ;42 Fensterrand,2*7 Rahmen, 4*10 XPAD und SPACE,3*53 Knopfhöhe
+  y_else = 42+4*10+3*53+55         ;42 Fensterrand,2*7 Rahmen, 4*10 XPAD und SPACE,3*53 Knopfhöhe,55 Textwidget
 
   yscroll = 0;Merken, ob Ausschnitt in y-Richtung voll sichtbar (nur für Positionsbestimmung später...)
   If ((xsize+x_else) gt maxsize(0)) and ((ysize+y_else) gt maxsize(1)) then begin
@@ -242,7 +316,12 @@ else $;höhere IDL-Versionen kennen BASE_ALIGN:
                     XPAD=10, $
                     YPAD=10, $
                     MAP=1, $
-                    TITLE=title) ;UVALUE wird unten gesetzt!
+                    TITLE=title, $
+                    MBAR=MenuBar) ;UVALUE wird unten gesetzt!
+
+  Text = Widget_Text(Base, FONT='-adobe-helvetica-bold-r-normal--14-140-75-75-p-77-iso8859-1', $
+                     XSIZE=55, $
+                     VALUE="Left Button: Magnify    Middle Button: SurfIt!    Right Button: ExamineIt!")
 
   DrawBase = WIDGET_BASE(Base, Frame=0)
   Draw = WIDGET_DRAW( DrawBase, $
@@ -308,6 +387,15 @@ endelse
       If Keyword_Set(PROJECTIVE) then Widget_Control, Button_Projective, SET_BUTTON=1 else Widget_Control, Button_Receptive, SET_BUTTON=1
       Widget_Control, Button_Print, SENSITIVE=0
 
+      ;;------------------> Define Menubar:
+;      Mode = CW_PDMENU(/MBAR, MenuBar, FONT='-adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1', $
+;                       ['1\Menu', $
+;                        '2\Entry 1', $
+;                        '1\Menu 2', $
+;                        '0\Entry 2', $
+;                        '0\Entry 23'])
+      ;;--------------------------------
+
 
   WIDGET_CONTROL, Base, /REALIZE
 
@@ -346,6 +434,9 @@ endelse
                                     magwin:-99, $
                                     maginwin: maginwin} ;für das blöde IDL 3...
 
-  If fix(!VERSION.Release) ge 5 then XMANAGER, 'TomWaits', Base, /NO_BLOCK, JUST_REG=just_reg $
+  GET_BASE = Base
+
+  If fix(!VERSION.Release) ge 5 then XMANAGER, 'TomWaits', Base, NO_BLOCK=no_block, JUST_REG=just_reg $
   else XMANAGER, 'TomWaits', Base, JUST_REG=just_reg
+
 END
