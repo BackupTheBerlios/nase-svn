@@ -39,7 +39,8 @@
 ;                             |\^/|     Maple V Release 3 (RWTH Aachen) .
 ;                          _|\|   |/|_. Copyright (c) 1981-1994 by Waterloo Maple Software and the
 ;                          \  MAPLE  /  University of Waterloo. All rights reserved. Maple and Maple V
-;                          <____ ____>  are registered trademarks of Waterloo Maple Software.       |       Type ? for help. 
+;                          <____ ____>  are registered trademarks of Waterloo Maple Software.       
+;                               |       Type ? for help. 
 ;                          > x:=3.00000;
 ;                                        x := 3.00000  
 ;                          > sin(x);                                   
@@ -50,8 +51,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/10/18 19:03:38  saam
+;           small docheader updates
+;
 ;     Revision 1.1  1998/10/18 19:02:17  saam
-;     initial revision
+;           initial revision
 ;
 ;
 ;-
