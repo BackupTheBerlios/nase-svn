@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2000/05/16 16:30:58  saam
+;           changed flt to dbl
+;
 ;     Revision 1.10  2000/04/06 09:41:53  saam
 ;           now outputs synapse type where input
 ;           is apllied to
@@ -358,14 +361,14 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
       11: BEGIN; EXTERN
        
          number_filter = N_elements(IN.filters)
-         pattern =  fltarr(h,w)
+         pattern =  dblarr(h,w)
          tempo = lonarr(number_filter)
          FOR i=0,number_filter-1 DO BEGIN
             tempo(i) = Handle_Create(!MH, VALUE=0);, /NO_COPY)
          ENDFOR
 
          IF (IN.time_step EQ -1) THEN dt = P.SIMULATION.SAMPLE*1000. ELSE dt =  IN.time_step
-         
+
          R =  { type            : 11                     ,$ ; input type (11=extern) 
                 synapse         : IN.synapse             ,$ ; just for logging messages
                 index           : IN.index               ,$ 
