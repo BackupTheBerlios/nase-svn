@@ -12,6 +12,7 @@
 ;                             [, XTITLE=Abszissentext] [,YTITLE=Ordinatentext]
 ;                             [, CHARSIZE=Schriftgroesse]
 ;                             [, /FULLSHEET]
+;                             [, /NOSCALE]
 ;                             [, /LEGEND]
 ;                             [, /ORDER]
 ;                             [, /NASE]
@@ -28,6 +29,10 @@
 ; KEYWORD PARAMETERS: FULLSHEET: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
 ;                                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
 ;                                der Regel nicht quadratisch.
+;                     NOSCALE: Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
+;                              mit dem Aufruf von <A HREF="#PLOTTV">PlotTV</A>
+;                              Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
+;                              TVSCL und TV.
 ;                     LEGEND: Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
 ;                             an. 
 ;                     ORDER: der gleiche Effekt wie bei Original-TVScl
@@ -47,11 +52,14 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-; SEE ALSO: <A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/graphic/index.html#NASETVSCL">NaseTVScl</A>
+; SEE ALSO: <A HREF="#PLOTTV">PlotTV</A><A HREF="#UTVSCL">UTVScl</A>, <A HREF="#TVSCLLEGEND">TVSclLegend</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/graphic/index.html#NASETVSCL">NaseTVScl</A>, 
 ;      
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.11  1997/12/17 14:45:19  thiel
+;            Jetzt neu: NOSCALE-Schluesselwort
+;
 ;     Revision 2.10  1997/12/10 15:24:28  thiel
 ;            Hilfsfunktion
 ;              'KeineNegativenUndGebrochenenTicks'
@@ -86,7 +94,7 @@
 
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
-                  LEGEND=Legend, ORDER=Order, NASE=Nase, _EXTRA=_extra
+                  LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, _EXTRA=_extra
 
 
 ;-----Sichern der urspruenglichen Device-Parameter
@@ -107,6 +115,7 @@ sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
 
 
 Default, Charsize, 1.0
+Default, NOSCALE, 0
 Default, ORDER, 0
 
 W = _W
@@ -154,7 +163,7 @@ IF ArrayWidth GE 15 THEN !X.Minor = 0 ELSE $
 Default, XPos, 0.0
 Default, YPos, 0.0
 
-IF Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
+IF Keyword_Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
 
 PosDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device)
 
@@ -203,8 +212,7 @@ PlotHeightNormal = TotalPlotHeightNormal - TotalPlotHeightNormal*2*!X.Ticklen
 PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
 
 ;-----Plotten der UTVScl-Graphik:
-UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
-
+UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
 
 ;-----Legende, falls erwuenscht:
 IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
