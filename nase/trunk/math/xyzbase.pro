@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  XYBase
+;  XYZBase
 ;
 ; VERSION:
 ;  $Id$
