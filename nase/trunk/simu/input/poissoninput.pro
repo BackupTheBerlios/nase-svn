@@ -7,7 +7,7 @@
 ; CATEGORY:           INPUT STAT
 ;
 ; CALLING SEQUENCE:   p = PoissonInput( {Layer, | LAYER=Layer | WIDTH=width, HEIGHT=height }
-;                                     [,RATE=rate] [,OVERSAMP=oversamp] [,CORR=corr])
+;                                     [,RATE=rate] [,OVERSAMP=oversamp] [,CORR=corr] [,PULSE=pulse])
 ;
 ; INPUTS:             Layer : die Neuronenschicht, fuer die der Input erzeugt werden soll oder
 ;                             die den Ouput erzeugt
@@ -22,7 +22,7 @@
 ;                     V               : ist Option gesetzt wird statt einem SSpassarray ein normales
 ;                                         Array zurueckgegeben, wobei die Aktionspotentiale Amplitude V
 ;                                         haben.
-;                     NOSPASS         : es wird eine normales Array zurueckgegeben
+;                     NOSPASS         : es wird ein normales Array zurueckgegeben
 ;                     CORR            : Bruchteil der Gesamtrate RATE, die fuer korrelierte Aktionspotentiale
 ;                                         benutzt wird
 ;                     FRAC            : Bruchteil der Neurone die einen korrelierten Puls erhalten 
@@ -30,6 +30,9 @@
 ;                                       Standardabweichung in ms
 ;                     UNIFORM_JITTER  : gleichverteiltes ver-jittern des correlierten Pulses mit der uebergebenen                                 
 ;                                       Amplitude in ms
+;
+;
+; OPTIONAL OUTPUTS:   PULSE : boolsche Variable, die zum Zeitpunkt eines korrelierten Pulses TRUE (1) liefert.
 ;
 ; OUTPUTS:            V gesetzt: 
 ;                          p: Spass-Array, das Aktionspotentiale mit Amplitude V enthaelt. Dies 
@@ -53,6 +56,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1999/02/17 16:57:57  saam
+;           + new optional output PULSE
+;           + bug fix: Frac_Random crashed for FRAC near 1
+;
 ;     Revision 2.4  1998/08/23 12:47:33  saam
 ;           now works with oversampling
 ;
@@ -69,7 +76,7 @@
 ;-
 FUNCTION PoissonInput, PIS, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rate, $
                        V=v, NOSPASS=nospass, CORR=corr, UNIFORM_JITTER=uniform_jitter, GAUSSIAN_JITTER=gaussian_jitter,$
-                       FRAC=frac, SAMPLEPERIOD=sampleperiod
+                       FRAC=frac, SAMPLEPERIOD=sampleperiod, PULSE=pulse
 
    On_Error, 2
 
@@ -154,6 +161,7 @@ FUNCTION PoissonInput, PIS, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rate,
       sig_uncorr = RandomU(seed, PIS.w*PIS.h) LE PIS.p_uncorr ; uncorrlated poisson processes generating spikes for each neuron
       corrSpike  = (RandomU(seed,1) LE PIS.p_corr)(0)          ; correlated poisson process
       IF corrSpike THEN BEGIN
+         PULSE = 1
          IF PIS.gj THEN BEGIN
             ja =  (FIX(PIS.jitter*(5+RandomN(seed, PIS.w*PIS.h))) < (PIS.ciSize-1)) >  0            
          END ELSE BEGIN
@@ -161,9 +169,9 @@ FUNCTION PoissonInput, PIS, LAYER=klayer, WIDTH=width, HEIGHT=height, RATE=rate,
             message, 'dont know if its working...'
 ;            ja(frac_random(PIS.w*PIS.h,PIS.frac)) = (FIX(PIS.jitter*RandomU(seed, FIX(PIS.frac*PIS.w*PIS.h)))) ; jitter array for each neuron, new for each correlated spike
          END
-         neuronInd = Frac_Random(PIS.w*PIS.h, PIS.frac)
+         IF PIS.frac GE 0.999 THEN neuronInd = LIndgen(PIS.w*PIS.h) ELSE neuronInd = Frac_Random(PIS.w*PIS.h, PIS.frac)
          FOR i=0,N_Elements(neuronInd)-1 DO PIS.ci((ja(neuronInd(i))+PIS.ciInd) MOD PIS.ciSize, neuronInd(i)) =  1 ; set spikes (distributed during following time steps)
-      END
+      END ELSE PULSE = 0
       vec        = (sig_uncorr+PIS.ci(PIS.ciInd,*,*)) < 1      ; add un- and -correlated processes (only one spike at a time)
       PIS.ci(PIS.ciInd,*,*) = 0                                ; distributed spikes will be forgotten
       
