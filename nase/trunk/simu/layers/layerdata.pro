@@ -16,7 +16,7 @@
 ;                              [,PARAMETERS=Parameters] 
 ;                              [,FEEDING=Feeding] [,LINKING=Linking] [,INHIBITION=Inhibition]
 ;                              [,POTENTIAL=Potential]
-;                              [,SCHWELLE=schnelle_Schwelle] [,SCHWELLE2=langsame_Schwelle]
+;                              [,SCHWELLE=schnelle_Schwelle] [,LSCHWELLE=langsame_Schwelle]
 ;                              [,LERNPOTENTIAL=Lernpotential]
 ;                              [,OUTPUT=Output]
 ;
@@ -53,6 +53,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/05/27 13:58:15  kupper
+;               SCHWELLE2-Keyword aus gruenden eindeutiger Abkuerzung in
+;                LSCHWELLE umbenannt.
+;
 ;        Revision 2.2  1998/01/28 15:55:46  kupper
 ;               Nur Header-Kosmetik.
 ;
@@ -67,7 +71,7 @@ Pro LayerData, Layer, $
                PARAMETERS=parameters, $
                FEEDING=feeding, LINKING=linking, INHIBITION=inhibition, $
                POTENTIAL=potential, $
-               SCHWELLE=schwelle, SCHWELLE2=schwelle2, $
+               SCHWELLE=schwelle, LSCHWELLE=lschwelle, $
                LERNPOTENTIAL=lernpotential, $
                OUTPUT=output
 
@@ -83,7 +87,7 @@ Pro LayerData, Layer, $
    inhibition                              = Reform(Layer.I, Layer.H, Layer.W)
    potential                               = Reform(Layer.M, Layer.H, Layer.W)
    schwelle                                = Reform(Layer.S, Layer.H, Layer.W)
-   if Layer.Type eq '2' then schwelle2     = Reform(Layer.R, Layer.H, Layer.W)
+   if Layer.Type eq '2' then lschwelle     = Reform(Layer.R, Layer.H, Layer.W)
    if Layer.Type eq '3' then lernpotential = Reform(Layer.P, Layer.H, Layer.W)
    output                                  = Out2Vector(Layer, /DIMENSIONS)
 
