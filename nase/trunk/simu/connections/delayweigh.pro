@@ -54,6 +54,7 @@
 ;
 ; MODIFICATION HISTORY:   initial version, Mirko Saam, 24.7.97
 ;                         Ergaenzung der zentralen Struktur um Breite und Hoehe der Source- und Target-Cluster, 25.7.97 
+;                         automatischer cast von INIT_WEIGHTS auf DOUBLE, Mirko Saam, 1.8.97
 ;
 ;-
 FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_delays,$
@@ -79,14 +80,14 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                    source_h: source_h,$
                    target_w: target_w,$
                    target_h: target_h,$
-                   Weights : init_weights ,$
+                   Weights : DOUBLE(init_weights) ,$
                    Delays  : [-1]          }
       END ELSE BEGIN         
          DelMat = { source_w: source_w,$
                     source_h: source_h,$
                     target_w: target_w,$
                     target_h: target_h,$
-                    Weights : init_weights ,$
+                    Weights : DOUBLE(init_weights) ,$
                     Matrix  : BytArr( (SIZE(init_weights))(1), (SIZE(init_weights))(2) ) ,$
                     Delays  : init_delays  ,$
                     Queue   : SpikeQueue( INIT_DELAYS=REFORM(init_delays, N_Elements(init_delays)) )}
