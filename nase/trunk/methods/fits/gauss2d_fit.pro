@@ -1,4 +1,3 @@
-; $Id$
 PRO	GAUSS2__FUNCT, X, A, F, PDER
 ; NAME:
 ;	GAUSS2__FUNCT
@@ -69,7 +68,8 @@ END
 
 
 
-Function Gauss2d_fit, z, a, x, y, NEGATIVE = neg, TILT=tilt
+Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = neg, TILT=tilt,$
+                CONVERGED=converged
 ;+
 ; NAME:
 ;	GAUSS2d_FIT
@@ -129,6 +129,8 @@ Function Gauss2d_fit, z, a, x, y, NEGATIVE = neg, TILT=tilt
 ;		the ellipse to be unrestricted.  The default is that
 ;		the axes of the ellipse must be parallel to the X-Y axes.
 ;		In this case, A(6) is always returned as 0.
+;       XCENTER/
+;       YCENTER = an initial guess where the center of the gaussian might be
 ;
 ; OUTPUTS:
 ;	The fitted function is returned.
@@ -174,13 +176,11 @@ Function Gauss2d_fit, z, a, x, y, NEGATIVE = neg, TILT=tilt
 ;
 ; MODIFICATION HISTORY:
 ;
-;       Thu Aug 21 11:10:49 1997, Mirko Saam
-;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;       $Log$
+;       Revision 1.3  1998/03/10 12:58:19  saam
+;             new keywords [XY]CENTER
+;             now uses ucurvefit
 ;
-;		Im wesentlichen Uebernahme der Funktion Gauss2dFit von IDL 5, da die 4.0-Version nicht funktionierte
-;
-;
-;	DMS, RSI, June, 1995.
 ;-
 ;
 on_error,2                      ;Return to caller if an error occurs
@@ -210,17 +210,21 @@ xfit = gauss_fit(x, z(*,iy), ax, NTERMS=4) ;Guess at params by taking slices
 yfit = gauss_fit(y, z(ix,*), ay, NTERMS=4)
 
 ; First guess, without XY term...
+IF NOT Set(XCENTER) THEN xcenter = ax(1) 
+IF NOT Set(YCENTER) THEN ycenter = ay(1) 
+
+
 a = [	(ax(3) + ay(3))/2., $		;Constant
 	sqrt(abs(ax(0) * ay(0))), $	;Exponential factor
-	ax(2), ay(2), ax(1), ay(1)]	;Widths and centers
+	ax(2), ay(2), xcenter, ycenter]	;Widths and centers
 
 ;  If there's a tilt, add the XY term = 0
 if Keyword_set(tilt) then a = [a, 0.0]
 
-;************* print,'1st guess:',string(a,format='(8f10.4)')
-result = curvefit([nx, ny, x, y], reform(z, n, /OVERWRITE), $
+;print,'1st guess:',string(a,format='(8f10.4)')
+result = ucurvefit([nx, ny, x, y], reform(z, n, /OVERWRITE), $
 		replicate(1.,n), a, itmax=50, $
-		function_name = "GAUSS2__FUNCT", /NODERIVATIVE)
+		function_name = "GAUSS2__FUNCT", /NODERIVATIVE, CONVERGED=converged)
 
 ; If we didn't already have an XY term, add it = 0.0
 if Keyword_set(tilt) eq 0 then a = [a, 0.0] $
