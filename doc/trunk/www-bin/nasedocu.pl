@@ -12,7 +12,8 @@ use NASE::parse;
 use NASE::xref;
 use strict;
 
-my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $IDXDIR, $INDEXURL, $myurl, $fullurl, $sub, $lastmod);
+my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $IDXDIR, $INDEXURL, $myurl, $fullurl, $sub, $lastmod,
+    $HTDOCS, $URL);
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -25,14 +26,16 @@ chop ($hostname = `uname -a`);
 			     $DOCDIR="/vol/neuro/nase/nasedocu"; 
 			     $CGIROOT="/vol/neuro/www";
 			     $IDXDIR="$DOCDIR";
+			     $HTDOCS="/vol/neuro/www/htdocs/nase";
+			     $URL="http://neuro.physik.uni-marburg.de/nase/";
 			     last;};
   $DOCDIR="/mhome/saam/sim"; 
   $CGIROOT="/usr/lib"; 
   $IDXDIR="/tmp";
+  $HTDOCS="/var/www/nase";
+  $URL="http://localhost/nase";
 }
 
-
-$INDEXURL="$DOCDIR/nindex.html";
 
 # global variables
 ($myurl = $0) =~ s/$CGIROOT//;
@@ -42,84 +45,9 @@ setBaseURL($myurl);
 
 # the directory we are currently
 $sub = path_info();
+setSubDir($sub);
 $fullurl = "$myurl/$sub";
 
-
-
-
-
-###################################################################################
-###################################################################################
-###################################################################################
-#sub fixhl { 
-#  my (@lines, @ridx, @url, $routine, @res, @fixed);
-  
-#  @lines = @_;
-#  @ridx = readRoutineIdx($DIRINDEX);
-#  foreach (@lines){
-#    s/<[^<>]*>//g; # remove HTML stuff
-#    s/\s+//g;      # remove whitespaces    
-#    s,\(.*?\),,g;  # remove braces like routine()
-#    @url = split(',', $_);
-#    foreach $routine (@url){
-#      @res = grep { /\/$routine\.pro/i  } @ridx; 
-#      $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=text&show=header>$routine</A>" : $routine);
-#    }
-#    push(@fixed, join(', ', @url));
-#  }
-#  return @fixed;
-#}
-
-
-
-
-
-###################################################################################
-###################################################################################
-###################################################################################
-#sub readRoutineIdx{
-
-#  my ($file) = @_;
-
-#  createRoutineIdx() unless -r $DIRINDEX;
-#  open (IDX, "<$file") || die "can't open $file for read: $!\n";
-#  my @ridx = <IDX>; chomp @ridx;
-#  close (IDX) || die "can't close $file, $!\n";
-  
-#  return @ridx;
-#}
-
-
-
-
-
-####################################################################################
-####################################################################################
-####################################################################################
-#sub createRoutineIdx {
-
-#  my %alpha;
-  
-#  open (IDX, ">$DIRINDEX") || die "can't open $DIRINDEX for write: $!\n";
-#  find(\&appendFile, $DOCDIR);
-#  close (IDX) || die "can't close $DIRINDEX: $!\n";
-   
-#  open (IDX, ">$ALPHINDEX") || die "can't open $ALPHINDEX for write: $!\n";
-#  foreach (sort keys %alpha){
-#    print IDX "$alpha{$_}\n";
-#  }
-#  close (IDX) || die "can't close $ALPHINDEX: $!\n";
-
-#  sub appendFile {
-#    if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
-#      my $file = $File::Find::name;
-#      $file =~ s/$DOCDIR//; 
-#      $file =~ s/^(\/)+//; 
-#      print IDX "$file\n";
-#      $alpha{basename($file)} = $file;
-#    }
-#  }
-#}
 
 
 
@@ -154,6 +82,11 @@ sub updatedoc {
 
   print "generating routine index...";
   createRoutineIdx();
+  print "...done\n";
+  print "generating directory indices...";
+  createAim("/");
+  print "generating keyword lists...";
+  keylista();
   print "...done</PRE>";
 }
 
@@ -284,7 +217,7 @@ sub showdir {
   ($reldir = $mydir) =~ s,.*\/,,;
 
   # display yourself
-  print a({href=>"$myurl/$mydir?mode=list",target=>"list"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."$reldir"), br;
+  print a({href=>"$myurl/$mydir?mode=dir",target=>"_top"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."$reldir"), br;
   
 
   # if you are the target path display all, otherwise do nothing
@@ -320,7 +253,10 @@ sub showdir {
 ###################################################################################
 print header;
 #print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
-print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE></HEAD>";
+print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE>\n";
+print '<style type="text/css">', "\n";
+print "<!-- blockquote { margin-left:15px; }\n";
+print "//-->\n</style>\n</HEAD>";
 
 $lastmod = checkRoutineIdx();
 if ($P::mode){
@@ -330,10 +266,14 @@ if ($P::mode){
 		      last TRUNK;};
     /list/i   && do { print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
-		      print font({size=>"-2"}, 
-				 hr,
-				 "last update: $lastmod, ",
-				 a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), br,
+		      print hr,
+		      a({href=>"$URL/".getROUTINES, target=>"text"}, "routine index"), ", ",
+		      "keyword index (",a({href=>"$URL/".getKEYA, target=>"text"}, "name"), ", ",
+		      a({href=>"$URL/".getKEYO, target=>"text"}, "count"), ")",
+		      font({size=>"-2"}, 
+			   hr,
+			   "last update: $lastmod, ",
+			   a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), br,
 		      font({size=>"-2"}, 
 			   '$Id$ ');
 		      last TRUNK;};
@@ -341,14 +281,21 @@ if ($P::mode){
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
 				  } else {
-				    open(IDX, "<$INDEXURL") || die "can't open $INDEXURL: $!\n";
+				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") || die "can't open index: $!\n";
 				    while(<IDX>){print;};
+				    close(IDX) || die "can't close index: $!\n";
+				    last TRUNK;};
 				  };
-		      
-		      last TRUNK;};
+    /dir/i   && do { print '<frameset cols="180,*">';
+		     print frame({src=>"$fullurl?mode=list", name=>"list"});
+		     print frame({src=>"$fullurl?mode=text&show=aim", name=>"text"});
+		     print '</frameset>';
+		     print "<BODY>i cant handle frames!!";
+		     last TRUNK;
+		   }
   }
 } else {
-  print '<frameset cols="180,*">';
+  print '<frameset cols="250,*">';
   print frame({src=>"$fullurl?mode=list", name=>"list"});
   print frame({src=>"$fullurl?mode=text", name=>"text"});
   print '</frameset>';
