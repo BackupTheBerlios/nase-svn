@@ -16,6 +16,7 @@ use Tie::DBI;
 use constant DATABASE => 'nase';
 use constant AUSER    => 'chiefnase';
 use constant APASSWD  => 'misfitme';
+use constant HOST     => 'neuro.physik.uni-marburg.de:3306';
 
 require Exporter;
 
@@ -127,13 +128,13 @@ BEGIN {
 
 
   # manage database
-  $dbh = DBI->connect("DBI:mysql:database=".DATABASE, AUSER, APASSWD);
+  $dbh = DBI->connect("DBI:mysql:database=".DATABASE.";".HOST, AUSER, APASSWD);
   die "connect error: $DBI::errstr\n" if $DBI::err;
   # create tables if not existent
   createTablesIfNotExist();
   # tie to tables
   tie %pro, 'Tie::DBI', {
-			 db       => "dbi:mysql:database=" . DATABASE,
+			 db       => "dbi:mysql:database=" . DATABASE.";".HOST,
 			 table    => 'pro',
 			 key      => 'fname',
 			 user     => AUSER,
@@ -143,7 +144,7 @@ BEGIN {
     || die "can't tie to database: $!\n";
 
   tie %catl, 'Tie::DBI', {
-			 db       => "dbi:mysql:database=" . DATABASE,
+			 db       => "dbi:mysql:database=" . DATABASE.";".HOST,
 			 table    => 'catl',
 			 key      => 'cname',
 			 user     => AUSER,
