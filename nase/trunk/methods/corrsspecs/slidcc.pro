@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1999/12/02 15:08:16  saam
+;           simplified calculation of the real time shift
+;
 ;     Revision 1.2  1998/07/15 09:48:24  saam
 ;           bug in docu
 ;
@@ -50,6 +53,7 @@ FUNCTION SlidCC, A,B, PShift, taxis, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=sa
    Default, SSIZE       , 128
    Default, SSHIFT      , SSIZE/2
    Default, PSHIFT      , 64
+   RShift = PShift/(1000*SAMPLEPERIOD) ; the actual shifts
    Default, TITLE, 'Sliding CCH'
    title = title + ', slice: '+STRCOMPRESS(SSIZE, /REMOVE_ALL)+' ms'
 
@@ -85,20 +89,20 @@ FUNCTION SlidCC, A,B, PShift, taxis, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=sa
    
 
    slicenr = (SIZE(SA))(1)
-   SCC = FltArr(slicenr, 2*PShift+1)
+   SCC = FltArr(slicenr, 2*RShift+1)
    FOR i=0,slicenr-1 DO BEGIN
       slicea = REFORM(LExtrac(SA, 1, i))
       sliceb = REFORM(LExtrac(SB, 1, i))
-      SCC(i, *) = CrossCor(slicea, sliceb, pshift)
+      SCC(i, *) = CrossCor(slicea, sliceb, rshift)
    END
 
 
    IF Keyword_Set(PLOT) THEN BEGIN
       OpenSheet, SLIDCC_1
-      PlotTvScl, SCC, /FULLSHEET, /LEGEND, XRANGE=[-PShift,PShift], YRANGE=[0,(SIZE(A))(1)], /ORDER, /NASE, XTITLE='!7s!3 / ms', YTITLE='t / ms', TITLE=title
+      PlotTvScl, SCC, /FULLSHEET, /LEGEND, XRANGE=[-PShift,PShift], YRANGE=[0,(SIZE(A))(1)*(1000*SAMPLEPERIOD)], /ORDER, /NASE, XTITLE='!7s!3 / ms', YTITLE='t / ms', TITLE=title
       CloseSheet, SLIDCC_1
    END
 
-   taxis = IndGen(2*PShift+1)-PShift
+   taxis = (IndGen(2*RShift+1)-RShift)*(1000*SAMPLEPERIOD)
    RETURN, REFORM(SCC,/OVERWRITE)
 END
