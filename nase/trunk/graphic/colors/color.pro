@@ -60,6 +60,15 @@
 ;
 ;-
 
+	FUNCTION WORDPOS, REF, S, help=hlp
+ 
+	L = 0
+LOOP:	W = GETWORD(REF, L)
+	IF W EQ '' THEN RETURN, -1
+	IF S EQ W THEN RETURN, L
+	L = L + 1
+	GOTO, LOOP
+	END
  
 PRO color, name0, index, rct, gct, bct, learn=lrn, $
            list=lst, number=num, name=nam, maxnumber=mx, text=txt, $
@@ -139,7 +148,7 @@ COMMON color_com, flag, cc, rr, gg, bb
       sfact = .5                ; Saturation factor for dull.
       if vpos eq (dlpos-1) then sfact=.3 ; Sat. fact. for very dull.
   endif
-  name = getwrd(name,lo,9)      ; Ignore modifiers.
+  name = getword(name,lo,9)      ; Ignore modifiers.
   
   w = where(name eq cc, count)  ; Look up desired color.
   lflag = 0                     ; Learn flag, put new at end.
