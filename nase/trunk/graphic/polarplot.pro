@@ -92,6 +92,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.17  2000/07/18 12:59:40  saam
+;              killed a vagabondizing title string
+;
 ;        Revision 2.16  2000/07/18 12:56:51  saam
 ;              + split into plot and oplot part
 ;              + code cleanup
@@ -175,7 +178,7 @@ Default, charsize, 1.0
 plot,radiusarray , anglearray,/POLAR, /NODATA, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
  XRANGE=xrange, YRANGE=yrange, $
- TITLE=title,_EXTRA=e
+ TITLE='',_EXTRA=e
 
 PTMP = !P.MULTI
 !P.MULTI(0) = 1
@@ -209,7 +212,7 @@ plotregion_device_new = [[plotregion_device(*,0)]-shift_plotregion_device,$
 plot, radiusarray, anglearray,/POLAR, $
   XSTYLE=xstyle, YSTYLE=ystyle, $
   XRANGE=xrange, YRANGE=yrange, $
-  TITLE=title ,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e
+  TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e
 
 
 
