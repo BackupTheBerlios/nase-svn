@@ -20,11 +20,14 @@
 ;                       IF Overflow THEN Print,'Ueberlauf'
 ;                    END
 ;
-; SEE ALSO:          <A HREF=#INITCOUNTER>InitCounter</A>
+; SEE ALSO:          <A HREF="#INITCOUNTER">InitCounter</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1997/11/25 10:35:46  saam
+;           another HTML-Bug
+;
 ;     Revision 2.2  1997/11/25 10:30:24  saam
 ;           Hyperlinks hatten einen BUG
 ;

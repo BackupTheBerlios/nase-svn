@@ -20,11 +20,14 @@
 ;                       print, Count(DigitalUhrMitSekunden)
 ;                    END
 ;
-; SEE ALSO:          <A HREF=#COUNT>Count</A>, </A HREF=#COUNT>ResetCounter</A>, </A HREF=#COUNTVALUE>CountValue</A>
+; SEE ALSO:          <A HREF="#COUNT">Count</A>, </A HREF="#RESETCOUNTER">ResetCounter</A>, </A HREF="#COUNTVALUE">CountValue</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1997/11/25 10:35:46  saam
+;           another HTML-Bug
+;
 ;     Revision 2.3  1997/11/25 10:30:25  saam
 ;           Hyperlinks hatten einen BUG
 ;
