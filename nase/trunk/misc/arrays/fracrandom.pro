@@ -49,7 +49,7 @@
 ;*print, FracRandom(10000)
 ;-
 FUNCTION FracRandom, n, m, OLDMETHOD=OLDMETHOD , VERBOSE=VERBOSE
-   COMMON commonrandom, seed
+   COMMON common_random, seed
 
    ; check for argument count
    np = N_Params()
