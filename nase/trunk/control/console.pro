@@ -44,6 +44,8 @@
 ;  WARNING:: A warning message (/WARNING=LEVEL20)
 ;  MSG    :: MeSsaGe ... no further action (/MSG=LEVEL10)
 ;  DEBUG  :: A debug message (/DEBUG=LEVEL5)
+;            You may want to consider using the <A>DMsg</A> command
+;            instead.
 ;  
 ;  UP     :: moves cursor one line up before
 ;            printing
@@ -66,13 +68,16 @@
 ;* ConsoleTime,MyCons,30,30.0
 ;* Freeconsole, MyCons
 ;
-; SEE ALSO: <A>InitConsole</A>, <A>ConsoleThreshold</A>
+; SEE ALSO: <A>InitConsole</A>, <A>ConsoleThreshold</A>, <A>DMsg</A>
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.17  2000/10/10 16:17:45  kupper
+;     Added hyperlink to DMsg.
+;
 ;     Revision 2.16  2000/10/10 15:15:55  kupper
 ;     Renomed ContainerElements to ContainedElements.
 ;
