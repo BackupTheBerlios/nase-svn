@@ -33,6 +33,7 @@
 ;                            Neuronen sehen will.
 ;                     TOS  : Muß gesetzt werden, wenn man die
 ;                            Verbindungen ZU den Neuronen sehen will.
+;                     DELAYS: Falls gesetzt, werden nicht die Gewichte, sondern die Delays visualisiert
 ;
 ; OUTPUTS: Gewichtsmatrix, an die Fenstergroesse angepasst.
 ;
@@ -69,16 +70,18 @@
 ;                           was auf Displays mit weniger als 256 freien Indizes (d.h. wenn IDL eine Public Colormap benutzt)
 ;                           den maximalen Kontrast erreicht.
 ;                           Rüdiger, 1.8.1997
+;                       Schluesselwort DELAYS hinzugefuegt, sodass nun auch alternativ auch die Verzoegerungen dargestellt werden koennen, Mirko, 3.8.97
 ;
 ;-
 
 
-PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, FROMS=froms,  TOS=tos
+PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, FROMS=froms,  TOS=tos, DELAYS=delays
 
 If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
 if keyword_set(TOS) then begin                   ; Source- und Targetlayer vertauschen:
    Matrix = {Weights: Transpose(_Matrix.Weights), $
+             Delays : Transpose(_Matrix.Delays),$
              source_w: _Matrix.target_w, $
              source_h: _Matrix.target_h, $
              target_w: _Matrix.source_w, $
@@ -110,11 +113,19 @@ erase, MaxFarbe
 
 
 
+IF Keyword_Set(Delays) THEN BEGIN
+   Max_Amp = max(Matrix.Delays)*1.0
+END ELSE BEGIN
+   Max_Amp = max(Matrix.Weights)
+END
 
-Max_Amp = max(Matrix.Weights)
 if Max_Amp eq 0 then Max_Amp = 1 ;falls Array nur Nullen enthält
 
-MatrixMatrix= reform(Matrix.Weights/Max_Amp*(MaxFarbe-1), Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+IF Keyword_Set(Delays) THEN BEGIN
+   MatrixMatrix= reform(Matrix.Delays/Max_Amp*(MaxFarbe-1), Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+END ELSE BEGIN
+   MatrixMatrix= reform(Matrix.Weights/Max_Amp*(MaxFarbe-1), Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
+END
 
 for YY= 0, Matrix.source_h-1 do begin
    for XX= 0, Matrix.source_w-1 do begin  
