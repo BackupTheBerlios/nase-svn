@@ -1,12 +1,16 @@
 ;+
-; NAME:              MaxWeight
+; NAME:
+;  MaxWeight()
+;
+; AIM: Fast search for maximum connection strength in DW structure.
 ;
 ; PURPOSE:           Ermittelt das maximale Gewicht in einer SDW-Struktur. 
 ;                    Das kann man natuerlich auch mit MAX(Weights(SDW)) 
 ;                    erreichen, dieser Zugriff ist aber schreiend ineffizient
 ;                    (Faktor 150(!!!!) beim Example unten)                   
 ; 
-; CATEGORY:          SIMULATION CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:  MW = MaxWeight(DW)
 ;
@@ -27,9 +31,14 @@
 ; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights()</A>, <A HREF="#MINWEIGHT">MinWeight()</A>,
 ;                    <A HREF="#MEANWEIGHT">MeanWeight()</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.3  1998/03/09 16:02:46  kupper
 ;            Nimmt jetzt auch oldstyle-DWs.
 ;
@@ -42,7 +51,7 @@
 ;           tatsaechlich vorhandene Gewichte gebildet wird.
 ;
 ;
-;-
+
 FUNCTION MaxWeight, _DW
 
    TestInfo, _DW, "DW"          ;Ist es überhaupt eine DW oder SDW?

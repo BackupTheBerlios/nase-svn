@@ -1,5 +1,8 @@
 ;+
-; NAME:              MinWeight
+; NAME:
+;  MinWeight()
+;
+; AIM: Fast search for minimum connection strength in DW structure.
 ;
 ; PURPOSE:           Ermittelt das minimale Gewicht in einer SDW-Struktur. 
 ;                    Das kann man natuerlich auch mit MIN(Weights(SDW)) 
@@ -8,7 +11,8 @@
 ;                    Auﬂerdem werden hier !NONE-Verbindungen
 ;                    automatisch ingoriert.                   
 ; 
-; CATEGORY:          SIMULATION CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:  MW = MinWeight(DW)
 ;
@@ -29,9 +33,14 @@
 ; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights()</A>, <A HREF="#MAXWEIGHT">MaxWeight()</A>,
 ;                    <A HREF="#MEANWEIGHT">MeanWeight()</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.2  1998/03/09 16:02:47  kupper
 ;            Nimmt jetzt auch oldstyle-DWs.
 ;
@@ -39,7 +48,7 @@
 ;           ja,ja ich hab's erstellt
 ;
 ;
-;-
+
 FUNCTION MinWeight, _DW
 
    

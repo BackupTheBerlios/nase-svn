@@ -1,10 +1,14 @@
 ;+
-; NAME:               SaveDW
+; NAME:
+;  SaveDW()
+;
+; AIM: Generate version of DW structure that can be saved.
 ;
 ; PURPOSE:            Liefert eine speicherbare Variante
 ;                     einer DelayWeigh-Struktur zurueck
 ;
-; CATEGORY:           SIMULATON CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:   SavDW = SaveDW(DW)
 ;
@@ -13,9 +17,14 @@
 ; OUPUTS:             SavDW: eine Struktur, die z.B. mit der IDL-Routine SAVE
 ;                            gespeichert werden kann
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.4  1998/02/05 13:16:03  saam
 ;           + Gewichte und Delays als Listen
 ;           + keine direkten Zugriffe auf DW-Strukturen
@@ -37,7 +46,7 @@
 ;           Birth
 ;
 ;
-;-
+
 
 FUNCTION SaveDW, DW
 

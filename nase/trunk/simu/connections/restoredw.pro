@@ -1,12 +1,16 @@
 ;+
-; NAME:               RestoreDW
+; NAME:
+;  RestoreDW()
+;
+; AIM: Restore DW structure.
 ;
 ; PURPOSE:            Ist ein Zusatz zur IDL-Routine RESTORE fuer DelayWeigh-Structuren.
 ;                     Diesen haben naemlich dynamische Tags, die nicht so ohne weiteres 
 ;                     gespeichert werden koennen. Diese Routine speichert sie zwar nicht, 
 ;                     sondern baut die entsprechenden Tags neu auf.
 ;
-; CATEGORY:           SIMULATION / CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:   Handle_DW = RestoreDW (Saved_DW)
 ;
@@ -27,9 +31,14 @@
 ;
 ; SEE ALSO: <A HREF="#SAVEDW">SaveDW</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.5  1998/02/05 13:16:03  saam
 ;           + Gewichte und Delays als Listen
 ;           + keine direkten Zugriffe auf DW-Strukturen
@@ -57,7 +66,6 @@
 ;          Schoepfung
 ;
 ;
-;-
 
 FUNCTION RestoreDW, DW
 

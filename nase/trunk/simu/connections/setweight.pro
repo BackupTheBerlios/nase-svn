@@ -1,5 +1,8 @@
 ;+
-; NAME: SetWeight
+; NAME:
+;  SetWeight
+;
+; AIM: Set single connections in DW structure to given strengths.
 ;
 ; PURPOSE: Schreibt ein oder mehrere Gewichte in eine
 ;          Delay_Weight-Struktur.
@@ -9,7 +12,8 @@
 ;          SetWeight eine Prozedur ist, und hier als zweites Argument das (die) Gewicht(e) 
 ;          angegeben wird.
 ;
-; CATEGORY: SIMULATION / CONNECTIONS 
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:          SetWeight ( D_W_Struktur, Gewicht,
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -73,9 +77,14 @@
 ;
 ; SEE ALSO: <A HREF="#GETWEIGHT">GETWEIGHT</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.21  2000/09/25 16:49:14  thiel
+;           AIMS added.
+;
 ;       Revision 1.20  1999/08/17 14:15:07  thiel
 ;           Bugfix in Old_DW_Part of SetWeights.
 ;           Setweight now uses new version of SetWeights.
@@ -146,7 +155,6 @@
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		Urversion erstellt.
-;-
 
 Pro SetWeight, DW, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $

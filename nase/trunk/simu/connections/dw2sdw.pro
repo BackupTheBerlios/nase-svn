@@ -1,5 +1,6 @@
 ;+
-; NAME: DW2SDW
+; NAME:
+;  DW2SDW
 ;
 ; AIM: Transform a DW connection matrix into a SDW connection struct.
 ;
@@ -11,7 +12,7 @@
 ;
 ;          Note: DW2SDW replaces Init_SDW
 ;
-; CATEGORY: INTERNAL SIMU CONNECTIONS
+; CATEGORY: Simulation / Connections (Internal!)
 ;
 ; CALLING SEQUENCE:   DW2SDW, DW
 ;
@@ -24,9 +25,14 @@
 ;
 ; SEE ALSO: <A HREF='#SDW2DW>SDW2DW</A>, <A HREF='#INITDW>InitDW</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.13  2000/07/18 16:38:46  kupper
 ;     Implemented Poggio&Riesenhuber-like MAX conjuction operation.
 ;
@@ -75,7 +81,7 @@
 ;           Cool
 ;
 ;
-;-
+
 
 PRO DW2SDW, _DW
 

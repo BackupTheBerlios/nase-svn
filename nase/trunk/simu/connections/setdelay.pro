@@ -1,7 +1,8 @@
 ;+
-; NAME: SetDelay
+; NAME:
+;  SetDelay
 ;
-;
+; AIM: Set delays of single connections contained in DW structure. 
 ;
 ; PURPOSE: Schreibt ein oder mehrere Delays in eine
 ;          Delay_Weight-Struktur.
@@ -11,7 +12,8 @@
 ;          SetDelay eine Prozedur ist, und hier als zweites Argument das (die) Delay(s)
 ;          angegeben wird.
 ;
-; CATEGORY: SIMU/CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:           SetDelay ( D_W_Struktur, Delay,
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -52,9 +54,14 @@
 ;
 ; EXAMPLE:siehe GetDelay()
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.12  1998/12/15 13:02:20  saam
 ;             multiple bugfixes
 ;
@@ -103,8 +110,6 @@
 ;		Urversion erstellt, im wesentlichen durch Kopieren von
 ;		SetWeight.
 ;
-;
-;-
 
 PRO SetDelay, DW, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
               T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $

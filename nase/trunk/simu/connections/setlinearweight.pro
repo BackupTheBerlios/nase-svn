@@ -1,10 +1,14 @@
 ;+
-; NAME: SetLinearWeight
+; NAME:
+;  SetLinearWeight
+;
+; AIM: Set connection strengths decreasing linearly with distance.
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
 ;          Verbindungen kegelförmig.
 ;
-; CATEGORY: Simulation
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetLinearWeight ( DWS
 ;                                   [,Maximum] [,Range=Reichweite]
@@ -41,9 +45,14 @@
 ;                           SetLinearWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;                           ShowWeights, My_DWS, /FROMS,  Groesse=4
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/25 16:49:14  thiel
+;           AIMS added.
+;
 ;       Revision 1.4  1998/02/05 13:16:08  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -63,7 +72,7 @@
 ;
 ;		Urversion erstellt, im wesentlichen Durch Übernahme von SetGaussWeight und SetLinearDelay
 ;
-;-
+
 PRO SetLinearWeight, DWS, Amp, Range, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $

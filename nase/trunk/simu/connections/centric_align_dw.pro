@@ -2,13 +2,13 @@
 ; NAME:
 ;  Centric_align_DW
 ;
-; AIM: Align the RFs od PFs of a DW matrix in a concentric manner.
+; AIM: Align the RFs or PFs of a DW matrix in a concentric manner.
 ;  
 ; PURPOSE:
 ;  -please specify-
 ;  
 ; CATEGORY:
-;  -please specify-
+;  Simulation / Connections
 ;  
 ; CALLING SEQUENCE:
 ;  -please specify-
@@ -52,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/25 16:49:13  thiel
+;            AIMS added.
+;
 ;        Revision 2.1  2000/09/07 17:34:16  kupper
 ;        Useful for DW Auswertung.
 ;

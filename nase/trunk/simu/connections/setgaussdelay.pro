@@ -1,10 +1,14 @@
 ;+
-; NAME: SetGaussDelay
+; NAME: 
+;  SetGaussDelay
 ;
+; AIM: Set connection delays increasing with distance like Gaussian bell curve.
+; 
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
 ;          Delays gaussförmig. (Eine umgedrehte Gaussglocke mit Minimum im Zentrum!)
 ;
-; CATEGORY: Simulation
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetGaussDelay ( DWS
 ;                                   [,MIN=Minimum] [,Maximum] [,Sigma | ,HWB=Halbwertsbreite]
@@ -44,9 +48,14 @@
 ;                           SetGaussDelay, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;                           ShowWeights, My_DWS, /FROMS,  Groesse=4, /DELAYS
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.4  1998/02/05 13:16:07  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -66,7 +75,6 @@
 ;
 ;		Urversion erstellt, im wesentlichen durch Übernahme von SetGaussWeight.
 ;
-;-
 
 PRO SetGaussDelay, DWS, Amp, Sigma, HWB=hwb, MIN=min, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $

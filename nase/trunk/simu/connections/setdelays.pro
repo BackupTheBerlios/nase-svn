@@ -1,9 +1,13 @@
 ;+
-; NAME:                SetDelays
+; NAME:
+;  SetDelays
 ;
-; PURPOSE:             Setzt die Delaysmatrix der DelayWeigh-Struktur 
+; AIM: Set all delays of connections contained in DW structure.
 ;
-; CATEGORY:            SIMULATION CONNECTIONS
+; PURPOSE:             Setzt die Delaymatrix der DelayWeigh-Struktur 
+;
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:    SetDelays, DW, D
 ;
@@ -19,9 +23,14 @@
 ;
 ; SEE ALSO:            <A HREF="#INITDW">InitDW</A>, <A HREF="#DELAYS#">Delays</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.3  1998/02/05 13:16:06  saam
 ;           + Gewichte und Delays als Listen
 ;           + keine direkten Zugriffe auf DW-Strukturen
@@ -36,8 +45,7 @@
 ;     Revision 2.1  1998/01/05 17:20:24  saam
 ;           Jo, hmm, viel Spass...
 ;
-;
-;-
+
 PRO SetDelays, _DW, D
    
    IStr = Info(_DW) 

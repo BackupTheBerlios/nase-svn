@@ -1,7 +1,8 @@
 ;+
-; NAME: GetWeight()
+; NAME:
+;  GetWeight()
 ;
-;
+; AIM: Read single weights from given DW structure. 
 ;
 ; PURPOSE: Liest ein oder mehrere Gewichte aus einer
 ;          Delay_Weight-Struktur aus
@@ -9,7 +10,7 @@
 ;          Dies ist das Gegenstück zu SetWeight.
 ;
 ;
-; CATEGORY: Simulation
+; CATEGORY: Simulation / Connections
 ;
 ; CALLING SEQUENCE: Gewicht = GetWeight ( D_W_Struktur
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -36,10 +37,15 @@
 ;
 ; PROCEDURE: Set(), LayerIndex()
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.6  1998/05/16 16:02:20  kupper
 ;              Verarbeitet jetzt auch Arrays von Indizes...
 ;
@@ -70,7 +76,7 @@
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		Urversion erstellt.
-;-
+
 
 Function GetWeight, DW, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, NONE=none

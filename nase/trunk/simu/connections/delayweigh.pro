@@ -1,5 +1,6 @@
 ;+
-; NAME: DelayWeigh
+; NAME:
+;  DelayWeigh()
 ;
 ; AIM: Propagate spikes through a connection matrix.
 ;
@@ -10,7 +11,7 @@
 ;          single target neuron, the weights are combined according to
 ;          the conjunction method specified in the SDW structure.
 ;
-; CATEGORY: SIMULATION
+; CATEGORY: Simulation / Connections
 ;
 ; CALLING SEQUENCE: OutVector = DelayWeigh(Matrix, InHandle)
 ;
@@ -33,9 +34,14 @@
 ;          
 ;          FOR z=0,6 DO print, SpassBeiseite(DelayWeigh( MyDelMat, Handle_Create(!MH, VALUE=Spassmacher([0,0,0,0,0,0,0]))) )
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.42  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.41  2000/07/18 16:38:46  kupper
 ;       Implemented Poggio&Riesenhuber-like MAX conjuction operation.
 ;
@@ -186,7 +192,7 @@
 ;                         Initialisierung der Struktur Matrix nun bei jedem Zeitschritt, damit Gewichte die vorher Null
 ;                         waren im foldenden auch wirksam sind, Mirko, 5.8.97
 ;
-;-
+
 
 Pro register_Output, outvector, targetneuron, strength, method
    case method of

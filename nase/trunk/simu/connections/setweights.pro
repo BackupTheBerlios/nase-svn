@@ -1,9 +1,13 @@
 ;+
-; NAME: SetWeights
+; NAME:
+;  SetWeights
+;
+; AIM: Set complete connection strengths contained in DW structure.
 ;
 ; PURPOSE: Setzt die Gewichtsmatrix einer DelayWeigh-Struktur. 
 ;
-; CATEGORY: SIMULATION / CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetWeights, DW, W [,/NO_INIT] [,/DIMENSIONS]
 ;
@@ -32,9 +36,14 @@
 ;
 ; SEE ALSO: <A HREF="#INITDW">InitDW</A>, <A HREF="#WEIGHTS">Weights</A>.
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/09/25 16:49:14  thiel
+;         AIMS added.
+;
 ;     Revision 2.7  1999/09/08 13:19:31  saam
 ;           + debugging help-statment deleted
 ;
@@ -61,8 +70,7 @@
 ;     Revision 2.1  1998/01/05 17:20:23  saam
 ;           Jo, hmm, viel Spass...
 ;
-;
-;-
+
 PRO SetWeights, _DW, W, NO_INIT=no_init, DIMENSIONS=dimensions
 
    Default, no_init, 1

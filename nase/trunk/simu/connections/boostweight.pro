@@ -1,11 +1,12 @@
 ;+
-; NAME:     BOOSTWEIGHT
+; NAME:
+;  BoostWeight
 ;
+; AIM: Multiply connection strengths of DW structure by given factor.
 ;
 ; PURPOSE:  Multipliziert die Gewichte einer DWS-Struktur mit einem Faktor
 ;
-;
-; CATEGORY: Connections
+; CATEGORY: Simulation / Connections
 ;
 ;
 ; CALLING SEQUENCE:   BOOSTWEIGHT, D_W_Struktur, FACTOR
@@ -21,10 +22,15 @@
 ;                          SetGaussWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;                          BOOSTWEIGHT,My_DWS,2.0
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.6  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.5  1998/02/11 17:08:42  kupper
 ;            Tippfehler korrigiert.
 ;
@@ -48,7 +54,7 @@
 ;          eine Geburt
 ;
 ;
-;-
+
 
 PRO BOOSTWEIGHT, DW, factor
 

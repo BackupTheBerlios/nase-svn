@@ -1,9 +1,12 @@
 ;+
-; NAME:                FreeDW
+; NAME:
+;  FreeDW
+;
+; AIM: Free memory allocated by DW structure.
 ;
 ; PURPOSE:             Gibt den von InitDW belegten dynamischen Speicher wieder frei
 ;
-; CATEGORY:            SIMULATION
+; CATEGORY: Simulation /Connections
 ;
 ; CALLING SEQUENCE:    FreeDW, Layer
 ;
@@ -15,9 +18,14 @@
 ;                      Layer = InitDW(....)
 ;                      FreeDW, Layer
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.12  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 2.11  1999/07/27 16:23:43  thiel
 ;           DW.queuehdl: A handle to a spikequeue.
 ;
@@ -58,7 +66,7 @@
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;	      Schoepfung 
 ;
-;-
+
 PRO FreeDW, _DW
 
    IF (Info(_DW) EQ 'DW_DELAY_WEIGHT') OR (Info(_DW) EQ 'DW_WEIGHT') THEN BEGIN

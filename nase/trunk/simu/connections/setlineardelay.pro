@@ -1,10 +1,14 @@
 ;+
-; NAME: SetLinearDelay
+; NAME:
+;  SetLinearDelay
+;
+; AIM: Set connection delays increasing linearly with distance.
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
 ;          Delays kegelförmig. (Ein umgedrehter Kegel mit Minimum im Zentrum!)
 ;
-; CATEGORY: Simulation
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetLinearDelay ( DWS
 ;                                   [,MIN=Minimum] [,Maximum] [,Range=Reichweite]
@@ -49,9 +53,14 @@
 ;                           SetLinearDelay, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;                           ShowWeights, My_DWS, /FROMS,  Groesse=4, /DELAYS
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.6  1998/11/08 17:47:03  saam
 ;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
 ;             + problem with NOCON corrected
@@ -80,7 +89,7 @@
 ;
 ;		Urversion erstellt, im wesentlichen durch Übernahme von SetGaussDelay.
 ;
-;-
+
 
 Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $

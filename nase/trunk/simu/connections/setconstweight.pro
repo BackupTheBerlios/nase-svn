@@ -1,11 +1,15 @@
 ;+
-; NAME: SetConstWeight
+; NAME:
+;  SetConstWeight
+;
+; AIM: Set connections from single neuron in source layer to fixed strength.
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem 
 ;          Neuron im Source-Layer wegführenden Verbindungen konstant bis zu 
 ;          einer maximalen Reichweite.
 ;
-; CATEGORY: SIMULATION / CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: 
 ;   SetConstWeight ( DWS [,Wert] [,Range]
@@ -65,9 +69,14 @@
 ;          SetConstWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;          ShowWeights, My_DWS, /FROMS,  Groesse=4
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.12  1999/09/06 13:03:35  thiel
 ;           Small header improvement.
 ;
@@ -112,7 +121,7 @@
 ;
 ;		Urversion erstellt, durch Modifikation von setlinearweight.pro von Ruediger
 ;
-;-
+
 PRO SetConstWeight, DWS, Amp, Range, $
                     S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                     T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $

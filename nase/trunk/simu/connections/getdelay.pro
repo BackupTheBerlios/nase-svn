@@ -1,12 +1,15 @@
 ;+
-; NAME: GetDelay()
+; NAME:
+;  GetDelay()
+;
+; AIM: Read single delays from given DW structure.
 ;
 ; PURPOSE: Liest ein oder mehrere Delays aus einer
 ;          Delay_Weight-Struktur aus
 ;
 ;          Dies ist das Gegenstück zu SetDelay.
 ;
-; CATEGORY: Simulation
+; CATEGORY: Simulation / Connections
 ;
 ; CALLING SEQUENCE: Delay = GetDelay ( D_W_Struktur
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -30,14 +33,19 @@
 ;             so ist der Output das Array aller zu diesem Neuron hinführenden Verbindungen.
 ;             Das Array ist ZWEIDIMENSIONAL und hat die Ausmaße des Source-Layers.
 ;
-;; RESTRICTIONS: Geht natürlich nur, wenn die Struktur mit Delays
+; RESTRICTIONS: Geht natürlich nur, wenn die Struktur mit Delays
 ;               initialisiert wurde!
 ;
 ; PROCEDURE: Set(), LayerIndex()
 ;
+;-  
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.6  1998/02/05 13:16:01  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -57,7 +65,7 @@
 ;		Urversion erstellt, im wesentlichen durch kopieren von
 ;		GetWeight().
 ;
-;-  
+
 Function GetDelay, DW, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
 

@@ -1,10 +1,14 @@
 ;+
-; NAME: SetConstDelay
+; NAME:
+;  SetConstDelay
+;
+; AIM: Set all connections from single neuron in source layer to fixed delay.
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
 ;          Delays konstant bis zu einer maximalen Reichweite.
 ;
-; CATEGORY: SIMU/CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetConstDelay ( DWS
 ;                                   [,Wert] [,Range=Reichweite]
@@ -43,9 +47,14 @@
 ;                           SetConstDelay, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;                           ShowWeights, My_DWS, /FROMS,  Groesse=4
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.8  1998/11/09 10:40:43  saam
 ;             NOCON (Range) cut radius+1
 ;
@@ -85,7 +94,6 @@
 ;
 ;		Urversion erstellt, durch Modifikation von setconstweight.pro
 ;
-;-
 
 Pro SetConstDelay, DWS, Amp, Range, $
                    S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $

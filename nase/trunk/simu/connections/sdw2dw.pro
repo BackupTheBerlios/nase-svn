@@ -1,5 +1,6 @@
 ;+
-; NAME:               SDW2DW
+; NAME:
+;  SDW2DW()
 ;
 ; AIM: Transform a SDW connection struct into a DW connection matrix.
 ;
@@ -9,7 +10,8 @@
 ;          connection matrices and should ONLY BE USED IF YOU ARE
 ;          AWARE OF WHAT YOU'RE DOING! 
 ;
-; CATEGORY: INTERNAL SIMU CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections (Internal!)
 ;
 ; CALLING SEQUENCE:   DW = SDW2DW(SDW [,/KEEP_ARGUMENT])
 ;
@@ -28,9 +30,14 @@
 ;
 ; SEE ALSO: <A HREF='#DW2SDW>DW2SDW</A>, <A HREF='#INITDW>InitDW</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.9  2000/08/04 09:43:38  thiel
 ;         Changed position of Handle_Value, _SDW, SDW, /NO_COPY to enable
 ;         correct work of DWDim.
@@ -66,7 +73,6 @@
 ;           Cool
 ;
 ;
-;-
 
 FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
 

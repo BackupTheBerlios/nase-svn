@@ -1,10 +1,14 @@
 ;+
-; NAME: SetDOGWeight
+; NAME:
+;  SetDOGWeight
+;
+; AIM: Set mexican-hat like connection strengths from single source neuron.
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
-;          Verbindungen Mexica-Hat-förmig. (DOG="Difference of Gaussians")
+;          Verbindungen Mexican-Hat-förmig. (DOG="Difference of Gaussians")
 ;
-; CATEGORY: SIMU/CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetDOGWeight ( DWS
 ;                                   [,Maximum] [,On_Sigma | ,ON_HWB=Halbwertsbreite] [,Off_Sigma | ,OFF_HWB=Halbwertsbreite]
@@ -52,9 +56,14 @@
 ;                           SetDOGWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20, 1, ON_HWB=3, OFF_HWB=7
 ;                           ShowWeights, My_DWS, /FROMS,  Groesse=4
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.8  1998/03/20 16:13:58  thiel
 ;              Benutzt kein _EXTRA mehr, um Konflikte mit ALL
 ;              zu vermeiden.
@@ -86,7 +95,6 @@
 ;
 ;		Urversion erstellt, im wesentlichen durch Übernahme von SetGaussWeight.
 ;
-;-
 
 Pro SetDOGWeight, DWS, Amp, On_Sigma, Off_Sigma, ON_HWB=on_hwb, OFF_HWB=off_hwb, $
                   S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $

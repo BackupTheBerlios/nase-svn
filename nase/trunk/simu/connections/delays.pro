@@ -1,10 +1,13 @@
 ;+
-; NAME:                Delays
+; NAME:
+;  Delays()
+;
+; AIM: Determine matrix of connection delays from DW structure.
 ;
 ; PURPOSE:             Ermittelt die zu einer DelayWeigh-Struktur 
 ;                      gehoerende Delaymatrix 
 ;
-; CATEGORY:            SIMULATION CONNECTIONS
+; CATEGORY: Simulation / Connections
 ;
 ; CALLING SEQUENCE:    D = Delays(DW [,/DIMENSIONS])
 ;
@@ -34,9 +37,14 @@
 ;
 ; SEE ALSO:            <A HREF="#INITDW">InitDW</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.7  1998/03/25 17:03:39  kupper
 ;            OVERWRITE bei Reform eingefügt!
 ;
@@ -64,7 +72,7 @@
 ;           Creation
 ;
 ;
-;-
+
 FUNCTION Delays, _DW, DIMENSIONS=dimensions
    
    IF (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') THEN BEGIN

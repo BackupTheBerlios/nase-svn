@@ -1,13 +1,16 @@
-
 ;+
-; NAME: SetGaussWeight
+; NAME: 
+;  SetGaussWeight
+;
+; AIM: Set connection strengths decreasing with distance like Gaussian curve.
 ;
 ; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur 
 ;                 - die von einem Neuron im Source-Layer wegführenden Verbindungen
 ;          oder   - die zu  einem Neuron im Target-Layer hinführenden Verbindungen 
 ;          gaussförmig.
 ;
-; CATEGORY: Simulation
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: SetGaussWeight ( DWS
 ;                                   [,Maximum | ,Norm ] [[,Sigma |
@@ -59,9 +62,14 @@
 ;                           SetGaussWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
 ;                           ShowWeights, My_DWS, /FROMS,  Groesse=4
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.16  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 1.15  2000/06/19 13:39:39  saam
 ;             + new keyword PHI to allow rotated gaussians
 ;
@@ -117,7 +125,6 @@
 ;
 ;		Urversion fertiggestellt.
 ;
-;-
 
 Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,phi=phi,NORM=norm ,LESSTHAN=lessthan, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $

@@ -1,10 +1,14 @@
 ;+
-; NAME: NoNone
+; NAME:
+;  NoNone
+;
+; AIM: Change !NONE to another value for evaluation or display purposes.
 ;
 ; PURPOSE: Veraendern des Wertes der !NONE-Verbindungen zum Zweck der
 ;          Auswertung oder Darstellung.
 ;
-; CATEGORY: SIMUALTION / CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: Entweder als Funktion:
 ;                      W_neu = NoNone (W_alt
@@ -51,14 +55,19 @@
 ;           <A HREF="#NONONE_FUNC">NoNone_Func</A>,
 ;           <A HREF="#WEIGHTS">Weights</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  2000/09/25 16:49:13  thiel
+;            AIMS added.
+;
 ;        Revision 2.5  1999/09/22 14:39:50  kupper
 ;        Added new procompiling-feature to NASE-startup script.
 ;        Allowing identically named Procs/Funcs (currently NoNone and Scl).
 ;
-;-
+
 
 
 Function NoNone, w, VALUE=value, NONES=nones, COUNT=count

@@ -1,9 +1,13 @@
-; NAME:                Use
+; NAME:
+;  Use()
+;
+; AIM: Determine dynamic synapse use parameter values from DW structure.
 ;
 ; PURPOSE:             Ermittelt die zu einer DelayWeigh-Struktur 
 ;                      gehoerende U_se-Matrix 
 ;
-; CATEGORY:            SIMULATION CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:    U_se = Use(DW [,/DIMENSIONS])
 ;
@@ -33,16 +37,20 @@
 ;
 ;                 
 ; SEE ALSO:            
+;
+;-
 ;                      
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/25 16:49:14  thiel
+;         AIMS added.
+;
 ;     Revision 2.1  1999/11/16 15:42:14  alshaikh
 ;           initial version
 ;
 ;
-;-
 
 
 

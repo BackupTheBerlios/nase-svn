@@ -1,5 +1,8 @@
 ;+
-; NAME:               DWDim
+; NAME:
+;  DWDim()
+;
+; AIM: Determine dimensions of target- and sourcelayer of given DW structure.
 ;
 ; PURPOSE:            Ermittelt die Dimension der Target- und Source-Cluster
 ;                     einer DW-Struktur. Ein direkter Zugriff auf die Tags der
@@ -11,7 +14,7 @@
 ;                            andere Routinen gleich mitveraendert werden
 ;                            muessen.
 ;
-; CATEGORY:           SIMULATION CONNECTIONS
+; CATEGORY: Simulation / Connections
 ;
 ; CALLING SEQUENCE:   dim = DWDim( DW {,/SW | ,/SH | ,/TW | ,/TH}+ )
 ;
@@ -35,9 +38,14 @@
 ;
 ; SEE ALSO:           <A HREF="#INITDW">InitDw</A>,<A HREF="#WEIGHTS">Weights</A>,<A HREF="#DELAYS">Delays</A> 
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.2  1998/01/05 16:55:42  saam
 ;           verbessertes Fehlerhandling; benutzt nun info
 ;
@@ -45,7 +53,7 @@
 ;           ein Stern erblickt das Licht der Welt
 ;
 ;
-;-
+
 FUNCTION DWDim, _DW, SW=sw, SH=sh, TW=tw, TH=th, ALL=all
 
    On_Error, 2

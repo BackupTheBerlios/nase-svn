@@ -1,10 +1,14 @@
 ;+
-; NAME: NoNone_Func
+; NAME:
+;  NoNone_Func()
+;
+; AIM: Change !NONE to another value for evaluation or display purposes.
 ;
 ; PURPOSE: Veraendern des Wertes der !NONE-Verbindungen zum Zweck der
 ;          Auswertung oder Darstellung.
 ;
-; CATEGORY: SIMUALTION / CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: Entweder als Funktion:
 ;                      W_neu = NoNone_Func(W_alt
@@ -49,9 +53,14 @@
 ;
 ; SEE ALSO: <A HREF="#NONONE_PROC">NoNone_Proc</A>, <A HREF="#WEIGHTS">Weights</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/25 16:49:13  thiel
+;            AIMS added.
+;
 ;        Revision 2.2  1999/09/22 10:16:57  kupper
 ;        Added COUNT Keyword.
 ;
@@ -67,7 +76,7 @@
 ;        Revision 2.1  1998/05/02 21:48:08  thiel
 ;               Endlich ausgelagert!
 ;
-;-
+
 
 
 FUNCTION NoNone_Func, w, VALUE=value, NONES=nones, COUNT=count

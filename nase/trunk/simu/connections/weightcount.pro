@@ -1,10 +1,14 @@
 ;+
-; NAME:               WeightCount
+; NAME:
+;  WeightCount()
+;
+; AIM: Count existing connections (NE !None) contained in DW structure. 
 ;
 ; PURPOSE:            Zaehlt die vorhandenen (nicht !NONE) Verbindungen in
 ;                     einer DW-Struktur.
 ;
-; CATEGORY:           SIMU CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:   c = WeightCount(DW)
 ;
@@ -12,14 +16,17 @@
 ;
 ; OUTPUTS:            c: die Zahl der Gewichte
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/25 16:49:14  thiel
+;         AIMS added.
+;
 ;     Revision 2.1  1998/02/05 13:10:16  saam
 ;           Cool
 ;
-;
-;-
 
 FUNCTION WeightCount, DW
 

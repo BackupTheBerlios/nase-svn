@@ -12,7 +12,7 @@
 ;  specified.
 ;
 ; CATEGORY: 
-;  SIMULATION / CONNECTIONS
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE: 
 ;  My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
@@ -165,10 +165,14 @@
 ;                           of object recognition in cortex", nature
 ;                           neurosc., 2(11), Nov. 1999
 ;                           (Papyrus #6409)
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.24  2000/09/25 16:49:13  thiel
+;           AIMS added.
+;
 ;       Revision 2.23  2000/08/29 10:09:08  kupper
 ;       Corrected typing errors.
 ;
@@ -329,7 +333,7 @@
 ;
 ;		Urversion erstellt. DELAY, WEIGHT, RANDOM, NRANDOM, NONSELF implementiert.
 ;
-;-
+
 
 Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  S_WIDTH=s_width, S_HEIGHT=s_height, T_WIDTH=t_width, T_HEIGHT=t_height, $

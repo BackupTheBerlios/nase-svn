@@ -1,10 +1,14 @@
 ;+
-; NAME:                Weights
+; NAME:
+;  Weights()
+;
+; AIM: Determine matrix of connection strengths from DW structure.
 ;
 ; PURPOSE:             Ermittelt die zu einer DelayWeigh-Struktur 
 ;                      gehoerende Gewichtmatrix 
 ;
-; CATEGORY:            SIMULATION CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:    W = Weights(DW [,/DIMENSIONS])
 ;
@@ -41,9 +45,14 @@
 ; SEE ALSO:            <A HREF="#INITDW">InitDW</A>
 ;                      <A HREF="#SETWEIGHTS"></A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  2000/09/25 16:49:14  thiel
+;         AIMS added.
+;
 ;     Revision 2.11  1999/05/31 17:04:36  kupper
 ;     Weights liefert jetzt auf jeden Fall ein zweidimensionales Array zurueck,
 ;     auch wenn Source- oder Targetlayer die Ausmaﬂe 1 haben sollten!
@@ -82,7 +91,7 @@
 ;           Creation
 ;
 ;
-;-
+
 FUNCTION Weights, _DW, DIMENSIONS=dimensions
    
    IF (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') THEN BEGIN

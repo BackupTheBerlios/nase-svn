@@ -1,5 +1,8 @@
 ;+
-; NAME:              MeanWeight
+; NAME:
+;  MeanWeight()
+;
+; AIM: Fast computation of mean connection strength in DW structure.
 ;
 ; PURPOSE:           Ermittelt das durchschnittliche Gewicht in einer SDW-Struktur. 
 ;                    Das kann man natuerlich auch mit Weights(SDW) 
@@ -8,7 +11,8 @@
 ;                    Außerdem werden hier !NONE-Verbindungen
 ;                    automatisch ingoriert.                   
 ; 
-; CATEGORY:          SIMULATION CONNECTIONS
+; CATEGORY:
+;  Simulation / Connections
 ;
 ; CALLING SEQUENCE:  MW = MeanWeight(DW)
 ;
@@ -29,9 +33,14 @@
 ; SEE ALSO:          <A HREF="#INITDW">InitD</A>, <A HREF="#WEIGHTS">Weights()</A>, <A HREF="#MINWEIGHT">MinWeight()</A>,
 ;                    <A HREF="#MAXWEIGHT">MaxWeight()</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/25 16:49:13  thiel
+;         AIMS added.
+;
 ;     Revision 2.2  1998/03/09 16:02:47  kupper
 ;            Nimmt jetzt auch oldstyle-DWs.
 ;
@@ -40,7 +49,7 @@
 ;
 ;
 ;
-;-
+
 FUNCTION MeanWeight, _DW
 
    TestInfo, _DW, "DW"          ;Ist es überhaupt eine DW oder SDW?
