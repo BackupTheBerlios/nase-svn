@@ -40,7 +40,11 @@
 ;  TYPE:: Type code of generated sparse array. For type code see IDL
 ;         help of the <*>Size()</*> command. It is necessary to choose
 ;         a type that can save both indices and values at the same
-;         time, otherwise information is lost. Default: 4 (float).
+;         time, otherwise information is lost. When converting very
+;         large arrays, note also that precision of floating point
+;         numbers may not be large enough to save indices
+;         precisely. In this case, longword integer (type 3) may do
+;         better. Default: 4 (float).
 ;
 ;  /DIMENSIONS:: Set this keyword to save information about the
 ;                original array dimensions at the end of the sparse
