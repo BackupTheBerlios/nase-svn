@@ -37,33 +37,14 @@
 pro uset_plot, Device, _EXTRA=extra
    
    __device = device
-   if TOTAL((IdlVersion(/FULL))(0:1) GT [5,3]) GE 1 then begin
-      CALL_PROCEDURE,'CATCH', Error_status
 
-      IF Error_status NE 0 THEN BEGIN
-         printf,-2, "% WARN: (USET_PLOT) Cannot set device to '"+ __Device+"'"
-         printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
-         flush, -2
-         __Device = 'Z'
-      endif
-     
-   end else begin
-      if __Device EQ 'X' and not XAllowed() then begin
-         printf,-2, "% WARN: (USET_PLOT) DISPLAY environment variable not set: cannot set device to '"+ __Device+"'"
-         printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
-         flush, -2
-         __Device = 'Z'
-      end
-   endelse
+   if __Device EQ 'X' and not XAllowed() then begin
+      printf,-2, "% WARN: (USET_PLOT) DISPLAY environment variable not set: cannot set device to '"+ __Device+"'"
+      printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
+      flush, -2
+      __Device = 'Z'
+   end
 
-   ;following lines are obsolete and unfortunately false (return statement)!!!
-   ;If __Device eq 'X' and not XAllowed() then begin
-   ;   printf, -2, "% WARN: (USET_PLOT) "+ $
-   ;     "Connecting to X server is forbidden. Setting device to 'Z'."
-   ;   flush, -2
-   ;   __Device = 'Z'
-   ;   return
-   ;endif 
 
    
 
