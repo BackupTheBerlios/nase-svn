@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.14  1998/06/10 16:31:04  neuroadm
+;            big
+;
 ;       Revision 1.13  1998/06/10 15:49:31  neuroadm
 ;             new hierarchy
 ;
@@ -51,7 +54,7 @@ PRO MkHTML
 
 Spawn, '/bin/pwd | sed "s/\/a\/ax1303//g"', MainDir
 SubDirs   = ['alien',$
-	     'control','control/counter','control/loops','control/output','control/time','video+tape',$
+	     'control','control/counter','control/loops','control/output','control/time','control/video+tape',$
 	     'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support',$
 	     'math',$
              'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$
