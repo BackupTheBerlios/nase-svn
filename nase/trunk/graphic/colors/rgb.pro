@@ -114,6 +114,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.13  1998/03/12 19:45:20  kupper
+;               Color-Postscripts werden jetzt richtig behandelt -
+;                die Verwendung von Sheets vorrausgesetzt.
+;
 ;        Revision 1.12  1998/02/23 14:59:43  kupper
 ;               Versteht jetzt Farbnamen.
 ;
@@ -150,7 +154,7 @@ Common common_RGB, My_freier_Farbindex
   
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
-   IF !D.Name EQ 'PS' THEN BEGIN
+   IF (!D.Name EQ 'PS') and !PSGREY THEN BEGIN
       ; korrekte Behandlung nur fuer Grauwertpostscripts 
       New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
       IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)

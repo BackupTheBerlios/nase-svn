@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/03/12 19:45:20  kupper
+;            Color-Postscripts werden jetzt richtig behandelt -
+;             die Verwendung von Sheets vorrausgesetzt.
+;
 ;     Revision 2.5  1998/01/29 15:52:04  saam
 ;           PlotS died with NULL-device if plot wasn't used before
 ;          !P.Multi also...
@@ -85,9 +89,9 @@ PRO OpenSheet, sheet
          IF sheet.eps THEN file = file+'.eps' ELSE file = file+'.ps'
 
          IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-            Device, FILENAME=file, ENCAPSULATED=sheet.eps
+            Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color
          END ELSE BEGIN
-            Device, FILENAME=file, ENCAPSULATED=sheet.eps, _EXTRA=sheet.extra
+            Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color, _EXTRA=sheet.extra
          END
       END ELSE Print, 'OpenSheet: Sheet already open!'
       
@@ -103,6 +107,8 @@ PRO OpenSheet, sheet
       old = !Z
       !Z = sheet.z
       sheet.z = old
+      
+      !PSGREY = NOT(sheet.color)
       
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'NULL'

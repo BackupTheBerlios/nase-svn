@@ -48,6 +48,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/03/12 19:45:20  kupper
+;            Color-Postscripts werden jetzt richtig behandelt -
+;             die Verwendung von Sheets vorrausgesetzt.
+;
 ;     Revision 2.5  1998/03/12 11:39:58  saam
 ;           Bug with window creation in idl5
 ;
@@ -67,7 +71,7 @@
 ;
 ;
 ;-
-FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated $
+FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
                       ,VERBOSE=verbose, _EXTRA=e
 
    COMMON Random_Seed, seed
@@ -92,6 +96,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
 
       Default, incremental, 0
       Default, encapsulated, 0
+      Default, color, 0
 
       IF NOT Keyword_Set(FILENAME) THEN filename = 'sheet_'+STRING([BYTE(97+25*RANDOMU(seed,10))])
 
@@ -108,6 +113,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 filename : filename     ,$
                 inc      : incremental  ,$
                 eps      : encapsulated ,$
+                color    : color        ,$
                 p        : !P           ,$
                 x        : !X           ,$
                 y        : !Y           ,$
