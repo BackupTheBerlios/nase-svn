@@ -5,7 +5,7 @@
 ;
 ; CATEGORY:            METHODS CORRS 
 ;
-; CALLING SEQUENCE:    cc = SlidCC( x,y, PShift, taxis, [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] [,/PLOT] [,TITLE=title]
+; CALLING SEQUENCE:    cc = SlidCC( x,y, PShift [,taxis] [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] [,/PLOT] [,TITLE=title]
 ;
 ; INPUTS:              x,y   : the two signals to be cross correlated
 ;                      PShift: the maximal amount the signals are shifted against each other, default is 64ms
@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/07/15 09:48:24  saam
+;           bug in docu
+;
 ;     Revision 1.1  1998/07/15 09:46:36  saam
 ;           extensively used and now commited for nase
 ;
