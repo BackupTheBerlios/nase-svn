@@ -37,6 +37,8 @@
 ;
 ; INPUT KEYWORDS:
 ;  ALL:: normalize all Weights of _DW
+;  QUADRATIC:: use quadratic normalization (sum of squares of weights
+;  is kept constant)
 ;  
 ;
 ; OUTPUTS:
@@ -69,7 +71,7 @@
 ;;; or view the NASE Standards Document
 
 
-PRO NormalizeWeights, _DW, LP, SPASSTARGET=SpassTarget, SSPASSTARGET=SSpassTarget, WEIGHTSUM=WeightSum, NOLOWSUM=NOLOWSUM, ALL=all
+PRO NormalizeWeights, _DW, LP, SPASSTARGET=SpassTarget, SSPASSTARGET=SSpassTarget, WEIGHTSUM=WeightSum, NOLOWSUM=NOLOWSUM, ALL=all, Quadratic=Quadratic
 ;Target: 
 
 ;SPASSTARGET: Sparse Array of active neurons 
@@ -105,25 +107,53 @@ endif
 
 ;IF DW.info EQ 'SDW_WEIGHT' THEN BEGIN
 
-if keyword_set(NoLowSum) then begin
-    FOR ti=1,target(0) DO BEGIN
-        tn = target(ti) 
-        IF DW.T2C(tn) NE -1 THEN BEGIN
-            Handle_Value, DW.T2C(tn), wi
-            wi = reform(wi)
-            DW.W[wi] = (WeightSum/total(DW.W[wi]))*DW.W[wi]
-        endif
-    endfor
+; die fast identischen if-zweige sind zwar nicht schön, die
+; if-Abfragen in der Schleife würden aber bei jedem Durchgang Zeit
+; kosten
+;;;; quadratische Normalisierung: Summe der Quadrate bleibt konstant
+if keyword_set(Quadratic) then begin
+    if keyword_set(NoLowSum) then begin
+        FOR ti=1,target(0) DO BEGIN
+            tn = target(ti) 
+            IF DW.T2C(tn) NE -1 THEN BEGIN
+                Handle_Value, DW.T2C(tn), wi
+                wi = reform(wi)
+                DW.W[wi] = sqrt(WeightSum/total(DW.W[wi]^2))*DW.W[wi]
+            endif
+        endfor
+    endif else begin
+        FOR ti=1,target(0) DO BEGIN 
+            tn = target(ti)
+            IF DW.T2C(tn) NE -1 THEN BEGIN
+                Handle_Value, DW.T2C(tn), wi
+                wi = reform(wi)
+                CurSum = total(DW.W[wi]^2)
+                if CurSum gt WeightSum then DW.W[wi] = sqrt(WeightSum/CurSum)*DW.W[wi]
+            endif
+        endfor
+    endelse
 endif else begin
-    FOR ti=1,target(0) DO BEGIN 
-        tn = target(ti)
-        IF DW.T2C(tn) NE -1 THEN BEGIN
-            Handle_Value, DW.T2C(tn), wi
-            wi = reform(wi)
-            CurSum = total(DW.W[wi])
-            if CurSum gt WeightSum then DW.W[wi] = (WeightSum/CurSum)*DW.W[wi]
-        endif
-    endfor
+;;;;; lineare Normalisierung: Summe bleibt konstant
+    if keyword_set(NoLowSum) then begin
+        FOR ti=1,target(0) DO BEGIN
+            tn = target(ti) 
+            IF DW.T2C(tn) NE -1 THEN BEGIN
+                Handle_Value, DW.T2C(tn), wi
+                wi = reform(wi)
+                DW.W[wi] = (WeightSum/total(DW.W[wi]))*DW.W[wi]
+            endif
+        endfor
+    endif else begin
+        FOR ti=1,target(0) DO BEGIN 
+            tn = target(ti)
+            IF DW.T2C(tn) NE -1 THEN BEGIN
+                Handle_Value, DW.T2C(tn), wi
+                wi = reform(wi)
+                CurSum = total(DW.W[wi])
+                if CurSum gt WeightSum then DW.W[wi] = (WeightSum/CurSum)*DW.W[wi]
+            endif
+        endfor
+    endelse
 endelse
 
 ;ENDIF  ELSE BEGIN 
