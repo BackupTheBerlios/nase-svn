@@ -31,16 +31,16 @@
 ;               [-keywords inherited from class MySuperClass-]
 ;               [-keywords inherited from class MyOtherSuperClass-]
 ;                                               
-; INPUTS: -please remove any sections that do not apply-
+; INPUTS: *please remove any sections that do not apply*
 ;
 ; OPTIONAL INPUTS:
-;  -please remove any sections that do not apply-
+;  *please remove any sections that do not apply*
 ;
 ; KEYWORD PARAMETERS:
-;  -please remove any sections that do not apply-
+;  *please remove any sections that do not apply*
 ;
 ; SIDE EFFECTS: 
-;  -please remove any sections that do not apply-
+;  *please remove any sections that do not apply*
 ;
 ; METHODS:
 ;
@@ -49,20 +49,16 @@
 ;   foo(parameter)       : computes the meaning of life.
 ;   bar, parameter       : crashes the system. Delay: parameter.
 ;
-;   inherited from class MySuperClass (see there for details):
-;     foobar(p),
-;     foofoobar, p
-;
-;   inherited from class MyOtherSuperClass (see there for details):
-;     barfoo, p
+;   -plus those inherited from class MySuperClass (see there for details)-
+;   -plus those inherited from class MyOtherSuperClass (see there for details)-
 ;
 ;  protected: Protected methods may only be called from within a derived class's
 ;             methods.
-;   -please remove any sections that do not apply-
+;   *please remove any sections that do not apply*
 ;
 ;  private: Private methods are not intended to be called by the user and are
 ;           not decribed in this header. Refer to the source code for information.
-;   -please remove any sections that do not apply-
+;   *please remove any sections that do not apply*
 ;
 ; ABSTRACT METHODS:
 ;
@@ -73,16 +69,16 @@
 ;  for derivation only. Instantiation of abstract classes is an error.
 ;
 ;  public:
-;   -please remove any sections that do not apply-
+;   *please remove any sections that do not apply*
 ;
 ;  protected:
-;   -please remove any sections that do not apply-
+;   *please remove any sections that do not apply*
 ;
 ;  private:
 ;   override_me_ : insert abstract-to-paper filter here.
 ;
 ; RESTRICTIONS: 
-;  -please remove any sections that do not apply-
+;  *please remove any sections that do not apply*
 ;
 ; PROCEDURE: 
 ;
