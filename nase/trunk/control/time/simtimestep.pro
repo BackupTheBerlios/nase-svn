@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/06/09 16:38:18  gabriel
+;          Schreibfehler
+;
 ;     Revision 1.2  1998/06/09 16:22:53  gabriel
 ;          Jetzt mit Schaetzung der Simulationszeit bis zum Ende
 ;
@@ -48,10 +51,10 @@ PRO SimTimeStep
    estimation = median*(stat.maxsteps-stat.step+1)
    IF stat.print THEN BEGIN
       print, '-----------------------------------------------'
-      print, '  Iteration               : ', stat.step
-      print, '  Time of last Iteration  : ', Seconds2String(stat.tpi(stat.step-1))
-      print, '  Mission complete in     : ', Seconds2String(estimation)
-      print, '  Total Time              : ', Seconds2String(Total(stat.tpi))
+      print, '  Iteration              : ', stat.step
+      print, '  Time of last Iteration : ', Seconds2String(stat.tpi(stat.step-1))
+      print, '  Mission completed in   : ', Seconds2String(estimation)
+      print, '  Total Time             : ', Seconds2String(Total(stat.tpi))
       print, '-----------------------------------------------'
    END
 
