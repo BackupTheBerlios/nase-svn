@@ -30,10 +30,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/11/11 16:05:22  saam
+;           Doc-Header hatte kein '-'
+;
 ;     Revision 2.1  1997/11/03 11:34:51  saam
 ;           Gefunden, angepasst und dokumentiert
 ;
-;
+;-
+
 FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset, DEVIATION=deviation
 
    COMMON Common_Random, seed
