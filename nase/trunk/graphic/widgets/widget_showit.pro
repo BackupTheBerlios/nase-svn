@@ -33,11 +33,24 @@
 ;
 ;                    Folgende weiteren Schlüsselworte werden mittels _EXTRA an die
 ;                    dafür zuständigen Widgets weitergereicht:
+;
+;                     ALIGN_BOTTOM
+;                     ALIGN_CENTER 
+;ALIGN_LEFT
+;ALIGN_RIGHT
+;ALIGN_TOP
+;GROUP_LEADER
+;MAP
+;
+;                     APP_SCROLL
+;                     BUTTON_EVENTS
 ;                     EVENT_PRO
 ;                     EVENT_FUNC
+;                     EXPOSE_EVENTS
 ;                     NOTIFY_REALIZE
 ;                     KILL_NOTIFY
 ;                     FRAME
+;                     MOTION_EVENTS
 ;                     NO_COPY
 ;                     UNAME
 ;                     UNITS
@@ -59,6 +72,8 @@
 ;                     VIEWPORT_EVENTS
 ;                     XSIZE
 ;                     YSIZE
+;                     X_SCROLL_SIZE
+;                     Y_SCROLL_SIZE
 ;                    Vgl. IDL-Hilfe zu 'Widget_Draw' und 'Widget_Base'
 ;
 ; OUTPUTS: widgetid: Die Identifikationsnummer des generierten Widgets.
@@ -81,6 +96,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/03/10 20:36:10  kupper
+;        Added missing keywords to _extra passing.
+;
 ;        Revision 1.7  2000/03/10 20:08:21  kupper
 ;        Moved Event_Func to draw-widget in order to provide free Event_Func/Event_Pro
 ;        for the compound widget.
@@ -191,11 +209,17 @@ FUNCTION Widget_ShowIt, Parent, $
                 }
 
    ; create outer base to have free uservalue:
-   b = Widget_Base(Parent, _EXTRA=["event_func", $
+   b = Widget_Base(Parent, _EXTRA=["align_bottom", $
+                                   "align_left", $
+                                   "align_right", $
+                                   "align_top", $
+                                   "event_func", $
                                    "event_pro", $
+                                   "group_leader", $
                                    "notify_realize", $
                                    "kill_notify", $
                                    "frame", $
+                                   "map", $
                                    "no_copy", $
                                    "uname", $
                                    "units", $
@@ -207,9 +231,13 @@ FUNCTION Widget_ShowIt, Parent, $
    d = Widget_Draw(b, $
                    TRACKING_EVENTS=(private_colors OR tracking_events), $
                    UVALUE=xtrastruct, /NO_COPY, $
-                   _EXTRA=["color_model", $
+                   _EXTRA=["app_scroll", $
+                           "button_events", $
+                           "color_model", $
                            "colors", $
+                           "expose_events", $
                            "graphics_level", $
+                           "motion_events", $
                            "renderer", $
                            "resource_name", $
                            "retain", $
@@ -219,7 +247,9 @@ FUNCTION Widget_ShowIt, Parent, $
                            "sensitive", $
                            "units", $
                            "viewport_events", $
+                           "x_scroll_size", $
                            "xsize", $
+                           "y_scroll_size", $
                            "ysize"])
 
    Widget_Control, d, EVENT_FUNC='Widget_ShowIt_Event'
