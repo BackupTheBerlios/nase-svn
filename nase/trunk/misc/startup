@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.35  2000/08/25 15:40:04  kupper
+;       Added check to prevent double execution of NASE startup.
+;
 ;       Revision 1.34  2000/08/16 15:56:48  kupper
 ;       Added directory widget_object.
 ;
@@ -108,6 +111,12 @@
 ;              Definition der !KEY-Variable hinzugefügt.
 ;
 ;-
+
+DefSysV, "!NASEPATH", EXISTS=nase_startup_executed
+If nase_startup_executed then message, /Info, "Trying to execute NASE startup for the second time."
+If nase_startup_executed then message, /info, "Exiting startup."
+If nase_startup_executed then stop
+
 
 ;; SET !PATH to NASE-Dirs: -----------------------------------------
 NASEPATH = GetEnv("NASEPATH")
