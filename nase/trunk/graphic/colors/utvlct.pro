@@ -1,6 +1,8 @@
 ;+
 ; NAME:                UTvLCt
 ;
+; VERSION: $Id$
+;
 ; AIM: Same as TvLct, but works for all devices (including NULL).
 ;
 ; PURPOSE:             Ersatz fuer TvLCt mit gleichen Aufrufoptionen,
@@ -9,11 +11,36 @@
 ;
 ; CATEGORY:            GRAPHIC GENERAL
 ;
-; SEE ALSO:            <A HREF="#ULOADCT">ULoadCt</A>, <A HREF="#UTVSCL">UTvScl</A>
+; CALLING SEQUENCE:
+;*                     utvlct,v1 [,v2][,v3][,start][,/sclct][,/GET] [,/HLS | ,/HSV]
 ;
+; INPUTS:
+;              v1::    see IDL Help for tvlct
+;
+; OPTIONAL INPUTS:
+;
+;              v2::     see IDL Help for tvlct
+;              v3::     see IDL Help for tvlct
+;              start::  see IDL Help for tvlct
+; 
+; INPUT KEYWORDS: 
+;              
+;              SCLCT::  scales a given color table with respect to
+;                       !TOPCOLOR without overwriting the color entries
+;                       from !TOPCOLOR to 255
+;
+;              GET::    see IDL Help for tvlct
+;              HLS::    see IDL Help for tvlct
+;              HSV::    see IDL Help for tvlct
+;
+; SEE ALSO:            <A HREF="#ULOADCT">ULoadCt</A>, <A HREF="#UTVSCL">UTvScl</A>
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2000/10/30 18:24:54  gabriel
+;          SCLCT Keyword new
+;
 ;     Revision 2.5  2000/10/01 14:50:57  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -39,19 +66,43 @@
 ;           hoffentlich hat sich's bald mit den U-Dingern
 ;
 ;
-;-
-PRO UTvLCt, v1, v2, v3, v4, _EXTRA=extra
-
+;
+PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT , _EXTRA=extra
+   default, sclct, 0
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
-      
-      CASE N_Params() OF
-         1 : TvLCt, v1,             _EXTRA=extra
-         2 : TvLCt, v1, v2,         _EXTRA=extra
-         3 : TvLCt, v1, v2, v3,     _EXTRA=extra
-         4 : TvLCt, v1, v2, v3, v4, _EXTRA=extra
-         ELSE: Message, 'wrong number of arguments'
-      ENDCASE
-      
-   END
+      if not extraset(extra,'get') then begin
+       
+         
+         if N_Params() GE 3 then v = [ [v1], [v2], [v3] ] else v = v1
+         
+         if sclct eq 1 then begin
+            _v = BYTARR(256, 3)
+            utvlct, _V, /get
+            
+            _v(*, 0)= [ congrid(v(*, 0), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 0)]
+            _v(*, 1)= [ congrid(v(*, 1), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 1)]
+            _v(*, 2)= [ congrid(v(*, 2), !TOPCOLOR+1), _v(!TOPCOLOR+1:*, 2)]
+         end else if set(v) then _v = v
+         
+         CASE N_Params() OF
+            1 : TvLCt, _v,     _EXTRA=extra
+            2 : TvLCt, _v, v2, _EXTRA=extra
+            3 : TvLCt, _v,     _EXTRA=extra
+            4 : TvLCt, _v, v4, _EXTRA=extra
+            ELSE: Message, 'wrong number of arguments'
+         ENDCASE
+         
+      END ELSE BEGIN
 
+         CASE N_Params() OF
+            1 : TvLCt, v1,             _EXTRA=extra
+            2 : TvLCt, v1, v2,         _EXTRA=extra
+            3 : TvLCt, v1, v2, v3,     _EXTRA=extra
+            4 : TvLCt, v1, v2, v3, v4, _EXTRA=extra
+            ELSE: Message, 'wrong number of arguments'
+         ENDCASE
+
+      ENDELSE
+   END
+   
 END
