@@ -9,13 +9,14 @@
 ;
 ; CATEGORY:           MIND INTERNAL
 ;
-; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT] [,/MEMBRANE] [,TIME=time] [,SELECT=select])
+; CALLING SEQUENCE:   o = ReadSim(file [,/INPUT] [,/OUTPUT] [,/MEMBRANE] [,/MUA] [,TIME=time] [,SELECT=select])
 ;
 ; INPUTS:             file: path/file to be read (without suffices)
 ;
 ; KEYWORD PARAMETERS: IINPUT  : read input for layer
 ;                     OUTPUT  : read spike output of layer (this is default)
 ;                     MEMBRANE: read membrane potentials of layer
+;                     MUA     : read multiple unit activity
 ;                     TIME    : reads the simulation from BIN start to BIN end specified
 ;                               as [start,end]
 ;                     SELECT  : an array of neuron indices to be read
@@ -30,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.3  1999/12/21 09:55:29  saam
+;            keyword MUA was not documented
+;
 ;      Revision 1.2  1999/12/21 09:42:38  saam
 ;            return on error now
 ;
