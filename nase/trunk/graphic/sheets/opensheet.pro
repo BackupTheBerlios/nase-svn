@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  OpenSheet()
+;  OpenSheet
 ;
 ; VERSION:
 ;  $Id$

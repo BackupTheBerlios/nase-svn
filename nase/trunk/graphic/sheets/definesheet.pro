@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  DefineSheet
+;  DefineSheet()
 ;
 ; VERSION:
 ;  $Id$
