@@ -1,6 +1,7 @@
 ;+
 ; NAME: INSCRIPTION
 ;
+; AIM: Add text to a plot, with easy positioning.
 ;
 ; PURPOSE:            A proceure for plotting text inside, outside, left, right, ...  of a data plot box
 ;                     with automatical arrangement.
@@ -39,6 +40,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.2  1999/02/25 11:14:55  gabriel
 ;          Da war was mit dem KEYWORD Default setting faul
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: GetBGColor()
 ;
+; AIM: (-outdated-) Return !P.Background as RGB values.
+;
 ; PURPOSE:
 ;
 ; CATEGORY:
@@ -32,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/10/01 14:50:57  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.2  1998/05/26 13:16:08  kupper
 ;               Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
 ;                  Änderungen an der Postcript-Sheet-Verarbeitung.

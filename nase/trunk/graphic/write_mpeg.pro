@@ -2,6 +2,9 @@
 ; NAME: 
 ;        WRITE_MPEG
 ;
+; AIM:
+;  Write a sequence of images as an mpeg movie.
+;
 ; PURPOSE: 
 ;        Write a sequence of images as an mpeg movie
 ;
@@ -101,6 +104,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.4  2000/09/27 15:59:13  saam
 ;     service commit fixing several doc header violations
 ;

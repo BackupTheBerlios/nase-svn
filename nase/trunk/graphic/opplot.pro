@@ -1,6 +1,10 @@
 ;+
 ; NAME:               OPPlot
 ;
+; AIM:
+;  Add dataset to an existing plot, and fill area below the line with
+;  a color.
+;
 ; PURPOSE:            Plottet einen Datensatz wie OPlot und fuellt die aufgespannte Flaeche aus.
 ;
 ; CATEGORY:           GRAPHIC
@@ -26,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.3  1999/12/02 14:18:30  saam
 ;           + there was some senseless playing with !P.multi
 ;           + plotting of axes eliminated

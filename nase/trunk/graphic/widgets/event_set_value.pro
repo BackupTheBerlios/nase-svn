@@ -1,13 +1,26 @@
 ;+
 ; NAME:
-;  (Hint: Insert name in THIS line, if you want it to appear in the
-;  HTML-help. If you put it elsewhere, the HTML-help item will be 
-;  generated from the filename.)
+;  Event_set_value
 ;
-; AIM: -please enter a short description of routine (a single line!)-
+; AIM:
+;  Set a widget value and trigger the associated event. (Imitate user
+;  interaction.) 
 ;  
 ; PURPOSE:
-;  -please specify-
+;  Setting widget values using the WIDGET_CONTROL procedure has one
+;  major drawback: The value is changed without calling the event
+;  handlers that are associated to the "normal" modification by user
+;  interaction. This is very likely to cause inconsistencies, as the
+;  associated event handlers very often have important side effects
+;  that may not be skipped.
+;  This is considered a design error in IDL's widget system.
+;  This routine aims to fix the problem by combining the modification
+;  of the widget's value with triggering an according event. That is,
+;  the routine tries to imitate a real user interaction.
+;  Note, however, that this is not well supported by IDL's widget
+;  system, and that individual actions have to be taken for different
+;  (compound) widgets. This routine needs to be extended for every new
+;  compund widget to be handled!
 ;  
 ; CATEGORY:
 ;  -please specify-
@@ -37,7 +50,10 @@
 ;  -please remove any sections that do not apply-
 ;  
 ; RESTRICTIONS:
-;  -please remove any sections that do not apply-
+;  Note, that this procedure is not well supported by IDL's widget
+;  system, and that individual actions have to be taken for different
+;  (compound) widgets. This routine needs to be extended for every new
+;  compund widget to be handled!
 ;  
 ; PROCEDURE:
 ;  -please specify-
@@ -54,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/10/01 14:51:58  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.1  2000/09/07 17:33:15  kupper
 ;        Was missing for f...ing IDL.
 ;

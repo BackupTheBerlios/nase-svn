@@ -3,10 +3,10 @@
 ;  OPlotMaximumFirst
 ;
 ; AIM:
-;  Several plots in a single coordinate system.
+;  Put several plots in a single coordinate system.
 ;  
 ; PURPOSE:
-;  This routine displays several plot in a single coordinate system.
+;  This routine displays several plots in a single coordinate system.
 ;  The y-axis is scaled such that the largest and smallest value of
 ;  all the plots is visible.
 ;  
@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/10/01 14:50:42  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.5  2000/08/01 12:10:28  thiel
 ;            Now also handles multiple colored oplots.
 ;            Header translated.

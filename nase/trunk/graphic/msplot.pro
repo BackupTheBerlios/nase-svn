@@ -3,7 +3,7 @@
 ;  MSPlot
 ;
 ; AIM:
-;  Plotting error values as a coloured area around data.
+;  Plot error values as a coloured area around data.
 ;  
 ; PURPOSE:
 ;  MSPLot plots onedimensional data and depicts supplied error values
@@ -47,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.3  2000/07/31 15:52:33  thiel
 ;         Now XRANGE applies to error area also and
 ;         ticks are plotted over error area. Header translated.

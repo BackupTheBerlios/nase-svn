@@ -1,6 +1,10 @@
 ;+
 ; NAME:               UTv
 ;
+; AIM:
+;  Device independent, color coded display of two-dimensional array
+;  contents.
+;
 ; PURPOSE:            Ersetzt die IDL-Routine TV. Bis auf die Skalierung 
 ;                     gleiche Funktionalitaet wie <A HREF="#UTVSCL#">UTvScl</A>.
 ;
@@ -11,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.4  1999/06/07 14:29:46  kupper
 ;     CUBIC, INTERP, MINUS_ONE are now passed explecitely.
 ;     My IDL crashed, if passed through _EXTRA. Don't know, why, but works...

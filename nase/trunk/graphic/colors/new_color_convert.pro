@@ -1,6 +1,8 @@
 ;+
 ; NAME: New_Color_Convert
 ;
+; AIM: Convert between color systems (RGB, HLS, ...), including YIC.
+;
 ; PURPOSE: Kann alles, was Color_Convert (standard-IDL) kann,
 ;          beherrscht aber auch das YIC-Farbmodell.
 ;
@@ -19,6 +21,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  2000/10/01 14:50:57  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.5  1998/02/19 17:58:03  kupper
 ;               Header geschrieben...
 ;

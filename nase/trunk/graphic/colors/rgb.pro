@@ -1,6 +1,8 @@
 ;+
 ; NAME: RGB()
 ;
+; AIM: Define color for plotting, works on truecolor and pseudocolor displays.
+;
 ; PURPOSE: Ermöglicht die Angabe von Farbwerten im RGB-Format, und
 ;           zwar ohne Änderung sowohl auf Echtfarb- als auch auf ColorTable-Systemen.
 ;
@@ -110,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.26  2000/10/01 14:50:57  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.25  2000/08/31 14:59:15  kupper
 ;        Typo.
 ;

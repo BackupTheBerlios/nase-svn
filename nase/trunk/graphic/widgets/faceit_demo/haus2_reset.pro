@@ -1,6 +1,9 @@
 ;+
 ; NAME: haus2_RESET
 ;
+; AIM:
+;  Reset all simulation data and the graphical user interface.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>.
 ;          Falls notwendig, können hier Aktionen bestimmt werden, die bei
 ;          Betätigung des RESET-Buttons ausgeführt werden sollen. So können 
@@ -40,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.3  1999/09/14 13:01:07  kupper
 ;        Just added informative comments.
 ;

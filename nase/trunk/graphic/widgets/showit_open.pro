@@ -1,6 +1,9 @@
 ;+
 ; NAME: ShowIt_Open
 ;
+; AIM:
+;  Open a ShowIt draw widget for graphics output.
+;
 ; PURPOSE: Öffnen eines zuvor mit <A HREF="#WIDGET_SHOWIT">Widget_ShowIt</A> vorbereiteten Widgets.
 ;          Beim Öffnen werden die Graphik-Systemvariablen auf die zu diesem 
 ;          Widget gehörenden Werte gesetzt. Außerdem wird die mit dem Widget
@@ -31,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/10/01 14:51:59  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.5  2000/03/16 15:31:54  kupper
 ;        Changed to store old active window.
 ;

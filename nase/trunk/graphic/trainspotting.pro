@@ -1,6 +1,9 @@
 ;+
 ; NAME: TRAINSPOTTING
 ;
+; AIM:
+;  Display spiketrains(s).
+;
 ; PURPOSE: Stellt ein Spikeraster dar (Ordinate: Neuronen, Abszisse: Zeit)
 ;
 ; CATEGORY: GRAPHICS
@@ -94,6 +97,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.13  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 1.12  1999/12/06 13:25:47  thiel
 ;         Tried to turn on cvs watches.
 ;

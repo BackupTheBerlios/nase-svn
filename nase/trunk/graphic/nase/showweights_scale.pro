@@ -1,6 +1,9 @@
 ;+
 ; NAME: ShowWeights_Scale()
 ;
+; AIM: Scale array to be plotted using one of the predefined NASE
+;      color tables.
+;
 ; PURPOSE: Wurde aus ShowWeights ausgelagert.
 ;          Ein Array wird so skaliert, daﬂ es mit TV ausgegeben werden 
 ;          kann und dann aussieht wie bei ShowWeights.
@@ -126,6 +129,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.20  2000/10/01 14:51:09  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.19  2000/08/31 10:23:27  kupper
 ;        Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
 ;

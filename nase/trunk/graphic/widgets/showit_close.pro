@@ -1,6 +1,9 @@
 ;+
 ; NAME: ShowIt_Close
 ;
+; AIM:
+;  Close a ShowIt draw widget after graphics output.
+;
 ; PURPOSE: Schließen eines zuvor mit <A HREF="#SHOWIT_OPEN">ShowIt_Open</A> geöffneten Widgets.
 ;          Beim Schließen werden die Graphik-Systemvariablen auf die vor dem  
 ;          Öffnen gesicherten Werte zurückgesetzt. Außerdem wird die gerade 
@@ -33,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/01 14:51:59  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.3  2000/03/16 15:31:29  kupper
 ;        Changed to restore old active window.
 ;

@@ -1,6 +1,10 @@
 ;+
 ; NAME: PlotTV
 ;
+; AIM:
+;  Color coded display of a two-dimensional array in a coordinate
+;  system.
+;
 ; PURPOSE: TV-Darstellung eines Arrays zusammen mit einem
 ;          Koordinatensystem, Achsenbeschriftung und Legende
 ;          Bis auf die Skalierung der Grauwert-Intensitaeten
@@ -15,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.3  1999/11/15 16:56:41  kupper
 ;     Added PlotTvScl's new GET_INFO-Keyword to the optional output
 ;     passing.

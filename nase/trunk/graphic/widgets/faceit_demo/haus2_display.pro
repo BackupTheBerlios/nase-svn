@@ -1,6 +1,9 @@
 ;+
 ; NAME: haus2_DISPLAY
 ;
+; AIM:
+;  Display the current state of the network during simulation.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>. 
 ;          Hier soll die Darstellung des Netzwerkzustands während der 
 ;          Simulation erfolgen. *_DISPLAY wird von FaceIt nach jedem 
@@ -37,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;

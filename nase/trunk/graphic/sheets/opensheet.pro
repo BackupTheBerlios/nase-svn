@@ -1,6 +1,9 @@
 ;+
 ; NAME:              OpenSheet
 ;
+; AIM:
+;  Open a sheet for device-independent graphics output.
+;
 ; PURPOSE:           Öffnet ein mit DefineSheet definiertes Sheet. Das bedeutet,
 ;                    dass das Fenster aktiviert oder geoeffnet bzw das PS-File
 ;                    geoeffnet wird.
@@ -29,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.24  2000/10/01 14:51:35  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.23  2000/09/01 12:42:58  kupper
 ;     oops! Forgot to rename one XorWin... Sorry.
 ;

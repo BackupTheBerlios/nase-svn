@@ -1,6 +1,9 @@
 ;+
 ; NAME:               InitTrainspottingscope
 ;
+; AIM:
+;  Initialize a structure for use with the Trainspottingscope routine.
+;
 ; PURPOSE:            Initialisiert ein TrainspottingScope
 ;                     (siehe <A HREF="#TRAINSPOTTINGSCOPE">TrainspottingScope</A>)
 ;
@@ -39,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/10/01 14:51:23  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.6  1999/03/17 10:24:14  saam
 ;           new keyword NONASE implemented
 ;

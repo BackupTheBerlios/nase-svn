@@ -1,6 +1,9 @@
 ;+
 ; NAME: SetColorIndex
 ;
+; AIM: Set one entry in the current color table (or translation table
+;      for truecolor).
+;
 ; PURPOSE: Setzt einen Eintrag des aktuellen Colortables - AUCH auf
 ;          TrueColor Displays. (Dort kann die Verwendung der
 ;          Farbtabelle allerdings abgeschaltet werden, mit
@@ -34,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  2000/10/01 14:50:57  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 1.9  1999/11/04 17:31:41  kupper
 ;       Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;       -extremely- slow down performance on True-Color-Displays when

@@ -1,8 +1,13 @@
 ;+
 ; NAME:                PloTopo
 ;
-; PURPOSE:             Plottet die Topologie von Gewichtsvektoren wie bei
-;                      Kohonen-Netzen ueblich.
+; AIM:
+;  Display topology of a set of two-element weight vectors, as known
+;  from Kohonen nets.
+;
+; PURPOSE:
+;  Plottet die Topologie von zweikomponentigen Gewichtsvektoren wie
+;  bei Kohonen-Netzen ueblich.
 ;
 ; CATEGORY:            GRAPHICS
 ;
@@ -18,7 +23,7 @@
 ;                      ; plot noisy retinotopy
 ;                      T = fltarr(20,20,2)
 ;                      T(*,*,0) = REBIN(Indgen(20)+1, 20, 20)+0.3*(2*randomu(seed,20,20)-1)
-;                      T(*,*,1) = TRANPOSE(REBIN(Indgen(20)+1, 20, 20)+0.3*(2*randomu(seed,20,20)-1))
+;                      T(*,*,1) = TRANSPOSE(REBIN(Indgen(20)+1, 20, 20)+0.3*(2*randomu(seed,20,20)-1))
 ;                      plotopo, T
 ;
 ; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic/#SYMBOLPLOT>SYMBOLPLOT</A>
@@ -26,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 1.1  1999/12/02 15:24:53  saam
 ;            + huhu, its me
 ;

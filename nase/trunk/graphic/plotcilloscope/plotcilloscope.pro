@@ -1,6 +1,9 @@
 ;+
 ; NAME:                Plotcilloscope
 ; 
+; AIM:
+;  Gradually plot oscilloscope-like graph(s) (y-t-plot).
+;
 ; PURPOSE:             Diese Routine soll eine Art Oscillograph
 ;                      d.h. einen Y-t-Plot realisieren. Jeder
 ;                      Aufruf aktualisiert die Ausgabe um den
@@ -36,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  2000/10/01 14:51:23  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.13  2000/09/06 16:36:56  kupper
 ;     Replaced old () array indexing by new [], as we encountered problems
 ;     with function/array "value".

@@ -1,6 +1,9 @@
 ;+
 ; NAME:              TrainspottingScope
 ;
+; AIM:
+;  Gradually plot spiketrain(s) in an oscilloscope-like display.
+;
 ; PURPOSE:           Sukzessive Darstellung der Spikeaktivitaet einer Gruppe
 ;                    von Neuronen als Spikerasterdiagramm. Diese Routine vereinigt 
 ;                    die Funktionalitaet von <A HREF=/nase/graphic/#TRAINSPOTTING>Trainspotting</A>
@@ -31,6 +34,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.10  2000/10/01 14:51:23  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.9  2000/08/23 13:45:11  kupper
 ;     Changed point of plotting new time slice by one step, as display was
 ;     erased one step too early (Display was erased at plotting the last

@@ -1,6 +1,9 @@
 ;+
 ; NAME:               TvSclLegend
 ;
+; AIM:
+;  Display a legend indicating color coding, compatible to TvScl routine.
+;
 ; PURPOSE:            Erzeugt eine horizontale oder vertikale Legende fuer 
 ;                     TvScl-Darstellungen unabhaengig fuer X-Windows(256 COLOR/TRUE COLOR) 
 ;                     und Postscript (BW/COLOR)
@@ -55,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.11  2000/09/08 12:45:00  kupper
 ;     Added RANGE keyword.
 ;

@@ -1,6 +1,9 @@
 ;+
 ; NAME:               DPlot  
 ;
+; AIM: Plot two graphs in same coordinate system, with different
+;      y-axes on left and right.
+;
 ; PURPOSE:            Ermoeglicht die Darstellung zwei Plots mit
 ;                     zwei unterschiedlichen Achsenbeschriftungen
 ;                     (links und rechts) in einem.
@@ -26,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 1.1  1999/12/22 18:45:14  saam
 ;           happy xmas
 ;

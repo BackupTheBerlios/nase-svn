@@ -1,6 +1,9 @@
 ;+
 ; NAME: NaseTV
 ;
+; AIM: Display arrays in NASE-orientation. Optionally zoom and handle
+;      zero values.
+;
 ; PURPOSE: Darstellung von Layerdaten (Inputs, Outputs, Potentiale,
 ;          Gewichte...) wie mit TV, aber richtig gedreht.
 ;          (D.h. z.B. werden Gewichtsmatrizen in der gleichen
@@ -29,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  2000/10/01 14:51:09  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 2.6  1998/04/09 12:25:34  kupper
 ;              Reform-Bug bei 2-dim. Arrays mit führender 1-Dim.
 ;
@@ -75,16 +81,12 @@ Pro NaseTv, _array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackbac
 ;      2:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
 ;      3:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
 ;      4:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
-      1:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
-      2:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
-      3:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
-      4:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
+      1:    UTVScl, /NOSCALE, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
+      2:    UTVScl, /NOSCALE, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
+      3:    UTVScl, /NOSCALE, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
+      4:    UTVScl, /NOSCALE, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
 
    endcase
-
-   ;;------------------> Veränderungen am Array rückgängig machen:
-   If Keyword_Set(BLACKBACK) and (!P.BACKGROUND ne 0) then if (count ne 0) then array(nullen) = 0
-   ;;--------------------------------
 
 End
 

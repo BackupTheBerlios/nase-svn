@@ -1,6 +1,8 @@
 ;+
 ; NAME: PSWeights
 ;
+; AIM: Plot a DW matrix to a Postscript file, using reversed colors
+;      (black on white).
 ;
 ; PURPOSE: Ausgabe einer Gewichtsmatrix in einer PostScript-Datei
 ;          Grosse Gewichte werden hier im Gegensatz zu ShowWeights
@@ -76,6 +78,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  2000/10/01 14:51:09  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 2.8  2000/08/31 10:10:10  kupper
 ;       Changed to restore previous output device after writing PS. (Not
 ;       expecitely 'X' as before.)

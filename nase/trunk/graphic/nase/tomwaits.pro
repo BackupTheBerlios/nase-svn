@@ -1,6 +1,8 @@
 ;+
 ; NAME: TomWaits
 ;
+; AIM: Interactively investigate contents of a DW matrix.
+;
 ; PURPOSE: Interaktive Darstellung einer NASE-DW-Matrix.
 ;
 ; CATEGORY: Graphic, Darstellung, Auswertung
@@ -65,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.16  2000/10/01 14:51:09  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.15  2000/09/07 10:30:48  kupper
 ;        Added hourglass at longer operations.
 ;

@@ -1,6 +1,9 @@
 ;+
 ; NAME: haus2_USEREVENT
 ;
+; AIM:
+;  The top level widget event handler for all user interactions.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>.
 ;          Die Reaktion der benutzerdefinierten Widgets auf ‰uﬂere Ereignisse 
 ;          (Mausklicks, Sliderbewegungen o‰) muﬂ in *_USEREVENT festgelegt 
@@ -39,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.3  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;

@@ -1,6 +1,9 @@
 ;+
 ; NAME:               DefineSheet
 ;
+; AIM:
+;  Define a structure for device independent graphics output.
+;
 ; PURPOSE:            Definiert ein Window-,PS-Sheet oder Null-Sheet.
 ;                     Diese Routine und ihre Verwandten OpenSheet, CloseSheet, DestroySheet dienen als
 ;                     Ersatz fuer Window-, Set_Plot- und Device-Aufrufe und sollen eine ‰quivalente 
@@ -13,7 +16,7 @@
 ;                     intern ab, so daﬂ diese beim sp‰teren ÷ffnen eines Sheets wieder restauriert werden.
 ;                     Ab Revision 2.13 speichern die Sheets zus‰tzlich zu den Plotparametern auch
 ;                     die verwendetet Farbtabelle ab.
-;                     Ab Revision 2.15 Koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
+;                     Ab Revision 2.15 koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
 ;
 ; CATEGORY:           GRAPHIC, WIDGETS, allgemein
 ;
@@ -82,6 +85,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.20  2000/10/01 14:51:35  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.19  2000/08/31 10:23:28  kupper
 ;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
 ;

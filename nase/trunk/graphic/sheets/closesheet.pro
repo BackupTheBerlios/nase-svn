@@ -1,6 +1,9 @@
 ;+
 ; NAME:              CloseSheet
 ;
+; AIM:
+;  Close a sheet after finishing the graphics output.
+;
 ; PURPOSE:           Schliesst ein mit OpenSheet geoeffnetes Sheet. Das bedeutet,
 ;                    dass das PS-File geschlossen wird. Auﬂerdem
 ;                    werden alle aktiven Graphik-Settings in der
@@ -58,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  2000/10/01 14:51:35  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.12  2000/08/31 10:23:28  kupper
 ;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
 ;

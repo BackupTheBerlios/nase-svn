@@ -1,6 +1,9 @@
 ;+
 ; NAME: ExamineIt
 ;
+; AIM:
+;  Interactively investigate the comtents of a two-dimensional array.
+;
 ; PURPOSE: Darstellung und interaktive Abfrage eines zweidimensionalen
 ;          Arrays. (S. auch PROCEDURE-Abschnitt)
 ;
@@ -90,6 +93,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  2000/10/01 14:51:58  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 1.7  2000/09/07 16:43:12  kupper
 ;       confused x and y.
 ;

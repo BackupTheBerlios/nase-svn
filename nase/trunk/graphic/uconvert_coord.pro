@@ -1,6 +1,9 @@
 ;+
 ; NAME:  UCONVERT_COORD
 ;
+; AIM:
+;  Selectively transform coordinates to and from data, device, or
+;  normal notation.
 ;
 ; PURPOSE:
 ;           The CONVERT_COORD function transforms one or more sets of coordinates to 
@@ -76,6 +79,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.2  1998/04/10 16:51:21  kupper
 ;            Es wurden nichtdefinierte Schlüsselworte übergeben.
 ;

@@ -1,6 +1,9 @@
 ;+
 ; NAME:               InitPlotscilloscope
 ;
+; AIM:
+;  Initialize a structure for use with the Plotcilloscope routine.
+;
 ; PURPOSE:            Initialisiert ein Plotscilloscope
 ;                     (siehe <A HREF="#PLOTCILLOSCOPE">Plotcilloscope</A>)
 ;
@@ -58,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  2000/10/01 14:51:23  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.14  2000/09/27 15:59:15  saam
 ;     service commit fixing several doc header violations
 ;

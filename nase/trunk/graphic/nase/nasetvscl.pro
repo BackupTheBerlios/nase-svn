@@ -1,6 +1,8 @@
 ;+
 ; NAME: NaseTVScl
 ;
+; AIM: Display arrays in NASE-orientation. Optionally zoom.
+;
 ; PURPOSE: Darstellung von Layerdaten (Inputs, Outputs, Potentiale,
 ;          Gewichte...) wie mit TVScl, aber richtig gedreht.
 ;          (D.h. z.B. werden Gewichtsmatrizen in der gleichen
@@ -17,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  2000/10/01 14:51:09  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 2.5  1998/04/09 12:25:35  kupper
 ;              Reform-Bug bei 2-dim. Arrays mit führender 1-Dim.
 ;
@@ -55,10 +60,10 @@ Pro NaseTvScl, _array, par1, par2, par3, ZOOM=zoom, ORDER=order, _EXTRA = _extra
 ;      2:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
 ;      3:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
 ;      4:    TVScl, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
-      1:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
-      2:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
-      3:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
-      4:    UTVScl, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
+      1:    UTVScl, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
+      2:    UTVScl, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
+      3:    UTVScl, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
+      4:    UTVScl, transpose(Temporary(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
 
    endcase
 

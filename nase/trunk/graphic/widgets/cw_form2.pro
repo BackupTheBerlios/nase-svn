@@ -2,6 +2,10 @@
 ; NAME:
 ;	CW_FORM2
 ;
+; AIM:
+;  Easy to handle compound widget creating a simple user interface for
+;  data input.
+;
 ; PURPOSE:
 ;	CW_FORM2 is a compound widget that simplifies creating
 ;	small forms which contain text, numeric fields, buttons, 
@@ -190,6 +194,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:51:58  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  2000/09/27 15:59:17  saam
 ;        service commit fixing several doc header violations
 ;

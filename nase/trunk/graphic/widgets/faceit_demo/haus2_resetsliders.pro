@@ -1,6 +1,10 @@
 ;+
 ; NAME: haus2_RESETSLIDERS
 ;
+; AIM:
+;  Reset the sliders of the graphical user interface to standard
+;  values.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="#FACEIT">FaceIt</A>.
 ;          haus2_RESETSLIDERS ist eine Routine, die der Übersichtlichkeit 
 ;          halber aus <A HREF="#FACEIT">haus2_RESET</A> ausgelagert wurde. Sie ist also zum 
@@ -36,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;

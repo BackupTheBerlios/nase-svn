@@ -1,6 +1,9 @@
 ;+
 ; NAME: KeineNegativenUndGebrochenenTicks
 ;
+; AIM:
+;  Suppress fractional parts of plot values. Also suppress all
+;  negative values.
 ;
 ; PURPOSE: Hilfsfunktion, die zur Unterdrueckung von negativen
 ;          und gebrochenen Tickmarks bei Achsenbeschriftungen
@@ -36,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/10/01 14:51:44  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.3  1998/06/23 11:13:52  saam
 ;              FIX goes LONG
 ;

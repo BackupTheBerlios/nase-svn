@@ -1,6 +1,9 @@
 ;+
 ; NAME: haus2_SIMULATE
 ;
+; AIM:
+;  The main simulation routine of the simulation application.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="#FACEIT">FaceIt</A>.
 ;          *_SIMULATE sollte den Simulationskern enthalten: Inputbestimmung, 
 ;          Lernen, Berechnen des neuen Netwerkzustands usw werden hier 
@@ -44,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;

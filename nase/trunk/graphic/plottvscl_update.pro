@@ -1,6 +1,8 @@
 ;+
 ; NAME: PlotTVScl_update
 ;
+; AIM:
+;  Refresh a previous PlotTVScl plot using same color coding.
 ;
 ; PURPOSE: Auffrischung einer zuvor mittels <A HREF="#PLOTTVSCL">PlotTVScl</A> dargestellten
 ;          Graphik
@@ -62,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.10  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.9  2000/03/06 15:56:59  kupper
 ;     Added some comments in header.
 ;

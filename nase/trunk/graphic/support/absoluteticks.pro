@@ -1,6 +1,8 @@
 ;+
 ; NAME: AbsoluteTicks
 ;
+; AIM:
+;  Suppress signs of plot labels (show absolute values).
 ;
 ; PURPOSE: Hilfsfunktion, die zur Unterdrueckung des Vorzeichens
 ;          bei Achsenbeschriftungen verwendet werden kann. Dies 
@@ -32,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/10/01 14:51:44  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.2  1998/01/22 14:24:22  thiel
 ;               Der Header war kaputt.
 ;

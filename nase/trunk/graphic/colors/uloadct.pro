@@ -1,6 +1,8 @@
 ;+
 ; NAME:                ULoadCt
 ;
+; AIM: Same as LoadCt, but works for all devices (including NULL).
+;
 ; PURPOSE:             Ersatz fuer LoadCt mit gleichen Aufrufoptionen,
 ;                      stellt aber sicher, dass Farbdarstellung auf
 ;                      allen Displays funktioniert.
@@ -19,6 +21,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/10/01 14:50:57  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.6  2000/07/07 14:15:52  gabriel
 ;           BGCOLOR BUG for ps plot fixed
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:              GetColorIndex
 ;
+; AIM: Return RGB values of a given color index.
+;
 ; PURPOSE:           Ermittelt einen Eintrag des aktuellen Colortables auf
 ;                    8-bit-Devices; bitte das allgemeinere CIndex2RGB verwenden!
 ;
@@ -24,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  2000/10/01 14:50:57  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 2.2  1997/11/14 16:06:07  saam
 ;             Doc-Header verbessert
 ;

@@ -1,6 +1,9 @@
 ;+
 ; NAME:               PPlot
 ;
+; AIM:
+;  Plot dataset, and fill area below the line with a color.
+;
 ; PURPOSE:            Plottet einen Datensatz wie Plot und fuellt die aufgespannte Flaeche aus.
 ;
 ; CATEGORY:           GRAPHIC
@@ -26,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.2  1998/10/05 12:16:03  saam
 ;           + docheader added
 ;           + still problem with axis labelling

@@ -1,6 +1,9 @@
 ;+
 ; NAME: GetWinID
 ;
+; AIM:
+;  Return the window ID associated with a window sheet.
+;
 ; PURPOSE: Liefert die zu einem Window-Sheet gehörige WINID. Diese wird fuer 
 ;          "Device, /COPY"-Anweisungen benötigt.
 ;
@@ -26,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/10/01 14:51:35  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 1.4  2000/09/27 15:59:16  saam
 ;     service commit fixing several doc header violations
 ;

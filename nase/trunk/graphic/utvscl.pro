@@ -1,6 +1,10 @@
 ;+
 ; NAME:               UTvScl
 ;
+; AIM:
+;  Device independent, color coded display of two-dimensional array
+;  contents.
+;
 ; PURPOSE:            Ersetzt TvScl und hat folgende tolle, neue Features:
 ;                         + Device-unabhaegige Darstellung
 ;                         + Positionierung in Normalkoordinaten
@@ -78,6 +82,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.37  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.36  2000/09/01 09:17:44  gabriel
 ;           !D.{X|Y}_PX_CM instead of hardcoding 40.0 isn't correct for postscript.
 ;           Exception included!

@@ -1,6 +1,9 @@
 ;+
 ; NAME: haus2_INITDATA
 ;
+; AIM:
+;  Initialize the data and structures used by the simulation application.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>. 
 ;          *_INITDATA dient der Festlegung der Simulationsstrukturen 
 ;          (Layer, DWs usw) und der globalen Parameter zu Beginn der 
@@ -53,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.3  1999/09/15 15:00:16  kupper
 ;        Added a TEMPORARY() here and there to conserve memory...
 ;

@@ -1,6 +1,10 @@
 ;+
 ; NAME: OrientSym()
 ;
+; AIM:
+;  Define plotmarks indicating a given direction or orientation
+;  (oriented arrow/line).
+;
 ; PURPOSE: Definition eines User-Plotsymbols entsprechend einer
 ;          angegebenen Orientierung.
 ;
@@ -41,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/10/01 14:50:42  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.1  1998/05/26 14:43:26  kupper
 ;               Neu, insbesondere für den SymbolPlot gedacht.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: BLUEREDCT
 ;
+; AIM: (-outdated-) Set the colortable running from red to blue,
+;      special options for PS.
 ;
 ; PURPOSE:  Sets a BLUE-BLACK-RED colortable and changes the plot options device dependent
 ;
@@ -19,6 +21,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/10/01 14:50:57  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.1  1999/03/19 12:31:49  gabriel
 ;          BLUE BLACK RED or BLUE WHITE RED Colortable
 ;

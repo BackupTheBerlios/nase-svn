@@ -1,7 +1,8 @@
 ;+
 ; NAME:               PolarPlot
 ;
-; AIM:                plots polar diagrams
+; AIM:
+;  Plot dataset in a polar diagram.
 ;
 ; PURPOSE:            Plots a polar diagram.
 ;
@@ -97,6 +98,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.24  2000/10/01 14:50:42  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.23  2000/09/01 20:24:50  saam
 ;              bug with extradiff
 ;

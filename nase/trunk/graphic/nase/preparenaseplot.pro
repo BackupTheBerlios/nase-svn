@@ -1,6 +1,9 @@
 ;+
 ; NAME: PrepareNASEPlot
 ;
+; AIM: Set plot parameters (e.g. tickmarks) suitable for a plotting a
+;      NASE array.
+;
 ; PURPOSE: Einstellen der Plot-Parameter für das Plotten von NASE-Arrays
 ;
 ; CATEGORY: Graphik, Darstellung
@@ -65,6 +68,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.8  2000/10/01 14:51:09  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.7  1998/06/30 20:38:14  thiel
 ;               Neue Keywords X/YTICKNAMESHIFT eingebaut.
 ;

@@ -1,6 +1,10 @@
 ;+
 ; NAME: haus2_FILEOPEN
 ;
+; AIM:
+;  Read a prviously saved simulation data file and adjust the
+;  simulation.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>. 
 ;          Diese Routine wird vom Menüpunkt 'File.Open' aufgerufen. Hier
 ;          können zuvor gespeicherte Simulationsdaten eingelesen werden.
@@ -43,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.4  1999/09/16 12:00:38  thiel
 ;            Put FREEDW in the right place.
 ;

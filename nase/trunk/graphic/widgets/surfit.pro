@@ -1,6 +1,9 @@
 ;+
 ; NAME: SurfIt
 ;            
+; AIM:
+;  Interactively display a surface plot.
+;
 ; PURPOSE: Interaktiver Surface-Plot.
 ;          Diese Routine ersetzt das programmtechnisch simplere Int_Surf.
 ;          Der Unterschied ist, daﬂ diese Routine hier eine kleine

@@ -1,6 +1,9 @@
 ;+
 ; NAME:               FreeTrainspottingScope
 ;
+; AIM:
+;  Free the dynamic memory allocated by a trainspottingscope structure.
+;
 ; PURPOSE:            Gibt ein TrainspottingScope frei
 ;                     (siehe <A HREF="#TRAINSPOTTINGSCOPE">TrainspottingScope</A>)
 ;
@@ -26,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/10/01 14:51:23  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.1  1998/11/08 14:20:09  saam
 ;           the marriage of trainspotting and plotcilloscope
 ;

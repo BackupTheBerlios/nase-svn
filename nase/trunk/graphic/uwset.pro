@@ -1,6 +1,10 @@
 ;+
 ; NAME:               UWSet
 ;
+; AIM:
+;  Set the window active for graphics output. Work around nasty
+;  features of IDL's WSet procedure.
+;
 ; PURPOSE:            Ersetzt die WSet-Routine von IDL mit zwei Aenderungen:
 ;                       + Ist das Fenster nicht verfuegbar, wird kein Fehler erzeugt
 ;                       + Ist ueberhaupt kein Fenster geoeffnet, oeffnet WSet eines.
@@ -23,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.2  1998/05/14 13:52:22  saam
 ;           again problems with idl5, hopefully fixed
 ;

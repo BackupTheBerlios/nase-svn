@@ -1,7 +1,9 @@
 ;+
 ; NAME: AbsoluteNZTicks
 ;
-; AIM:  Labels axes with absolute, non-zero values
+; AIM:
+;  Suppress signs of plot labels (show absolute values). Also suppress
+;  small values.
 ;
 ; PURPOSE: Support function that supresses signs and to small values
 ;          (<1E-10) for axis labelling. This is useful for polarplots 
@@ -29,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/10/01 14:51:44  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.2  2000/07/24 10:20:59  saam
 ;              removed MODHIST from documentation
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: Interleave ()
 ;
+; AIM: Interleave pixels of arrays to produce pseudo-transparence for TV.
+;
 ; PURPOSE: Überlagerung mehrer Arrays (i.d.R. zur Ausgabe mit TV) 
 ;
 ; CATEGORY: Graphik, Darstellung

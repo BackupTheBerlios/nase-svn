@@ -1,6 +1,8 @@
 ;+
 ; NAME:                UTvLCt
 ;
+; AIM: Same as TvLct, but works for all devices (including NULL).
+;
 ; PURPOSE:             Ersatz fuer TvLCt mit gleichen Aufrufoptionen,
 ;                      stellt aber sicher, dass Farbdarstellung auf
 ;                      allen Displays funktioniert.
@@ -12,6 +14,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/10/01 14:50:57  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.4  1999/11/04 17:31:41  kupper
 ;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;     -extremely- slow down performance on True-Color-Displays when

@@ -1,6 +1,9 @@
 ;+
 ; NAME: ScrollIt()
 ;
+; AIM:
+;  Create a window or a draw widget with scrollbars.
+;
 ; PURPOSE: Darstellung groﬂer Graphiken in kleinen Fenstern mit
 ;          Scrollbalken.
 ;          Ab Revision 2.21 auch als Kind-Widgets in einer Widget-Applikation. 
@@ -158,6 +161,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/10/01 14:51:58  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 1.2  1999/10/28 16:16:05  kupper
 ;       Color-Management with sheets was not correct on a
 ;       true-color-display.

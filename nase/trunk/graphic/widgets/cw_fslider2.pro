@@ -1,6 +1,9 @@
 ;+
 ; NAME: CW_FSLIDER2
 ;
+; AIM:
+;  Compound widget displaying a slider for floating value input.
+;
 ; PURPOSE: Eine etwas huebschere Version des standard CW_FSLIDER.
 ;
 ; CATEGORY: widgets, graphic
@@ -144,6 +147,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:51:58  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  2000/02/22 18:26:58  kupper
 ;        Added Event_Pro, Event_Func keywords and theri proper handling!
 ;

@@ -6,10 +6,11 @@
 ;  $Id$
 ;
 ; AIM:
-;  closes all windows
+;  Close all windows and destroy all widgets.
 ;  
 ; PURPOSE:
-;  Tell what your routine does here.   
+;  This routine closes all open windows and resets the widget system,
+;  which destroys all widgets.   
 ;  
 ; CATEGORY:
 ;  Put the following category (or categories, specified separate

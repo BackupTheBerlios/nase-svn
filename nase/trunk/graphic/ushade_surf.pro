@@ -1,6 +1,10 @@
 ;+
 ; NAME:                UShade_Surf
 ;
+; AIM:
+;  Display a shaded surface plot. Like IDL shade_surf, but works for
+;  NULL device.
+;
 ; PURPOSE:             Ersatz fuer ShadeSurf mit gleichen Aufrufoptionen,
 ;                      stellt aber sicher, dass Farbdarstellung auf
 ;                      allen Displays funktioniert.
@@ -12,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.2  1999/11/04 17:31:40  kupper
 ;     Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;     -extremely- slow down performance on True-Color-Displays when

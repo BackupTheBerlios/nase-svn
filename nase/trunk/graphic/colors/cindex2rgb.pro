@@ -1,6 +1,8 @@
 ;+
 ; NAME:                CIndex2RGB
 ;
+; AIM: (-outdated-) Compute 8 bit RGB values from a 24 bit Truecolor value.
+;
 ; PURPOSE:             Errechnet aus einem Color-Index den
 ;                      zugehoerigen RGB-Wert. Die Translation-
 ;                      Tables bei True-Color-Displays werden 
@@ -25,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/10/01 14:50:57  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.2  2000/08/31 10:23:26  kupper
 ;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
 ;

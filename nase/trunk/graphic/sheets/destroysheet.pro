@@ -1,6 +1,10 @@
 ;+
 ; NAME:              DestroySheet
 ;
+; AIM:
+;  Free dynamic memory allocated by a sheet structure. For window
+;  sheets also close window. 
+;
 ; PURPOSE:           Loescht ein Sheet. Das bedeutet,
 ;                    dass das Fenster geschlossen wird.
 ;
@@ -33,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  2000/10/01 14:51:35  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.8  1999/06/15 17:36:39  kupper
 ;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
 ;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen

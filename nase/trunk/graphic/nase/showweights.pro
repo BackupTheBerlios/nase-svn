@@ -1,6 +1,8 @@
 ;+
 ; NAME: ShowWeights
 ;
+; AIM: Show contents of a DW matrix as "matrix of matrices".
+;
 ; PURPOSE: Formt eine Gewichtsmatrix um und stellt diese auf dem Bildschirm dar.
 ;          Dabei werden die Gewichte der Verbindungen NACH Neuron#0
 ;          (also dessen rezeptives Feld) in der linken
@@ -173,6 +175,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.31  2000/10/01 14:51:09  kupper
+;       Added AIM: entries in document header. First NASE workshop rules!
+;
 ;       Revision 2.30  1999/11/26 14:08:58  alshaikh
 ;             bugfix
 ;

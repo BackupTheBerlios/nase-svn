@@ -1,6 +1,10 @@
 ;+
 ; NAME: SymbolPlot
 ;
+; AIM:
+;  Plot two-dimensional array contents in a variety of styles.
+;  (Indicate values by size, color, orientation, ... of plotsymbols).
+;
 ; PURPOSE: Darstellung eines Arrays auf dem Bildschirm in allerlei
 ;          hübscher und erbaulicher Weise...
 ;          Die Arraywerte werden in der Symbolgröße codiert.
@@ -45,8 +49,8 @@
 ;                     6	Square	
 ;                     7	X	
 ;                     8	User-defined. See USERSYM procedure. (Standard-IDL)
-;                     9     Filled Square
-;                    11     N.
+;                     9 Filled Square
+;                    11 N.
 ;
 ;                POSCOLOR: Die Farbe, mit der positive Werte geplottet werden.
 ;                          Default: !P.COLOR.
@@ -121,6 +125,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.8  2000/10/01 14:50:42  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.7  1999/12/02 15:02:15  saam
 ;              + new positional arguments posx, posy for
 ;                arbitrary symbol positions

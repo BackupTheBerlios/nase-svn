@@ -1,6 +1,10 @@
 ;+
 ; NAME: Widget_ShowIt
 ;
+; AIM:
+;  Create and initialize an extended draw widget, that stores
+;  individual plot parameters and color tables. 
+;
 ; PURPOSE: Diese Routine dient der Initialisierung eines Widgets, das ein 
 ;          einfaches IDL-Draw-Widget um die Fähigkeit der NASE-<A HREF="./SHEETS/#DEFINESHEET">Sheets</A>
 ;          erweitert, die Graphik-Systemvariablen und private Farbtabellen zu 
@@ -95,6 +99,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  2000/10/01 14:51:59  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.10  2000/03/16 15:13:04  kupper
 ;        Added oldwin tag to xtra struct.
 ;

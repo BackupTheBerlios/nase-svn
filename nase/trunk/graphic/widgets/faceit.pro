@@ -2,6 +2,9 @@
 ; NAME: FaceIt 
 ;       (Frame for Application Control by Event-driven Interactive Technology)
 ;
+; AIM:
+;  A universal graphical user interface for NASE simulations.
+;
 ; PURPOSE: Stellt Grundfunktionen einer graphischen Simulationsoberfläche zur 
 ;          Verfügung. FaceIt erzeugt eine IDL-Widget-Anwendung, die ein Fenster
 ;          zur Darstellung des Simulationsablaufs und Buttons zur Steuerung 
@@ -136,6 +139,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.19  2000/10/01 14:51:58  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.18  2000/09/27 15:59:17  saam
 ;        service commit fixing several doc header violations
 ;

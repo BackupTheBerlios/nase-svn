@@ -1,6 +1,9 @@
 ;+
 ; NAME: haus2_FILESAVE
 ;
+; AIM:
+;  Save the current state of the simultion for later resumption.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>. 
 ;          Dessen Menüeintrag 'File.Save' ruft diese Routine auf. Der Benutzer
 ;          kann damit bei Bedarf Simulationsdaten speichern.
@@ -37,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  1999/09/02 14:38:18  thiel
 ;            Improved documentation.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: ubar_PLOT
 ;
+; AIM:
+;  Plot dataset using a histogram style.
 ;
 ; PURPOSE:       Routine zum plotten von Histogrammen
 ;
@@ -40,6 +42,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.7  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.6  2000/06/08 10:09:10  gabriel
 ;            xbase, keword oplot
 ;

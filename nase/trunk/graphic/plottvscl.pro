@@ -1,6 +1,9 @@
 ;+
 ; NAME: PlotTVScl
 ;
+; AIM:
+;  Color coded display of a two-dimensional array in a coordinate
+;  system.
 ;
 ; PURPOSE: TVScl-Darstellung eines Arrays zusammen mit einem
 ;          Koordinatensystem, Achsenbeschriftung und Legende
@@ -185,6 +188,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.66  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.65  2000/03/14 13:33:27  kupper
 ;     Updated header to inform user that keywords are passed to PLOT.
 ;     Changed use of _EXTRA to _REF_EXTRA => Keywords are also passed FROM PLOT now!

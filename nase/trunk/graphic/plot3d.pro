@@ -1,6 +1,9 @@
 ;+
 ; NAME:                Plot3D
 ;
+; AIM:
+;  Imitate surface plot by overlaying several simple plots.
+;
 ; PURPOSE:             Malt mehrere, sich verdeckende Plots in ein drei-
 ;                      dimensionales Koordinatensystem. Im Prinzip koennte
 ;                      das gleicher auch die Surface-Routine, wenn sie das
@@ -36,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.3  2000/08/31 10:07:41  kupper
 ;     Changed to use UTV instead of TV. Should work with other devices than
 ;     X now.

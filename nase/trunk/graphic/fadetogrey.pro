@@ -1,6 +1,9 @@
 ;+
 ; NAME: FadeToGrey
 ;
+; AIM: Turn a color indexed BMP into greylevel image, using linear
+;      sorted colortable.   
+;
 ; PURPOSE: Einlesen eines Bitmap-Bildes mit 8 Bit Farbtiefe
 ;          und Speichern einer Grauwert-Bitmap dieses Bildes
 ;          mit gleichzeitiger Rueckgabe der Grauwert-Bitmap
@@ -59,6 +62,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/10/01 14:50:42  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.1  1998/04/02 15:19:37  thiel
 ;               Nie wieder Aerger mit Farbtabellen von
 ;               eingelesenen Bitmaps!

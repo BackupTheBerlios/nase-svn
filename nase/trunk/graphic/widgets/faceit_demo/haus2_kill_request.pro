@@ -1,6 +1,10 @@
 ;+
 ; NAME: haus2_KILL_REQUEST
 ;
+; AIM:
+;  Allow or reject the requested closing of the simulation application
+;  and take appropriate actions.
+;
 ; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>.
 ;          Die hierin enthaltenen Befehle werden vor der Zerstörung des
 ;          FaceIt-Widgets ausgeführt, zB kann hier mit den NASE-Routinen 
@@ -43,6 +47,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/10/01 14:52:11  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 1.2  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;

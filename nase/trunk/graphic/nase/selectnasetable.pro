@@ -1,6 +1,8 @@
 ;+
 ; NAME: SelectNASEtable
 ;
+; AIM: Select one of the predefined sets of NASE color tables.
+;
 ; PURPOSE: Auswählen eines der vordefinierten NASE-Colortable-Sätze
 ;          (Bildschirm und Postscript).
 ;
@@ -28,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/10/01 14:51:09  kupper
+;        Added AIM: entries in document header. First NASE workshop rules!
+;
 ;        Revision 2.3  1998/06/10 12:30:34  kupper
 ;               Multicolor auch fuer Postscript (identische Farbtabelle wie Bildschirm...)
 ;

@@ -1,6 +1,10 @@
 ;+
 ; NAME:               VCR
 ;
+; AIM:
+;  Interactively display animated timesequence of one- or
+;  two-dimensional array data.
+;
 ; PURPOSE:            Display of a 1- or 2-dimensional sequence with
 ;                     controls similar to those of a videoplayer (not
 ;                     recorder!).
@@ -59,6 +63,9 @@
 ;     ohjehohjeh
 ;
 ;     $Log$
+;     Revision 2.9  2000/10/01 14:50:42  kupper
+;     Added AIM: entries in document header. First NASE workshop rules!
+;
 ;     Revision 2.8  2000/06/09 09:58:22  ziemann
 ;           added memory display by using new
 ;           keyword TAUMEMO
