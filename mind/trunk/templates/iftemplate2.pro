@@ -45,10 +45,15 @@
 ;
 ; SIDE EFFECTS:       TEMP_VALS is changed by the function call!
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/27 10:50:30  saam
+;           delete modification history from doc header
+;
 ;     Revision 1.5  2000/01/22 19:04:23  saam
 ;           updated doc header
 ;
@@ -65,7 +70,6 @@
 ;           initial version... keyword LOGIC
 ;
 ;
-;-
 
 
 FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
