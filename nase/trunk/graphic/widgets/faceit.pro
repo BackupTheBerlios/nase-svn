@@ -131,6 +131,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  1999/11/16 18:03:23  kupper
+;        Now sets black/white linear colortable after initialization is
+;        finished. Thus, ShowIts with PRIVATE_COLORS not set don't look
+;        so strange...
+;
 ;        Revision 1.9  1999/10/27 12:01:11  kupper
 ;        Added no_block-keyword.
 ;
@@ -557,6 +562,8 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
    Utv, logo
    ShowIt_Close, userstruct.w_simlogo
 
+   loadct, 0                    ;don't leave that ugly logo-colortable...
+   
 
    XMANAGER, CATCH=1-DEBUGMODE
 
