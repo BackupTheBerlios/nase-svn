@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.21  1998/04/09 12:21:50  saam
+;           first argument is not changed any more
+;
 ;     Revision 2.20  1998/03/21 16:27:44  saam
 ;           now handles array of types like (1,m,n)
 ;
@@ -126,7 +129,7 @@
 ;
 ;
 ;-
-PRO UTvScl, _Image, XNorm, YNorm, Dimension $
+PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
@@ -137,6 +140,7 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
             , _EXTRA=e
 
    IF !D.Name EQ 'NULL' THEN RETURN
+   _Image = __Image
 
    IF N_Params() LT 1 THEN Message, 'argument expected'
    IF (Size(_Image))(0) GT 2 THEN BEGIN
