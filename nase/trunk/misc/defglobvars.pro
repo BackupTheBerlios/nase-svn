@@ -44,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  1999/01/14 14:15:42  saam
+;           + thereis now !NONEl for integer nones
+;
 ;     Revision 1.2  1998/07/14 12:33:14  gabriel
 ;          History-Buffer auf 200 Lines erhoeht
 ;
@@ -53,7 +56,8 @@
 ;
 ;-
 PRO defglobvars
-DefSysV, '!NONE', -999999.0, 1
+DefSysV, '!NONE' , -999999.0, 1
+DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
 DefSysV, '!REVERTPSCOLORS', 1
 DefSysV, '!PSGREY', 1
