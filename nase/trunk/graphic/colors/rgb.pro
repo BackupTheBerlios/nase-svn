@@ -112,6 +112,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.27  2000/10/05 10:26:30  saam
+;        *INDEX,NOALLOC removed
+;        *allocates only colors GT !TOPCOLOR
+;
 ;        Revision 1.26  2000/10/01 14:50:57  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -209,8 +213,15 @@ END
 FUNCTION RGB, R,G,B, INDEX=index, $; je 0..255
                       START=start,$
                       NOALLOC=noalloc
-Common common_RGB, My_freier_Farbindex   
-  
+Common common_RGB, ucc
+
+;;; ucc : user color counter; counter for the reserved color indices
+;;;       protected from overwriting by Uloadct, indicated by !TOPCOLOR;
+;;;       ucc = 0 points to !TOPCOLOR+1
+
+if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
+if set(noalloc) THEN Console, "keyword NOALLOC is obsolete, please remove", /WARN
+
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
 
@@ -226,44 +237,54 @@ Common common_RGB, My_freier_Farbindex
 
 
    ;; ---- NOALLOC --------------------------------------------------------------
-   IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
-      myCM = bytarr(!D.Table_Size,3) 
-      TvLCT, myCM, /GET
-      New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
-      New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
-      differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
-      lowestDiff = MIN(differences, bestMatch)
-      RETURN, bestMatch
-   END
+;   IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
+;      myCM = bytarr(!D.Table_Size,3) 
+;      TvLCT, myCM, /GET
+;      New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
+;      New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
+;      differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
+;      lowestDiff = MIN(differences, bestMatch)
+;      RETURN, bestMatch
+;   END
    ;; ---------------------------------------------------------------------------
 
 
 
+   Default, ucc, -1
 
-   if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
-      Default, start, 1
-      My_freier_Farbindex = start
-   end
-   if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
+;   if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
+;      Default, start, 0
+;      My_freier_Farbindex = start
+;   end
+;   if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
 
+
+   ucc = (ucc + 1) MOD (!D.TABLE_SIZE - !TOPCOLOR - 1)
+   index_to_set = !TOPCOLOR + 1 + ucc
+
+
+   ; one way to save colors would suggest:
+   ; search if the color is already defined by rgb and
+   ; return the corresponding index
 
    ;; ---- Screen (X, MAC or WIN), and not pseudocolor: ---------------------------------------
    IF (!D.Name EQ ScreenDevice()) AND NOT Pseudocolor_Visual() THEN BEGIN
-      SetColorIndex, SetIndex, R, G, B  
+      SetColorIndex, index_to_set, R, G, B  
    ENDIF ELSE BEGIN
    ;; ---- all other devices: -------------------------------------------------   
        My_Color_Map = bytarr(!D.Table_Size,3) 
        TvLCT, My_Color_Map, /GET  
-       My_Color_Map (SetIndex,*) = [R,G,B]  
+       My_Color_Map (index_to_set,*) = [R,G,B]  
        TvLCT, Temporary(My_Color_Map)
    END
 
-   if not set(index) then begin
-      My_freier_Farbindex = (My_freier_Farbindex+1) mod !TOPCOLOR
+;   if not set(index) then begin
+;       ucc = (ucc + 1) MOD (!D.TABLE_SIZE - !TOPCOLOR - 1)
+;       My_freier_Farbindex = !TOPCOLOR + 1 + ucc
 ;      if My_freier_Farbindex eq 0 then message, /INFORM, "!Farbpalette voll!"  
-      return, My_Freier_Farbindex-1
-   end
-   return,  SetIndex
+;      return, My_Freier_Farbindex-1
+;   end
+   return, index_to_set
    ;; ---------------------------------------------------------------------------
 
 END
