@@ -74,7 +74,7 @@ sub updatedoc {
     
     `rm -Rf $DOCDIR/*`;
     foreach (@projects){
-      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_`;
+      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_; chmod -R g+w $_`;
       print "checking out $_ ... done\n";
     }
         
