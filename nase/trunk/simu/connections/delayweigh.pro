@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.30  1998/02/11 14:11:05  saam
+;             Geschwindigkeitsoptimierung
+;
 ;       Revision 1.29  1998/02/05 14:18:50  saam
 ;             loop variables now long
 ;
@@ -154,7 +157,7 @@ FUNCTION DelayWeigh, _DW, InHandle
 
 
       IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, In, /SET $
-      ELSE  DW.Learn = Handle_Create(VALUE=In)
+      ELSE  DW.Learn = Handle_Create(_DW, VALUE=In)
 
       IF In(0) EQ 0 THEN BEGIN
          result = FltArr(2,1)
@@ -178,7 +181,8 @@ FUNCTION DelayWeigh, _DW, InHandle
             ; C2T(wi) has each target neuron only once,
             ; because there is only one connection between
             ; source and target; therefore next assignment is ok
-            vector(DW.C2T(wi)) = vector(DW.C2T(wi)) + DW.W(wi)
+            tN = DW.C2T(wi) 
+            vector(tN) = vector(tn) + DW.W(wi)
          END
       END
 
@@ -227,7 +231,7 @@ FUNCTION DelayWeigh, _DW, InHandle
       DW.Queue = tmpQu
 
       IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, acilo, /SET $
-      ELSE DW.Learn = Handle_Create(VALUE=acilo)
+      ELSE DW.Learn = Handle_Create(_DW, VALUE=acilo)
 
       vector = FltArr(tw*th)
 
@@ -240,7 +244,8 @@ FUNCTION DelayWeigh, _DW, InHandle
          FOR i=0l,N_Elements(acilo)-1 DO BEGIN
             wi = acilo(i)
             ; get corresponding target index
-            vector(DW.C2T(wi)) = vector(DW.C2T(wi)) + DW.W(wi)
+            tN = DW.C2T(wi) 
+            vector(tN) = vector(tN) + DW.W(wi)
          END
 
 
