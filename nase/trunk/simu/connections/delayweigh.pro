@@ -103,7 +103,8 @@ FUNCTION DelayWeigh, DelMat, In
 ;      alte Variante, ohne nocon !!!!!!!!!!
 ;      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
 ;      RETURN, DelMat.Weights # In 
-
+      
+      
       spikes = Transpose(REBIN([In], (SIZE(DelMat.Weights))(2), (SIZE(DelMat.Weights))(1), /SAMPLE))
                                 ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
                                 ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
@@ -111,12 +112,13 @@ FUNCTION DelayWeigh, DelMat, In
       res = FltArr(DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h)
       active = WHERE(spikes NE 0, count) 
       IF (count NE 0) THEN res(active) = DelMat.weights(active) ;* spikes(active)
-
+      
       noweights = WHERE(res LE !NONE, count)
       IF count NE 0 THEN res(noweights) = 0
-
-      RETURN, TOTAL(res, 2)
-
+      
+      IF (SIZE(res))(0) EQ 2 THEN RETURN, TOTAL(res, 2) ELSE RETURN, TOTAL(res)
+      
+      
    END ELSE BEGIN
       
       tmp = Transpose(REBIN([In], (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
@@ -138,6 +140,8 @@ FUNCTION DelayWeigh, DelMat, In
       IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
          DelMat.lp =  ((DelMat.lp - delmat.dp) > 0) + DelMat.vp*spikes
       END
-      RETURN, TOTAL(res, 2)
+
+      IF (SIZE(res))(0) EQ 2 THEN RETURN, TOTAL(res, 2) ELSE RETURN, TOTAL(res)
+
    END   
 END   
