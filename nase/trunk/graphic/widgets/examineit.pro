@@ -20,7 +20,7 @@
 ;*                   [,XPOS=xoffset] [,YPOS=yoffset]
 ;*                   [,/BOUND]
 ;*                   [,RANGE=...]
-;*                   [ [,/NORDER] [,/NSCALE] | [,/NASE] ]
+;*                   {[,/NORDER] [,/NSCALE]} | [,/NASE]
 ;*                   [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
 ;*                   [,GET_BASE=BaseID]
 ;*                   [,DELIVER_EVENTS=Array_of_Widget_IDs]
