@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.6  1999/09/23 17:52:44  kupper
+;     Oops! Forgot to pass SETCOL-Keyword, sorry...
+;
 ;     Revision 2.5  1999/09/23 14:12:39  kupper
 ;     Corrected Legend colorscaling (now uses TOP).
 ;     Updating should work now, behaviour of plottvscl should even be
@@ -87,6 +90,7 @@ PRO PlotTvscl_update, W, Info, INIT=init
    Default, NEUTRAL, Info.neutral
    Default, NOSCALE, Info.noscale
    Default, COLORMODE, Info.colormode
+   Default, SETCOL, Info.setcol
 
    Default, TOP, Info.top
    Default, TOP, !D.Table_Size-1
