@@ -1,6 +1,7 @@
 ;+
 ; NAME:
 ;	GAUSS__FUNCT
+; AIM:  evaluate the sum of a gaussian and a 2nd order polynomial
 ;
 ; VERSION: $Id$
 ;
@@ -80,6 +81,8 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ; NAME:
 ;	GAUSS_FIT
 ;
+; AIM:  fits the gaussian function to a given data
+;
 ; PURPOSE:
 ; 	Fit the equation y=f(x) where:
 ;
@@ -142,10 +145,13 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ;	element.  The height is (MAX-AVG) or (AVG-MIN) respectively.
 ;	The width is found by searching out from the extrema until
 ;	a point is found less than the 1/e value.
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/28 12:56:25  gabriel
+;            AIM tag added , message <> console
+;
 ;       Revision 1.6  2000/09/27 15:59:26  saam
 ;       service commit fixing several doc header violations
 ;
@@ -160,14 +166,14 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ;       Thu Aug 21 10:56:14 1997, Mirko Saam
 ;		dies ist im wesentlichen die IDL 5 Routine von Gaussfit, die nun auch den Parameter NTerms akzeptiert
 ;
-;-
+;
 
 
 on_error,2                      ;Return to caller if an error occurs
 csave = !c
 if n_elements(nt) eq 0 then nt = 6
 if nt lt 3 or nt gt 6 then $
-   message,'NTERMS must have values from 3 to 6.'
+   console, /fatal,'NTERMS must have values from 3 to 6.'
 n = n_elements(y)		;# of points.
 s = size(y)
 
@@ -194,7 +200,7 @@ if n_elements(est) eq 0 then begin	;Compute estimates?
     if nt gt 4 then a = [a, c(1)]
     if nt gt 5 then a = [a, 0.]
 endif else begin
-    if nt ne n_elements(est) then message, 'ESTIMATES must have NTERM elements'
+    if nt ne n_elements(est) then console, /fatal, 'ESTIMATES must have NTERM elements'
     a = est
 endelse
 

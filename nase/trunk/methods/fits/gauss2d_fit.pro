@@ -1,6 +1,8 @@
 ;+
 ; NAME:
 ;	GAUSS2__FUNCT
+; AIM:  evaluate function for gauss2fit
+;
 ; PURPOSE:
 ;	Evaluate function for gauss2fit.
 ; CALLING SEQUENCE:
@@ -75,6 +77,7 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ;+
 ; NAME:
 ;	GAUSS2d_FIT
+; AIM:  fits a 2 dim. ellipt. gaussian equation to rectilinearly gridded data
 ;
 ; PURPOSE:
 ; 	Fit a 2 dimensional elliptical gaussian equation to rectilinearly
@@ -177,10 +180,13 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ;	yfit = gauss2d_fit(z,b)			;Fit the function, no rotation
 ;	print,'Should be:',string(a,format='(6f10.4)')  ;Report results..
 ;	print,'Is:      :',string(b(0:5),format='(6f10.4)')
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  2000/09/28 12:51:34  gabriel
+;            AIM tag added , message <> console
+;
 ;       Revision 1.6  2000/09/27 15:59:26  saam
 ;       service commit fixing several doc header violations
 ;
@@ -194,12 +200,12 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ;             new keywords [XY]CENTER
 ;             now uses ucurvefit
 ;
-;-
+;
 ;
 on_error,2                      ;Return to caller if an error occurs
 s = size(z)
 if s(0) ne 2 then $
-	message, 'Z must have two dimensions'
+	console, /fatal, 'Z must have two dimensions'
 n = n_elements(z)
 nx = s(1)
 ny = s(2)
@@ -208,9 +214,9 @@ if np lt 3 then x = findgen(nx)
 if np lt 4 then y = findgen(ny)
 
 if nx ne n_elements(x) then $
-    message,'X array must have size equal to number of columns of Z'
+ console, /fatal,'X array must have size equal to number of columns of Z'
 if ny ne n_elements(y) then $
-    message,'Y array must have size equal to number of rows of Z'
+ console, /fatal,'Y array must have size equal to number of rows of Z'
 
 if keyword_set(neg) then q = MIN(SMOOTH(z,3), i) $
     ELSE q = MAX(SMOOTH(z,3), i)	;Dirty peak / valley finder

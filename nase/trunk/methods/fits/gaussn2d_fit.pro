@@ -1,6 +1,9 @@
 ;+
 ; NAME:
 ;	GAUSS2__FUNCT
+;
+; AIM: evaluate function for gauss2fit
+;
 ; PURPOSE:
 ;	Evaluate function for gauss2fit.
 ; CALLING SEQUENCE:
@@ -41,7 +44,7 @@ F = A(0) * u
 
 if n_params(0) le 3 then return ;need partial?  No.
 
-message,'fix me: i thought derivatives are needed??'
+console, /fatal,'fix me: i thought derivatives are needed??'
 
 END
 
@@ -52,6 +55,7 @@ Function Gaussn2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = 
 ;+
 ; NAME:
 ;	GAUSS2d_FIT
+; AIM: fits a 2 dim. ellipt. gaussian equation to rectilinearly gridded data.
 ;
 ; PURPOSE:
 ; 	Fit a 2 dimensional elliptical gaussian equation to rectilinearly
@@ -148,10 +152,13 @@ Function Gaussn2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = 
 ;	yfit = gauss2d_fit(z,b)			;Fit the function, no rotation
 ;	print,'Should be:',string(a,format='(6f10.4)')  ;Report results..
 ;	print,'Is:      :',string(b(0:5),format='(6f10.4)')
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/28 12:59:26  gabriel
+;            AIM tag added , message <> console
+;
 ;       Revision 1.2  2000/09/27 15:59:26  saam
 ;       service commit fixing several doc header violations
 ;
@@ -168,12 +175,12 @@ Function Gaussn2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = 
 ;             new keywords [XY]CENTER
 ;             now uses ucurvefit
 ;
-;-
+;
 ;
 on_error,2                      ;Return to caller if an error occurs
 s = size(z)
 if s(0) ne 2 then $
-	message, 'Z must have two dimensions'
+	console, /fatal, 'Z must have two dimensions'
 n = n_elements(z)
 nx = s(1)
 ny = s(2)
@@ -182,9 +189,9 @@ if np lt 3 then x = findgen(nx)
 if np lt 4 then y = findgen(ny)
 
 if nx ne n_elements(x) then $
-    message,'X array must have size equal to number of columns of Z'
+    console, /fatal,'X array must have size equal to number of columns of Z'
 if ny ne n_elements(y) then $
-    message,'Y array must have size equal to number of rows of Z'
+    console, /fatal,'Y array must have size equal to number of rows of Z'
 
 if keyword_set(neg) then q = MIN(SMOOTH(z,3), i) $
     ELSE q = MAX(SMOOTH(z,3), i)	;Dirty peak / valley finder

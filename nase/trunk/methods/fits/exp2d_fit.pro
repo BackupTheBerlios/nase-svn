@@ -1,6 +1,9 @@
 ;+
 ; NAME:
 ;	EXP2__FUNCT
+;
+; AIM:  Evaluate function for exp2fit 
+;
 ; PURPOSE:
 ;	Evaluate function for exp2fit.
 ; CALLING SEQUENCE:
@@ -32,9 +35,12 @@
 ;
 ; MODIFICATION HISTORY:
 ;	$Log$
+;	Revision 1.5  2000/09/28 12:48:13  gabriel
+;	     AIM tag added , message <> console
+;
 ;	Revision 1.4  2000/09/27 15:59:26  saam
 ;	service commit fixing several doc header violations
-;
+;	
 ;	Revision 1.3  1998/03/14 15:01:51  pauly
 ;	Header completed
 ;	
@@ -69,7 +75,7 @@ F = a(0) + a(1) * u
 
 if n_params(0) le 3 then return ;need partial?  No.
 
-message,'EXP__2FUNCT: Partial Derivatives not yet supported (pauly)'
+console, /fatal,'EXP__2FUNCT: Partial Derivatives not yet supported (pauly)'
 ; Caution: these are left from the GAUSS2__FUNCT
 ;PDER = FLTARR(n, n_elements(a))	;YES, make partial array.
 ;PDER(*,0) = 1.0			;And fill.
@@ -89,6 +95,8 @@ Function Exp2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = neg
 ;+
 ; NAME:
 ;	EXP2d_FIT
+;
+; AIM:  fits a 2 dim ellipt. exponent. (decaying) equation to rectilinearly gridded data
 ;
 ; PURPOSE:
 ; 	Fit a 2 dimensional elliptical exponential (decaying) equation to 
@@ -191,9 +199,12 @@ Function Exp2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = neg
 ;	yfit = exp2d_fit(z,b)			;Fit the function, no rotation
 ;	print,'Should be:',string(a,format='(6f10.4)')  ;Report results..
 ;	print,'Is:      :',string(b(0:5),format='(6f10.4)')
-;
+;-
 ; MODIFICATION HISTORY:
 ;       $Log$
+;       Revision 1.5  2000/09/28 12:48:13  gabriel
+;            AIM tag added , message <> console
+;
 ;       Revision 1.4  2000/09/27 15:59:26  saam
 ;       service commit fixing several doc header violations
 ;
@@ -206,13 +217,13 @@ Function Exp2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = neg
 ;       Revision 1.1  1998/03/13 20:23:52  pauly
 ;            Analog gauss2d_fit fuer exp-Abfall programmiert, erste Version
 ;
-;-
+;
 ;
 ;
 on_error,2                      ;Return to caller if an error occurs
 s = size(z)
 if s(0) ne 2 then $
-	message, 'Z must have two dimensions'
+	console, /fatal, 'Z must have two dimensions'
 n = n_elements(z)
 nx = s(1)
 ny = s(2)
@@ -221,9 +232,9 @@ if np lt 3 then x = findgen(nx)
 if np lt 4 then y = findgen(ny)
 
 if nx ne n_elements(x) then $
-    message,'X array must have size equal to number of columns of Z'
+    console,/fatal,'X array must have size equal to number of columns of Z'
 if ny ne n_elements(y) then $
-    message,'Y array must have size equal to number of rows of Z'
+    console,/fatal,'Y array must have size equal to number of rows of Z'
 
 if keyword_set(neg) then q = MIN(SMOOTH(z,3), i) $
     ELSE q = MAX(SMOOTH(z,3), i)	;Dirty peak / valley finder
@@ -260,8 +271,8 @@ factory = ay_exp(0)
 basey   = ay_exp(1)
 offsety = ay_exp(2)
 
-print, 'Result of x slice: (factorx,basex,offsetx)', [factorx,basex,offsetx]
-print, 'Result of y slice: (factory,basey,offsety)', [factory,basey,offsety]
+console,/msg, 'Result of x slice: (factorx,basex,offsetx)', [factorx,basex,offsetx]
+console,/msg, 'Result of y slice: (factory,basey,offsety)', [factory,basey,offsety]
 
 ;Meaning of the coefficients used with the exponential model:
 ;f(x) = a0 * a1^x + a2 
@@ -271,7 +282,7 @@ print, 'Result of y slice: (factory,basey,offsety)', [factory,basey,offsety]
 expdivisorx = 1.0/ALOG(basex)
 expdivisory = 1.0/ALOG(basey)
 
-print, 'Exponential divisors (x,y) from slices:', expdivisorx, expdivisory
+console,/msg, 'Exponential divisors (x,y) from slices:', expdivisorx, expdivisory
 
 ;Use of Coefficient Array by EXP2__FUNCT
 ;F(x,y) = A0 + A1*EXP(-sqrt((yp/A2)^2 + (xp/A3)^2))
@@ -288,7 +299,7 @@ a = [	(offsetx+offsety)/2.0, $        ;mean value as guess
 ;  If there's a tilt, add the XY term = 0
 if Keyword_set(tilt) then a = [a, 0.0]
 
-print,'1st guess:',string(a,format='(8f10.4)')
+console,/msg,'1st guess:',string(a,format='(8f10.4)')
 ;STOP ;stop here to debug, if things don't converge
 
 result = ucurvefit([nx, ny, x, y], reform(z, n, /OVERWRITE), $
