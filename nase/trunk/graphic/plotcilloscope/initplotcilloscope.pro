@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1998/03/25 10:40:05  kupper
+;            Whatever might be might be...
+;
 ;     Revision 2.7  1998/03/19 11:04:22  kupper
 ;            Inkompatibilität zu IDL4 entfernt... (_extra-Verarbeitung)
 ;
@@ -84,7 +87,9 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
    Default, YMAX, 1.0
    Default, Rays, 1
    Default, XTITLE, 't / ms'
-   Default, _extra, {XTITLE: xtitle}
+   If not keyword_set(_EXTRA) then _extra = {XTITLE: xtitle} else begin
+      If not extraset(_extra, "xtitle") then _extra = create_struct(_extra, "xtitle", xtitle)
+   EndElse
    time =  time*OVERSAMP
    maxSc = 1
    minSc = 1
