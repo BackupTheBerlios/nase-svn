@@ -1,5 +1,9 @@
 ;+
 ;       $Log$
+;       Revision 1.22  1999/07/15 14:55:37  kupper
+;       !PATH wird jetzt von der startup-Routine auf die NASE-Verzeichnisse
+;       gesetzt. Die Benutzung des nasedirs.{bash|csh}-Skriptes entfaellt damit.
+;
 ;       Revision 1.21  1999/07/15 12:29:28  kupper
 ;       Reihenfolge von defgolvars un ShowLogo geaendert.
 ;
@@ -62,6 +66,50 @@
 ;              Definition der !KEY-Variable hinzugefügt.
 ;
 ;-
+
+;; SET !PATH to NASE-Dirs: -----------------------------------------
+NASEPATH = GetEnv("NASEPATH")
+If NASEPATH eq "" then begin message, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%",/INFO & message, "%%%% NASE Error: Environment variable 'NASEPATH' not set! %%%%%",/INFO & message, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" & end
+     
+NASEDIRS = NASEPATH+"/alien:"$
+ +NASEPATH+"/control:"$
+ +NASEPATH+"/control/counter:"$
+ +NASEPATH+"/control/loops:"$
+ +NASEPATH+"/control/output:"$
+ +NASEPATH+"/control/time:"$
+ +NASEPATH+"/control/video+tape:"$
+ +NASEPATH+"/graphic:"$
+ +NASEPATH+"/graphic/colors:"$
+ +NASEPATH+"/graphic/nase:"$
+ +NASEPATH+"/graphic/plotcilloscope:"$
+ +NASEPATH+"/graphic/sheets:"$
+ +NASEPATH+"/graphic/support:"$
+ +NASEPATH+"/math:"$
+ +NASEPATH+"/methods:"$
+ +NASEPATH+"/methods/fits:"$
+ +NASEPATH+"/methods/corrs+specs:"$
+ +NASEPATH+"/methods/rfscan:"$
+ +NASEPATH+"/methods/signals:"$
+ +NASEPATH+"/methods/stat:"$
+ +NASEPATH+"/misc:"$
+ +NASEPATH+"/misc/arrays:"$
+ +NASEPATH+"/misc/bugs:"$
+ +NASEPATH+"/misc/files+dirs:"$
+ +NASEPATH+"/misc/files+dirs/compress:"$
+ +NASEPATH+"/misc/handles:"$
+ +NASEPATH+"/misc/keywords:"$
+ +NASEPATH+"/misc/regler:"$
+ +NASEPATH+"/misc/strings:"$
+ +NASEPATH+"/misc/structures:"$
+ +NASEPATH+"/simu:"$
+ +NASEPATH+"/simu/input:"$
+ +NASEPATH+"/simu/connections:"$
+ +NASEPATH+"/simu/layers:"$
+ +NASEPATH+"/simu/plasticity"
+SetEnv, "NASEDIRS="+NASEDIRS    ;for compatibility reasons
+!PATH = !PATH+":"+NASEDIRS
+;------------------------------------------------------------------
+
 
 ;; ----------- Show Logo on startup? ----------------------
 WillShowLogo = (GetEnv("NASELOGO") eq "TRUE")
