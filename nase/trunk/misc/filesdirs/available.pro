@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.1  1999/09/10 12:55:59  kupper
+;        Changed Name from "non_block_readable()" to "available()".
+;
 ;        Revision 2.3  1999/09/10 12:51:43  kupper
 ;        Changed Name from "non_block_readable()" to "available()".
 ;
