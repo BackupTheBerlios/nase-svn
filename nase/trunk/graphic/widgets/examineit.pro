@@ -413,9 +413,9 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                NOSCALE = _noscale, $
                XPOS=xpos, YPOS=ypos, COLOR=color
    
-   MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
-   MySmallFont = '-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1'
-
+   ;; The font definition has been moved to the DefGlobVars routine
+   ;;   MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
+   ;;   MySmallFont = '-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1'
 
    ;;NASE implies NORDER and NSCALE:
    Default, NASE, 0
@@ -536,7 +536,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                             ['1\Mode', $
                              '0\BOUND on\examineit_bound_on_handler',$
                              '2\BOUND off\examineit_bound_off_handler'], $
-                            IDs=ids, Font=MyFont)
+                            IDs=ids, Font=!NASEWIDGETFONT)
    Uvalue, ids[1], {tv: tv, other: ids[2]}
    Uvalue, ids[2], {tv: tv, other: ids[1]}
    widget_control, ids[2-BOUND], Sensitive=0
