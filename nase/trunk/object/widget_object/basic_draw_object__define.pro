@@ -74,7 +74,19 @@
 ;                          upon initialization.
 ;                          It may be admirable to disable color saving in special 
 ;                          cases, e.g. when frequent updates happen, or when
-;                          connecting to an X server accross a network.
+;                          connecting to an X server accross a
+;                          network.
+;   ct, n                : set the color table that is to be used for
+;                          the display (see IDL's <C>LoadCT</C> for an
+;                          overview of available color tables). <BR>
+;                          The color table is initialized to <*>0</*>
+;                          (liear grey ramp) upon construction of the object.<BR> 
+;                          Please note that the color table will be
+;                          overwritten, if <C>/NASE</C> is set (unless
+;                          also <C>SETCOL=0</C> is passed).<BR>
+;   ct()                 : return the current color table.<BR>
+;                          The color table is initialized to <*>0</*>
+;                          (liear grey ramp) upon construction of the object.<BR>                      
 ;
 ;   -plus those inherited from class <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A> (see there for details)-
 ;
@@ -129,58 +141,16 @@
 ;           <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>
 ;
 ; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.15  2001/09/21 13:52:13  kupper
-;        Implemented FRAME und SUBFRAME keywords.
-;        Rü
-;
-;        Revision 1.14  2001/08/02 14:18:09  kupper
-;        replaced "MESSAGE" commands by "CONSOLE" calls.
-;
-;        Revision 1.13  2000/09/27 15:59:37  saam
-;        service commit fixing several doc header violations
-;
-;        Revision 1.12  2000/03/15 19:07:10  kupper
-;        Hm, postponing solution of the added-to-realized-widget-problem to future...
-;        Changed update_info method not to break on unrealized objects.
-;
-;        Revision 1.11  2000/03/14 15:42:53  kupper
-;        Paint requests for unrealized widgets are now ignored.
-;
-;        Revision 1.10  2000/03/13 16:36:18  kupper
-;        Polished header (needs mor polishing!)
-;
-;        Revision 1.9  2000/03/13 15:47:34  kupper
-;        initial_paint_hook_ now issues abstract method warning.
-;
-;        Revision 1.8  2000/03/13 14:04:25  kupper
-;        Polished header.
-;
-;        Revision 1.7  2000/03/13 13:22:48  kupper
-;        paint_hook_ is now not called upon realization any more.
-;
-;        Revision 1.6  2000/03/12 17:00:41  kupper
-;        Adjusted to new classname argument of Init/Cleanup_Superclasses.
-;
-;        Revision 1.5  2000/03/12 15:16:10  kupper
-;        Extended object.
-;        Now including save_colors/ignore_colors and allow_paint/prevent_paint methods.
-;        Added paint_hook_ and initial_paint_hook_ methods.
-;
-;        Revision 1.4  2000/03/10 21:06:30  kupper
-;        Should work and be complete.
-;
-;        Revision 1.3  2000/03/10 20:49:40  kupper
-;        Now passing correct keywords to wisget_showit.
-;
 ;-
+
+
 ;; ------------ Widget support routines ---------------------
 Pro BDO_Notify_Realize, id
    On_Error, 2
    Widget_Control, id, Get_Uvalue=object
 
    showit_open, object->showit()
+   ULoadCt, object->ct()
    object->initial_paint_hook_
    showit_close, object->showit(), Save_Colors=object->save_colors_()
 
@@ -347,6 +317,23 @@ Pro basic_draw_object::ignore_colors
    self.save_colors = 0
 End
 
+Pro basic_draw_object::ct, n
+   self.ct = n
+
+   If Widget_Info(self.widget, /Realized) then begin
+      showit_open, self.w_showit
+      ULoadCt, n
+      showit_close, self.w_showit, Save_Colors=self.save_colors
+      self->paint
+   Endif else begin
+      console, /Debug, "Postponed ct request for unrealized " + $
+          "widget-object."
+   endelse
+End
+Function basic_draw_object::ct
+   return, self.ct
+End
+
 ;; ------------ Private --------------------
 Pro basic_draw_object::paint_hook_; -ABSTRACT-
    ;; for overriding in subclass!
@@ -376,6 +363,8 @@ Pro basic_draw_object__DEFINE
             paint_interval: 0.0, $
             $
             prevent_paint_flag: 0b, $
-            delayed_paint_request_flag: 0b $
+            delayed_paint_request_flag: 0b, $
+            $
+            ct: 0l $ ;; color table
            }
 End
