@@ -1,12 +1,12 @@
 ;+
-; NAME: KillWeights
+; NAME: ShowNoMercy
 ;
 ;
 ; PURPOSE: Elimination von Verbindungen mit kleinen Gewichten
 ;
 ; CATEGORY: SIMULATION
 ;
-; CALLING SEQUENCE: DWMatrix = KillWeights (DWMatrix, LESSTHAN=Abschneidewert)
+; CALLING SEQUENCE: DWMatrix = ShowNoMercy (DWMatrix, LESSTHAN=Abschneidewert)
 ;
 ; INPUTS: DWMatrix : Eine mit InitDW geschaffene Struktur
 ;
@@ -30,11 +30,14 @@
 ;
 ; PROCEDURE: Set
 ;
-; EXAMPLE: W90_90 = KillWeights(W90_90, LessThan=0.01)
+; EXAMPLE: W90_90 = ShowNoMercy(W90_90, LessThan=0.01)
 ;          Setzt die Gewichte in der Delay-Weigh-Struktur W90_90, die
 ;          kleiner als 0.01 sind, auf !NONE
 ;
 ; MODIFICATION HISTORY:
+;
+;       Thu Aug 21 16:33:56 1997, Andreas Thiel
+;		Funktion umbenannt.
 ;
 ;       Wed Aug 20 14:38:59 1997, Andreas Thiel
 ;		Erste Version erstellt.
@@ -42,7 +45,7 @@
 ;-
 
 
-FUNCTION KillWeights, Matrix, LESSTHAN=LessThan
+FUNCTION ShowNoMercy, Matrix, LESSTHAN=LessThan
 
 
 If Not Set(LESSTHAN) Then Return, Matrix
