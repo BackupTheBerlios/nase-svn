@@ -129,6 +129,9 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.2  1998/03/11 09:59:20  saam
+;            another endless loop terminated
+;
 ;      Revision 1.1  1998/03/10 12:40:55  saam
 ;            modification of IDL4.0's curvefit routine
 ;            with improved error handling
@@ -195,6 +198,7 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
           repeat begin
              c = sqrt(alpha(diag) # alpha(diag))
              array = alpha/c
+             if min(c) EQ 0 THEN GOTO, error
              array(diag) = array(diag)*(1.+flambda)              
              array = invert(array)
              b = a+ array/c # transpose(beta) ; New params
@@ -202,11 +206,7 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
              chisqr = total(w*(y-yfit)^2)/nfree         ; New chisqr
 	     if all_done then goto, done
              flambda = flambda*10.                      ; Assume fit got worse
-             IF NOT finite(chisqr) THEN BEGIN
-                message, 'Failed to converge', /INFORMATIONAL
-                converged = 0
-                return, yfit
-             END
+             IF NOT finite(chisqr) THEN GOTO, error
           endrep until chisqr le chisq1
 ;
           flambda = flambda/100.  ; Decrease flambda by factor of 10
@@ -214,12 +214,14 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
           if ((chisq1-chisqr)/chisq1) le tol then goto,done  ; Finished?
        endfor                        ;iteration loop
 ;
-       message, 'Failed to converge', /INFORMATIONAL
-       converged = 0
-       return, yfit
+       GOTO, error
 ;
 done:  sigmaa = sqrt(array(diag)/alpha(diag)) ; Return sigma's
        chi2 = chisqr                          ; Return chi-squared
        converged = 1
        return,yfit              ;return result
+
+error: message, 'Failed to converge                                   ', /INFORMATIONAL
+       converged = 0
+       return, yfit
 END
