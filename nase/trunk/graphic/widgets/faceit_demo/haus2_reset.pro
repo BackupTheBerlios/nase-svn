@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/09/14 13:01:07  kupper
+;        Just added informative comments.
+;
 ;        Revision 1.2  1999/09/03 14:24:46  thiel
 ;            Better docu.
 ;
@@ -53,9 +56,16 @@
 
 PRO haus2_RESET, dataptr, displayptr
 
+;--- THE FOLLOWING WILL DO FINE IN MOST CASES.
+;--- HOWEVER, IF THERE IS A MORE EFFICIENT WAY TO RESET
+;--- YOUR SIMULATION, CHANGE IT. 
+
    haus2_FreeData, dataptr
    (*dataptr) = Create_Struct({info : 'haus2_data'})
    haus2_InitData, dataptr
+
    haus2_ResetSliders, dataptr, displayptr
+
+;--- NO CHANGES NECESSARY BELOW THIS LINE.
 
 END ; haus2_RESET 
