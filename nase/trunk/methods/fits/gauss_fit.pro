@@ -73,7 +73,7 @@ END
 
 
 
-Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est
+Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ;+
 ; NAME:
 ;	GAUSS_FIT
@@ -108,6 +108,8 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est
 ;	NTERMS = Set NTERMS to 3 to compute the fit: F(x) = A0*EXP(-z^2/2).
 ;	   Set it to 4 to fit:  F(x) = A0*EXP(-z^2/2) + A3
 ;	   Set it to 5 to fit:  F(x) = A0*EXP(-z^2/2) + A3 + A4*x
+;       CONVERGED: If set to a named variable, the status of the fit will
+;               be returned.
 ;
 ; OUTPUTS:
 ;	The fitted function is returned.
@@ -141,16 +143,15 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est
 ;
 ; MODIFICATION HISTORY:
 ;
-;       Thu Aug 21 10:56:14 1997, Mirko Saam
-;<saam@ax1317.Physik.Uni-Marburg.DE>
+;       $Log$
+;       Revision 1.4  1998/03/10 16:50:22  saam
+;             new keyword CONVERGED
+;             now uses ucurvefit
 ;
+;
+;       Thu Aug 21 10:56:14 1997, Mirko Saam
 ;		dies ist im wesentlichen die IDL 5 Routine von Gaussfit, die nun auch den Parameter NTerms akzeptiert
 ;
-;
-;
-;DMS, RSI, Dec, 1983.  DMS, RSI,
-;Jun, 1995, Added NTERMS keyword.  Result is now float if Y is not
-;double.  DMS, RSI, Added ESTIMATES keyword.  -
 ;-
 
 
@@ -190,7 +191,7 @@ endif else begin
 endelse
 
 !c=csave			;reset cursor for plotting
-return,curvefit(x,y,replicate(1.,n),a,sigmaa, $
-		function_name = "GAUSS__FUNCT") ;call curvefit
+return,ucurvefit(x,y,replicate(1.,n),a,sigmaa, $
+		function_name = "GAUSS__FUNCT", converged) ;call curvefit
 
 end
