@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1999/09/08 13:19:31  saam
+;           + debugging help-statment deleted
+;
 ;     Revision 2.6  1999/08/31 13:02:20  thiel
 ;         Messages disabled.
 ;
@@ -76,7 +79,6 @@ PRO SetWeights, _DW, W, NO_INIT=no_init, DIMENSIONS=dimensions
           w = Reform(/OVERWRITE, w, DWDim(_DW,/TH)*DWDim(_DW,/TW), $
                      DWDim(_DW,/SH)*DWDim(_DW,/SW))
          Handle_Value, _DW, DW, /NO_COPY
-         help, dw, /struct
          
          DW.Weights = W
          Handle_Value, _DW, DW, /NO_COPY, /SET
