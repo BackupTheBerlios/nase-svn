@@ -1,15 +1,55 @@
 ;+
 ; NAME: NASim
 ;
-; PURPOSE: Grundfunktionen einer graphischen Simulationsoberfläche.
+; PURPOSE: Stellt Grundfunktionen einer graphischen Simulationsoberfläche zur 
+;          Verfügung. NASim erzeugt eine IDL-Widget-Anwendung, die ein Fenster
+;          zur Darstellung des Simulationsablaufs und Buttons zur Steuerung 
+;          dieser Simulation besitzt. Der Simulationskern und die Darstellung
+;          müssen vom Benutzer in separaten Routinen bereitgestellt werden.
+;          NaSim ruft diese Routinen dann entsprechend der auftretenden 
+;          Ereignisse auf.
 ;
-; CATEGORY:
+; CATEGORY: SIMULATION
 ;
-; CALLING SEQUENCE:
+; CALLING SEQUENCE: NASim, name
 ;
-; INPUTS:
+; INPUTS: name: Ein String, der den Namen der auszuführenden Simulation 
+;               enthält.
 ;
-; OPTIONAL INPUTS:
+;         Desweiteren erwartet NASim, daß es die unten aufgeführten Routinen 
+;         finden kann. Beim Aufruf werden die angegebenend Parameter übergeben.
+;         Dabei handelt es sich um die beiden Pointer dataptr und displayptr
+;         und die Widgets W_base und W_userbase.
+;
+;          PRO name_INITDATA, dataptr
+;           Zur Festlegung der Simulationsstrukturen (Layer, DWs usw) und der
+;           globalen Parameter. Alle diese Dinge müssen in der Struktur
+;           untergebracht werden, auf die der dataptr zeigt. Das macht man so:
+;            *dataptr = Create_Struct(*dataptr, 'lernrate' , 0.23)
+;           oder so:
+;            *dataptr = Create_Struct( *dataptr, $
+;                'layer', InitLayer(WIDTH=(*dataptr).width, $
+;                                   HEIGHT=(*dataptr).eighth, $
+;                                   TYPE=(*dataptr).paratype))
+;
+;          PRO name_INITDISPLAY, dataptr, W_Base, W_UserBase, displayptr
+;
+;          FUNCTION name_SIMULATE, dataptr
+;           Return, 1
+;
+;          FUNCTION name_DISPLAY, dataptr, W_Base, W_UserBase, displayptr 
+;           Return, 1
+;
+;          FUNCTION name_USEREVENT, Event
+;           Return, 0
+;
+;          PRO name_RESET, dataptr, W_Base, W_UserBase, displayptr
+;
+;          PRO name_FREEDATA, dataptr
+;
+;          FUNCTION name_KILL_REQUEST, dataptr, W_Base, W_UserBase, displayptr
+;           Return, 1
+;
 ;
 ; KEYWORD PARAMETERS:
 ;
@@ -17,11 +57,16 @@
 ;
 ; OPTIONAL OUTPUTS:
 ;
-; COMMON BLOCKS:
+; COMMON BLOCKS: WidgetSimulation, MyFont, MySmallFont
+;                mit: MyFont = '-adobe-helvetica-bold-r-normal$
+;                               --14-140-75-75-p-82-iso8859-1'
+;                und: MySmallFont = '-adobe-helvetica-bold-r-normal$
+;                                    --12-120-75-75-p-70-iso8859-1'
 ;
 ; SIDE EFFECTS:
 ;
-; RESTRICTIONS: Dies ist der Alpha-Release.
+; RESTRICTIONS: Dies ist erst der Alpha-Release, also sind Bugs und 
+;               Umstellungen zu erwarten.
 ;
 ; PROCEDURE:
 ;
@@ -32,8 +77,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/08/17 13:34:38  thiel
+;            Still not complete, but improved once more.
+;
 ;        Revision 1.2  1999/08/13 15:38:13  thiel
-;            Alphe release: Now separted basic functions and user definitions.
+;            Alphe release: Now separated basic functions and user definitions.
 ;
 ;        Revision 1.1  1999/08/09 16:43:23  kupper
 ;        Ein Sub-Alpha-Realease der neuen graphischen
@@ -44,18 +92,27 @@
 
 
 
-FUNCTION NASim_INIT, simname, W_base, W_userbase
+FUNCTION NASim_CreateData, simname
 
-   P = PTR_NEW( {info : simname+"_globalvariables", $
-              dataptr : PTR_NEW({ info : simname+'_data'}) $
-                 })
-   
-   Call_Procedure, simname+'_INITDATA', (*P).dataptr
-   Call_Procedure, simname+'_INITDISPLAY', W_base, W_userbase, P
+   dataptr = PTR_NEW({info : simname+'_data'})
 
-   Return, P
+   Call_Procedure, simname+'_INITDATA', dataptr
 
-END ; NASim_INIT
+   Return, dataptr
+
+END ; NASim_CreateData
+
+
+FUNCTION NASim_CreateDisplay, simname, dataptr, W_userbase
+
+   displayptr = PTR_NEW({info : simname+'_display'})
+
+   Call_Procedure, simname+'_INITDISPLAY', $
+    dataptr, displayptr, W_userbase
+
+   Return, displayptr
+
+END ; NASim_CreateDisplay
 
 
 ;--- This handles the basic events
@@ -77,21 +134,21 @@ PRO NASim_EVENT, Event
                ;Initiate next simulation cycle
                WIDGET_CONTROL, UV.W_Base, TIMER=UV.SimDelay
                UV.continue_simulation = $
-                Call_FUNCTION(UV.simname+'_SIMULATE', (*(UV.P)).dataptr)
+                Call_FUNCTION(UV.simname+'_SIMULATE', UV.dataptr)
                CurrentTime = SysTime(1)
                Widget_Control, UV.W_SimStepTime, SET_VALUE=str(round((CurrentTime-UV.SimAbsTime)*1000))
                UV.SimAbsTime = CurrentTime
                IF (UV.display) THEN BEGIN 
                   UV.display = $
-                   Call_FUNCTION(UV.simname+'_DISPLAY', UV.W_Base, UV.W_UserBase, UV.P) 
+                   Call_FUNCTION(UV.simname+'_DISPLAY', UV.dataptr, UV.displayptr, UV.W_UserBase) 
                ENDIF
             ENDIF
          END ; WIDGET_TIMER
                                               
          "WIDGET_KILL_REQUEST" : $
-          IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.W_Base, UV.W_UserBase, UV.P) THEN BEGIN
-            Ptr_Free, (*(UV.P)).dataptr 
-            Ptr_Free, UV.P
+          IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr, UV.W_UserBase) THEN BEGIN
+            Ptr_Free, UV.dataptr 
+            Ptr_Free, UV.displayptr
             WIDGET_CONTROL, Event.Top, /DESTROY
             widget_killed = 1
          ENDIF ; WIDGET_KILL_REQUEST
@@ -106,11 +163,11 @@ PRO NASim_EVENT, Event
          "SIMULATION_STOP" : UV.continue_simulation = 0
                                               
          'SIMULATION_RESET' : BEGIN
-               Call_Procedure, UV.simname+'_FREEDATA', (*(UV.P)).dataptr
-               Ptr_Free, (*(UV.P)).dataptr 
-               (*(UV.P)).dataptr = Ptr_New({info : UV.simname+'_data'})
-               Call_Procedure, UV.simname+'_InitData', (*(UV.P)).dataptr
-               Call_Procedure, UV.simname+'_RESET', UV.W_base, UV.W_userbase, UV.P
+               Call_Procedure, UV.simname+'_FREEDATA', UV.dataptr
+               Ptr_Free, UV.dataptr 
+               UV.dataptr = Ptr_New({info : UV.simname+'_data'})
+               Call_Procedure, UV.simname+'_InitData', UV.dataptr
+               Call_Procedure, UV.simname+'_RESET', UV.dataptr, UV.displayptr, UV.W_userbase
             END 
 
          ELSE : Message, "Unexpected event caught from W_Base: "+ EventName
@@ -141,11 +198,11 @@ PRO NASim_EVENT, Event
       UV.W_SimStop : UV.continue_simulation = 0 ; "Pressed" is the only event that this will generate
 
       UV.W_SimReset : BEGIN
-         Call_Procedure, UV.simname+'_FREEDATA', (*(UV.P)).dataptr
-         Ptr_Free, (*(UV.P)).dataptr 
-         (*(UV.P)).dataptr = Ptr_New({info : UV.simname+'_data'})
-         Call_Procedure, UV.simname+'_InitData', (*(UV.P)).dataptr
-         Call_Procedure, UV.simname+'_RESET', UV.W_base, UV.W_userbase, UV.P
+         Call_Procedure, UV.simname+'_FREEDATA', UV.dataptr
+         Ptr_Free, UV.dataptr 
+         UV.dataptr = Ptr_New({info : UV.simname+'_data'})
+         Call_Procedure, UV.simname+'_InitData', UV.dataptr
+         Call_Procedure, UV.simname+'_RESET', UV.dataptr, UV.displayptr, UV.W_userbase
       END
 
       UV.W_SimDisplay: BEGIN
@@ -172,6 +229,8 @@ END ; all2all_EVENT
 
 PRO NASim, simname
 
+   COMMON WidgetSimulation, MyFont, MySmallFont
+
 
    DEBUGMODE = 1; XMANAGER will terminate on error, if DEBUGMODE is set
    
@@ -195,6 +254,9 @@ PRO NASim, simname
                               /BASE_ALIGN_CENTER, $
                               /ALIGN_TOP, /ROW $
                              )
+   W_simlogo  = DefineSheet(W_simcontrol, /WINDOW, XSIZE=75, YSIZE=50, $
+                                /PRIVATE_COLORS)
+
    W_SimDisplay = CW_BGroup(W_SimControl, "Display", $
                             /NONEXCLUSIVE, $
                             SET_VALUE=1, $
@@ -216,6 +278,7 @@ PRO NASim, simname
                               VALUE="Stop", FONT=MyFont $
                              )
    
+   
    W_SimReset  = Widget_Button(W_SimControl, $
                               VALUE="Reset", FONT=MyFont $
                              )
@@ -232,26 +295,35 @@ PRO NASim, simname
    Message, /INFO, "          ******************************"
    Message, /INFO, "          *** Calling Initialization ***"
    Message, /INFO, "          ******************************"
-   Widget_Control, W_Base, /NO_COPY, $
-    SET_UVALUE={P             : NASim_Init(simname, W_Base, W_UserBase), $
-                W_Base        : W_Base, $
-                W_SimDisplay  : W_SimDisplay, $
-                W_SimDelay    : W_SimDelay, $
-                W_SimStepTime : W_SimStepTime, $
-                SimAbsTime    : SysTime(1), $
-                W_SimStart    : W_SimStart, $
-                W_SimStop     : W_SimStop, $
-                W_SimReset    : W_SimReset, $
-                W_simlogo     : DefineSheet(W_simcontrol, /WINDOW,   XSize=75,   YSize=50, /PRIVATE_COLORS), $
-                W_UserBase    : W_UserBase, $
-                minSimDelay   : minSimDelay, $
-                oldSimDelay   : minSimDelay, $
-                SimDelay      : minSimDelay, $ ;SimulationDelay/ms
-                continue_simulation : 0, $
-                display       : 1, $
-                simname : simname $
-                 }
-                
+
+
+   userstruct = Create_Struct( $
+      'simname', simname, $
+      'dataptr', NASim_CreateData(simname) $
+   )
+
+   userstruct = Create_Struct(userstruct, $
+      'displayptr', NASim_CreateDisplay(simname, $
+                       userstruct.dataptr, W_UserBase), $
+      'W_Base', W_Base, $
+      'W_simlogo', w_simlogo, $
+      'W_SimDisplay', W_SimDisplay, $
+      'W_SimDelay', W_SimDelay, $
+      'W_SimStepTime', W_SimStepTime, $
+      'SimAbsTime', SysTime(1), $
+      'W_SimStart', W_SimStart, $
+      'W_SimStop', W_SimStop, $
+      'W_SimReset', W_SimReset, $
+      'W_UserBase', W_UserBase, $
+      'minSimDelay', minSimDelay, $
+      'oldSimDelay', minSimDelay, $
+      'SimDelay', minSimDelay, $ ;SimulationDelay/ms
+      'continue_simulation', 0, $ ; Flags
+      'display', 1 $
+   )
+   
+   Widget_Control, W_Base, /NO_COPY, SET_UVALUE=userstruct
+            
    ;--- display nase-logo:
    WIDGET_CONTROL, W_Base, GET_UVALUE=UV
    OpenSheet, UV.w_simlogo
@@ -272,5 +344,5 @@ PRO NASim, simname
    XMANAGER, "Simulation: "+SimName, W_Base, EVENT_HANDLER="NASim_EVENT", /NO_BLOCK
 
 
-END ; i_all2all
+END ; NASim
 
