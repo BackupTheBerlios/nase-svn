@@ -2,6 +2,8 @@
 ; NAME:
 ;       UCOMFIT
 ;
+; AIM:  fits one of nine common known functions to given data
+;
 ; VERSION: $Id$
 ;
 ; PURPOSE:
@@ -80,6 +82,9 @@
 ;-
 ; MODIFICATION HISTORY:
 ;       $Log$
+;       Revision 1.3  2000/09/28 13:11:01  gabriel
+;            AIM tag added , message <> console
+;
 ;       Revision 1.2  2000/09/27 15:59:26  saam
 ;       service commit fixing several doc header violations
 ;
@@ -158,11 +163,11 @@ function ucomfit, x, y, a0, weights = weights, sigma = sigma, yfit = yfit, $
   nx = n_elements(x)
   wx = n_elements(weights)
   if nx ne n_elements(y) then $
-    message, 'x and y must be vectors of equal length.'
+    console, /fatal, 'x and y must be vectors of equal length.'
 
   if wx eq 0 then weights = replicate(1.0, nx) $
   else if wx ne nx then $
-	message, 'x and weights must be vectors of equal length.'
+	console, /fatal, 'x and weights must be vectors of equal length.'
 
   a1 = a0			;Copy initial guess
   if keyword_set(exponential) then i = 0 $
@@ -173,10 +178,10 @@ function ucomfit, x, y, a0, weights = weights, sigma = sigma, yfit = yfit, $
   else if keyword_set(logsquare) then i = 5 $
   else if keyword_set(general_hyp) then i = 6 $
   else if keyword_set(hyp_square) then i = 7 $
-  else message, 'Type of model must be supplied as a keyword parameter.'
+  else console, /fatal, 'Type of model must be supplied as a keyword parameter.'
 
   if n_elements(a1) ne fcn_npar(i) then $
-	message, 'a0 must be supplied as a '+strtrim(fcn_npar(i), 2) + $
+	console, /fatal, 'a0 must be supplied as a '+strtrim(fcn_npar(i), 2) + $
 	     '-element initial guess vector.'
   yfit = curvefit(x, y, weights, a1, sigma, function_name = fcn_names(i))
   return, a1

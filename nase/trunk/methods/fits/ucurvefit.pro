@@ -1,6 +1,9 @@
 ;+
 ; NAME:
-;       CURVEFIT
+;       UCURVEFIT
+;
+; AIM:  non-linear least squares fit to any non-linear function
+;
 ;
 ; PURPOSE:
 ;       Non-linear least squares fit to a function of an arbitrary 
@@ -127,6 +130,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.4  2000/09/28 13:15:17  gabriel
+;           AIM tag added , message <> console
+;
 ;      Revision 1.3  2000/09/27 15:59:26  saam
 ;      service commit fixing several doc header violations
 ;
@@ -162,7 +168,7 @@ function ucurvefit, x, y, w, a, sigmaa, Function_Name = Function_Name, $
 
        nterms = n_elements(a)   ; # of parameters
        nfree = n_elements(y) - nterms ; Degrees of freedom
-       if nfree le 0 then message, 'Curvefit - not enough data points.'
+       if nfree le 0 then console, /fatal, 'Curvefit - not enough data points.'
        flambda = 0.001          ;Initial lambda
        diag = lindgen(nterms)*(nterms+1) ; Subscripts of diagonal elements
 
@@ -225,7 +231,7 @@ done:  sigmaa = sqrt(array(diag)/alpha(diag)) ; Return sigma's
        converged = 1
        return,yfit              ;return result
 
-error: message, 'Failed to converge                                   ', /INFORMATIONAL
+error: console, /msg , 'Failed to converge                                   '
        converged = 0
        return, yfit
 END
