@@ -169,32 +169,22 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          ActCol = !P.Color
          !P.Color = info.color
          
-         minrow = min(info.w(*, y_arr))
-         maxrow = max(info.w(*, y_arr))
-         mincol = min(info.w(x_arr, *))
-         maxcol = max(info.w(x_arr, *))
+         minrow = min(info.w(*, y_arr), /NAN)
+         maxrow = max(info.w(*, y_arr), /NAN)
+         mincol = min(info.w(x_arr, *), /NAN)
+         maxcol = max(info.w(x_arr, *), /NAN)
          value  = info.w(x_arr, y_arr)
          allmin = info.wmin
          allmax = info.wmax
 
-         ;; handle NONE entries (have been replaced by 999999 during initialization
-;;;         If info.nase then begin ;Entschuldige mich für diesen Wust... sorry...
-            If minrow eq 999999 then minrow = "(none)" else minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
-            If maxrow eq 999999 then maxrow = "(none)" else maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
-            If mincol eq 999999 then mincol = "(none)" else mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)
-            If maxcol eq 999999 then maxcol = "(none)" else maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
-            If value  eq 999999 then value  = "(none)"
-            If allmin eq 999999 then allmin = "(none)" else allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
-            If allmax eq 999999 then allmax = "(none)" else allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
-;;;         Endif else begin
-;;;            minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
-;;;            maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
-;;;            mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)            
-;;;            maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
-;;;            allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
-;;;            allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
-;;;         endelse
-
+         minrow = strtrim(string(minrow, FORMAT="(G20.3)"), 2)
+         maxrow = strtrim(string(maxrow, FORMAT="(G20.3)"), 2)
+         mincol = strtrim(string(mincol, FORMAT="(G20.3)"), 2)
+         maxcol = strtrim(string(maxcol, FORMAT="(G20.3)"), 2)
+         allmin = strtrim(string(allmin, FORMAT="(G20.3)"), 2)
+         allmax = strtrim(string(allmax, FORMAT="(G20.3)"), 2)
+         ;; value is not shortened, to have the exact value displayed.
+         
          If info.norder then begin ;Entschuldige mich für diesen Wust... sorry...
             row_nr = info.height-y_arr-1
             y_nr = x_arr
@@ -234,16 +224,9 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          PrepareNASEPlot, info.height, info.width, /OFFSET, GET_OLD=oldplot, NONASE=1-Keyword_Set(info.norder), /X_ONLY
          rowpos = info.position
          rowpos(3) = info.win_height/3-rowpos(1);15*info.zoom-rowpos(1)
-         ;; NONES shall now also be skipped in no-NASE-case!
-;;;         If keyword_set(info.nase) then begin
-            plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
-             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-             yrange=[rowplotmin, rowplotmax], MAX_VALUE=999998
-;;;            endif else begin
-;;;             plot, indgen(info.Width)+1, info.w(*, y_arr),  /DEVICE, POSITION=rowpos, $
-;;;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-;;;             yrange=[rowplotmin, rowplotmax]
-;;;          endelse
+         plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
+               xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+               yrange=[rowplotmin, rowplotmax]
           if info.bound then begin
              oplot, indgen(info.Width)+1, replicate(rowplotmin, $
                                                     info.Width), color=rgb("orange", /noalloc), thick=2
@@ -265,16 +248,9 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
                       colpos(2)]
          PrepareNASEPlot, info.width, info.height, /OFFSET, NONASE=1-Keyword_Set(info.nase), /X_ONLY
          If not info.norder then !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
-         ;; NONES shall now also be skipped in no-NASE-case!
-;;;         If keyword_set(info.nase) then begin
-            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
-             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-             yrange=[colplotmin, colplotmax], MAX_VALUE=999998
-;;;         endif else begin
-;;;            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
-;;;             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-;;;             yrange=[colplotmin, colplotmax]
-;;;         endelse
+         plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
+               xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+               yrange=[colplotmin, colplotmax]
          if info.bound then begin
             oplot, indgen(info.Width)+1, replicate(colplotmin, $
                                                    info.Height), color=rgb("orange", /noalloc), thick=2
@@ -408,12 +384,12 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
       tv_w = rotate(Temporary(tv_w), 3)
    Endif
 
-   ;; determine right default range, ignoring any !NONES:
-   nones = where(w eq !NONE, count)
-   If count ne 0 then w(nones) = max(w) ;Finde min ausser NONES
-   Default, Range, [min(w), max(w)]
-   If count ne 0 then w(nones) = +999999 ;Weil IDL3 noch kein MIN_VALUE kennt
-  
+   ;; replace !NONES by NaN
+   ;; this allows easy computing of min and max, and easy plotting.
+   ;; COde will break on IDL3, but we don't care any more.
+   NoNone, w, Value=!VALUES.D_NAN
+
+   Default, Range, [min(w, /NAN), max(w, /NAN)] 
    default, bound, 0
    Default, no_block, 1
    Default, modal, 0
@@ -523,8 +499,8 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
          pixcol_win: pixcol_win, $
          text_win: text_win, $
          w       : w, $
-         wmax    : max(w), $
-         wmin    : min(w), $
+         wmax    : max(w, /NAN), $
+         wmin    : min(w, /NAN), $
          bound   : bound, $
          range   : range, $
          deliver_events:deliver_events, $
