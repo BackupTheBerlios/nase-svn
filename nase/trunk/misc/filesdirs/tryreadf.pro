@@ -78,7 +78,7 @@
 ;*>line3
 ;
 ; SEE ALSO:
-;  <A>SetNonblocking</A>, <A>SetBlocking</A>, <A>Available</A>,
+;  <A>SetNonblocking</A>, <A>SetBlocking</A>, <A>Available()</A>,
 ;  <C>ON_IOERROR</C>, <C>READF</C>.
 ;-
 

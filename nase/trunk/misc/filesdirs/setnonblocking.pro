@@ -71,7 +71,7 @@
 ;        (Caution: IDL will not return!)
 ;
 ; SEE ALSO:
-;  <A>SetBlocking</A>, <A>TryReadF</A>, <A>Available</A>,
+;  <A>SetBlocking</A>, <A>TryReadF()</A>, <A>Available()</A>,
 ;  <C>ON_IOERROR</C>.
 ;-
 
