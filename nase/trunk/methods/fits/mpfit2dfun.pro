@@ -49,7 +49,7 @@
 ;   craigm@lheamail.gsfc.nasa.gov
 ;   UPDATED VERSIONs can be found on my WEB PAGE: 
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html;
-
+;
 ;
 ; CATEGORY:
 ;  Math

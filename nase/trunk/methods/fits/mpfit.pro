@@ -59,9 +59,9 @@
 ;  derivatives numerically via a finite difference approximation, by
 ;  default.  The user-supplied function need not calculate the
 ;  derivatives explicitly, but can if AUTODERIVATIVE=0 is passed.
-;
+;*
 ; REFERENCES:
-;
+;*
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
 ;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
