@@ -16,12 +16,13 @@
 ;                  ydata: 1d-Array von der Y-Achse
 ;
 ; OPTIONAL INPUTS:
-;                  COLORS: 1d-Array von den Farben, bzgl. der BALKEN
+;                  COLORS: 1d-Array der Farben pro X-Wert. Eine Farbe fuer alle X-Werte erhaelt man,
+;                          in dem  man COLORS auf einen Farbwert setzt.         
 ;	
 ; KEYWORD PARAMETERS:
 ;                  OFFSET:   Abstand der Balken von der Nullachse
 ;                  CENTER:   Balken werden zentriert um den x-Wert
-;                  BARSPACE: Abstand zwischen den Balken
+;                  BARSPACE: Abstand zwischen den Balken (default: 0.2 [= 20% der Klassenbreite])
 ;                  _EXTRA:   alle gewoehnlichen PLOT-OPTIONEN
 ; OUTPUTS:
 ;                  Balkendiagramm von YDATA
@@ -32,11 +33,14 @@
 ; EXAMPLE:
 ;           xdata = indgen(20)
 ;           ydata = RANDOMU(S,20)
-;           ubar_plot,xdata,ydata,/CENTER
+;           ubar_plot,xdata,ydata,/CENTER,COLORS=RGB(255,0,0,/NOALLOC)
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  1998/05/12 14:10:11  gabriel
+;          Docu erweitert bei COLORS
+;
 ;     Revision 2.1  1998/05/12 13:58:09  gabriel
 ;          Eine kleine neue Routine
 ;
