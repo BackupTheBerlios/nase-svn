@@ -103,7 +103,12 @@ BEGIN {
   {
    $CVSROOT="/vol/neuro/nase/IDLCVS"; 
    $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
-   $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+
+   if($ENV{'HTTPS'} =~ /on/ ){
+     $DOCURL="https://neuro.physik.uni-marburg.de/nase/";
+   }else{
+     $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+   }
    $INDEXDIR="$DOCDIR"; #should be unused
     
 #    $DOCDIR="/mhome/saam/sim"; 
@@ -111,7 +116,13 @@ BEGIN {
 #    $INDEXDIR="/tmp";
   }
   
-  $BASEURL  = "http://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
+
+  if($ENV{'HTTPS'} =~ /on/ ){
+    $BASEURL  = "https://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
+  }else{
+    $BASEURL  = "http://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
+  }
+    
   $SUBDIR   = "/";
   ## just default settings (END) ##
 
