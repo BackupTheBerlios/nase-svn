@@ -49,6 +49,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.15  1998/04/08 16:48:16  kupper
+;              paar gnudoits hinzugefügt (Revert-Buffer und so...)
+;
 ;       Revision 1.14  1998/03/18 12:45:47  kupper
 ;              Minor Bugfixes, Wildcards jetzt erlaubt.
 ;
@@ -114,6 +117,7 @@ common common_cvs, name, npath
          Print, "=========== Making File Editable: "+file
          Spawn, "cvs edit """+file+""""
          Spawn, "gnudoit -q '(find-file """+file+""")'"
+         Spawn, "gnudoit -q '(revert-buffer """+file+""")'"
          Print, "============= done."
       endif
       END
@@ -124,6 +128,7 @@ common common_cvs, name, npath
          Print
          Print, "=========== UnEditing Changes on: "+file
          Spawn, "cvs unedit """+file+""""
+         Spawn, "gnudoit -q '(revert-buffer """+file+""")'"
          Print, "============= done."
       endif
       END
@@ -144,7 +149,8 @@ common common_cvs, name, npath
          CD, path, CURRENT=olddir
          Spawn, "cvs add """+file+""""
          Spawn, "cvs commit """+file+""""
-         CD, olddir
+         Spawn, "gnudoit -q '(revert-buffer """+file+""")'"
+        CD, olddir
          Print, "============= done."
          if name eq "nase" then NASE_Special ;do some nosy things
       endif
@@ -153,6 +159,7 @@ common common_cvs, name, npath
       Print
       Print, "=========== Committing all your changed CVS-Files:"
       Spawn, "cvs commit"
+      Spawn, "gnudoit -q '(revert-buffer """+npath+"*"+""")'"
       Print, "============= done."
       if name eq "nase" then NASE_Special ;do some nosy things
       END
@@ -163,6 +170,7 @@ common common_cvs, name, npath
          Print
          Print, "=========== Committing File "+file
          Spawn, "cvs commit "+file
+         Spawn, "gnudoit -q '(revert-buffer """+file+""")'"
          Print, "============= done."
          if name eq "nase" then NASE_Special ;do some nosy things
       endif
