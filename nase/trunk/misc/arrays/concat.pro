@@ -1,38 +1,36 @@
 ;+
-; NAME: CONCAT
+; NAME:
+;  concat
 ;
-; VERSION: $Id:
+; VERSION:
+;  $Id$
 ;
-; AIM:      concatenation of arrays 
+; AIM:
+;  concatenation of arrays 
 ;
+; PURPOSE:
+;  concatenation of arrays 
 ;
-; PURPOSE:  concatenation of arrays
+; CATEGORY:
+;  Array
 ;
-;
-;
-; CATEGORY: MISC/ARRRAYS
-;
-;
-;
-; CALLING SEQUENCE:  
-;*                     result=concat( A, B [, INDEX][,extend=extend][,add=add][, overwrite=overwrite] )
-;
-;
+; CALLING SEQUENCE:
+;*result=concat( A, B [, INDEX][,extend=extend][,add=add][, overwrite=overwrite] )
 ;
 ;
-; INPUTS:             A::  n-dimensional array
+; INPUTS:
+;                     A::  n-dimensional array
 ;                     B::  n-dimensional array
-;
-;
+;  
 ;
 ; OPTIONAL INPUTS:
 ;                     INDEX:: the index of the array over which A and B 
-;                            should be concatenated (default:0).   
+;                            should be concatenated (default 0).   
 ;                            The dimension indices of A and B must have 
 ;                            the same range except the choosen index.
 ;                            Index equal 0 is the fastest method.
 ;
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;
 ;                     EXTEND:: concatenation of A and B over an
 ;                             additional index at the position of INDEX.
@@ -41,18 +39,17 @@
 ;
 ;                     OVERWRITE:: if the contents of A and B are
 ;                                rejected, this keyword should be 
-;                                used for faster computations.
+;                                used for faster computations.;  
 ;
 ; OUTPUTS:
 ;                     result:: 
-;                               an array with the concatenation of A and B
-;
-;
+;                               an array with the concatenation of A and B;  
 ;
 ; SIDE EFFECTS:
 ;                     if keyword OVERWRITE is choosen, the dimensions
 ;                     of A and B could be changed.
 ;  
+;
 ;
 ; EXAMPLE:
 ;*                     1.Example::
@@ -77,8 +74,9 @@
 ;*                                d=concat(c,a,1)
 ;*                                help,d
 ;*                                ;idl results ----
-;**                               D   INT = Array[10, 3, 20, 30] 
-;-     
+;*                                D   INT = Array[10, 3, 20, 30] ; 
+;
+;-
 
 function concat,A, B, index, extend=extend, overwrite=overwrite
 
