@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.17  1999/09/02 13:08:28  kupper
+;       added new grahic/widgets directory.
+;
 ;       Revision 1.16  1998/06/22 21:27:58  saam
 ;             compress-folder was missing
 ;
@@ -61,7 +64,7 @@ PRO MkHTML
 Spawn, '/bin/pwd | sed "s/\/a\/ax1303//g"', MainDir
 SubDirs   = ['alien',$
 	     'control','control/counter','control/loops','control/output','control/time','control/video+tape',$
-	     'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support',$
+	     'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support','graphic/widgets',$
 	     'math',$
              'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$
              'misc','misc/arrays','misc/files+dirs','misc/files+dirs/compress','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
