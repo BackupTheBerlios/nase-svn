@@ -1,78 +1,74 @@
 ;+
-; NAME: haus2_INITDISPLAY
+; NAME:
+;  haus2_INITDISPLAY
+;
+; VERSION:
+;  $Id$
 ;
 ; AIM:
 ;  Construct and initialize the widget hierarchy for display and GUI
 ;  of the simulation application.
 ;
-; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="../#FACEIT">FaceIt</A>.
-;          *_INITDISPLAY dient der Initialisierung der graphischen Darstellung
-;          einer Simulation. Hier wird festgelegt, welche graphischen Elemente
-;          (Widgets) die Simulationsoberfäche enthält und wie diese 
-;          positioniert sind.
-;          
-;          Zum Aufbau einer eigenen Simulation empfiehlt es sich, diese Routine
-;          zu kopieren, den haus2-Teil des Namens durch den der eigenen
-;          Simulation zu ersetzen und die Routine nach den eigenen Wünschen 
-;          abzuwandeln.
+; PURPOSE:
+;  Teilprogramm zur Demonstration der Benutzung von
+;  <A>FaceIt</A>. <C>*_INITDISPLAY</C> dient der Initialisierung der
+;  graphischen Darstellung einer Simulation. Hier wird festgelegt,
+;  welche graphischen Elemente (Widgets) die Simulationsoberfäche
+;  enthält und wie diese positioniert sind.<BR>
+;  <*>*displayptr</*> sollte nach dem Durchlauf von
+;  <C>*_INITDISPLAY</C> die Widget-IDs aller wichtigen graphischen
+;  Elemente enthalten. Wichtige graphische Elemente sind dabei solche,
+;  die Ereignisse produzieren (anhand ihrer ID kann man später die
+;  Ereignisse den Widgets zuordnen) oder die zum Darstellen von Daten
+;  benutzt werden sollen.
+;  <BR>        
+;  Zum Aufbau einer eigenen Simulation empfiehlt es sich, diese Routine
+;  zu kopieren, den haus2-Teil des Namens durch den der eigenen
+;  Simulation zu ersetzen und die Routine nach den eigenen Wünschen 
+;  abzuwandeln. See also <A>FaceIt_Rename</A>.
 ;
-; CATEGORY: GRAPHICS / WIDGETS / FACEIT_DEMO
+; CATEGORY:
+;  Graphic
+;  NASE
+;  Simulation
+;  Widgets
 ;
-; CALLING SEQUENCE: haus2_INITDISPLAY, dataptr, displayptr, w_userbase
+; CALLING SEQUENCE:
+;* haus2_INITDISPLAY, dataptr, displayptr, w_userbase
 ;
-; INPUTS: dataptr : Ein Pointer auf eine Struktur, die alle notwendigen
-;                   Simulationsdaten enhält. Diese werden mit <A HREF="#HAUS2_INITDATA">*_INIDATA</A>
-;                   festgelegt.
-;         displayptr : Ein Pointer auf eine Struktur, die die WidgetIDs der 
-;                      benutzerdefinierten Widgets enthält. Der Pointer wird 
-;                      von <A HREF="../#FACEIT">FaceIt</A> geliefert. 
-;                      *_INITDISPLAY füllt die Struktur, auf die displayptr 
-;                      zeigt, mit den IDs der gewünschten Widgets. Art der 
-;                      benutzten Widgets und Reihenfolge des Aufrufs bestimmen
-;                      über das Aussehen der fertigen graphischen Oberfläche.
-;                      Zum Vorgehen dabei siehe den Programmtext.
-;         w_userbase : Das von <A HREF="../#FACEIT">FaceIt</A> zur Verfügung gestellte Parent-Widget, das
-;                      alle anderen benutzereigenen Widgets aufnimmt. Die
-;                      Anordnung der direkten Kind-Widgets in w_userbase 
-;                      erfolgt untereinander (/COLUMN-Schlüsselwort in 
-;                      Widget_Base).
+; INPUTS:
+;  dataptr:: Ein Pointer auf eine Struktur, die alle notwendigen
+;  Simulationsdaten enhält. Diese werden mit <A>haus2_INITDATA</A>
+;  festgelegt.
+;  displayptr:: Ein Pointer auf eine Struktur, die die WidgetIDs der
+;  benutzerdefinierten Widgets enthält. Der Pointer wird von
+;  <A>FaceIt</A> geliefert. <C>*_INITDISPLAY</C> füllt die Struktur,
+;  auf die <*>displayptr</*> zeigt, mit den IDs der gewünschten
+;  Widgets. Art der benutzten Widgets und Reihenfolge des Aufrufs
+;  bestimmen über das Aussehen der fertigen graphischen
+;  Oberfläche. Zum Vorgehen dabei siehe den Programmtext. 
+;  w_userbase:: Das von <A>FaceIt</A> zur Verfügung gestellte
+;               Parent-Widget, das alle anderen benutzereigenen
+;               Widgets aufnimmt. Die Anordnung der direkten
+;               Kind-Widgets in w_userbase erfolgt untereinander
+;               (<*>/COLUMN</*>-Schlüsselwort in Widget_Base).
 ;
-; (SIDE) EFFECTS: *displayptr sollte nach dem Durchlauf von *_INITDISPLAY die
-;                 Widget-IDs aller wichtigen graphischen Elemente enthalten.
-;                 Wichtige graphische Elemente sind dabei solche, die 
-;                 Ereignisse produzieren (anhand ihrer ID kann man später
-;                 die Ereignisse den Widgets zuordnen) oder die zum 
-;                 Darstellen von Daten benutzt werden sollen.
-;
-; RESTRICTIONS: Die Benutzung der gesamten FaceIt-Architektur ist erst ab 
-;               IDL 5 möglich. 
+; RESTRICTIONS:
+;  Die Benutzung der gesamten FaceIt-Architektur ist erst ab IDL 5
+;  möglich. 
+;  
 ;
 ; PROCEDURE:
+;  
 ;
-; EXAMPLE: FaceIt, 'haus2'
+; EXAMPLE:
+;* FaceIt, 'haus2'
 ;
-; SEE ALSO: <A HREF="../#FACEIT">FaceIt</A>, <A HREF="#HAUS2_INITDATA">haus2_INITDATA</A> , <A HREF="../#WIDGET_SHOWIT">Widget_ShowIt</A> 
-;           und IDL-Online-Hilfe über 'Widgets'.
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.4  2000/10/01 14:52:11  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 1.3  1999/09/15 15:00:16  kupper
-;        Added a TEMPORARY() here and there to conserve memory...
-;
-;        Revision 1.2  1999/09/02 14:38:19  thiel
-;            Improved documentation.
-;
-;        Revision 1.1  1999/09/01 16:46:31  thiel
-;            Moved in repository.
-;
-;        Revision 1.1  1999/09/01 13:38:10  thiel
-;            First version of FaceIt-Demo-Routines. Doku not yet complete.
-;
+; SEE ALSO:
+;  <A>FaceIt</A>, <A>haus2_INITDATA</A> , <A>Widget_ShowIt</A> and
+;  IDL-Online-Help about 'Widgets'.
 ;-
+
 
 
 PRO haus2_INITDISPLAY, dataptr, displayptr, w_userbase
