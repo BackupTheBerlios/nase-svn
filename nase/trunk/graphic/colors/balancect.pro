@@ -131,15 +131,15 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
        G = ndf+pdf-MIN(ndf+pdf)
        B = ndf+pdf-MIN(ndf+pdf)
 
-       IF Keyword_Set(TOPRED)   THEN R = R + ndf
-       IF Keyword_Set(TOPGREEN) THEN G = G + ndf
-       IF Keyword_Set(TOPBLUE)  THEN B = B + ndf
+       IF Keyword_Set(TOPRED)   THEN R = ndf
+       IF Keyword_Set(TOPGREEN) THEN G = ndf
+       IF Keyword_Set(TOPBLUE)  THEN B = ndf
 
-       IF Keyword_Set(BOTTOMRED)   THEN R = R + pdf
-       IF Keyword_Set(BOTTOMGREEN) THEN G = G + pdf
-       IF Keyword_Set(BOTTOMBLUE)  THEN B = B + pdf
+       IF Keyword_Set(BOTTOMRED)   THEN R = pdf
+       IF Keyword_Set(BOTTOMGREEN) THEN G = pdf
+       IF Keyword_Set(BOTTOMBLUE)  THEN B = pdf
    END
    UTVLCT, R, G, B
-   
+
 END
 
