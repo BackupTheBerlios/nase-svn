@@ -110,6 +110,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.15  1998/02/05 14:13:17  saam
+;             bug in FROMS (noncritical) corrected
+;
 ;       Revision 2.14  1998/02/05 13:22:39  saam
 ;             Anpassung an neue DW-Struktur
 ;
@@ -229,13 +232,13 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
 
    ENDIF ELSE begin             ; Source- und Targetlayer NICHT vertauschen:
       
-      IF info(__Matrix) EQ 'DW_WEIGHT' THEN BEGIN
+      IF info(__Matrix) EQ 'DW_WEIGHT' OR info(__Matrix) EQ 'SDW_WEIGHT' THEN BEGIN
          Matrix = {Weights : Weights(__Matrix), $
                    source_w: DWDim(__Matrix, /SW), $
                    source_h: DWDim(__Matrix, /SH), $
                    target_w: DWDim(__Matrix, /TW), $
                    target_h: DWDim(__Matrix, /TH)}
-      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+      END ELSE IF info(__Matrix) EQ 'DW_DELAY_WEIGHT' OR info(__Matrix) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          Matrix = {Weights : Weights(__Matrix), $
                    Delays : Delays(__Matrix),$
                    source_w: DWDim(__Matrix, /SW), $
