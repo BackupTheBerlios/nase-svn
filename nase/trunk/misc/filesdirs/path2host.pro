@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/06/01 14:51:50  saam
+;           problems with gonzo's new system corrected
+;
 ;     Revision 1.2  1998/02/05 11:21:17  saam
 ;           problems concerning automount dir '/tmp_mnt' fixed
 ;
@@ -40,7 +43,7 @@ FUNCTION Path2Host, Path
    IF Contains(Path, '/ax1302')                                       THEN Host = 'ax1302'
    IF Contains(Path, '/ax1303')                                       THEN Host = 'ax1303'
    IF Contains(Path, '/usr/elauge1') OR Contains(Path, '/ax1315')     THEN Host = 'ax1315'
-   IF Contains(Path, '/ax1317') OR Contains(Path, '/home/gonzo')      THEN Host = 'ax1317'
+   IF Contains(Path, '/ax1317') OR Contains(Path, '/home/gonzo')      THEN Host = 'gonzo'
    IF Contains(Path, '/ax1318')                                       THEN Host = 'ax1318'
    IF Contains(Path, '/usr/ax1319')                                   THEN Host = 'ax1319'
    IF Contains(Path, '/usr/neuro') OR Contains(Path, '/home/neuro')   THEN Host = 'neuro'

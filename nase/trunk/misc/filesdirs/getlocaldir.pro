@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  1998/06/01 14:51:50  saam
+;           problems with gonzo's new system corrected
+;
 ;     Revision 1.5  1998/02/09 16:33:23  saam
 ;           Pfadname enthaelt nun einen nachfolgenden Slash
 ;
@@ -75,6 +78,7 @@ FUNCTION GetLocalDir, WishDir
          'ax1303' : WorkDir = '/usr/ax1303'
          'ax1315' : WorkDir = '/usr/elauge1'
          'ax1317' : WorkDir = '/home/gonzo/tmp'
+         'gonzo'  : WorkDir = '/home/gonzo/tmp'
          'ax1318' : WorkDir = '/usr/ax1318.a/tmp'
          'ax1319' : WorkDir = '/usr/ax1319.a/tmp'
          'neuro'  : WorkDir = '/home/neuro/tmp'
