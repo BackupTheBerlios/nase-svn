@@ -19,6 +19,8 @@
 ;                  D_NRANDOM, W_NRANDOM : Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zuf‰llig belegt mit Mittelwert MW und Standardabweichung sigma. Diese Belegung wirkt additiv, wenn zus‰tzlich zu diesem Schl¸sselwort noch ein anderes angegeben wird.
 ;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_CONST              : Array [Value,Range]. Die Delays werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                             W_IDENT   :  
+;                  D_CONST              : 
 ;                             W_LINEAR   : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_LINEAR             : Array [min,max,Range]. Die Delays werden von jedem Soure-Neuron umgekehrt kegelfˆrmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_GAUSS   : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gauﬂfˆrmig in den Targetlayer gesetzt (mit Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
@@ -103,6 +105,11 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Fri Aug 15 15:57:12 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Schluesselwort W_IDENT, D_IDENT fuer Identitaetsabbildung hinzugefuegt
+;
 ;       Thu Aug 14 11:23:99 1997, Mirko Saam
 ;       <Mirko.Saam@physik.uni-marburg.de>
 ;       
@@ -145,6 +152,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_GAUSS=d_gauss,             W_GAUSS=w_gauss, $
                  W_DOG=w_dog, $
                  D_CONST=d_const,             W_CONST=w_const, $
+                 D_IDENT=d_ident,             W_IDENT=w_ident, $
                  D_LINEAR=d_linear,           W_LINEAR=w_linear, $
                  D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
@@ -211,6 +219,15 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 
 if set (W_GAUSS) then SetGaussWeight, DelMat, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
 if set (D_GAUSS) then SetGaussDelay,  DelMat, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+
+if set (W_IDENT) then BEGIN
+   if t_width*t_height ne s_width*s_height then message, "Schluesselwort W_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
+   SetConstWeight, DelMat, w_ident, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+END
+if set (D_IDENT) then BEGIN
+   if t_width*t_height ne s_width*s_height then message, "Schluesselwort D_IDENT ist nur sinnvoll bei gleichgroﬂem Source- und Targetlayer!"
+   SetConstDelay,  DelMat, d_ident, 1, 1, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+END
 
 if set (W_CONST) then SetConstWeight, DelMat, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
 if set (D_CONST) then SetConstDelay,  DelMat, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value

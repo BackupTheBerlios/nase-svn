@@ -97,6 +97,9 @@ FUNCTION DelayWeigh, DelMat, In
       active = WHERE(spikes NE 0, count) 
       IF (count NE 0) THEN res(active) = DelMat.weights(active) ;* spikes(active)
 
+      noweights = WHERE(res LE -7654321, count)
+      IF count NE 0 THEN res(noweights) = 0
+
       
                                 ; update the learning potential if needed
       IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
