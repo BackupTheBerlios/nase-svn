@@ -71,6 +71,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Sep 9 21:36:58 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Der übergebene Titel wird jetzt nicht mehr verändert.
+;
 ;       Tue Sep 9 13:00:34 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -99,23 +104,23 @@
 ;
 ;-
 
-Function InitVideo, Frame, _Title, TITLE=title, $
+Function InitVideo, Frame, _Title, TITLE=__title, $
                     SYSTEM=system, STARRING=starring, COMPANY=company, PRODUCER=producer, YEAR=year, $
                     VERBOSE=verbose
 
    If not(set(Frame)) then message, 'Bitte Musterframe angeben!'
 
-   Default, title, _title
-   Default, title, "The Spiking Neuron"   
+   Default, __title, _title
+   Default, __title, "The Spiking Neuron"   
    Default, system, "CVS"
    Default, starring, "Nerd ""die NASE"" Neuron"
    Default, company, "AG Neurophysik"
    Default, producer, GETENV("USER")
    Default, year, strmid(systime(),0,11)+' '+strmid(systime(),20,24)
  
-   filename = title+".vid"
-   infoname = title+".vidinf"
-   Parts = str_sep(title, '/')
+   filename = __title+".vid"
+   infoname = __title+".vidinf"
+   Parts = str_sep(__title, '/')
    title = Parts(n_elements(Parts)-1)
 
    If Keyword_set(VERBOSE) then begin

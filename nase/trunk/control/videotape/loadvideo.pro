@@ -35,6 +35,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Tue Sep 9 21:37:38 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Der übergebene Titel wird jetzt nicht mehr verändert.
+;
 ;       Tue Sep 9 13:02:45 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -58,14 +63,14 @@
 ;
 ;-
 
-Function LoadVideo, _Title, TITLE=title, VERBOSE=verbose, INFO=info
+Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info
    
-   Default, title, _Title
-   Default, title, "The Spiking Neuron"   
+   Default, __title, _Title
+   Default, __title, "The Spiking Neuron"   
  
-   filename = title+".vid"
-   infoname = title+".vidinf"
-   Parts = str_sep(title, '/')
+   filename = __title+".vid"
+   infoname = __title+".vidinf"
+   Parts = str_sep(__title, '/')
    title = Parts(n_elements(Parts)-1)
 
    Get_Lun, infounit
