@@ -13,7 +13,7 @@
 ; CALLING SEQUENCE:   UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
 ;                             [,X_SIZE=x_size] [,Y_SIZE=y_size]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
-;                             [,/NOSCALE] [,DIMENSIONS=dimensions]
+;                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
 ;
 ; INPUTS:             image: ein ein- oder zweidimensionales Array
 ;
@@ -44,6 +44,9 @@
 ;                                 Koordinaten zurueckgegeben: (xpos, ypos, xsize, ysize)
 ;                                 Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
 ;                                 gesetztem CENTER-Keyword)
+;                     DEVICE    : falls gesetzt werden [XY]Norm als Device-Koordinaten ausgewertet. Eigentlich
+;                                 sollte das Ding nicht benutzt werden, da der Witz von UTvScl ja gerade
+;                                 die Deviceunabhaegigkeit ist.
 ;                     
 ; RESTRICTIONS:       Arbeitet nicht ganz korrekt mit einer Shared-8Bit-Color-Table
 ;                
@@ -60,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.16  1998/02/27 13:07:13  saam
+;           Keyword DEVICE hinzugefuegt
+;
 ;     Revision 2.15  1998/01/06 13:27:09  saam
 ;           fktioniert jetzt auch mit 1-d Arrays
 ;
@@ -110,7 +116,8 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
             , DIMENSIONS=dimensions $
-            , NOSCALE=NOSCALE $
+            , NOSCALE=noscale $
+            , DEVICE=device $
             , _EXTRA=e
 
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -151,8 +158,13 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    ysize = ysize*stretch*v_stretch
 
    ; pos in Centimeters
-   xpos = (xnorm * !D.X_Size / !D.X_PX_CM)
-   ypos = (ynorm * !D.Y_Size / !D.Y_PX_CM)
+   IF Keyword_Set(DEVICE) THEN BEGIN
+      xpos = (DOUBLE(xnorm) / !D.X_PX_CM)
+      ypos = (DOUBLE(ynorm) / !D.Y_PX_CM)
+   END ELSE BEGIN
+      xpos = (xnorm * !D.X_Size / !D.X_PX_CM)
+      ypos = (ynorm * !D.Y_Size / !D.Y_PX_CM)
+   END
    IF Keyword_Set(CENTER) THEN BEGIN
       xpos = xpos - xsize/2.
       ypos = ypos - ysize/2.
