@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.12  1998/12/15 13:02:20  saam
+;             multiple bugfixes
+;
 ;       Revision 1.11  1998/11/08 17:47:02  saam
 ;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
 ;             + problem with NOCON corrected
@@ -154,10 +157,10 @@ PRO SetDelay, DW, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
              for y=-t_row, th-1-t_row do begin
                 if keyword_set(TRUNCATE) then begin ;truncate
                    if count ne -1 then maske = where(NoRot_Shift(boolmaske, round(LWY*y), round(LWX*x), WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
-                   D(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=tw, HEIGHT=th), maske)=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
+                   IF (size(maske))(0) NE 0 THEN D(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=tw, HEIGHT=th), maske)=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
                 endif else begin ;no truncate
                    if count ne -1 then maske = where(Shift(boolmaske, round(LWY*y), round(LWX*x) )) ;hat transparente stellen 
-                   D(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=tw, HEIGHT=th), maske)=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)
+                   IF (size(maske))(0) NE 0 THEN D(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=tw, HEIGHT=th), maske)=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)
                 endelse
              endfor
           endfor
@@ -194,7 +197,7 @@ PRO SetDelay, DW, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
              for y=-s_row, sh-1-s_row do begin
                 if Keyword_set(TRUNCATE) then begin ;truncate
                    if count ne -1 then maske = where(NoRot_Shift(boolmaske, round(LWY*y), round(LWX*x), WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
-                   D(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
+                   IF (size(maske))(0) NE 0 THEN D(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
                 endif else begin ;no Truncate
                    if count ne -1 then maske = where(Shift(boolmaske, round(LWY*y), round(LWX*x) )) ;hat transparente stellen 
                    IF (size(maske))(0) NE 0 THEN D(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)

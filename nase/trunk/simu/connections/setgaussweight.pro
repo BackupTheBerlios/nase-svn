@@ -60,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.14  1998/12/15 13:02:20  saam
+;             multiple bugfixes
+;
 ;       Revision 1.13  1998/02/05 13:16:07  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -123,9 +126,8 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
    sh = DWDim(DWS, /SH)
 
 
-
    Default, Amp, 1
-   IF Keyword_Set(Norm) THEN Amp = 1
+;   IF Keyword_Set(Norm) THEN Amp = 1
    
    IF (set(lessthan) AND set(trunc_value)) THEN  message, 'Keywords: LESSTHAN und TRUNCVALUE koennen nicht gleichzeitig gesetzt werden !'
    IF set(lessthan) THEN trunc_value =  !NONE

@@ -116,6 +116,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.15  1998/12/15 13:02:18  saam
+;             multiple bugfixes
+;
 ;       Revision 2.14  1998/11/08 17:49:45  saam
 ;             + wrong implementation with TARGET_TO_SOURCE, SOURCE_TO_TARGET
 ;
@@ -333,11 +336,14 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
 ; --------------------- Gauss, Linear, Const, DOG: -----------------------------------------------
    If keyword_set(TARGET_TO_SOURCE) then begin ;------------Target -> Source: 
-      if set (W_GAUSS) then SetGaussWeight, _DW, w_gauss(0), w_gauss(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (W_GAUSS) then BEGIN
+         IF N_Elements(w_Gauss) EQ 3 THEN SetGaussWeight, _DW, w_gauss(0), w_gauss(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value, /NORM $
+          ELSE SetGaussWeight, _DW, w_gauss(0), w_gauss(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      END
       if set (D_GAUSS) then SetGaussDelay,  _DW, d_gauss(1), min=d_gauss(0), d_gauss(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
       
       if set (W_CONST) then SetConstWeight, _DW, w_const(0), w_const(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_CONST) then SetConstDelay,  _DW, d_const(1), min=d_const(0), d_const(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (D_CONST) then SetConstDelay,  _DW, d_const(0), d_const(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
       if set (W_LINEAR) then SetLinearWeight, _DW, w_linear(0), w_linear(1), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
       if set (D_LINEAR) then SetLinearDelay,  _DW, d_linear(1), min=d_linear(0), d_linear(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
@@ -345,11 +351,14 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
       if set (W_DOG) then SetDOGWeight, _DW, w_dog(0), w_dog(1), w_dog(2), T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
       
    endif else begin             ;------------------------------Source -> Target:
-      if set (W_GAUSS) then SetGaussWeight, _DW, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      if set (W_GAUSS) then BEGIN
+         IF N_Elements(w_Gauss) EQ 3 THEN SetGaussWeight, _DW, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value, /NORM $
+          ELSE SetGaussWeight, _DW, w_gauss(0), w_gauss(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
+      END
       if set (D_GAUSS) then SetGaussDelay,  _DW, d_gauss(1), min=d_gauss(0), d_gauss(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
       
       if set (W_CONST) then SetConstWeight, _DW, w_const(0), w_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
-      if set (D_CONST) then SetConstDelay,  _DW, d_const(1), min=d_const(0), d_const(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
+      if set (D_CONST) then SetConstDelay,  _DW, d_const(0), d_const(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
 
       if set (W_LINEAR) then SetLinearWeight, _DW, w_linear(0), w_linear(1), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=w_trunc_value
       if set (D_LINEAR) then SetLinearDelay,  _DW, d_linear(1), min=d_linear(0), d_linear(2), S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=d_truncate, TRUNC_VALUE=d_trunc_value
