@@ -190,13 +190,15 @@ Function __ScaleArray, A, TOP=top, TRUE=true, RANGE_IN=range_in
       min = min(A[nonones])
       max = max(A[nonones])
       Default, range_in, [min, max]
-      
       result = Scl(A, [0, _top], range_in)
-   endif
 
-   ;; restore nones:
-;;   if nonecount ne 0 then result[nones] = rgb("none")
-   if nonecount ne 0 then result[nones] = !NONE
+      ;; restore nones:
+      if nonecount ne 0 then result[nones] = !NONE
+   endif else begin
+      ;; all entries are !NONE
+      result = A
+   endelse
+
 
    Return, result
 End
@@ -422,7 +424,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       ;; BUT if the user wants interpolation, resizing has to be done.
       IF NOT(Keyword_Set(POLYGON)) THEN BEGIN
          ;; Congrid when POLYGON is not set
-         _Image = FltArr((xsize*_smooth(0)) > 1 $
+         _Image = DblArr((xsize*_smooth(0)) > 1 $
                          , (ysize*_smooth(1)) > 1, TRUE > 1)
          FOR i=0, 2 * (TRUE GT 0) DO $
           _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1 $
@@ -434,7 +436,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
          IF Set(CUBIC) OR Keyword_Set(INTERP) OR $
           Keyword_Set(MINUS_ONE) THEN BEGIN
             ;; Congrid when POLYGON is set but INTERPOLATION is desired
-            _Image = FltArr((xsize*_smooth(0)) > 1 $
+            _Image = DblArr((xsize*_smooth(0)) > 1 $
                             , (ysize*_smooth(1)) > 1, TRUE > 1)
             FOR i=0, 2 * (TRUE GT 0) DO $
              _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1 $
