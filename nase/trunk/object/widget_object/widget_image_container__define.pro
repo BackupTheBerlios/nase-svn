@@ -5,7 +5,7 @@
 ; PURPOSE:
 ;   A widget object serving both as a display and a container for an image
 ;   array. The image is stored inside the object and displayed in a
-;   <A HREF="../../nase/graphic/#PLOTTVSCL">PlotTvScl</A>-Plot. Image data can be set and retrieved. Alternatively, the
+;   <A>PlotTvScl</A>-Plot. Image data can be set and retrieved. Alternatively, the
 ;   image can be addressed through a pointer, allowing for online-monitoring of
 ;   array contents.
 ;   Auto-painting is inherited from <A>class Basic_Draw_Object</A>.
