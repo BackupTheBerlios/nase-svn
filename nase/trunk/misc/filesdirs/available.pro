@@ -103,7 +103,7 @@ Function available, lun, HELP=HELP, USE_SELECT=USE_SELECT
       if (lun lt -2) then message, "Non-valid LUN: "+str(lun)
       
       If Keyword_set(USE_SELECT) then Return, total(Wait_for_Data(lun, SECS=0, MICROSECS=0)) NE !NONE $
-      else Return, Call_External (!NASE_LIB, "non_block_readable", lun)
+      else Return, Call_External (!NASE_LIB, "non_block_readable", LONG(lun))
       
    endif else begin             ; It's an array!
       

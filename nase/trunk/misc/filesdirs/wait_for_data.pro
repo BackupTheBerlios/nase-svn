@@ -1,92 +1,98 @@
 ;+
-; NAME: wait_for_data()
+; NAME:
+;  wait_for_data()
 ;
-; AIM: waits for data on severals logical unit numbers (LUNs)
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Check, if data is waiting on one or several LUNs, wait if specified.
-;          I.e. the next attempt to read from the LUN wil *not* block IDL.
-;		  (Blocking appears on device-special files like pipes or FIFOs, if no data ist ready to read.
-;		   In that case no EOF is generated!)
+; AIM:
+;  waits for data on severals logical unit numbers (LUNs)
 ;
-; CATEGORY: I/O
+; PURPOSE:
+;   Check, if data is waiting on one or several LUNs (wait for it if
+;   specified). I.e. the next attempt to read from the LUN wil *not*
+;   block IDL. <BR>
+;   <I>Note</I>: Blocking appears on device-special files like pipes
+;                or FIFOs, if no data ist ready to read. In that case
+;                no EOF is generated!
 ;
-; CALLING SEQUENCE: ready_array=wait_for_data(lun_array [,SECS=secs, MICROSECS=microsecs]
-;                                                       [,BOOL_MASK=bool_mask] [,/HELP])
+; CATEGORY:
+;  ExecutionControl
+;  Files
+;  IO
+;  OS
 ;
-; INPUTS: lun_array           : An array of valid IDL-Logical-Unit-Numbers, or a scalar LONG.
+; CALLING SEQUENCE:
+;*ready_array = wait_for_data(lun_array [,SECS=secs, MICROSECS=microsecs]
+;                                       [,BOOL_MASK=bool_mask] [,/HELP])
 ;
-; KEYWORED PARAMETERS: SECS, MICROSECS: Time to wait for one of the LUNs to get readable.
-;		                        SECS=-1 or not specified: wait forever
-;                                       SECS=0 and MICROSECS=0: return immediately
+; INPUTS:
+;  lun_array:: An array of valid IDL-Logical-Unit-Numbers, or a scalar
+;              LONG.
 ;
-;                      HELP           : Information
+; INPUT KEYWORDS:
 ;
-; OUTPUTS: ready_array: Array of non-blocking readable LUNS (a subset of lun_array)
-;                       !NONE on error, or if time out before any LUN was readable
+;   SECS, MICROSECS:: Time to wait for one of the LUNs to get readable.
+;                     <C>SECS=-1</C> or not specified: wait forever
+;                     <C>SECS=0</C> and <C>MICROSECS=0</C>: return immediately
 ;
-; OPTIONAL OUTPUTS: An informational message is issued if an error occurs.
-;                   BOOL_MASK: A boolean mask (Array, size of lun_array), indicating which LUNs are readable.
-;                   It is ready_array=lun_array(where(BOOL_MASK)).
+;   HELP           :: Show some information on routine usage.
+;  
 ;
-; SIDE EFFECTS: IDL timer signals are suspended during execution.
+; OUTPUTS:
+;   ready_array:: Array of non-blocking readable LUNS (a subset of
+;                 lun_array) <C>!NONE</C> on error, or if time out before any
+;                 LUN was readable.
+; 
 ;
-; RESTRICTIONS: LUNs have to be valid and open for reading
-;               Works only on systems supporting the select() system-function. Use non_block_readable() on other systems!
-;	        This routine checks only for reading. Could be changed to check for writing (quite?) easily.
-;               (See documentation of select())
-;               Note that the select() function is a low-level
-;               I/O function call. It bypasses the buffering
-;               performed by the stdio-filestreams. This means
-;               that by a call to wait_for_data(), the
-;               underlying filedescriptor is tested for
-;               available data, regardless of any data already
-;               waiting in a filestream-buffer. Thus,
-;               wait_for_data() should best be used on
-;               non-buffered files (Keyword BUFSIZE=0 or
-;               /NOSTDIO in a call to OPEN). This is no
-;               drawback, as wait_for_data() most oftenly will
-;               be used with pipes or FIFOs that are inherently
-;               memory buffered by the operating system and do
-;               not need buffering by the filestreams.
-;               However, if you have to test for data available
-;               on a buffered stream and get misleading results
-;               from wait_for_data(), use <A HREF="#AVAILABLE">available()</A>
-;               instead.
+; OPTIONAL OUTPUTS:
+;   An informational message is issued if an error occurs.
 ;
-; PROCEDURE: CALL_EXTERNAL(!NASE_LIB,"wait_for_data", ...)
+;   BOOL_MASK:: A boolean mask (Array, size of lun_array), indicating
+;               which LUNs are readable. 
 ;
-; EXAMPLE: 
-;		  ready_luns=wait_for_data([lun1,lun2,lun3]) ;wait forever
-;		  if n_elements(ready_luns) gt 0 then readf, ready_luns[0], data
+;   It is <*>ready_array = lun_array(where(BOOL_MASK)).</*>
+;  
 ;
-; SEE ALSO: <A HREF="#GET_FD">get_fd()</A>,
-;           <A HREF="#AVAILABLE">available()</A>,
-;           documentation of c++-routine in shared/IDL_IO_support.h
+; SIDE EFFECTS:
+;  IDL timer signals are suspended during execution.
 ;
-; MODIFICATION HISTORY:
+; RESTRICTIONS:
+;   LUNs have to be valid and open for reading.<BR>
 ;
-;        $Log$
-;        Revision 2.4  2000/09/25 09:13:03  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
+;   Works only on systems supporting the <*>select()</*>
+;   system-function. Use <A>non_block_readable()</A> on other
+;   systems!<BR>
+; 
+;   This routine checks only for reading. Could be changed to check
+;   for writing (quite?) easily. (See documentation of
+;   <*>select()</*>.)<BR>
+; 
+;   Note that the <*>select()</*> function is a low-level I/O function
+;   call. It bypasses the buffering performed by the
+;   stdio-filestreams. This means that by a call to
+;   <C>wait_for_data()</C>, the underlying filedescriptor is tested
+;   for available data, regardless of any data already waiting in a
+;   filestream-buffer. Thus, <C>wait_for_data()</C> should best be
+;   used on non-buffered files (Keyword <C>BUFSIZE=0</C> or
+;   <C>/NOSTDIO</C> in a call to <C>OPEN</C>). This is no drawback, as
+;   <C>wait_for_data()</C> most oftenly will be used with pipes or
+;   FIFOs that are inherently memory buffered by the operating system
+;   and do not need buffering by the filestreams. However, if you have
+;   to test for data available on a buffered stream and get misleading
+;   results from <C>wait_for_data()</C>, use <A>available()</A>
+;   instead.
+;  
+; PROCEDURE:
+;  <C>CALL_EXTERNAL(!NASE_LIB,"wait_for_data", ...)</C>
 ;
-;        Revision 2.3  1999/09/13 13:46:59  kupper
-;        Added warning about buffered streams and use of select(). (See Restrictions)
+; EXAMPLE:
+;*ready_luns = wait_for_data([lun1,lun2,lun3]) ;wait forever
+;*if n_elements(ready_luns) gt 0 then readf, ready_luns[0], data
 ;
-;        Revision 2.2  1999/03/05 20:25:40  kupper
-;        Also:
-;        1) Get_fd() und non_block_readable() können jetzt wie "brave" IDL-Routinen
-;        auch Arrays verarbeiten.
-;        2) Wait_for_data() kann in BOOL_MASK optional die Maske der lesbaren LUNs zurückliefern.
-;        3) non_block_readable() kann mit /USE_SELECT angewiesen werden, die UNIX select()
-;           Funktion zu benutzen, anstatt wild drauflos Leseversuche zu starten.
-;           Auf Systemen, die das unterstützen (SVR4 und 4.3+BSD und ?), ist das die Methode der Wahl.
-;           (Man könnte drüber nachdenken, eine Systemvariable zu machen, die das anzeigt...)
-;
-;        Revision 2.1  1999/03/05 14:30:22  kupper
-;        Geburt der Wrapper-Routinen für CALL_EXTERNAL.
-;
+; SEE ALSO:
+;  <A>get_fd()</A>, <A>available()</A>,
+;  documentation of c++-routine in shared/IDL_IO_support.h
 ;-
 
 Function wait_for_data, lun_array ,SECS=secs, MICROSECS=microsecs, BOOL_MASK=BOOL_MASK, HELP=HELP
@@ -108,7 +114,7 @@ Function wait_for_data, lun_array ,SECS=secs, MICROSECS=microsecs, BOOL_MASK=BOO
 
    temp_luns = LONG(lun_array)
 
-   number_ready = Call_External (!NASE_LIB, "wait_for_data", temp_luns, N_ELEMENTS(temp_luns), SECS, MICROSECS)
+   number_ready = Call_External (!NASE_LIB, "wait_for_data", temp_luns, N_ELEMENTS(temp_luns), LONG(SECS), LONG(MICROSECS))
    
    if (number_ready gt 0) then BOOL_MASK = temp_luns else BOOL_MASK = (lun_array-lun_array);all 0
 
