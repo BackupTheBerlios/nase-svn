@@ -1,49 +1,22 @@
 ;+
-; NAME: defglobvars
+; NAME:                 DefGlobVars
 ;
+; PURPOSE:              Definiert eine Reihe von Systemvariablen, die von 
+;                       diversen NASE-Routinen benutzt werden (koennen).
+;                       Diese Routine wird vom Start-Script misc/startup
+;                       aufgerufen und braucht eigentlich nicht von Hand
+;                       benutzt zu werden.
 ;
-; PURPOSE:
+; CATEGORY:             MISC 
 ;
-;
-; CATEGORY: MISC
-;
-;
-; CALLING SEQUENCE:
-;
-; 
-; INPUTS:
-;
-;
-; OPTIONAL INPUTS:
-;
-;	
-; KEYWORD PARAMETERS:
-;
-;
-; OUTPUTS:
-;
-;
-; OPTIONAL OUTPUTS:
-;
-;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-;
-; EXAMPLE:
-;
+; CALLING SEQUENCE:     DefGlobvars
 ;
 ; MODIFICATION HISTORY:
 ;
-;
 ;     $Log$
+;     Revision 1.4  1999/02/22 11:21:57  saam
+;           added !EXECPATHS
+;
 ;     Revision 1.3  1999/01/14 14:15:42  saam
 ;           + thereis now !NONEl for integer nones
 ;
@@ -53,9 +26,9 @@
 ;     Revision 1.1  1998/06/18 12:28:27  gabriel
 ;          Startup in Procedure
 ;
-;
 ;-
-PRO defglobvars
+PRO DefGlobVars
+
 DefSysV, '!NONE' , -999999.0, 1
 DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
@@ -104,5 +77,11 @@ DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 
 ; input buffer (history) erhoehen
 !EDIT_INPUT = 200
+
+
+; eine Reihe von EXEC-Pfaden (benutzt von der COMMAND Routine)
+DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', '/usr/X11R6/bin', '/usr/bin/X11', '/vol/bin', '~/bin'], 1
+
+
 
 END
