@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.14  1998/09/02 19:07:48  gabriel
+;             Leider ist ShowLogo fuer nohup total untauglich
+;
 ;       Revision 1.13  1998/09/02 13:10:24  kupper
 ;       minor changes
 ;
@@ -32,10 +35,10 @@
 ;
 ;-
 
-ShowLogo
+;ShowLogo
 
 defglobvars
 
-wait, 3
-caw
-loadct, 0
+;wait, 3
+;caw
+;loadct, 0
