@@ -5,41 +5,71 @@
 ;
 ; CATEGORY: GRAPHICS
 ;
-; CALLING SEQUENCE: Trainspotting, nt 
-;                                  [, TITLE=title] [,XTITLE=xtitle]
-;                                  [, WIN=win], [CHARSIZE=Schriftgroesse]
-;                                  [, LEVEL=level] [, OFFSET=offset]
-;                                  [, XSYMBOLSIZE=Symbolbreite] [YSYMBOLSIZE=Symbolhoehe]
-;                                  [, OVERSAMPLING=Oversampling]
-;                                  [,/CLEAN]
-; INPUTS: nt: 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
+; CALLING SEQUENCE: 
+;    Trainspotting, nt [,XRANGE=xrange] [,YRANGE=yrange]
+;                      [,TITLE=title] [,XTITLE=xtitle] [,YTITLE=ytitle]
+;                      [,WIN=win], [CHARSIZE=schriftgroesse]
+;                      [,LEVEL=level] [, OFFSET=offset]
+;                      [,XSYMBOLSIZE=symbolbreite] [YSYMBOLSIZE=symbolhoehe]
+;                      [,OVERSAMPLING=oversampling]
+;                      [,/CLEAN] [,/SPASS]
 ;
-; OPTIONAL INPUTS: Title:          der Titel des Plots
-;                  xtitle:         Beschriftung der X-Achse, Default: 'Time / ms' 
-;                  Win:            oeffnet und benutzt Fenster NR. Win zur Darstellung
-;                  Schriftgroesse: die Groesse der Achsenbeschriftung.
-;                  Level:          gibt an, wie gro"s ein Eintrag in nt sein muss, um 
-;                  Offset:         Zahlenwert, der zur x-Achsenbeschriftung addiert wird; 
-;                                  sinnvoll, wenn man nur einen Teil der Zeitachse darstellen 
-;                                  will und der Prozedur, z.B. nt(*,500:1000) uebergibt; dann 
-;                                  kann man mit OFFSET=500 die Darstellung korrigieren
-;                                  dargestellt zu werden.
-;                                  Default: 1.0 (-> 1 Spike)
-;                  Oversampling:   Gewaehrleistet eine korrekte Darstellung von Neuronen
-;                                  mit Oversampling, BIN <-> ms  
-;                  Symbolbreite:   Die Breite der zur Darstellung der Spikes verwendeten
-;                                  Symbole in Bruchteilen der verfuegbaren Plotbreite.
-;                                  (Diese seltsame Einheit wurde gewaehlt, um eine einheit-
-;                                  liche Darstellung auf unterschiedlichen Sheets zu erzielen.)
-;                                  Default: ein Pixel
-;                  Symbolhoehe:    Die Hoehe der zur Darstellung der Spikes verwendeten
-;                                  Symbole in Bruchteilen der verfuegbaren Plothoehe.
-;                                  Default: 1 / Anzahl der dargestellten Neuronen 
+; INPUTS: nt: 2-dimensionales Array, erster Index: Neuronennummer, 
+;                                   zweiter Index: Zeit
+;             wahlweise die Sparse Version eines solchen Arrays, siehe 
+;             Keyword /SPASS
 ;
-; KEYWORD PARAMETERS: CLEAN : unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
-;                             (fuer Weiterbearbeitungen mit anderen Programmen)
+; OPTIONAL INPUTS:
+;    x/yrange:       Bereich aus dem gesamten Spikeraster, der in der 
+;                    Darstellung erscheinen soll. Man beachte, daß diese
+;                    Werte den tatsächlichen Achsenbeschriftungen entsprechen,
+;                    falls also OVERSAMPLING benutzt wird, müssen die
+;                    xrange-Werte angepaßt werden.
+;    title:          der Titel des Plots, Default: 'Spikeraster'
+;    xtitle:         Beschriftung der X-Achse, Default: 'Time / ms'
+;    ytitle:         Beschriftung der Y-Achse, Default: 'Neuron #' 
+;    win:            oeffnet und benutzt Fenster NR. Win zur Darstellung
+;    schriftgroesse: die Groesse der Achsenbeschriftung.
+;    offset:         Zahlenwert, der zur x-Achsenbeschriftung addiert wird
+;                    (beachte also OVERSAPMPLING); 
+;                    sinnvoll, wenn man nur einen Teil der Zeitachse 
+;                    darstellen will und der Prozedur, z.B. nt(*,500:1000) 
+;                    uebergibt; dann kann man mit OFFSET=500 die Darstellung 
+;                    korrigieren
+;    level:          gibt an, wie groß ein Eintrag in nt sein muss, um 
+;                    dargestellt zu werden. Default: 0.0, dh alle 
+;                    Einträge GT 0 werden dargestellt. 
+;    oversampling:   Gewaehrleistet eine korrekte Darstellung von Neuronen
+;                    mit Oversampling, BIN <-> ms. Mit oversampling kann
+;                    aber auch elegant die Achsenbeschriftung geändert 
+;                    werden, ohne daß sich die Beziehung BIN-ms geändert
+;                    haben muss. ZB liefert oversampling=1000 eine 
+;                    Beschriftung in Sekunden, falls ein BIN weiterhin eine 
+;                    Millisekunde lang ist.   
+;    symbolbreite:   Die Breite der zur Darstellung der Spikes verwendeten
+;                    Symbole in Bruchteilen der verfuegbaren Plotbreite.
+;                    (Diese seltsame Einheit wurde gewaehlt, um eine einheit-
+;                    liche Darstellung auf unterschiedlichen Sheets zu 
+;                    erzielen.) Default: ein Pixel
+;    symbolhoehe:    Die Hoehe der zur Darstellung der Spikes verwendeten
+;                    Symbole in Bruchteilen der verfuegbaren Plothoehe.
+;                    Default: 1 / Anzahl der dargestellten Neuronen 
 ;
-; PROCEDURE: Default
+; KEYWORD PARAMETERS: 
+;    CLEAN : unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
+;            (fuer Weiterbearbeitungen mit anderen Programmen)
+;    SPASS: Gibt an, ob das übergebene nt-Array als Sparse interpretiert werden
+;           soll. Dazu muß das Sparse-Array allerdings Infromation über die
+;           Dimension enthalten. Siehe dazu /DIMENSIONS - Keyword in 
+;           <A HREF="../misc/arrays/#SPASSAMCHER">Spassmacher</A>.
+;
+; PROCEDURE: 1. Konventionelles oder Sparse-Array? Größen entsprechend 
+;               auslesen.
+;            2. Defaults und Ranges setzen.
+;            3. Achsen plotten.
+;            4. Usersymbol für Spikes definieren, vorher Größe dafür berechnen.
+;            5. Indizes der Spikes auslesen.
+;            6. Plot der Spikes, die innerhalb der Ranges liegen.
 ;
 ; EXAMPLE:               
 ;          nt = randomu(seed,20,200) GE 0.8    
@@ -49,12 +79,24 @@
 ;          Trainspotting, nt, TITLE='Spikes mit Idealgroesse'
 ;          Trainspotting, nt, TITLE='Dickere Spikes', XSYMBOLSIZE=0.02
 ;          Trainspotting, nt, TITLE='Niedliche Spikes', YSYMBOLSIZE=0.02
-;          Trainspotting, nt, TITLE='Richtig Fette Spikes', XSYMBOLSIZE=0.02, YSYMBOLSIZE=0.1
+;          Trainspotting, nt, TITLE='Richtig Fette Spikes', XSYMBOLSIZE=0.02,$
+;                                                          YSYMBOLSIZE=0.1
 ;
+;          mit Sparse-Array und Ranges:
+;          snt = Spassmacher(nt, /DIMENSIONS)
+;          Trainspotting, snt, /SPASS
+;          Trainspotting, snt, /SPASS, xrange=[50,150], yrange=[5,15]
+;          Trainspotting, snt, /SPASS, xrange=[0.05,0.15], yrange=[5,15], $
+;                               OVERSAMP=1000, XTITLE='Time / s'
+;
+; SEE ALSO: <A HREF="plotcilloscope/#TRAINSPOTTINGSCOPE">TrainspottingScope</A>, <A HREF="../misc/arrays/#SPASSAMCHER">Spassmacher</A>
 ;
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.11  1999/12/06 13:18:45  thiel
+;         Now able to use sparse-nt-arrays and x/yrange.
+;
 ;     Revision 1.10  1999/06/16 09:16:39  thiel
 ;         Hatte gar kein _EXTRA, jetzt schon.
 ;
@@ -86,108 +128,170 @@
 ;
 ;                              
 ;     Urversion erstellt, Mirko, 13.8.97
-;     TICKLEN minimal eingestellt, dass Achsenticks nicht mehr sichtbar sind, Mirko, 13.8.97
+;     TICKLEN minimal eingestellt, dass Achsenticks nicht mehr sichtbar sind,
+;     Mirko, 13.8.97
 ;
 ;-
 
 
 
-PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, $
-                   STRETCH=stretch, V_STRETCH=v_stretch, CHARSIZE=Charsize, $
-                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSampling=OverSampling, $
-                   XTITLE=xtitle, _EXTRA=_extra
-
-;-----Keine alten Keywords mehr verwenden:
-IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_STRETCH werden ab sofort per Order di Mufti X- und YSYMBOLSIZE verwendet. Die momentane Darstellung erfolgt mit deren Default-Werten. Noch Fragen???'
-
+PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
+                   CLEAN=clean, CHARSIZE=Charsize, $
+                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
+                   OverSampling=OverSampling, $
+                   XTITLE=xtitle, SPASS=spass, $
+                   XRANGE=xrange, YRANGE=yrange, _EXTRA=_extra
 
 ;---------------> check syntax
-IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
+   IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
 
-s = SIZE(nt)
-IF S(0) EQ 1 THEN BEGIN ; correction for a single spiketrain
-   modified = 1
-   nt = REFORM(nt, 1, N_Elements(nt), /OVERWRITE)
-END ELSE BEGIN
-   modified = 0
-   IF s(0) NE 2 THEN Message, 'first arg must be a 2-dim array'
-END
 
-neurons = (SIZE(nt))(1)-1
-IF (neurons LT 0) THEN Message, 'keine Neuronen zum Darstellen'
+   s = SIZE(nt)
+   IF Keyword_Set(SPASS) THEN BEGIN
+      ; if there's only one dimension (empty sparse array) or there are
+      ; as many entries in sparse(0,0) than in the whole array, then there
+      ; can't be any dimension-information:
+      IF (s(0) EQ 1) OR (s(s(0)) EQ nt(0,0)+1) THEN $
+       Message, 'No dimension information present.'
+      IF nt(0,nt(0,0)+1) NE 2 THEN $
+       Message, 'Sparse array must be made from 2-dim original.'
+      s(1:2) = nt(0,nt(0)+2:nt(0)+3)
+   ENDIF ELSE BEGIN
+      IF S(0) EQ 1 THEN BEGIN   ; correction for a single spiketrain
+         modified = 1
+         nt = REFORM(nt, 1, N_Elements(nt), /OVERWRITE)
+         s = SIZE(nt)
+      END ELSE BEGIN
+         modified = 0
+         IF s(0) NE 2 THEN Message, 'first arg must be a 2-dim array'
+      END
+   ENDELSE
 
-   
-   
-Default, title  , 'Spikeraster'
-Default, xtitle, 'Time / ms'
-Default, level  , 1.0
-Default, offset , 0.0
-Default, Charsize, 1.0
-Default, OverSampling, 1.0
 
-Offset = Offset / FLOAT(OverSampling)
-time =  Float((SIZE(nt))(2)-1) / FLOAT(OverSampling)
-IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
+   Default, title, 'Spikeraster'
+   Default, xtitle, 'Time / ms'
+   Default, ytitle, 'Neuron #'
+   Default, level, 0.0
+   Default, offset , 0.0
+   Default, Ccharsize, 1.0
+   Default, oversampling, 1.0
+
+   oversampling = Float(oversampling)
+
+   allneurons = s(1)-1 ; this is needed to determine ccords from inidces
+   time =  Float(s(2)-1) / oversampling
+
+
+   IF Set(XRANGE) THEN xr=[(xrange(0)>0), $
+                           (xrange(1)<(s(2)-1))] $
+   ELSE xr = [0,time]
+
+   IF Set(YRANGE) THEN BEGIN
+      yr = [yrange(0) > 0, yrange(1) < (s(1)-1)]
+      showneurons = yr(1)-yr(0) ; this is needed to determine size of symbols
+      yr = [yr(0)-1,yr(1)+1]
+   ENDIF ELSE BEGIN 
+      showneurons = s(1)-1
+      yr = [-1,allneurons+1]
+   ENDELSE
 
 
 ;---------------> use own window if wanted
-IF KEYWORD_SET(WIN) THEN BEGIN
-   Window,win,XSIZE=500,YSIZE=250, TITLE=title
-   !P.MULTI = [0,0,1,0,0]
-END 
+   IF KEYWORD_SET(WIN) THEN BEGIN
+      Window,win,XSIZE=500,YSIZE=250, TITLE=title
+      !P.MULTI = [0,0,1,0,0]
+   END 
    
    
    
 ;---------------> plot axis
-IF KEYWORD_SET(clean) THEN BEGIN
-   empty=StrArr(25)
-   FOR i=0,24 DO empty(i)=' '
-   Plot, nt, /NODATA, XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], $
-    XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001, $
-    XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize, _EXTRA=_extra
-END ELSE BEGIN
-   Plot, nt, /NODATA, CHARSIZE=Charsize , $
-    XRANGE=[offset,time+offset], $
-    YRANGE=[-1,neurons+1], $
-    XSTYLE=1, YSTYLE=1, $
-    XTITLE=xtitle, YTITLE='Neuron #', TITLE=title, $
-    XTICKLEN=0.00001, YTICKLEN=0.00001, $
-    YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
-ENDELSE 
+   IF KEYWORD_SET(clean) THEN BEGIN
+      empty=StrArr(25)
+      FOR i=0,24 DO empty(i)=' '
+      Plot, nt, /NODATA, $
+       XRANGE=xr+offset, YRANGE=yr, $
+       XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, $
+       XTICKLEN=0.00001, YTICKLEN=0.00001, $
+       XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize, $
+       _EXTRA=_extra
+   END ELSE BEGIN
+      Plot, nt, /NODATA, CHARSIZE=Charsize , $
+       XRANGE=xr+offset, $ 
+       YRANGE=yr, $
+       XSTYLE=1, YSTYLE=1, $
+       XTITLE=xtitle, YTITLE=ytitle, TITLE=title, $
+       XTICKLEN=0.00001, YTICKLEN=0.00001, $
+       YTICKFORMAT='KeineNegativenUndGebrochenenTicks', $
+       _EXTRA=_extra
+   ENDELSE 
 
 
 
 ;----------------> define UserSymbol: filled square
-PlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
-PlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
-
-PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
-
-Default, XSymbolSize, 0.0
-Default, YSymbolSize, 2.0/(Neurons+1)
-
+   PlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
+   PlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
+   
+   PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], $
+                                  /Normal, /To_Device)
+   
+   Default, XSymbolSize, 0.0
+   Default, YSymbolSize, 2.0/(showneurons+1)
+   
 ;----- Usersymbols, die nur ein Pixel breit sind (Stretch=0.0), duerfen
-;      nicht FILLed dargestellt werden, da sie dann nicht zu sehen sind:
+;      nicht FILLed dargestellt werden, da sie sonst nicht zu sehen sind:
 
-IF XSymbolSize EQ 0.0 THEN Fill = 0 ELSE Fill = 1
+   IF XSymbolSize EQ 0.0 THEN Fill = 0 ELSE Fill = 1
+   
+   xsizedevice = xsymbolsize*PlotAreaDevice(0)
+   ysizedevice = ysymbolsize*PlotAreaDevice(1)
 
-xsizedevice = xsymbolsize*PlotAreaDevice(0)
-ysizedevice = ysymbolsize*PlotAreaDevice(1)
-
-xsizechar = xsizedevice/!D.X_CH_SIZE
-ysizechar = ysizedevice/!D.Y_CH_SIZE
-
-UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, -xsizechar/2.0, -xsizechar/2.0], [-ysizechar/2.0,-ysizechar/2.0,ysizechar/2.0,ysizechar/2.0,-ysizechar/2.0], FILL=Fill
-
-
-
+   xsizechar = xsizedevice/!D.X_CH_SIZE
+   ysizechar = ysizedevice/!D.Y_CH_SIZE
+   
+   UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, $
+             -xsizechar/2.0, -xsizechar/2.0], $
+            [-ysizechar/2.0, -ysizechar/2.0, ysizechar/2.0, $
+             ysizechar/2.0, -ysizechar/2.0], $
+            FILL=fill
+   
+   
 ;----------------> plot spikes
-spikes = where(nt GE level, count)
-IF (count NE 0) THEN PlotS, LONG((spikes / FLOAT(neurons+1))/OverSampling + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
+   doplot = 1
 
+   IF Keyword_Set(SPASS) THEN BEGIN
+      IF nt(0) NE 0 THEN BEGIN ; are there any spikes?
+         IF LEVEL GT 0.0 THEN BEGIN ; level set, so values must be checked: 
+            higherthanlevel = where(nt(1,1:nt(0)) GE level, c)
+            IF c NE 0 THEN spikes = nt(0,1+higherthanlevel) ELSE doplot = 0
+         ENDIF ELSE BEGIN
+            spikes = nt(0,1:nt(0)) ; no level set, first col of sparse array 
+                                   ; already contains indices
+         ENDELSE
+      ENDIF ELSE doplot = 0 ; no spikes to plot
+      
+   ENDIF ELSE BEGIN ; conventional nt-array
+      spikes = where(nt GT level, doplot) ; level check
+      ; correction for a single spiketrain
+      IF modified THEN nt = REFORM(nt, /OVERWRITE)
+   ENDELSE
 
-; correction for a single spiketrain
-IF modified THEN nt = REFORM(nt, /OVERWRITE)
+   ; now procedure is the same for sparse and conventional:
+   IF (doplot NE 0) THEN BEGIN
+      ; Determine coords from indices:
+      x = spikes / FLOAT(allneurons+1) / oversampling
+      y = spikes MOD (allneurons+1)
+      ; Use only coords that are in x/y-range:
+      yi = Where(y GT yr(0) AND y LT yr(1), no)
+      IF no NE 0 THEN BEGIN
+         x = Temporary(x(yi))
+         y = Temporary(y(yi))
+         xi = Where(x GT xr(0) AND x LT xr(1), no)
+         IF no NE 0 THEN PlotS, x(xi) + offset, y(xi), PSYM=8, SYMSIZE=1.0
+      ENDIF
+
+   ENDIF
+
+      
 
 END
 
