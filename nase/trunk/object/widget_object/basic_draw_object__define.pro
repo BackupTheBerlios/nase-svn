@@ -6,6 +6,9 @@
 ;
 ; CATEGORY: 
 ;
+; SUPERCLASSES:
+;   <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>
+;
 ; CONSTRUCTION: 
 ;
 ;   o = Obj_New("basic_draw_object"
@@ -28,7 +31,7 @@
 ;               [,YSIZE=ysize] 
 ;               [,X_SCROLL_SIZE=x_scroll_size]
 ;               [,Y_SCROLL_SIZE=y_scroll_size]
-;               [-keywords inherited from class basic_widget_object-])
+;               [-keywords inherited from <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>-])
 ;
 ; DESTRUCTION:
 ;
@@ -69,8 +72,7 @@
 ;                          cases, e.g. when frequent updates happen, or when
 ;                          connecting to an X server accross a network.
 ;
-;   inherited from class basic_widget_object:
-;     widget()
+;   -plus those inherited from class <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A> (see there for details)-
 ;
 ;  protected: Protected methods may only be called from within a derived class's
 ;             methods.
@@ -119,11 +121,15 @@
 ;
 ; EXAMPLE: 
 ;
-; SEE ALSO: <A HREF="#MY_ROUTINE">My_Routine()</A>
+; SEE ALSO: <A HREF="../../graphic/widgets/#WIDGET_SHOWIT">Widget_Showit()</A>
+;           <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.10  2000/03/13 16:36:18  kupper
+;        Polished header (needs mor polishing!)
+;
 ;        Revision 1.9  2000/03/13 15:47:34  kupper
 ;        initial_paint_hook_ now issues abstract method warning.
 ;
