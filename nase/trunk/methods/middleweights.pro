@@ -6,7 +6,7 @@
 ;
 ; CATEGORY: STATISTICS
 ;
-; CALLING SEQUENCE: Gemittelt = MiddleWeights ( Matrix 
+; CALLING SEQUENCE: Gemittelt = MiddleWeights ( Matrix [,sd] 
 ;                                               {,/FROMS | ,/TOS |, PROJECTIVE |, /RECEPTIVE }
 ;                                               [,/WRAP]
 ;                                               [,/ROWS] [,/COLS] )
@@ -34,8 +34,15 @@
 ;                     Ergebnis eine vierdimensionale Matrix.
 ;                     (s. Beschreibung von ROWS)
 ;
-; RESTRICTIONS: Bisher kann nur ueber die gesamte Gewichtsmatrix
-;               gemittelt werden.
+; OPTIONAL OUTPUTS: sd : gibt die Matrix der zugehoerigen Standardabweichungen zurueck. Falls Keyword
+;                        WRAP nicht gesetzt, wird nur ueber tatsaechlich vorhandene Matrixelemente
+;                        standardabgeweicht, da die Zahl der eingehenden Messwerte zum Rand hin abfaellt.
+;                        Das Ganze funktioniert (bisher) NICHT fuer Keywords COLS/ROWS.
+;                        
+;
+; RESTRICTIONS: 
+;               - Bisher kann nur ueber die gesamte Gewichtsmatrix gemittelt werden.
+;               - Mittelung nur ueber gleichdimensionierte Target- und Source-Cluster
 ;
 ; PROCEDURE: Set() mal wieder
 ;
@@ -54,6 +61,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1998/07/06 21:39:53  saam
+;             + restricted to target and source clusters of same dimension
+;             + new optional output for standard deviation
+;
 ;       Revision 1.9  1998/05/19 19:33:58  kupper
 ;              ROWS implementiert.
 ;
@@ -82,7 +93,7 @@
 ;
 ;-
 
-FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
+FUNCTION MiddleWeights, DW, sd, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
                         PROJECTIVE=projective, RECEPTIVE=receptive, $
                         ROWS=rows, COLS=cols
 
@@ -106,6 +117,7 @@ FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
                 th     : DWDim(DW, /TH)        }
    END
    
+   IF (Matrix.sw NE Matrix.tw) OR (Matrix.sh NE Matrix.th) THEN Message, 'if you are sure the median makes sense in the case of different target & source layer dimensions THEN comment out this message or ask Mirko'
    
    
    no_connections = WHERE(Matrix.Weights EQ !NONE, count)
@@ -179,9 +191,35 @@ FUNCTION MiddleWeights, DW, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
          end
       end
    EndElse
+
+   m = middle/double(sum)
+
+   ; compute the standard deviation for each matrix element
+   var = fltarr(Matrix.th,Matrix.tw)
+   If Not Keyword_Set(WRAP) Then Begin
+      for YY= 0, Matrix.sh-1 do begin
+         for XX= 0, Matrix.sw-1 do begin  
+            untermatrix = MatrixMatrix(*, *, YY, XX)
+            geshiftet = norot_shift(untermatrix,zentrumy-YY,zentrumx-XX, WEIGHT=!NONE)
+            var = var + (geshiftet GT !NONE)*(geshiftet - m)^2
+         end
+      end
+   Endif Else Begin
+      for YY= 0, Matrix.sh-1 do begin
+         for XX= 0, Matrix.sw-1 do begin  
+            untermatrix = MatrixMatrix(*, *, YY, XX)
+            geshiftet = shift(untermatrix,zentrumy-YY,zentrumx-XX)
+            var = var + (geshiftet - m)^2
+         end
+      end
+   EndElse
+   var = var / double(sum)
+   sd = sqrt(var)
+
+
    
    
-   RETURN, middle/double(sum)
+   RETURN, m
    ;;--------------------------------
    
 END
