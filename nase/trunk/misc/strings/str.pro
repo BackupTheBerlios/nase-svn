@@ -1,48 +1,40 @@
 ;+
-; NAME: Str()
+; NAME:
+;  Str()
 ;
-; AIM: removes all leading and trailing white spaces from a string
+; AIM:
+;  removes all leading and trailing white spaces from a string
 ;
-; PURPOSE: Wrapper-Prozedur für String() (Standard-IDL)
-;          Macht genau das gleiche wie String(), entfernt aber
-;          zusätzlich alle führenden oder folgenden Leerzeichen beim Ergebnis.
+; PURPOSE: 
+;  This routine is a simple wrapper for <C>String()</C>. Additionally to
+;  the functionality of <C>String()</C> it removes all leading and
+;  trailing white spaces
 ;
-; CATEGORY: Output
+; CATEGORY:
+;  Strings
 ;
-; CALLING SEQUENCE: s. String()
+; CALLING SEQUENCE: 
+;  see <C>String()</C> for syntax, inputs and outputs 
 ;
-; INPUTS: s. String()
+; PROCEDURE: 
+;  strtrim(string(...),2)
 ;
-; OPTIONAL INPUTS: s. String()
+; EXAMPLE:
+;* Print, "twentythree..."+str(23)+"!"
+;*;twentythree...23!
 ;
-; KEYWORD PARAMETERS: s. String()
+; while call of string results in:
+;* Print, "twentythree..."+string(23)+"!"
+;*;twentythree...      23!
 ;
-; OUTPUTS: s. String()
-;
-; OPTIONAL OUTPUTS: s. String()
-;
-; PROCEDURE: strtrim(string(...),2)
-;
-; EXAMPLE: Print, "Dreiundzwanzig..."+str(23)+"!"
-;
-;          zum Vergleich: Print, "Dreiundzwanzig..."+string(23)+"!"
-;
-; SEE ALSO: String() (Standard-IDL)
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 2.2  2000/09/25 09:13:11  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 2.1  1998/03/29 16:19:47  kupper
-;               Schöpfung aus Bequemlichkeit...
+; SEE ALSO: 
+;  <C>String()</C>
 ;
 ;-
 
 Function Str, var, _extra=_EXTRA
+
+   On_Error, 2
 
    If Keyword_Set(_EXTRA) then $
     Return, strtrim(string(var, _EXTRA=_extra), 2) else $
