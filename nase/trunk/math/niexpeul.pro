@@ -70,7 +70,7 @@
 ;* y1=FltArr(10)
 ;* time1=FIndgen(10)*10.
 ;* y1[0]=100. ;; start at T(0)=100.
-;* FOR t=0,98 DO y1(t+1)=NIExpEul(y1(t),A=0.1*23.,B=0.1,DT=10.)
+;* FOR t=0,8 DO y1(t+1)=NIExpEul(y1(t),A=0.1*23.,B=0.1,DT=10.)
 ;* Plot, time1, y1
 ; Change the time resolution just for fun:
 ;* y2=FltArr(10000)
@@ -87,11 +87,13 @@
 
 FUNCTION NIExpEul, y, A=a, B=b, DT=dt
 
+   On_Error, 2
+
    Default, dt, 1.
 
    IF N_Params() NE 1 THEN $
-    Console, /FATAL, 'Wrong number of parameters.'
-   IF (NOT Set(a)) AND (NOT Set(b)) THEN $
+    Console, /FATAL, 'Previous state of variable needed.'
+   IF (NOT Set(a)) OR (NOT Set(b)) THEN $
     Console, /FATAL, 'Parameters A and B need to be specified.'
 
    d = Exp(-b*dt)
