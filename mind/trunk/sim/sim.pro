@@ -88,6 +88,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    ;-----> COMPLETE COMMAND SYNTAX
    ;----->
    OS = 1./(1000*P.SIMULATION.SAMPLE)
+   OS = round(1000*os)/1000.
 
 
    ;-----> DETERMINE LEARNING STATUS
@@ -128,7 +129,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
       NAME = tmp.INFO         ; name of init-routine
       deltag, tmp, 'INFO'     ; remove this name from structure
-      tmp2 =  CALL_FUNCTION(NAME,_EXTRA=tmp)
+      tmp2 =  CALL_FUNCTION(NAME,_EXTRA=tmp, SAMPLEPERIOD=P.SIMULATION.SAMPLE)
 
       L(i) = InitLayer(WIDTH=curLayer.w, HEIGHT=curLayer.h, TYPE = tmp2)
       console, P.CON, 'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h)+', TYPE :'+NAME
@@ -234,6 +235,8 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    Vid_M   = LonArr(Lmax+1)
    Vid_MUA = LonArr(Lmax+1)
    Vid_LFP = LonArr(Lmax+1)
+   Vid_I2 = LonArr(Lmax+1)
+   Vid_Linking = LonArr(Lmax+1)
 
    SelVidO = BytArr(Lmax+1)
    SelVidM = BytArr(Lmax+1)
@@ -244,39 +247,113 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       ; ensure REC_LFP is defined
       IF NOT ExtraSet(REC, "REC_LFP") THEN BEGIN
           SetTag, REC, "REC_LFP", 0
-          curLayer.LEX = REC
+          SetTag, curLayer, "LEX", REC
+;          curLayer.LEX = REC  ;probably syntax error
+      END
+
+      ; ensure REC_Linking is defined
+      IF NOT ExtraSet(REC, "REC_Linking") THEN BEGIN
+          SetTag, REC, "REC_Linking", [0,0]
+          SetTag, curLayer, "LEX", REC
+      ENDIF
+      
+      ; ensure REC_I2 is defined
+      IF NOT ExtraSet(REC, "REC_I2") THEN BEGIN
+          SetTag, REC, "REC_I2", [0,0]
+          SetTag, curLayer, "LEX", REC
+      ENDIF
+
+      ; ensure PotentialSamplingRate is defined 
+      ;POT_SAMPLE=1 --> record potential with simulation rate
+      ;POT_SAMPLE=10 --> record every 10th value
+      IF NOT ExtraSet(REC, "POT_SAMPLE") THEN BEGIN
+          SetTag, REC, "POT_SAMPLE", OS
+          SetTag, curLayer, "LEX", REC
       END
 
       IF ((REC.REC_O(1) GT REC.REC_O(0)) AND (REC.REC_O(0) LT P.SIMULATION.TIME)) THEN BEGIN
-         IF N_Elements(REC.REC_O) GT 2 THEN BEGIN
-            Vid_O(i) = InitVideo( BytArr(N_Elements(REC.REC_O)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-            console, P.CON, 'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms for '+STR(N_Elements(REC.REC_O)-2)+' neurons'
-            SelVidO(i) = N_Elements(REC.REC_O)-2
-         END ELSE BEGIN
-            Vid_O(i) = InitVideo( BytArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-            console, P.CON,'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms'  
-         END
-      END
+          IF N_Elements(REC.REC_O) GT 2 THEN BEGIN
+              Vid_O(i) = InitVideo( BytArr(N_Elements(REC.REC_O)-2) $
+                                    ,TITLE=P.File+'.'+curLayer.FILE+'.o.sim' $
+                                    ,/SHUTUP $
+                                    ,/ZIPPED )
+              console, P.CON, 'RECORDING: '+curLayer.NAME+$
+                       ' Output from '+STR(REC.REC_O(0))+$
+                       ' to '+STR(REC.REC_O(1))+$
+                       ' ms for '+STR(N_Elements(REC.REC_O)-2)+' neurons'
+              SelVidO(i) = N_Elements(REC.REC_O)-2
+          END ELSE BEGIN
+              Vid_O(i) = InitVideo( BytArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
+              console, P.CON,'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms'  
+          ENDELSE
+      ENDIF
+
+      ;prepare video for membrand potential
       IF ((REC.REC_M(1) GT REC.REC_M(0)) AND (REC.REC_M(0) LT P.SIMULATION.TIME)) THEN BEGIN
           IF N_Elements(REC.REC_M) GT 2 THEN BEGIN
-              Vid_M(i) = InitVideo( DblArr(N_Elements(REC.REC_M)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-              console,P.CON, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms for '+STR(N_Elements(REC.REC_M)-2)+' neurons'
+              Vid_M(i) = InitVideo( DblArr(N_Elements(REC.REC_M)-2) $
+                                    ,TITLE=P.File+'.'+curLayer.FILE+'.m.sim' $
+                                    ,/SHUTUP $
+                                    ,/ZIPPED )
+              console,P.CON, 'RECORDING: '+curLayer.NAME+$
+                      ' Membrane from '+STR(REC.REC_M(0))+' to '$
+                      +STR(REC.REC_M(1))$
+                      +' ms for '+STR(N_Elements(REC.REC_M)-2)+' neurons'
               SelVidM(i) = N_Elements(REC.REC_M)-2
-          END ELSE BEGIN
+          ENDIF ELSE BEGIN
               Vid_M(i) = InitVideo( DblArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.m.sim', /SHUTUP)
               console, P.CON, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms'  
-          END
-      END
+          ENDELSE
+      ENDIF
+
+
+      ;prepare video for second inhibition (i2)
+      IF ((REC.REC_I2(1) GT REC.REC_I2(0)) AND (REC.REC_I2(0) LT P.SIMULATION.TIME)) THEN BEGIN
+          IF N_Elements(REC.REC_I2) GT 2 THEN BEGIN
+              Vid_I2(i) = InitVideo( DblArr(N_Elements(REC.REC_I2)-2) $
+                                     ,TITLE=P.File+'.'+curLayer.FILE+'.i2.sim' $
+                                     ,/SHUTUP $
+                                     ,/ZIPPED )
+              console,P.CON, 'RECORDING: '+curLayer.NAME+$
+                      ' 2nd Inhibition Potential from '+STR(REC.REC_I2(0))+' to '$
+                      +STR(REC.REC_I2(1))$
+                      +' ms for '+STR(N_Elements(REC.REC_I2)-2)+' neurons'
+              SelVidM(i) = N_Elements(REC.REC_I2)-2
+          ENDIF ELSE BEGIN
+              Vid_I2(i) = InitVideo( DblArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.i2.sim', /SHUTUP)
+              console, P.CON, 'RECORDING: '+curLayer.NAME+' 2nd Inhibition Potential from '+STR(REC.REC_I2(0))+' to '+STR(REC.REC_I2(1))+' ms'  
+          ENDELSE
+      ENDIF
+
+      ;prepare video for linking
+      IF ((REC.REC_Linking(1) GT REC.REC_Linking(0)) AND (REC.REC_Linking(0) LT P.SIMULATION.TIME)) THEN BEGIN
+          IF N_Elements(REC.REC_Linking) GT 2 THEN BEGIN
+              Vid_Linking(i) = InitVideo( DblArr(N_Elements(REC.REC_Linking)-2) $
+                                     ,TITLE=P.File+'.'+curLayer.FILE+'.link.sim' $
+                                     ,/SHUTUP $
+                                     ,/ZIPPED )
+              console,P.CON, 'RECORDING: '+curLayer.NAME+$
+                      ' Linking Potential from '+STR(REC.REC_Linking(0))+' to '$
+                      +STR(REC.REC_Linking(1))$
+                      +' ms for '+STR(N_Elements(REC.REC_Linking)-2)+' neurons'
+              SelVidM(i) = N_Elements(REC.REC_Linking)-2
+          ENDIF ELSE BEGIN
+              Vid_Linking(i) = InitVideo( DblArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.link.sim', /SHUTUP)
+              console, P.CON, 'RECORDING: '+curLayer.NAME+' Linking Potential from '+STR(REC.REC_Linking(0))+' to '+STR(REC.REC_Linking(1))+' ms'  
+          ENDELSE
+      ENDIF
+
+
       IF REC.REC_MUA THEN BEGIN
-         Vid_MUA(i) = InitVideo( 0l, TITLE=P.File+'.'+curLayer.FILE+'.mua.sim', /SHUTUP)
-         console, P.CON, 'RECORDING: '+curLayer.NAME+' MUA'
-      END
+          Vid_MUA(i) = InitVideo( 0l, TITLE=P.File+'.'+curLayer.FILE+'.mua.sim', /SHUTUP)
+          console, P.CON, 'RECORDING: '+curLayer.NAME+' MUA'
+      ENDIF
       IF REC.REC_LFP THEN BEGIN
-         Vid_LFP(i) = InitVideo( 0., TITLE=P.File+'.'+curLayer.FILE+'.lfp.sim', /SHUTUP)
-         console, P.CON, 'RECORDING: '+curLayer.NAME+' LFP'
-      END
+          Vid_LFP(i) = InitVideo( 0., TITLE=P.File+'.'+curLayer.FILE+'.lfp.sim', /SHUTUP)
+          console, P.CON, 'RECORDING: '+curLayer.NAME+' LFP'
+      ENDIF
       Handle_Value, P.LW(i), curLayer, /NO_COPY, /SET
-   END
+  ENDFOR
 
 
 
@@ -299,7 +376,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    IF Learn THEN InitLearn, LDWmax+1, CON, P.LearnW, _EXTRA=e
    IF Learn THEN InitNormalize, LDWmax+1, CON, P.LearnW, _EXTRA=e
 
- 
+   ;-------------> INIT CROSS-NORMALIZING
+   IF ExtraSet(P, 'NORMW') THEN NORMmax = N_Elements(P.NormW)-1 ELSE NORMmax = -1
+   IF NORMmax ne -1 then InitCrossNorm, NORMmax, CON, P.NormW
+
    ;--------------> INIT CONNECTION STRUCTURE 
    IF DWmax GE 0 THEN ADW = StrArr(DWmax+1)    ; automatic DW
    FOR i=0, DWmax DO BEGIN
@@ -346,6 +426,9 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       ;-------------> Normalize Weights
       FOR i=0, LDWmax DO Normalize, L, CON, P.LEARNW(i), _TIME
 
+      ;-------------> CrossNormalize WeightMatrices
+      FOR i=0, NORMmax do CrossNorm, L, CON, P.NORMW[i], _TIME
+
       ;;----- Proceed layers
       FOR i=0,Lmax DO ProceedLayer, L(i)
 
@@ -388,19 +471,44 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          curLayer = Handle_Val(P.LW(i))
          REC = curLayer.LEX
          IF ((_TIME GE OS*REC.REC_O(0)) AND (_TIME LT OS*curLayer.LEX.REC_O(1))) THEN BEGIN
-            IF SelVidO(i) NE 0 THEN dummy = CamCord( Vid_O(i), (BYTE(LayerSpikes(L(i))))(2:SelVidO(i)+1)) ELSE dummy = CamCord( Vid_O(i), BYTE(LayerSpikes(L(i))))
-         END
-         IF ((_TIME GE OS*REC.REC_M(0)) AND (_TIME LT OS*curLayer.LEX.REC_M(1)) AND ((_TIME MOD OS) EQ 0)) THEN BEGIN
-            LayerData, L(i), POTENTIAL=M
-            IF SelVidM(i) NE 0 THEN M = M(2:SelVidM(i)+1)
-            dummy = CamCord( Vid_M(i), REFORM(DOUBLE(M), N_Elements(M), /OVERWRITE))
-         END
+             IF SelVidO(i) NE 0 THEN $
+               dummy = CamCord( Vid_O(i)$
+                                , (BYTE(LayerSpikes(L(i))))(2:SelVidO(i)+1)) $
+             ELSE dummy = CamCord( Vid_O(i), BYTE(LayerSpikes(L(i))))
+         ENDIF
+         IF ((_TIME GE OS*REC.REC_M(0)) $
+             AND (_TIME LT OS*curLayer.LEX.REC_M(1)) $
+             AND ((_TIME MOD curLayer.LEX.POT_SAMPLE) EQ 0)) THEN BEGIN
+             LayerData, L(i), POTENTIAL=M
+             IF SelVidM(i) NE 0 THEN M = M(2:SelVidM(i)+1)
+             dummy = CamCord( Vid_M(i), REFORM(DOUBLE(M), N_Elements(M), /OVERWRITE))
+         ENDIF
+
+          ; record Linking 
+         IF ((_TIME GE OS*REC.REC_Linking(0)) $
+             AND (_TIME LT OS*curLayer.LEX.REC_Linking(1)) $
+             AND ((_TIME MOD curLayer.LEX.POT_SAMPLE) EQ 0)) THEN BEGIN
+             LayerData, L(i), Linking=M
+             IF SelVidM(i) NE 0 THEN M = M(2:SelVidM(i)+1)
+             dummy = CamCord( Vid_Linking(i), REFORM(DOUBLE(M), N_Elements(M), /OVERWRITE))
+         ENDIF
+
+
+          ; record Second Inhibition
+         IF ((_TIME GE OS*REC.REC_I2(0)) $
+             AND (_TIME LT OS*curLayer.LEX.REC_I2(1)) $
+             AND ((_TIME MOD curLayer.LEX.POT_SAMPLE) EQ 0)) THEN BEGIN
+             LayerData, L(i), SInhibition=M
+             IF SelVidM(i) NE 0 THEN M = M(2:SelVidM(i)+1)
+             dummy = CamCord( Vid_I2(i), REFORM(DOUBLE(M), N_Elements(M), /OVERWRITE))
+         ENDIF
+
          IF REC.REC_MUA THEN dummy = CamCord( VID_MUA(i), LONG(LayerMUA(L(i))))
          IF REC.REC_LFP THEN BEGIN
              LayerData, L(i), POTENTIAL=m
              dummy = CamCord( VID_LFP(i), FLOAT(TOTAL(m)))             
-         END
-      END
+         ENDIF
+     ENDFOR
 
       ;-----> OPERATIONS DONE IN LEARNING MODE
 ;      FOR i=0, LDWmax DO BEGIN
@@ -413,7 +521,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 ;         END
 ;      END
 ;     
-      IF (_TIME MOD 50 EQ 0 ) THEN consoletime,P.CON, bin=_time, ms= _TIME/os
+      IF (_TIME MOD (OS*50) EQ 0 ) THEN consoletime,P.CON, bin=_time, ms= _TIME/os
    END
    console,P.CON, 'Main Simulation Loop done'
 
@@ -424,6 +532,8 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       REC = curLayer.LEX
       IF ((REC.REC_O(1) GT REC.REC_O(0)) AND (REC.REC_O(0) LT P.SIMULATION.TIME)) THEN Eject, Vid_O(i), /NOLABEL, /SHUTUP
       IF ((REC.REC_M(1) GT REC.REC_M(0)) AND (REC.REC_M(0) LT P.SIMULATION.TIME)) THEN Eject, Vid_M(i), /NOLABEL, /SHUTUP
+      IF ((REC.REC_I2(1) GT REC.REC_I2(0)) AND (REC.REC_I2(0) LT P.SIMULATION.TIME)) THEN Eject, Vid_I2(i), /NOLABEL, /SHUTUP
+      IF ((REC.REC_Linking(1) GT REC.REC_Linking(0)) AND (REC.REC_Linking(0) LT P.SIMULATION.TIME)) THEN Eject, Vid_Linking(i), /NOLABEL, /SHUTUP
       IF REC.REC_MUA THEN Eject, VID_MUA(i), /NOLABEL, /SHUTUP
       IF REC.REC_LFP THEN Eject, VID_LFP(i), /NOLABEL, /SHUTUP
    END
