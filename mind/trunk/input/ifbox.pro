@@ -44,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/12/15 10:02:12  saam
+;     access to uninitialized variables fixed
+;
 ;     Revision 1.6  2000/09/29 08:10:34  saam
 ;     added the AIM tag
 ;
@@ -72,11 +75,10 @@
 
 FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                 LOGIC=logic, $
-                X1=x1,Y1=y1,X2=x2,Y2=y2,INVERT=invert, VALUE=value
+                X1=x1,Y1=y1,X2=x2,Y2=y2,INVERT=invert, VALUE=value, _EXTRA=e
 
    COMMON ATTENTION
 
-   ON_ERROR, 2
 
    Default, mode, 1          ; i.e. step
    Default, R   , !NONE
@@ -123,7 +125,7 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
       ; STEP
       1: BEGIN                             
          R = fltarr(TV.h,TV.w)
-         R(y1:y2,x1:x2) = TV.value
+         R(TV.y1:TV.y2,TV.x1:TV.x2) = TV.value
          IF TV.invert NE 0 THEN R = TV.value - R
          TV.sim_time =  TV.sim_time + TV.delta_t
 
