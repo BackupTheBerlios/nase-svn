@@ -157,6 +157,7 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
             sheet.inc = sheet.inc + 1
          END
          IF sheet.eps THEN file = file+'.eps' ELSE file = file+'.ps'
+         sheet.curfile = file
 
          IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
             Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color

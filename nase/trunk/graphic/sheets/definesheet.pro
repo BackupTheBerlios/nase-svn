@@ -3,66 +3,69 @@
 ;  DefineSheet
 ;
 ; VERSION:
+;  $Id$
 ; 
 ; AIM:
 ;  Define a structure for device independent graphics output.
 ;
-; PURPOSE:            Definiert ein Window-,PS-Sheet oder Null-Sheet.
-;                     Diese Routine und ihre Verwandten OpenSheet, CloseSheet, DestroySheet dienen als
-;                     Ersatz fuer Window-, Set_Plot- und Device-Aufrufe und sollen eine äquivalente 
-;                     Behandlungsweise von Window- und PS-Output ermoeglichen. DefineSheet definiert das
-;                     Ausgabemedium (mit Optionen). Moechte man einen Bildschirm-Plot nun als PS in ein
-;                     File schicken muss man nur diesen Aufruf aendern, alles andere bleibt gleich.
-;                     Benutzt man dann noch die U-Routinen (UTvScl, ULoadCt,...) dann ist man voellig
-;                     device-unabhaengig.
-;                     Ein Sheet speichert außerdem wichtige Plotparameter (wie !X, !Y, !P, ...)
-;                     intern ab, so daß diese beim späteren Öffnen eines Sheets wieder restauriert werden.
-;                     Ab Revision 2.13 speichern die Sheets zusätzlich zu den Plotparametern auch
-;                     die verwendetet Farbtabelle ab.
-;                     Ab Revision 2.15 koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
+; PURPOSE:
+;  Definiert ein Window-,PS-Sheet oder Null-Sheet.
+;  Diese Routine und ihre Verwandten OpenSheet, CloseSheet, DestroySheet dienen als
+;  Ersatz fuer Window-, Set_Plot- und Device-Aufrufe und sollen eine äquivalente 
+;  Behandlungsweise von Window- und PS-Output ermoeglichen. DefineSheet definiert das
+;  Ausgabemedium (mit Optionen). Moechte man einen Bildschirm-Plot nun als PS in ein
+;  File schicken muss man nur diesen Aufruf aendern, alles andere bleibt gleich.
+;  Benutzt man dann noch die U-Routinen (UTvScl, ULoadCt,...) dann ist man voellig
+;  device-unabhaengig.
+;  Ein Sheet speichert außerdem wichtige Plotparameter (wie !X, !Y, !P, ...)
+;  intern ab, so daß diese beim späteren Öffnen eines Sheets wieder restauriert werden.
+;  Ab Revision 2.13 speichern die Sheets zusätzlich zu den Plotparametern auch
+;  die verwendetet Farbtabelle ab.
+;  Ab Revision 2.15 koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
 ;
 ; CATEGORY:
 ;  Graphic
 ;  Windows
 ;
 ; CALLING SEQUENCE:   
-;*                      Sheet = DefineSheet( [ Parent ]
-;*                                          [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
-;*                                          [,/INCREMENTAL] [,/VERBOSE]
-;*                                          [,/PRIVATE_COLORS]
-;*                                          (,OPTIONS)*
+;*Sheet = DefineSheet( [ Parent ]
+;*                     [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
+;*                     [,/INCREMENTAL] [,/VERBOSE]
+;*                     [,/PRIVATE_COLORS]
+;*                     (,OPTIONS)* )
 ;
 ; OPTIONAL INPUTS: 
-;                 Parent:: Eine Widget-ID des Widgets, dessen Kind das 
-;                          neue Sheet-Widget werden soll.
+;  Parent:: Eine Widget-ID des Widgets, dessen Kind das 
+;           neue Sheet-Widget werden soll.
 ;
-; KEYWORD PARAMETERS: WINDOW::     Das Sheet wird auf dem Bildschirm dargestellt
-;                     PS::         Das Sheet wird als PS in ein File gespeichert.
-;                     NULL::       Das Sheet unterdrueckt jegliche Ausgabe
-;                     MULTI::      Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
-;                                  Beschreibung des MULTI-Parameters s. <A HREF="../#SCROLLIT">ScrollIt()</A>.
-;                                  Wenn angegeben, ist das Ergebnis von DefineSheet ein MultiSheet (Array von Sheets).
-;                    INCREMENTAL:: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
-;                                  File geschlossen. Malt man nun mehrmals in ein Sheet gibt es 
-;                                  zwei Moeglichkeit auf PS damit umzugehen. Entweder wird das
-;                                  alte File immer wieder ueberschrieben, oder ein neues File
-;                                  wird angelegt. Dies macht die Option INCREMENTAL; der Filename
-;                                  wird dabei um einen laufenden Index erweitert.
-;                     VERBOSE::    DefineSheet wird gespraechig...
-;                 PRIVATE_COLORS:: Nur sinnvoll bei Windows. 
-;                                  Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
-;                                  jedes Sheetchen, verarbeitet dann Tracking-Events, dh, die Farbtabelle
-;                                  wird richtig gesetzt, wenn der Mauszeiger in das Widget weist.
-;                                  Das speichern der
-;                                  privaten Colormap wird von closesheet erledigt.
-;                                  Dieses Schlüsselwort wird auf nicht-Pseudocolor-Displays (TrueColor,
-;                                  DirectColor) ignoriert.
-;                     OPTIONS::    Alle Optionen die das jeweilige Device versteht sind erlaubt.
-;                                  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
-;                                              [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
-;                                              [XY]DrawSize
-;                    PS::          siehe Hilfe von Device, z.B.
-;                                              /ENCAPSULATED, BITS_PER_PIXEL, /COLOR, FILENAME
+; INPUT KEYWORDS: 
+;  WINDOW::     Das Sheet wird auf dem Bildschirm dargestellt
+;  PS::         Das Sheet wird als PS in ein File gespeichert.
+;  NULL::       Das Sheet unterdrueckt jegliche Ausgabe
+;  MULTI::      Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
+;               Beschreibung des MULTI-Parameters s. <A HREF="../#SCROLLIT">ScrollIt()</A>.
+;               Wenn angegeben, ist das Ergebnis von DefineSheet ein MultiSheet (Array von Sheets).
+;  INCREMENTAL:: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
+;                File geschlossen. Malt man nun mehrmals in ein Sheet gibt es 
+;                zwei Moeglichkeit auf PS damit umzugehen. Entweder wird das
+;                alte File immer wieder ueberschrieben, oder ein neues File
+;                wird angelegt. Dies macht die Option INCREMENTAL; der Filename
+;                wird dabei um einen laufenden Index erweitert.
+;  VERBOSE::    DefineSheet wird gespraechig...
+;  PRIVATE_COLORS:: Nur sinnvoll bei Windows. 
+;                   Diese Option wird an ScrollIt weitergereicht. Das Sheet, bzw.
+;                   jedes Sheetchen, verarbeitet dann Tracking-Events, dh, die Farbtabelle
+;                   wird richtig gesetzt, wenn der Mauszeiger in das Widget weist.
+;                   Das speichern der
+;                   privaten Colormap wird von closesheet erledigt.
+;                   Dieses Schlüsselwort wird auf nicht-Pseudocolor-Displays (TrueColor,
+;                   DirectColor) ignoriert.
+;  OPTIONS::    Alle Optionen die das jeweilige Device versteht sind erlaubt.
+;  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
+;            [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
+;            [XY]DrawSize
+;  PS::          siehe Hilfe von Device, z.B.
+;          /ENCAPSULATED, BITS_PER_PIXEL, /COLOR, FILENAME
 ;
 ; OUTPUTS:            Sheet:: eine Struktur, die alle Sheet-Informationen enthaelt und an OpenSheet,
 ;                            CloseSheet und DestroySheet uebergeben wird.
@@ -75,110 +78,18 @@
 ;
 ;
 ; EXAMPLE:
-;*                     window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
-;*                     ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
-;*                     ps_sheet2    = DefineSheet( /PS, /VERBOSE, /INCREMENTAL, FILENAME='test2')
+;*window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
+;*ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
+;*ps_sheet2    = DefineSheet( /PS, /VERBOSE, /INCREMENTAL, FILENAME='test2')
 ;*
-;*                     sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;*                     OpenSheet, sheety
-;*                     Plot, Indgen(200)
-;*                     CloseSheet, sheety
-;*                     dummy = Get_Kbrd(1)
-;*                     DestroySheet, sheety
+;*sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;*OpenSheet, sheety
+;*Plot, Indgen(200)
+;*CloseSheet, sheety
+;*dummy = Get_Kbrd(1)
+;*DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
-;           <A HREF="#OPENSHEET">OpenSheet</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
-;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.23  2000/11/30 16:57:46  saam
-;     now color and 8 bits_per_pixel are default for ps sheets
-;
-;     Revision 2.22  2000/11/02 09:40:28  gabriel
-;          doc header modified
-;
-;     Revision 2.21  2000/11/02 09:32:52  gabriel
-;          uset_plot instead of setplot
-;
-;     Revision 2.20  2000/10/01 14:51:35  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.19  2000/08/31 10:23:28  kupper
-;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
-;
-;     Revision 2.18  2000/08/30 22:35:29  kupper
-;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
-;
-;     Revision 2.17  1999/11/16 16:47:51  kupper
-;     Updated and corrected header.
-;
-;     Revision 2.16  1999/10/29 11:48:27  kupper
-;     Nur Header angepasst.
-;
-;     Revision 2.15  1999/06/15 17:36:39  kupper
-;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
-;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
-;     eingebaut werden. Die Modifikationen machten es notwendig, den
-;     WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
-;     Realisierung der Widget-Hierarchie bestimmt werden kann.
-;     Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
-;     WIDGET_CONTROL ab.
-;     Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
-;     ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
-;     Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
-;     entsprechend angepasst.
-;     Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
-;     nicht voellig auszuschliessen.
-;
-;     Revision 2.14  1999/06/01 13:46:21  kupper
-;     Fixed bug in PRIVATE_COLORS-option.
-;
-;     Revision 2.13  1999/06/01 13:41:29  kupper
-;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
-;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
-;     privater Colormaps.
-;
-;     Revision 2.12  1999/02/12 15:22:52  saam
-;           sheets are mutated to handles
-;
-;     Revision 2.11  1998/06/18 15:01:11  kupper
-;            Hyperlings geupgedatet nach Veraenderigung der Verzeichnischtrugdur.
-;
-;     Revision 2.10  1998/06/03 10:30:54  saam
-;           now ps works with multi
-;
-;     Revision 2.9  1998/05/19 19:28:12  saam
-;           also works for null- and perhaps for ps-sheets now
-;
-;     Revision 2.8  1998/05/18 18:25:10  kupper
-;            Multi-Sheets implementiert!
-;
-;     Revision 2.7  1998/03/19 10:45:56  saam
-;           now uses ScrollIt and remembers destroyed windows
-;           resize events have no effect
-;
-;     Revision 2.6  1998/03/12 19:45:20  kupper
-;            Color-Postscripts werden jetzt richtig behandelt -
-;             die Verwendung von Sheets vorrausgesetzt.
-;
-;     Revision 2.5  1998/03/12 11:39:58  saam
-;           Bug with window creation in idl5
-;
-;     Revision 2.4  1998/01/26 13:10:54  thiel
-;            Erzeugt jetzt hoffentlich keine leeren Seiten mehr.
-;
-;     Revision 2.3  1998/01/21 21:57:25  saam
-;           es werden nun ALLE (!!!) Window-Parameter
-;           gesichert.
-;
-;     Revision 2.2  1997/12/02 10:08:08  saam
-;           Sheets merken sich nun ihren persoenlichen
-;           !P.Multi-Zustand; zusaetzlicher Tag: multi
-;
-;     Revision 2.1  1997/11/13 13:03:29  saam
-;           Creation
-;
+; SEE ALSO: <A>ScrollIt</A>, <A>OpenSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>
 ;
 ;-
 FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
@@ -241,7 +152,8 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
       END
       uSet_Plot, 'ps'      
       sheet = { type     : 'ps'         ,$
-                filename : filename     ,$
+                filename : filename     ,$ ;contains the filepath prototype 
+                curfile  : ''           ,$ ;stores the current filename if there is one  
                 inc      : incremental  ,$
                 eps      : encapsulated ,$
                 color    : color        ,$
