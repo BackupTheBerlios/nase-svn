@@ -22,7 +22,7 @@
 ; CALLING SEQUENCE:
 ;*result = Gabor( size
 ;*                [,HMW=...] [,ORIENTATION=...] [,PHASE=...] [,WAVELENGTH=...]
-;*                [,/MAXONE] [,/NICEDETECTOR] )
+;*                [,/NORM] [,/MAXONE] [,/NICEDETECTOR] )
 ;
 ; INPUTS:
 ;  size:: Size of the (square) array to be returned.
@@ -49,6 +49,17 @@
 ;                <*>size</*> parameter).
 ;
 ; INPUT KEYWORDS:
+;  NORM        :: Normalize the gabor patch, for image processing
+;                 purposes. If <*>/NORM</*> is set, the gabor wavelet
+;                 is scaled to yield <*>1.0</*> as maximum value, when
+;                 convolved with a sine grating of the same wavelength
+;                 (in case of oriented patches). This makes
+;                 convolution results for different wavelengths
+;                 comparable.
+;                 Note: I do NOT KNOW if this is the mathematically
+;                       correct way to normalize a gabor wavelet for
+;                       filtering purposes. It probably is NOT.
+;
 ;  MAXONE      :: If <*>PHASE</*> is different from <*>0</*>, the
 ;                 maximum values of the cosine function and the gauss
 ;                 mask used to create to gabor patch will not be
@@ -58,7 +69,8 @@
 ;                 <*>1.0</*> in these cases. If the maximum of the
 ;                 resulting gabor patch is desired to equal
 ;                 <*>1.0</*>, regardless of phase shift, set the
-;                 <*>/MAXONE</*> switch.
+;                 <*>/MAXONE</*> switch. <BR>
+;                 Note that <*>/MAXONE</*> overrides <*>/NORM</*>.
 ;
 ;  NICEDETECTOR:: Gabor wavelet have only restricted use as
 ;                 orientation detectors, as, for instance, in a <*>0°</*>
@@ -82,7 +94,7 @@
 ;
 ; OUTPUTS:
 ;  A <*>size x size</*> array of type DOUBLE, containing the gabor
-;  patch.
+;  patch. The result is normalized to a total of zero.
 ;
 ; RESTRICTIONS:
 ;  Like all other routines using array rotations, this routine suffers
@@ -97,6 +109,11 @@
 ;  values will be adjusted as to virtually meat the correct maximum in
 ;  between the middle two points. As a fact, <A>Hill</A> and
 ;  <A>Distance</A> are called to produce the correct cosine function.
+;
+;  Note on the /NORM option:
+;  I do NOT KNOW if this is the mathematically correct way to
+;  normalize a gabor wavelet for filtering purposes. It probably is
+;  NOT.
 ;
 ; PROCEDURE:
 ;  Create a shifted linear or concentric cosine function, and multiply
@@ -127,7 +144,7 @@ End
 
 Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
                 WAVELENGTH=wavelength, $
-                HWB=hwb, HMW=hmw, $
+                HWB=hwb, HMW=hmw, NORM=norm, $
                 MAXONE=maxone, NICEDETECTOR=nicedetector
 
    Default, WAVELENGTH, size
@@ -141,8 +158,15 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
       result = distance(size)
    Endelse
 
-   result = cos(phase + temporary(result)*2*!PI/float(wavelength))
-   result = temporary(result)*gauss_2d(size, size, HWB=hwb)
+   cosfunc = cos(phase + temporary(result)*2*!PI/float(wavelength))
+   gauss   = gauss_2d(size, size, HWB=hwb)
+   result  = cosfunc*gauss
+   
+
+   ;; If NORM was set, normalize as to yield 1.0 when filtering a pure
+   ;; sinus of given wavelength:
+   If Keyword_Set(NORM) then $
+     result = temporary(result)/total(temporary(cosfunc)^2.0*temporary(gauss))
 
 
    If Keyword_Set(NICEDETECTOR) then begin ; adjust eauch column to have total 0
@@ -178,6 +202,7 @@ Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
    
    If Keyword_Set(MAXONE) then result = result/max(result) $
     else result = temporary(result)/(1-center_offset) ;Thus max of gaussmask is 1 again
+
 
    return, result
 End
