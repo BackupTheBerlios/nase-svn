@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2003/09/17 11:23:08  gabriel
+;          fix for idl 6, date keyword
+;
 ;     Revision 1.4  2003/03/05 13:34:47  gabriel
 ;          bug fix idl version 5.6, use internal idl function now
 ;
@@ -65,10 +68,12 @@ FUNCTION MTime, File, DATE=date
    if idlversion(/float) GE 5.6 then begin
       f_info = file_info(File)
       seconds = f_info.mtime
-   end else seconds = CALL_EXTERNAL(!NASE_LIB, 'mtime', File, date)
+      date = systime(0,seconds)
+   end else begin 
+      seconds = CALL_EXTERNAL(!NASE_LIB, 'mtime', File, date)
+      date = STRMID(date,0,24)
+   end
 
-   date = STRMID(date,0,24)
-   
    RETURN, seconds
 
 END
