@@ -1,22 +1,27 @@
 ;+
-; NAME: Spassmacher
+; NAME:
+;  Spassmacher()
 ;
-; AIM: reduce array to a sparse version
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Konvertiert ein Float-Array in eine Liste mit folgendem
-;          Format:
-;             sparse(0,0) : Zahl der Elemente ungleich Null in Sparse
-;             sparse(1,0) : Gesamtzahl der Elemente in Vector
-;             sparse(0,i) mit Sparse(0,0) => i > 0 :
-;                              Index der der aktiven Elemente
-;             sparse(1,i) mit Sparse(0,0) => i > 0 :
-;                              zu Sparse(0,i) gehoerenden Werte
-;                  
-;          Vorteile: + geringer Speicherbedarf fuer wenige aktive Elemente
-;                   ++ viele Routine behandeln nur aktive Elemente und 
-;                      muessen bei Vektorinput diese immer erst heraussuchen, 
-;                      dies ist hier nicht mehr notwendig
-;          Nachteil: - grosser Speicherbedarf fuer viele aktive Elemente
+; AIM:
+;  Reduce array to a sparse version.
+;
+; PURPOSE:
+;  <C>Spassmacher</C> converts a numerical array into an array
+;  that contains information about position and value of entries NE 0
+;  in the original array, i.e. a sparse version of the original array
+;  is created.<BR>
+;  Advantages of sparse representaion are:<BR>
+;  + less memory needed if only few elements are active (NE 0).<BR>
+;  + routines that only work on active elements do not need to search
+;  for them in advance.<BR>
+;  Disadvantage:<BR>
+;  - larger memory consumption for many active elements.<BR>
+;  The inverse transformation from a sparse to a conventional array is
+;  done by <A>Spassbeiseite</A>. For binary arrays, there is a special
+;  conversion routine called <A>SSpassmacher</A>.
 ;
 ; CATEGORY:
 ;  Array
@@ -25,76 +30,63 @@
 ;  NASE
 ;  Simulation
 ;
-; CALLING SEQUENCE: sparse = Spassmacher(array [,TYPE=type][,/DIMENSIONS])
+; CALLING SEQUENCE:
+;* sparse = Spassmacher(array [,TYPE=...][,/DIMENSIONS])
 ;
-; INPUTS: array : ein Zahlen-Array
+; INPUTS:
+;  array:: An array of numerical type.
 ;
-; OPTIONAL INPUTS: type: Der Typ des erzeugten Sparse-Arrays. Bei der 
-;                        Auswahl muß man darauf achten, einen Typ zu wählen, 
-;                        der sowohl Indizes als auch die Arraywerte selbst
-;                        aufnehmen kann. Default: Typ 4 (Float)
-;                        Typ-Code: siehe IDL-Hilfe zu SIZE.  
+; INPUT KEYWORDS:
+;  TYPE:: Type code of generated sparse array. For type code see IDL
+;         help of the <*>Size()</*> command. It is necessary to choose
+;         a type that can save both indices and values at the same
+;         time, otherwise information is lost. Default: 4 (float).
 ;
-; OUTPUTS: sparse : ein zweidimensionales Array vom gewünschten Typ.
-;                           
-; KEYWORD PARAMETERS: 
-;    DIMENSIONS: Dieses Keyword speichert die Information über die 
-;                ursprünglichen Dimensionen von array am Ende des 
-;                Sparse-Arrays. Diese können dann zur Rekonstruktion des
-;                Originalarrays verwendet werden.
-;                   sparse(0,sparse(0,0)+1) : Zahl der Dimensionen
-;                   sparse(0,sparse(0,0)+1+i) : ite Dimension
-;                   sparse(1,sparse(0,0)+i) : unbenutzt (aber nicht Null, da
-;                                              Sparse-Arrays mit /NOZERO
-;                                              erzeugt werden.)
+;  /DIMENSIONS:: Set this keyword to save information about the
+;                original array dimensions at the end of the sparse
+;                array. This can be used to reconstruct the original
+;                array from its sparse version, e.g. when displayed
+;                with <A>Trainspotting</A>. The format is:<BR>
+;                sparse(0,sparse(0,0)+1): dimension<BR>
+;                sparse(0,sparse(0,0)+1+i): ith dimension<BR>
+;                sparse(1,sparse(0,0)+i): unused, but NE 0, since
+;                                         sparse arrays are generated
+;                                         with the <*>/NOZERO</*> option.
 ;
-; EXAMPLE:  IDL> a=findgen(2,2)
-;           IDL> print, spassmacher(a)
-;                 3.00000      4.00000
-;                 1.00000      1.00000
-;                 2.00000      2.00000
-;                 3.00000      3.00000
-;           IDL> print, spassmacher(a, /DIM)
-;                 3.00000      4.00000
-;                 1.00000      1.00000
-;                 2.00000      2.00000
-;                 3.00000      3.00000
-;  Dimensionen -> 2.00000      4.12734 <- Fnord
-;      1. Dim. -> 2.00000      4.00000
-;      2. Dim. -> 2.00000      13.1451
+; OUTPUTS:
+;  sparse:: Twodimensional array of the desired type. <*>sparse</*> is
+;           organized as follows:<BR>
+;           <*>sparse(0,0)</*>: Number of elements NE 0 in <*>array</*>.<BR>
+;           <*>sparse(1,0)</*>: Total number of elements in <*>array</*>.<BR>
+;           <*>sparse(0,i)</*> with <*>i >0</*>: Indices of active elements.<BR>
+;           <*>sparse(1,i)</*> with <*>i >0</*>: Values corresponding
+;                                               to the indices
+;                                               <*>sparse(0,i)</*>. 
 ;
+; PROCEDURE:
+;  Search for elements NE 0 and remember their indices.
 ;
-; SEE ALSO: <A HREF="#SPASSBEISEITE">SpassBeiseite</A>.
+; EXAMPLE:
+;* IDL/NASE> a=findgen(2,2)
+;* IDL/NASE> print, spassmacher(a)
+;*      3.00000      4.00000
+;*      1.00000      1.00000
+;*      2.00000      2.00000
+;*      3.00000      3.00000
+;* IDL/NASE> print, spassmacher(a, /DIM)
+;*      3.00000      4.00000
+;*      1.00000      1.00000
+;*      2.00000      2.00000
+;*      3.00000      3.00000
+;*      2.00000      5.94770
+;*      2.00000  5.60519e-45
+;*      2.00000 -0.000789642
 ;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.5  2001/01/23 16:16:06  kupper
-;        Replaced manual check for floating underflow errors by call to new
-;        IgnoreUnderflows procedure (which is platform independent).
-;
-;        Revision 1.4  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.3  2000/09/08 16:55:59  kupper
-;        Now catching floating underflows (can appear if TYPE is float, which
-;        is default, and the array is double.)
-;
-;        Revision 1.2  1999/12/04 12:14:41  thiel
-;            Stupid /SAMETYPE changed to TYPE.
-;
-;        Revision 1.1  1999/12/03 16:21:28  thiel
-;            Moved from simu/layers and added dimension support.
-;
-; 
-;       Thu Sep 11 17:16:46 1997, Mirko Saam
-;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
-;		Schoepfung und ausgiebiger Test, Version 1.1.2.2
-;
+; SEE ALSO:
+;  <A>Spassbeiseite</A>, <A>SSpassmacher</A>, <A>SSpassbeiseite</A>. 
 ;-
+
+
 
 FUNCTION Spassmacher, a, DIMENSIONS=dimensions, TYPE=type
 
