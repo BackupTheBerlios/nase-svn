@@ -147,8 +147,8 @@ FUNCTION UReadU, _lun, ERROR=error, _EXTRA=e
 
   ; small lookahead
   Point_Lun, -lun, pos
-  version = ''
-  ReadF, lun, version
+  version = StrRepeat(" ", 40)
+  ReadU, lun, version
 
   ;print, "*"+version+"*"
 
