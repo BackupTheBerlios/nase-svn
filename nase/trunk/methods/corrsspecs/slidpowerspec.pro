@@ -22,7 +22,7 @@
 ;* sps = SlidPowerSpec(series [,slicesize [,f]] [,PHASE=phase]
 ;*                     [,TRUNC_PHASE=trunc_phase],
 ;*                     [,SAMPLEPERIOD=sampleperiod]
-;*                     [,SLICESIZE=...] [,F=f]
+;*                     [,SLICESIZE=...] [,SLIZESHIFT=...] [,F=f]
 ;*                     [,/AVERAGE]
 ;
 ; INPUTS:
@@ -38,6 +38,7 @@
 ;  SAMPLEPERIOD:: sample period of <*>series</*> in seconds (default: 0.001)
 ;  SLICESIZE:: the size of the sliding window in ms (default: 256). Specify either
 ;              the positional or the keyword parameter.
+;  SLICESHIFT:: the shift of the sliding window in ms (default: <*>SLICESIZE</*>/4)
 ;  AVERAGE:: computes time resolved spectra and then averages across
 ;            all slices of the same time series. This is not the same
 ;            as using <A>PowerSpec</A>!
@@ -67,7 +68,7 @@
 ;
 ;-
 
-FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE, SAMPLEPERIOD=sampleperiod, TVALUES=TVALUES, TINDICES=TINDICES, AVERAGE=average, SLICESIZE=_slicesize, F=f
+FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_PHASE=TRUNC_PHASE, SAMPLEPERIOD=sampleperiod, TVALUES=TVALUES, TINDICES=TINDICES, AVERAGE=average, SLICESIZE=_slicesize, SLICESHIFT=slizeshift, F=f
 
    default,double,0
    
@@ -75,13 +76,14 @@ FUNCTION SlidPowerSpec, series, slicesize, x,DOUBLE=Double ,Phase=Phase ,TRUNC_P
    IF (N_PARAMS() LT 1 )     THEN console, /fatal , 'wrong number of arguments'
    Default, _slicesize, 256
    Default, slicesize, _slicesize
+   Default, sliceshift, slicesize/4
 
    IF set(TRUNC_PHASE) AND NOT set(PHASE)   THEN console, /fatal, 'Keyword TRUNC_PHASE must be set with Keyword PPHASE'
    
    N = N_Elements(series)
    IF (N LT slicesize) THEN Console, /fatal, 'number of elements less than slicesize!!'
    
-   signal_slice = slices(series, SSIZE=slicesize, SAMPLEPERIOD=SAMPLEPERIOD, TVALUES=TVALUES, TINDICES=TINDICES, /TFIRST)
+   signal_slice = slices(series, SSIZE=slicesize, SSHIFT=slizeshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALUES=TVALUES, TINDICES=TINDICES, /TFIRST)
    s_s = size(signal_slice)
    
    
