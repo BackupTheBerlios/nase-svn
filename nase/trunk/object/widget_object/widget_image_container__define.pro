@@ -335,8 +335,8 @@ Pro widget_image_container::examineit, xpos=xpos, ypos=ypos, _EXTRA=_extra
               GROUP=self->widget(), $
               XPOS=xpos, YPOS=ypos, $
               NASE=(*self.update_info).nase, $
-              NORDER = (*self.update_info).nase, $
-              NSCALE = (*self.update_info).nase, $
+              NORDER = (*self.update_info).norder, $
+              NSCALE = (*self.update_info).nscale, $
               SETCOL=0, $
               RANGE_IN=(*self.update_info).range_in, $
               _EXTRA=_extra
@@ -353,6 +353,7 @@ Pro widget_image_container::surfit, _EXTRA=_extra
               GROUP=self->widget(), $
               XPOS=xpos, YPOS=ypos, $
               NASE=(*self.update_info).nase, $
+              NORDER=(*self.update_info).norder, $
               _EXTRA=_extra
 End
 
