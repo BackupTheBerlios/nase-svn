@@ -49,7 +49,7 @@
 ;          you can still change the
 ;          delay by dragging a slider while the
 ;          simulation is running
-;  TITLE:: you may provide a titel<BR>
+;  TITLE:: you may provide a title<BR>
 ;
 ;  SCALE:: Usually the whole video is scaled such
 ;          that one intensity of colour corresponds
@@ -87,6 +87,7 @@ PRO VCR_DISPLAY, UD
       IF UD.ismemory THEN BEGIN
       faktor=EXP(-1.0/UD.taumemo)
       UD.memo= reform(a(UD.t,*,*))+faktor*UD.memo
+      IgnoreUnderflows
       ENDIF ELSE BEGIN
       UD.memo= reform(a(UD.t,*,*))
       ENDELSE 
