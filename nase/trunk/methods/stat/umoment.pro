@@ -1,27 +1,23 @@
 ;+
-; NAME:
-;       UMOMENT
+; NAME:               UMOMENT
 ;
-; PURPOSE:
-;       This function computes the mean, variance, skewness and kurtosis
-;       of an n-element vector. if values are not defined !NONE  will
-;       be returned instead
+; PURPOSE:            This function computes the mean, variance, skewness and kurtosis
+;                     of an n-element vector. if values are not defined !NONE  will
+;                     be returned instead
 ;
-; CATEGORY:
-;       STATISTICS.
+; CATEGORY:           METHODS STATISTICS
 ;
-; CALLING SEQUENCE:
-;       Result = UMoment(X)
+; CALLING SEQUENCE:   Result = UMoment(X, [,/DOUBLE] [,MDEV=mdev] [,SDEV=sdev])
 ;
-; INPUTS:
-;       X:      An n-element vector of type integer, float or double.
+; INPUTS:             X : An n-element vector of type integer, float or double.
 ;
-; KEYWORD PARAMETERS:
-;       MDEV:   Use this keyword to specify a named variable which returns
-;               the mean absolute deviation of X.
+; KEYWORD PARAMETERS: DOUBLE: If set to a non-zero value, computations are done in
+;                             double precision arithmetic.
+;                     MDEV:   Use this keyword to specify a named variable which returns
+;                             the mean absolute deviation of X.
 ;
-;       SDEV:   Use this keyword to specify a named variable which returns
-;               the standard deviation of X.
+;                     SDEV:   Use this keyword to specify a named variable which returns
+;                             the standard deviation of X.
 ;
 ; EXAMPLE:
 ;       Define the n-element vector of sample data.
@@ -45,6 +41,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  1999/02/17 17:55:59  saam
+;             + new keyword DOUBLE
+;             + is stolen from moment.pro ( IDL5 )
+;             + fixes the strange VARIANCE/STANDARD DEVIATION calculation of
+;                IDL 3/4
+;
 ;       Revision 1.3  1998/07/19 18:19:24  saam
 ;             error message for 'kurtosis not defined' removed
 ;
@@ -57,36 +59,70 @@
 ;
 ;-
 
-function umoment, x, mdev = mdev, sdev = sdev
+FUNCTION DATOTAL, Arg, Double = Double
 
-  on_error, 2
-  nx = n_elements(x)
-  if nx eq 1 then BEGIN
-     mdev = 0
-     sdev = 0
-     RETURN, [x,0,!NONE,!NONE]
-  END
-  IF nx LT 1 THEN message, 'empty input'
+  Type = SIZE(Arg)
 
-  mean = total(x) / nx
-  resid = x - mean
-  ;Mean absolute deviation (returned through the MDEV keyword).
-  mdev = total(abs(resid)) / nx
-  r2 = total(resid^2)  
-  var1 = r2 / (nx-1.0)
-  var2 = (r2 - (total(resid)^2)/nx)/(nx-1.0)
-  var =  (var1 + var2)/2.0
-  ;Standard deviation (returned through the SDEV keyword).
-  sdev = sqrt(var)
+  ;If DATOTAL is called without the Double keyword let the type
+  ;of input argument drive the precision of TOTAL.
+  if N_ELEMENTS(Double) eq 0 then Double = (Type(Type(0)+1) eq 5) or (Type(Type(0)+1) eq 9)
+    
+  ArgSum = TOTAL(Arg, Double = Double)
 
-  if var ne 0 then begin 
-    skew = total(resid^3) / (nx * sdev ^ 3)
-    kurt = total(resid^4) / (nx * sdev ^ 4) - 3.0
-  endif else begin
-;     print, 'UMOMENT: Skewness and Kurtosis not defined for a sample variance of zero.'
-     skew = !NONE
-     kurt = !NONE
-  end
-  return, [mean, var, skew, kurt]
+  if Type(Type(0)+1) eq 5 and Double eq 0 then $
+    RETURN, FLOAT(ArgSum) else $
+  if Type(Type(0)+1) eq 9 and Double eq 0 then $
+    RETURN, COMPLEX(ArgSum) else $
+    RETURN, ArgSum
+
+END
+
+
+FUNCTION UMoment, X, Double = Double, Mdev = Mdev, Sdev = Sdev
+
+   ON_ERROR, 2
+
+   TypeX = SIZE(X)
+
+   ;Check length.
+   if TypeX(TypeX(0)+2) eq 1 then BEGIN
+      RETURN, [X(0),0.0,!NONE,!NONE]
+   END
+
+   if TypeX(TypeX(0)+2) lt 2 then $
+    MESSAGE, "X array must contain 1 or more elements."
+
+  ;If the DOUBLE keyword is not set then the internal precision and
+  ;result are identical to the type of input.
+  if N_ELEMENTS(Double) eq 0 then $
+    Double = (TypeX(TypeX(0)+1) eq 5 or TypeX(TypeX(0)+1) eq 9)
+
+  nX = TypeX(TypeX(0)+2)
+  Mean = DATOTAL(X, Double = Double) / nX
+  Resid = X - Mean
+
+  ;Mean absolute deviation (returned through the Mdev keyword).
+  Mdev = DATOTAL(ABS(Resid), Double = Double) / nX
+ 
+  Var = DATOTAL(Resid^2, Double = Double) / (nX-1.0)
+    ;Numerically-stable "two-pass" formula.
+    ;r2 = DATOTAL(Resid^2, Double = Double)
+    ;Var1 = r2 / (nX-1.0)
+    ;Var2 = (r2 - (DATOTAL(Resid, Double = Double)^2)/nX)/(nX-1.0)
+    ;Var =  (Var1 + Var2)/2.0
+
+  ;Standard deviation (returned through the Sdev keyword).
+  Sdev = SQRT(Var)
+
+  if Sdev ne 0 then begin	;Skew & kurtosis defined?
+    Skew = DATOTAL(Resid^3, Double = Double) / (nX * Sdev ^ 3)
+    Kurt = DATOTAL(Resid^4, Double = Double) / (nX * Sdev ^ 4) - 3.0
+      ;The "-3" term makes the kurtosis value zero for normal distributions.
+      ;Positive values of the kurtosis (lepto-kurtic) indicate pointed or
+      ;peaked distributions; Negative values (platy-kurtic) indicate flatt-
+      ;ened or non-peaked distributions.
+    RETURN, [Mean, Var, Skew, Kurt]
+  endif else $		;All elements equal. Return NaN for skew & kurtosis
+    RETURN, [Mean, Var, !NONE, !NONE]
 end
 
