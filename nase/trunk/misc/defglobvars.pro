@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.16  2000/10/12 14:01:23  saam
+;     added !FILESEP for os independent usage
+;
 ;     Revision 1.15  2000/10/05 16:24:31  saam
 ;     decreased !TOPCOLOR to increase number
 ;     of private colors
@@ -151,4 +154,8 @@ DefSysV, '!CREATEDIR', 0, 0
 ; defines a standard console
 DefSysV, '!CONSOLE', InitConsole(TITLE='Standard Output')
 
+; os independent file separator
+DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
+
+ä
 END
