@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1997/09/17 10:35:31  saam
+;            Kontrollausgaben rausgeworfen
+;
 ;       Revision 1.7  1997/09/17 10:25:55  saam
 ;       Listen&Listen in den Trunk gemerged
 ;
@@ -68,7 +71,6 @@ IF NOT Set(LESSTHAN) THEN message, 'Also, LESSTHAN müßte schon angegeben werden.
 die = where((abs(DW.Weights) LT LessThan), count)
 
 IF count NE 0 THEN BEGIN
-   print, 'SNM!!!! ',  count
    DW.Weights(die) = !NONE
    
    ; soc : source neuron of connection 
@@ -87,7 +89,6 @@ IF count NE 0 THEN BEGIN
 
       stn = WHERE(DW.Weights(toc(i),*) NE !NONE, tcount)
       IF tcount NE 0 THEN Handle_Value, DW.SSource(toc(i)), stn, /SET ELSE BEGIN
-         print, toc(i)
          IF DW.SSource(toc(i)) NE -1  THEN BEGIN
             Handle_Free, DW.SSource(toc(i))
             DW.SSource(toc(i)) = -1
