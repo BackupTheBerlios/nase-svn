@@ -7,7 +7,9 @@
 ;
 ; CALLING SEQUENCE: FrameNumber = CamCord ( Video, NewFrame [,Anzahl] [,/VERBOSE] )
 ; 
-; INPUTS: Video:    Eine mit InitVideo erstellte Videostruktur
+; INPUTS: Video:    Eine mit InitVideo erstellte Videostruktur oder
+;                   ein mit LoadVideo und /EDIT zum Editieren
+;                   geöffnetes Video.
 ;         NewFrame: Ein aufzubnehmendes Array geeigneter Größe
 ;
 ; OPTIONAL INPUTS: Anzahl: zur Aufnahme mehrerer Szenen - NOCH NICHT IMPLEMENTIERT
@@ -33,6 +35,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  1998/05/13 12:38:20  kupper
+;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
+;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
+;               Aber man sollte immer wissen, was man tut...
+;
 ;       Revision 2.7  1998/04/06 16:06:52  saam
 ;             now leaves procedure when an error occurs
 ;
@@ -51,7 +58,7 @@ Function CamCord, Video, Frame, Anzahl, VERBOSE=verbose
    
    On_Error, 2
 
-   If Video.VideoMode ne 'RECORD' then message, 'Das Video ist nicht zum Schreiben geöffnet!'
+   If Video.VideoMode ne 'RECORD' and Video.VideoMode ne "EDIT" then message, 'Das Video ist nicht zum Schreiben geöffnet!'
 
    If a_ne(size([Frame]), Video.FrameSize) then message, 'Frame ist inkompatibel mit dem in InitVideo() angegebenen Muster!'
 

@@ -26,6 +26,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  1998/05/13 12:38:20  kupper
+;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
+;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
+;               Aber man sollte immer wissen, was man tut...
+;
 ;       Revision 2.6  1998/04/29 17:35:19  kupper
 ;              sagt jetzt, wenns zippt.
 ;
@@ -44,8 +49,8 @@
 ;-
 Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
 
-   If Video.VideoMode eq 'RECORD' then begin
-      writeu, Video.infounit, Video.FramePointer
+   If Video.VideoMode eq 'RECORD' or Video.VideoMode eq 'EDIT' then begin
+      If Video.VideoMode eq 'EDIT' then writeu, Video.infounit, max([Video.FramePointer, Video.Length]) else writeu, Video.infounit, Video.FramePointer
       
       if keyword_set(VERBOSE) then begin
          print

@@ -6,7 +6,7 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: Rewind, Video, FrameNumber [,/VERBOSE]
+; CALLING SEQUENCE: Rewind, Video, {FrameNumber | /APPEND} [,/VERBOSE]
 ; 
 ; INPUTS: Video: Eine mit LoadVideo iitialisierte Video-Struktur
 ;         FrameNumber: Neue Position des Framepointers
@@ -14,6 +14,11 @@
 ; OPTIONAL INPUTS: ---
 ;	
 ; KEYWORD PARAMETERS:  VERBOSE: Für mehr Freude am Simulieren...
+;                      APPEND : Funktioniert nur bei Videos, die mit
+;                               LoadVideo und /EDIT geöffnet wurden.
+;                               Setzt den internen Framepointer so,
+;                               daß mit folgenden CamCords an das
+;                               Video Frames angehängt werden können.
 ;
 ; SIDE EFFECTS: Der interne FramePointer wird neu gesetzt.
 ;
@@ -32,6 +37,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.4  1998/05/13 12:38:21  kupper
+;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
+;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
+;               Aber man sollte immer wissen, was man tut...
+;
 ;       Revision 2.3  1997/11/27 14:50:56  kupper
 ;              Hyperlinks in Header geschrieben.
 ;              Kosmetische Änderungen im Output.
@@ -47,16 +57,21 @@
 ;
 ;-
 
-Pro Rewind, Video, FrameNumber, VERBOSE=verbose
+Pro Rewind, Video, FrameNumber, VERBOSE=verbose, APPEND=append
 
-   If Video.VideoMode ne 'PLAY' then message, 'Das Video ist nicht zur Wiedergabe geöffnet!'
-   If FrameNumber ge Video.Length then message, 'Videoende überschritten!'
-
-   Video.FramePointer = FrameNumber
+   If Keyword_Set(APPEND) then begin
+      If Video.VideoMode ne "EDIT" then mesage, "Das Video ist nicht zum Editieren geöffnet - kein Anhängen möglich!"
+      Video.FramePointer = Video.Length
+   Endif else begin
+      If Video.VideoMode ne 'PLAY' then message, 'Das Video ist nicht zur Wiedergabe geöffnet!'
+      If FrameNumber ge Video.Length then message, 'Videoende überschritten!'
+      
+      Video.FramePointer = FrameNumber
+   Endelse
 
    If keyword_set(VERBOSE) then begin
-      print, 'Ah! Eine besonders schöne Szene in "'+Video.title+'": Nummer '+strtrim(string(FrameNumber), 1)
+      print, 'Ah! Eine besonders schöne Szene in "'+Video.title+'": Nummer '+strtrim(string(Video.FramePointer), 1)
    endif else begin
-      message, /inform, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(FrameNumber), 1)+'.'
+      message, /inform, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(Video.FramePointer), 1)+'.'
    endelse
 End

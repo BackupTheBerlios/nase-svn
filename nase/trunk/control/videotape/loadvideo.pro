@@ -6,7 +6,7 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO]
+; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO] [,/EDIT]
 ;                                         [,GET_LENGTH] [,GET_SIZE]
 ;                                         [,GET_TITLE] [,GET_SYSTEM] [,GET_STARRING]
 ;                                         [,GET_COMPANY] [,GET_PRODUCER] [,GET_YEAR] 
@@ -26,6 +26,9 @@
 ;                         Hinweis: In diesem Fall wird das Video NICHT
 ;                                  geöffnet, und die Funktion liefert
 ;                                  den Wert 0 zurück.
+;                     EDIT:   Ein bestehendes Video wird zum Editieren geöffnet.
+;                             (Z.B. um Frames anzuhängen oder zu ändern.
+;                             VORSICHT! Anhängen muss immer als letzte Operation vor dem eject erfolgen!)
 ;                     SHUTUP: falls gesetzt, gibt es ueberhaupt keine
 ;                             Informationen aus
 ; 
@@ -46,6 +49,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.12  1998/05/13 12:38:21  kupper
+;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
+;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
+;               Aber man sollte immer wissen, was man tut...
+;
 ;       Revision 2.11  1998/04/29 17:36:35  kupper
 ;              Sagt jetzt, wenns zippt.
 ;
@@ -205,9 +213,26 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    If Keyword_Set(EDIT) then begin
       openu, unit, filename
       VideoMode = 'EDIT'
+
+      leer80 = "                                                                                "
+      ltitle = leer80 & strput, ltitle, title
+      lsystem = leer80 & strput, lsystem, system
+      lstarring = leer80 & strput, lstarring, starring
+      lcompany = leer80 & strput, lcompany, company
+      lproducer = leer80 & strput, lproducer, producer
+      lyear = leer80 & strput, lyear, year
+      
+      Get_Lun, infounit
+      openw, infounit, infoname
+      
+      writeu, infounit, FrameSize ; Das SIZE-Array eines Frames
+      writeu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
+                                ;später wird noch die FrameAnzahl angehängt.
+      
    endif else begin
       openr, unit, filename
       VideoMode = 'PLAY'
+      infounit = -1
    endelse
 
    return, {VideoMode   : VideoMode, $
@@ -216,6 +241,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
             year        : year, $
             company     : company, $
             unit        : unit, $
+            infounit    : infounit, $
             FrameSize   : FrameSize, $
             Length      : Length, $
             FramePointer: 0l,$
