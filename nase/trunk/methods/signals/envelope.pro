@@ -111,19 +111,20 @@ FUNCTION  Envelope,   Signal, fS_,  $
                            ELSE  NEpochs = Product(DimsSignal[1:*])   ; number of signal epochs in the whole array
    fS = Float(fS_[0])   ; If fS is an array, only the first value is taken seriously.
 
-   ; If the specified filter does not have the typical characteristics of a bandpass filter, the meaning of the
-   ; envelope signal(s) might be questionable, and a corresponding warning message is given:
-   IF  NOT(Set(flow) AND Set(fhigh))  $
-     THEN  Console,  '  Specified filter is no bandpass filter. Please check parameters.', /warning  $
-     ELSE  IF  (flow LE 0) OR (flow GE fS/2) OR (fhigh LE 0) OR (fhigh GE fS/2) OR (fhigh LE flow)  $
-             THEN  Console, '  Specified filter is no bandpass filter. Please check parameters.', /warning
-
    ;----------------------------------------------------------------------------------------------------------------------
    ; Preparing the filter function and the array for the result:
    ;----------------------------------------------------------------------------------------------------------------------
 
-   IF  NOT Keyword_Set(filter)  THEN  $
-       Filter = CosFlankFilter(NSignal, fS,   fl = flow, fh = fhigh, wl = wlow, wh = whigh, h = hertz, att = attenuation)
+   IF  NOT Keyword_Set(filter)  THEN  BEGIN
+     ; If the specified filter does not have the typical characteristics of a bandpass filter, the meaning of the
+     ; envelope signal(s) might be questionable, and a corresponding warning message is given:
+     IF  NOT(Set(flow) AND Set(fhigh))  $
+       THEN  Console,  '  Specified filter is no bandpass filter. Please check parameters.', /warning  $
+       ELSE  IF  (flow LE 0) OR (flow GE fS/2) OR (fhigh LE 0) OR (fhigh GE fS/2) OR (fhigh LE flow)  $
+               THEN  Console, '  Specified filter is no bandpass filter. Please check parameters.', /warning
+     ; The filter function is generated:
+     Filter = CosFlankFilter(NSignal, fS,   fl = flow, fh = fhigh, wl = wlow, wh = whigh, h = hertz, att = attenuation)
+   ENDIF
    SizeFilter = Size(Filter)
    IF  (SizeFilter[0] NE 1) OR (SizeFilter[1] NE NSignal)  THEN  Console, '  Filter length does not match signal length.', /fatal
 
