@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1998/08/23 12:52:05  saam
+;             returns {0,0,0,0} if no peaks were found
+;
 ;       Revision 1.2  1998/06/23 12:28:15  saam
 ;             bugfix
 ;
@@ -98,7 +101,10 @@ FUNCTION OscFreq, _sig, PLOT=plot, WAIT=WAIT, CRIT=crit, OS=os, CL=cl, _EXTRA=e
 
    IF mn LE 1 THEN BEGIN
       Print, "OSCFREQ: data isn't rhythmic"
-      RETURN, -1
+      RETURN, {  m_hz : 0,$
+                sd_hz : 0,$
+                m_bin : 0,$
+               sd_bin : 0 }
    END
 
    ; calculate differences between adjacent peaks
