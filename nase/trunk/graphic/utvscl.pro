@@ -15,7 +15,7 @@
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;                             [,/NOSCALE] [,DIMENSIONS=dimensions]
 ;
-; INPUTS:             image: ein zweidimensionales Array
+; INPUTS:             image: ein ein- oder zweidimensionales Array
 ;
 ; OPTIONAL INPUTS:    XNorm, YNORM: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
 ;                                   bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
@@ -60,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  1998/01/06 13:27:09  saam
+;           fktioniert jetzt auch mit 1-d Arrays
+;
 ;     Revision 2.14  1997/12/17 15:28:58  saam
 ;           Ergaenzung um optionalen Output Dimension
 ;
@@ -113,7 +116,7 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    IF !D.Name EQ 'NULL' THEN RETURN
 
    IF N_Params() LT 1 THEN Message, 'argument expected'
-   IF (Size(_Image))(0) NE 2 THEN Message, 'two dimensional array expected'
+   IF (Size(_Image))(0) NE 1 AND (Size(_Image))(0) NE 2 THEN Message, 'array with one or two dimensions expected'
    IF N_Params() LT 3 AND     Keyword_Set(CENTER) THEN YNorm = 0.5
    IF N_Params() LT 3 AND NOT Keyword_Set(CENTER) THEN YNorm = 0.0
    IF N_Params() LT 2 AND     Keyword_Set(CENTER) THEN XNorm = 0.5
@@ -125,6 +128,7 @@ PRO UTvScl, _Image, XNorm, YNorm, Dimension $
    
    ; don't modify the original image
    Image = _Image
+   IF (Size(Image))(0) EQ 1 THEN Image = Reform(Image, N_Elements(Image), 1)
 
    ; 40 Pixels are One-Centimeter
    ; size in Centimeters
