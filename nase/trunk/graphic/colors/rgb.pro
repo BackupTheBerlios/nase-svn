@@ -110,6 +110,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  1998/02/19 14:00:58  saam
+;              Bug korrigiert
+;
 ;        Revision 1.8  1998/02/19 13:59:42  saam
 ;              alternative Farbbestimmung via Maximumsnorm
 ;
@@ -143,7 +146,7 @@ Common common_RGB, My_freier_Farbindex
       IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefienieren, sondern aehnlichste zurueckgeben
          myCM = bytarr(!D.Table_Size,3) 
          TvLCT, myCM, /GET
-         differences = MAX(ABS(myCM(*,0)-R) + ABS(myCM(*,1)-G) + ABS(myCM(*,2)-B))
+         differences = MAX([ABS(myCM(*,0)-R),ABS(myCM(*,1)-G),ABS(myCM(*,2)-B)])
          lowestDiff = MIN(differences, bestMatch)
          RETURN, bestMatch
       END
