@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  1998/11/13 21:20:40  saam
+;           now uses readfilename
+;
 ;     Revision 1.8  1998/04/10 12:17:16  saam
 ;           now recursively removes local files/directories
 ;
@@ -77,6 +80,8 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
 
 
    ; get the host where remote-dir resides
+   RemoteDir = RealFileName(RemoteDir)
+   LocalDir = RealFileName(LocalDir)
    RemoteHost = Path2Host(RemoteDir)
 
    ; is LocalDir really local?

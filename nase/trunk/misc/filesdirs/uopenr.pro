@@ -23,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/11/13 21:21:16  saam
+;           now uses readfilename
+;
 ;     Revision 2.5  1998/11/08 15:01:44  saam
 ;           maximum file number is now 40
 ;
@@ -62,7 +65,8 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
       RETURN, !NONE
    END
 
-   exists = ZipStat(file, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
+   rfile = RealFileName(file)
+   exists = ZipStat(rfile, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
    IF exists THEN BEGIN
 
       ; get a free entry
@@ -72,18 +76,18 @@ FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
       llun.zip(idx) = 0
       IF zf(0) NE '-1' THEN BEGIN
          IF Keyword_Set(Verbose) THEN print, 'UOpenR: no unzipped version found...unzipping'
-         UnZip, file
+         UnZip, rfile
          llun.zip(idx) = 1
       END
-      OpenR, lun, file, /GET_LUN, _EXTRA=e 
+      OpenR, lun, rfile, /GET_LUN, _EXTRA=e 
       
       llun.lun(idx)  = lun & llun.act=llun.act+1
-      llun.file(idx) = file
+      llun.file(idx) = rfile
 
       
       RETURN, lun
    END ELSE BEGIN
-      print, 'UOpenR: ', file
+      print, 'UOpenR: ', rfile
       print, 'UOpenR: neither unzipped nor zipped version found!'
       RETURN, !NONE
    END

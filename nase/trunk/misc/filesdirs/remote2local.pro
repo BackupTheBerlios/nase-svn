@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/11/13 21:20:56  saam
+;           now uses readfilename
+;
 ;     Revision 1.2  1997/10/29 11:41:06  saam
 ;           Ermittlung des Hosts aus dem Pfadnamen in Path2Host
 ;     	ausgelagert
@@ -63,6 +66,9 @@ FUNCTION Remote2Local, RemoteDir, WishDir, NOZIP=nozip
    
 
    ; get the host where remote-dir resides
+   RemoteDir = RealFileName(RemoteDir)
+   IF N_Params() EQ 2 THEN WishDir = RealFileName(WishDir)
+
    RemoteHost = Path2Host(RemoteDir)
 
      
