@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.40  2000/10/31 13:31:28  kupper
+;       How about IDL/NASE> as a prompt?
+;
 ;       Revision 1.39  2000/10/27 12:11:12  gabriel
 ;            Prompt now says now for Ruediger "Rudi's NASE> ".
 ;
@@ -142,6 +145,4 @@ If not(nase_startup_executed) then startup_ctd
 
 @precompile ;;Compile some modules that cannot be compiled automatically
 
-if getenv('USER') eq 'kupper' then !PROMPT="Rudi's NASE> "
-
-;!PROMPT="NASE> "
+!PROMPT="IDL/NASE> "
