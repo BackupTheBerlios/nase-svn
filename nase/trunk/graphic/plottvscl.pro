@@ -134,6 +134,11 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.61  2000/03/06 14:20:18  kupper
+;     Default for TOP now is !D.TableSize-1, not !D.Tablesize as before. Think that
+;     was a bug. However, it occured only, when none of NASE, NOSCALE or NEUTRAL was
+;     set.
+;
 ;     Revision 2.60  1999/11/22 13:09:43  kupper
 ;     Another error with !P.-Background-bug: Did not pass "COLORMODE"
 ;     to Showweights_Scale.
@@ -407,7 +412,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, LEGEND, 0
    Default, legmargin,0.25
    Default, Polygon,0
-   DEFAULT, top, !D.TABLE_SIZE
+   DEFAULT, top, !D.TABLE_SIZE-1
 
 ; Added for passing to PlotTvScl_update, R Kupper, Sep 22 1999
    default, NASE, 0
