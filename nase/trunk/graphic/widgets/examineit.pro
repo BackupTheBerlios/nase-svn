@@ -90,6 +90,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/04 17:55:12  kupper
+;       Added red BOUND indicators.
+;
 ;       Revision 1.2  2000/09/04 16:50:36  kupper
 ;       Bound mode can now be toggled from a menu entry.
 ;       Added hourglass cursor during plottvscl.
@@ -280,6 +283,13 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
              yrange=[rowplotmin, rowplotmax]
           endelse
+          if info.bound then begin
+             oplot, indgen(info.Width)+1, replicate(rowplotmin, $
+                                                    info.Width), color=rgb("red", /noalloc), thick=2
+             oplot, indgen(info.Width)+1, replicate(rowplotmax, $
+                                                    info.Width), $
+              color=rgb("red", /noalloc), thick=2
+          endif
          rowplotmin = !Y.CRANGE(0)
          rowplotmax = !Y.CRANGE(1)
          rowrange = rowplotmax-rowplotmin
@@ -303,6 +313,13 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
              xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
              yrange=[colplotmin, colplotmax]
          endelse
+         if info.bound then begin
+            oplot, indgen(info.Width)+1, replicate(colplotmin, $
+                                                   info.Width), color=rgb("red", /noalloc), thick=2
+            oplot, indgen(info.Width)+1, replicate(colplotmax, $
+                                                   info.Width), $
+             color=rgb("red", /noalloc), thick=2
+         endif
          colplotmin = !Y.CRANGE(0)
          colplotmax = !Y.CRANGE(1)
          colrange = colplotmax-colplotmin
@@ -380,6 +397,10 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                BOUND=bound, RANGE=range, NASE=nase, $
                XPOS=xpos, YPOS=ypos, COLOR=color
    
+   MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
+   MySmallFont = '-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1'
+
+
    If (Size(_w))(0) eq 2 then w = _w $ ;Do not change Contents!
    else w = reform(_w) ;Try to get rid of leading 1-dims.
               
@@ -476,9 +497,9 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    ;; the menu:
    menu_buttons = cw_pdmenu(menu, /Mbar, $
                             ['1\Mode', $
-                             '0\bound on\examineit_bound_on_handler',$
-                             '2\bound off\examineit_bound_off_handler'], $
-                            IDs=ids)
+                             '0\BOUND on\examineit_bound_on_handler',$
+                             '2\BOUND off\examineit_bound_off_handler'], $
+                            IDs=ids, Font=MyFont)
    Uvalue, ids[1], {tv: tv, other: ids[2]}
    Uvalue, ids[2], {tv: tv, other: ids[1]}
    widget_control, ids[2-BOUND], Sensitive=0
