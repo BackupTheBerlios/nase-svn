@@ -1,26 +1,28 @@
-
-;------------------------------------------------------------------------
+;+
+; NAME: Default
 ;
-;       Name               : Default
-;       Projekt            : Allgemein
+; PURPOSE:  Defaultwert für optionalen Parameter einer Prozedur oder Funktion setzen
 ;
-;       Autor              : Rüdiger Kupper
+; CATEGORY: miscellaneous
 ;
-;       erstellt am        : 21.7.97
-;       letze Modifikation :
+; CALLING SEQUENCE: Default, Variable, Defaultwert
 ;
-;       Funktion           : Defaultwert für optionalen Parameter einer Prozedur oder Funktion setzen
+; INPUTS: Variable, Defaultwert:  Ist die übergebene Variable undefiniert, so wird sie mit dem Defaultwert initialisiert.
+;                                 Ist sie definiert, so passiert nichts.
 ;
-;                            Aufruf: Default (Variable, Defaultwert)
+; EXAMPLE: Default, Titel, 'The unforgettable Firing'
 ;
-;                            Ist die übergebene Variable undefiniert, so wird sie mit dem Defaultwert initialisiert.
-;                            Ist sie definiert, so passiert nichts.
+; MODIFICATION HISTORY:
 ;
-;                            Set Version 1.2 kann sowohl die erste als
-;                            auch die zweite Variable undefiniert
-;                            sein, ohne daß ein Fehler auftritt.
+;        $Log$
+;        Revision 1.3  1997/11/04 12:25:07  kupper
+;               Nur Dokumentation in den Header geschrieben!
 ;
-;------------------------------------------------------------------------
+;
+;               Seit Version 1.2 kann sowohl die erste als
+;                auch die zweite Variable undefiniert
+;                sein, ohne daß ein Fehler auftritt.
+;-
 
 Pro default, Var, Value
 
