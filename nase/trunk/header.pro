@@ -50,8 +50,8 @@
 ;  Windows
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par, [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par, [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
+;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
 ;
 ; INPUTS:
 ;  
