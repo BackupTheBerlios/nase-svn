@@ -51,7 +51,7 @@
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
-; MODIFICATION HISTORY: erste Version vom 30 Juli '97. Andreas.
+; MODIFICATION HISTORY: erste Version vom 5. August '97. Andreas.
 ;
 ;-
 
