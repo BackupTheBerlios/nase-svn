@@ -1,0 +1,137 @@
+;+
+; NAME:
+;  PSSheet()
+;
+; VERSION:
+;  $Id$
+;
+; AIM:
+;  Generate a sheet structure for EPS output.
+;
+; PURPOSE:
+;  (When referencing this very routine in the text as well as all IDL
+;  routines, please use <C>RoutineName</C>.)
+;
+; CATEGORY:
+;  Graphic
+;
+; CALLING SEQUENCE:
+;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
+;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;
+; INPUTS:
+;  
+;
+; OPTIONAL INPUTS:
+;  
+;
+; INPUT KEYWORDS:
+;  
+;
+; OUTPUTS:
+;  
+;
+; OPTIONAL OUTPUTS:
+;  
+;
+; COMMON BLOCKS:
+;  
+;
+; SIDE EFFECTS:
+;  
+;
+; RESTRICTIONS:
+;  
+;
+; PROCEDURE:
+;  
+;
+; EXAMPLE:
+;*
+;*>
+;
+; SEE ALSO:
+;  <A>RoutineName</A>
+;-
+
+FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
+                  , XMARGIN=xmargin, YMARGIN=ymargin $
+                  , XOMARGIN=xomargin, YOMARGIN=yomargin $
+                  , XSIZE=xsize, YSIZE=ysize $
+                  , CHARSIZE=charsize, FONTTYPE=fonttype $
+                  , PRODUCER=producer $ 
+                  , VERBOSE=verbose
+
+   Default, filename, 'printsheet'
+   Default, multi, [0, 1, 1, 0, 0]
+   Default, xmargin, [7, 1.5]
+   Default, ymargin, [3, 0.75]
+   Default, xomargin, [0, 0]
+   Default, yomargin, [0, 0]
+   Default, producer, '/CALLER'
+
+   Default, xsize, 21. ;; 0.75\textwidth
+   ;; xsize=24.5  0.875\textwidth
+   Default, charsize, 1.8 ;; This results in annotation that is as large as 
+   ;; \small in 12pt if output is scaled to 0.75\textwidth 
+
+   Default, fonttype, 'ps'
+
+   Default, verbose, 0
+
+;   cs = 2. ;; TrueType
+   cs = charsize 
+
+   xs = 21.
+
+   ;; y size is the same when one or two rows are displayed, 
+   ;; but is increased proportionally if more than two are displayed 
+   IF multi[2] LE 2 THEN BEGIN
+      ys = 0.5*(Sqrt(5.)-1)*xs
+   ENDIF ELSE BEGIN
+      ys = multi(2)*0.25*(Sqrt(5.)-1)*xs
+   ENDELSE
+
+   ;; undo IDL !P.MULTI change of font size if either more than two
+   ;; rows or columns are to be displayed 
+   IF (multi[1] GT 2) OR (multi[2] GT 2) THEN BEGIN
+      cs = 2.*cs
+      IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Charsize modified.'
+   ENDIF 
+
+   Default, ysize, ys
+
+   IF Keyword_Set(VERBOSE) THEN $
+    Console, /MSG, 'Sheetsize: '+Str(xsize)+', '+Str(ysize)
+
+   __sheet = DefineSheet(/PS, FILE=filename, /ENCAPS $
+                        , XSIZE=xsize, YSIZE=ysize, PRODUCER=producer $
+                        , VERBOSE=verbose)
+
+   Handle_Value, __sheet, _sheet, /NO_COPY
+
+   _sheet.P.MULTI = multi
+
+   CASE fonttype OF 
+      'ps': _sheet.P.FONT = 0 ;; this selects PS font
+      'tt': _sheet.P.FONT = 1 ;; is true type
+      ELSE:  Console, /FATAL, "Either select 'ps' or 'tt' font type."
+   ENDCASE
+;   Device, SET_FONT='Helvetica';, /TT_FONT, seems obsolete
+
+   _sheet.p.CHARSIZE = cs
+
+   _sheet.X.MARGIN = xmargin
+   _sheet.Y.MARGIN = ymargin
+   _sheet.X.OMARGIN = xomargin
+   _sheet.Y.OMARGIN = yomargin
+
+   _sheet.P.THICK = 4.
+   _sheet.X.THICK = 4.
+   _sheet.Y.THICK = 4.
+
+   Handle_Value, __sheet, _sheet, /NO_COPY, /SET
+
+   Return, __sheet
+
+END
