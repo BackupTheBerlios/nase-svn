@@ -92,6 +92,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.18  2000/07/19 12:16:17  saam
+;              + removed _EXTRA in one plot call to avoid
+;                vagabondizing text strings
+;
 ;        Revision 2.17  2000/07/18 12:59:40  saam
 ;              killed a vagabondizing title string
 ;
@@ -177,8 +181,12 @@ Default, charsize, 1.0
 ; for the plot ..... and to care for MULTI plots
 plot,radiusarray , anglearray,/POLAR, /NODATA, $
  XSTYLE=xstyle, YSTYLE=ystyle, $
- XRANGE=xrange, YRANGE=yrange, $
- TITLE='',_EXTRA=e
+ XRANGE=xrange, YRANGE=yrange;  ,_EXTRA=e
+                                ;  deleted the passing of the extra
+                                ;  argument, because this produced
+                                ;  ghost-titles and subtitles in the
+                                ;  plot. i hope it deletion has no
+                                ;  other unintented side effects
 
 PTMP = !P.MULTI
 !P.MULTI(0) = 1
