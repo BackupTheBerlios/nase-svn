@@ -48,6 +48,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/27 17:44:25  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.4  2000/01/27 13:20:41  alshaikh
 ;           KEYWORD : myseed
 ;
@@ -136,7 +139,7 @@ if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
                       }
          
 
-         console,output,'filter ''ifrotgrid'' initialized, mode :'+logic, 'firotgrid',/MSG
+         console,output,'filter ''ifrotgrid'' initialized, mode :'+logic 
          
       END
 
@@ -156,12 +159,13 @@ if set(myseed) THEN myseed = lonarr(36)+myseed ELSE myseed= seed
                         
             
             IF temp_vals.random NE 0 THEN $
-             angle = round((randomu(_seed)*100) MOD (temp_vals.div))*2*3.14159/(temp_vals.div) $
+             angle = (round( (randomu(_seed)*temp_vals.div)+0.5)-1)*2*3.14159/temp_vals.div $ 
                            +temp_vals.delta_alpha $
                            ELSE angle =  temp_vals.alpha
 
-console,output,'angle: '+str(angle),'ifrotgrid',/msg
+console,output,'angle: '+str(angle)
 
+temp_vals.myseed =  _seed
 
             FOR x=-(temp_vals.h/2),temp_vals.h/2 DO BEGIN
                FOR y=-(temp_vals.w/2),(temp_vals.w/2) DO BEGIN
@@ -198,7 +202,7 @@ console,output,'angle: '+str(angle),'ifrotgrid',/msg
       2:BEGIN
          
          temp_pattern = 0.0
-         console,output,'filter ''ifrotgrid'' stopped','ifrotgrid',/msg
+         console,output,'filter ''ifrotgrid'' stopped'
 
       END
 

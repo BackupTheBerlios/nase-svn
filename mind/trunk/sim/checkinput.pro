@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.10  2000/01/27 17:45:23  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.9  2000/01/26 16:19:49  alshaikh
 ;           print,message -> console
 ;
@@ -88,6 +91,9 @@
 
 PRO _CHECKINP, WSTOP=WSTOP, _EXTRA=e,NUMBER=number,viz_mode=viz_mode
 
+
+ COMMON terminal,output
+
 Default, viz_mode, [1,1,1,1,1,1,1,1,1]
 Default, NUMBER, 0
 
@@ -124,10 +130,10 @@ Default, NUMBER, 0
 
 
       L(i) = InitLayer(WIDTH=curLayer.w, HEIGHT=curLayer.h, TYPE = tmp2)
-      print, 'LAYER: ',curLayer.NAME, ', ',STR(curLayer.w),'x', STR(curLayer.h)
+      console,output, 'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h),'checkinput',/msg
    END
    
-   Print, 'Initializing simulation...'
+   console,output, 'Initializing simulation...','checkinput',/msg
 
    ;--------------> INIT INPUT
    INmax = N_Elements(P.INPUT)-1
@@ -168,8 +174,8 @@ Default, NUMBER, 0
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
 
-   Print, 'Starting main simulation loop...'
-   Print, '  '
+   console, output, 'Starting main simulation loop...','checkinput',/msg
+   
 
 
    
@@ -207,7 +213,7 @@ Default, NUMBER, 0
                 pattern = CALL_FUNCTION(act_filter.NAME,$
                                         PATTERN=pattern, temp_vals=INn.temps(i)) 
                
-               IF act_time/1000.0 eq act_filter.stop THEN print,'INPUT:filter '''+act_filter.NAME+''' inactive'
+               IF act_time/1000.0 eq act_filter.stop THEN console, output,'INPUT:filter '''+act_filter.NAME+''' inactive','checkinput',/msg
                
                INn.pattern = pattern ; store for future use
                

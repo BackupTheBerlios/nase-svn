@@ -42,6 +42,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/27 17:44:24  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.2  2000/01/26 16:20:38  alshaikh
 ;           print,message -> console
 ;
@@ -103,7 +106,7 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
                 invert : invert    $
          }
          
-         console,output,'initialized','ifbox',/msg         
+         console,output,'initialized',/msg         
       END
       
       ; STEP
@@ -141,15 +144,15 @@ FUNCTION IFbox, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DE
       
       ; FREE
       2: BEGIN
-         console, output,'done','IFBOX',/msg
+         console, output,'done',/msg
       END 
 
       ; PLOT
       3: BEGIN
-         console, output, 'display mode not implemented, yet','ifbox',/warning
+         console, output, 'display mode not implemented, yet',/warning
       END
       ELSE: BEGIN
-         console, output, 'unknown mode','ifbox',/warning
+         console, output, 'unknown mode',/warning
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET

@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/01/27 17:45:24  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.7  2000/01/26 16:19:50  alshaikh
 ;           print,message -> console
 ;
@@ -213,10 +216,10 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
 ;      END
       3: BEGIN; PCC
          IF IN.decay THEN BEGIN
-            IF h NE w THEN console, output, 'PCC with DECAY and non-quadratic layers is not defined...','initinput',/fatal
+            IF h NE w THEN console, output, 'PCC with DECAY and non-quadratic layers is not defined...',/fatal
             sigma = sqrt(-IN.r^2/2./alog(0.1)) ; okay, amplitude is at 0.1 at the circle border
             mask = Gauss_2D(h,w,sigma)
-            console, output, 'INPUT: PCC, R='+Str(IN.r)+' => sigma='+Str(sigma),'initinput',/msg
+            console, output, 'INPUT: PCC, R='+Str(IN.r)+' => sigma='+Str(sigma),/msg
          END ELSE BEGIN
             mask = CutTorus(Make_Array(h,w,/BYTE, VALUE=1),IN.r,-1)
          END
@@ -228,7 +231,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
          END ELSE IF N_Elements(IN.F) EQ 1 THEN BEGIN
             f_corr = (IN.F)(0)
             f_uncorr = (IN.F)(0)
-         END ELSE console,output, 'Wrong Declaration of INPUT.v','initinput',/fatal
+         END ELSE console,output, 'Wrong Declaration of INPUT.v',/fatal
             
          IF ExtraSet(IN, 'WRAP') THEN WRAP = 1 ELSE WRAP = 0
 
@@ -271,7 +274,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
                t     : 0l                                                       ,$
                In    : (Rt*IN.V)*(1.-LP.df(0))*(1.-LP.df(1))/(LP.df(1)-LP.df(0)),$
                index : IN.INDEX}
-         console,output, 'INPUT: BAR, '+STR(w)+'x'+STR(h)+', GAP='+STR(IN.gap)+ ' -> '+curLayer.NAME+ ', '+ IN.SYNAPSE,'initinput',/msg
+         console,output, 'INPUT: BAR, '+STR(w)+'x'+STR(h)+', GAP='+STR(IN.gap)+ ' -> '+curLayer.NAME+ ', '+ IN.SYNAPSE,/msg
       END
       5: R = { type : 5        ,$
                t    : 0l       ,$
@@ -368,7 +371,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
                 pattern         : pattern }                 ; generated input-pattern
       END 
 
-      ELSE: console,output, 'dont know that kind of input: '+STRING(IN.TYPE),'initinput',/fatal
+      ELSE: console,output, 'dont know that kind of input: '+STRING(IN.TYPE),/fatal
    ENDCASE
 
    ;----->
@@ -397,7 +400,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
       IF R.REC(1) EQ -1 THEN R.REC(1) = P.SIMULATION.TIME+1
       IF ((R.REC(1) GT R.REC(0)) AND (R.REC(0) LT P.SIMULATION.TIME)) THEN BEGIN
          SetTag, R, 'RECLUN', InitVideo(sampleframe, TITLE=P.File+'.'+STR(curLayer.FILE)+'.'+STR(IN.INDEX)+'.in.sim', /SHUTUP, /ZIPPED )
-         console, output, 'RECORDING: '+curLayer.NAME+' Input ('+STR(IN.INDEX)+') from '+STR(R.REC(0))+' to '+STR(R.REC(1))+' ms','initinput',/msg  
+         console, output, 'RECORDING: '+curLayer.NAME+' Input ('+STR(IN.INDEX)+') from '+STR(R.REC(0))+' to '+STR(R.REC(1))+' ms',/msg  
       END
    END ELSE SetTag, R, 'REC', [-1,-1]
 

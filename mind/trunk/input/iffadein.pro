@@ -24,6 +24,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/27 17:44:25  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.4  2000/01/26 16:20:39  alshaikh
 ;           print,message -> console
 ;
@@ -62,7 +65,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
                        delta_t  : delta_t $
                       }
      
-          console,output,'initialized','iffadein',/msg         
+          console,output,'initialized',/msg         
       END 
 
       
@@ -81,7 +84,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 
       2: BEGIN
          pattern = 0.0  
-         console,output,'stopped','iffadein',/msg
+         console,output,'stopped',/msg
 
          END
 

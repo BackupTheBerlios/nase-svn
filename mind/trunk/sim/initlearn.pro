@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/01/27 17:47:56  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.9  2000/01/27 10:49:42  saam
 ;           some calls of console were broken
 ;
@@ -151,9 +154,9 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
             
    curDW = Handle_Val(P.DWW(LS.DW))
 
-   IF NOT ExtraSet(LS, 'RULE')  THEN console,output, 'tag RULE undefined!','initlearn',/fatal
-   IF NOT ExtraSet(LS, 'DW')    THEN console,output, 'tag DW undefined!','initlearn',/fatal
-   IF NOT ExtraSet(LS, 'INDEX') THEN console,output, 'tag INDEX undefined!','initlearn',/fatal
+   IF NOT ExtraSet(LS, 'RULE')  THEN console,output, 'tag RULE undefined!',/fatal
+   IF NOT ExtraSet(LS, 'DW')    THEN console,output, 'tag DW undefined!',/fatal
+   IF NOT ExtraSet(LS, 'INDEX') THEN console,output, 'tag INDEX undefined!',/fatal
    ;Default, MaxWin, 1
 
   
@@ -226,7 +229,7 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    ;----->
    curSLayer = Handle_Val(P.LW(curDW.SOURCE))
    curTLayer = Handle_Val(P.LW(curDW.TARGET))
-   console, output, 'LEARNING: '+curSLayer.NAME+' -> '+curTLayer.NAME+' with '+ LS.RULE,'initlearn',/msg
+   console, output, 'LEARNING: '+curSLayer.NAME+' -> '+curTLayer.NAME+' with '+ LS.RULE,/msg
 
 
    ;determine if correpsonding DW is delayed or not, cause this changes the call of initrecall
@@ -248,28 +251,28 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    END ELSE IF InSet(lRule, [1,2]) THEN BEGIN
       CASE lWin OF 
          1: BEGIN; ALPHA
-            console, output, 'LEARNWIN: ALPHA, '+ STR(LS.tau_inc)+ ' ms, '+ STR(LS.tau_dec)+' ms','initlearn',/msg 
+            console, output, 'LEARNWIN: ALPHA, '+ STR(LS.tau_inc)+ ' ms, '+ STR(LS.tau_dec)+' ms',/msg 
             IF delay THEN win = InitRecall(_CON(LS.DW), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE) $
              ELSE win = InitRecall(P.LW(curDW.SOURCE), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
          2: BEGIN; EXPO
-            console,output, 'LEARNWIN: EXPO, '+ STR(LS.tau)+ ' ms','initlearn',/msg
+            console,output, 'LEARNWIN: EXPO, '+ STR(LS.tau)+ ' ms',/msg
             win = InitRecall(_CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
-         ELSE: console,output, 'Learning Window for these learning rule expected!','initlearn',/fatal
+         ELSE: console,output, 'Learning Window for these learning rule expected!',/fatal
       END
       SetTag, LS, 'TYPE', lrule
       SetTag, LS, '_WIN', win
    END ELSE IF lRule EQ 3 THEN BEGIN
       IF NOT ExtraSet(LS, 'V_PRE') THEN BEGIN
          LW = InitLearnBiPoo(postv=LS.v_post, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE, /PREBAL)
-         console, output, 'LEARN: BIPOO, delearn, tau='+ STR(LS.tau_pre)+ ' ms, learn, '+ STR(LS.v_post)+ '  '+ STR(LS.tau_post)+ ', balanced','initlearn',/msg
+         console, output, 'LEARN: BIPOO, delearn, tau='+ STR(LS.tau_pre)+ ' ms, learn, '+ STR(LS.v_post)+ '  '+ STR(LS.tau_post)+ ', balanced',/msg
       END ELSE IF NOT ExtraSet(LS, 'V_POST') THEN BEGIN
          LW = InitLearnBiPoo(prev=LS.v_pre, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE, /POSTBAL)
-         console, output, 'LEARN: BIPOO, delearn, '+ STR(LS.v_pre)+ ',  tau='+ STR(LS.tau_pre)+ ' ms, learn, tau='+ STR(LS.tau_post)+ ', balanced','initlearn',/msg
+         console, output, 'LEARN: BIPOO, delearn, '+ STR(LS.v_pre)+ ',  tau='+ STR(LS.tau_pre)+ ' ms, learn, tau='+ STR(LS.tau_post)+ ', balanced',/msg
       END ELSE BEGIN
          LW = InitLearnBiPoo(postv=LS.v_post, prev=LS.v_pre, pretau=LS.tau_pre, posttau=LS.tau_post, SAMPLE=P.SIMULATION.SAMPLE)
-         console, output, 'LEARN: BIPOO, delearn, '+ STR(LS.v_pre)+'  '+STR(LS.tau_pre)+' ms, learn, '+ STR(LS.v_post)+ '  '+ STR(LS.tau_post),'initlearn',/msg
+         console, output, 'LEARN: BIPOO, delearn, '+ STR(LS.v_pre)+'  '+STR(LS.tau_pre)+' ms, learn, '+ STR(LS.v_post)+ '  '+ STR(LS.tau_post),/msg
       END
       win = InitPrecall(_CON(LS.DW), LW)
       SetTag, LS, 'TYPE', lrule

@@ -55,6 +55,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/27 17:44:24  alshaikh
+;           new console-syntax
+;
 ;     Revision 1.3  2000/01/26 16:20:38  alshaikh
 ;           print,message -> console
 ;
@@ -108,7 +111,7 @@ convol_range_h = h-1
                        delta_t  : delta_t $ 
                       }
          
-          console,output,'initialized','ifcsur',/msg         
+          console,output,'initialized',/msg         
       END
       
 
@@ -144,11 +147,11 @@ convol_range_h = h-1
 ;
       2:BEGIN
          
-          console,output,'stopped','ifcsur',/msg
+          console,output,'stopped',/msg
          
       END 
       ELSE: BEGIN
-          console,output, 'unknown mode','ifcsur',/fatal
+          console,output, 'unknown mode',/fatal
       END
       
    ENDCASE 

@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.7  2000/01/27 17:45:24  alshaikh
+;            new console-syntax
+;
 ;      Revision 1.6  2000/01/26 16:19:52  alshaikh
 ;            print,message -> console
 ;
@@ -66,7 +69,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    ;----->
    OS = 1./(1000*P.SIMULATION.SAMPLE)
 
-   output =  initconsole(mode='nowin',length=200)
+   output =  initconsole(mode='win',length=200, threshold=0, tolerance=30)
 
    ;-----> DETERMINE LEARNING STATUS
    IF ExtraSet(P, 'LEARNW') THEN LDWmax = N_Elements(P.LearnW)-1 ELSE LDWmax = -1
@@ -114,7 +117,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       tmp2 =  CALL_FUNCTION(NAME,_EXTRA=tmp)
 
       L(i) = InitLayer(WIDTH=curLayer.w, HEIGHT=curLayer.h, TYPE = tmp2)
-      console,output,'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h)+', TYPE :'+NAME,'sim'
+      console,output,'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h)+', TYPE :'+NAME
    END
 
 
@@ -127,7 +130,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    IF Keyword_Set(WSTOP) THEN stop
 
 
-   console,output,'Initializing simulation...','sim'
+   console,output,'Initializing simulation...'
 
    IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN
       IF TSSCloutmax GE 0 THEN CSIM_1  = DefineSheet(/NULL, MULTI=[TSSCloutmax+1,1,TSSCloutmax])
@@ -214,26 +217,26 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       IF ((REC.REC_O(1) GT REC.REC_O(0)) AND (REC.REC_O(0) LT P.SIMULATION.TIME)) THEN BEGIN
          IF N_Elements(REC.REC_O) GT 2 THEN BEGIN
             Vid_O(i) = InitVideo( BytArr(N_Elements(REC.REC_O)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-            console, 'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms for '+STR(N_Elements(REC.REC_O)-2)+' neurons','SIM',/MSG
+            console, 'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms for '+STR(N_Elements(REC.REC_O)-2)+' neurons'
             SelVidO(i) = N_Elements(REC.REC_O)-2
          END ELSE BEGIN
             Vid_O(i) = InitVideo( BytArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-            console, output,'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms','SIM',/MSG  
+            console, output,'RECORDING: '+curLayer.NAME+' Output from '+STR(REC.REC_O(0))+' to '+STR(REC.REC_O(1))+' ms'  
          END
       END
       IF ((REC.REC_M(1) GT REC.REC_M(0)) AND (REC.REC_M(0) LT P.SIMULATION.TIME)) THEN BEGIN
          IF N_Elements(REC.REC_M) GT 2 THEN BEGIN
             Vid_M(i) = InitVideo( DblArr(N_Elements(REC.REC_M)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-            console,output, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms for '+STR(N_Elements(REC.REC_M)-2)+' neurons','SIM',/MSG
+            console,output, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms for '+STR(N_Elements(REC.REC_M)-2)+' neurons'
             SelVidM(i) = N_Elements(REC.REC_M)-2
          END ELSE BEGIN
             Vid_M(i) = InitVideo( DblArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.m.sim', /SHUTUP)
-            console,output, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms','SIM',/MSG  
+            console,output, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms'  
          END
       END
       IF REC.REC_MUA THEN BEGIN
          Vid_MUA(i) = InitVideo( 0l, TITLE=P.File+'.'+curLayer.FILE+'.mua.sim', /SHUTUP)
-         console,output, 'RECORDING: '+curLayer.NAME+' MUA','SIM',/MSG
+         console,output, 'RECORDING: '+curLayer.NAME+' MUA'
       END
    END
 
@@ -266,7 +269,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
       curSLayer = Handle_Val(P.LW(curDW.SOURCE))
       curTLayer = Handle_Val(P.LW(curDW.TARGET))
-      console,output, 'CONNECTIONS:  '+ curSLayer.NAME+ ' -> '+ curTLayer.NAME+' via '+ curDW.SYNAPSE+', '+curDW.NAME,'SIM',/MSG
+      console,output,  'CONNECTIONS:  '+ curSLayer.NAME+ ' -> '+ curTLayer.NAME+' via '+ curDW.SYNAPSE+', '+curDW.NAME
    END
 
 
@@ -283,8 +286,8 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 ;------------->
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
-   console,output, 'Starting main simulation loop...','SIM',/MSG
-   console,output, '  ','SIM',/MSG
+   console,output, 'Starting main simulation loop...'
+   console,output, '  '
 
    FOR _TIME=0l,P.SIMULATION.TIME*os-1 DO BEGIN
 
@@ -364,7 +367,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 ;     
       IF (_TIME MOD 50 EQ 0 ) THEN consoletime,output, bin=_time, ms= _TIME/os
    END
-   console,output, 'Main Simulation Loop done','SIM',/MSG
+   console,output, 'Main Simulation Loop done'
 
 
    ;-------------> CLOSE VIDEOS
