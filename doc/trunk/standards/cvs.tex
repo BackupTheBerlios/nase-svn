@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.3  2002/03/12 12:54:26  alshaikh
+%             changes
+%
 %       Revision 1.2  2000/11/16 15:48:47  saam
 %       i modified something, but what?
 %
@@ -125,16 +128,49 @@ notes, comments and corrections.
 
 Set the CVS-Root-Directory to the following location
 \begin{verbatim}
-bash: export CVSROOT=/vol/neuro/nase/IDLCVS
-tcsh: setenv CVSROOT /vol/neuro/nase/IDLCVS
+bash: export CVSROOT=:ext:username@neuro:/vol/neuro/nase/IDLCVS
+      export CVS_RSH=ssh
+tcsh: setenv CVSROOT :ext:username@neuro:/vol/neuro/nase/IDLCVS
+      export CVS_RSH ssh
 \end{verbatim}
 
+
 \subsection{Windows}
-i wrote it down but can't find it, at the momen
+NASE unter Windows-NT installieren:
 
+* WinCvs starten
 
+* Menü: CvsAdmin|Preferences...|General:
+  Enter the CVSROOT: username@neuro:/vol/neuro/nase/IDLCVS eintragen
+  Authentication: "passwd" file on the cvs server
 
+* CvsAdmin|Login...
+  (Unix-)Passwort eingeben
+  wenn erfolgreich, dann kommt folgende Rückmeldung:
 
+     cvs login
+     (Logging in to michler@neuro)
+
+     *****CVS exited normally with code 0*****
+
+* CvsAdmin|Checkout module...
+  Dialogfenster: zunächst Verzeichnis angeben, wo NASE installiert
+  werden soll
+  nächstes Dialogfenster: unter Checkout settings
+    Enter the module name and path on the server: "nase" auswählen
+  hier besteht nochmals die Möglichkeit, das Verzeichnis auszuwählen
+  dann auf OK klicken.
+
+* unter Systemsteuerung|System|Umgebung Benutzervariable anlegen:
+  Variable = NASEPATH
+  Wert     = [hier den Pfad eintragen, unter dem NASE installiert wurde]
+
+* in IDL: unter File|Preferences...|Path den Nase-Pfad eintragen
+
+* in IDL: unter File|Preferences...|Startup [Pfad\]nase\misc\startup
+eintragen
+
+* IDL neu starten
 
 \section{Basic Actions}
 
