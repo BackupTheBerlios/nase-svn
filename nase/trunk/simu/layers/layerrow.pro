@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.5  1998/05/16 16:01:50  kupper
+;              Verarbeiten nun auch Arrays von Indizes...
+;
 ;       Revision 1.4  1998/02/19 15:32:26  kupper
 ;              Es sollten jetzt alle Layer?-Funktionen mit Layer- und DW-Strukturen richtig funktionieren!
 ;
@@ -55,7 +58,7 @@
 Function LayerRow, Layer, _Index, INDEX=index, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=target
    
         Default,  index, _Index
-	if Index ge LayerSize(Layer, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=target) then print, 'LayerRow WARNUNG: Layerindex ist zu groß!'
+	if total(Index ge LayerSize(Layer, WIDTH=width, HEIGHT=height, SOURCE=source, TARGET=target)) gt 0 then message, 'Layerindex ist zu groß!'
 	
         if set(HEIGHT) then return, Index mod height
 	
