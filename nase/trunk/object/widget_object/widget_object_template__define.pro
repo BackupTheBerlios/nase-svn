@@ -136,7 +136,7 @@ Function widget_MyClass::init, _REF_EXTRA=_ref_extra
    ;; object. If it fails, exit returning false:
    If not Init_Superclasses(self, "widget_MyClass", _EXTRA=_ref_extra) then return, 0
 
-   ;; Try whatever initialization is needed for a MyClass object,
+   ;; Try whatever initialization is needed for a widget_MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
    ;;
    ;; insert code here
@@ -155,7 +155,7 @@ Function widget_MyClass::init, _REF_EXTRA=_ref_extra
    ;; self.w_size = CW_fslider2(self.widget, /Vertical, Minimum=0.0, Maximum=1.0, $
    ;;                           StepWidth=0.01, Value=self.size, Title="size", $
    ;;                           UValue=self, $
-   ;;                           Event_Pro="MyClass_size_handler")
+   ;;                           Event_Pro="widget_MyClass_size_handler")
    ;;
 
    ;; note: adding widgets will never fail.
@@ -172,7 +172,7 @@ Pro widget_MyClass::cleanup, _REF_EXTRA = _ref_extra
    Cleanup_Superclasses, self, "widget_MyClass", _EXTRA=_ref_extra
    ;; Note: Destroying the basic_widget_object also destroyes the widget.
 
-   ;; Now do what is needed to cleanup a MyClass object:
+   ;; Now do what is needed to cleanup a widget_MyClass object:
    ;;
    ;; insert code here
    ;;
