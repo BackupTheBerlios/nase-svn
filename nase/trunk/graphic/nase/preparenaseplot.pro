@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  1998/04/17 15:24:02  kupper
+;               fix statt round...
+;
 ;        Revision 2.5  1998/04/01 14:32:47  kupper
 ;               Bug in OFFSET-Behandlung.
 ;
@@ -95,7 +98,7 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
 
    If not Keyword_Set(y_only) then begin
       !X.MINOR = (Width-1) / 30 +1
-      !X.TICKS = round((Width-1) / float(!X.MINOR))
+      !X.TICKS = fix((Width-1) / float(!X.MINOR))
       !X.STYLE = 1
       !X.TICKV = findgen(!X.TICKS+1)*!X.MINOR
       If Keyword_Set(CENTER) then begin
@@ -111,7 +114,7 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
    endif
    If not Keyword_Set(x_only) then begin
       !Y.MINOR = (Height-1) / 30 +1
-      !Y.TICKS = round((Height-1) / float(!Y.MINOR))
+      !Y.TICKS = fix((Height-1) / float(!Y.MINOR))
       !Y.STYLE = 1
       !Y.TICKV = findgen(!Y.TICKS+1)*!Y.MINOR
       If Keyword_Set(CENTER) then begin
