@@ -110,6 +110,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  1998/02/19 17:33:33  thiel
+;               Sucht jetzt aehnlichste Farbe mit Hilfe des
+;               YIC-Farbmodells.
+;
 ;        Revision 1.10  1998/02/19 14:28:03  saam
 ;             NOALLOC ermittelt aehnliche Farbe nach HSV-Farbmodell
 ;
@@ -140,8 +144,8 @@ Common common_RGB, My_freier_Farbindex
 
    IF !D.Name EQ 'PS' THEN BEGIN
       ; korrekte Behandlung nur fuer Grauwertpostscripts 
-      Color_Convert, R, G, B, h, s, v, /RGB_HSV
-      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(v*255) ELSE RETURN, LONG(v*255)
+      New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
+      IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)
    END
 
 
@@ -149,9 +153,9 @@ Common common_RGB, My_freier_Farbindex
       IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefienieren, sondern aehnlichste zurueckgeben
          myCM = bytarr(!D.Table_Size,3) 
          TvLCT, myCM, /GET
-	 Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myH, myS, myV, /RGB_HSV
-	 Color_Convert, R, G, B, H, S, V, /RGB_HSV
-	 differences = (myH - H)^2 + (myS - S)^2 + (myV - V)^2
+	 New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
+	 New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
+	 differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
          lowestDiff = MIN(differences, bestMatch)
          RETURN, bestMatch
       END
