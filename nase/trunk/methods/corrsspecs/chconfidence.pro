@@ -1,6 +1,7 @@
 ;+
 ; NAME: CHCONFIDENCE
 ;
+; AIM:                computes the confidence of the coherence 
 ;
 ; PURPOSE:            The CHCONFIDENCE (coherenceconfidence) function 
 ;
@@ -28,6 +29,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 14:17:05  gabriel
+;          AIM tag added
+;
 ;     Revision 1.2  2000/09/27 15:59:24  saam
 ;     service commit fixing several doc header violations
 ;
