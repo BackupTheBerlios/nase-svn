@@ -17,7 +17,7 @@
 ;  
 ; CALLING SEQUENCE:
 ;*  MSPlot [,x] ,mean ,sd 
-;*         [,/SDMEAN]
+;*         [,/SDMEAN]  [,/POSITIVE]
 ;*         [{[,MCOLOR=...] [,SDCOLOR=...]} | /BW ]
 ;*         [,/OPLOT]
 ;*         [,_EXTRA=...]
@@ -46,7 +46,7 @@
 ;  SDMEAN  :: <*>sd</*> entries are interpreted as absolute values
 ;             (mean+-error). This kind of output is e.g. provided by <A>FZTmean</A>. 
 ;  _EXTRA  :: All other unrecognized options are passed to the
-;             underlying <*>Plot</*> and <*>Axis</*> procedures.
+;             underlying <*>Plot</*> procedures.
 ;  
 ; RESTRICTIONS:
 ;  <*>X-/YTITLE</*> and <*>X-/YTICKFORMAT</*> can only be used for
@@ -73,7 +73,7 @@
 
 
 PRO MSPLOT, z, zz, zzz $
-            , MCOLOR=mcolor, SDCOLOR=sdcolor, XRANGE=xrange $
+            , MCOLOR=mcolor, SDCOLOR=sdcolor, XRANGE=xrange, YRANGE=yrange $
             , SDMEAN=sdmean $
             , BW=bw, OPLOT=oplot $
             , XSTYLE=xstyle, YSTYLE=ystyle $ 
@@ -123,37 +123,26 @@ PRO MSPLOT, z, zz, zzz $
       xf = x
       yr = [MIN(m-sd(0,*)), MAX(m+sd(1,*))]
    ENDELSE
+   IF Set(YRANGE) THEN yr=YRANGE ;if not the default is already set above
+   
 
 
+   ; initialize coordinate system, without actually plotting the axes
    IF NOT Keyword_Set(OPLOT) THEN $
-    Plot, x, m, YRANGE=yr, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4 $
-    , YSTYLE=ystyle+4, _EXTRA=e
+    Plot, x, m, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4, YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=e
 
    IF Keyword_Set(BW) THEN BEGIN
        OPlot, x, m+sd(1,*), LINESTYLE=1
        OPlot, x, m-sd(0,*), LINESTYLE=1
-       OPlot, x, m
+       OPlot, x, m 
    END ELSE BEGIN
-       PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] $
-         , [m+sd(1,*), m(n-1)-sd(0,n-1), REVERSE(m-sd(0,*)), m(0)+sd(1,0)] $
-         , COLOR=sdcolor
+       PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] ,$
+         [m+sd(1,*), m(n-1)-sd(0,n-1), REVERSE(m-sd(0,*)), m(0)+sd(1,0)],$
+         COLOR=sdcolor, NOCLIP=0
        OPlot, x, m, COLOR=mcolor
    END
 
-   IF NOT KEYWORD_Set(OPLOT) THEN BEGIN
-       Axis, XRANGE=xrange, XAXIS=0, XSTYLE=xstyle, _EXTRA=e
-       Axis, YRANGE=yr, YAXIS=0, YSTYLE=ystyle, _EXTRA=e
-       IF set(e) THEN BEGIN
-           DelTag, e, 'xtitle'
-           DelTag, e, 'ytitle'
-           DelTag, e, 'xtickformat'
-           DelTag, e, 'ytickformat'
-       ENDIF
-       
-       Axis, XRANGE=xrange, XAXIS=1, XTICKFORMAT='noticks' $
-        , XSTYLE=xstyle, _EXTRA=e
-       Axis, YRANGE=yr, YAXIS=1, YTICKFORMAT='noticks' $
-        , YSTYLE=ystyle, _EXTRA=e
-   END
-
+   ; plot coordinate system only
+   IF NOT KEYWORD_Set(OPLOT) THEN $
+     Plot, x, m, /NODATA, /NOERASE, XRANGE=xrange, XSTYLE=xstyle, YRANGE=yr, YSTYLE=ystyle, _EXTRA=e
 END
