@@ -20,7 +20,7 @@ cd $CVSWORK
 cvs -d $CVSROOT checkout doc
 
 cd $CVSWORK/doc/standards
-ln -s $CVSWORK/standards/header.pro $CVSWORK/standards/header.pro.tex
+ln -s $CVSWORK/doc/header.pro $CVSWORK/doc/header.pro.tex
 $CVSWORK/doc/www-bin/makedoc standards
 
 
