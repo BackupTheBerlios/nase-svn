@@ -7,7 +7,7 @@
 ;
 ; CATEGORY:              STAT
 ;
-; CALLING SEQUENCE:      ps = PowerSpec( series, [xaxis], [/HAMMING] )
+; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING] )
 ;
 ; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) mit mind. 10 Elementen
 ;
