@@ -574,7 +574,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
             PolyFill, [fill_left, fill_right, fill_right, fill_left], $
                       [fill_bottom, fill_bottom, fill_top, fill_top], $
                       /Normal, $
-                      color=rgb("red") ;GetBackground()
+                      color=GetBackground()
          endif
          ;; now draw the legend:
          TVSclLegend, UPDATE_INFO.leg_x, $
