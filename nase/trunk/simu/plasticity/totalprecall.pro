@@ -45,6 +45,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1999/08/05 11:49:39  thiel
+;           Now computes time differences between ALL spikes until they are
+;           too old. No more resetting of learned connections.
+;
 ;       Revision 1.6  1999/07/27 10:19:12  thiel
 ;           Changed 'transpose' to 'reform' and wrote header.
 ;
@@ -83,9 +87,10 @@ PRO TotalPrecall, _PC, _DW, postL
    ;
    IF PreAP(0) NE 0 THEN BEGIN ; is at least one presynaptic connection/neuron active?
       PreAP = PreAP(2:PreAP(0)+1)
-      
-      ; set neurons/connections active
-      PC.pre(preAP) = PC.time
+      ; save presynaptic neurons'/connections' activation time:
+      PC.pre(preAP,pc.spikesinpre) = PC.time
+      pc.spikesinpre = (pc.spikesinpre+1) MOD pc.deltamin
+
 
       IF NOT delay THEN BEGIN
          ; Delay=0: We have to find corresponding active connections
@@ -107,12 +112,13 @@ PRO TotalPrecall, _PC, _DW, postL
       IF Set(preCON) THEN BEGIN ; there may be neurons not connected to any neuron
          ; look if the corresponding postsynaptic neuron was already active
          ; if yes, remember connection to be learned
-         atn = WHERE(PC.Post(DW.C2T(preCON)) NE !NONEl, c)
+         atn = WHERE(PC.Post(DW.C2T(preCON),*) NE !NONEl, c)
          IF c NE 0 THEN BEGIN
-            learnPre = preCON(atn)
-            PN = DW.C2T(learnPre)
-            IF delay THEN list1 = [learnPre, PC.Post(PN)-PC.Pre(learnPre)] $
-            ELSE list1 = [learnPre, PC.Post(PN)-PC.Pre(DW.C2S(learnPre))]
+            learnpre = precon(atn MOD N_Elements(precon))
+            IF delay THEN $
+             list1 = [learnPre, (PC.Post(DW.C2T(preCON),*))(atn)-pc.time] $
+            ELSE $
+             list1 = [learnPre, (PC.Post(DW.C2T(preCON),*))(atn)-pc.time]
             list1 = REFORM(list1, N_Elements(list1)/2 ,2, /OVERWRITE)
          ENDIF
       ENDIF 
@@ -128,7 +134,9 @@ PRO TotalPrecall, _PC, _DW, postL
    Handle_Value, LayerOut(postL), postAP ; get POSTsynaptic action potentials
    IF PostAP(0) NE 0 THEN BEGIN
       PostAP = PostAP(2:PostAP(0)+1)
-      PC.post(PostAP) = PC.time
+      ; save time of postsynaptic spikes:
+      PC.post(PostAP,pc.spikesinpost) = PC.time
+      pc.spikesinpost = (pc.spikesinpost+1) MOD pc.deltamax
 
       ; we have to find corresponding active connections
       ; to the active postsynaptic neurons stored in PostAP
@@ -150,21 +158,20 @@ PRO TotalPrecall, _PC, _DW, postL
        ; if yes, remember connection to be learned
          IF NOT delay THEN BEGIN
             ; Delay=0
-            aci = WHERE(PC.Pre(DW.C2S(postCON)) NE !NONEl, c)
+            aci = WHERE(PC.Pre(DW.C2S(postCON),*) NE !NONEl, c)
             IF c NE 0 THEN BEGIN
-               learnPost = postCon(aci)
-               PostNeurons = DW.C2T(learnPost)
-               list2 = [learnPost, PC.Post(PostNeurons)-PC.Pre(DW.C2S(learnPost))]
+               learnPost = postCon(aci MOD N_Elements(postcon))
+;               PostNeurons = DW.C2T(learnPost)
+               list2 = [learnPost, PC.time-(PC.Pre(DW.C2S(postcon),*))(aci)]
                list2 = REFORM(list2, N_Elements(list2)/2 ,2, /OVERWRITE)
             ENDIF ; c NE 0
          ENDIF ELSE BEGIN
             ; Delay=1
-            idx = WHERE(PC.pre(postCON) NE !NONEl, c)
+            idx = WHERE(PC.pre(postCON,*) NE !NONEl, c)
             IF c NE 0 THEN BEGIN
-               learnPost = postCon(idx)
+               learnPost = postCon(idx MOD N_Elements(postcon))
                                 ; complicated...
-               PostNeurons = DW.C2T(learnPost)
-               list2 = [learnPost, PC.Post(PostNeurons)-PC.Pre(learnPost)]
+               list2 = [learnPost, PC.time-(PC.Pre(postcon,*))(idx)]
                list2 = REFORM(list2, N_Elements(list2)/2 ,2, /OVERWRITE)
             ENDIF ; c NE 0
          ENDELSE ; Delay=1
@@ -186,16 +193,16 @@ PRO TotalPrecall, _PC, _DW, postL
    IF Handle_Info(PC.postpre) THEN Handle_Value, PC.postpre, list, /SET ELSE PC.postpre = Handle_Create(!MH, VALUE = list)
    
    
-   ; reset learned connections
-   IF Set(learnPre)    THEN BEGIN
-      PC.Pre(learnPre) = !NONEl
-      PC.Post(PN) = !NONEl
-   ENDIF
+   ; resetting of learned connections is no longer necessary:
+;   IF Set(learnPre)    THEN BEGIN
+;      PC.Pre(learnPre) = !NONEl
+;      PC.Post(PN) = !NONEl
+;   ENDIF
 
-   IF Set(learnPost)   THEN BEGIN
-      PC.Pre(learnPost)    = !NONEl
-      PC.Post(PostNeurons)    = !NONEl
-   ENDIF
+;   IF Set(learnPost)   THEN BEGIN
+;      PC.Pre(learnPost)    = !NONEl
+;      PC.Post(PostNeurons)    = !NONEl
+;   ENDIF
 
 
 
