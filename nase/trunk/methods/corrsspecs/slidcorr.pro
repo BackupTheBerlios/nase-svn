@@ -105,6 +105,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1998/05/12 14:10:55  gabriel
+;          code bei ubar_plot geaendert
+;
 ;     Revision 1.1  1998/05/12 13:12:54  gabriel
 ;          Ob es funktioniert ?
 ;
@@ -343,7 +346,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
 
          opensheet,pix_3
          !P.MULTI = 0
-         poly_plot,tdata,energiearr,COLORS=RGB(255,0,0,/NOALLOC),YTICKS=2,YRANGE=[0,1.]  , /YSTYLE,$
+         ubar_plot,tdata,energiearr,COLORS=RGB(255,0,0,/NOALLOC),YTICKS=2,YRANGE=[0,1.]  , /YSTYLE,$
          ;poly_plot,tdata,showweight,COLORS=RGB(255,0,0,/NOALLOC),YTICKS=2,YRANGE=[0,1.]  , /YSTYLE,$
           YTITLE="Energy [perc]",CHARSIZE=1.,$
           TITLE="Energy of Frequenceband",DIST=0,$
