@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  Loads a suitable colortable to display positive and negative data.
+;  generates a linear, exponential or logarrithmic colortable suitable to display positive and/or negative data
 ;
 ; PURPOSE:
 ;  Creates a colortable to display your two dimensional data with a
@@ -44,17 +44,17 @@
 ;          the default is <*>!TOPCOLOR</*>.
 ;
 ; INPUT KEYWORDS:
+;  BOTTOMRED,BOTTOMGREEN,BOTTOMBLUE :: negative values are displayed red, green
+;                             or blue (default: <*>BOTTOMBLUE</*>)
+;  NEUTRAL                 :: specifies the data value that will be
+;                             displayed either black or white (may
+;                             exceed the data range and will then not be
+;                             displayed). The default is <*>MIN(ABS(data))</*>.
 ;  TOPRED,TOPGREEN,TOPBLUE :: positive values are displayed red, green
 ;                             or blue (default: <*>TOPRED</*>)
 ;  ZEROBLACK,ZEROWHITE     :: value zero will be black (good for
 ;                             screen display) or white (good for
 ;                             postscripts), respectively. Default is <*>ZEROBLACK</*>. 
-;  NEUTRAL                 :: specifies the data value that will be
-;                             displayed either black or white (may
-;                             exceed the data range and will then not be
-;                             displayed). The default is <*>MIN(ABS(data))</*>.
-;  BOTTOMRED,BOTTOMGREEN,BOTTOMBLUE :: negative values are displayed red, green
-;                             or blue (default: <*>BOTTOMBLUE</*>)
 ;  EXP,LOG :: allows an exponential or logarithmic scaling of the
 ;             otherwise linear color map. You may either enable the
 ;             nonlinearity using <*>/EXP</*> or <*>/LOG</*>, but if
@@ -128,16 +128,17 @@ PRO BALANCECT, data, TOP=maci, TOPRED=topred, TOPGREEN=topgreen, TOPBLUE=topblue
 
    cid = maci-mici+1             ;number of color indices used
 
-   IF N_Params() EQ 1 THEN BEGIN
+   IF Set(data) THEN BEGIN
        mid = FLOAT(MIN(data))
        mad = FLOAT(MAX(data))
+       Default, neutral, MIN(ABS(data))
    END ELSE BEGIN
        ; symmetric around zero if no data is given
        mid = -1.
        mad =  1.
+       Default, neutral, 0.
    END
 
-   Default, neutral, MIN(ABS(data))
    mid = mid - neutral
    mad = mad - neutral
 
