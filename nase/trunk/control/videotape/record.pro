@@ -3,30 +3,22 @@
 ;
 ; PURPOSE: Aufzeichnen von Zustandsgroessen der Neuronen aus einer Layer.
 ;
-; CATEGORY: SIMULATION
+; CATEGORY: Control Routines / Videos, Tapes
 ;
 ; CALLING SEQUENCE: Kontrolle = Record (TAPE=Aufnahmeband, VALUE=Zustandsgroesse)
 ;
-; INPUTS: Aufnahmeband: Eine mit InitTape erzeugte Struktur.
+; INPUTS: Aufnahmeband: Eine mit <A HREF="#INITTAPE">InitTape</A> erzeugte Struktur.
 ;         Zustandsgroesse: Eine beliebige Zustandsgroesse
 ;                          der Layer, zum Beispiel Output (Spikes) oder
 ;                          Feedingpotential oder...
-;
-; OPTIONAL INPUTS: ---
 ;
 ; KEYWORD PARAMETERS: siehe Inputs 
 ;
 ; OUTPUTS: Kontrolle: Das zuletzt gespeicherte Zustands-Array wird zurueckgegeben.
 ;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
-; RESTRICTIONS: ---
-;
-; PROCEDURE: Set()
+; PROCEDURE: Syntax testen, und dann indizierte Werte aus dem Eingabearray
+;            raussuchen. Anschliessen in das Array der Tape-Struktur schreiben 
+;            und den Zaehler eisn raufsetzen.
 ;
 ; EXAMPLE: MittlereSpalteOben=LayerIndex(Layer90, Row=0, Col=Layer90.w/2-1)
 ;          MittlereSpalte=mittlerespalteoben+IndGen(Layer90.h)
@@ -51,10 +43,17 @@
 ;          Am Ende der Aufzeichnung koennte das gespeicherte
 ;          Spikeraster mit der Trainspotting-Routine dargestellt werden. 
 ;
+; SEE ALSO: <A HREF="#INITTAPE">InitTape</A>
+;
 ; MODIFICATION HISTORY:
 ;
+; $Log$
+; Revision 2.2  1998/06/24 14:55:11  thiel
+;        Header aktualisiert.
+;
+;
 ;       Thu Aug 21 11:41:24 1997, Andreas Thiel
-;;		Erste Version erstellt und ein wenig getestet.
+;		Erste Version erstellt und ein wenig getestet.
 ;
 ;-
 
