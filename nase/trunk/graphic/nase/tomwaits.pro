@@ -65,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.15  2000/09/07 10:30:48  kupper
+;        Added hourglass at longer operations.
+;
 ;        Revision 1.14  2000/09/01 12:57:39  kupper
 ;        Added hourglass cursor during SHowweights call.
 ;
@@ -186,6 +189,8 @@ PRO TomWaits_Event, Event
          Endif                  ;Mouse Button Release
 
          If Event.Type eq 0 then begin ;Mouse Button Press
+            ;;This might take a while, so display hourglass:
+            Widget_Control, /Hourglass
             ;;------------------> Neuronennummer bestimmen:
             col = fix((Event.X-data.tvinfo.x0)/data.tvinfo.subxsize)
             row = fix((Event.Y-data.tvinfo.y00)/data.tvinfo.subysize)
