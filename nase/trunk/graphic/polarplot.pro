@@ -14,9 +14,9 @@
 ;                                [,XSTYLE=xstyle] [,YSTYLE=ystyle]
 ;                                [,MINORANGLETICKS=minorangleticks]
 ;                                [,THICK=thick]   [,/CLOSE],
-;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor],
+;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor]
 ;                                [,SMOOTH=smooth]
-;                                [,ORIGPT=ORIGPT]
+;                                [,ORIGPT=ORIGPT [,DCOLOR=dcolor] ]
 ;
 ; INPUTS:             radiusarray: array containing the values, that
 ;                                  are plotted as distances from the
@@ -70,6 +70,10 @@
 ;                                  to 1.
 ;                          mcolor: Color index for the mean data
 ;                                  points (default: white) 
+;                          dcolor: Color index for the original data
+;                                  points. This option only works, if
+;                                  you plot the original data points
+;                                  using keyword origpt (Default: mcolor).
 ;                         sdcolor: Color index for the standard
 ;                                  deviation (if set, default: dark blue) 
 ;                          origpt: original data points are emphasized
@@ -92,6 +96,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.21  2000/07/24 13:18:41  saam
+;              + added keyword DPLOT
+;
 ;        Revision 2.20  2000/07/24 10:28:35  saam
 ;             sorry, forgot to remove a debugging stop
 ;

@@ -9,9 +9,9 @@
 ;
 ; CALLING SEQUENCE:   PolarPlot, radiusarray, anglearray [,sdevarray]
 ;                                [,THICK=thick]   [,/CLOSE],
-;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor],
+;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor]
 ;                                [,SMOOTH=smooth]
-;                                [,ORIGPT=ORIGPT]
+;                                [,ORIGPT=ORIGPT [,DCOLOR=dcolor] ]
 ;
 ; INPUTS:             radiusarray: array containing the values, that
 ;                                  are plotted as distances from the
@@ -37,6 +37,10 @@
 ;                                  to 1.
 ;                          mcolor: Color index for the mean data
 ;                                  points (default: white) 
+;                          dcolor: Color index for the original data
+;                                  points. This option only works, if
+;                                  you plot the original data points
+;                                  using keyword origpt (Default: mcolor).
 ;                         sdcolor: Color index for the standard
 ;                                  deviation (if set, default: dark blue) 
 ;                          origpt: original data points are emphasized
@@ -59,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/07/24 13:18:40  saam
+;              + added keyword DPLOT
+;
 ;        Revision 2.2  2000/07/24 10:28:11  saam
 ;              + added _EXTRA tag for oplot
 ;
@@ -72,15 +79,14 @@
 ;
 
 
-PRO OPolarPlot, radiusarray, anglearray, sdevarray,    $
-                MCOLOR=mcolor, SDCOLOR=sdcolor,        $
-                DELTA=DELTA, SMOOTH=smooth,            $
-                THICK=thick, CLOSE=CLOSE,              $
-                ORIGPT=ORIGPT,                         $
-                radiusinterpol=radiusinterpol,         $
-                winkelinterpol=winkelinterpol,         $
+PRO OPolarPlot, radiusarray, anglearray, sdevarray,           $
+                MCOLOR=mcolor, DCOLOR=dcolor, SDCOLOR=sdcolor,$
+                DELTA=DELTA, SMOOTH=smooth,                   $
+                THICK=thick, CLOSE=CLOSE,                     $
+                ORIGPT=ORIGPT,                                $
+                radiusinterpol=radiusinterpol,                $
+                winkelinterpol=winkelinterpol,                $
                 _EXTRA=e
-
 
 On_Error, 2
 
@@ -100,6 +106,7 @@ IF set(SDEVARRAY) THEN _sdevarray = sdevarray
 BGCOLOR = GetBgColor()
 BGCOLOR = RGB(BGCOLOR(0), BGCOLOR(1), BGCOLOR(2),/NOALLOC)
 Default, MCOLOR , !P.COLOR
+Default, DCOLOR , MCOLOR
 Default, SDCOLOR, RGB(150,150,200,/NOALLOC)
 IF set(SMOOTH) THEN DEFAULT,CLOSE ,1
 
@@ -158,7 +165,7 @@ IF ORIGPT GT 0 THEN BEGIN
     y=r*sin(PHI) & x=r*cos(PHI) 
     usersym, x, y, /FILL
     
-    oplot, radiusarray, anglearray, /POLAR, PSYM=8
+    oplot, radiusarray, anglearray, /POLAR, PSYM=8, COLOR=dcolor
 ENDIF
 
 radiusinterpol = _radiusarray
