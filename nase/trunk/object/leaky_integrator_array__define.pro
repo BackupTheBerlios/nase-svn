@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  2001/08/02 14:52:22  kupper
+;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
+;
 ;        Revision 1.10  2001/01/23 16:10:27  kupper
 ;        Replaced manual check for floating underflow errors by call to new
 ;        IgnoreUnderflows procedure (which is platform independent).
@@ -95,7 +98,7 @@ Function leaky_integrator_array::init, Dimensions=dimensions, Tau=tau
 End
 
 Pro leaky_integrator_array::cleanup, _dummy=_dummy
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
    Ptr_Free, self.data
 End
 
@@ -108,7 +111,7 @@ End
 Pro leaky_integrator_array::input, a
 ;   On_Error, 2                  ;retutn to caller
    If a_ne(size(a, /Dimensions), size(*self.data,  /Dimensions)) then $
-    message, "Array  has incompatible dimensions."
+    Console, /Fatal, "Array has incompatible dimensions."
 
    *self.data = Temporary(*self.data) * self.decay_factor + a
  

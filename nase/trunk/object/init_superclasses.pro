@@ -87,6 +87,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2001/08/02 14:50:33  kupper
+;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
+;
 ;        Revision 1.4  2000/03/12 16:59:16  kupper
 ;        Added classname argument.
 ;        This was necessary to avoid infinite recursion when calling the init methods
@@ -116,7 +119,7 @@ Function Init_Superclasses, self, classname, _REF_EXTRA=_ref_extra
    
    if not success then begin
       fail = i-1                ;Initialization of superclass i-1 failed:
-      message, /info, "Initialization of object's " + superclasses[fail]+" " + $
+      Console, /Warning, "Initialization of object's " + superclasses[fail]+" " + $
        "part failed. Cleaning up."
       If fail ne 0 then $       ;at least one INIT was successful:
        for j=fail-1, 0 do Call_Method, superclasses[j]+"::CLEANUP", self

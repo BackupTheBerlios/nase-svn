@@ -97,7 +97,7 @@
 
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function MyClass::init, KEYWORD = keyword, _REF_EXTRA=_ref_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
@@ -116,7 +116,7 @@ Function MyClass::init, KEYWORD = keyword, _REF_EXTRA=_ref_extra
 End
 
 Pro MyClass::cleanup, KEYWORD = keyword, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
    Cleanup_Superclasses, self, "MyClass", _EXTRA=_ref_extra
@@ -171,7 +171,7 @@ End
 Pro MyClass::override_me_; -ABSTRACT-
    ;; use this template for all abstract methods.
    On_error, 2
-   message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
+   Console, /Fatal, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
 End
 
 
