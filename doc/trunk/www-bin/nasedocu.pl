@@ -16,10 +16,12 @@ import_names('P');
 
 
 # NASE/MIND Settings
-#$DOCDIR="/vol/neuro/nase";
-#$CGIROOT="/vol/neuro/www/cgi-bin-neuro";
-$DOCDIR="/mhome/saam/sim";
-$CGIROOT="/usr/lib";
+chop ($hostname = `hostname`);
+{
+  $hostname =~ /bert/i && do {$DOCDIR="/mhome/saam/sim"; $CGIROOT="/usr/lib"; last;};
+  $hostname =~ /neuro/i && do {$DOCDIR="/vol/neuro/nase"; $CGIROOT="/vol/neuro/www"; last;};
+  die "unconfigured host $hostname";
+}
 
 $INDEX="/tmp/nase-routineindex";
 
@@ -224,9 +226,9 @@ if ($P::mode eq "update"){
   print '</TD>';
   print '</TABLE>';
   $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
-  print "<FONT SIZE=-1>last update: ".localtime($lastmod)."</FONT>, <A HREF=$myurl?mode=update>initiate update</A>";
+  print "<FONT SIZE=-1>last update: ".localtime($lastmod).", <A HREF=$myurl?mode=update>initiate update</A></FONT>";
   print hr;
-  print "<FONT SIZE=-1>$Id$</FONT>";
+  print '<FONT SIZE=-1>$Id$</FONT>';
 }
 
 print end_body;
