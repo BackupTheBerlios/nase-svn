@@ -224,22 +224,32 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          PrepareNASEPlot, info.height, info.width, /OFFSET, GET_OLD=oldplot, NONASE=1-Keyword_Set(info.norder), /X_ONLY
          rowpos = info.position
          rowpos(3) = info.win_height/3-rowpos(1);15*info.zoom-rowpos(1)
-         plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
-               xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-               yrange=[rowplotmin, rowplotmax]
-          if info.bound then begin
-             oplot, indgen(info.Width)+1, replicate(rowplotmin, $
-                                                    info.Width), color=rgb("orange", /noalloc), thick=2
-             oplot, indgen(info.Width)+1, replicate(rowplotmax, $
-                                                    info.Width), $
-              color=rgb("orange", /noalloc), thick=2
-          endif
+         ;; check if all is !NONE:
+         If (where(finite(info.w(*, y_arr))))[0] eq -1 then begin
+            ;; all values are !NONE or NaN
+            ;; do empty plot:
+            plot, /NODATA, indgen(info.Width)+1, fltarr(info.Width), /DEVICE, POSITION=rowpos, $
+                  xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+                  yrange=[rowplotmin, rowplotmax]
+         endif else begin
+            ;; there is something plottable
+            plot, indgen(info.Width)+1, info.w(*, y_arr), /DEVICE, POSITION=rowpos, $
+                  xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+                  yrange=[rowplotmin, rowplotmax]
+         endelse
+         if info.bound then begin
+            oplot, indgen(info.Width)+1, replicate(rowplotmin, $
+                                                   info.Width), color=rgb("orange", /noalloc), thick=2
+            oplot, indgen(info.Width)+1, replicate(rowplotmax, $
+                                                   info.Width), $
+                   color=rgb("orange", /noalloc), thick=2
+         endif
          rowplotmin = !Y.CRANGE(0)
          rowplotmax = !Y.CRANGE(1)
          rowrange = rowplotmax-rowplotmin
          plots, [1+x_arr,1+x_arr], [rowplotmin-rowrange, rowplotmax+rowrange] ;ein (aber nicht zu langer!) Strich
-
-         wset, info.pixcol_win     ;Spalte darstellen
+         
+         wset, info.pixcol_win  ;Spalte darstellen
          colpos = info.position
          colpos(2) = info.win_width/3-colpos(1);15*info.zoom-colpos(0)
          pixcolpos = [info.win_height-colpos(3), $
@@ -248,21 +258,33 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
                       colpos(2)]
          PrepareNASEPlot, info.width, info.height, /OFFSET, NONASE=1-Keyword_Set(info.nase), /X_ONLY
          If not info.norder then !X.TICKNAME = rotate(!X.TICKNAME(0:!X.TICKS), 2)
-         plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
-               xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-               yrange=[colplotmin, colplotmax]
+         ;; check if all is !NONE:
+         If (where(finite(info.w(x_arr, *))))[0] eq -1 then begin
+            ;; all values are !NONE or NaN
+            ;; do empty plot:
+            plot, /NODATA, indgen(info.Height)+1, fltarr(info.Height), /DEVICE, POSITION=rowpos, $
+                  xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+                  yrange=[rowplotmin, rowplotmax]
+         endif else begin
+            ;; there is something plottable
+            plot, info.Height-indgen(info.Height), info.w(x_arr, *), /DEVICE, POSITION=pixcolpos, $
+                  xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+                  yrange=[colplotmin, colplotmax]
+         endelse
          if info.bound then begin
             oplot, indgen(info.Width)+1, replicate(colplotmin, $
                                                    info.Height), color=rgb("orange", /noalloc), thick=2
             oplot, indgen(info.Width)+1, replicate(colplotmax, $
                                                    info.Height), $
-             color=rgb("orange", /noalloc), thick=2
+                   color=rgb("orange", /noalloc), thick=2
          endif
          colplotmin = !Y.CRANGE(0)
          colplotmax = !Y.CRANGE(1)
          colrange = colplotmax-colplotmin
          plots, [info.Height-y_arr, info.Height-y_arr], [colplotmin-colrange, colplotmax+colrange]
+
          PrepareNASEPlot, RESTORE_OLD=oldplot
+
          If Pseudocolor_Visual() then begin
             ;; we have a pseudocolor display, array is [x,y]
             tv = tvrd()
