@@ -187,6 +187,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/09/01 14:16:24  saam
+;              replaced [] by () array calls
+;
 ;        Revision 1.6  2000/08/11 14:53:24  kupper
 ;        Removed left over comment.
 ;
@@ -244,7 +247,7 @@ Function distance, xlen, ylen, cx, cy, QUADRATIC=quadratic, $
       ;; The easy case: no oblique coord. system:
 
       ;; If scale[0]=scale[1], we only need to rotate the center:
-      if keyword_set(phi) and (scale[0] EQ scale[1]) then begin
+      if keyword_set(phi) and (scale(0) EQ scale(1)) then begin
          p = Scl(cyclic_value(phi, [0, 360]), [0, 2*!DPI], [0, 360])
          
          p = -p                 ;Rot counts clockwise by default!
@@ -263,8 +266,8 @@ Function distance, xlen, ylen, cx, cy, QUADRATIC=quadratic, $
          phi = 0
       endif
       
-      xa = (FIndgen(xlen)-cx)/scale[0]
-      ya = (FIndgen(ylen)-cy)/scale[1]
+      xa = (FIndgen(xlen)-cx)/scale(0)
+      ya = (FIndgen(ylen)-cy)/scale(1)
       
       xa = REBIN(           Temporary(xa)^2  , xlen, ylen)
       ya = REBIN( Transpose(Temporary(ya)^2) , xlen, ylen)
@@ -283,17 +286,17 @@ Function distance, xlen, ylen, cx, cy, QUADRATIC=quadratic, $
    endif else begin
       ;; The complicated case, oblique coord.system:
 
-      a1 = scale[0]
-      b1 = scale[1]
+      a1 = scale(0)
+      b1 = scale(1)
 
       ;; WARP=[phi,strength,ground]
-      ph = Rad(WARP[0]+90);;+90° because of NASE coord system!
+      ph = Rad(WARP(0)+90);;+90° because of NASE coord system!
       
       cp = cos(ph)
       sp = sin(ph)
 
       ;; berechne m: Steigung der Mittelachse. m=tan(theta)
-      If Keyword_Set(ABSWARP) then m = WARP[1] $
+      If Keyword_Set(ABSWARP) then m = WARP(1) $
        else $
       ;; WARP[1]: strength
       ;; strength=0: Steigung der Mittelachse=0
@@ -302,12 +305,12 @@ Function distance, xlen, ylen, cx, cy, QUADRATIC=quadratic, $
       ;; in der Richtung von phi: elliptic_r(a1,b1,phi)
       ;; (Dies ist der Radius(phi) in der Ellipse mit den Halbachsen
       ;; a1 und b1.)
-      m = WARP[1]*sqrt( a1^2*b1^2 / ((a1*sp)^2+(b1*cp)^2) )
+      m = WARP(1)*sqrt( a1^2*b1^2 / ((a1*sp)^2+(b1*cp)^2) )
 
 
       ;; ground: M(z) = (cos(phi),sin(phi))*z*m)
-      cx = cx-cp*WARP[2]*m
-      cy = cy-sp*WARP[2]*m
+      cx = cx-cp*WARP(2)*m
+      cy = cy-sp*WARP(2)*m
 
 
       x = Hill(xlen, cx, Top=0, Lslope=1, Rslope=-1)
