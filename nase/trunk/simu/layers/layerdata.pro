@@ -14,7 +14,7 @@
 ;                              [,TYPE=Type]
 ;                              [,WIDTH=Width] [,HEIGHT=Height]
 ;                              [,PARAMETERS=Parameters] 
-;                              [,FEEDING=Feeding] [,LINKING=Linking] [,INHIBITION=Inhibition]
+;                              [,FEEDING=Feeding] [,FEEDING1=Feeding1][,FEEDING2=Feeding2] [,LINKING=Linking] [,INHIBITION=Inhibition]
 ;                              [,POTENTIAL=Potential]
 ;                              [,SCHWELLE=schnelle_Schwelle] [,LSCHWELLE=langsame_Schwelle]
 ;                              [,LERNPOTENTIAL=Lernpotential]
@@ -29,7 +29,9 @@
 ;                   Width, Height    : Ausmaße des Layers (Integer)
 ;                   Parameters       : Parameter, wie mit InitPara erzeugt
 ;                   
-;                   Feeding, 
+;                   Feeding,
+;                   Feeding1,
+;                   Feeding2 
 ;                   Linking,
 ;                   Inhibition       : Stand der entsprechenden
 ;                                      Leckintegratoren (DoubleArray[HeightxWidth])
@@ -53,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1998/11/05 18:07:35  niederha
+;               funktioniert jetzt auch für Neuronentyp 7
+;
 ;        Revision 2.3  1998/05/27 13:58:15  kupper
 ;               SCHWELLE2-Keyword aus gruenden eindeutiger Abkuerzung in
 ;                LSCHWELLE umbenannt.
@@ -65,11 +70,11 @@
 ;
 ;-
 
-Pro LayerData, Layer, $
+Pro LayerDataTest, Layer, $
                TYPE=type, $
                WIDTH=width, HEIGHT=height, $
                PARAMETERS=parameters, $
-               FEEDING=feeding, LINKING=linking, INHIBITION=inhibition, $
+               FEEDING=feeding, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, INHIBITION=inhibition, $
                POTENTIAL=potential, $
                SCHWELLE=schwelle, LSCHWELLE=lschwelle, $
                LERNPOTENTIAL=lernpotential, $
@@ -81,14 +86,25 @@ Pro LayerData, Layer, $
    width      = Layer.W
    height     = Layer.H
    parameters = Layer.Para
-   
-   feeding                                 = Reform(Layer.F, Layer.H, Layer.W)
+
+
    linking                                 = Reform(Layer.L, Layer.H, Layer.W)
-   inhibition                              = Reform(Layer.I, Layer.H, Layer.W)
    potential                               = Reform(Layer.M, Layer.H, Layer.W)
    schwelle                                = Reform(Layer.S, Layer.H, Layer.W)
    if Layer.Type eq '2' then lschwelle     = Reform(Layer.R, Layer.H, Layer.W)
    if Layer.Type eq '3' then lernpotential = Reform(Layer.P, Layer.H, Layer.W)
    output                                  = Out2Vector(Layer, /DIMENSIONS)
+   if Layer.Type eq '7' then begin 
+                             feeding1      = Reform(Layer.F1, Layer.H, Layer.W)
+                             feeding2      = Reform(Layer.F2, Layer.H, Layer.W)   
+                             inhibition1   = Reform(Layer.I1, Layer.H, Layer.W)
+                             inhibition2   = Reform(Layer.I2, Layer.H, Layer.W)
+                        end else begin
+                             feeding       = Reform(Layer.F, Layer.H, Layer.W)
+                             inhibition    = Reform(Layer.I, Layer.H, Layer.W)   
+                        end
 
 End
+
+
+
