@@ -1,3 +1,4 @@
+;+
 ; NAME: AbsoluteTicks
 ;
 ;
@@ -31,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/01/22 14:24:22  thiel
+;               Der Header war kaputt.
+;
 ;        Revision 2.1  1998/01/22 14:21:56  thiel
 ;               Eine weitere neue Tickformat-Funktion.
 ;
