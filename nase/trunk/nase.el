@@ -212,6 +212,8 @@
 ;;    expand.el (I think there was also something with a name similar to
 ;;    dmacro.el)"
 
+
+
 (defun idlwave-nase-template (s1 s2 &optional prompt noindent)
   "Build a template with optional prompt expression.
 
@@ -234,7 +236,17 @@ unless the optional second argument NOINDENT is non-nil."
         end)
     ;(if (not (looking-at "\\s-*\n"))
     ;    (open-line 1))
-    (insert s1)
+
+    (if (not (region-active-p))
+        ;;then (one expression only!)
+        (insert s1)
+      ;;else (n expressions)
+      (save-excursion
+        (goto-char (region-beginning))
+        (insert s1)
+        )
+      )
+
     (save-excursion
       (insert s2)
       (setq end (point)))
