@@ -9,11 +9,11 @@ use CGI qw/:standard :html3 :netscape -no_debug/;
 use CGI::Carp qw(fatalsToBrowser);
 use File::Find;
 use File::Basename;
+#use strict;
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
 import_names('P');
-
 
 # NASE/MIND Settings
 chop ($hostname = `uname -a`);
@@ -51,7 +51,7 @@ sub fixhl {
     my @url = split(',', $_);
     foreach my $routine (@url){
       @res = grep { /\/$routine\.pro/i  } @ridx; 
-      $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=header>$routine</A>" : $routine);
+      $routine = ($res[0] ? "<A HREF=$myurl/".dirname($res[0])."?file=".lc($routine)."&mode=text&show=header>$routine</A>" : $routine);
     }
     push(@fixed, join(', ', @url));
   }
@@ -134,7 +134,7 @@ sub showheader {
     s/^;//;
 
     {
-      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=source>source</A> <A HREF=huhe2>modifications</A></FONT>"); $namefound=1; } else {print;};  last;};
+      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=huhe2>modifications</A></FONT>"); $namefound=1; } else {print;};  last;};
       /(SEE\s+ALSO\s*:\s+)(.*)/i && do {print $1, fixhl($2); last; };
       print;
     }
@@ -154,7 +154,7 @@ sub showsource {
   print "<PRE>";
   while ($line = <IN>){
     if ((! $namefound) && ($line =~ /NAME\s*:\s*(\w+)/i)){
-      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=header>header</A> <A HREF=huhe2>modifications</A></FONT>");
+      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=header>header</A> <A HREF=huhe2>modifications</A></FONT>");
       $namefound = 1;
     }
     last if ($line =~ /^[PRO|FUNCTION]/i);
@@ -186,16 +186,18 @@ sub showdirs {
   @ndir = grep { /^[^\.]/ && -d "$fulldir/$_" } readdir(DIR);
   closedir DIR;      
 
-  print h2($reldir);
+
+#  print img({src=>"/icons/back.gif",alt=>"[DIR]"});
 
   if ($reldir ne '/'){ 
+    print h2($reldir);
     print img({src=>"/icons/back.gif",alt=>"[DIR]"});
-    print a({href=>$myurl.ddot($reldir)}, "  parent dir"), br;
+    print a({href=>$myurl.ddot($reldir)."?mode=list"}, "  parent dir"), br;
   }
   foreach $ndir (sort @ndir) {
     if (($ndir ne "CVS") && ($ndir ne "RCS")){
-      print img({src=>"/icons/folder.gif",alt=>"[DIR]"});
-      print a({href=>"$fullurl/$ndir"}, "  $ndir"), br;
+      print img({href=>"$fullurl/$ndir?mode=list",target=>"list", src=>"/icons/folder.gif",alt=>"[DIR]"});
+      print a({href=>"$fullurl/$ndir?mode=list",target=>"list"}, "  $ndir"), br;
     }
   }
 }
@@ -215,7 +217,7 @@ sub showfiles {
     $file =~ s/\.pro//i;
     ($base) = split(/\./,$file);
     print img({src=>"/icons/text.gif",alt=>"[DIR]"});
-    print a({href=>"$fullurl?file=$file&mode=header"}, "  $base"), br;
+    print a({href=>"$fullurl?file=$file&show=header&mode=text",target=>"text"}, "  $base"), br;
   }
 }
 
@@ -223,34 +225,40 @@ sub showfiles {
 
 print header;
 print start_html('NASE/MIND Documentation System');
-print start_body;
 
 
 if (! -r $INDEX){
   createRoutineIdx();
 }
-if ($P::mode eq "update"){
-  updatedoc();
-} else {
-  print '<TABLE BORDER=0 WIDTH="100%" HEIGHT="80%">';
-  print '<TD ALIGN=LEFT VALIGN=TOP WIDTH="40%">';
-  showdirs($sub);
-  showfiles($sub);
-  print '</TD>';
-  print '<TD VALIGN=TOP>';
-  if ($P::file){
-    if ($P::mode eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); }
-    if ($P::mode eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); }
-  }
-  print '</TD>';
-  print '</TABLE>';
-  $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
-  print "<FONT SIZE=-1>last update: ".localtime($lastmod).", <A HREF=$myurl?mode=update>initiate update</A></FONT>";
-  print hr;
-  print '<FONT SIZE=-1>$Id$</FONT>';
-}
 
-print end_body;
+
+if ($P::mode){
+  $_ = $P::mode;
+ TRUNK: {
+    /update/i && do { updatedoc();
+		      last TRUNK;};
+    /list/i   && do { showdirs($sub);
+		      showfiles($sub);
+		      $lastmod = (stat($INDEX))[9] || die "can't stat() $INDEX: $!\n";
+		      print "<FONT SIZE=-1>last update: ".localtime($lastmod).", <A HREF=$myurl?mode=update>initiate update</A></FONT>";
+		      print hr;
+		      print '<FONT SIZE=-1>$Id$</FONT>';
+		      last TRUNK;};
+    /text/i   && do { if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); }
+				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); }
+				  };
+		      last TRUNK;};
+  }
+} else {
+  print '<frameset cols="25%,75%">';
+  print frame({src=>"$fullurl?mode=list", name=>"list"});
+  print frame({src=>"$fullurl?mode=text", name=>"text"});
+  print '</frameset>';
+  print "i cant handle frames!!";
+};
+
+
+
 print end_html;
 
 exit 0;
