@@ -8,7 +8,7 @@
 ; AIM:
 ;  Suppress display of <I>Floating Underflow</I> math errors.
 ;
-; PURPOSE: 
+; PURPOSE:
 ;  <I>Floating Underflow</I> errors can appear very frequently in numeric
 ;  computations. In most cases, these are non-critical errors,
 ;  indicating that an expression evaluated to a result too small to be
@@ -61,7 +61,7 @@
 ;
 ; PROCEDURE:
 ;  Check for supported platform/version, then execute
-;  <*>dummy = Check_Math(Mask=32)</*>. 
+;  <*>dummy = Check_Math(Mask=32)</*>.
 ;
 ; EXAMPLE:
 ;*> a = exp(-300)
@@ -75,5 +75,5 @@
 
 Pro IgnoreUnderflows
    If IdlVersion() gt 3 then $
-    If !Version.OS_FAMILY ne "WIndows" then dummy = Check_Math(Mask=32)
+    If !Version.OS_FAMILY ne "Windows" then dummy = Check_Math(Mask=32)
 End
