@@ -1,10 +1,9 @@
 ;+
 ; NAME:               TotalRecall
 ;
-; PURPOSE:            Die Prozedur erhaelt als Input die verzoegerten praesynaptischen Aktionspotentiale 
-;                     und updated alle synaptischen Lernpotentiale, die in einer mit InitRecall erzeugten
-;                     Struktur enthalten sind. Die Verwendung dieser beiden Routinen macht nur fuer verzeogerte
-;                     Verbindungen Sinn.
+; PURPOSE:            Die Prozedur erhaelt als Input die (verzoegert oder nicht) praesynaptischen Aktionspotentiale 
+;                     und updated alle Lernpotentiale, die in einer mit InitRecall erzeugten
+;                     Struktur enthalten sind. Der Aufruf dieser Routine erfolgt eigentlich nur aus einer Lernregel.
 ;
 ; CATEGORY:           LEARNING
 ;
@@ -50,10 +49,15 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Thu Sep 4 15:42:53 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Header an veraenderte InitRecall-Routine angepasst
+;
 ;       Thu Sep 4 11:38:25 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
-;		Urversion erstellt
+;		Schoepfung
 ;
 ;-
 PRO TotalRecall, LP, In
