@@ -93,6 +93,10 @@
 ;  Note that interpolation of an array containing <*>!NONE</*>
 ;  elements is not recommended, as <*>!NONE</*>s tend to disappear
 ;  due to the interpolation process.
+;
+;  BUGS/TODO:
+;  o Handling of 1-dim arrays is broken.
+;  o Handling of arrays with trailing dimensions of 1 is broken.
 ;                
 ; EXAMPLE:
 ;* bild = FIndgen(100,100)
