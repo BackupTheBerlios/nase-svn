@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1999/03/11 17:42:05  kupper
+;        KLeinigkeit, aber wichtig: WINDOW muﬂ vor TVLCT kommen, damit man eine private Colormap bekommt!
+;
 ;        Revision 1.3  1999/03/11 17:32:06  kupper
 ;        Showlogo hat jetzt das SECS Keyword.
 ;
@@ -37,12 +40,10 @@
 Pro ShowLogo, SECS=secs
 
    Read_GIF, GETENV("NASEPATH")+"/graphic/naselogo2.gif", logo, r, g, b
-   tvlct, r, g, b
 
    device, get_screen_size=ss
    window, /free, COLORS=256, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
-   plot, indgen(10)
-
+   tvlct, r, g, b
    tv, logo
 
    if Keyword_Set(SECS) then begin
