@@ -42,14 +42,12 @@
 ;         convolution, corresponding to simply counting the spikes in
 ;         a given time window.
 ;         Using a gaussian gives a smoother result, but takes longer
-;         to compute. Note
-;         that <*>SSIZE</*> may have to be adjusted depending on
-;         whether <*>GAUSS</*> is set or not. 
+;         to compute. 
 ;  SSIZE:: Width of window used to calculate the firing rate. If
 ;         keyword <*>/GAUSS</*> is set, <*>SSIZE</*> sets the standard
 ;         deviation of 
 ;         the Gaussian filter, if <*>GAUSS=0</*>, <*>SSIZE</*> sets
-;         the total width of the rectangular convolution mask. Default: 20ms.
+;         the half width of the rectangular convolution mask. Default: 20ms.
 ;  SSHIFT:: Shift of positions where firing rate is to be
 ;          computed. Default: 1BIN.
 ;
@@ -67,8 +65,18 @@
 ;  AVERAGE:: Array containing the firing rate averaged over all 
 ;            neurons/trials.
 ;
+; RESTRICTIONS:
+;  IDL's <C>Smooth</C> is used, which always increments its
+;  smoothing range by 1 of the range supplied es even. Thus, the actual
+;  width of the rectangular window used to count the spikes is
+;* 2*Fix(ssize*0.001/sampleperiod)+1
+; 
 ; PROCEDURE: 
-;  Construct filter and convolve spiktrain with this. Average if desired.
+;  Construct filter and convolve spiktrain with this. If
+;  <*>GAUSS=0</*>, use IDL's <C>Smooth</C> with some array reformations.
+;  <C>Smooth</C> in IDL5.4 cannot handle different ranges in different
+;  dimensions, so the spike array is transformed to 1dim, smoothed and
+;  transformed back. Average the result if desired.
 ;
 ; EXAMPLE: 
 ;*  a=fltarr(1000,10)
@@ -95,9 +103,12 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
    Default, gauss, 0
    Default, sampleperiod, 0.001
    Default, ssize, 20
-   __ssize = ssize*0.001/sampleperiod
+;   __ssize = ssize*0.001/sampleperiod
+   __ssize = Fix(ssize*0.001/sampleperiod) ;;__ssize is in array indices, thus integer
 
    snt = Size(nt)
+   ;; add dimension if 1dim array is supplied
+   IF snt[0] EQ 1 THEN snt = [snt[0:1], 1, snt[2:3]]
 
    IF Set(sshift) THEN __sshift = sshift*0.001/sampleperiod $
    ELSE __sshift = 1
@@ -114,7 +125,24 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
    ENDIF ELSE BEGIN
       ;; Smooth() works faster and is equivalent to convolution with
       ;; rectangular array
-      rates = Smooth(Float(nt), [__ssize, 1], /EDGE_TRUNC)/sampleperiod
+      ;; rates = Smooth(Float(nt), [__ssize, 1], /EDGE_TRUNC)/sampleperiod
+      ;; works in IDL5.6, but not IDL5.4???
+
+      ;; this version uses 1dim smoothing and correctly computes rates
+      ;; at edges by adding 0s
+      addlength = __ssize
+      add = FltArr(addlength, snt[2])
+      newnt = Reform([add, Float(nt), add], snt[4]+(addlength*2*snt[2]))
+      rates = Smooth(newnt, 2*__ssize)/sampleperiod
+      rates = Reform(rates, snt[1]+addlength*2, snt[2], /OVERWRITE)
+      i1 = LIndGen(snt[1])+addlength
+      rates = (Temporary(rates))[[i1], *]
+
+      ;; old version: beware of edge effects if first or last entry is
+      ;; a spike
+      ;; mask = FltArr(2*__ssize+1)+1./(2.*__ssize+1)
+      ;; rates = Convol(Float(nt), mask, /EDGE_TRUNC)/sampleperiod
+
    ENDELSE ;; Keyword_Set(GAUSS)
 
    rates = (Temporary(rates))[tindices, *]
