@@ -70,6 +70,8 @@
 ;-
 
 Pro SetColorIndex, Nr, R, G, B
+   
+   if Nr gt !D.Table_Size-1 then message, "Der Farbindex ist nicht verfügbar!"
 
     My_Color_Map = intarr(256,3) 
     TvLCT, My_Color_Map, /GET  
