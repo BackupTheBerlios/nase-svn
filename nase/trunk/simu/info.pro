@@ -20,12 +20,34 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/02/26 17:21:22  kupper
+;            Jetzt schneller mit Trial-and-Error-Strategie!
+;
 ;     Revision 1.1  1998/01/05 16:34:58  saam
 ;           aus der Not geboren
 ;
 ;
 ;-
 FUNCTION Info, _NS
+
+;Wir stellen uns hganz dumm und probieren erstmal:
+Try = 0
+Catch, My_Error                 ;hier hinter landen wir, wenn was nicht klappt
+
+Try = Try+1                     ;nächster Versuch
+;print, Try, '. Versuch!'
+case Try of
+   1: Return, _NS.info          ;1. Versuch: Eine Struktur mit info-Tag
+   2: Begin                     ;2. Versuch: Ein Handle auf eine solche
+      Handle_Value, _NS, NS
+      Return, NS.info
+   End
+   else: Catch, /CANCEL ;Dann machen wir halt eine konventionelle Untersuchung!
+endcase
+
+
+
+;; Hier folgt der Fehlerbehandlungsteil:
 
    On_Error, 2
 
