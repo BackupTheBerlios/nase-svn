@@ -155,8 +155,9 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
 
    CASE mmode OF
       0: begin 
+         ;; this is a text console, print the message to stderr:
          for i=0, n_elements(yell)-1 do begin 
-            print, yell(i)
+            printf, -2, yell(i)
 
          endfor
          ;;since idlversion 5.4 output is buffered within a nohup session

@@ -29,7 +29,7 @@
 ;   FILENAME :: Enables additional logging into
 ;               a file called FILENAME. 
 ;   MODE     :: specifies display :
-;               MODE = 'nowin'  ... console=print  (Default)
+;               MODE = 'nowin'  ... print output to stderr  (Default)
 ;               MODE = 'win'    ... opens text-widget 
 ;   LENGTH   :: Length of remembered lines       (Default=200)  
 ;               THRESHOLD:: Messages with priority lt THRESHOLD are supressed
