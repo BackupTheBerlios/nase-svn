@@ -124,7 +124,7 @@ FUNCTION _UReadU, lun, _EXTRA=e
               x = Replicate(x, Product(sx(1:sx(0)))) ; fucking REPLICATE doesn't accept a vector of dimensions!
               x = REFORM(x, sx(1:sx(0)), /OVERWRITE)
 
-              FOR i=1,N_Elements(x)-1 DO x(i)=UReadU(lun)
+              FOR i=1,N_Elements(x)-1 DO x(i)=_UReadU(lun)
           END
           ELSE: ReadU, lun, x
       END
