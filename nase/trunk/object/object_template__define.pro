@@ -168,7 +168,7 @@ End
 
 
 ;; ------------ Private --------------------
-Pro basic_draw_object::override_me_; -ABSTRACT-
+Pro MyClass::override_me_; -ABSTRACT-
    ;; use this template for all abstract methods.
    On_error, 2
    message, "This abstract method was not overridden in derived class '"+Obj_Class(self)+"'!"
