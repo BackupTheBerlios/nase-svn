@@ -26,6 +26,7 @@
 ;                             [, /NEUTRAL]
 ;                             [, /POLYGON]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
+;                             [, SETCOL=0]
 ;
 ; INPUTS: Array : klar!
 ;
@@ -62,6 +63,8 @@
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
 ;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;                     TOP       : Benutzt nur die Farbeintraege von 0..TOP-1 (siehe IDL5-Hilfe von TvSCL)
+;                     SETCOL    : Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
+;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
@@ -89,6 +92,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.40  1999/06/06 14:24:48  kupper
+;     Added SETCOL KeyWord.
+;
 ;     Revision 2.39  1999/03/17 16:37:16  saam
 ;           TOP keyword implemented
 ;
@@ -236,6 +242,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                POLYGON=POLYGON,$
                LEGMARGIN=LEGMARGIN,$
                TOP=top,$
+               SETCOL=setcol, $
                _EXTRA=_extra
 
 
@@ -263,6 +270,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
    Get_Color = sc
    
+   Default, SETCOL, 1
    Default, Charsize, 1.0
    Default, NOSCALE, 0
    Default, ORDER, 0
@@ -431,13 +439,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
           X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM,$
           ORDER=UpSideDown, POLYGON=POLYGON
       END ELSE BEGIN
-         UTV, ShowWeights_Scale(Transpose(W),/SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+         UTV, ShowWeights_Scale(Transpose(W),SETCOL=setcol), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
           OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM,$
           Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
       ENDELSE
    END ELSE BEGIN
       IF Keyword_Set(NEUTRAL) THEN BEGIN
-         UTV, ShowWeights_Scale(W, /SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+         UTV, ShowWeights_Scale(W, SETCOL=setcol), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
           OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, $
           Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
       END ELSE BEGIN
