@@ -25,14 +25,12 @@
 ;  fsample:: Sample frequency
 ;  frequency:: Frequency of the wavelet
 ;
-; OPTIONAL INPUTS:
-;
 ; INPUT KEYWORDS:
 ;  NPERIODS:: Number of periods
 ;
 ; OUTPUTS:
 ;  wave:: A complex one dimensional array containing the wavelet form. It's length is given by: <BR>
-;         <*> s = 1.5*nperiods*fsample/frequency </*>
+;         <*> s = 1.5*nperiods*fsample/frequency + 1 </*>
 ;
 ; PROCEDURE:
 ;  The wavelet signal is
