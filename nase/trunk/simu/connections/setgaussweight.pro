@@ -9,7 +9,7 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: SetGaussWeight ( DWS
-;                                   [,Maximum | ,Norm ] [,Sigma | ,HWB=Halbwertsbreite] 
+;                                   [,Maximum | ,Norm ] [[,Sigma | ,HWB=Halbwertsbreite] | [ ,XHWB=xhwb ,YHWB=yhwb]] 
 ;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE | LESSTHAN=Abschneidewert ] ]
@@ -32,8 +32,9 @@
 ; OPTIONAL INPUTS: Maximum       : Stärke der stärksten Verbindung (Höhe der Bergspitze, default 1)
 ;                  Norm          : Volumen der Gaussmaske auf Eins normiert
 ;                  Sigma         : Standardabweichung in Gitterpunkten.
-;                                  alternativ kann in HWB die Halbwertsbreite angegeben werden.
-;	            Abschneidewert: Legt fest, wie klein die Gewichte
+;                                  alternativ kann in HWB oder in HWBX und HWBY die Halbwertsbreite angegeben werden.
+;                                  SEE ALSO: <A HREF="/usr/ax1303/neuroadm/nase#GAUSS_2D"></A>
+;                  Abschneidewert: Legt fest, wie klein die Gewichte
 ;                                  werden duerfen, bevor sie auf !NONE gesetzt werden 
 ;                                  ( TRUNC_VALUE wird dann auf !NONE gesetzt !!!)
 ;
@@ -70,6 +71,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1997/12/08 17:33:02  gabriel
+;            paar bugs entfernt, elliptische gaussmaske, XHWB YHWB Keywords
+;
 ;       Revision 1.9  1997/11/17 17:45:45  gabriel
 ;             INITSDW Keyword eingefuegt
 ;
@@ -102,11 +106,11 @@
 ;
 ;-
 
-Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
+Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESSTHAN=lessthan, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                       TRANSPARENT=transparent, _EXTRA=extra
+                       TRANSPARENT=transparent, INITSDW=initsdw
 
    Default, Amp, 1
    IF Keyword_Set(Norm) THEN Amp = 1
@@ -117,7 +121,8 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
    
       if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
-       GaussMask = Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb,NORM=norm, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
+       GaussMask = Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
+                                  Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
        IF set(lessthan) THEN BEGIN
           g_index = where(GaussMask LT lessthan,g_count)
           IF g_count GT 0 THEN  GaussMask(g_index) = !NONE 
@@ -131,7 +136,8 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
       if not(set(t_row)) or not(set(t_col)) or not(set(s_hs_row)) or not(set(s_hs_col)) then $
        message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
 
-       GaussMask =Amp * Gauss_2D(DWS.source_h, DWS.source_w, Sigma, HWB=hwb,NORM=norm, Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
+       GaussMask =Amp * Gauss_2D(DWS.source_h, DWS.source_w, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
+                                 Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
        IF set(lessthan) THEN BEGIN
           g_index = where(GaussMask LT lessthan,g_count)
           IF g_count GT 0 THEN  GaussMask(g_index) = !NONE 
@@ -139,7 +145,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
 
        SetWeight, DWS, T_ROW=t_row, T_COL=t_col, GaussMask,$
         ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-        TRANSPARENT=transparent,_EXTRA=extra
+        TRANSPARENT=transparent,INITSDW=initsdw
 
    endelse
 
