@@ -71,7 +71,12 @@
 ;                         Since the zero-frequency ("DC") bin occurs only once in the whole discrete Fourier spectrum,
 ;                         this bin must <I>not</I> be multiplied by 2. The same holds for the Nyquist-frequency bin if
 ;                         the total number of frequency bins is even (otherwise, there <I>is</I> no Nyquist-frequency bin,
-;                         but some frequency slightly below is represented twice).
+;                         but some frequency slightly below is represented twice). <B>WARNING</B>: This correction does
+;                         not have the desired effect when padding is performed! The reason is that the interpolation
+;                         values near the zero- and the Nyquist-bin always run towards the uncorrected values of these
+;                         bins, and correcting only the zero- and Nyquist-bins themselves afterwards introduces
+;                         discontinuities at the edges of the spectrum. I (Andreas) have not found a solution for this
+;                         problem so far, but I will think about it.
 ;  PADDING::              "Padding" means artificially extending the length of the analysis time window in order to get
 ;                         a higher frequency resolution, which, of course, can only be a "pseudo-resolution", because
 ;                         the non-padded DFT spectrum already contains all information that is available from the given
