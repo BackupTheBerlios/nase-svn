@@ -9,7 +9,7 @@
 ; CATEGORY:           MIND CONTROL
 ;
 ; CALLING SEQUENCE:   iter = ForEach(procedure [,p1 [,p2 [,p3 [,p4 [,p5 [,p6 [,p7 [p8 [,p9]]]]]]]]] $
-;                                     [,/W] [,VALUES=values] [,/FAKE] [,/QUIET] [,_EXTRA=e] )
+;                                     [,ISKIP=iskip] [,OSKIP=oskip] [,/W] [,VALUES=values] [,/FAKE] [,/QUIET] [,_EXTRA=e] )
 ;
 ; INPUTS:             procedure: the string of the procedure to be performed for each iteration
 ;
@@ -20,6 +20,11 @@
 ;                     QUIET : supresses the output of the latest iteration
 ;                     FAKE  : simulates the routine without actually calling procedure
 ;                     E     : all other keywords are passed to procedure
+;                     ISKIP ,
+;                     OSKIP : skips the specified number of inner and
+;                             outer loop hierarchies, this is
+;                             espacially useful for metaroutines that
+;                             evaluate data accross multiple iterations
 ;
 ; OUTPUTS:            iter  : the number of performed iterations 
 ;
@@ -32,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/04/03 12:50:57  saam
+;           added ISKIP and OSKIP to skip loop hierarchies
+;
 ;     Revision 1.2  1999/12/21 09:42:03  saam
 ;           docheader now includes fakeeach
 ;
@@ -40,16 +48,35 @@
 ;
 ;
 ;-
-FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet, setvalues=setvalues, _EXTRA=e
+FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet, setvalues=setvalues, pname=pname, $
+                  ISKIP=iskip, OSKIP=oskip, _EXTRA=e
 
    COMMON ATTENTION
    
    
    ; scan AP for loop instructions __?
-   TS  = ExtraDiff(AP, '__TV', /SUBSTRING, /LEAVE)
+   TST = ExtraDiff(AP, '__TV', /SUBSTRING, /LEAVE) ; temporary 
    TSN = ExtraDiff(AP, '__TN', /SUBSTRING, /LEAVE)
    
    
+   Default, ISKIP, 0
+   IF (ISKIP GT N_Tags(TST)) THEN Console, 'skipping more inner loops ('+STR(ISKIP)+') than currently availible ('+STR(N_TAGS(TST))+')', /FATAL
+   IF ISKIP GT 0 THEN Console, 'skipping '+STR(ISKIP)+' inner loop hierarchy/ies'
+
+   Default, OSKIP, 0
+   IF (OSKIP GT N_Tags(TST)) THEN Console, 'skipping more outer loops ('+STR(OSKIP)+') than currently availible ('+STR(N_TAGS(TST))+')', /FATAL
+   IF OSKIP GT 0 THEN Console, 'skipping '+STR(OSKIP)+' outer loop hierarchy/ies'
+
+   IF ISKIP+OSKIP GT N_TAGS(TST) THEN Console, 'skipping more than available', /WARN
+
+   ; cut that __TV stuff away
+   TS = {____XXX : 0}
+   FOR i=0+OSKIP, N_TAGS(TST)-1-ISKIP DO BEGIN
+       SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)
+   END
+   DelTag, TS, "____XXX"
+
+
    ltags = 0
    IF TYPEof(TS) EQ 'STRUCT' THEN BEGIN
       LS = InitLoop(TS)
@@ -69,7 +96,8 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
             
             ;ATTENTION
             P = AP
-            P.file = StrCompress(AP.FILE+LoopName(LS), /REMOVE_ALL)
+            P.file = StrCompress(AP.FILE+LoopName(LS, pname=pname), /REMOVE_ALL)
+            P.pfile = pname
             ;Set values
             FOR i=0, N_Tags(LV)-1 DO BEGIN
                coms = Str_Sep(TSN.(i), '/')
@@ -91,7 +119,7 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
             END
             
             
-            IF NOT Keyword_Set(QUIET) THEN Print, LoopName(LS, /PRINT)
+            IF NOT Keyword_Set(QUIET) THEN Console, LoopName(LS, /PRINT)
             
             IF Keyword_Set(SETVALUES) THEN BEGIN
                IF Set(E) THEN newextra = Create_Struct(e, 'LOOPVALUE', LV) ELSE newextra = {LOOPVALUE : LV}
@@ -119,7 +147,8 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    END ELSE BEGIN
       IF NOT Keyword_Set(FAKE) THEN BEGIN
          P = AP
-         P.file = StrCompress(AP.FILE+'_', /REMOVE_ALL)
+         P.file = Str(AP.FILE+'_')
+         P.pfile = Str(AP.pFILE+'_')
          
          CASE N_Params() OF
             1: CALL_PROCEDURE, procedure,_EXTRA=e
