@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  1999/07/26 12:49:44  thiel
+;           Non-Delay version improved.
+;
 ;       Revision 1.3  1999/07/26 09:10:52  thiel
 ;           New version with even better learned connection reset.
 ;
@@ -77,17 +80,20 @@ PRO TotalPrecall, _PC, _DW, postL
       PC.pre(preAP) = PC.time
 
       IF NOT delay THEN BEGIN
-         ; we have to find corresponding active connections
-         ; to the active presynaptic neurons stored in PreAP
+         ; Delay=0: We have to find corresponding active connections
+         ; to the active presynaptic neurons stored in PreAP.
          FOR asi=0, N_Elements(PreAP)-1 DO BEGIN
             asn = PreAP(asi)
             IF DW.S2C(asn) NE -1 THEN BEGIN
                Handle_Value, DW.S2C(asn), wi, /NO_COPY
-               IF Set(preCON) THEN preCON = [preCON, wi] ELSE preCON = wi ;preCON : list of active presynaptic weight indidices
+               IF Set(preCON) THEN preCON = [preCON, wi] $
+               ELSE preCON = wi 
+                  ; preCON : list of active presynaptic weight indidices
                Handle_Value, DW.S2C(asn), wi, /NO_COPY, /SET
-            END
-         END
-      END ELSE preCON = PreAP
+            ENDIF
+         ENDFOR
+      ENDIF ELSE preCON = PreAP; Delay=1: Active connections are already
+                               ; given in PreAP 
 
 
       IF Set(preCON) THEN BEGIN ; there may be neurons not connected to any neuron
@@ -97,13 +103,13 @@ PRO TotalPrecall, _PC, _DW, postL
          IF c NE 0 THEN BEGIN
             learnPre = preCON(atn)
             PN = DW.C2T(learnPre)
-            IF delay THEN list1 = [learnPre, PC.Post(PN)-PC.Pre(learnPre)] ELSE list1 = [learnPre, PC.Post(PN)-PC.Pre(DW.C2S(learnPre))]
+            IF delay THEN list1 = [learnPre, PC.Post(PN)-PC.Pre(learnPre)] $
+            ELSE list1 = [learnPre, PC.Post(PN)-PC.Pre(DW.C2S(learnPre))]
             list1 = REFORM(list1, N_Elements(list1)/2 ,2, /OVERWRITE)
-         END
-      END
+         ENDIF
+      ENDIF 
 
-
-   END
+   ENDIF 
 
 
 
@@ -122,35 +128,41 @@ PRO TotalPrecall, _PC, _DW, postL
          atn = PostAP(ati)
          IF DW.T2C(atn) NE -1 THEN BEGIN
             Handle_Value, DW.T2C(atn), wi
-            wi = Transpose(wi)  ; diese Zeile ergänzt
-            IF Set(postCON) THEN postCON = [postCON, wi] ELSE postCON = wi ;postCON : list of active postsynaptic weight indidices
-         END
-      END
+            wi = Transpose(wi)  ; added this line
+            IF Set(postCON) THEN postCON = [postCON, wi] $
+            ELSE postCON = wi   
+               ; postCON : list of active postsynaptic weight indidices
+         ENDIF
+      ENDFOR
+
       
       IF Set(postCON) THEN BEGIN ; there may be neurons not connected to any neuron
-         ; look if the corresponding presynaptic connection was already active
-         ; if yes, remember connection to be learned
-
+       ; look if the corresponding presynaptic connection was already active
+       ; if yes, remember connection to be learned
          IF NOT delay THEN BEGIN
-            FOR aci=0, N_Elements(preCON)-1 DO BEGIN
-               IF PC.Post(DW.C2T(preCON(aci))) NE !NONEl THEN BEGIN
-                  IF Set(learnPost) THEN learnPost = [learnPost, preCON(aci)] ELSE learnPost = preCon(aci)
-               END
-            END
-         END ELSE BEGIN
+            ; Delay=0
+            aci = WHERE(PC.Pre(DW.C2S(postCON)) NE !NONEl, c)
+            IF c NE 0 THEN BEGIN
+               learnPost = postCon(aci)
+               PostNeurons = DW.C2T(learnPost)
+               list2 = [learnPost, PC.Post(PostNeurons)-PC.Pre(DW.C2S(learnPost))]
+               list2 = REFORM(list2, N_Elements(list2)/2 ,2, /OVERWRITE)
+            ENDIF ; c NE 0
+         ENDIF ELSE BEGIN
+            ; Delay=1
             idx = WHERE(PC.pre(postCON) NE !NONEl, c)
             IF c NE 0 THEN BEGIN
                learnPost = postCon(idx)
-               ; complicated...
+                                ; complicated...
                PostNeurons = DW.C2T(learnPost)
-               IF delay THEN list2 = [learnPost, PC.Post(PostNeurons)-PC.Pre(learnPost)] ELSE list2 = [learnPost, PC.Post(PostNeurons)-PC.Pre(DW.C2S(learnPost))]
+               list2 = [learnPost, PC.Post(PostNeurons)-PC.Pre(learnPost)]
                list2 = REFORM(list2, N_Elements(list2)/2 ,2, /OVERWRITE)
-            END
-         END
-      END
-      
+            ENDIF ; c NE 0
+         ENDELSE ; Delay=1
+         
+      ENDIF ; Set(postCON)
 
-   END   
+   ENDIF ; PostAP(0) NE 0   
 
 
    ; merge the two results
@@ -165,25 +177,13 @@ PRO TotalPrecall, _PC, _DW, postL
    IF Handle_Info(PC.postpre) THEN Handle_Value, PC.postpre, list, /SET ELSE PC.postpre = Handle_Create(!MH, VALUE = list)
    
    
-;   Print, 'List: ', list
-
-;   Print
-;   Print, 'pc.pre: ', pc.pre
-;   Print
-;   Print, 'pc.post: ', pc.post
-
    ; reset learned connections
    IF Set(learnPre)    THEN BEGIN
-;      Print
-;      Print, 'learnpre: ', learnpre
       PC.Pre(learnPre) = !NONEl
       PC.Post(PN) = !NONEl
    ENDIF
 
-;vorher:   IF Set(learnPost)   THEN PC.Pre(learnPost)    = !NONEl
    IF Set(learnPost)   THEN BEGIN
-;      Print
-;      Print, 'learnpost: ', learnpost
       PC.Pre(learnPost)    = !NONEl
       PC.Post(PostNeurons)    = !NONEl
    ENDIF
@@ -198,6 +198,11 @@ PRO TotalPrecall, _PC, _DW, postL
    oldSpikes = WHERE(PC.pre LE PC.time-PC.deltaMax,c)
    IF c NE 0 THEN PC.pre(oldSpikes) = !NONEl
    
+
+   Print, 'pc.pre: ',pc.pre
+   Print, 'pc.post: ',pc.post
+
+   Print, 'List: ',list
 
 
 
