@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  RealFileName()
+;  RealFilename()
 ;
 ; VERSION:
 ;  $Id$
@@ -9,15 +9,18 @@
 ;  Cleans a pathname from automounter artifacts.
 ;
 ; PURPOSE:
-;  <C>RealFileName()</C> is used to manipulate a filename according to
+;  <C>RealFilename()</C> is used to manipulate a filename according to
 ;  certain requirements. It was originally developed to clean
-;  pathnames from automounter artifacts specfic for the Marburgian UNIX
+;  pathnames from automounter artifacts specific for the Marburgian UNIX
 ;  environment. By setting the system variable <C>!CHANGEFILENAME</C>
-;  to 'marburg', <C>RealFileName()</C> still works in this way. It is
+;  to 'marburg', <C>RealFilename()</C> still works in this way. This
+;  is also the default setting, done during execution of
+;  <A>DefGlobVars</A>.
+;  It is
 ;  possible to implement new desired behaviors by adding
 ;  instructions for other values of <C>!CHANGEFILENAME</C>. Currently,
 ;  the only other value is 'off', which
-;  results in <C>RealFileName()</C> doing nothing.
+;  results in <C>RealFilename()</C> doing nothing. 
 ;
 ; CATEGORY:
 ;  Dirs
@@ -25,7 +28,7 @@
 ;  OS
 ;
 ; CALLING SEQUENCE:
-;*newname = RealFileName( filepath )
+;* newname = RealFilename( filepath )
 ;
 ; INPUTS:
 ;  filepath:: The complete filename as a string variable.
@@ -33,32 +36,31 @@
 ; OUTPUTS:
 ;  newname:: The manipulated filename, also a string.  
 ;
-; RESTRICTIONS:
-;  Currently, if <C>!CHANGEFILENAME</C> is not set,
-;  <C>RealFileName()</C> executes the Marburg specific commands like
-;  it always did.
-;
 ; PROCEDURE:
-;  - Check if <C>!CHANGEFILENAME</C> is set.<BR>
-;  - If yes, execute commans according to <C>!CHANGEFILENAME</C>'s
-;  value.<BR>
-;  - If not, behave like always.
+;  Execute commands according to <C>!CHANGEFILENAME</C>'s
+;  value in a CASE statement.
 ;
 ; EXAMPLE:
-;*  DefSysV, '!CHANGEFILENAME', 'marburg'
-;*  Print, RealFileName('/a/ax1319/usr/ax1319.a/...')
+;*  !CHANGEFILENAME='marburg'
+;*  Print, RealFilename('/a/ax1319/usr/ax1319.a/...')
 ;*> /usr/ax1319.a/..
-;*  Print, RealFileName('/home/athiel/IDL/...')
+;*  Print, RealFilename('/home/athiel/IDL/...')
 ;*> /usr/athiel/IDL/...
 ;*  !CHANGEFILENAME='off'
-;*  Print, RealFileName('/home/athiel/IDL/...')
+;*  Print, RealFilename('/home/athiel/IDL/...')
 ;*> /home/athiel/IDL/...
+;
+; SEE ALSO:
+;  <A>DefGlobVars</A>.
 ;
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  2001/05/08 15:37:18  thiel
+;        !CHANGEFILENAME is now defined in DEFGLOBVARS.
+;
 ;     Revision 2.5  2001/05/08 13:44:23  thiel
 ;        RealFileName can be turned off now.
 ;
@@ -85,15 +87,16 @@
 ;           routines in this directory use it...
 ;
 
-FUNCTION RealFileName, FilePath
+FUNCTION RealFilename, FilePath
 
    ON_Error, 2
 
-   IF N_Params() NE 1 THEN Message, 'wrong calling syntax'
+   IF N_Params() NE 1 THEN Console, 'Wrong calling syntax.', /FATAL
    
    Renorm = FilePath
 
    ;; Is !CHANGEFILENAME defined at all?
+   ;; This should have happended in DefGlobVars.
    DefSysV, '!CHANGEFILENAME', EXISTS=ex
 
    IF ex THEN BEGIN ;; !CHANGEFILENAME is defined
@@ -116,32 +119,17 @@ FUNCTION RealFileName, FilePath
          END ;; Marburg Unix specific actions
 
          'off' : BEGIN ;; do nothing
-            Console, 'Filename change turned OFF.', /MSG
-         END 
+            ; Console, 'Filename change turned OFF.', /MSG
+         END ;; do nothing
 
-         ELSE: BEGIN
+         ELSE: BEGIN;; none of the above?
             Console, 'Unknown !CHANGEFILENAME. Filename NOT changed.',  /MSG
          END
 
       ENDCASE
 
-   ENDIF ELSE BEGIN ;;!CHANGEFILENAME is not defined
-
-      ;; Execute Marburg Unix specific actions like before
-      Renorm = StrReplace(Renorm, '/tmp_mnt/', '/')
-      slashified = Str_Sep(Renorm, '/')
-      IF N_Elements(slashified) GT 1 THEN BEGIN
-         IF ((slashified(0) EQ '') AND (slashified(1) EQ 'a')) THEN $
-          Renorm = StrReplace(Renorm, '/'+slashified(1)+'/'+ $
-                              slashified(2)+'/', '/')
-      ENDIF 
-      Renorm = StrReplace(Renorm, '/home/', '/usr/')
-      Renorm = StrReplace(Renorm, '/gonzo/', '/ax1317/')
-      Renorm = StrReplace(Renorm, '/./','/')
-      Renorm = RemoveDup(Renorm, '/')
-
-      Console, 'Please choose a value for !CHANGEFILENAME.', /MSG
-
+   ENDIF ELSE BEGIN ;;!CHANGEFILENAME is not defined. Shouldnt happen!
+      Console, '!CHANGEFILENAME not defined. Did you call DEFGLOBVARS?', /FATAL
    ENDELSE
      
    Return, Renorm
