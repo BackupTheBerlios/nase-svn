@@ -1,5 +1,5 @@
 ;+
-; NAME: IniTape
+; NAME: InitTape
 ;
 ;
 ; PURPOSE: Erzeugen einer Tape-Struktur
@@ -57,6 +57,9 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Thu Aug 21 18:02:12 1997, Andreas Thiel
+;		.t ist jetzt ein Long-Integer
+;
 ;       Thu Aug 21 12:01:29 1997, Andreas Thiel
 ;		Erste Version erstellt und getestet.
 ;
@@ -71,7 +74,8 @@ If Not Set(LAYER) Then Message, 'Schicht, aus der aufgenommen werden soll, mit L
 
 If Not Set(INDEX) Then Index=IndGen(LayerSize(Layer))
 
-Default, StartTime,0
+Default, StartTime, 0
+StartTime = Long(StartTime)
 
 Info = size(Index)
 Length = Info(1)
