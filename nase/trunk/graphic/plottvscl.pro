@@ -48,7 +48,8 @@
 ; INPUTS: 
 ;           Array:: klar!
 ;
-; OPTIONAL INPUTS: XNorm, YNorm:: Position der unteren linken Ecke des Plotkastens
+; OPTIONAL INPUTS: 
+;                  XNorm, YNorm:: Position der unteren linken Ecke des Plotkastens
 ;                                 in Normalkoordinaten.
 ;                                 Werden diese Werte angegeben, so hat der Anwender
 ;                                 selbst fuer ausreichenden Rand fuer Beschriftungen 
@@ -59,22 +60,24 @@
 ;                  Schriftgroesse:: Faktor, der die Schriftgroesse in Bezug auf die
 ;                                   Standardschriftgroesse (1.0) angibt
 ;
-; KEYWORD PARAMETERS: FULLSHEET:: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
+; INPUT KEYWORDS: 
+;                     FULLSHEET:: Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
 ;                                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
 ;                                der Regel nicht quadratisch.
 ;                     NOSCALE::   Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
-;                                mit dem Aufruf von <A HREF="#PLOTTV">PlotTV</A>
+;                                mit dem Aufruf von <A>PlotTV</A>
 ;                                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
 ;                                TVSCL und TV.
-;                     LEGEND::    Zeigt zusaetzlich eine <A HREF="#TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
+;                     LEGEND::    Zeigt zusaetzlich eine <A NREF="TVSCLLEGEND">Legende</A> rechts neben der TVScl-Graphik
 ;                                an. 
 ;                     ORDER::     der gleiche Effekt wie bei Original-TVScl
 ;                     NASE::      Bewirkt die richtig gedrehte Darstellung von Layerdaten 
 ;                                (Inputs, Outputs, Potentiale, Gewichte...).
 ;                                D.h. z.B. werden Gewichtsmatrizen in der gleichen
 ;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
-;                     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
-;                                das erste Element gibt das Minimum, das zweite das Maximum der Achse an                      
+;                     [XY]RANGE:: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung:
+;                                das erste Element gibt das Minimum,
+;                                das zweite das Maximum der Achse an 
 ;                     LEGMARGIN:: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
 ;                     leg_(max|min):: alternative Beschriftung der Legende 
 ;                     NEUTRAL::   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
@@ -100,7 +103,7 @@
 ;                                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
 ;                     PLOTCOL::   Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
 ;                                 wird versucht, eine passende Farbe zu raten.
-;                     RANGE_IN:: When passed, the two-element array is taken as the range to
+;                     RANGE_IN::  When passed, the two-element array is taken as the range to
 ;                                 scale to the plotting colors. (I.e. the first element is scaled to
 ;                                 color index 0, the scond is scaled to the highest available
 ;                                 index (or to TOP in the no-NASE, no-NEUTRAL, no-NOSCALE 
@@ -115,7 +118,7 @@
 ;                                 struct. However, the new scaling is valid for
 ;                                 this call only, and is not stored in the
 ;                                 struct, unless you also specify /INIT.
-;                    UPDATE_INFO:: When omitted, undefined, or passend an empty
+;                   UPDATE_INFO:: When omitted, undefined, or passend an empty
 ;                                 PLOTTVSCL_INFO structure, the call acts like
 ;                                 a normal PlotTvScl call. Axes as well as the
 ;                                 array are plotted.
@@ -140,7 +143,7 @@
 ;                                 for convenience.
 ;                                   If you intend to store UPDATE_INFO
 ;                                 structures in an array or another structure,
-;                                 use the zeroed structure {PLOTTVSCL_INFO} as
+;                                 use the zeroed structure '{PLOTTVSCL_INFO}' as
 ;                                 initial value. This value will be treated as
 ;                                 if an undefined variable was passed to
 ;                                 UPDATE_INFO. When storing in another
@@ -148,7 +151,7 @@
 ;                                 passed by value in IDL. You need to use a
 ;                                 temporary variable. (See IDL Reference Manual,
 ;                                 chapter "Parameter Passing with Structures", sic!)
-;                           INIT:: When passing a structure in UPDATE_INFO, array 
+;                          INIT:: When passing a structure in UPDATE_INFO, array 
 ;                                 values are scaled according to the values
 ;                                 contained in the PLOTTVSCL_INFO struct. /INIT
 ;                                 forces the color scaling to be re-initialized, 
@@ -158,36 +161,37 @@
 ;                                 The new scling is stored in the PLOTTVSCL_INFO 
 ;                                 struct for subsequent calls.
 ;
-; OPTIONAL OUTPUTS: GET_POSITION:: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
-;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
-;                                 zurueckgibt.
-;                   GET_COLOR:: Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
+; OPTIONAL OUTPUTS:
+;                 
+;                   GET_POSITION::  Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
+;                                   und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
+;                                   zurueckgibt.
+;                   GET_COLOR::     Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
 ;                   GET_[XY]Ticks:: Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
-;                                 ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
-;                                 beschriftet worden waere. 
+;                                   ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
+;                                   beschriftet worden waere. 
 ;                   GET_PIXELSIZE:: Ein zweielementiges Array [XSize, YSize], das die Groesse der
-;                                 TV-Pixel in Normalkoordinaten
-;                                 zurueckliefert.
-;                   GET_INFO::    Kept for compatibility reasons. This keyword
-;                                 is obsolete. The value returned is the same as 
-;                                 returned by the UPDATE_INFO keyword. Use
-;                                 UPDATE_INFO instead.
+;                                   TV-Pixel in Normalkoordinaten
+;                                   zurueckliefert.
+;                   GET_INFO::      Kept for compatibility reasons. This keyword
+;                                   is obsolete. The value returned is the same as 
+;                                   returned by the UPDATE_INFO keyword. Use
+;                                   UPDATE_INFO instead.
 ;
 ;
-; PROCEDURE: 1. Ermitteln des fuer die Darstellung zur Verfuegung stehenden Raums.
-;            2. Zeichnen der Achsen an der ermittelten Position.
-;            3. Ausfuellen mit einer entsprechend grossen UTVScl-Graphik
-;            4. Legende hinzufuegen 
+; PROCEDURE: 
+;* 1. Ermitteln des fuer die Darstellung zur Verfuegung stehenden Raums.
+;* 2. Zeichnen der Achsen an der ermittelten Position.
+;* 3. Ausfuellen mit einer entsprechend grossen UTVScl-Graphik
+;* 4. Legende hinzufuegen 
 ;
 ; EXAMPLE: 
 ;*          width = 25
 ;*          height = 50
 ;*          W = gauss_2d(width, height)+0.01*randomn(seed,width, height)
 ;*          window, xsize=500, ysize=600
-;*          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
+;*          PlotTvScl, W, 0.0, 0.1, XTITLE='X-ACHSEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-;*          ; Using the UPDATE_INFO keyword:
-;*          PlotTvScl, 
 ;
 ; SEE ALSO: <A>PlotTV</A>, <A>UTVScl</A>, <A>TVSclLegend</A>, <A>NaseTVScl</A>,
 ;           <A>PlotTVScl_update</A>            
@@ -195,6 +199,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.68  2000/11/02 16:19:25  gabriel
+;          doc header bug killed; perl doesn't like cambered brackets ...
+;
 ;     Revision 2.67  2000/11/02 15:48:43  gabriel
 ;          many bugs fixed: fg color , arry origin positioning , doc header
 ;
