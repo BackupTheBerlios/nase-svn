@@ -1,27 +1,126 @@
 ;+
+; NAME:
+;  ProcedureName or FunctionName()  [without .pro!]
+;
+; VERSION:
+;  $Id$
+;
+; AIM:
+;  
+;
+; PURPOSE:
+;  (When referencing this very routine in the text as well as all IDL
+;  routines, please use <C>RoutineName</C>.)
+;
+; CATEGORY:
+;  Algebra
+;  Animation
+;  Array
+;  Color
+;  CombinationTheory
+;  Connections
+;  DataStorage
+;  DataStructures
+;  Demonstration
+;  Dirs
+;  ExecutionControl
+;  Files
+;  Fonts
+;  Graphic
+;  Help
+;  Image
+;  Input
+;  Internal
+;  IO
+;  Layers
+;  Math
+;  MIND
+;  NASE
+;  NumberTheory
+;  Objects
+;  OS
+;  Plasticity
+;  Startup
+;  Statistics
+;  Signals
+;  Simulation
+;  Strings
+;  Structures
+;  Widgets
+;  Windows
+;
+; CALLING SEQUENCE:
+;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
+;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;
+; INPUTS:
+;  
+;
+; OPTIONAL INPUTS:
+;  
+;
+; INPUT KEYWORDS:
+;  
+;
+; OUTPUTS:
+;  
+;
+; OPTIONAL OUTPUTS:
+;  
+;
+; COMMON BLOCKS:
+;  
+;
+; SIDE EFFECTS:
+;  
+;
+; RESTRICTIONS:
+;  
+;
+; PROCEDURE:
+;  
+;
+; EXAMPLE:
+;*
+;*>
+;
+; SEE ALSO:
+;  <A>RoutineName</A>
+;-
+
+;;; look in headerdoc.pro for explanations and syntax,
+;;; or view the NASE Standards Document
+ 
+
+;+
 ; NAME:               FracRandom
 ;
-; AIM:                draws k (k<=n) random pairwise different numbers for a set of n numbers
+; AIM:                draws k (k < = n) random pairwise different numbers for a set of n numbers
 ;
 ; PURPOSE:            Erzeugt ein Array aus m paarweise verschiedenen Zufallszahlen,
 ;                     die aus dem Intervall [0,n) gezogen werden. Dies kann z.B. als
 ;                     fuer ein anderes Array benutzt werden.
 ;
-; CATEGORY:           MISC ARRAY
+; CATEGORY:
+;  Array
+;  Color
+;  CombinationTheory
+;  Math
 ;
-; CALLING SEQUENCE:   x = FracRandom(n [,m][,OLDMETHOD=OLDMETHOD][,VERBOSE=VERBOSE])
+; CALLING SEQUENCE:
+;* x = FracRandom(n [,m][,/OLDMETHOD][,/VERBOSE])
 ;
-; INPUTS:             n: Zahlen werden aus [0,1,...,n-1] gezogen, n>0
-;                     m: es werden m paarweise verschiedene Zahlen gezogen, m>0, m<=n
+; INPUTS:             n:: Zahlen werden aus [0,1,...,n-1] gezogen, n>0
+;                     m:: es werden m paarweise verschiedene Zahlen gezogen, m>0, m<=n
 ;
-; KEYWORDS            OLDMETHOD: Benutzt die alte Methode (langsam)
-;                     VERBOSE:   verbosly 
+; INPUT KEYWORDS:     OLDMETHOD:: Benutzt die alte Methode (langsam)
+;                     VERBOSE::   verbosly 
 ;
-; OUTPUTS:            x: Long-Array mit m Elementen
+; OUTPUTS:            x:: Long-Array mit m Elementen
 ;
-; COMMON BLOCKS:      COMMON_RANDOM
+; COMMON BLOCKS:      COMMONRANDOM
 ;
-; RESTRICTIONS:       n>0, m>0, m<=n
+; RESTRICTIONS:       n > 0, m > 0, m < = n
 ;
 ; PROCEDURE:          Zieht n gleichverteilte Elemente zwischen 0..1. Diese Elemente
 ;                     werden mit der Fkt. sort sortiert  und als Ergebnis wird der
@@ -36,42 +135,14 @@
 ;                     noch aelteren Version von All_Random(), Faktor 15 bei n=10^4)
 ;
 ; EXAMPLE:            
-;                     ;ziehe 10 Zahlen aus dem Intervall 0..99
-;                     print, FracRandom(100,10)
-;
-;                     ;ziehe 10000 paarweise verschiedene Zufallszahlen
-;                     print, FracRandom(10000)
-;
-; AUTHOR:             Mirko Saam
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.4  2000/09/25 09:12:54  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.3  1999/07/14 16:53:58  gabriel
-;            NEW Method implemented:
-;            +uses sort and randomu for indexing
-;            +speeds up for big dimensions
-;            +Keyword new: OLDMETHOD and VERBOSE
-;
-;        Revision 1.2  1999/02/24 15:52:20  saam
-;              there was a certain, very low probability that
-;              an access beyond array dimensions occured; this
-;              is fixed
-;
-;        Revision 1.1  1999/02/17 19:24:16  saam
-;              improvement & completely rewritten of all_random:
-;                + take variable elements from given set
-;                + no brute force any more!!
-;
-;
+;*;ziehe 10 Zahlen aus dem Intervall 0..99
+;*print, FracRandom(100,10)
+;*
+;*;ziehe 10000 paarweise verschiedene Zufallszahlen
+;*print, FracRandom(10000)
 ;-
 FUNCTION FracRandom, n, m, OLDMETHOD=OLDMETHOD , VERBOSE=VERBOSE
-   COMMON common_random, seed
+   COMMON commonrandom, seed
 
    ; check for argument count
    np = N_Params()
