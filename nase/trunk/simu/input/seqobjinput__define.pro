@@ -13,7 +13,7 @@
 ; multiple sequence objects.  It creates an set of input objects (see
 ; <A>seqobject__define</A>). Each input object consists of a grid of
 ; sequence elements (see <A>seqelement__define</A>). For using this
-; object as MIND input you need the <A>ifiniputobjwrapper</A>.
+; object as MIND input you need the <A>IFInputObjWrapper</A>.
 ;
 ; CATEGORY:
 ;  Input
