@@ -16,7 +16,7 @@ foreach $file (@files){
     if (-r $file){
       # if file is not readable commit should probably remove the file, so we do not check it
       print STDERR "$file: scanning...\n";
-      my %pro = scanFile(path=>dirname($file), file=>basename($file,""), test=>1);
+      my %pro = scanFile(filepath=>$file, test=>1);
 
       if ($pro{rname} =~ /_error/){
 	print STDERR "$file: syntax error in documentation header\n";
