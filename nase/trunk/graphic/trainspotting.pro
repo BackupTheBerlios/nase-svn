@@ -124,6 +124,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
                    MUA=mua, MCOLOR=mcolor ,$
                    _EXTRA=_extra
 
+On_Error, 2
 ;---------------> check syntax
    IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
 
@@ -194,7 +195,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
            Plot, nt, /NODATA, $
              XRANGE=xr+offset, YRANGE=yr, $
              XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, $
-             XTICKLEN=0.00001, YTICKLEN=0.00001, $
+             XMINOR=1, YMINOR=1, $
+             XTICKLEN=!X.TICKLEN*0.4, YTICKLEN=!Y.TICKLEN*0.4, $
              XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize, $
              _EXTRA=_extra
        END ELSE BEGIN
@@ -203,7 +205,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
              YRANGE=yr, $
              XSTYLE=1, YSTYLE=1, $
              XTITLE=xtitle, YTITLE=ytitle, TITLE=title, $
-             XTICKLEN=0.00001, YTICKLEN=0.00001, $
+             XMINOR=1, YMINOR=1, $
+             XTICKLEN=!X.TICKLEN*0.4, YTICKLEN=!Y.TICKLEN*0.4, $
              YTICKFORMAT='KeineNegativenUndGebrochenenTicks', $
              _EXTRA=_extra
        ENDELSE 
@@ -272,7 +275,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
       ; extract color from _EXTRA tag
       IF ExtraSet(_extra, 'COLOR') THEN color = _extra.color ELSE color = getforeground()
       ; Determine coords from indices:
-      x = spikes / FLOAT(allneurons+1) / oversampling
+      x = FLOAT(spikes / (allneurons+1)) / oversampling
       y = spikes MOD (allneurons+1)
       ; Use only coords that are in x/y-range:
       yi = Where(y GT yr(0) AND y LT yr(1), no)
@@ -284,7 +287,6 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
       ENDIF
 
    ENDIF
-
       
 
 END
