@@ -88,6 +88,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/10/11 16:50:39  kupper
+;        Re-implemented fixed queues to allow for using them as bounded queues
+;        also. (HOPE it works...) Implemented dequeue for these queues and
+;        implemented detail.
+;
 ;        Revision 1.4  2000/10/10 14:28:33  kupper
 ;        Now queue struct contains the sample value, for DeQueue() needs
 ;        something to fill in!
@@ -114,15 +119,15 @@ Function InitFQueue, length, sample
 
    Default, sample, 0.0
 
+   ;;The order of elements in the internal array is:
+   ;;increasing index in direction of tail
    return, {info   : 'FIXED_QUEUE', $
             Q      : make_array(length, VALUE=sample), $
             sample : sample, $ ;; for later filling in by DeQueue()
-            Pointer: length-1, $ ;Dieser Zeiger weist stets auf das zuletzt
-                                ;beschriebene Element, also auf den
-                                ;Schwanz der Queue.
-            Length : length, $
-            valid  : 0l}        ;Hier steht am Anfang die Anzahl der bereits eingereihten Elemente, 
-                                ;solange bis mehr als length Elemente
-                                ;eingereiht wurden. (Falls die
-                                ;Initwerte nicht beachtet werden sollen....)
+            tail   : length-1, $       ;the tail of the queue (last that was
+                                ;enqueued, last to go out)
+            valid  : 0, $; the number of valid elements in the queue.
+            $            ;;head = cyclic_value(tail-valid+1, [0,length])
+            abshead: 0, $; the start (absolute head) of the fixed queue.
+            length : length}
 End

@@ -61,6 +61,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/11 16:50:39  kupper
+;        Re-implemented fixed queues to allow for using them as bounded queues
+;        also. (HOPE it works...) Implemented dequeue for these queues and
+;        implemented detail.
+;
 ;        Revision 1.3  2000/09/25 09:13:13  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -81,9 +86,13 @@ Pro EnQueue, Queue, Wert, NO_COPY=no_copy
    If not contains(Queue.info, 'QUEUE', /IGNORECASE) then message, 'Not a Queue!'
 
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
-      Queue.Pointer = (Queue.Pointer+1) mod Queue.Length
-      Queue.Q(Queue.Pointer) = Wert
+      Queue.tail = (Queue.tail+1) mod Queue.length
+      Queue.Q(Queue.tail) = Wert
       Queue.valid = (Queue.valid+1) < Queue.length
+      If (Queue.valid ne 1) and (Queue.tail eq Queue.abshead) then begin
+         DMsg, "one dropped out."
+         Queue.abshead = (Queue.abshead+1) mod Queue.length
+      EndIf
    endif
 
    If contains(Queue.info, 'DYNAMIC_QUEUE', /IGNORECASE) then begin

@@ -75,6 +75,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.19  2000/10/11 16:50:37  kupper
+;     Re-implemented fixed queues to allow for using them as bounded queues
+;     also. (HOPE it works...) Implemented dequeue for these queues and
+;     implemented detail.
+;
 ;     Revision 2.18  2000/10/10 16:20:03  kupper
 ;     Added assert-message.
 ;
@@ -196,7 +201,7 @@ PRO Console, __console, _message, DEBUG=debug, MSG=msg, $
 
    viz = status.viz
 
-   IF Keyword_Set(UP) THEN dummy = DeQueue(viz)
+   IF Keyword_Set(UP) THEN dummy = DeTail(viz)
    For i=0, n_elements(yell)-1 do EnQueue, viz, yell(i)
 
    CASE status.mode OF

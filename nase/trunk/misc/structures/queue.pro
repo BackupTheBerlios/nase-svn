@@ -52,6 +52,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/10/11 16:50:39  kupper
+;        Re-implemented fixed queues to allow for using them as bounded queues
+;        also. (HOPE it works...) Implemented dequeue for these queues and
+;        implemented detail.
+;
 ;        Revision 1.5  2000/10/10 14:13:06  kupper
 ;        re-implemented handling of VALID Keyword, to allow for partially
 ;        filled queues not starting at first element (which allows
@@ -81,12 +86,13 @@ Function Queue, Queue, VALID=valid
    If not contains(Queue.info, 'QUEUE', /IGNORECASE) then message, 'Not a Queue!'
 
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
-      If Keyword_Set(VALID) and (Queue.valid lt Queue.length) then begin
+      If Keyword_Set(VALID) then begin
          assert, Queue.valid gt 0, "Fixed queue does not contain any " + $
           "valid elements."
-         return, (Queue(Queue))(Queue.length-Queue.valid:*);;achtung, Rekursion!
+         return, (shift([Queue.Q], $
+                        -cyclic_value(Queue.tail-Queue.valid+1, [0, Queue.length])))(0:Queue.valid-1)
       endif
-      return, shift([Queue.Q], -Queue.Pointer-1)
+      return, shift([Queue.Q], -Queue.abshead)
    EndIf
 
    If contains(Queue.info, 'DYNAMIC_QUEUE', /IGNORECASE) then message, 'Not yet implemented for Dynamic Queues!'
