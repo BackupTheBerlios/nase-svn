@@ -6,6 +6,9 @@
 ; MODIFICATION HISTROY:
 ;
 ;       $Log$
+;       Revision 1.7  2001/06/20 20:58:34  thiel
+;          Separator is now also used to add MINDDIRS to !PATH
+;
 ;       Revision 1.6  2001/02/09 11:17:17  thiel
 ;           Now PUSHD/POPD and GETENV is used to change to nase dir for
 ;           the nase-startup call. This is hopefully OS invariant.
@@ -52,7 +55,7 @@ MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["sim"])     
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["templates"]) + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["xplore"])
 
-!PATH = !PATH+":"+MINDDIRS
+!PATH = !PATH+separator+MINDDIRS
 
 
 print, "========================="
