@@ -9,7 +9,8 @@
 ;
 ; CATEGORY:            STAT SIGNAL
 ;
-; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] [,/NASE] [,SAMPLE_T=SAMPLE_T])
+; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] [,/NASE] 
+;                                      [,SAMPLE_T=SAMPLE_T] [,FRANGE='['flow,fhi']'])
 ;
 ; INPUTS:              mt      : 3d-Array, das den Zeitverlauf der Membranpotentiale 
 ;                                enthaelt. Die Dimensionen sind (HOEHE, BREITE, ZEIT).
@@ -23,6 +24,9 @@
 ;                                fuer die Gewichtung der LFP's. Dimension (SIGNAL_NR,HOEHE,BREITE)
 ;                      NASE    : korrekte Behandlung von Nase-Layern
 ;                      SAMPLE_T: Zeit zwischen zwei Abtastwerten in s (Default: 0.001)
+;                      FRANGE  : das LFP-Signal wird zwischen flow und fhi Herz bandpass-gefiltert.
+;                                Wird nur eine Zahl uebergeben ist die untere Grenze automatisch 0 Hz.
+;                                Default ist [0,100].
 ;                       
 ; OUTPUTS:             LFPS  : Array das die LFP-Signale fuer die Ableitorte enthaelt.
 ;                              Dimension: (ABLEITINDEX, ZEIT)
@@ -36,6 +40,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  1999/02/02 19:10:54  saam
+;           + now uses 'filter' for bandpass-filtering
+;           + new keyword FRANGE to change the filtering
+;             behaviour
+;
 ;     Revision 1.7  1998/07/11 12:07:58  saam
 ;           new keyword SAMPLE_T for correct handling
 ;           of different smapled signals
@@ -62,12 +71,16 @@
 ;
 ;
 ;-
-FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, SAMPLE_T=sample_T, ROI=roi, NASE=nase
+FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, SAMPLE_T=sample_T, ROI=roi, NASE=nase, FRANGE=frange
 
    On_Error, 2
 
    Default, radius  , 5
    Default, SAMPLE_T, 0.001
+
+   Default, FRANGE, [0,100]
+   IF N_Elements(FRANGE) LT 2 THEN FRANGE = [0, FRANGE]
+
    IF N_Params() NE 2 THEN Message, 'wrong number of arguments'
 
 
@@ -125,14 +138,14 @@ FUNCTION LFP, mt, list, CONST=const, HMW_X2=hmw_x2, SAMPLE_T=sample_T, ROI=roi, 
       ENDFOR
       IF (t MOD (maxT/20)) EQ 0 THEN print, !Key.UP, 'LFP: processing... '+STRCOMPRESS(FIX(t/FLOAT(maxT)*100.), /REMOVE_ALL)+' %'
    ENDFOR
-      
-
-   ; -----> LOW PASS FILTERING WITH 100Hz CUTOFF-FREQUENCY 
-   ; 100Hz = hpf*Nyquist-Frequency ??
-   hpf = 100.*2*Sample_T
-   LFPS = DblArr(maxROI, maxT)
-   filter =  Digital_Filter(0.0, hpf, 50, 10)
-   FOR i=0, maxROI-1 DO LFPS(i,*) = Convol( REFORM(roiSigs(i,*)), filter, /EDGE_TRUNCATE )
    
+
+   ; -----> BAND BASS FILTERING 
+   print, "LFP: filtering between ", Str(frange(0)), " and ", Str(frange(1)), " Hz..."
+   LFPS = DblArr(maxROI, maxT)
+   filt = filter(frange(0), frange(1), 50, 10, SAMPLEPERIOD=SAMPLE_T)
+   FOR i=0, maxROI-1 DO LFPS(i,*) = Convol( REFORM(roiSigs(i,*)), filt, /EDGE_TRUNCATE )
+   
+
    RETURN, LFPS
 END
