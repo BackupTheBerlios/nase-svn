@@ -31,12 +31,15 @@
 ;
 ; EXAMPLE:
 ;           TvSclLegend, 0.5, 0.5, /CENTER
-;           TvSclLegend, 0.2, 0.2, MAX=10, MIN=-10, MID='Null', /VERTICAL, /TOP 
+;           TvSclLegend, 0.2, 0.2, MAX=10, MIN=-10, MID='Null', /VERTICAL, /LEFT 
 ;
 ;        
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1997/11/11 16:56:43  saam
+;           Bug im Example der Docu
+;
 ;     Revision 2.3  1997/11/11 16:53:56  saam
 ;           Fehler bei Rahmen mit BW-PS korrigiert
 ;
