@@ -19,9 +19,9 @@
 ;
 ; CATEGORY: SIMULATION
 ;
-; CALLING SEQUENCE:  G = LearnHebbLP(G, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
+; CALLING SEQUENCE:     LearnHebbLP, G, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
 ;                                    RATE=Rate, ALPHA=Alpha
-;                                    [,/SELF | ,/NONSELF])
+;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
 ;
@@ -40,15 +40,14 @@
 ;                                           werden nicht veraendert,
 ;                                           aber auch nicht Null-gesetzt.
 ;                                           (Siehe InitDW)
-; OUTPUTS: G : die geaendert Gewichtsmatrix
+; OUTPUTS: ---
 ;
 ; OPTIONAL OUTPUTS: ---
 ;
 ; COMMON BLOCKS: ---
 ;
 ; SIDE EFFECTS: Die Matrix G, die als Parameter G uebergeben wird,
-;               wird entsprechend der Lernregel geaendert. Zusaetzlich wird die
-;               geaenderte Matrix auch als Funktionsergebnis zurueckgeliefert.
+;               wird entsprechend der Lernregel geaendert.
 ;
 ; RESTRICTIONS: es koennen nur Cluster aus Neuronen verarbeitet
 ;               werden, die mit Lernpotential ausgestattet sind, dh den Tag .P in
@@ -56,13 +55,19 @@
 ;
 ; PROCEDURE: LayerSize()
 ;
-; EXAMPLE: W = LearnHebbLP(W, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself)
+; EXAMPLE: LearnHebbLP, W, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
 ;          veraendert die Matrix W entsprechend dem Zustand des
 ;          Clusters 'Layer', dh es werden Intra-Cluster-Verbindungen
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       Wed Sep 3 15:50:04 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Ist jetzt eine Prozedur und keine Funktion mehr. (Ab
+;		Rev. 1.5)
 ;
 ;       Mon Aug 18 16:44:07 1997, Mirko Saam
 ;<saam@ax1317.Physik.Uni-Marburg.DE>
@@ -76,7 +81,7 @@
 ;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
 ;-
 
-FUNCTION LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
+PRO LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    spaltenindex = where(Target_CL.O,count)
    If count EQ 0 Then Return, Matrix
@@ -98,5 +103,4 @@ FUNCTION LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,A
    connections = WHERE(Matrix.Weights NE !NONE, count)
    IF count NE 0 THEN Matrix.Weights(connections) = Matrix.Weights(connections) + Rate*dw(connections)
    
-Return, Matrix
 END
