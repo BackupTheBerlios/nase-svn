@@ -1,1 +1,2 @@
 DefSysV, '!NONE', -999999.0, 1
+DefSysV, '!NOMERCYFORPOT', 0.01, 1
