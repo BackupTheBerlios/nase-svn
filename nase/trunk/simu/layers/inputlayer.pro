@@ -40,6 +40,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;  $Log$
+;  Revision 2.6  2000/06/19 13:43:12  saam
+;       + REV 2.5 insertion of CheckMath was IDL3.6 incompatible
+;         ... fixed that
+;
 ;  Revision 2.5  2000/03/17 13:24:38  kupper
 ;  Now checks and ignores floating underflows.
 ;  (This means floating underflows will not be reported any more when !EXCEPT=1,
@@ -69,7 +73,7 @@ PRO InputLayer, _Layer, _EXTRA=_extra
    Call_Procedure, 'InputLayer_'+type, _Layer, _EXTRA=_extra
 
    ;; Ignore any floating underflows:
-   dummy = Check_Math(Mask=32)
+   IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
 
 END
 
