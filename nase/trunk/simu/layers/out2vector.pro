@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/01/29 14:04:35  kupper
+;            Dimensionen werden jetzt RICHTIGherum wiederhergestellt...
+;
 ;     Revision 2.3  1997/11/24 10:08:44  saam
 ;           Keyword DIMENSIONS hinzugefuegt, nicht getestet!!
 ;
@@ -45,6 +48,6 @@ FUNCTION Out2Vector, OutHandle, DIMENSIONS=dimensions
    IF NOT Keyword_Set(DIMENSIONS) THEN BEGIN
       RETURN, SSpassBeiseite(Handle_Val(OutHandle))
    END ELSE BEGIN
-      RETURN, REFORM(SSpassBeiseite(Handle_Val(OutHandle.O)), OutHandle.w, OutHandle.h)
+      RETURN, REFORM(SSpassBeiseite(Handle_Val(OutHandle.O)), OutHandle.h, OutHandle.w)
    END
 END
