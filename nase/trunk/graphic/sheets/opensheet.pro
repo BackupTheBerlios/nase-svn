@@ -22,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1998/03/19 14:50:30  saam
+;           common block like in define-sheet
+;
 ;     Revision 2.8  1998/03/19 10:45:57  saam
 ;           now uses ScrollIt and remembers destroyed windows
 ;           resize events have no effect
@@ -56,7 +59,7 @@
 ;-
 PRO _sheetkilled, id
 
-   COMMON ___SHEET_KILLS
+   COMMON ___SHEET_KILLS, sk
 
    Widget_Control, id, GET_UVAL=uval
    
@@ -71,7 +74,7 @@ END
 
 PRO OpenSheet, sheet
 
-COMMON ___SHEET_KILLS
+   COMMON ___SHEET_KILLS, sk
 
    IF sheet.type EQ 'X' THEN BEGIN
       Set_Plot, 'X'
