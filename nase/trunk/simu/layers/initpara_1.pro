@@ -3,36 +3,43 @@
 ;  InitPara_1()
 ;
 ; AIM:
-;  Define parameter values for layer of Standard Marburg Model Neurons.
+;  define parameter values for layer of Standard Marburg Model Neurons
 ;
-; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 1 enthaelt
+; PURPOSE: Initialises parameter-structure <*>Para1</*> containing
+; neuron-parameters for neuron-type 1  
 ;
 ; CATEGORY:             SIMULATION /LAYERS
 ;
-; CALLING SEQUENCE:     Para = InitPara_1( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VS=vs] [, TAUS=taus] $
-;                       [, TH0=th0] [SIGMA=sigma] [NOISYSTART=noisystart] [,SPIKENOISE=spikenoise] )
+; CALLING SEQUENCE:    
+;* Para = InitPara_1( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] $
+;*                    [, VS=vs] [, TAUS=taus] [, TH0=th0] $
+;*                    [SIGMA=sigma] [NOISYSTART=noisystart] [,SPIKENOISE=spikenoise] )
 ;
-; KEYWORD PARAMETERS:   tauf       : Feeding-Zeitkonstante
-;                       taul       : Linking-Zeitkonstante
-;                       taui       : Inihibition-Zeitkonstante
-;                       vaus       : Schwellen-Verstaerkung
-;                       taus       : Schwellen-Zeitkonstante
-;                       th0        : Schwellen-Offset
-;                       sigma      : Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
-;                       noisystart : alle Input-Potential (F,L,I) werden mit gleichverteilten Zufalls-
+; INPUT KEYWORDS:       tauf       :: Feeding-Zeitkonstante
+;                       taul       :: Linking-Zeitkonstante
+;                       taui       :: Inihibition-Zeitkonstante
+;                       vaus       :: Schwellen-Verstaerkung
+;                       taus       :: Schwellen-Zeitkonstante
+;                       th0        :: Schwellen-Offset
+;                       sigma      :: Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
+;                       noisystart :: alle Input-Potential (F,L,I) werden mit gleichverteilten Zufalls-
 ;                                    zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
-;                                    th0 angegeben.
-;                       spikenoise : mean spontanous activity in Hz 
+;                                    <*>th0</*> angegeben.
+;                       spikenoise :: mean spontanous activity in Hz 
 ;
-; OUTPUTS:              Para : Struktur namens Para1, die alle Neuronen-Informationen enthaelt, s.u.
+; OUTPUTS:              Para :: Struktur namens <*>Para1</*>, die alle Neuronen-Informationen enthaelt, s.u.
 ;
-; RESTRICTIONS:         tau? muss > 0.0 sein
+; RESTRICTIONS:         <*>tau?</*> muss > 0.0 sein
 ;
-; EXAMPLE:              para1 = InitPara_1(tauf=10.0, vs=1.0)
+; EXAMPLE:              
+;* para1 = InitPara_1(tauf=10.0, vs=1.0)
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  2004/03/16 16:09:17  zwickel
+;            introduced new header layout, translated purpose
+;
 ;       Revision 1.7  2000/09/28 13:05:26  thiel
 ;           Added types '9' and 'lif', also added AIMs.
 ;
