@@ -1,6 +1,8 @@
 ;+
 ; NAME: RFScan_Return()
 ;
+; AIM:     results the RF-Cinematogramm of simulated neurons
+;
 ; PURPOSE: Liefert das Ergebnis eines RF-Scans zurück.
 ;          siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
 ;
@@ -39,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/09/28 12:25:35  gabriel
+;             AIM tag added , message <> console
+;
 ;        Revision 1.7  2000/09/27 15:59:28  saam
 ;        service commit fixing several doc header violations
 ;
@@ -80,8 +85,8 @@ Function RFScan_Return, RFS, FILENAME=filename
 
       BoostWeight, RFS.RFs, 1.0/float(RFS.divide)
       If Keyword_Set(FILENAME) then begin
-         Message, /INFORM, "Saving Estimated RFs in File '"+filename+".save'..."
-         Message, /INFORM, "     Restore using 'Restore' and 'RestoreDW()'!"
+         console, /msg , "Saving Estimated RFs in File '"+filename+".save'..."
+         console, /msg , "     Restore using 'Restore' and 'RestoreDW()'!"
          SaveRF = SaveDW(RFS.RFs)
          Save, SaveRF, FILENAME=filename+".save", /VERBOSE
          BoostWeight, RFS.RFs, float(RFS.divide) ;Soll ja noch weiter benutzt werden...   

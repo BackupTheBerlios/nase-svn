@@ -1,6 +1,8 @@
 ;+
 ; NAME: RFScan_Init()
 ;
+; AIM:     initializes the RF-Cinematogramm of simulated neurons
+;
 ; PURPOSE: Experimentelle Bestimmung der rezeptiven Felder der
 ;          Neuronen eines Layers unter bestimmten Reizbedingungen.
 ;          Die RFScan-Routinen sind der Methode des RF-Cinematogramms
@@ -208,10 +210,13 @@
 ;          Ich werd wohl ne BeispielSimulation zur Verfügung stellen...          
 ;
 ; SEE ALSO: <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_SCHAUMAL">RFScan_Schaumal</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  2000/09/28 12:25:17  gabriel
+;             AIM tag added , message <> console
+;
 ;        Revision 1.8  2000/06/16 08:53:01  kupper
 ;        Some corrections for AUTO_SINGLEDOT.
 ;        Adjusted header.
@@ -254,7 +259,7 @@
 ;                 Header mach ich noch...
 ;                 VISUALIZE-Keyword ist noch nicht implementiert...
 ;
-;-
+;
 
 Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
                WIDTH=width, HEIGHT=height, $
@@ -269,7 +274,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
                VISUALIZE=visualize, WRAP=wrap
 
    If keyword_set(VISUALIZE) and n_elements(VISUALIZE) ne 4 then $
-    message, "Keyword VISUALIZE is expected to be set to a four-elementary Array!"
+    console, /fatal, "Keyword VISUALIZE is expected to be set to a four-elementary Array!"
 
    If keyword_set(InDW) then begin
       WIDTH = DWDim(InDW, /SW)
@@ -316,7 +321,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
 
    ;;------------------> Will Picture be manually defined?
    MANUAL = not set(Picture) and not keyword_set(AUTO_SINGLEDOT) and not keyword_set(AUTO_RANDOMDOTS) and not keyword_set(AUTO_VERTICALEDGE) and not keyword_set(AUTO_HORIZONTALEDGE)
-   If MANUAL then message, /INFORM, "No Input Picture defined - will expect manual specification..."
+   If MANUAL then console, /MSG, "No Input Picture defined - will expect manual specification..."
    ;;--------------------------------
 
    ;;------------------> Will Picture be shifted in both directions?
