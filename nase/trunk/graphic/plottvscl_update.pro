@@ -141,7 +141,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM,$
           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
          If Keyword_Set(INIT) then begin 
-            Info.Range_In = get_range_in(1) ;=MAXCOL, by the way...
+            Info.Range_In = get_range_in
             Info.colormode = get_colormode ;store for update
          EndIf
 
@@ -158,7 +158,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
           Info.y00_norm, X_SIZE=float(Info.x1)/!D.X_PX_CM, $
           Y_SIZE=float(Info.y1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
          If Keyword_Set(INIT) then begin 
-            Info.Range_In = get_range_in(1) ;=MAXCOL, by the way...
+            Info.Range_In = get_range_in
             Info.colormode = get_colormode ;store for update
          EndIf
 
