@@ -5,7 +5,10 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO] )
+; CALLING SEQUENCE: MyVideo = LoadVideo ( [Title] [,TITLE] [,/VERBOSE] [,/INFO]
+;                                         [,GET_LENGTH] [,GET_SIZE]
+;                                         [,GET_TITLE] [,GET_SYSTEM] [,GET_STARRING]
+;                                         [,GET_COMPANY] [,GET_PRODUCER] [,GET_YEAR] )
 ; 
 ; INPUTS:  Title     : Filename und Videotitel. Dieser Parameter hat
 ;                      exakt die gleiche Funktion wie das
@@ -63,7 +66,10 @@
 ;
 ;-
 
-Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info
+Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
+                                         GET_LENGTH=get_length, GET_SIZE=get_size, $
+                                         GET_TITLE=get_title ,GET_SYSTEM=get_system, GET_STARRING=get_starring, $
+                                         GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year
    
    Default, __title, _Title
    Default, __title, "The Spiking Neuron"   
@@ -78,7 +84,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info
    
    dims = 0l & readu, infounit, dims
    rest = lonarr(dims+2) & readu, infounit, rest
-   FrameSize = [dims, rest] ; Das SIZE-Array eines Frames
+   FrameSize = [dims, rest] & GET_SIZE=FrameSize ; Das SIZE-Array eines Frames
 
    leer80 = "                                                                                "
    ltitle = leer80 
@@ -88,14 +94,14 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info
    lproducer = leer80
    lyear = leer80
    readu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
-   title    = strtrim(ltitle, 2)
-   system   = strtrim(lsystem, 2)
-   starring = strtrim(lstarring, 2)
-   company  = strtrim(lcompany, 2)
-   producer = strtrim(lproducer, 2)
-   year     = strtrim(lyear, 2)
+   title    = strtrim(ltitle, 2)      & GET_TITLE=title
+   system   = strtrim(lsystem, 2)     & GET_SYSTEM=system
+   starring = strtrim(lstarring, 2)   & GET_STARRING=starring
+   company  = strtrim(lcompany, 2)    & GET_COMPANY=company
+   producer = strtrim(lproducer, 2)   & GET_PRODUCER=producer
+   year     = strtrim(lyear, 2)       & GET_YEAR=year
 
-   Length = 0l & readu, infounit, Length ;Anzahl der Frames
+   Length = 0l & readu, infounit, Length & GET_LENGTH=length ;Anzahl der Frames
 
 ;---------------- Video Info anzeigen
    type = ["Undefined", "Byte", "Integer", "Longword Integer", "Floating Point", "Double-Precision Floating Point", "Complex Floating Point", "String", "Structure", "Double-precision Complex"]
