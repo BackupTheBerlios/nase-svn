@@ -22,6 +22,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1998/03/19 10:45:57  saam
+;           now uses ScrollIt and remembers destroyed windows
+;           resize events have no effect
+;
 ;     Revision 2.7  1998/03/18 10:48:55  kupper
 ;            Kleiner Bug: Opensheet hat das Plot_Device nicht auf PS gesetzt, wenn
 ;             ein zuvor schonmal geöffnetes PS-heet wieder geöffnet wurde.
@@ -50,22 +54,43 @@
 ;
 ;
 ;-
+PRO _sheetkilled, id
+
+   COMMON ___SHEET_KILLS
+
+   Widget_Control, id, GET_UVAL=uval
+   
+   IF sk(uval.Window_ID) NE 0 THEN Message, 'Sheet already killed !'
+   IF uval.Window_ID GT 128 THEN Message, 'WinID > 128 !'
+
+   sk(uval.Window_ID) = 1
+END
+
+
+
+
 PRO OpenSheet, sheet
+
+COMMON ___SHEET_KILLS
 
    IF sheet.type EQ 'X' THEN BEGIN
       Set_Plot, 'X'
 
       ; does window already exist?? then set it active
-      UWSet, sheet.winid, exists
+      exists = 0
+      IF sheet.winid NE -2 THEN BEGIN
+         IF sk(sheet.winid) EQ 0 THEN UWSet, sheet.winid, exists
+      END
       
       ; create a new window
       IF NOT exists THEN BEGIN
          IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-            Window, /FREE
+            sheet.winid = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled')
          END ELSE BEGIN
-            Window, /FREE, _EXTRA=sheet.extra
+            sheet.winid = ScrollIt(Get_BASE=tid, KILL_NOTIFY='_sheetkilled', _EXTRA=sheet.extra)
          END
-         sheet.winid = !D.Window
+         sheet.widid = tid
+         sk(sheet.winid) = 0
       END
       old = !P
       !P = sheet.p

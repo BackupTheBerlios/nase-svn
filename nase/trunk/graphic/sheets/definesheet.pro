@@ -48,6 +48,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/03/19 10:45:56  saam
+;           now uses ScrollIt and remembers destroyed windows
+;           resize events have no effect
+;
 ;     Revision 2.6  1998/03/12 19:45:20  kupper
 ;            Color-Postscripts werden jetzt richtig behandelt -
 ;             die Verwendung von Sheets vorrausgesetzt.
@@ -75,7 +79,12 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                       ,VERBOSE=verbose, _EXTRA=e
 
    COMMON Random_Seed, seed
+   COMMON ___SHEET_KILLS, sk
 
+
+   IF NOT SET(sk) THEN BEGIN
+      sk = BytArr(128)
+   END
 
    IF NOT Keyword_Set(PS) AND NOT Keyword_Set(WINDOW) AND NOT Keyword_SET(NULL) THEN Window = 1
    Default, e, -1
@@ -86,6 +95,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       
       sheet = { type  : 'X'   ,$
                 winid : -2    ,$
+                widid : -2    ,$
                 p     : !P    ,$
                 x     : !X    ,$
                 y     : !Y    ,$
