@@ -12,7 +12,7 @@
 ;                                   [,/D_NONSELF] [,/W_NONSELF] 
 ;                                   [,/W_TRUNCATE [,W_TRUNC_VALUE]]
 ;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
-;                                   [,W_NOCON] )
+;                                   [,NOCON] )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;
@@ -34,7 +34,7 @@
 ;                  D_GAUSS              : Array [Min,Max,sigma]. Die Delays werden von jedem Source-Neuron umgekehrt gaußförmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_DOG     : Array [Amp,on_sigma,off_sigma]. Die Gewichte werden von jedem Source-Neuron Maxican-Hat-förmig in den Targetlayer gesetzt (mit Zentrumsamplitude Amp, on_sigma,off_sigma in Gitterpunkten), und zwar so, daß die HotSpots dort göeichmäßig verteilt sind (Keyword ALL)
 ;                  D_NONSELF, W_NONSELF : Sind Source- und Targetlayer gleichgroß (oder identisch), so läßt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
-;                  W_NOCON              : Neuronen, deren Abstand vom HotSpot groesser als NOCON ist, werden nicht verbunden;
+;                  NOCON                : Neuronen, deren Abstand vom HotSpot groesser als NOCON ist, werden nicht verbunden;
 ;                                         zwischen diesen Neuronen koennen auch keine Gewichte gelernt werden
 ;               
 ;
@@ -110,6 +110,12 @@
 ;                  ShowWeights, /DELAYS, My_DWS, /FROMS, Titel="Delays"
 ;        
 ; MODIFICATION HISTORY:
+;
+;       Sun Sep 7 16:36:04 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Delays nichtexistierender Verbindungen werden jetzt
+;		auch auf !NONE gesetzt.
 ;
 ;       Thu Sep 4 17:11:25 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
@@ -209,11 +215,11 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
                  D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
                  D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
-                 W_NOCON=w_nocon, $
+                 W_NOCON=w_nocon, NOCON=nocon, $
                  SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source
 
-   Default, w_nocon, nocon
-   if keyword_set(nocon) then message, /INFORM, "Das NOCON-Schlüsselwort ist übrigens seit Version 1.19 in W_NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
+   Default, nocon, w_nocon
+   if keyword_set(w_nocon) then message, /INFORM, "Das W_NOCON-Schlüsselwort ist übrigens seit Version 2.7 wieder in NOCON umbenannt. Bitte den Aufruf entsprechend ändern. Rüdiger."
 
 
    IF set(S_LAYER) THEN BEGIN
@@ -328,8 +334,11 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
 
 ; ------------------------- NOCON: ----------------------------------------------------------------
-      IF keyword_set(W_NOCON) THEN BEGIN
-         SetConstWeight, DelMat, !NONE, w_nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+      IF keyword_set(NOCON) THEN BEGIN
+         SetConstWeight, DelMat, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+         if HasDelay then begin
+            SetConstDelay, DelMat, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+         endif
       END
 ; ----------------------------------------------------------------------------------------------------------------------
 
