@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.39  2000/10/27 12:11:12  gabriel
+;            Prompt now says now for Ruediger "Rudi's NASE> ".
+;
 ;       Revision 1.38  2000/10/26 17:54:43  kupper
 ;       Prompt now says "NASE> ". Should long have done this ;-)
 ;
@@ -139,4 +142,6 @@ If not(nase_startup_executed) then startup_ctd
 
 @precompile ;;Compile some modules that cannot be compiled automatically
 
-!PROMPT="NASE> "
+if getenv('USER') eq 'kupper' then !PROMPT="Rudi's NASE> "
+
+;!PROMPT="NASE> "
