@@ -1,78 +1,63 @@
 ;+
 ; NAME: 
-;        WRITE_MPEG
+;  WRITE_MPEG
+;
+; VERSION:
+;  $Id$
 ;
 ; AIM:
-;  Write a sequence of images as an mpeg movie.
+;  writes a sequence of images as an mpeg movie
 ;
 ; PURPOSE: 
-;        Write a sequence of images as an mpeg movie
+;  writes a sequence of images as an mpeg movie
 ;
-; CATEGORY: graphics
+; CATEGORY:
+;  Graphic
 ;
 ; CALLING SEQUENCE: 
-;     There are two methods
-;     1. method:
+;  If you have the whole movie sequence in a three dimensional array,
+;  just call 
+;* WRITE_MPEG, ims [,mpegFileName=mpegFileName] [,TMPDIR=...] [,/DELAFT] [,REP=REP]
 ;
-;            WRITE_MPEG,ims [,mpegFileName=mpegFileName] [,TMPDIR=TMPDIR] [,DLAFT=DLAFT] [,REP=REP]
+;  <BR>If the data is a sequence of image frames  (perhaps because the
+;  whole movie would be too large for your working memory) use:
 ;
-;     2. method:
-;
-;            WRITE_MPEG,INIT=nims,[,mpegFileName=mpegFileName] [,TMPDIR=TMPDIR] [,REP=REP]
-;            WRITE_MPEG,image,/WRITE
-;            WRITE_MPEG,/CLOSE
+;* WRITE_MPEG,INIT=nims,[,mpegFileName=mpegFileName] [,TMPDIR=...]
+;*                      [,/DELAFT] [,REP=..] 
+;* WRITE_MPEG,image,/WRITE
+;* WRITE_MPEG,/CLOSE
 ;
 ; INPUTS:
-;     1. method:
+;  ims:: sequence of images as a 3D array with dimensions [xsize,
+;        ysize, #frames]
+;  image:: image as a 2D array with dimensions [xsize, ysize]    
 ;
-;            ims: sequence of images as a 3D array with dimensions [sx, sy, nims]
-;                 where sx = xsize of images
-;                       sy = ysize of images
-;                       nims = number of images
+; INPUT KEYWORDS:
+;  CLOSE::        calls write_mpeg to produce a mpeg
+;  DELAFT::       if set. the routine deletes the temporary array after movie was created.
+;                  You should actually always do it otherwise you get
+;                  problems with permissions on multiuser machines (since
+;                  <*>/tmp</*> normally has the sticky bit set)
+;  INIT::          calls write_mpeg to initialice image writing,
+;                  where INIT is the number of images (default: 0)
+;  MPEGFILENAME:: name of mpeg file (default: "test.mpg")
+;  REP::          if given means repeat every image 'rep' times
+;                  (as a workaround to modify replay speed)
+;  TMPDIR::        directory for temporary data (default: "/tmp/idl2mpeg.frames")
+;  WRITE::         calls write_mpeg to write the image
 ;
-;     2. method:
-;
-;            image: image as a 2D array with dimensions [sx, sy]    
-;                   where sx = xsize of images
-;                         sy = ysize of images
-;
-;
-;
-; KEYWORD PARAMETERS:
-;
-;     only 2. method:
-;                        INIT:          calls write_mpeg to initialice image writing,
-;                                       where INIT is the number of images (default: 0)
-;                        WRITE:         calls write_mpeg to write the image
-;                        CLOSE:         calls write_mpeg to produce a mpeg
-;
-;     1.+ 2. method: 
-;                        delaft:        if set delete temporary array after movie was created
-;                                       you should actually always do it otherwise you get
-;                                       problems with permissions on multiuser machines (since
-;                                       /tmp normally has the sticky bit set)
-;                        rep:           if given means repeat every image 'rep' times
-;                                       (as a workaround to modify replay speed)
-;                        tmpdir:        directory for temporal data (default: "/tmp/idl2mpeg.frames")
-;                        mpegfilename:  name of mpeg file (default: "test.mpg")
-;
-;
-; OUTPUTS: None
-;
-; OPTIONAL OUTPUTS:
 ;
 ; COMMON BLOCKS:
-;                COMMON WRITE_MPEG_BLOCK , info
+;  COMMON WRITE_MPEG_BLOCK , info
+;
 ; SIDE EFFECTS:
 ;          creates some files in TMPDIR which are only removed when
 ;          the DELAFT keyword is used
-;
 ;
 ; RESTRICTIONS:
 ;          depends on the program mpeg_encode from University of
 ;          California, Berkeley, which must be installed in a directory, 
 ;          which is used in the PATH environment.
-;
 ;
 ; PROCEDURE:
 ;         writes a parameter file based on the dimensions of the image
@@ -80,52 +65,26 @@
 ;         temporary directory; finally spawns mpeg_encode to build the
 ;         movie
 ;
-;
 ; EXAMPLE:
+;first method:
+;*frames=findgen(100,75,100) ;; 100 frames (3D array)
+;*write_mpeg,frames                 
 ;
-;          1. method:
-;                     frames=findgen(100,75,100) ;; 100 frames (3D array)
-;                     write_mpeg,frames                 
+;<BR>second method:
+;*;;here with function TVRD
+;*write_mpeg,init=100
+;*window,xsiz=100,ysize=75
 ;
-;          2. method:
-;                     ;;here with function TVRD
-;                     write_mpeg,init=100
-;                     window,xsiz=100,ysize=75
-;
-;                     FOR i =0l ,100-1 DO BEGIN
-;                      utvscl,findgen(100,75)*reform(randomu(S,1))
-;                      image=tvrd(/order)
-;                      write_mpeg,image,/write
-;                     ENDFOR
+;*FOR i =0l ,100-1 DO BEGIN
+;*   utvscl,findgen(100,75)*reform(randomu(S,1))
+;*   image=tvrd(/order)
+;*   write_mpeg,image,/write
+;*ENDFOR
 ;                     
-;                     write_mpeg,/close
+;*write_mpeg,/close
 ;
 ;-
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.5  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.4  2000/09/27 15:59:13  saam
-;     service commit fixing several doc header violations
-;
-;     Revision 2.3  2000/06/08 10:28:58  gabriel
-;             compressed image files now used
-;
-;     Revision 2.2  1999/05/13 15:35:59  gabriel
-;          Nochmals angepasst und etwas optimiert
-;
-;     Revision 2.1  1999/05/07 14:23:06  gabriel
-;          Toll musste ich nicht schreiben, nur Keyword TMPDIR neu
-;
-;
-;     Mon Nov 18 13:13:53 1996, Christian Soeller
-;     <csoelle@mbcsg1.sghms.ac.uk>
-;
-;		grabbed original from the net and made slight modifications
-;
-;
+
 FUNCTION pseudo_to_true, image8
 
 s = SIZE(image8)
