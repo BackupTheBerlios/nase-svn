@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/01/26 13:10:54  thiel
+;            Erzeugt jetzt hoffentlich keine leeren Seiten mehr.
+;
 ;     Revision 2.3  1998/01/21 21:57:25  saam
 ;           es werden nun ALLE (!!!) Window-Parameter
 ;           gesichert.
@@ -97,6 +100,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
          Print, '   Filename: ', filename+'.'+ty
       END
       
+      Set_Plot, 'ps'      
       sheet = { type     : 'ps'         ,$
                 filename : filename     ,$
                 inc      : incremental  ,$
@@ -107,6 +111,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 z        : !Z           ,$
                 extra    : e            ,$                
                 open     : 0            }
+      Set_Plot, 'X'
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN
      
