@@ -111,6 +111,10 @@
 ;               Drag=1, falls /DRAG angegeben wurde, und der Slider
 ;               bei gedruecktem Mausknopf bewegt wurde, sonst 0.
 ;
+;               Zum Auslesen und Setzen des aktuellen Slider-Values
+;               kann wie gewohnt WIDGET_CONTROL mit den
+;               Schluesselworten GET_VALUE und SET_VALUE verwendet werden.
+;
 ; RESTRICTIONS:
 ;
 ; PROCEDURE: Dies ist ein "klassisches" Compound-Widget.
@@ -134,6 +138,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1999/06/17 14:30:05  kupper
+;        Extended Header.
+;
 ;        Revision 2.3  1999/06/17 14:06:02  kupper
 ;        Modified Example to use Dummy_EventHandler.
 ;        Correct typing errors in Header.
