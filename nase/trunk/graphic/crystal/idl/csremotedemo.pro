@@ -17,16 +17,17 @@
 ;  IO
 ;
 ; CALLING SEQUENCE:
-;*csRemoteDemo, port=port
+;*csRemoteDemo, PORT=PORT
 ;
 ; INPUTS:
 ;  
 ;
 ; OPTIONAL INPUTS:
-;  port ist the port number used by the Crystal Space application
+;  
 ;
 ; INPUT KEYWORDS:
-;  
+;  PORT:: port ist the port number used by the Crystal Space
+;  application; default value is <*>1234</*>
 ;
 ; OUTPUTS:
 ;  
@@ -41,13 +42,20 @@
 ;  
 ;
 ; RESTRICTIONS:
-;  
+;  the Crystal Space application must be started before, waiting for a
+;  connection on port number <*>PORT</*>
 ;
 ; PROCEDURE:
 ;  
 ;
 ; EXAMPLE:
-;*
+; start nase/graphic/crystal/cpp/simple from console
+;* csremotedemo
+;then press the SPACE button in the simple application to accept the
+;connection;
+; now you can click with the mouse buttons in the idl widget window
+; and you see the screenshot of the simple application. Using left and
+; right mouse button you can turn left and right.
 ;*>
 ;
 ; SEE ALSO:

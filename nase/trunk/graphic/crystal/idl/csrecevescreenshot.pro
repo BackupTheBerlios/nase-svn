@@ -15,18 +15,19 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*ScreenShot = csReceveScreenShot(lun, verbose=verbose)
+;*ScreenShot = csReceveScreenShot(lun, VERBOSE=VERBOSE)
 ;
 ; INPUTS:
-;  lun is a unit number assiciated with an open TCP/IP socket, connected with a running Crystal
-;  Space application. You must use <C>csConnect()</C> to get this lun.
+; lun:: lun is a unit number assiciated with an open TCP/IP socket,
+; connected with a running Crystal Space application. 
+; You must use <C>csConnect()</C> to get this unit.
 ;  
 ; 
 ; OPTIONAL INPUTS:
 ;  
 ;
 ; INPUT KEYWORDS:
-; You can set /verbose to get some debug information
+; VERBOSE:: You can set /verbose to get some debug information
 ;
 ; OUTPUTS:
 ;  ScreenShot is a bitmap (2D-Byte-Array)
@@ -110,7 +111,7 @@ while ((TransBytes ne MemSize) and (TrialCount lt MaxTransTrials)) do begin
     TransBytes=TransBytes+tc
     TrialCount = TrialCount+1
 endwhile
-print, "TrialCount=", TrialCount
+if keyword_set(verbose) then print, "TrialCount=", TrialCount
 
 invertHeight = Height-indgen(Height)
 

@@ -16,7 +16,7 @@
 ;  IO
 ;
 ; CALLING SEQUENCE:
-;*lun = csConnect(port=port, read_timeout=seconds)
+;*lun = csConnect(PORT=PORT, HOST=HOST, READ_TIMEOUT=READ_TIMEOUT)
 ;
 ; INPUTS:
 ;  
@@ -25,7 +25,12 @@
 ;  
 ;
 ; INPUT KEYWORDS:
-;  
+;  PORT:: TCP/IP port number, there must be a server program listening
+;  to this port; default ist 1234
+;  HOST:: host name to which to connect; default is 'localhost'
+;  READ_TIMEOUT:: this keyword is set to the number of seconds to wait
+;  for data to arrive before giving up and issuing an error (see
+;  idlhelp for "socket"
 ;
 ; OUTPUTS:
 ;  
@@ -37,7 +42,8 @@
 ;  
 ;
 ; SIDE EFFECTS:
-;  
+;  before finishing your program you should close the connection using
+;  <*>close, lun</*>
 ;
 ; RESTRICTIONS:
 ;  
