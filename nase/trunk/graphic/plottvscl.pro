@@ -134,6 +134,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.55  1999/10/12 14:17:32  kupper
+;     Bug: Keyword CUBIC was passed as an integer. Fixed.
+;
 ;     Revision 2.54  1999/09/23 14:12:39  kupper
 ;     Corrected Legend colorscaling (now uses TOP).
 ;     Updating should work now, behaviour of plottvscl should even be
@@ -572,7 +575,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                noscale : NOSCALE, $
                polygon : POLYGON, $
                top     : TOP, $
-               cubic   : CUBIC, $
+               cubic   : float(CUBIC), $
                interp  : INTERP, $
               minus_one: MINUS_ONE, $
               colormode: COLORMODE, $
