@@ -30,6 +30,7 @@
 ;; the second time by mistake.
 
 Pro Startup_ctd
+common commonrandom, seed
 
    if (fix(!VERSION.Release) ge 4) then OS_FAMILY=!version.OS_FAMILY else OS_FAMILY='unix'
 
@@ -136,4 +137,9 @@ Pro Startup_ctd
    ;;Initialise (and restore, if logo was displayed) color map,
    ;;according to NASE color management:
    ULoadCt, 0 ;;(This is nohup-protected itself)
+
+   ;;Initialise random seed, so that routines can expect it to be
+   ;;defined:
+   dummy = randomu(seed)
+   Message, "Initialising random seed.", /Informational
 End
