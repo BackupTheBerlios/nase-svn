@@ -12,19 +12,20 @@
 ;      
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    Maple, mfile, OUTPUT=output, PARAS=paras, _EXTRA=e
+; CALLING SEQUENCE:    Maple, mfile [,OUTPUT=output] [,PARAS=paras] [,/VERBOSE] [,_EXTRA=e]
 ;
 ; INPUTS:              mfile: File mit Maple-Anweisungen
 ;
-; KEYWORD PARAMETERS:  PARAS:  Struktur, die Variablen enthaelt, die in 
-;                              Maple bekannt sein sollen
-;                      _EXTRA: Alle unbekannten Keywords werden als
-;                              Variablen an MAPLE uebergeben, d.h.
-;                                Maple, file, a=6, b=10 
-;                                   ==> a:=6;b:=10; (in MAPLE) 
-;                              Sind in _EXTRA und PARAS gleiche Variablennamen
-;                              definiert, haben die in PARAS (wie bei _EXTRA
-;                              ueblich) Prioritaet.
+; KEYWORD PARAMETERS:  VERBOSE: geschwaetzig
+;                      PARAS  : Struktur, die Variablen enthaelt, die in 
+;                               Maple bekannt sein sollen
+;                      _EXTRA : Alle unbekannten Keywords werden als
+;                               Variablen an MAPLE uebergeben, d.h.
+;                                 Maple, file, a=6, b=10 
+;                                    ==> a:=6;b:=10; (in MAPLE) 
+;                               Sind in _EXTRA und PARAS gleiche Variablennamen
+;                               definiert, haben die in PARAS (wie bei _EXTRA
+;                               ueblich) Prioritaet.
 ;
 ;                      ACHTUNG: Da Maple case-sensitive arbeitet, IDL aber nicht,
 ;                               muessen IDL-Variablen in MAPLE komplett klein
@@ -51,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/10/18 19:10:56  saam
+;           new keyword VERBOSE
+;
 ;     Revision 1.2  1998/10/18 19:03:38  saam
 ;           small docheader updates
 ;
@@ -59,7 +63,7 @@
 ;
 ;
 ;-
-PRO Maple, mfile, OUTPUT=output, PARAS=paras, _EXTRA=e
+PRO Maple, mfile, OUTPUT=output, PARAS=paras, VERBOSE=verbose, _EXTRA=e
 
 host    = 'neuro'
 maple   = '/vol/math/maple/bin/maple' 
@@ -83,10 +87,16 @@ IF Set(paras) THEN BEGIN
    END
 END
 
+IF Keyword_Set(VERBOSE) THEN Print, 'MAPLE: additional variables are ', S
 
 IF FileExists(mfile) THEN BEGIN
    command = rsh+' '+host+" '(( "+echo+' "'+S+'";'+cat+' '+mfile+';'+echo+' "quit;" ) | '+maple+")'"
+   IF Keyword_Set(VERBOSE) THEN print, 'MAPLE: running MAPLE on '+host+'...'
    spawn, command, output
+   IF Keyword_Set(VERBOSE) THEN BEGIN
+      print, !KEY.UP, 'MAPLE: running MAPLE on '+host+'...done'
+      print, 'MAPLE: '+STRCOMPRESS(N_ELEMENTS(OUTPUT),/REMOVE_ALL)+' lines of output'
+   END
 END ELSE Message, "file doesn't exist"
 
 
