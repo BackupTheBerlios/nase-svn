@@ -6,6 +6,9 @@
 ; MODIFICATION HISTROY:
 ;
 ;       $Log$
+;       Revision 1.5  2000/01/27 10:55:41  saam
+;             added learn dir
+;
 ;       Revision 1.4  2000/01/14 15:13:06  saam
 ;             added templates path in IDLPATH
 ;
@@ -40,6 +43,7 @@ MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["demo"])    
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["graphic"])   + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["input"])     + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["internal"])  + separator
+MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["learn"])     + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["sim"])       + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["templates"]) + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["xplore"])

@@ -11,6 +11,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.4  2000/01/27 10:55:41  saam
+;             added learn dir
+;
 ;       Revision 1.3  2000/01/19 17:50:21  saam
 ;             templates added
 ;
@@ -27,7 +30,7 @@ PRO UpdateDOC
    cd, MINDdir, CURRENT=oldPWD
    Spawn, "cvs update"
 
-   SubDirs   = ['control', 'demo', 'graphic', 'input', 'internal', 'sim', 'templates', 'xplore']
+   SubDirs   = ['control', 'demo', 'graphic', 'input', 'internal', 'learn', 'sim', 'templates', 'xplore']
    HTMLFile  = 'index.html'
 
    FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
