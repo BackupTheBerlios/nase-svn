@@ -28,6 +28,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/03/22 14:57:39  kupper
+;        Oops, put in a little error...
+;        fixed.
+;
 ;        Revision 1.2  2000/03/22 14:52:52  kupper
 ;        Changed to use new Distance() function.
 ;        The old code was wrong! Inertia() will have produced invalid results!
@@ -54,7 +58,7 @@ FUNCTION Inertia, A, COM=com
    IF com(0) NE !NONE THEN BEGIN
       IF equal(tA, 0.0) THEN $
        return, 0.0 ELSE $
-       return, total( A * Distance(h, w, com(0), com(1)) ) / tA
+       return, total( A * Distance(h, w, com(0), com(1))^2 ) / tA
    END ELSE RETURN, !NONE
 
 END
