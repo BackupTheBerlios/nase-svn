@@ -22,6 +22,7 @@
 ;                                           | ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                         }
+;                                         [ ,ALL [ ,LWX ,LWY ] ]
 ;                                       )
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: siehe GetWeight()!
@@ -36,7 +37,18 @@
 ;
 ;
 ;	
-; KEYWORD PARAMETERS:siehe GetWeight()
+; KEYWORD PARAMETERS: ALL: Wird dieses Keyword gesetzt, so werden
+;                          nicht nur die Gewichte für das angegebene
+;                          Neuron gesetzt, sondern auch die aller
+;                          anderen. Dabei wird die übergebene
+;                          Gewichtsmatrix entsprechend verschoben. Die
+;                          Verschiebung wird so berechnet, daß die
+;                          resultierenden HotSpots gleichmäßig im
+;                          Layer verteilt sind. Wird eine andere
+;                          Verschiebung gewünscht, so kann die
+;                          Laufweite in LWX und LWY übergeben werden.
+;
+;                     alles andere: siehe GetWeight()
 ;
 ;
 ;
@@ -58,7 +70,7 @@
 ;
 ; RESTRICTIONS: Die übergebenen Gewichte müssen je nach Kontext
 ;               entweder ein Skalar oder ein Array mit entsprechenden
-;               imensionen (s. GetWeight() ) sein!
+;               Dimensionen (s. GetWeight() ) sein!
 ;
 ;
 ;
@@ -72,6 +84,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Mon Aug 4 00:43:52 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		ALL, LWX, LWY zugefügt.
+;
 ;       Wed Jul 30 18:14:23 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -84,7 +101,8 @@
 ;-
 
 Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
-                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
+                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
+                                    ALL=all, LWX=lwx, LWY=lwy
     
    s = size(Weight)
 
@@ -93,22 +111,47 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if s(0) ne 2 then message, '2D-Array erwartet!'
        if (s(1) ne V_Matrix.source_h) or (s(2) ne V_Matrix.source_w) then message, 'Das übergebene Array muß die Ausmaße des Source-Layers haben!'
 
-       if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
-       V_Matrix.Weights(t_index, *) = Weight 
+       if not set(t_index) then begin
+          t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
+       endif else begin 
+          t_row = LayerRow(INDEX=t_index, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
+          t_col = LayerCol(INDEX=t_index, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
+       end
+       if keyword_set(ALL) then begin
+          Default, LWX, V_Matrix.source_w/V_Matrix.target_w
+          Default, LWY, V_Matrix.source_h/V_Matrix.target_h
+          Weight = Shift(Weight, -LWY*t_row, -LWX*t_col)
+          for x=0, V_Matrix.target_w-1 do begin
+             for y=0, v_Matrix.target_h-1 do begin
+                V_Matrix.Weights(Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Weight, LWY*y, LWX*x)
+             endfor
+          endfor
+       end else V_Matrix.Weights(t_index, *) = Weight 
 
     end
 
  
    if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
-
-       if not set(s_index) then s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
-
        if s(0) ne 2 then message, '2D-Array erwartet!'
        if (s(1) ne V_Matrix.target_h) or (s(2) ne V_Matrix.target_w) then message, 'Das übergebene Array muß die Ausmaße des Target-Layers haben!'
 
-       V_Matrix.Weights(*, s_index) = Weight
-   
-   end
+       if not set(s_index) then begin
+          s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
+       endif else begin
+          s_row = LayerRow(INDEX=s_index, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
+          s_col = LayerCol(INDEX=s_index, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
+       end
+       if keyword_set(ALL) then begin
+          Default, LWX, V_Matrix.target_w/V_Matrix.source_w
+          Default, LWY, V_Matrix.target_h/V_Matrix.source_h
+          Weight = Shift(Weight, -LWY*s_row, -LWX*s_col)
+          for x=0, V_Matrix.source_w-1 do begin
+             for y=0, v_Matrix.source_h-1 do begin
+                V_Matrix.Weights(*, Layerindex(ROW=y, COL=x, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Weight, LWY*y, LWX*x)
+             endfor
+          endfor
+       end else V_Matrix.Weights(*, s_index) = Weight
+    end
 
 
    if (set(S_ROW) or set(S_INDEX)) and (set(T_ROW) or set(T_INDEX)) then begin ; Nur einzelne Verbindung zurückliefern:
