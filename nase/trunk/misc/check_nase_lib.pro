@@ -12,7 +12,14 @@ Pro Check_NASE_LIB
    PushD, LIBDIR
    Spawn, ["make"], /Noshell              ; create or update library if necessary
    
-   If NOT Fileexists(!NASE_LIB) THEN Console, !NASE_LIB+" doesn't exist. Somethings going wrong here", /FATAL
+   If NOT Fileexists(!NASE_LIB) THEN begin
+      Console, !NASE_LIB+" doesn't exist. Something's going wrong " + $
+       "here.", /WARNING
+      Console, "You will encounter problems using the C-library " + $
+       "routines.", /WARNING
+      PopD
+      return
+   End
 
    dummy = MTime(!NASE_LIB, Date=d)
    Print
