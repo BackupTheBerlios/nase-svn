@@ -278,14 +278,20 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
      REDRAW_LEGEND = 1
 
 
-   If UPDATE_INFO.defined eq 0 then begin
+   ;; we want some special things (not) to be done at the very first
+   ;; call, so we define this:
+   VERY_FIRST_CALL = (UPDATE_INFO.defined eq 0)
+
+
+   If VERY_FIRST_CALL then begin
       ;; UPDATE_INFO either was not specified, or it was passed an empty
       ;; PLOTTVSCL_INFO struct. ("defined" is never 0 in a properly initialized 
       ;; PLOTTVSCL_INFO struct.)
       ;;This is a normal PlotTvScl-Call
 
-      INIT = 1                  ; we want the color scaling to be initialized
-      REDRAW_LEGEND = 1         ; we want the palette to be drawn, (if requested)
+      INIT = 1                  ; we want everything to be done: the
+                                ; color scaling to be initialized
+                                ; and the legend to be drawn, (if requested)
 
       ;;-----Sichern der urspruenglichen Device-Parameter
       oldRegion   = !P.Region
@@ -345,13 +351,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
       ;;print,charcor
       xcoord = lindgen(ArrayWidth)
       ycoord = lindgen(ArrayHeight)
-;;;;;;;      PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=GetBackground(), Charsize=Charsize*charcor,_EXTRA=_extra
-
-;;;;;;;      plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
-;;;;;;;      plotregion_norm = [[0.1,0.1],[0.9,0.9]] 
-;;;;;;;      ;;only whole pixel or points exist
-;;;;;;;      plotregion_device = (convert_coord(plotregion_norm,/NORM,/TO_DEVICE))
-;;;;;;;      plotregion_norm = uconvert_coord(plotregion_device,/TO_NORM,/DEVICE)
 
 
       VisualWidth = !D.X_VSIZE
@@ -408,33 +407,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
        IF ArrayWidth GE 7 THEN !X.Minor = 2 ELSE !X.Minor=-1
       
 
-      ;;-----Raender und Koordinaten des Ursprungs:
-;;;;;;;      IF Keyword_Set(LEGEND) THEN LegendRandDevice = LEGMARGIN*VisualWidth ELSE LegendRandDevice = 0.0
-;;;;;;;      
-;;;;;;;          
-;;;;;;;      IF N_Params() EQ 3 THEN OriginDevice = (uConvert_Coord([XPos,YPos], /Normal, /To_Device)) $
-;;;;;;;      ELSE OriginDevice = [plotregion_device(0,0),plotregion_device(1,0)]
-;;;;;;;   
-;;;;;;;     
-;;;;;;;      UpRightDevice = ([VISUALWIDTH -(plotregion_device(0,1)- plotregion_device(0,0)), $
-;;;;;;;                        VISUALHEIGHT-(plotregion_device(1,1)-plotregion_device(1,0))]+[LegendRandDevice,0])
-;;;;;;;       
-;;;;;;;      LegendRandNorm = uConvert_Coord([LegendRandDevice,0], /Device, /To_Normal)
-;;;;;;;      OriginNormal = uConvert_Coord(OriginDevice, /Device, /To_Normal)
-;;;;;;;      UpRightNormal = uConvert_Coord(UpRightDevice, /Device, /To_Normal)
-;;;;;;;      
-;;;;;;;      RandNormal = OriginNormal + UpRightNormal
-;;;;;;;      
-;;;;;;;      PlotPositionDevice = FltArr(4)
-;;;;;;;      PlotPositionDevice(0) = OriginDevice(0)
-;;;;;;;      PlotPositionDevice(1) = OriginDevice(1)
-;;;;;;;      
-;;;;;;;     
-;;;;;;;      PixelSizeNormal = [(plotregion_norm(0,1)-OriginNormal(0)-LegendRandNorm(0,0))/float(ArrayWidth+1),$
-;;;;;;;                         (plotregion_norm(1,1)-OriginNormal(1))/float(ArrayHeight+1)]
-;;;;;;;      
-;;;;;;;      PixelSizeDevice = (uconvert_coord(PixelSizeNormal, /normal, /to_device))
-    
+
 
       ;;-----Plotten des Koodinatensystems:
       IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
@@ -553,10 +526,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
    Endif;; keyword_set(UPDATE_INFO.defined)
 
 
-
    ;;-----Plotten der UTVScl-Graphik:
    PlotTvScl_update, INIT=init, _W, UPDATE_INFO, RANGE_IN=range_in
-
 
    
    ;;------------ Handling of legend: ----------------------------
@@ -583,30 +554,39 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
 
 
    ;;-----Legende plotten, falls erwuenscht und nötig:
-   IF (Keyword_Set(INIT) or Keyword_Set(REDRAW_LEGEND)) and Keyword_Set(UPDATE_INFO.legend) THEN BEGIN
-      
-      ;; first opaque area for legend value plotting, in case this is an
-      ;; update (all in normal):
-      fill_left = UPDATE_INFO.leg_x
-      fill_right = 1.0
-      fill_bottom = 0.0
-      fill_top = 1.0
-      PolyFill, [fill_left, fill_right, fill_right, fill_left], $
-                [fill_bottom, fill_bottom, fill_top, fill_top], $
-                /Normal, $
-                color=GetBackground()
-      
-      ;; now draw the legend:
-      TVSclLegend, UPDATE_INFO.leg_x, $
-                   UPDATE_INFO.leg_y, $
-                   Stretch=UPDATE_INFO.leg_stretch, $
-                   Max=UPDATE_INFO.leg_max, $
-                   Min=UPDATE_INFO.leg_min, $
-                   Mid=UPDATE_INFO.leg_mid_str, $
-                   CHARSIZE=Charsize, $
-                   /Vertical, /Center, TOP=top
+   ;; Legende erwünscht?
+   If Keyword_Set(UPDATE_INFO.legend) then begin
+      ;; die Legende muß gezeichnet werden bei /REDRAW_LEGEND und auch
+      ;; bei /INIT:
+      IF Keyword_Set(INIT) or Keyword_Set(REDRAW_LEGEND)  THEN BEGIN
+         ;; Ist es ein RE-draw? Dann können sich die Legendenwerte
+         ;; geändert haben, und wir müssen die alten auslöschen. wir
+         ;; wollen das nicht beim allerersten Aufruf tun
+         ;; (VERY_FIRST_CALL=1), da es dort überflüssig ist und in
+         ;; PS-Files nicht die lästigen Farbkästen auftauchen.
+         IF not VERY_FIRST_CALL THEN BEGIN
+            ;; first opaque area for legend value plotting, in case this is an
+            ;; update (all in normal):
+            fill_left = UPDATE_INFO.leg_x
+            fill_right = 1.0
+            fill_bottom = 0.0
+            fill_top = 1.0
+            PolyFill, [fill_left, fill_right, fill_right, fill_left], $
+                      [fill_bottom, fill_bottom, fill_top, fill_top], $
+                      /Normal, $
+                      color=rgb("red") ;GetBackground()
+         endif
+         ;; now draw the legend:
+         TVSclLegend, UPDATE_INFO.leg_x, $
+                      UPDATE_INFO.leg_y, $
+                      Stretch=UPDATE_INFO.leg_stretch, $
+                      Max=UPDATE_INFO.leg_max, $
+                      Min=UPDATE_INFO.leg_min, $
+                      Mid=UPDATE_INFO.leg_mid_str, $
+                      CHARSIZE=Charsize, $
+                      /Vertical, /Center, TOP=top
       ENDIF
-   
+   endif
    ;;----- end handling of legend -------------------------
    
 
