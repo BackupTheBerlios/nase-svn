@@ -16,7 +16,6 @@
 ; INPUTS: radiusarray: Die in diesem Array enthaltenen Werte werden als Abstaende
 ;                      gemessen vom Ursprung dargestellt.
 ;         winkelarray: Die zugehoerigen Winkel in Rad.
-
 ;
 ; OPTIONAL INPUTS: 
 ;                  sdev       : Array, das die Standardabweichung enthaelt 
@@ -57,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.13  2000/07/05 10:19:14  saam
+;              little bug in doc header
+;
 ;        Revision 2.12  2000/06/23 10:22:12  gabriel
 ;             !P.MULTI bug fixed
 ;
