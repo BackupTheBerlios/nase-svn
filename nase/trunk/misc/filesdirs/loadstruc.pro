@@ -1,66 +1,68 @@
 ;+
-; NAME:                LoadStruc
+; NAME:
+;   LoadStruc()
 ;
-; AIM:                 restores a structure saved with <A>SaveStruc</A> from a LUN
+; AIM:
+;   restores a structure saved with <A>SaveStruc</A> from a LUN
 ;
-; PURPOSE:             Arrays und skalare Datentypen lassen sich einfach
-;                      per PrintF oder WriteU speichern. Dies geht fuer
-;                      Structures nur, wenn man beim Laden die Tags und
-;                      Dimensionen kennt. Leider weiss man das halt nicht
-;                      immer. Die Funktionen SaveStruc und das Komplement 
-;                      LoadStruc heben diese Einschraekung auf.
+; PURPOSE:
+;   Arrays and scalar data types can easily be stored via
+;   <*>PrintF</*> or <*>WriteU</*>. For structures, this is 
+;   only possible, if one knows the names and sizes of all
+;   tags. SaveStruc and its partner <A>LoadStruc</A> provide
+;   an easy to use extension for this.<BR>
+;   Why not use IDLs <*>Save</*>, instead? Restored structures
+;   always have to have the same name when being restored. This
+;   is complicated, if you use different routines to save and 
+;   restore, because you have to synchronize the naming. It gets
+;   even more complicated, if you want to save several structures. 
 ;
-; CATEGORY:            MISC
+; CATEGORY:
+;  DataStorage
+;  Files
+;  IO
+;  Structures
 ;
-; CALLING SEQUENCE:    Struc = LoadStruc(lun)
+; CALLING SEQUENCE:
+;*   struc = LoadStruc(lun)
 ;
-; INPUTS:              lun  : ein gueltiger FilePointer
+; INPUTS:             
+;   lun  :: a valid file pointer
 ;
-; OUTPUTS:             Struc: die geladende Struktur
+; OUTPUTS:
+;   struc:: the structure loaded from lun
 ;
 ; RESTRICTIONS:
-;                      Struc darf beim Speichern keine weitere Struktur oder Array von 
-;                      Structuren enthalten.
+;   Struc <B>must not</B> contain any structure or
+;   array of structures. 
 ;
 ; EXAMPLE:
-;                      a = {tag1:1,$
-;                           hallo:[1,2,3,4,5],$
-;                           shit:['A N','wkjfh','schluess']}
-;                      help, a, /STRUCTURES
-;                      openw, 1, 'testfile'
-;                      savestruc,1,a
-;                      close,1
-;                      openr, 1,'testfile'
-;                      b=loadstruc(1)
-;                      close, 1
-;                      help, b, /STRUCTURES
-;                      
-;                   Screenshot:
-;                      ** Structure <4001f608>, 3 tags, length=64, refs=1:
-;                         TAG1            INT              1
-;                         HALLO           INT       Array(5)
-;                         SHIT            STRING    Array(3)
-;                      ** Structure <4001f408>, 3 tags, length=64, refs=1:
-;                         TAG1            INT              1
-;                         HALLO           INT       Array(5)
-;                         SHIT            STRING    Array(3)
 ;
-; SEE ALSO:         <A HREF="#SAVESTRUC">SaveStruc</A>
+;*  a = {tag1:1,$
+;*       hallo:[1,2,3,4,5],$
+;*       shit:['A N','wkjfh','schluess']}
+;*  help, a, /STRUCTURES
+;*
+;*  >** Structure <4001f608>, 3 tags, length=64, refs=1:
+;*  >   TAG1            INT              1
+;*  >   HALLO           INT       Array(5)
+;*  >   SHIT            STRING    Array(3)
+;*
+;*  uopenw, 1, 'testfile'
+;*  savestruc,1,a
+;*  uclose,1
+;*  uopenr, 1,'testfile'
+;*  b=loadstruc(1)
+;*  uclose, 1
+;*  help, b, /STRUCTURES
+;*                      
+;*  >** Structure <4001f408>, 3 tags, length=64, refs=1:
+;*  >   TAG1            INT              1
+;*  >   HALLO           INT       Array(5)
+;*  >   SHIT            STRING    Array(3)
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.3  2000/09/25 09:13:02  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 2.2  1997/12/17 16:22:23  saam
-;           Umwandlung in Funktion
-;
-;     Revision 2.1  1997/11/26 09:18:04  saam
-;           Urversion
-;
+; SEE ALSO:
+;   <A>SaveStruc</A>
 ;
 ;-
 FUNCTION LoadStruc, lun
