@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/04/04 14:25:40  saam
+;           one implemented condition could never be fulfilled
+;           -> erased
+;
 ;     Revision 1.4  2000/04/04 14:22:34  saam
 ;           changed implementation to not change the
 ;           order of existing tags
@@ -64,13 +68,15 @@ PRO SetTag, S, TN, TV
    IF TypeOf(TN) NE 'STRING' THEN message, 'second argument has to be a string'
 
    IF ExtraSet(S, TN, TAGNR=tagnr) THEN BEGIN
+       ; tag already exists, replace it
        tn = Tag_Names(S)
        FOR i=0,tagnr-1 DO IF Set(_S) THEN _S = Create_Struct(_S, tn(i), S.(i)) ELSE _S = Create_Struct(tn(i), S.(i))  
        IF Set(_S) THEN _S = Create_Struct(_S, tn(tagnr), TV) ELSE _S = Create_Struct(tn(tagnr), TV)
        FOR i=tagnr+1, N_Tags(S)-1 DO IF Set(_S) THEN _S = Create_Struct(_S, tn(i), S.(i)) ELSE _S = Create_Struct(tn(i), S.(i))
        S = _S
    END ELSE BEGIN
-       IF TypeOf(S) EQ "STRUCT" THEN S = Create_Struct(S, TN, TV) ELSE S = Create_Struct(TN, TV)
+       ; tag doesn't exist, append to the end
+       S = Create_Struct(S, TN, TV)
    END
 
        ; the following was the old implementation:
