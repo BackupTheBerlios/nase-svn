@@ -1,6 +1,8 @@
 ;+
 ; NAME:               LoopIter
 ;
+; AIM: returns the number of iterations, defined in a loop-structure
+;
 ; PURPOSE:            Liefert die Zahl an Iteration, die in einer LoopStructure 
 ;                     definiert sind.
 ;                         
@@ -36,6 +38,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/28 13:24:44  alshaikh
+;           added AIM
+;
 ;     Revision 1.3  1997/12/02 10:11:47  saam
 ;           optionaler Output tagIter hinzugefuegt
 ;

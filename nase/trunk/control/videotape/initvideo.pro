@@ -1,6 +1,8 @@
 ;+
 ; NAME: InitVideo()
 ;
+; AIM: Initializes a video-structure.
+;
 ; PURPOSE: Initialisierung eines Array-Videos
 ;
 ;          Zur Video-Familie gehören: InitVideo()
@@ -67,6 +69,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.13  2000/09/28 13:23:27  alshaikh
+;             added AIM
+;
 ;       Revision 2.12  2000/06/19 13:08:08  saam
 ;             + replaced string processing by an IDL3.6 compatible version
 ;

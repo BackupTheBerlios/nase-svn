@@ -1,6 +1,7 @@
 ;+
 ; NAME:  consoletime.pro
 ;
+; AIM: <A>console</A>-utility... sets console-time
 ;
 ; PURPOSE:  updates console-time
 ;
@@ -50,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/28 13:23:54  alshaikh
+;           added AIM
+;
 ;     Revision 2.1  2000/01/26 17:03:36  alshaikh
 ;           initial version
 ;

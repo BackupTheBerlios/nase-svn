@@ -1,6 +1,8 @@
 ;+
 ; NAME: InformationOverkill()
 ;
+; AIM: summation of a video over all frames.
+;
 ; PURPOSE: Summieren eines Array-Videos über alle Frames unter
 ;          optionaler Anwendung einer Funktion. (s. InitVideo für
 ;          nähere Informationen zu Array-Videos.)

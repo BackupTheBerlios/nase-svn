@@ -1,6 +1,8 @@
 ;+
 ; NAME:              InitCounter
 ;
+; AIM: initializes a single/multiple counter
+;
 ; PURPOSE:           Initialisiert ein Zaehlwerk aus beliebigen Zaehlern.
 ;                    Jeder Zaehler hat einen individuellen Ueberlauf.
 ;                    
@@ -26,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/09/28 13:24:20  alshaikh
+;           added AIM
+;
 ;     Revision 2.6  1999/03/16 12:55:21  saam
 ;           corrected disfunctional example
 ;

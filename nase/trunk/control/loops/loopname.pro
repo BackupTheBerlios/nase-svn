@@ -1,6 +1,8 @@
 ;+
 ; NAME:               LoopName
 ;
+; AIM: Generates an individual string for a given loop structure
+;
 ; PURPOSE:            Generates an individual string for a given loop
 ;                     structure. This may serve as basis for a
 ;                     filename to save iteration specific data.
@@ -52,6 +54,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/09/28 13:24:44  alshaikh
+;           added AIM
+;
 ;     Revision 1.8  2000/06/19 13:06:12  saam
 ;           + translated doc header
 ;           + new keyword SEP for loop variable separators

@@ -1,6 +1,8 @@
 ;+
 ; NAME:               LoopTags
 ;
+; AIM: returns the number of tags contained in a loop (c.f. <A>looping</A>)
+;
 ; PURPOSE:            Liefert die Zahl der Tags, die eine Schleife beinhalten.
 ;                         
 ; CATEGORY:           CONTROL
@@ -29,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/28 13:24:44  alshaikh
+;           added AIM
+;
 ;     Revision 1.1  1997/11/26 14:31:35  saam
 ;           Urversion
 ;

@@ -1,7 +1,9 @@
 ;+
 ; NAME:                 MkHTML
 ;
-; PURPOSE:              erstellt HTML-Dokumentation in allen Unterverzeicnissen mit Namen index.html
+; AIM:  Generates HTML documentation (index.html) in all subdirectories
+;
+; PURPOSE:              erstellt HTML-Dokumentation in allen Unterverzeichnissen mit Namen index.html
 ;
 ; CATEGORY:             GENERAL
 ;
@@ -12,6 +14,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.21  2000/09/28 13:23:55  alshaikh
+;             added AIM
+;
 ;       Revision 1.20  2000/08/16 16:34:36  kupper
 ;       Added directory "object/widget_object".
 ;

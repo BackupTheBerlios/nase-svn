@@ -1,6 +1,8 @@
 ;+
 ; NAME: Remaster
 ;
+; AIM: postprocessing of a (closed) array-video.
+;
 ; PURPOSE: Nachbearbeitung eines (abgeschlossenen) Arrayvideos
 ;
 ; CATEGORY: Simulation
@@ -78,6 +80,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  2000/09/28 13:23:28  alshaikh
+;              added AIM
+;
 ;        Revision 2.5  1999/02/16 15:46:33  thiel
 ;               Jetzt auch mit NOLABEL-Keyword.
 ;

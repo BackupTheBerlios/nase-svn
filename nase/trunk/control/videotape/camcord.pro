@@ -1,6 +1,8 @@
 ;+
 ; NAME: CamCord() 
 ;
+; AIM: Recording of an Array-Video.
+;
 ; PURPOSE: Aufnehmen eines "Array-Videos"
 ;
 ; CATEGORY: Simulation
@@ -35,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  2000/09/28 13:23:26  alshaikh
+;             added AIM
+;
 ;       Revision 2.9  1998/11/08 14:51:35  saam
 ;             + video-structure made a handle
 ;             + ZIP-handling replaced by UOpen[RW]

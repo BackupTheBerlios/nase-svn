@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Looping
 ;
+; AIM: routine for handling general loops (c.f. <A>initloop</A>)
+;
 ; PURPOSE:            Diese Routine dient zur Behandlung von allgemeinen
 ;                     Schleifen. Das Prinzip ist folgendes: Alle Parameter
 ;                     werden in einer beliebigen Struktur (oder Array) gespeichert.
@@ -60,6 +62,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/09/28 13:24:44  alshaikh
+;           added AIM
+;
 ;     Revision 1.6  2000/09/27 15:59:10  saam
 ;     service commit fixing several doc header violations
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                  SimTimeInit
 ;
+; AIM: Initializes a structure for recording the time needed by simulations
+;
 ; PURPOSE:               Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
 ;                        zu protokollieren und nach der Gesamtsimulation eine Statistik/Graphik aus-
 ;                        zugeben.
@@ -29,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/28 13:25:35  alshaikh
+;           added AIM
+;
 ;     Revision 1.4  1998/06/19 09:22:30  gabriel
 ;          Keyword CLEAR eingefuehrt
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: Rewind
 ;
+; AIM: Positions a frame-pointer in a formerly recorded array-video.
+;
 ; PURPOSE: Positionieren des internen FramePointers in einem zuvor
 ;          aufgezeichneten Array-Video.
 ;
@@ -40,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  2000/09/28 13:23:29  alshaikh
+;             added AIM
+;
 ;       Revision 2.8  1999/01/14 16:13:28  niederha
 ;       Header geaendert
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME: Record
 ;
+; AIM: records state variables  of all neurons in a layer.
+;
 ; PURPOSE: Aufzeichnen von Zustandsgroessen der Neuronen aus einer Layer.
 ;
 ; CATEGORY: Control Routines / Videos, Tapes
@@ -48,6 +50,9 @@
 ; MODIFICATION HISTORY:
 ;
 ; $Log$
+; Revision 2.3  2000/09/28 13:23:28  alshaikh
+;       added AIM
+;
 ; Revision 2.2  1998/06/24 14:55:11  thiel
 ;        Header aktualisiert.
 ;

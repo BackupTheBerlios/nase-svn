@@ -1,6 +1,8 @@
 ;+
 ; NAME: PrintXY
 ;
+; AIM: Prints text at position (x,y)
+;
 ; PURPOSE: Ausgabe von Text an einer bestimmten Fensterposition
 ;
 ; CATEGORY: Output, Text
@@ -30,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/28 13:25:10  alshaikh
+;              added AIM
+;
 ;        Revision 2.2  1998/04/13 18:57:50  kupper
 ;               X/Y-Vertauschung umgetauscht...
 ;

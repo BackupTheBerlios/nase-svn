@@ -1,6 +1,8 @@
 ;+
 ; NAME: LoadVideo()
 ;
+; AIM: opens a stored array-video.
+;
 ; PURPOSE: Öffnen eines zuvor aufgezeichneten Array-Videos, die Routine erkennt
 ;          dabei automatisch, ob das Video gezippt ist oder nicht.
 ;
@@ -49,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.15  2000/09/28 13:23:28  alshaikh
+;             added AIM
+;
 ;       Revision 2.14  1998/11/09 09:48:37  saam
 ;             function instead of procedure call for uclose
 ;

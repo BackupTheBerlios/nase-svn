@@ -1,6 +1,8 @@
 ;+
 ; NAME:               InitLoop
 ;
+; AIM: initializes a LOOP. that is a structure for handling general loops .
+;
 ; PURPOSE:            Diese Routine dient zur Behandlung von allgemeinen
 ;                     Schleifen. Das Prinzip ist folgendes: Alle Parameter
 ;                     werden in einer beliebigen Struktur (oder Array) gespeichert.
@@ -58,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/09/28 13:24:43  alshaikh
+;           added AIM
+;
 ;     Revision 1.5  1997/11/26 09:21:39  saam
 ;           Update der Docu
 ;

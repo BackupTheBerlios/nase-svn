@@ -1,6 +1,8 @@
 ;+
 ; NAME:              CountValue
 ;
+; AIM: returns the state of the counter
+;
 ; PURPOSE:           Gibt den aktuellen Zaehlerstand aus 
 ;                   
 ; CATEGORY:          MISC
@@ -28,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2000/09/28 13:24:20  alshaikh
+;           added AIM
+;
 ;     Revision 2.6  2000/09/27 15:59:08  saam
 ;     service commit fixing several doc header violations
 ;

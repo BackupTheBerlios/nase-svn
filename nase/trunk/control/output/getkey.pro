@@ -1,6 +1,8 @@
 ;+
 ; NAME: GetKey()
 ;
+; AIM: extended Get_Kbrd() function.
+;
 ; PURPOSE: Ersetzt die Get_Kbrd(1)-Funktion (Standard-IDL) mit
 ;          zusätzlicher Steuercode-Verarbeitung.
 ;
@@ -33,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/09/28 13:25:10  alshaikh
+;              added AIM
+;
 ;        Revision 2.2  1998/03/16 17:54:16  kupper
 ;               Mode implementiert.
 ;

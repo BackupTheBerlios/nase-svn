@@ -1,6 +1,7 @@
 ;+
 ; NAME: InitTape
 ;
+; AIM: Initializes a Tape-Structure.
 ;
 ; PURPOSE: Erzeugen einer Tape-Struktur
 ;
@@ -53,6 +54,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  2000/09/28 13:23:27  alshaikh
+;             added AIM
+;
 ;       Revision 2.5  1998/06/24 14:45:15  thiel
 ;              Kein .Log im Header!
 ;

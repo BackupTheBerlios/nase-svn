@@ -1,6 +1,8 @@
 ;+
 ; NAME:              FREECONSOLE
 ;
+; AIM: frees <A>console</A>-structure
+;
 ; PURPOSE:           frees console-structure
 ;
 ; CATEGORY:          NASE CONTROL
@@ -20,6 +22,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/28 13:23:55  alshaikh
+;           added AIM
+;
 ;     Revision 2.3  2000/04/03 12:13:34  saam
 ;           + removed side effect in console
 ;           + freeconsole now really closes the window

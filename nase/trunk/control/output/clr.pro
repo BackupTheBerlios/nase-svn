@@ -1,6 +1,8 @@
 ;+
 ; NAME: CLR
 ;
+; AIM: clears the (text-)screen
+;
 ; PURPOSE: Loescht den Textbildschirm
 ;
 ; CATEGORY: Output, Text
@@ -19,6 +21,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/28 13:25:09  alshaikh
+;              added AIM
+;
 ;        Revision 2.1  1998/03/23 17:45:58  kupper
 ;               Aus der Hebe getauft!
 ;

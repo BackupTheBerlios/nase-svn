@@ -1,6 +1,8 @@
 ;+
 ; NAME:               CONSOLE
 ;
+; AIM: console-window for messages, warnings, fatal errors
+;
 ; PURPOSE:            console for messages, warnings, fatal errors...
 ;                     provides an unified message-mechanism for ALL mind-routines
 ;                     You can use console even without the init
@@ -39,6 +41,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.9  2000/09/28 13:23:54  alshaikh
+;           added AIM
+;
 ;     Revision 2.8  2000/06/19 12:44:56  saam
 ;           replaced string processing by an IDL3.6
 ;           conform version

@@ -1,6 +1,8 @@
 ;+
 ; NAME: Replay()
 ;
+; AIM: Reads a formerly recorded array-video.
+;
 ; PURPOSE: Auslesen eines zuvor aufgezeichneten Array-Videos
 ;
 ; CATEGORY: Simulation

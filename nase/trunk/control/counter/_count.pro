@@ -1,6 +1,8 @@
 ;+
 ; NAME:              _Count
 ;
+; AIM: is called by <A>count</A>.
+;
 ; PURPOSE:           Wird von Count benutzt.
 ;
 ; CATEGORY:          INTERNAL
@@ -15,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  2000/09/28 13:24:19  alshaikh
+;           added AIM
+;
 ;     Revision 2.3  2000/09/27 15:59:08  saam
 ;     service commit fixing several doc header violations
 ;

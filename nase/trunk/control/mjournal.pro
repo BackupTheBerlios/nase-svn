@@ -1,6 +1,8 @@
 ;+
 ; NAME:               MJournal
 ;
+; AIM: Extends <A>journal</A> by a BACKUP-SYSTEM (<A>bakrotate</A>)
+;
 ; PURPOSE:            Erweitert die IDL-Routine Journal um ein 
 ;                     Backup-System (BakRotate). Ausserdem wird
 ;                     der Filename um ein '.pro' ergaenzt, falls
@@ -39,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/28 13:23:55  alshaikh
+;           added AIM
+;
 ;     Revision 1.1  1999/02/22 11:14:33  saam
 ;           new & cool
 ;

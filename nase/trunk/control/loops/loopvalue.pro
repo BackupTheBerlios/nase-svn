@@ -1,6 +1,8 @@
 ;+
 ; NAME:               LoopValue
 ;
+; AIM: returns the actual loop-state of a structure initialized with <A>initloop</A>
+;
 ; PURPOSE:            Diese Routine liefert die aktuelle Schleifenzustand einer
 ;                     mit InitLoop initialisierten LoopStructure zurueck.
 ;                         
@@ -55,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/28 13:24:44  alshaikh
+;           added AIM
+;
 ;     Revision 1.3  1998/01/20 12:03:59  saam
 ;           Erweiterung um optionalen Ouput Iterationszahl
 ;

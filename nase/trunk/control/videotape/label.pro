@@ -1,6 +1,8 @@
 ;+
 ; NAME: Label
 ;
+; AIM: Appends a label to a closed array-video.
+;
 ; PURPOSE: Anfügen eines Label-Textes an ein erstelltes und
 ;          geschlossenes Array-Video.
 ;          Besitzt das Video bereits ein Label, so wird dieses

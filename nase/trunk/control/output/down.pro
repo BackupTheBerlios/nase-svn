@@ -1,6 +1,8 @@
 ;+
 ; NAME: Up()
 ;
+; AIM: returns a String of !KEY.DOWNs
+;
 ; PURPOSE: Liefert String aus lauter !KEY.DOWNs
 ;
 ; CATEGORY: Output, Text
@@ -20,6 +22,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/09/28 13:25:10  alshaikh
+;              added AIM
+;
 ;        Revision 2.1  1998/03/23 17:45:59  kupper
 ;               Aus der Hebe getauft!
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:                  SimTimeStep
 ;
+; AIM: see <A>simtimeinit</A>
+;
 ; PURPOSE:               Diese Routine ist dazu gedacht, die Zeiten fuer eine Folge von Simulationen 
 ;                        zu protokollieren und nach der Gesamtsimulation eine Statistik/Graphik aus-
 ;                        zugeben.
@@ -23,6 +25,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/09/28 13:25:36  alshaikh
+;           added AIM
+;
 ;     Revision 1.6  1998/06/29 13:10:38  gabriel
 ;          CALLING SEQUENCE korrigiert
 ;

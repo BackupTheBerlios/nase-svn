@@ -1,6 +1,8 @@
 ;+
 ; NAME: UDialog_Message
 ;
+; AIM: graphical user-dialog for all IDL versions >= 3
+;
 ; PURPOSE: Graphischer User-Dialog im Stil von "Dialog_Message"(IDL5)
 ;          bzw. "Widget_Message"(IDL4) für alle IDL-Versionen (ab 3 aufwärts).
 ;
@@ -21,6 +23,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/09/28 13:23:55  alshaikh
+;              added AIM
+;
 ;        Revision 2.3  1998/06/04 14:30:17  kupper
 ;               Jetzt hoffentlich wirklich.
 ;

@@ -1,6 +1,8 @@
 ;+
 ; NAME:              Count
 ;
+; AIM: Increases a counter initialized with <A>initcounter</A> by 1
+;
 ; PURPOSE:           Zaehlt einen mit InitCounter erstellten Zaehler um
 ;                    eins weiter.
 ;
@@ -28,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/09/28 13:24:19  alshaikh
+;           added AIM
+;
 ;     Revision 2.7  1997/11/26 10:54:47  saam
 ;           Probleme mit Rekursion&automatischer Compilation von CountIt
 ;           Auslagerung in _Count

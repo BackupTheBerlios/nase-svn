@@ -1,6 +1,8 @@
 ;+
 ; NAME:              ResetCounter
 ;
+; AIM: resets a counter which was initialized by <A>initcounter</A>
+;
 ; PURPOSE:           Setzt das mit InitCounter initialisierte Zaehlwerk auf Null.
 ;                    
 ; CATEGORY:          MISC
@@ -22,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/09/28 13:24:20  alshaikh
+;           added AIM
+;
 ;     Revision 2.4  1997/11/25 10:39:41  saam
 ;           yes another HTML-Bug
 ;

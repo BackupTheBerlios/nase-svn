@@ -1,6 +1,8 @@
 ;+
 ; NAME:               EJECT
 ;
+; AIM: closes a video, opened by <A>initvideo</A> or <A>loadvideo</A>.
+;
 ; PURPOSE:            Schließen eines mit InitVideo oder LoadVideo geöffneten Array-Videos und
 ;                     Anfügen eines informativen Labeltextes an das Videoinfo-File.
 ;
@@ -26,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  2000/09/28 13:23:27  alshaikh
+;             added AIM
+;
 ;       Revision 2.8  1998/11/08 14:51:36  saam
 ;             + video-structure made a handle
 ;             + ZIP-handling replaced by UOpen[RW]
