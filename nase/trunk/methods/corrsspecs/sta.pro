@@ -59,9 +59,9 @@ FUNCTION STA, C, B, t, PSHIFT=pshift $
 
    ON_ERROR, 2
 
-   ;----->
-   ;-----> CHECK & COMPLETE COMMAND LINE SYNTAX
-   ;----->
+   ;;----->
+   ;;-----> CHECK & COMPLETE COMMAND LINE SYNTAX
+   ;;----->
    IF N_Params() LT 2 THEN console, /fatal, 'At least two parameters expected.'
    ; C : continuous signal
    ; B : binary signal
@@ -78,9 +78,9 @@ FUNCTION STA, C, B, t, PSHIFT=pshift $
    IF avstart GE avstop THEN Console, /FATAL $
     , 'Starting time of averaging interval has to be earlier (lower) than stopping time.' 
 
-   ;----->
-   ;-----> AVERAGE SIGNAL C AROUND EACH SPIKE
-   ;----->
+   ;;----->
+   ;;-----> AVERAGE SIGNAL C AROUND EACH SPIKE
+   ;;----->
 
    ;; determine number of signals in c,
    ;; assume first dimension as time and
