@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2000/01/28 14:29:27  alshaikh
+;           fixed some /nographic-bugs
+;
 ;     Revision 1.10  2000/01/27 17:47:56  alshaikh
 ;           new console-syntax
 ;
@@ -134,6 +137,11 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    IF ExtraSet(e, 'NEWWIN') THEN LEARNwins = 0
 
    IF (SIZE(LEARNwins))(1) EQ 0 THEN BEGIN
+
+      ;LEARN_1 = LonArr(MaxWin)
+      ;LEARN_1 = LEARN_1 - 1
+
+
       LEARN_2 = LonArr(MaxWin)
       LEARN_2 = LEARN_2 - 1
       
@@ -166,8 +174,7 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    ;----->
   
    IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN
-     
-      LEARN_1 = DefineSheet(/NULL)
+      LEARN_1= DefineSheet(/NULL, MULTI=[MaxWin,MaxWin,1])
       IF (LS.SHOWW NE 0) THEN LEARN_2(LS.index) = DefineSheet(/NULL)
       LEARN_3(LS.index) = DefineSheet(/NULL)
       LEARN_4(LS.index) = DefineSheet(/NULL)
