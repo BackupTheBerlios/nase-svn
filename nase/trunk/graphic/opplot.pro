@@ -26,6 +26,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1999/12/02 14:18:30  saam
+;           + there was some senseless playing with !P.multi
+;           + plotting of axes eliminated
+;
 ;     Revision 2.2  1998/10/05 12:16:03  saam
 ;           + docheader added
 ;           + still problem with axis labelling
@@ -64,11 +68,6 @@ PRO OPPlot, z, zz, BASELINE=baseline, COLOR=color, INVERSE=inverse, _EXTRA=e
 
    IF NOT Keyword_Set(INVERSE) THEN PlotS, [x(0), x(n-1)], [baseline, baseline], COLOR=color, NOCLIP=0
 
-   winnr = (MAX([1,!P.Multi(1)])*MAX([1,!P.Multi(2)]))
-   
    ; plot the axes without confusing !P.Multi
-   !P.multi(0) = (!P.multi(0)+1) MOD winnr
-   plot,x,y,/NODATA,/NOERASE,_EXTRA=e
-   !P.multi(0) = (!P.multi(0)+winnr-1) MOD winnr
 
 END
