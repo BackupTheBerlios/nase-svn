@@ -121,6 +121,23 @@ common commonrandom, seed
       DEVICE, DECOMPOSED=0
       ;; request private color map:
       Window, 0, COLORS=256, XSIZE=1, YSIZE=1, /PIXMAP
+      ;; NOTE: The following BYPASS_TRANSLATION=0 call seems to fix
+      ;;       the problem of wrong color management with IDL 5.5.
+      ;;       Why, by heaven's sake, IDL bypasses it's internal
+      ;;       translation table, when on the other hand, 
+      ;;       HELP, /DEVICE reports that it uses a -shared-
+      ;;       colortable, I suppose no-one can and will and would
+      ;;       ever want to know.
+      ;;       To be exact, after getting the TRUE_COLOR-visual, the
+      ;;       translation table is still enabled, and a shared color
+      ;;       map is reported. Then, after the first window is
+      ;;       opened, it switches to bypassed, while still reporting
+      ;;       a shared color table. So we have to turn the translation
+      ;;       table back on in the following call.
+      ;;       Perhaps I'll try and ask RSI about it.
+      ;;       By the way: DIRECT_COLOR visuals don't work in any
+      ;;                   case, still. Just don't ask.
+      DEVICE, BYPASS_TRANSLATION=0
       WDelete, 0
    endif
 
