@@ -49,13 +49,15 @@ pro uset_plot, Device, _EXTRA=extra
       !D.Name EQ ScreenDevice() AND !D.NAME NE 'NULL' : begin
          DEVICE, GET_DECOMPOSED=DECOMPOSED
          if !D.N_COLORS EQ 16777216 and DECOMPOSED EQ 1 THEN return
-         !P.BACKGROUND = !D.TABLE_SIZE-2
-         !P.COLOR      = !D.TABLE_SIZE-1
+         ResetCM
          return
       end
       !D.Name EQ 'PS': begin 
-         !P.BACKGROUND = !D.TABLE_SIZE-1
-         !P.COLOR      = !D.TABLE_SIZE-2
+         ResetCM
+         return
+      end
+      !D.Name EQ 'Z': begin 
+         ResetCM
          return
       end
       else: return
