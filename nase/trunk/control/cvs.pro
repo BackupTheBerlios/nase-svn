@@ -1,0 +1,173 @@
+;
+; Auto Save File For /.amd/sisko/home/sisko/kupper/IDL/Allerlei/cvs.pro
+;
+
+
+
+; CODE MODIFICATIONS MADE ABOVE THIS COMMENT WILL BE LOST.
+; DO NOT REMOVE THIS COMMENT: BEGIN HEADER
+
+
+
+
+; DO NOT REMOVE THIS COMMENT: END HEADER
+; CODE MODIFICATIONS MADE BELOW THIS COMMENT WILL BE LOST.
+
+
+; CODE MODIFICATIONS MADE ABOVE THIS COMMENT WILL BE LOST.
+; DO NOT REMOVE THIS COMMENT: BEGIN MAIN13
+
+
+
+
+PRO MAIN13_Event, Event
+common common_cvs, name, searchpath
+
+  WIDGET_CONTROL,Event.Id,GET_UVALUE=Ev
+
+  CASE Ev OF 
+
+  'BUTTON5': BEGIN              ;Update
+      Print
+      Print, "----------- Updating CVS:"
+      Spawn, "cvs update "+Name
+      END
+  'BUTTON25': BEGIN             ;Edit
+      file = PickFile(TITLE="Select File to Edit", /MUST_EXIST, FILTER="*.pro", PATH=searchpath)
+      If file ne "" then begin
+         Print
+         Print, "----------- Making File Editable: "+file
+         Spawn, "cvs edit "+file
+      endif
+      END
+  'BUTTON15': BEGIN              ;UnEdit
+      file = PickFile(TITLE="Select File to UnEdit", /MUST_EXIST, FILTER="*.pro", PATH=searchpath)
+      If file ne "" then begin
+         Print
+         Print, "----------- UnEditing Changes on: "+file
+         Spawn, "cvs unedit "+file
+      endif
+      END
+  'BUTTON19': BEGIN              ;Editors
+      Print
+      Print, "----------- Current CVS-Editors:"
+      Spawn, "cvs editors"
+      END
+  'BUTTON35': BEGIN              ;Add
+      file = PickFile(TITLE="Select File to Add", FILTER="*.pro", PATH=searchpath)
+      If file ne "" then begin
+         Print
+         Print, "----------- Establishing CVS-Control for: "+file
+         Spawn, "cvs add "+file
+         Spawn, "cvs commit "+file
+      endif
+      END
+  'BUTTON23': BEGIN              ;Commit All
+      Print
+      Print, "----------- Committing all your changed CVS-Files:"
+      Spawn, "cvs commit"
+      END
+  'BUTTON28': BEGIN              ;Commit File
+      file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=searchpath)
+      If file ne "" then begin
+         Print
+         Print, "----------- Committing File "+file
+         Spawn, "cvs commit "+file
+      endif
+      END
+  ENDCASE
+END
+
+
+; DO NOT REMOVE THIS COMMENT: END MAIN13
+; CODE MODIFICATIONS MADE BELOW THIS COMMENT WILL BE LOST.
+
+
+
+PRO cvs, CVS_Name, PATH=path, GROUP=Group
+common common_cvs, name, searchpath
+
+  default, CVS_Name, "nase"
+  default, path, "."
+  name = CVS_Name
+  searchpath = path
+
+  IF N_ELEMENTS(Group) EQ 0 THEN GROUP=0
+
+  junk   = { CW_PDMENU_S, flags:0, name:'' }
+
+
+  MAIN13 = WIDGET_BASE(GROUP_LEADER=Group, $
+      MAP=1, $
+      TITLE='A Simple ConcurrentVersionSystem Controller', $
+      UVALUE='MAIN13', $
+      XSIZE=350, $
+      YSIZE=364)
+
+  BUTTON5 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON5', $
+      VALUE='Update', $
+      XOFFSET=10, $
+      XSIZE=320, $
+      YOFFSET=10)
+
+  BUTTON25 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON25', $
+      VALUE='Edit File', $
+      XOFFSET=10, $
+      XSIZE=150, $
+      YOFFSET=90)
+
+  BUTTON15 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON15', $
+      VALUE='UnEdit File', $
+      XOFFSET=180, $
+      XSIZE=150, $
+      YOFFSET=90)
+
+  BUTTON19 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON19', $
+      VALUE='Show Editors', $
+      XOFFSET=70, $
+      XSIZE=200, $
+      YOFFSET=145)
+
+  BUTTON35 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON35', $
+      VALUE='Add File', $
+      XOFFSET=100, $
+      XSIZE=140, $
+      YOFFSET=225)
+
+  BUTTON23 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON23', $
+      VALUE='Commit All', $
+      XOFFSET=10, $
+      XSIZE=150, $
+      YOFFSET=305)
+
+  BUTTON28 = WIDGET_BUTTON( MAIN13, $
+      FONT='-adobe-helvetica-bold-r-normal--24-240-75-75-p-138-iso8859-1', $
+      FRAME=5, $
+      UVALUE='BUTTON28', $
+      VALUE='Commit File', $
+      XOFFSET=180, $
+      XSIZE=150, $
+      YOFFSET=305)
+
+  WIDGET_CONTROL, MAIN13, /REALIZE
+
+  XMANAGER, 'MAIN13', MAIN13
+END
