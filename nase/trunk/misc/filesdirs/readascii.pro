@@ -9,7 +9,10 @@
 ;  Reads the lines from an ASCII file into a string array.
 ;
 ; PURPOSE:
-;  This function reads the lines of an ASCII file one after the other and puts them into a string array.
+;  This function reads the lines of an ASCII file one after the other and puts them into a string array. Certainly IDL
+;  does already provide the function <*>Read_ASCII</*>, but handling of the corresponding structures is quite ponderous,
+;  and if you just want to read the lines of an ASCII file into a string array, <*>Read_ASCII</*> is like taking a
+;  sledgehammer to crack a nut.
 ;
 ; CATEGORY:
 ;  Files
