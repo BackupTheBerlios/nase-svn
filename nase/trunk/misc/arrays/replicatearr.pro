@@ -68,7 +68,7 @@ FUNCTION ReplicateArr, A, RepDim
     D0 = NewDim(0) & D1 = NewDim(1) & D2 = NewDim(2) & D3 = NewDim(3)
     D4 = NewDim(4) & D5 = NewDim(5) & D6 = NewDim(6) & D7 = NewDim(7)
 
-    Return, Rebin(A,D0,D1,D2,D3,D4,D5,D6,D7)
+    Return, Reform(Rebin(A,D0,D1,D2,D3,D4,D5,D6,D7),[OldDim,RepDim])
 
   ENDIF ELSE BEGIN  ; do it brute force for string/complex arrays
 
