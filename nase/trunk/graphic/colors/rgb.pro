@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.29  2000/10/05 16:40:59  saam
+;        added NOALLOC support for PSEUDOCOLOR visuals, again
+;
 ;        Revision 1.28  2000/10/05 16:23:08  saam
 ;        last two color indices of palette are not
 ;        overwritten to protect black & white
@@ -224,7 +227,6 @@ Common common_RGB, ucc
 ;;;       ucc = 0 points to !TOPCOLOR+1
 
 if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
-if set(noalloc) THEN Console, "keyword NOALLOC is obsolete, please remove", /WARN
 
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
@@ -241,15 +243,20 @@ if set(noalloc) THEN Console, "keyword NOALLOC is obsolete, please remove", /WAR
 
 
    ;; ---- NOALLOC --------------------------------------------------------------
-;   IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
-;      myCM = bytarr(!D.Table_Size,3) 
-;      TvLCT, myCM, /GET
-;      New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
-;      New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
-;      differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
-;      lowestDiff = MIN(differences, bestMatch)
-;      RETURN, bestMatch
-;   END
+   IF Keyword_Set(NOALLOC) THEN BEGIN 
+       IF NOT Pseudocolor_Visual() THEN BEGIN
+           Console, "ignoring keyword NOALLOC in true color mode", /DEBUG
+       END ELSE BEGIN
+           ;; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
+           myCM = bytarr(!D.Table_Size,3) 
+           TvLCT, myCM, /GET
+           New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
+           New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
+           differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
+           lowestDiff = MIN(differences, bestMatch)
+           RETURN, bestMatch
+       END
+   END
    ;; ---------------------------------------------------------------------------
 
 
