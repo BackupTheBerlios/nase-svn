@@ -175,7 +175,7 @@ FUNCTION  Coherence,  X, Y,   Sxy, ConfInt,  $
      Dimension = 2
 
    IF  Keyword_Set(cfvalue_)  THEN  BEGIN
-     CfValue = Long(cfvalue_[0])
+     CfValue = Float(cfvalue_[0])
      IF  (CfValue LE 0) OR (CfValue GE 1)  THEN  Console, '  Specified confidence must lie within (0,1).', /fatal
    ENDIF  ELSE  $
      CfValue = 0.95
