@@ -171,7 +171,6 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
    IF  NX LT 2  THEN  Console, '  X epoch must have more than one element.', /fatal
    N = N_Elements(X) / NX
 
-   ; To avoid integer division traps, fS is converted to float type:
    IF  TypefS EQ 0  THEN  fS = 1.0  $
                     ELSE  fS = Float(fS_(0))   ; If fS is an array, only the first value is taken seriously.
 
@@ -265,8 +264,8 @@ FUNCTION  Spectrum,    X, fS_, f, Phase,  $
    S = S * Float(NS) / sqrt(fS*NX)
 
    ; If phase values are returned in some way (either explicitly or in the complex spectrum), phases must be corrected
-   ; for the shift caused by the symmetric padding if the wide window was used:
-   IF  Keyword_Set(widewindow) AND ((N_Params() EQ 4) OR NOT(Keyword_Set(amplitude) OR Keyword_Set(power)))  THEN  BEGIN
+   ; for the time shift if centred padding was used:
+   IF  Keyword_Set(center) AND ((N_Params() EQ 4) OR NOT(Keyword_Set(amplitude) OR Keyword_Set(power)))  THEN  BEGIN
      PhaseFactor = exp(Complex(0,1) * 2*!pi*f*NFlankL/fS)
      FOR  i = 0, N-1  DO  S(*,i) = S(*,i) * PhaseFactor
    ENDIF
