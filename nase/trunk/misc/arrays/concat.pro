@@ -19,7 +19,7 @@
 ;
 ;
 ; INPUTS:
-;                     A::  n-dimensional array
+;                     A::  n-dimensional array (or empty, s. example 3)
 ;                     B::  n-dimensional array
 ;  
 ;
@@ -48,11 +48,11 @@
 ; SIDE EFFECTS:
 ;                     if keyword OVERWRITE is choosen, the dimensions
 ;                     of A and B could be changed.
-;  
+;                     
 ;
 ;
 ; EXAMPLE:
-;*                     1.Example::
+;*                     1.Example:
 ;*                                a=indgen(10,20,30)
 ;*                                b=indgen(10,40,30)
 ;*                                ;concatenation of a and b over index 1
@@ -61,7 +61,7 @@
 ;*                                ;idl results ----
 ;*                                ;C  INT = Array[10, 60, 30]
 ;*
-;*                     2.Example::
+;*                     2.Example:
 ;*                                a=indgen(10,20,30)
 ;*                                b=indgen(10,20,30)
 ;*                                ;concatenation of a and b over an
@@ -75,7 +75,19 @@
 ;*                                help,d
 ;*                                ;idl results ----
 ;*                                D   INT = Array[10, 3, 20, 30] ; 
-;
+;*                     3.Example:
+;*                                
+;*                                ;; first undef accumulation array
+;*                                undef,c
+;*                                for i=0,9 do begin
+;*                                     ;;generate random vars       
+;*                                     a=randomn(s,20,30,40)
+;*                                     c=concat(c,a,/extend)
+;*                                endfor
+;*                                help,c
+;*                                ;idl results ----
+;*                                D  INT = Array[10,20, 30, 40] ; 
+;*
 ;-
 
 function concat,A, B, index, extend=extend, overwrite=overwrite
@@ -90,42 +102,48 @@ over_a = overwrite
 over_b = overwrite
 __extend = extend
 
+;;if not set(a) and __extend ge 1 then begin
+if not set(a) then begin
+   s_a = size(b)
+   if ( index GE s_a(0) and __extend eq 0 ) OR  ( index GT (s_a(0)+1) and __extend eq 1 )  then $
+    Console, 'array/index dimension missmatch', /FATAL
+   ;;set extend dimension index at right position
+   if __extend eq 1 then begin
+      dim = shift([1, shift( s_a(1:s_a(0)), -index)], index)
+      return, reform(b, dim, overwrite=overwrite )
+   end else return,b
+end
+
 s_a = size(a)
 s_b = size(b)
+
+if ( index GE s_a(0) and __extend eq 0 ) OR  ( index GT s_a(0) and __extend eq 1 )  then $
+ Console, 'Array dimension missmatch', /FATAL
 
 if (s_b(0) +1) EQ s_a(0) then begin 
    add = 1 
    __extend = 0
 endif
 
-if ( index GE s_a(0) and __extend eq 0 ) OR  ( index GT s_a(0) and __extend eq 1 )  then $
- Console, 'Array dimension missmatch', /FATAL
-
-
-
 s_na = s_a(1:s_a(0))
 s_nb = s_b(1:s_b(0))
 
 if __extend ge 1 then begin
-
-   s_na = shift([1, shift( s_a(1:s_a(0)), -index)], index)
-   s_nb = shift([1, shift( s_b(1:s_b(0)), -index)], index)
-   s_a = [ s_a(0)+1, s_na, s_a(s_a(0)+1), s_a(s_a(0)+2) ]
-   s_b = [ s_b(0)+1, s_nb, s_b(s_b(0)+1), s_b(s_b(0)+2) ]
-
+      s_na = shift([1, shift( s_a(1:s_a(0)), -index)], index)
+      s_nb = shift([1, shift( s_b(1:s_b(0)), -index)], index)
+      s_a = [ s_a(0)+1, s_na, s_a(s_a(0)+1), s_a(s_a(0)+2) ]
+      s_b = [ s_b(0)+1, s_nb, s_b(s_b(0)+1), s_b(s_b(0)+2) ]
 endif
-
-if add ge 1 then begin
  
+if add ge 1 then begin
    s_nb = shift([1, shift( s_b(1:s_b(0)), -index)], index)
    s_b = [ s_b(0)+1, s_nb, s_b(s_b(0)+1), s_b(s_b(0)+2) ]
    __extend = 1
    over_a = 1
-   
 endif
 
 if s_a(0) ne s_b(0) then $
- Console, 'Array dimension missmatch', /FATAL
+ Console, 'array dimension missmatch', /FATAL
 
 shift_index = reverse(shift(lindgen(s_a(0)), s_a(0) - (index+1) ))
 
@@ -135,25 +153,21 @@ ind = where(i eq shift_index)
 back_index(i) = ind(0) 
 endfor
 
-
 if s_a(0) GE 2 THEN $
  if total(((s_a(1:s_a(0)))(shift_index))(1:s_a(0)-1)   $
           EQ ((s_b(1:s_b(0)))(shift_index))(1:s_b(0)-1) ) NE (s_a(0)-1) then $
- Console, 'Array dimension missmatch', /FATAL
+ Console, 'array dimension missmatch', /FATAL
 
 if __extend eq 1 then begin
-
-   if index NE 0 then $
-    return,  utranspose([utranspose(reform(a,s_na, overwrite=over_a), shift_index),$
-                         utranspose(reform(b,s_nb, overwrite=over_b),shift_index)],$
-                        back_index)  $
-   else  return, [ reform(a,s_na, overwrite=over_a), reform(b,s_nb, overwrite=over_b) ]  
+   if index NE 0 then begin
+      return,  utranspose([utranspose(reform(a,s_na, overwrite=over_a),shift_index),$
+                           utranspose(reform(b,s_nb, overwrite=over_b),shift_index)],$
+                          back_index)  
+   end else  return, [ reform(a,s_na, overwrite=over_a), reform(b,s_nb, overwrite=over_b) ]  
 end else begin
-
-   if index NE 0 then $
-    return,  utranspose([utranspose(a, shift_index),utranspose(b,shift_index)], back_index)  $
-   else  return, [ a, b ]  
-
+   if index NE 0 then begin
+      return,  utranspose([utranspose(a, shift_index),utranspose(b,shift_index)], back_index)  
+   end else return, [ a, b ]  
 end
-
+;;never happens
 end
