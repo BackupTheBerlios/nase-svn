@@ -36,7 +36,7 @@
 ;*           [, /POLYGON]
 ;*           [, CUBIC=...] [, /INTERP] [, /MINUS_ONE]
 ;*           [, LEG_MAX=...] [, LEG_MIN=...]
-;*           [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=...]
+;*           [, COLORMODE=+/-1] [, SETCOL=0]
 ;*           [, TOP=...]
 ;*           [, RANGE_IN=[a,b] ]
 ;*           [, UPDATE_INFO=... [, /INIT ] ]
@@ -118,8 +118,6 @@
 ;                 (COLORMODE=-1) erzwungen werden.
 ;     SETCOL::    Default:1 Wird an ShowWeights_Scale weitergereicht, beeinflusst also, ob
 ;                 die Farbtabelle passend fuer den ArrayInhalt gesetzt wird, oder nicht.
-;     PLOTCOL::   Farbe, mit der der Plot-Rahmen gezeichnet wird. Wenn nicht angegeben,
-;                 wird versucht, eine passende Farbe zu raten.
 ;     RANGE_IN::  When passed, the two-element array is taken as the range to
 ;                 scale to the plotting colors. (I.e. the first element is scaled to
 ;                 color index 0, the scond is scaled to the highest available
@@ -243,7 +241,6 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                TOP=top,$
                CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
                COLORMODE=colormode, SETCOL=setcol, $
-               PLOTCOL=plotcol, $
                RANGE_IN=range_in, $
                UPDATE_INFO=update_info, $
                INIT=init, $
@@ -263,7 +260,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;; PLOTTVSCL_INFO struct.)
       ;;This is a normal PlotTvScl-Call
 
-      INIT = 1
+      INIT = 1                  ; we want the color scaling to be initialized
 
       ;;-----Sichern der urspruenglichen Device-Parameter
       oldRegion   = !P.Region
@@ -320,7 +317,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       ;;print,charcor
       xcoord = lindgen(ArrayWidth)
       ycoord = lindgen(ArrayHeight)
-      PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize*charcor,_EXTRA=e
+      PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=GetBackground(), Charsize=Charsize*charcor,_EXTRA=_extra
 
       plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
       ;;only whole pixel or points exist
@@ -493,65 +490,21 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                      allowcolors : ALLOWCOLORS, $
                      $;;
                      $;; Scaling Information to be stored by PlotTvScl_update:
-                     range_in: [-1.0d, -1.0d]}
+                     range_in: [-1.0d, -1.0d], $
+                       $;;
+                       $;;Data needed to (re)produce the legend:
+                       leg_x: OriginNormal[0]+TotalPlotWidthNormal*1.15, $
+                       leg_y: OriginNormal[1]+TotalPlotHeightNormal/2.0, $
+                       leg_hstretch: TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
+                       leg_vstretch: TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
+                       charsize: CHARSIZE, $
+                       legend: LEGEND $
+                       }
 
       Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
       ;;-------------------------------- End Optional Outputs
 
       
-
-      ;;-----Legende, falls erwuenscht:
-      IF Keyword_Set(LEGEND) THEN BEGIN
-         IF Keyword_Set(NSCALE) THEN BEGIN
-            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-               Default, LEG_MAX,  MAX([ABS(MaxW), ABS(MinW)])
-               Default, LEG_MIN, -MAX([ABS(MaxW), ABS(MinW)])
-               If LEG_MIN eq -LEG_MAX then Mid = '0'
-               TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15, $
-                            OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-                            $ $
-                            H_Stretch = TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $ $
-                            V_Stretch = TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-                            Max=LEG_MAX, Min=LEG_MIN, Mid=Mid, $
-                            CHARSIZE=Charsize, $
-                            $;;NOSCALE=NoScale, $
-                            /Vertical, /Center ;, COLOR=sc
-            END ELSE BEGIN
-               Default, LEG_MAX, MaxW
-               Default, LEG_MIN, 0
-               If LEG_MIN eq -LEG_MAX then Mid = '0'
-               TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15, $
-                            OriginNormal(1)+TotalPlotHeightNormal/2.0, $
-                            $ $
-                            H_Stretch = TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $ $
-                            V_Stretch = TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-                            Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
-                            CHARSIZE=Charsize, $
-                            $;;NOSCALE=NoScale, $
-                            /Vertical, /Center ;, COLOR=sc
-            END
-         END  ELSE BEGIN;; No-NASE
-            Default, LEG_MAX, MAX(_w)
-            Default, LEG_MIN, MIN(_w)
-            IF Keyword_Set(NEUTRAL) THEN BEGIN
-               IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
-                  LEG_MAX = MAX([ABS(MaxW), ABS(MinW)])
-                  LEG_MIN = -LEG_MAX
-               END ELSE LEG_MIN = 0
-            END
-            
-            
-            TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15, $
-                         OriginNormal(1)+TotalPlotHeightNormal/2.0, $ $
-                         H_Stretch = TotalPlotWidthNormal/15.*VisualWidth/(0.5*!D.X_PX_CM), $ $
-                         V_Stretch = TotalPlotHeightNormal/4.*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
-                         Max=LEG_MAX, Min=LEG_MIN, $
-                         CHARSIZE=Charsize, $
-                         /Vertical, /Center, TOP=top ;,COLOR=sc
-         END
-      ENDIF
-
-
       ;;-----Restauration der urspruenglichen Device-Parameter
       !P.Region  = oldRegion 
       !X.TickLen = oldXTicklen 
@@ -560,8 +513,73 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
       !Y.Minor   = oldYMinor   
 
 
-   Endif;; not Keyword_Set(UPDATE_INFO)
+   Endif;; keyword_set(UPDATE_INFO.defined)
 
+
+
+   ;;-----Legende, falls erwuenscht und nötig:
+   IF Keyword_Set(INIT) and Keyword_Set(UPDATE_INFO.legend) THEN BEGIN
+      
+      ;; first opaque area for legend value plotting, in case this is an
+      ;; update (all in normal):
+      fill_left = UPDATE_INFO.leg_x
+      fill_right = 1.0
+      fill_bottom = 0.0
+      fill_top = 1.0
+      PolyFill, [fill_left, fill_right, fill_right, fill_left], $
+                [fill_bottom, fill_bottom, fill_top, fill_top], $
+                /Normal, $
+                color=GetBackground()
+      
+      IF Keyword_Set(NSCALE) THEN BEGIN
+         IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+            Default, LEG_MAX,  MAX([ABS(MaxW), ABS(MinW)])
+            Default, LEG_MIN, -MAX([ABS(MaxW), ABS(MinW)])
+            If LEG_MIN eq -LEG_MAX then Mid = '0'
+            TVSclLegend, UPDATE_INFO.leg_x, $
+                         UPDATE_INFO.leg_y, $
+                         H_Stretch=UPDATE_INFO.leg_hstretch, $
+                         V_Stretch=UPDATE_INFO.leg_vstretch, $
+                         Max=LEG_MAX, Min=LEG_MIN, Mid=Mid, $
+                         CHARSIZE=Charsize, $
+                         $;;NOSCALE=NoScale, $
+                         /Vertical, /Center
+         END ELSE BEGIN
+            Default, LEG_MAX, MaxW
+            Default, LEG_MIN, 0
+            If LEG_MIN eq -LEG_MAX then Mid = '0'
+            TVSclLegend, UPDATE_INFO.leg_x, $
+                         UPDATE_INFO.leg_y, $
+                         H_Stretch=UPDATE_INFO.leg_hstretch, $
+                         V_Stretch=UPDATE_INFO.leg_vstretch, $
+                         Max=LEG_MAX, Min=LEG_MIN, MID=Mid, $
+                         CHARSIZE=Charsize, $
+                         $;;NOSCALE=NoScale, $
+                         /Vertical, /Center
+         ENDELSE
+      ENDIF  ELSE BEGIN;; No-NASE
+         Default, LEG_MAX, MAX(_w)
+         Default, LEG_MIN, MIN(_w)
+         IF Keyword_Set(NEUTRAL) THEN BEGIN
+            IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
+               LEG_MAX = MAX([ABS(MaxW), ABS(MinW)])
+               LEG_MIN = -LEG_MAX
+            END ELSE LEG_MIN = 0
+         END
+         
+         
+         TVSclLegend, UPDATE_INFO.leg_x, $
+                      UPDATE_INFO.leg_y, $
+                      H_Stretch=UPDATE_INFO.leg_hstretch, $
+                      V_Stretch=UPDATE_INFO.leg_vstretch, $
+                      Max=LEG_MAX, Min=LEG_MIN, $
+                      CHARSIZE=Charsize, $
+                      /Vertical, /Center, TOP=top
+      ENDELSE
+   ENDIF
+   
+   
+   
 
 
    ;;-----Plotten der UTVScl-Graphik:
