@@ -17,7 +17,7 @@
 ;       Stat
 ;
 ; CALLING SEQUENCE:
-;       Cxy = CrossCor(x,y,PShift,CorrBranch=Branch,OverlapNorm=ONorm)
+;       Cxy = CrossCor(x,y,PShift [,CorrBranch=Branch] [,OverlapNorm=ONorm] [, Covar=Covar])
 ;
 ; INPUTS:
 ;       x      - FltArr(N)
@@ -33,6 +33,7 @@
 ;       OverlapNorm - wenn dieses Keyword gesetzt wurde wird auf den jeweiligen ‹berlapp der
 ;                     Verschiebung normiert. (Groﬂe Verschiebung - kleiner ‹berlapp)
 ;                     und es bedeutet, das gleichzeitig die Covarianz berechnet wird
+;       Covar       - berechnet die Korvarianz
 ;
 ; OUTPUTS:
 ;       Cxy - Kreuzkorrelation zwischen Signal x und y.
@@ -58,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1998/01/28 09:52:12  saam
+;             documentation for keyword COVAR
+;
 ;       Revision 1.5  1997/12/16 13:49:18  saam
 ;             no comment
 ;
