@@ -216,14 +216,14 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          END
       END
       IF ((REC.REC_M(1) GT REC.REC_M(0)) AND (REC.REC_M(0) LT P.SIMULATION.TIME)) THEN BEGIN
-         IF N_Elements(REC.REC_M) GT 2 THEN BEGIN
-            Vid_M(i) = InitVideo( DblArr(N_Elements(REC.REC_M)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
-            console,P.CON, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms for '+STR(N_Elements(REC.REC_M)-2)+' neurons'
-            SelVidM(i) = N_Elements(REC.REC_M)-2
-         END ELSE BEGIN
-            Vid_M(i) = InitVideo( DblArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.m.sim', /SHUTUP)
-            console, P.CON, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms'  
-         END
+          IF N_Elements(REC.REC_M) GT 2 THEN BEGIN
+              Vid_M(i) = InitVideo( DblArr(N_Elements(REC.REC_M)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
+              console,P.CON, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms for '+STR(N_Elements(REC.REC_M)-2)+' neurons'
+              SelVidM(i) = N_Elements(REC.REC_M)-2
+          END ELSE BEGIN
+              Vid_M(i) = InitVideo( DblArr(curLayer.w *curLayer.h), TITLE=P.File+'.'+curLayer.FILE+'.m.sim', /SHUTUP)
+              console, P.CON, 'RECORDING: '+curLayer.NAME+' Membrane from '+STR(REC.REC_M(0))+' to '+STR(REC.REC_M(1))+' ms'  
+          END
       END
       IF REC.REC_MUA THEN BEGIN
          Vid_MUA(i) = InitVideo( 0l, TITLE=P.File+'.'+curLayer.FILE+'.mua.sim', /SHUTUP)
@@ -373,10 +373,12 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    END
    FOR i=0, DWmax DO BEGIN
       curDW = Handle_Val((P.DWW)(i)) 
-      IF (curDW.FILE NE 'NULL') THEN BEGIN
-         lun = UOpenW(P.file+'.'+curDW.FILE+'.dw', /ZIP)
-         SaveStruc, lun, SaveDW(CON(i))
-         UClose, lun
+      IF ExtraSet(curDW, "FILE") THEN BEGIN
+          IF (curDW.FILE NE 'NULL') THEN BEGIN
+              lun = UOpenW(P.file+'.'+curDW.FILE+'.dw', /ZIP)
+              SaveStruc, lun, SaveDW(CON(i))
+              UClose, lun
+          ENDIF
       ENDIF
    END
    
