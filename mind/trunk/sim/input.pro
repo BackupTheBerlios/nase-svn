@@ -17,6 +17,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/01/28 14:28:53  alshaikh
+;           some console-bugs were left
+;
 ;     Revision 1.6  2000/01/26 16:19:51  alshaikh
 ;           print,message -> console
 ;
@@ -279,8 +282,6 @@ FUNCTION Input, L, _IN
                                              MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
                                              temp_vals=IN.temps(i),DELTA_T=delta_t) 
                      END
-                     ;print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
-                     ;print,''
                   END 
                   
                   pattern = CALL_FUNCTION(act_filter.NAME,$
@@ -290,7 +291,7 @@ FUNCTION Input, L, _IN
             ENDFOR              ; i  
             
             IN.pattern = pattern ; store for future use
-            print, total(IN.pattern)
+            
 
             IF IN.visible NE 0 THEN BEGIN ; show what you've done
                OpenSheet, INPUT_1
