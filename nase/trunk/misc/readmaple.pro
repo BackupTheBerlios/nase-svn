@@ -18,6 +18,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/11/08 14:57:05  saam
+;           now deletes temporary files
+;
 ;     Revision 1.1  1998/10/18 19:51:04  saam
 ;           new, a little bit experimental, needs some proof
 ;           ...and generality if needed...
@@ -39,6 +42,8 @@ FUNCTION ReadMaple, file, nel
    lun = UOpenR(file+tmpsuff)
    ReadF, lun, val
    UClose, lun
-   
+ 
+   spawn, 'rm '+file+tmpsuff
+  
    RETURN, val
 END
