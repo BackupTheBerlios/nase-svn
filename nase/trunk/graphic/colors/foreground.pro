@@ -24,8 +24,8 @@
 ;
 ; INPUTS:
 ;  colorstring:: A string containing a color name according to the
-;                NASE color naming conventions. See <C>RGB</C> or
-;                <C>Color</C> for details, or look for a document
+;                NASE color naming conventions. See <A>RGB</A> or
+;                <A>Color</A> for details, or look for a document
 ;                describing the NASE color management.
 ;  r, g, b:: Three byte-range scalar values defining the red, green
 ;            and blue composition of the desired color.
@@ -42,7 +42,7 @@
 ;  contained in !P.Background and !P.Color shall be done by the user!</I>
 ;
 ; PROCEDURE:
-;  Call <C>SetColorIndex</C> on <*>!D.TABLE_SIZE-1</*>.
+;  Call <A>SetColorIndex</A> on <*>!D.TABLE_SIZE-1</*>.
 ;
 ; EXAMPLE:
 ;*Background, "white"
@@ -50,7 +50,7 @@
 ;*Plot, indgen(10)
 ;
 ; SEE ALSO:
-;  <C>Background</C>, <C>RGB</C>, <C>Color</C>, or look for a document
+;  <A>Background</A>, <A>RGB</A>, <A>Color</A>, or look for a document
 ;  describing the NASE color management.
 ;
 ;-

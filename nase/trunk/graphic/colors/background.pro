@@ -24,14 +24,14 @@
 ;
 ; INPUTS:
 ;  colorstring:: A string containing a color name according to the
-;                NASE color naming conventions. See <C>RGB</C> or
-;                <C>Color</C> for details, or look for a document
+;                NASE color naming conventions. See <A>RGB</A> or
+;                <A>Color</A> for details, or look for a document
 ;                describing the NASE color management.
 ;  r, g, b:: Three byte-range scalar values defining the red, green
 ;            and blue composition of the desired color.
 ;
 ; SIDE EFFECTS:
-;  The index <*>!D.TABLE_SIZE-2</*> of the current color table is
+;  The index <C>!D.TABLE_SIZE-2</C> of the current color table is
 ;  changed. In NASE color management, this special index is
 ;  exclusively reserved to contain the background color.<BR>
 ;  <I>No manual modifications of explicit color indices or the values
@@ -39,10 +39,10 @@
 ;
 ; RESTRICTIONS:
 ;  <I>No manual modifications of explicit color indices or the values
-;  contained in !P.Background and !P.Color shall be done by the user!</I>
+;  contained in <C>!P.Background<C> and </C>!P.Color</C> shall be done by the user!</I>
 ;
 ; PROCEDURE:
-;  Call <C>SetColorIndex</C> on <*>!D.TABLE_SIZE-2</*>.
+;  Call <A>SetColorIndex</A> on <*>!D.TABLE_SIZE-2</*>.
 ;
 ; EXAMPLE:
 ;*Background, "white"
@@ -50,7 +50,7 @@
 ;*Plot, indgen(10)
 ;
 ; SEE ALSO:
-;  <C>Foreground</C>, <C>RGB</C>, <C>Color</C>, or look for a document
+;  <A>Foreground</A>, <A>RGB</A>, <A>Color</A>, or look for a document
 ;  describing the NASE color management.
 ;
 ;-
