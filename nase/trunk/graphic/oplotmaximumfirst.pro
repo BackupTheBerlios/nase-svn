@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1999/05/24 15:24:04  thiel
+;            THICK-Keyword wird jetzt auch an OPlot weitergegeben.
+;
 ;        Revision 1.3  1999/04/29 13:17:18  thiel
 ;            Und noch besser: kann jetzt auch PlotSymbols.
 ;
@@ -66,7 +69,8 @@
 ;
 ;-
 
-PRO OPlotMaximumFirst, z, zz, LINESTYLE=linestyle, PSYM=psym, _EXTRA=_extra
+PRO OPlotMaximumFirst, z, zz, LINESTYLE=linestyle, PSYM=psym, THICK=thick, $
+                       _EXTRA=_extra
 
    maxlinestyle = 6
    maxpsym = 7
@@ -93,10 +97,11 @@ PRO OPlotMaximumFirst, z, zz, LINESTYLE=linestyle, PSYM=psym, _EXTRA=_extra
    IF maxvalue EQ minvalue THEN nodata(0) = maxvalue $
     ELSE nodata(0:1) = [minvalue,maxvalue]
 
-   Plot, x, nodata, /NODATA, _EXTRA=_extra
+   Plot, x, nodata, /NODATA, THICK=thick, _EXTRA=_extra
 
    FOR n=0,plotnr-1 DO $
-    OPlot, x, y(*,n), PSYM=((psym+1)<1)*(((psym+n) MOD maxpsym)-2*((linestyle+2)<1)*((psym+n) MOD maxpsym)), LINESTYLE=(linestyle+n) MOD maxlinestyle
+    OPlot, x, y(*,n), PSYM=((psym+1)<1)*(((psym+n) MOD maxpsym)-2*((linestyle+2)<1)*((psym+n) MOD maxpsym)), LINESTYLE=(linestyle+n) MOD maxlinestyle, $
+    THICK=thick
 
 END
 
