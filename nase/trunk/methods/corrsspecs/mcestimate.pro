@@ -11,10 +11,10 @@
 ; PURPOSE:
 ;           Multiple Coherence (MC) Estimate. In 1963, the multiple coherence estimate or <I>sample multiple
 ;           coherence</I> was introduced in [1]. The MC estimate between
-;           a reference channel x<SUB>j</SUB> and channels
+;           a reference channel <*>x<SUB>j</SUB></*> and channels
 ;           <*>x<SUB>i</SUB>,..,x<SUB>j-1</SUB>,x<SUB>j+1</SUB>,..,x<SUB>M</SUB></*> 
-;           is defined as <BR><*>|C<SUB><FONT SIZE=-1>
-;           j:1,..,j-1,j+1,..,M</FONT></SUB>(f)|<SUP>2</SUP> = 1 -
+;           is defined as <BR><*>|C<SUB>
+;           j:1,..,j-1,j+1,..,M</SUB>(f)|<SUP>2</SUP> = 1 -
 ;           1/(S<SUB>jj</SUB>(f)S<SUP>jj</SUP>(f))</*>,<BR>
 ;           where <*>S<SUB>jj</SUB>(f)</*> is the j-th diagonal element of
 ;           the estimatetd cross spectral density matrix
