@@ -34,28 +34,31 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* fsignal = FilteringFFT(signal, fS  [, FLOW=...] [, FHIGH=...] [, WLOW=...] [, WHIGH=...] [, /HERTZ] [, ATTENUATION=...]
+;* fsignal = FilteringFFT(signal, fS  [, FLOW=...] [, FHIGH=...] [, WLOW=...] [, WHIGH=...] [, /ABSOLUTEWIDTHS] [, ATTENUATION=...]
 ;*                                 |  [, FILTER=...]
 ;
 ; INPUTS:
 ;  signal::  An integer, float or complex array containing the signal epoch(s) in the 1st dimension.
-;  fS::      An integer or float scalar giving the frequency (in Hz) which was used for sampling the signal epoch(s).
+;
+; OPTIONAL INPUTS:
+;  fS::  A float scalar giving the frequency (in Hz) which was used for sampling the signal. If <*>fS</*> is not supplied,
+;        it is assumed to be 2.0, such that all cut-off frequencies and the like are fractions of <*>fN</*>.
 ;
 ; INPUT KEYWORDS:
-;  FLOW::         cf. <A>CosFlankFilter</A>
-;  FHIGH::        cf. <A>CosFlankFilter</A>
-;  WLOW::         cf. <A>CosFlankFilter</A>
-;  WHIGH::        cf. <A>CosFlankFilter</A>
-;  HERTZ::        cf. <A>CosFlankFilter</A>
-;  ATTENUATION::  cf. <A>CosFlankFilter</A>
-;  FILTER::       If want to treat your signal(s) with a more elaborate, quite special filter instead of just a simple
-;                 bandpass or bandstop filter, set this keyword to an integer, float or complex array which you want
-;                 to be used as the frequency-domain transfer function. <*>FILTER</*> must be of the same length as
-;                 <*>signal</*>; otherwise this routine stops execution with a fatal error message. Please note that the
-;                 filter function must be constructed in an FFT-compatible way, i.e., with the negative frequency branch
-;                 attached to the upper end of the positive frequency branch, and special attention paid to the zero and
-;                 Nyquist frequency bins occurring only once each (if the number of data points is even). If this keyword
-;                 is set, all other keywords are ignored.
+;  FLOW::           cf. <A>CosFlankFilter</A>
+;  FHIGH::          cf. <A>CosFlankFilter</A>
+;  WLOW::           cf. <A>CosFlankFilter</A>
+;  WHIGH::          cf. <A>CosFlankFilter</A>
+;  ABSOLUTEWIDTHS:: cf. <A>CosFlankFilter</A>
+;  ATTENUATION::    cf. <A>CosFlankFilter</A>
+;  FILTER::         If want to treat your signal(s) with a more elaborate, quite special filter instead of just a simple
+;                   bandpass or bandstop filter, set this keyword to an integer, float or complex array which you want
+;                   to be used as the frequency-domain transfer function. <*>FILTER</*> must be of the same length as
+;                   <*>signal</*>; otherwise this routine stops execution with a fatal error message. Please note that the
+;                   filter function must be constructed in an FFT-compatible way, i.e., with the negative frequency branch
+;                   attached to the upper end of the positive frequency branch, and special attention paid to the zero and
+;                   Nyquist frequency bins occurring only once each (if the number of data points is even). If this keyword
+;                   is set, all other keywords are ignored.
 ;
 ; OUTPUTS:
 ;  fsignal::  An array of the same type and dimensional structure as <*>signal</*>, containing the filtered signal
@@ -103,9 +106,10 @@
 
 
 
-FUNCTION  FilteringFFT,   Signal, fS_,  $
+FUNCTION  FilteringFFT,   Signal, fS,  $
                           filter = filter,  $
-                          flow = flow, fhigh = fhigh, wlow = wlow, whigh = whigh, hertz = hertz, attenuation = attenuation
+                          flow = flow, fhigh = fhigh, wlow = wlow, whigh = whigh, absolutewidths = absolutwidths,  $
+                          attenuation = attenuation
 
 
    ;----------------------------------------------------------------------------------------------------------------------
@@ -114,25 +118,24 @@ FUNCTION  FilteringFFT,   Signal, fS_,  $
 
    On_Error, 2
 
-   IF  NOT(Set(Signal) AND Set(fS_))  THEN  Console, '   Not all arguments defined.', /fatal
+   IF  NOT Set(Signal)  THEN  Console, '   Argument Signal defined.', /fatal
    SizeSignal = Size([Signal])
    DimsSignal = Size([Signal], /dim)
    NSignal    = DimsSignal(0)    ; number of data points in one signal epoch
    TypeSignal = SizeSignal(SizeSignal(0)+1)
-   TypefS     = Size(fS_, /type)
+   TypefS     = Size(fS, /type)
    IF  (TypeSignal GE 7) AND (TypeSignal LE 11) AND (TypeSignal NE 9)  THEN  Console, '  Signal is of wrong type', /fatal
    IF  (TypefS     GE 6) AND (TypefS     LE 11)                        THEN  Console, '  fS is of wrong type', /fatal
    IF  NSignal     LT 2  THEN  Console, '  Array epoch must have more than one element.', /fatal
    IF  SizeSignal(0) EQ 1  THEN  NEpochs = 1  $
                            ELSE  NEpochs = Product(DimsSignal(1:*))   ; number of signal epochs in the whole array
-   fS = Float(fS_(0))   ; If fS is an array, only the first value is taken seriously.
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Preparing the filter function and the array for the result:
    ;----------------------------------------------------------------------------------------------------------------------
 
    IF  NOT Keyword_Set(filter)  THEN  $
-       Filter = CosFlankFilter(NSignal, fS,   fl = flow, fh = fhigh, wl = wlow, wh = whigh, h = hertz, att = attenuation)
+       Filter = CosFlankFilter(NSignal, fS,   fl = flow, fh = fhigh, wl = wlow, wh = whigh, ab = absolutewidths, att = attenuation)
    SizeFilter = Size(Filter)
    IF  (SizeFilter(0) NE 1) OR (SizeFilter(1) NE NSignal)  THEN  Console, '  Filter length does not match signal length.', /fatal
 

@@ -19,12 +19,12 @@
 ;  phase shifts of the contributing signal components. For the same reason, on the other hand, the filter is not
 ;  causal.<BR>
 ;  The two cut-off frequencies are set via the corresponding keywords. If neither keyword is set, the transfer function
-;  will be =1 everywhere and will have no filtering effect. The non-trivial possibilities are the following (<*>fS</*>
-;  denoting the sampling frequency):<BR>
-;  Lowpass:  0 < <*>FHIGH</*> < <*>fS</*>/2  (<*>FLOW </*> not set)<BR>
-;  Highpass: 0 < <*>FLOW </*> < <*>fS</*>/2, (<*>FHIGH</*> not set)<BR>
-;  Bandpass: 0 < <*>FLOW </*> < <*>FHIGH</*> < <*>fS</*>/2<BR>
-;  Bandstop: 0 < <*>FHIGH</*> < <*>FLOW </*> < <*>fS</*>/2<BR>
+;  will be =1 everywhere and will have no filtering effect. The non-trivial possibilities are the following (<*>fN</*>
+;  denoting the Nyquist frequency, which is =<*>fS</*>/2, or, by default, =1):<BR>
+;  Lowpass:  0 < <*>FHIGH</*> < <*>fN</*>  (<*>FLOW </*> not set)<BR>
+;  Highpass: 0 < <*>FLOW </*> < <*>fN</*>, (<*>FHIGH</*> not set)<BR>
+;  Bandpass: 0 < <*>FLOW </*> < <*>FHIGH</*> < <*>fN</*>/2<BR>
+;  Bandstop: 0 < <*>FHIGH</*> < <*>FLOW </*> < <*>fN</*>/2<BR>
 ;  By default, the cut-off frequencies denote the 3-dB points of the filter (i.e., those points where the flanks reach
 ;  the 3-dB value (ca. 0.5). Thus, signal components at the specified cut-off frequency are already attenuated by 3 dB.
 ;  (Note that this attenuation refers to the signal <I>amplitude</I>; the attenuation of the signal <I>power</I> is
@@ -33,8 +33,8 @@
 ;  The widths of the two flanks may also be set via keywords unless the default values are acceptable. By default, the
 ;  width of each flank is chosen to be exactly one octave (i.e., the ratio of the "begin" and "end" frequencies of each
 ;  flank is 1:2). The numbers specifying the flank widths are usually interpreted as the number of octaves (default) or
-;  as absolute values in Hertz (by setting the keyword HERTZ). (Note that the cut-off frequencies, in contrast, are
-;  <I>always</I> given as absolute values in Hertz.)<BR>
+;  as absolute values (by setting the keyword <*>ABSOLUTEWIDTHS</*>). (Note that the cut-off frequencies, in contrast, are
+;  <I>always</I> given as absolute values.)<BR>
 ;  If the filter is returned as a time-domain kernel, its order can be specified via the keyword <*>ORDER</*>. The length
 ;  of the kernel is <*>2*ORDER+1</*>. By default, the order is chosen such that the kernel contains more than 99% of
 ;  the RMS amplitude of the "ideal" kernel (which results from the inverse DFT of the frequency-domain transfer function).
@@ -45,42 +45,47 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* filter = CosFlankFilter(N, fS [, FLOW=...] [, FHIGH=...] [, WLOW=...] [, WHIGH=...] [, /HERTZ] [, ATTENUATION=...]
+;* filter = CosFlankFilter(N, fS [, FLOW=...] [, FHIGH=...] [, WLOW=...] [, WHIGH=...] [, /ABSOLUTEWIDTHS] [, ATTENUATION=...]
 ;*                               [, /TIME [, ORDER=...]]
 ;
 ; INPUTS:
 ;  N::   An integer scalar giving the number of data points of the signal epoch for which the filter is constructed.
 ;        The frequency-domain transfer function will have this number of data points as well.
-;  fS::  A float scalar giving the frequency (in Hz) which was used for sampling the signal.
+;
+; OPTIONAL INPUTS:
+;  fS::  A float scalar giving the frequency (in Hz) which was used for sampling the signal. If <*>fS</*> is not supplied,
+;        it is assumed to be 2.0, such that all cut-off frequencies and the like are fractions of <*>fN</*>.
 ;
 ; INPUT KEYWORDS:
-;  FLOW::         A float scalar giving the lower cut-off frequency (i.e., the highpass cut-off), in Hertz. Setting
-;                 <*>FLOW</*> to a value <=0 is equivalent to omitting it, and the filter function is solely determined
-;                 by <*>FHIGH</*>. Setting <*>FLOW</*> to a value >=<*>fS</*>/2 results in a lowpass filter if
-;                 0<<*>FHIGH</*><<*>fS</*>/2, otherwise it results in a zero-filter.
-;  FHIGH::        A float scalar giving the upper cut-off frequency (i.e., the lowpass cut-off), in Hertz. Setting
-;                 <*>FHIGH</*> to a value >=<*>fS</*>/2 is equivalent to omitting it, and the filter function is
-;                 solely determined by <*>FLOW</*>. Setting <*>FHIGH</*> to a value <=0 results in a highpass filter if
-;                 0<<*>FLOW</*><<*>fS</*>/2, otherwise it results in a zero-filter.
-;  WLOW::         A float scalar giving the lower (i.e., the highpass) flank width, in multiples of one octave
-;                 (default: 1). If you want to specify the flank width in Hertz, set the keyword /HERTZ. Setting
-;                 <*>WLOW</*> explicitly to zero results in an ideal highpass with a discontinuous cut-off.
-;  WHIGH::        A float scalar giving the upper (i.e., the lowpass) flank width, in multiples of one octave
-;                 (default: 1). If you want to specify the flank width in Hertz, set the keyword /HERTZ. Setting
-;                 <*>WHIGH</*> explicitly to zero results in an ideal lowpass with a discontinuous cut-off.
-;  HERTZ::        Set this keyword if you want the <*>WLOW</*> and <*>WHIGH</*> values to be interpreted as absolute
-;                 values in Hertz (default: the flank widths are assumed to be given in multiples of one octave).
-;  ATTENUATION::  A float scalar giving the desired attenuation value at the cut-off frequencies (default: 3 dB, i.e.
-;                 0.5012). This keyword may also be explicitly set to zero, in which case the cut-off frequencies exactly
-;                 mark the edges of the plateau of the transfer function.
-;  TIME::         Set this keyword if you want the filter to be returned as a time-domain convolution kernel.
-;  ORDER::        An integer scalar giving the order (i.e., half of the length) of the time-domain kernel; this keyword
-;                 has no effect unless the keyword <*>TIME</*> is set simultaneously. The default value used by the
-;                 algorithm depends on the filter parameters and is chosen such that the kernel contains more than 99% of
-;                 the ideal kernel. (The "ideal" kernel is the result of the inverse DFT of the frequency-domain transfer
-;                 function. It is then truncated on both sides as long as not more than 1% of its RMS amplitude is lost.)
-;                 If <*>ORDER</*> is explicitly set to zero using a named variable, <*>CosFlankFilter</*> determines the
-;                 optimal filter order as just described and returns the result in the named variable.
+;  FLOW::           A float scalar giving the lower cut-off frequency (i.e., the highpass cut-off). Setting <*>FLOW</*>
+;                   to a value <=0 is equivalent to omitting it, and the filter function is solely determined by
+;                   <*>FHIGH</*>. Setting <*>FLOW</*> to a value >=<*>fS</*>/2 results in a lowpass filter if
+;                   0<<*>FHIGH</*><<*>fS</*>/2, otherwise it results in a zero-filter.
+;  FHIGH::          A float scalar giving the upper cut-off frequency (i.e., the lowpass cut-off). Setting <*>FHIGH</*>
+;                   to a value >=<*>fS</*>/2 is equivalent to omitting it, and the filter function is solely determined
+;                   by <*>FLOW</*>. Setting <*>FHIGH</*> to a value <=0 results in a highpass filter if
+;                   0<<*>FLOW</*><<*>fS</*>/2, otherwise it results in a zero-filter.
+;  WLOW::           A float scalar giving the lower (i.e., the highpass) flank width, in multiples of one octave
+;                   (default: 1). If you want to specify the flank width as an absolute value, set the keyword
+;                   ABSOLUTEWIDTHS. Setting <*>WLOW</*> explicitly to zero results in an ideal highpass with a
+;                   discontinuous cut-off.
+;  WHIGH::          A float scalar giving the upper (i.e., the lowpass) flank width, in multiples of one octave
+;                   (default: 1). If you want to specify the flank width as an absolute value, set the keyword
+;                   ABSOLUTEWIDTHS. Setting <*>WHIGH</*> explicitly to zero results in an ideal lowpass with a
+;                   discontinuous cut-off.
+;  ABSOLUTEWIDTHS:: Set this keyword if you want the <*>WLOW</*> and <*>WHIGH</*> values to be interpreted as absolute
+;                   values (default: the flank widths are assumed to be given in multiples of one octave).
+;  ATTENUATION::    A float scalar giving the desired attenuation value at the cut-off frequencies (default: 3 dB, i.e.
+;                   0.5012). This keyword may also be explicitly set to zero, in which case the cut-off frequencies
+;                   exactly mark the edges of the plateau of the transfer function.
+;  TIME::           Set this keyword if you want the filter to be returned as a time-domain convolution kernel.
+;  ORDER::          An integer scalar giving the order (i.e., half of the length) of the time-domain kernel; this keyword
+;                   has no effect unless the keyword <*>TIME</*> is set simultaneously. The default value used by the
+;                   algorithm depends on the filter parameters and is chosen such that the kernel contains more than 99%
+;                   of the ideal kernel. (The "ideal" kernel is the result of the inverse DFT of the frequency-domain
+;                   transfer function. It is then truncated on both sides as long as not more than 1% of its RMS amplitude
+;                   is lost.) If <*>ORDER</*> is explicitly set to zero using a named variable, <*>CosFlankFilter</*>
+;                   determines the optimal filter order as just described and returns the result in the named variable.
 ;
 ; OUTPUTS:
 ;  filter::  A one-dimensional (float) array containing the desired filter function. If <*>filter</*> is returned as a
@@ -141,7 +146,7 @@
 
 
 FUNCTION  CosFlankFilter,  N_, fS_,  $
-                           flow = flow_, fhigh = fhigh_, wlow = wlow_, whigh = whigh_, hertz = hertz,  $
+                           flow = flow_, fhigh = fhigh_, wlow = wlow_, whigh = whigh_, absolutewidths = absolutewidths,  $
                            attenuation = attenuation_, time = time, order = order_
 
 
@@ -151,13 +156,14 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
 
    On_Error, 2
 
-   IF  NOT(Set(N_) AND Set(fS_))  THEN  Console, '   Not all arguments defined.', /fatal
+   IF  NOT Set(N_)  THEN  Console, '   Argument N not defined.', /fatal
    IF  (Size(N_ , /type) GE 6) AND (Size(N_ , /type) LE 11)  THEN  Console, '  Argument N is of wrong type', /fatal
    IF  (Size(fS_, /type) GE 6) AND (Size(fS_, /type) LE 11)  THEN  Console, '  Argument fS is of wrong type', /fatal
 
    N  = Round(N_(0))    ; If N  is an array, only the first value is taken seriously.
-   fS = Float(fS_(0))   ; If fS is an array, only the first value is taken seriously.
-   fN = fS/2            ; the Nyquist frequency
+   IF  Set(fS_)  THEN  fS = Float(fS_(0))  $   ; If fS is an array, only the first value is taken seriously.
+                 ELSE  fS = 2.0
+   fN = fS/2   ; the Nyquist frequency
 
    ; The type of each keyword (if set) is checked:
    IF  Set(flow_)         THEN  IF  (Size(flow_       , /type) GE 6) AND (Size(flow_       , /type) LE 11)  THEN  Console, '  Keyword FLOW is of wrong type'       , /fatal
@@ -189,11 +195,11 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    wBody = 1 - wTail
 
    ; Flank widths are needed as absolute values in Hz for the algorithm below.
-   ; If the keyword HERTZ is set, the default value of 1.0 octave has to be expressed in Hz for each flank width
-   ; that is not explicitly specified via WLOW or WHIGH.
-   ; Furthermore, if HERTZ is not set, both widths are interpreted as given in multiples of 1 octave and have to be
-   ; transformed to Hz. (To understand the transformation formulas, make a drawing and some calculations. Or leave it.)
-   IF  Keyword_Set(Hertz)  THEN  BEGIN
+   ; If the keyword ABSOLUTEWIDTHS is set, the default value of 1.0 octave has to be expressed as an absolute value for
+   ; each flank width that is not explicitly specified via WLOW or WHIGH.
+   ; Furthermore, if ABSOLUTEWIDTHS is not set, both widths are interpreted as given in multiples of 1 octave and have to
+   ; be transformed to Hz. (To understand the transformation formulas, make a drawing and some calculations. Or leave it.)
+   IF  Keyword_Set(absolutewidths)  THEN  BEGIN
      IF  NOT Set(wlow_)   THEN  wLow  = fLow  / (1 + wTail)
      IF  NOT Set(whigh_)  THEN  wHigh = fHigh / (1 + wBody)  ; (These formulas are special cases of the formulas in the ELSE condition.)
    ENDIF  ELSE  BEGIN
