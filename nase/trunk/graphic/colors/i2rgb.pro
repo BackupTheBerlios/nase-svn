@@ -49,7 +49,6 @@ END
 
 b = CIndex2RGB(a)
 
-IF Set(p) THEN UTVLCT, sp
-
+IF Set(p) THEN UTVLCT, sp, /OVER
 RETURN, b
 END
