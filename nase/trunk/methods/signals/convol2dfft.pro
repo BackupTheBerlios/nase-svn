@@ -26,7 +26,7 @@
 ;  Math
 ;  Signals
 ;  Image
-;
+; 
 ; CALLING SEQUENCE:
 ;* c = Convol2DFFT(x, k)
 ;
