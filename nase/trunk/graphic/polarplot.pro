@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.7  2000/02/24 15:49:22  gabriel
+;              Bugfix: Axis weren't printed properly
+;
 ;        Revision 2.6  1999/04/29 09:17:26  gabriel
 ;             Interpolation der Winkel war falsch
 ;
@@ -84,8 +87,7 @@ PRO PolarPlot, radiusarray, winkelarray,sdev,SDCOLOR=sdcolor,MCOLOR=mcolor,DELTA
                XRANGE=xrange, YRANGE=yrange, $
                XSTYLE=xstyle, YSTYLE=ystyle, $
                MINORANGLETICKS=minorangleticks, $
-               THICK=thick , CLOSE=CLOSE, _EXTRA=e
-
+               THICK=thick , CLOSE=CLOSE,radiusinterpol=radiusinterpol,winkelinterpol=winkelinterpol, _EXTRA=e
 
 
 _radiusarray = radiusarray
@@ -117,18 +119,18 @@ IF DELTA GT 1 THEN BEGIN
       IF set(_SDEV) THEN  _sdev=[_sdev,_sdev,_sdev]
    ENDWHILE
 
-   IF set(_SDEV) THEN   _sdev =   Sincerpolate(_radiusarray + _sdev ,delta)
+   IF set(_SDEV) THEN   _sdev =   Sincerpolate(_sdev ,delta)
 
    _radiusarray = Sincerpolate(_radiusarray,delta)
    _radiusarray = _radiusarray(index*delta : (index+ N_ELEMENTS(radiusarray))*delta-1+close)
 
    IF set(_SDEV) THEN BEGIN 
       _sdev = _sdev(index*delta : (index+ N_ELEMENTS(radiusarray))*delta-1+close)
-      _sdev = _sdev - _radiusarray
+      ;_sdev = _sdev - _radiusarray
    ENDIF
 
-   _winkelarray = (last(_winkelarray)+close*abs(_winkelarray(1)-_winkelarray(0))-_winkelarray(0))*findgen(delta*(N_ELEMENTS(_winkelarray))+close)/FLOAT(N_ELEMENTS(_winkelarray)*DELTA+close-1)+_winkelarray(0)
-
+   _winkelarray = (signum(last(_winkelarray))*(abs(last(_winkelarray))+close*abs(_winkelarray(1)-_winkelarray(0)))-_winkelarray(0))*findgen(delta*(N_ELEMENTS(_winkelarray))+close)/FLOAT(N_ELEMENTS(_winkelarray)*DELTA+close-1)+_winkelarray(0)
+;print, _winkelarray
 END ELSE BEGIN
 
    IF CLOSE EQ 1 THEN BEGIN
@@ -196,10 +198,10 @@ ENDIF
 oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
 
 Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
- XSTYLE=xstyle, XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
-Axis, 0,0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
- YSTYLE=ystyle, YRANGE=yrange, CHARSIZE=charsize
-
+    XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
+Axis, 0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
+  YRANGE=yrange, CHARSIZE=charsize, COLOR=RGB(255, 255, 255, /noall)
+print, yrange
 Arcs, TickArray, LINESTYLE=1
 
 IF (Set(minorangleticks)) THEN BEGIN
@@ -210,4 +212,6 @@ IF (Set(minorangleticks)) THEN BEGIN
 ENDIF 
 !P.MULTI = PTMP
 
+radiusinterpol = _radiusarray
+winkelinterpol = _winkelarray
 END 
