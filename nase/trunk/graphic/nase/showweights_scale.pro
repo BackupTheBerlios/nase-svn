@@ -54,7 +54,7 @@
 ;                to be used for greyscales. The colors orange and blue
 ;                are not set. This option is intended for generating
 ;                printable greyscale graphics.
-;  RANGE_IN:: The <I>positive scalar value</I> given in <*>RANGE_IN</*> will be
+;  RANGE_IN:: The <I>non-negative scalar value</I> given in <*>RANGE_IN</*> will be
 ;             scaled to the maximum color (white / full green). Note
 ;             that this exact value does not have to be contained in
 ;             the array. If the array contains values greater than
@@ -155,12 +155,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
                                 ;literal 0)
    Default, Range, max([max, -min]) ; for positive Arrays this equals max.
 
-   ;; Is this possible to work around range=0 for "empty" arrays???
-   ;; at least leaving range eq 0 does not work fine
-   IF range EQ 0 THEN range = 1
-
-   assert, N_Elements(Range) eq 1, "Range_In must be a positive scalar value for this routine."
-   assert, Range gt 0, "Range_In must be a positive scalar value for this routine."
+   assert, N_Elements(Range) eq 1, "Range_In must be a non-negativescalar value for this routine."
+   assert, Range ge 0, "Range_In must be a non-negative scalar value for this routine."
 
 
 
@@ -174,9 +170,6 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    ;; GET_RANGE_OUT see below!
    ;;--------------------------------
    
-   if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
-   
-
 
 
    If not Keyword_Set(COLORMODE) then $
