@@ -53,7 +53,16 @@
 
 FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
 
-   Handle_Value, _Struc, Struc, /NO_COPY
+
+   IF (SIZE(_Struc))(1) EQ 3 THEN BEGIN
+      Handle_Value, _Struc, Struc, /NO_COPY
+      handle = 1
+   END ELSE BEGIN
+      Struc = _Struc
+      handle = 0
+   END
+
+
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
@@ -81,7 +90,7 @@ FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
              source_s : xsize,$
              target_s : ysize}
 
-      Handle_Value, _Struc, Struc, /NO_COPY, /SET
+      IF Handle THEN Handle_Value, _Struc, Struc, /NO_COPY, /SET
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
@@ -98,7 +107,7 @@ FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
              source_s : xsize,$
              target_s : ysize}
       
-      Handle_Value, _Struc, Struc, /NO_COPY, /SET
+      IF Handle THEN Handle_Value, _Struc, Struc, /NO_COPY, /SET
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
