@@ -1,48 +1,53 @@
 ;+
-; NAME:               TotalPrecall
+; NAME: TotalPrecall
 ;
-; PURPOSE:            Die Prozedur erhaelt als Input die 
-;                     (verzoegerten oder unverzoegerten) praesynaptischen 
-;                     Aktionspotentiale (VORSICHT: das passiert
-;                     bereits in DelayWeigh!) und aktualisiert alle 
-;                     Lernpotentiale, die in der mit <A HREF="#INITRECALL">InitRecall</A>
-;                     erzeugten Struktur enthalten sind. Wird kein 
-;                     In-Handle uebergeben, so werden die Potentiale 
-;                     nur abgeklungen.
+; PURPOSE: Diese Prozedur wird zur Aktualisierung einer Liste von 
+;          Zeitdifferenzen zwischen prä- und postsynaptischen Spikes verwendet.
+;          Diese Liste wird mit <A HREF="#INITPRECALL">InitPrecall</A> erzeugt und kann später von 
+;          Lernregeln ausgewertet werden, die die Zeitdifferenz als Grundlage 
+;          der Gewichts- oder Delayänderung benutzen. 
+;          Die Zeitdifferenz wird durch t_post - t-pre berechnet, ist also 
+;          positiv, falls der postsynaptische Spike NACH dem präsynaptsichen 
+;          auftritt. 
 ;
-; CATEGORY:           SIMULATION / PLASTICITY
+; CATEGORY: SIMULATION / PLASTICITY
 ;
-; CALLING SEQUENCE:   TotalRecall, LP [, DW]
+; CALLING SEQUENCE: TotalPrecall, PC, DW, postL
 ;
-; INPUTS:             LP: Eine mit InitRecall erzeugte Struktur
-;                     DW: die zugehoerige DW-Struktur
+; INPUTS: PC: Eine mit <A HREF="#INITPRECALL">InitPrecall</A> erzeugte Struktur.
+;         DW: Die zugehörige DW-Struktur. Diese liefert NACH dem Aufruf von
+;              <A HREF="#INITPRECALL">DelayWeigh</A> die präsynaptischen Aktionspotentiale.
+;         postL: Die postsynaptische Neuronenschicht.
 ;
-; SIDE EFFECTS:       LP wird beim Aufruf veraendert
+; SIDE EFFECTS: PC wird beim Aufruf verändert.
 ;
 ; EXAMPLE:            
-;                  My_Neuronentyp = InitPara_1()
-;                  My_Layer       = InitLayer_1(Type=My_Neuronentyp, WIDTH=21, HEIGHT=21)   
-;                  My_DWS         = InitDW (S_Layer=My_Layer, T_Layer=My_Layer, $
-;                                           D_LINEAR=[1,2,10], /D_TRUNCATE, $
-;                                            D_NRANDOM=[0,0.1], /D_NONSELF, $
-;                                           W_GAUSS=[1,5], /W_TRUNCATE, $
-;                                            W_RANDOM=[0,0.3], /W_NONSELF)
+;   Layer1 = InitPara_1()
+;   L1 = InitLayer(WIDTH=2, HEIGHT=1, TYPE=Layer1)    
 ;
-;                  LP = InitRecall( My_DWS, EXPO=[1.0, 10.0])
+;   CON_L1_L1 = InitDW(S_LAYER=L1, T_LAYER=L1, $
+;                      WEIGHT=0.1, /W_TRUNCATE, /W_NONSELF, DELAY=1)
 ;
-;                  <Simulationsschleife START>
-;                  InputForMyLayer = DelayWeigh( My_DWS, My_Layer.O)
-;                  TotalRecall, LP, My_DWS
-;                  <Learn Something between My_Layer and My_layer>
-;                  ProceedLayer_1(My_Layer, ....)
-;                  <Simulationsschleife STOP>
+;   LearnWindow = InitLearnBiPoo(POSTV=0.01, PREV=0.01)
+;   PC_L1_L1 = InitPrecall(CON_L1_L1, LearnWindow)
 ;
-; SEE ALSO: <A HREF="#INITRECALL">InitRecall</A>, <A HREF="#LEARNHEBBLP">LearnHebbLP</A>
+;   <Simulationloop START>
+;      InputForMyLayer = DelayWeigh(CON_L1_L1, LayerOut(L1))
+;      TotalPrecall, PC_L1_L1, CON_L1_L1, L1
+;      <Learn connections within L1 eg with 'LearnBiPoo'>
+;      InputLayer, L1, FEEDING=InputForMyLayer
+;      ProceedLayer, L1
+;   <Simulationloop STOP>
+;
+; SEE ALSO: <A HREF="#INITPRECALL">InitPrecall</A>, <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>, <A HREF="#LEARNBIPOO">LearnBiPoo</A> 
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1999/07/27 10:19:12  thiel
+;           Changed 'transpose' to 'reform' and wrote header.
+;
 ;       Revision 1.5  1999/07/26 13:04:36  thiel
 ;           Print-Statements removed.
 ;
@@ -131,7 +136,8 @@ PRO TotalPrecall, _PC, _DW, postL
          atn = PostAP(ati)
          IF DW.T2C(atn) NE -1 THEN BEGIN
             Handle_Value, DW.T2C(atn), wi
-            wi = Transpose(wi)  ; added this line
+            ; Reform to make 'wi' really 1-dimensional:
+            wi = Reform(wi, N_Elements(wi), /OVERWRITE) 
             IF Set(postCON) THEN postCON = [postCON, wi] $
             ELSE postCON = wi   
                ; postCON : list of active postsynaptic weight indidices
