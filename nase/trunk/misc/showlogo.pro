@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/08/28 14:53:23  kupper
+;        Now using FilePath for plaotform independency.
+;
 ;        Revision 1.6  2000/04/04 13:04:56  saam
 ;              it formerly closed all windows via CAW, which
 ;              also destroyed all MIND windows; now the LOGO
@@ -47,8 +50,8 @@
 
 Pro ShowLogo, SECS=secs
 
-   Read_GIF, GETENV("NASEPATH")+"/graphic/naselogo2.gif", logo, r, g, b
-
+   Read_GIF, FilePath("naselogo2.gif", ROOT_DIR=!NASEPATH, $
+                      SUBDIRECTORY=["graphic"]), logo, r, g, b
    device, get_screen_size=ss
    window, /free, COLORS=256, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
    win = !D.WINDOW
