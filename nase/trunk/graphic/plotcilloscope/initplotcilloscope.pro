@@ -2,7 +2,7 @@
 ; NAME:               InitPlotscilloscope
 ;
 ; PURPOSE:            Initialisiert ein Plotscilloscope
-;                     (siehe <A HREF="#PLOTCILLOSCOPE>Plotcilloscope</A>)
+;                     (siehe <A HREF="#PLOTCILLOSCOPE">Plotcilloscope</A>)
 ;
 ; CATEGORY:           GRAPHIC
 ;
@@ -34,11 +34,14 @@
 ;               wait, 0.06
 ;            END
 ;
-; SEE ALSO:  <A HREF="#PLOTCILLOSCOPE>Plotcilloscope</A>
+; SEE ALSO:  <A HREF="#PLOTCILLOSCOPE">Plotcilloscope</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/01/07 17:52:30  saam
+;           na was?? n Bug in der Docu
+;
 ;     Revision 2.1  1998/01/07 17:49:01  saam
 ;           es ist geschafft
 ;
