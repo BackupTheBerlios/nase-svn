@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.9  2000/03/01 16:20:30  gabriel
+;                 there was a cut and paste bug
+;
 ;        Revision 2.8  2000/02/24 15:51:49  gabriel
 ;                ------
 ;
@@ -203,9 +206,12 @@ oplot, _radiusarray, _winkelarray, /polar, THICK=thick,COLOR=mcolor
 Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
     XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
 Axis, 0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
-  YRANGE=yrange, CHARSIZE=charsize, COLOR=RGB(255, 255, 255, /noall)
+  YRANGE=yrange, CHARSIZE=charsize
 
 Arcs, TickArray, LINESTYLE=1
+
+
+
 
 IF (Set(minorangleticks)) THEN BEGIN
  IF minorangleticks NE 0 THEN BEGIN
