@@ -1,8 +1,10 @@
 ;+
 ; NAME: SIGNUM
 ;
+; AIM: signum function in mathematical sense
+;
 ;                                                                    
-; PURPOSE:   The signum funktion in mathematical sense. 
+; PURPOSE:   The signum function in mathematical sense. 
 ;                                                                   
 ;
 ; CATEGORY: MATH
@@ -20,16 +22,19 @@
 ; EXAMPLE:              X = [-10,0,0,20,-3,3,90]
 ;                       result = signum(x)
 ;                       print, result
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/09/28 08:52:32  gabriel
+;         AIM tag added
+;
 ;     Revision 2.1  1998/06/30 13:31:37  gabriel
 ;          hat schon immer gefehlt
 ;
 ;
-;-
+;
 FUNCTION signum ,X
    
    return,((X GT 0) + (X LT 0)*(-1))

@@ -1,6 +1,9 @@
 ;+
 ; NAME: SQRTM 
 ;
+; AIM: matrix square root (first solution)
+;
+;
 ;
 ; PURPOSE: Matrix square root. B = sqrtm(A) is the matrix square root of A. 
 ;          A warning message is printed if the computed B#B is not close to A.
@@ -42,11 +45,14 @@
 ; EXAMPLE:
 ;            X = [[7,10][15,22]]
 ;            Y=sqrtm(X)
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/09/28 08:49:57  gabriel
+;         AIM tag added
+;
 ;     Revision 2.2  2000/06/14 14:18:15  kupper
 ;     Test checkin to test CVS watch.
 ;
@@ -54,7 +60,7 @@
 ;           Eine neue Linalg Routine
 ;
 ;
-;-
+;
 
 FUNCTION sqrtm_func, X
    COMMON SQRTM_BLOCK,M
