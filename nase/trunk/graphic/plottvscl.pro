@@ -52,6 +52,11 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.10  1997/12/10 15:24:28  thiel
+;            Hilfsfunktion
+;              'KeineNegativenUndGebrochenenTicks'
+;            ausgelagert.
+;
 ;     Revision 2.9  1997/12/08 16:24:13  thiel
 ;            Fehler im Hyperdings korrigiert.
 ;
@@ -78,18 +83,6 @@
 ;
 ;
 ;-
-
-
-;-----Eine kleine Hilfsfunktion, der Name sagt ja schon alles:
-FUNCTION KeineNegativenUndGebrochenenTicks, axis, index, value
-   IF (Value LT 0) OR ((Value - Fix(Value)) NE 0) THEN BEGIN
-      Return, '' 
-      ENDIF ELSE BEGIN
-         Return, String(Value, Format='(I)')
-         ENDELSE 
-END
-
-
 
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
