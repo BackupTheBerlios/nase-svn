@@ -76,6 +76,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  2000/08/31 10:10:10  kupper
+;       Changed to restore previous output device after writing PS. (Not
+;       expecitely 'X' as before.)
+;
 ;       Revision 2.7  1998/03/04 15:17:48  thiel
 ;              Wurde auch auf die neue Verwaltung der Gewichtsmatrizen
 ;              umgestellt.
@@ -190,6 +194,7 @@ IF Set(YTITLE) THEN XRand = Width/15.0 ELSE XRand = 0.0
 IF Set(XTITLE) THEN YRand = Height/15.0 ELSE YRand = 0.0
 
 
+current_device = !D.Name
 SET_PLOT, 'PS'
 
 If Not Set(EPS) Then Begin
@@ -283,7 +288,7 @@ IF Set(XTITLE) THEN XYOuts, 1000.0*(Width/2.0), 1000.0*(Height+YRand/2.0), XTITL
 IF Set(YTITLE) THEN XYOuts, 1000.0*(Width+XRand/2.0), 1000.0*(Height/2.0), YTITLE, ALIGNMENT=0.5, /DEVICE, ORIENTATION=270, Size=1.0
 
 DEVICE, /Close
-SET_PLOT, 'X'
+SET_PLOT, current_device        ;restore previous device.
 
 Print, 'PS-File erzeugt.'
 
