@@ -59,6 +59,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/02/26 17:28:54  kupper
+;               Benutzt jetzt die neue !TOPCOLOR-Systemvariable.
+;        	Außerdem setzt es die !P.BACKGROUND stets auf den Farbindex für schwarz
+;        	und initialisiert SET_SHADING geeignet, damit folgende Surface-Plots nicht
+;                seltsam aussehen.
+;
 ;        Revision 2.2  1998/02/18 13:48:18  kupper
 ;               Schlüsselworte COLORMODE,GET_COLORMODE,GET_MAXCOL zugefügt.
 ;
@@ -77,7 +83,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
 
    min = min(MatrixMatrix)
    max = max(MatrixMatrix)
-   ts = !D.Table_Size
+   ts = !TOPCOLOR+1             ;ehemals !D.Table_Size
    GET_MAXCOL = ts-3
 
    if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
@@ -90,6 +96,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       If Keyword_Set(SETCOL) then begin
          g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          tvlct, g, g, g         ;Grauwerte
+         !P.BACKGROUND = 0      ;Index für Schwarz
+         Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
       MatrixMatrix = MatrixMatrix/double(max)*GET_MAXCOL
    endif else begin             ;pos/neg Array
@@ -97,6 +105,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       If Keyword_Set(SETCOL) then begin
          g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
          tvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+         !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
+         Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
       MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
       MatrixMatrix = (MatrixMatrix+0.5)*GET_MAXCOL
