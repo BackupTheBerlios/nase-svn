@@ -396,7 +396,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
       noscale = 1 
    endif else begin
       If Keyword_Set(NSCALE) then begin
-         tv_w = ShowWeights_Scale(w, SETCOL=setcol, RANGE_IN=range_in)
+         tv_w = ShowWeights_Scale(w, SETCOL=setcol, RANGE_IN=max(abs(RANGE_IN)))
          noscale = 1
       endif else begin
          tv_w = w
