@@ -6,12 +6,12 @@
 ;
 ; CATEGORY: Simulation
 ;
-; CALLING SEQUENCE: SetLinearWeight ( DWS
+; CALLING SEQUENCE: SetConstWeight ( DWS
 ;                                   [,Wert] [,Range=Reichweite]
 ;                                    ,S_ROW=Source_Row, S_COL=Source_Col
 ;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ]
-;                                   [,TRANSPARENT] )
+;                                   [,TRANSPARENT] [,INVERSE] )
 ;
 ;
 ; 
