@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/02/19 16:09:21  kupper
+;               Fehlerchen...
+;
 ;        Revision 2.1  1998/02/19 16:04:42  kupper
 ;               Aus der Not geboren...
 ;
@@ -56,10 +59,10 @@ Pro New_Color_Convert, I0, I1, I2, O0, O1, O2, $
    endif
       
    If Keyword_Set(YIC_RGB) then begin
-      RGB = [I0, I1, I2] # YIC2RGB
-      O0  = RGB(*, 0)
-      O1  = RGB(*, 1)
-      O2  = RGB(*, 2)
+      MyRGB = [I0, I1, I2] # YIC2RGB
+      O0  = MyRGB(*, 0)
+      O1  = MyRGB(*, 1)
+      O2  = MyRGB(*, 2)
       Return
    endif
 
