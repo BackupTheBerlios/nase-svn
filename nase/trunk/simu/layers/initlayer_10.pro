@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  1999/05/07 13:26:28  thiel
+;           .para-Tag vergessen.
+;
 ;       Revision 1.1  1999/05/07 12:43:21  thiel
 ;              Neu. Neu. Neu.
 ;
@@ -63,6 +66,7 @@ FUNCTION InitLayer_10, PROBABILITY=probability, TYPE=type
              Type   : '10', $
              w      : width, $
              h      : height, $
+             para   : type, $
              decr   : 1, $
              F      : FltArr(width*height), $
              S      : probability, $
