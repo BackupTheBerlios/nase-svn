@@ -6,7 +6,7 @@
 ;  $Id$
 ;
 ; AIM:
-;  plots dataset using a histogram style
+;  Plots dataset using a histogram style.
 ;
 ; PURPOSE:
 ;  Plot dataset with values depicted as bar heights. <*>UBar_Plot</*>
@@ -46,9 +46,9 @@
 ;  Bar diagram of <*>ydata</*>.
 ;
 ; EXAMPLE:
-;*xdata = IndGen(20)
-;*ydata = RandomU(s,20)
-;*ubar_plot, xdata, ydata, OFFSET=0.5, COLORS=255*randomn(s,20)
+;* xdata = IndGen(20)
+;* ydata = RandomU(s,20)
+;* UBar_Plot, xdata, ydata, OFFSET=0.5, COLORS=255*randomn(s,20)
 ;
 ;-
 
@@ -82,17 +82,19 @@ PRO UBar_Plot, xdata, ydata, xbase $
    END
 
    IF CENTER THEN BEGIN
-      stepl = (FLOAT(xbase(1)-xbase(0))/2.)*(1.-barspace/2)
-      stepr = stepl*(1.-barspace/2) 
+      stepl = (Float(xbase[1]-xbase[0])/2.)*(1.-barspace/2)
+      ;; setting stepr equal to stepl gives equal space on either side
+      ;; of the bar, which looks nicer, so the 1-barspve/2 part has
+      ;; been commented out
+      stepr = stepl;*(1.-barspace/2) 
    END ELSE BEGIN 
       stepl = barspace/2
-      stepr = FLOAT(xbase(1)-xbase(0))*(1.-barspace/2)
+      stepr = Float(xbase[1]-xbase[0])*(1.-barspace/2)
    END
 
    PTMP = !P.MULTI
    IF OPLOT EQ 0 THEN BEGIN
 
-      ;;print,!P.MULTI
       CASE 1 OF
          ExtraSet(e, 'XRANGE'): plot,__xdata,ydata,/NODATA,/XSTYLE,_EXTRA=e
          ExtraSet(e, 'XSTYLE'): plot,__xdata,ydata $
@@ -105,7 +107,7 @@ PRO UBar_Plot, xdata, ydata, xbase $
              ,XRANGE=[__xdata(0)-stepl,MAX(__xdata)+stepr],/XSTYLE,_EXTRA=e
          END 
       ENDCASE
-      ;;print,!P.MULTI
+
    ENDIF ;; OPLOT EQ 0 
 
 
