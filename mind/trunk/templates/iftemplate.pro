@@ -17,12 +17,16 @@
 ;                     ignore_me  = IFTemplate( MODE=0, 
 ;                                              TEMP_VALS=temp_vals
 ;                                              [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
+;                                              [,/WRAP]
+;                                              [,FILE=file]
 ;                                              {various filter options} )
 ;
 ;                     newPattern = IFTemplate( [MODE=1], PATTERN=pattern )
 ;                     ignore_me  = IFTemplate( MODE=[2|3] )
 ;	
 ; KEYWORD PARAMETERS: DELTA_T   : passing time in ms between two sucessive calls of this filter function
+;                     FILE      : provides a file skeleton (string) to save
+;                                 data in an ordered way. 
 ;                     HEIGHT    : height of the input to be created
 ;                     MODE      : determines the performed action of the filter. 
 ;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
@@ -31,6 +35,10 @@
 ;                                 is initialized when MODE=0, read/modified for MODE=1 and freed for
 ;                                 MODE=2
 ;                     WIDTH     : width of the input to be created
+;                     WRAP      : set, if the underlying layer has
+;                                 toroidal boundary conditions
+;                                 (default: no)
+;
 ;                     {various filter options}: to be added by the author
 ;
 ;
@@ -44,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/07/04 09:01:02  saam
+;           added WRAP and FILE identical to IFtemplate2
+;
 ;     Revision 1.7  2000/01/27 10:50:30  saam
 ;           delete modification history from doc header
 ;
@@ -72,7 +83,7 @@
 ;
 
 
-FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t
+FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, WRAP=wrap, FILE=file
 
  COMMON terminal, output
 
@@ -80,6 +91,8 @@ FUNCTION IFtemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
 
    Default, mode, 1          ; i.e. step
    Default, R   , !NONE
+   Default, wrap, 0
+   Default, file, ''
    
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      
