@@ -139,6 +139,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.20  2000/10/03 12:39:43  kupper
+;        Added INVISIBLE and GETBASE keywords.
+;
 ;        Revision 1.19  2000/10/01 14:51:58  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -577,7 +580,8 @@ END ; faceit_EVENT
 
 
 
-PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
+PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch, $
+            INVISIBLE=invisible, GET_BASE=get_base
 
    COMMON WidgetSimulation, MyFont, MySmallFont
 
@@ -625,7 +629,7 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
                               /BASE_ALIGN_CENTER, /ROW)
 
    W_simlogo  = Widget_ShowIt(W_simcontrol, XSIZE=75, YSIZE=50, $
-                              /PRIVATE_COLORS)
+                              /PRIVATE_COLORS, FRAME=2)
 
    W_SimDisplay = CW_BGroup(W_SimControl, "Display", /NONEXCLUSIVE, $
                             SET_VALUE=1, FONT=MyFont)
@@ -746,6 +750,11 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
    Message, /INFO, "   *** Registering Main Widget  ***"
    Message, /INFO, "   ********************************"
 
+   If Keyword_Set(INVISIBLE) then begin
+      For i=1, n_elements(*userstruct.UserBases) do $
+       Widget_Control, (*userstruct.UserBases)[i-1], MAP=0
+      Widget_Control, w_base, MAP=0
+   endif
    ;; Realize all user-bases:
    ;; This will also realize W_Base.
    For i=1, n_elements(*userstruct.UserBases) do $
@@ -778,6 +787,7 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
    XMANAGER, "FaceIt! "+SimName, W_Base, $
     EVENT_HANDLER="FaceIt_EVENT", NO_BLOCK=no_block
 
+   GET_BASE = w_base
 
 END ; FaceIt
 
