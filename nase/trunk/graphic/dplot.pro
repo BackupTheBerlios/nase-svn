@@ -1,40 +1,39 @@
 ;+
-; NAME:               DPlot  
+; NAME:
+;  DPlot  
 ;
-; AIM: Plot two graphs in same coordinate system, with different
-;      y-axes on left and right.
+; VERSION:
+;  $Id$
 ;
-; PURPOSE:            Ermoeglicht die Darstellung zwei Plots mit
-;                     zwei unterschiedlichen Achsenbeschriftungen
-;                     (links und rechts) in einem.
+; AIM:
+;  generates two graphs with different ordinate scaling in the same plot
 ;
-; CATEGORY:           NASE GRAPHIC
+; PURPOSE:
+;  Generates two graphs with different ordinate scaling in the same plot.
+;  The scaling for the first plot is on the left side, while the
+;  second is placed on the right side.
 ;
-; CALLING SEQUENCE:   DPlot, x, y1, y2, _EXTRA=e
+; CATEGORY:
+;  Graphic
 ;
-; INPUTS:             x : die gemeinsamen Abszissen-Werte
-;                     y1: Ordinaten-Werte fuer die linke Achse
-;                     y2: Ordinaten-Werte fuer die rechte Achse 
+; CALLING SEQUENCE:
+;*DPlot, x, y1, y2, _EXTRA=e
 ;
-; KEYWORD PARAMETERS: + alle Plot-Keywords gelten fuer die linke Achse
-;                     + alle Plot-Keywords mit der zusaetzlichen Endung
-;                       '2' gelten fuer die rechte Achse
+; INPUTS:
+;  x  :: common absizza values
+;  y1 :: ordinate values for the first plot (left axis)
+;  y2 :: ordinate values for the second plot (right axis)
+;
+; INPUT KEYWORDS:
+;  + all standard plot keyword are passed to the first plot<BR>
+;  + plot keywords with an additional '2' like <*>YRANGE2</*> are
+;    passed to the second plot
 ;
 ; EXAMPLE:            
-;                     x=findgen(100)/10.
-;                     y1=sin(x)
-;                     y2=0.25*randomu(seed,100)
-;                     dplot, x, y1, y2, ytitle='sinus', yrange2=[0,1], ytitle2='noise'
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.2  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 1.1  1999/12/22 18:45:14  saam
-;           happy xmas
-;
+;*x=findgen(100)/10.
+;*y1=sin(x)
+;*y2=0.25*randomu(seed,100)
+;*dplot, x, y1, y2, ytitle='sinus', yrange2=[0,1], ytitle2='noise'
 ;
 ;-
 PRO DPlot, x, y1, y2, _EXTRA=e
