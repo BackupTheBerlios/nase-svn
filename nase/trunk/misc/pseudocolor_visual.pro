@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/01/17 12:49:27  kupper
+;        Added informational message.
+;
 ;        Revision 1.2  2000/01/17 11:13:26  kupper
 ;        Broke on devices other than X.
 ;        Fixed.
@@ -63,6 +66,7 @@ Function PseudoColor_Visual
       
       else: begin
          Message, /INFO, "You are trying to determine the Visual-Class of a "+!D.NAME+"-Device."
+         Message, /INFO, "(Returning true.)"
          Return, 1
       endelse
 
