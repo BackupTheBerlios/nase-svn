@@ -2,7 +2,7 @@
 ; NAME:     BOOSTWEIGHT
 ;
 ;
-; PURPOSE:  Multipliziert die Gewichte mit einem Faktor
+; PURPOSE:  Multipliziert die Gewichte einer DWS-Struktur mit einem Faktor
 ;
 ;
 ; CATEGORY: Connections
@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  1997/12/08 17:41:41  gabriel
+;           wohl eine schwere ... docu erweitert
+;
 ;     Revision 2.1  1997/12/08 17:36:30  gabriel
 ;          eine Geburt
 ;
