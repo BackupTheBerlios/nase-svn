@@ -30,13 +30,16 @@
 ; EXAMPLE:
 ;                     IDL laeuft auf gonzo
 ;                     print, GetLocalDir( '/home/gonzo/saam/mysim' )
-;                         ;liefert: /home/gonzo/saam/mysim
+;                         ;liefert: /home/gonzo/saam/mysim/
 ;                     print, GetLocalDir( '/usr/ax1319.a/saam/mysim' )
-;                         ;liefert z.B.: /home/gonzo/tmp/saam/hxqtupaycacmtmivxhwn         
+;                         ;liefert z.B.: /home/gonzo/tmp/saam/hxqtupaycacmtmivxhwn/         
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/02/09 16:33:23  saam
+;           Pfadname enthaelt nun einen nachfolgenden Slash
+;
 ;     Revision 1.4  1997/10/29 11:37:32  saam
 ;           Bestimmung des Hosts aus dem Pfadnamen ausgelagert in
 ;             Path2Host
@@ -94,5 +97,5 @@ FUNCTION GetLocalDir, WishDir
    ; create directory if it doesnot exist 
    Spawn, 'mkdir -p '+ WorkDir
    
-   RETURN, WorkDir
+   RETURN, WorkDir+'/'
 END
