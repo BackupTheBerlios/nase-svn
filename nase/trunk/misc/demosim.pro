@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.16  1999/07/16 09:40:44  thiel
+;           Endlich das "stop" am Ende entfernt.
+;
 ;       Revision 1.15  1998/11/08 19:33:47  saam
 ;             TrainspottingScope and new Layer types included
 ;
@@ -224,7 +227,6 @@ SH2 = DefineSheet(/WINDOW, XSIZE=800, YSIZE=250, MULTI=[3,1,3], TITLE='Diverses'
    SimTimeStop
 
    Print, 'Main Simulation Loop done'
-   stop
 
    FreeDw, CON_L1_L1
    FreeDw, CON_L1_L2
