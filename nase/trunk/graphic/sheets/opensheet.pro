@@ -23,12 +23,15 @@
 ;                    dummy = Get_Kbrd(1)
 ;                    DestroySheet, sheety
 ;
-; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+; SEE ALSO: <A HREF="../#SCROLLIT">ScrollIt()</A>,
 ;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  1998/06/18 14:56:14  kupper
+;            nur Hyperlink nach Umstellung der Verzeichnisstruktur angepasst.
+;
 ;     Revision 2.12  1998/06/03 10:30:55  saam
 ;           now ps works with multi
 ;
