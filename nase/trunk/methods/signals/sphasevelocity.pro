@@ -13,7 +13,7 @@
 ;
 ; CALLING SEQUENCE:    vel = SPHASEVELOCITY(  A [, distance_ax] [, delay_ax][, time_ax][, ICHISQ=ICHISQ],[ISUPPORTP=ISUPPORTP]
 ;                                                    [,CORRSTRENGHTH_CRIT=CORRSTRENGHTH_CRIT][,IMED_CORRSTRENGTH=IMED_CORRSTRENGTH]
-;                                                    [,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT][,CHISQ_CRIT=CHISQ_CRIT,] [PLOT=PLOT],[INTERPOL=INTERPOL])
+;                                                    [,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT][,CHISQ_CRIT=CHISQ_CRIT,] [PLOT=PLOT],[INTERPOL=INTERPOL],[PHASE=PHASE])
 
 ;
 ; 
@@ -43,6 +43,9 @@
 ;                                         for each spatiotemporal correlation window
 ;                      IMED_CORRSTRENGTH: median correlation strength of the points, which were used for the linear regression fit,
 ;                                         for each spatiotemporal correlation window (range: [0,1])
+;                      PHASE:             phase shift as function of distance for each spatiotemporal correlation window
+;                                         
+;                      all arrays above have the dimension type (time[,data])
 ;
 ; COMMON BLOCKS:
 ;                COMMON SPHASEVELOCITY_BLOCK, SHEET_1, PLOTFLAG
@@ -81,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  1999/03/21 09:55:54  gabriel
+;          Phase Keyword new
+;
 ;     Revision 1.3  1999/03/12 10:07:50  gabriel
 ;          INTERPOL Keyword new
 ;
@@ -92,9 +98,10 @@
 ;
 ;
 ;-
-FUNCTION SPHASEVELOCITY, A, distance_ax, delay_ax, time_ax, ICHISQ=ICHISQ,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT,ISUPPORTP=ISUPPORTP,$
-                         CORRSTRENGTH_CRIT=CORRSTRENGTH_CRIT,IMED_CORRSTRENGTH=IMED_CORRSTRENGTH,$
-                         CHISQ_CRIT=CHISQ_CRIT, PLOT=PLOT,VERBOSE=VERBOSE,INTERPOL=INTERPOL
+FUNCTION SPHASEVELOCITY, A, distance_ax, delay_ax, time_ax, ICHISQ=ICHISQ,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT,$
+                         ISUPPORTP=ISUPPORTP, CORRSTRENGTH_CRIT=CORRSTRENGTH_CRIT,$
+                         IMED_CORRSTRENGTH=IMED_CORRSTRENGTH,CHISQ_CRIT=CHISQ_CRIT, PLOT=PLOT,$
+                         VERBOSE=VERBOSE,INTERPOL=INTERPOL,PHASE=PHASE
 
 COMMON SPHASEVELOCITY_BLOCK, SHEET_1,PLOTFLAG
 
@@ -110,9 +117,10 @@ default,CORRSTRENGTH_CRIT,0.05
 default,PLOTFLAG,0
 default,plot,0
 default,verbose,0
+interpoldim = [(sa(1)*interpol*2)/2+1,(sa(2)*interpol*2)/2+1]
 
-distance_ax = (lindgen(sa(1)*interpol)/FLOAT(interpol)-sa(1)/2.)/FLOAT(sa(1))*last(distance_ax)*2.
-delay_ax = (lindgen(sa(2)*interpol)/FLOAT(interpol)-sa(2)/2.)/FLOAT(sa(2))*last(delay_ax)*2.
+distance_ax = (lindgen(interpoldim(0))/FLOAT(interpol)-sa(1)/2.)/FLOAT(sa(1))*last(distance_ax)*2.
+delay_ax = (lindgen(interpoldim(1))/FLOAT(interpol)-sa(2)/2.)/FLOAT(sa(2))*last(delay_ax)*2.
 
 iCHISQ = fltarr(sa(3))
 iMED_CORRSTRENGTH = fltarr(sa(3))
@@ -126,9 +134,10 @@ ENDIF
 
 IF PLOT EQ 1 THEN BEGIN 
    pix_1 = definesheet( /WINDOW ,XSIZE=XSIZE,YSIZE=XSIZE,/PIXMAP)
+  
    pix_2 = definesheet( /WINDOW ,XSIZE=XSIZE,YSIZE=.5*XSIZE,/PIXMAP)
 ENDIF
-
+phase = fltarr(sa(3),N_ELEMENTS(distance_ax))
 FOR i=0 ,sa(3)-1 DO BEGIN
   
    
@@ -136,12 +145,15 @@ FOR i=0 ,sa(3)-1 DO BEGIN
    IF interpol EQ 1 THEN BEGIN
       tmparray = a(*,*,i)
    END ELSE BEGIN 
-      tmparray = congrid(a(*,*,i),sa(1)*interpol,sa(2)*interpol,cubic=-0.5,/MINUS)
+      tmparray = congrid(a(*,*,i),N_ELEMENTS(distance_ax),N_ELEMENTS(delay_ax),cubic=-0.5,/MINUS)
+   ;stop
    ENDELSE   
    tmpmax =  imax(tmparray,0,index)
    t_indtmp = DELAY_AX(index) 
+   phase(i,*) = t_indtmp
    X_indtmp = DISTANCE_AX
    IF PLOT EQ 1 THEN BEGIN
+     
       opensheet,pix_1
       !p.multi = 0
       plottvscl,(1+BYTSCL(tmparray)/255.*FLOAT(!D.TABLE_SIZE-3)),$
@@ -151,7 +163,6 @@ FOR i=0 ,sa(3)-1 DO BEGIN
      
    ENDIF
    findex = lindgen(N_ELEMENTS(x_indtmp))
-
    CHISQ = 200
    max_sdev = 1.
    ;;max_moment = umoment(tmpmax(findex),SDEV=MAX_SDEV)
@@ -162,6 +173,7 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       tmpfindex = (shift(findex,-N_ELEMENTS(findex)/2))(1:*) 
       ;stop
       max_moment = umoment(tmpmax(tmpfindex),SDEV=MAX_SDEV)
+      TMP_MAX_SDEV=MAX_SDEV
       ;;linearer Fit
       regtmp = linfit(x_indtmp(findex),t_indtmp(findex),CHISQ=CHISQ)  
       CHISQ = CHISQ/FLOAT(N_ELEMENTS(findex))
@@ -171,6 +183,7 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       IF N_ELEMENTS(findex) LT (SUPPORTPOINTS_CRIT*N_ELEMENTS(DISTANCE_AX)) THEN BEGIN
          CHISQ = -1
          MAX_SDEV = 0
+          
          IF verbose EQ 1 THEN print,'--------> TO THE TRUSH'
          ENDIF
    ENDWHILE
@@ -184,6 +197,13 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       !P.MULTI = 0
       plot,distance_ax,tmpmax,YRANGE=[0,1.5],/YSTYLE,/XSTYLE,XTITLE="distance / !8mm!X",$
        YTITLE="corr. strength",TITLE="Maxima Signed Above"
+      IF CHISQ NE -1 THEN SCOLOR =RGB(255,0,0,/noalloc) $
+      ELSE SCOLOR=RGB(0,0,255,/noalloc)
+ 
+      oplot,distance_ax,REPLICATE(max_moment(0)+TMP_MAX_SDEV,N_ELEMENTS(distance_ax)),COLOR=SCOLOR
+      oplot,distance_ax,REPLICATE(max_moment(0)-TMP_MAX_SDEV,N_ELEMENTS(distance_ax)),COLOR=SCOLOR
+
+
       closesheet,pix_2 
       opensheet,sheet_1
       !p.multi = 0
@@ -195,6 +215,7 @@ FOR i=0 ,sa(3)-1 DO BEGIN
    iCHISQ(i) = CHISQ
    iMED_CORRSTRENGTH(i) = max_moment(0)
    ISUPPORTP(i) = N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
+      
 ;stop
 ENDFOR
 IF PLOT EQ 1 THEN DestroySheet, pix_1
