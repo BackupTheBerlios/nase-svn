@@ -1,21 +1,24 @@
 ;+
 ; NAME:              CountValue
 ;
-; PURPOSE:           Zaehlt einen mit InitCounter erstellten Zaehler um
-;                    eins weiter.
-;
+; PURPOSE:           Gibt den aktuellen Zaehlerstand aus 
+;                   
 ; CATEGORY:          MISC
 ;
-; CALLING SEQUENCE:  counter = CountValue(CS)
+; CALLING SEQUENCE:  counter = CountValue(CS [,iter])
 ;
 ; INPUTS:            CS: eine mit InitCounter initialisiertes Zaehlwerk
 ;
 ; OUTPUTS:           counter: der aktuelle Zaehlerstand
 ;
+; OPTIONAL OUTPUTS:  iter: enthaelt nach dem Aufruf die Gesamtzahl
+;                           bereits durchgefuehrter Zaehlungen
+
 ; EXAMPLE:
 ;                    ThreeBits = InitCounter( [2,2,2] )
 ;                    FOR i=0,20 DO BEGIN
-;                       print, CountValue(ThreeBits)
+;                       print, CountValue(ThreeBits, iter)
+;                       print, iter
 ;                       Count, ThreeBits, overflow
 ;                       IF Overflow THEN Print,'Ueberlauf'
 ;                    END
@@ -25,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/01/20 12:01:37  saam
+;           Erweiterung um optional output: iter
+;
 ;     Revision 2.4  1997/11/25 10:39:38  saam
 ;           yes another HTML-Bug
 ;
@@ -42,9 +48,10 @@
 ;
 ;
 ;-
-FUNCTION CountValue, CS
-   
-   IF CS.info EQ 'Counter' THEN BEGIN
+FUNCTION CountValue, CS, iter
+   IF Contains(CS.info, 'Counter', /IGNORECASE) THEN BEGIN
+      iter = 0
+      FOR i=0,CS.n-1 DO iter = iter*CS.maxCount(i) + CS.counter(i)
       RETURN, CS.Counter
    END ELSE MESSAGE, 'argument is no valid count structure'
 END
