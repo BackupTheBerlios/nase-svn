@@ -9,7 +9,7 @@
 ;          SetWeight eine Prozedur ist, und hier als zweites Argument das (die) Gewicht(e) 
 ;          angegeben wird.
 ;
-; CATEGORY: SIMULATION, CONNECTIONS 
+; CATEGORY: SIMULATION / CONNECTIONS 
 ;
 ; CALLING SEQUENCE:          SetWeight ( D_W_Struktur, Gewicht,
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
@@ -52,10 +52,11 @@
 ;
 ;                     TRANSPARENT: Hier kann ein Wert angegeben werden
 ;                                  (meist wohl 0), der transparent
-;                                  erscheint. D.h. an diesen Stellen
-;                                  werden die Gewichte in der Matrix
-;                                  NICHT ÜBERSCHRIEBEN, sondern
-;                                  bleiben unverändert.
+;                                  erscheint. D.h. an den Stellen in
+;                                  der SetWeight-Matrix, die diesen Wert
+;                                  haben, werden die Gewichte in der zuvor
+;                                  definierten DW-Matrix NICHT ÜBERSCHRIEBEN, 
+;                                  sondern bleiben unverändert.
 ;                                  Wird dieses Keyword zusammen mit
 ;                                  TRUNCATE verwendet, so wird als
 ;                                  Default die transparente Farbe
@@ -75,6 +76,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.16  1998/05/04 15:14:51  thiel
+;              Klitzekleiner Bugfix (Tippfehler korrigiert).
+;
 ;       Revision 1.15  1998/03/19 12:01:33  kupper
 ;              Bricht jetzt bei eindimensionalen Matrizen nicht mehr ab.
 ;
@@ -165,7 +169,7 @@ Pro SetWeight, DW, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  
        endif
        if count eq -1 then begin
           maske = indgen(n_elements(Weight)) ; ganzes Array neu setzen!
-          boolmask = Weight-Weight+(1 eq 0) ;lauter FALSEs
+          boolmaske = Weight-Weight+(1 eq 0) ;lauter FALSEs
        endif
 
        if not set(t_index) then begin
