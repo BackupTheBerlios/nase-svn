@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.3  2000/10/03 16:16:51  saam
+%       updated
+%
 %       Revision 1.2  2000/10/02 16:39:32  saam
 %       schedule update
 %       protocol for monday morning
@@ -128,7 +131,8 @@ Version: \$Id$ $\$
 \hline\hline
   Di & 10:15 & Einf"uhrung MIND\\ 
      &       & "Ubersicht MIND Routinen (bei Bedarf)\\ 
-     & 14:00 & Platz zum Schieben, Diskussion vom Montag bearbeiten\\ 
+     & 14:00 & Arbeit in Gruppen\\ 
+     &       & Vorstellung und Diskussion der Ergebnisse\\
 \hline\hline
   Mi & 10:15 & Einf"uhrung CVS\\
      &       & Effizientes Programmieren in IDL\\
@@ -146,7 +150,7 @@ Version: \$Id$ $\$
 
 \section{Protokoll}
 
-\subsection{Montag Vormittag}
+\subsection{Montag, 2. Oktober, vormittags}
 
 \subsubsection{Bericht "uber Aiming}
 \begin{itemize}
@@ -159,6 +163,31 @@ Version: \$Id$ $\$
 \subsection{Vorstellung der NASE Hyperhelp}
 
 \subsection{Documentation Header}
+
+
+
+
+\subsection{Dienstag, 3. Oktober, vormittags}
+
+\subsubsection{Einf"uhrung in MIND}
+\begin{itemize}
+\item Vorstellung des Demo-Simulation \texttt{DSIM}
+\item Erl"auterung des Console Konzepts
+\item allgemeine Schleifen mit Hilfe von \texttt{ForEach}. Soll dieses System in NASE verallgemeinert werden?
+\item Fehlerbehandlung in MIND
+\item Zusammenf"uhrung  von MIND und FaceIt wurde als sinnvoll, aber zeitaufw"andig eingestuft.
+\end{itemize}
+
+
+\subsection{Dienstag, 3. Oktober, vormittags}
+
+\subsubsection{Ergebnisse der Arbeiten}
+\begin{itemize}
+\item Komprimierte Erzeugung der \texttt{C2S}, sowie \texttt{C2T} Strukturen in \texttt{mSetSDW} wurde implementiert und
+      verbessert die Performance um den Fakor 2 [BAS]
+\item Implementierung einer Pool-Array Datenstruktur, zur Optimierung der Performance von  Arrays mit sukzessiv anwachsender Elementzahl [RK] 
+\item \texttt{Loops} aus NASE, sowie \texttt{ForEach} in MIND wurden um die F"ahigkeit erweitert, simultan mehrere Parameter zu ver"andern [AT,MS]
+\end{itemize}
 
 
 

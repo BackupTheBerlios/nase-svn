@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.3  2000/10/03 16:16:51  saam
+%       updated
+%
 %       Revision 1.2  2000/10/02 16:39:52  saam
 %       todos from monday inserted
 %
@@ -106,7 +109,7 @@
 \begin{document}
 
 \begin{center}
-{\Huge\textbf{ToDos}}\\[2cm]
+{\Huge\textbf{Bugs, ToDos and Feature Reqests}}\\[2cm]
 Version: \$Id$ $\$ 
 \end{center}
 
@@ -120,7 +123,54 @@ Version: \$Id$ $\$
 \item Keywords werden komplett grossgeschrieben. 
 \item Abtrennung von Keywords und Beschreibung durch ``::''
 \item show path to file in header display
+\item standards Makefile broken for non-saam environment
 \end{itemize}
+
+
+
+\section{Control}
+\begin{itemize}
+\item allow \texttt{console} to log into a file, simultaneously
+\item console ignores level keyword and outputs filename instead of procedure/function name
+\item \texttt{SimTime}: make it work together with console
+\end{itemize}
+
+
+\section{Graphic}
+\begin{itemize}
+\item \texttt{PlotTvScl}: PS and NASE option broken
+\item \texttt{PlotTvScl}: colors in PS broken
+\item \texttt{CAW}: doesn't work for Andreas
+\end{itemize}
+
+
+\section{Methods}
+\begin{itemize}
+\item \texttt{peakPicker}: strange or wrong keyword handling
+\end{itemize}
+
+
+\section{MIND}
+
+\begin{itemize}
+\item routines save their evaluation parameters 
+\item allow deletion of unnecessary tags
+\item external learning rules should display relevant information
+\item \texttt{DSim}: not up to date
+\item \texttt{FakeEach}: omit the skel keyword, or delete from documentation
+\item modify \texttt{foreach} to process multiple parameter variations synchronously. 
+\end{itemize}
+
+
+
+\section{Misc}
+\begin{itemize}
+\item \texttt{StrJoin}: internal IDL routine?
+\item How can marburg specific extensions be included?
+\item \texttt{RealFileName}: marburg specific actions brake other systems
+\end{itemize}
+
+
 
 
 \section{Simulation Kernel}
@@ -131,22 +181,15 @@ Version: \$Id$ $\$
 \item initialize T2C on demand and in a separate function
 \item extend \texttt{initDW} to work \texttt{SLOW} and \texttt{FAST} version
 \item check the functionality of weight display routines, when T2C is missing
-\item may \texttt{delayWeigh} be improved in processing speed and memory consumption?
-\item commit \texttt{floatWeigh}, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well
+\item \texttt{delayWeigh}: improvement in processing speed and memory consumption?
+\item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well
 \item commit neuron type file
 \end{itemize}
 
 
-\section{Misc}
-\begin{itemize}
-\item allow \texttt{console} to log into a file, simultaneously
-\end{itemize}ä
 
-\section{MIND}
+\section{Fulfilled ToDos}
 
-\begin{itemize}
-\item modify \texttt{foreach} to process multiple parameter variations synchronously. 
-\end{itemize}
 
 
 \end{document}
