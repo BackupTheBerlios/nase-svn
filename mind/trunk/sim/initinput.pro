@@ -169,6 +169,10 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
    ;----->
    ;-----> ORGANIZE THE SHEETS
    ;----->
+
+   ;; inputwins flag=0: window sheets should be defined anew
+   Default, inputwins, 0 ;; reopening input window is desired in first call
+
    IF ExtraSet(e, 'NEWWIN') THEN InputWins = 0
    IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN
       INPUT_1 = DefineSheet(/NULL)
@@ -177,7 +181,7 @@ FUNCTION InitInput, L, _IN, CallString, CallLong, _EXTRA=e;, EXTERN=_ext
       INPUT_1 = DefineSheet(/NULL)
       INPUTwins = 0
    END ELSE BEGIN
-      IF (SIZE(INPUTwins))(1) EQ 0 THEN BEGIN
+      IF inputwins EQ 0 THEN BEGIN
          w2h = w/h
          IF w2h GT 1 THEN BEGIN
             xs = 300+100

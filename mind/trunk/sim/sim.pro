@@ -22,11 +22,13 @@
 ;*  Sim [,/WSTOP][,/NOGRAPHIC]
 ;
 ; INPUT KEYWORDS: 
-;  WSTOP:: stop after weight initialization; DWs are in CON(i), i=0..n-1
-;  NOGRAPHIC:: dont show any graphics (is considerably faster!)
+;  WSTOP:: Stop after weight initialization; DWs are in CON(i), i=0..n-1
+;  NOGRAPHIC:: Dont show any graphics. (Is considerably faster!)
 ;
-; COMMON BLOCKS: 
-;  attention
+; COMMON BLOCKS:
+;  ATTENTION
+;  SH_SIM
+;  COMMON_Random
 ;
 ; EXAMPLE:
 ;* DSim & Sim
@@ -50,7 +52,32 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    ;----->
    uclose, /all
 
-   IF ExtraSet(e, 'NOGRAPHIC') THEN graphic = 0 ELSE graphic = 1
+   ;; The SIMWins flag is indicating that new definition of window
+   ;; sheets is desired. this is the case at the first call of SIM,
+   ;; and also after using /NOGRAPHIC to get back the sheets.
+   Default, SIMWins, 0 
+   
+ 
+   ;; ATTENTION: spohisticated keyword handling! 
+   IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN 
+      ;; if NOGRAPHIC is present in EXTRA, theres two possibilities:
+      IF e.nographic THEN BEGIN
+         ;; NOGRAPHIC eq TRUE => user wants no graphic 
+         graphic = 0
+      ENDIF ELSE BEGIN
+         ;; NOGRAPHIC eq FALSE => user wants graphic
+         ;; as other routines only check for presence of "NOGRAPHIC"
+         ;; in EXTRA, the tag has to be deleted to ensure that those
+         ;; routines produce graphics.
+         graphic = 1
+         Deltag, e, 'NOGRAPHIC'
+      ENDELSE
+   ENDIF ELSE BEGIN
+      ;; if NOGRAPHIC is not present in EXTRA, the user wants graphic
+      graphic = 1
+   ENDELSE
+ 
+   
 
    Lmax  = N_Elements(P.LW)-1
    IF ExtraSet(P, "DWW")    THEN DWmax = N_Elements(P.DWW)-1    ELSE DWmax=-1
@@ -112,7 +139,6 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       console, P.CON, 'LAYER: '+curLayer.NAME+ ', '+STR(curLayer.w)+'x'+ STR(curLayer.h)+', TYPE :'+NAME
    END
 
-
    ;-------------> INIT WEIGHTS
    IF DWmax GE 0 THEN CON = LonArr(DWmax+1)
    FOR i=0, DWmax DO BEGIN
@@ -123,26 +149,40 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
    console,P.CON,'Initializing simulation...'
 
-   IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN
-      IF TSSCloutmax GE 0 THEN CSIM_1  = DefineSheet(/NULL, MULTI=[TSSCloutmax+1,1,TSSCloutmax])
-      IF Lmax   GE 0 THEN CSIM_4 = DefineSheet(/NULL, MULTI=[Lmax+1,Lmax+1,1])
-      IF LDWmax GE 0 THEN CSIM_5 = DefineSheet(/NULL, MULTI=[LDWmax+1,LDWmax+1,1])
-      IF NWmax  GE 0 THEN CSIM_6 = DefineSheet(/NULL, MULTI=[NWmax+1,NWmax+1,1])
+
+;   IF ExtraSet(e, 'NOGRAPHIC') THEN BEGIN --- former version
+   IF NOT graphic THEN BEGIN
+      IF TSSCloutmax GE 0 THEN $
+       CSIM_1  = DefineSheet(/NULL, MULTI=[TSSCloutmax+1,1,TSSCloutmax])
+      IF Lmax GE 0 THEN $
+       CSIM_4 = DefineSheet(/NULL, MULTI=[Lmax+1,Lmax+1,1])
+      IF LDWmax GE 0 THEN $
+       CSIM_5 = DefineSheet(/NULL, MULTI=[LDWmax+1,LDWmax+1,1])
+      IF NWmax GE 0 THEN $
+       CSIM_6 = DefineSheet(/NULL, MULTI=[NWmax+1,NWmax+1,1])
       SIMwins = 0
-   END ELSE IF ExtraSet(e, 'PS') THEN BEGIN
+   ENDIF ELSE IF ExtraSet(e, 'PS') THEN BEGIN 
       CSIM_1 = DefineSheet(/NULL)
       CSIM_4  = DefineSheet(/NULL)
       CSIM_5  = DefineSheet(/NULL)
       CSIM_6  = DefineSheet(/NULL)
       SIMwins = 0
-   END ELSE BEGIN
-      IF (SIZE(SIMwins))(1) EQ 0 THEN BEGIN
-         IF TSSCloutmax GE 0 THEN CSIM_1 = DefineSheet(/Window, XSIZE=600, YSIZE=200, MULTI=[TSSCloutmax+1,1,TSSCloutmax+1], TITLE='Spikeraster')
-         IF Lmax   GE 0 THEN CSIM_4 = DefineSheet(/Window, XSIZE=400, YSIZE=200, MULTI=[Lmax+1,Lmax+1,1], TITLE='MUAs')
-         IF NWmax  GE 0 THEN CSIM_6 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200, MULTI=[NWmax+1,NWmax+1,1], TITLE='Neuron Watchers')
+   ENDIF ELSE BEGIN
+      IF SIMwins EQ 0 THEN BEGIN
+         IF TSSCloutmax GE 0 THEN $
+          CSIM_1 = DefineSheet(/Window, XSIZE=600, YSIZE=200 $
+                               , MULTI=[TSSCloutmax+1,1,TSSCloutmax+1] $
+                               , TITLE='Spikeraster')
+         IF Lmax GE 0 THEN $
+          CSIM_4 = DefineSheet(/Window, XSIZE=400, YSIZE=200 $
+                               , MULTI=[Lmax+1,Lmax+1,1], TITLE='MUAs')
+         IF NWmax GE 0 THEN $
+          CSIM_6 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200 $
+                               , MULTI=[NWmax+1,NWmax+1,1] $
+                               , TITLE='Neuron Watchers')
          SIMwins = 1
-      END
-   END
+      ENDIF 
+   ENDELSE
    
 
 
@@ -297,22 +337,24 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       ;-------------> LEARN SOMETHING
       FOR i=0, LDWmax DO Learn, L, CON, P.LEARNW(i), _TIME
 
-
+      ;;----- Proceed layers
       FOR i=0,Lmax DO ProceedLayer, L(i)
+
+
       IF graphic THEN BEGIN
          FOR i=0,TSSCloutmax DO BEGIN
             OpenSheet, CSIM_1, i
             TrainspottingScope, TSSClout(i), LayerOut(L(TSSCl(i)))
             CloseSheet, CSIM_1, i
-         END
-      END ; graphic
+         ENDFOR
+;      END ; graphic
 
 
 
       ;----
       ;----> MAKE A BIG SHOW
       ;----
-      IF graphic THEN BEGIN
+;      IF graphic THEN BEGIN
          FOR i=0, ANALmax DO AnaLayer, AnaCL(ANAL(i)), L(ANAL(I))
          FOR i=0,Lmax DO BEGIN
             OpenSheet, CSIM_4, i

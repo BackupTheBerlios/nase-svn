@@ -105,16 +105,20 @@
 
 PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    
-   Default, MODE , 1
-   
+   On_Error, 2
+
    COMMON ATTENTION
    COMMON SH_LEARN, LEARNwins, LEARN_1, LEARN_2, LEARN_3, LEARN_4
 
-   On_Error, 2
+
+   Default, MODE , 1
+   ;; learnwins flag=0: window sheets should be defined anew
+   Default, learnwins, 0 ;; reopening of windows is desired
+
 
    IF ExtraSet(e, 'NEWWIN') THEN LEARNwins = 0
 
-   IF (SIZE(LEARNwins))(1) EQ 0 THEN BEGIN
+   IF learnwins EQ 0 THEN BEGIN
 
       ;LEARN_1 = LonArr(MaxWin)
       ;LEARN_1 = LEARN_1 - 1
@@ -168,29 +172,30 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    END ELSE BEGIN
    
 
-     IF (SIZE(LEARNwins))(1) EQ 0 THEN BEGIN
+      IF LEARNwins EQ 0 THEN BEGIN
 
 ; initialize weight-watchers    
-        IF LLoop EQ 0 THEN begin
-           IF MaxWin GE 1 THEN LEARN_1 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200, MULTI=[MaxWin,MaxWin,1], TITLE='Weight Watchers')
-        END 
+         IF LLoop EQ 0 THEN begin
+            IF MaxWin GE 1 THEN LEARN_1 = DefineSheet(/WINDOW, XSIZE=400, YSIZE=200, MULTI=[MaxWin,MaxWin,1], TITLE='Weight Watchers')
+         ENDIF  
 ; --------------------------
 
 ; initialize showweights-sheets
-        IF (LS.SHOWW NE 0) THEN BEGIN
-           width  = LS.ZOOM*LayerWidth(_CON(LS.DW), /TARGET)*(LayerWidth(_CON(LS.DW), /SOURCE)) + 50
-           height = LS.ZOOM*LayerHeight(_CON(LS.DW), /TARGET)*(LayerHeight(_CON(LS.DW), /SOURCE)) + 50
-           LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
+         IF (LS.SHOWW NE 0) THEN BEGIN
+            width  = LS.ZOOM*LayerWidth(_CON(LS.DW), /TARGET)*(LayerWidth(_CON(LS.DW), /SOURCE)) + 50
+            height = LS.ZOOM*LayerHeight(_CON(LS.DW), /TARGET)*(LayerHeight(_CON(LS.DW), /SOURCE)) + 50
+            LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
                                             XSIZE=MIN([width,height]), YSIZE=MIN([width,height]), $
                                             TITLE=curDW.NAME)
-
-        END
+            
+         ENDIF
 ; ------------------------------
 
-        LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=curDW.NAME)
-        LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+curDW.NAME)
-      END
-   END
+         LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=curDW.NAME)
+         LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+curDW.NAME)
+         LEARNwins = 1
+      ENDIF ;; LEARNwins EQ 0
+   ENDELSE ;; ExtraSet(e, 'PS')
 
 
 
@@ -321,6 +326,5 @@ ENDELSE
    Handle_Value, _LS(LLoop),LS,/NO_COPY,/SET
    ENDFOR                       ; LLoop
 
-   LEARNwins = 1
   
 END
