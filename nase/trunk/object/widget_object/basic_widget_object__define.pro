@@ -1,5 +1,6 @@
 ;; ------------ Widget Support Routines ---------------------
 Function basic_widget_object_get_value, widid
+   COMPILE_OPT HIDDEN, IDL2
    ;; Returns the VALUE of the widget_object. This is the object 
    ;; reference of the associated object. It is stored in a
    ;; private subwidget:
@@ -12,6 +13,7 @@ Function basic_widget_object_get_value, widid
 End
 
 Pro basic_widget_object_kill_notify, private_base_id
+   COMPILE_OPT HIDDEN, IDL2
    ;; This Procedure is called when the private value container
    ;; widget dies. It is used to destroy the associated object
    ;; as well:
@@ -27,6 +29,7 @@ End
 Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
                             TITLE=title, $
                             _REF_EXTRA=_extra
+   COMPILE_OPT IDL2
    DMsg, "I am created."
 
    Default, title, Obj_Class(self)
@@ -62,6 +65,7 @@ Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
 End
 
 Pro basic_widget_object::cleanup, dummy=dummy
+   COMPILE_OPT IDL2
    DMsg, "I'm dying!"
    ;; destroy associated widget as well. This would lead to
    ;; infinite recursion as the widget would try to destroy the
@@ -81,22 +85,27 @@ End
 ;; ------------ Public --------------------
 ;; Member access methods:
 Function basic_widget_object::widget
+   COMPILE_OPT IDL2
    return, self.widget
 End
 ;; Other public methods:
 Pro basic_widget_object::uvalue, val, NO_COPY=no_copy 
+   COMPILE_OPT IDL2
    Widget_Control, self.widget, Set_Uvalue=val, NO_COPY=no_copy
 End
 Function basic_widget_object::uvalue, NO_COPY=no_copy 
+   COMPILE_OPT IDL2
    Widget_Control, self.widget, Get_Uvalue=val, NO_COPY=no_copy
    return, val
 End
 
 Pro basic_widget_object::realize
+   COMPILE_OPT IDL2
    Widget_Control, self->widget(), /Realize
 End
 
 Pro basic_widget_object::register, TITLE=title, NO_BLOCK=no_block, _ref_extra=e
+   COMPILE_OPT IDL2
    ;; no_block is default!
    Default, title, self.title
    Default, no_block, 1
@@ -113,6 +122,7 @@ End
 
 ;; ------------ Object definition ---------------------------
 Pro basic_widget_object__DEFINE
+   COMPILE_OPT IDL2
    dummy = {basic_widget_object, $
             $
             widget: 0l, $
