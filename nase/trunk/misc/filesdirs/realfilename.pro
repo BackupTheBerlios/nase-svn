@@ -21,6 +21,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1999/07/28 08:38:12  saam
+;           fixed a bug with slashes
+;
 ;     Revision 2.2  1999/03/11 14:06:10  saam
 ;           + uses the much more flexible StrRepeat command
 ;           + completely rewritten
@@ -47,8 +50,10 @@ FUNCTION RealFileName, FilePath
    Renorm = StrReplace(Renorm, '/tmp_mnt/', '/')
 
    slashified = Str_Sep(Renorm, '/')
-   IF ((slashified(0) EQ '') AND (slashified(1) EQ 'a')) THEN Renorm = StrReplace(Renorm, '/'+slashified(1)+'/'+slashified(2)+'/', '/')
-      
+   IF N_Elements(slashified) GT 1 THEN BEGIN
+      IF ((slashified(0) EQ '') AND (slashified(1) EQ 'a')) THEN Renorm = StrReplace(Renorm, '/'+slashified(1)+'/'+slashified(2)+'/', '/')
+   END
+
    Renorm = StrReplace(Renorm, '/home/', '/usr/')
    Renorm = StrReplace(Renorm, '/gonzo/', '/ax1317/')
    Renorm = StrReplace(Renorm, '/./','/')
