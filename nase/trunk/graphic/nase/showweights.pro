@@ -1,7 +1,7 @@
 ;+
 ; NAME: ShowWeights
 ;
-; PURPOSE: formt eine Gewichtsmatrix um und stellt diese auf dem Bildschirm dar
+; PURPOSE: formt eine Gewichtsmatrix um und stellt diese auf dem Bildschirm dar.
 ;          dabei werden die Gewichte der Verbindungen NACH Neuron#0 in der linken
 ;          oberen Ecke des Fensters als grau-schattierte Kaestchen
 ;          gezeigt, die Gewichte der Verbindungen NACH Neuron#1 rechts
@@ -9,24 +9,27 @@
 ;   
 ; CATEGORY: GRAPHIC
 ;
-; CALLING SEQUENCE: ShowWeights, Matrix, 
-;                                sourcebreite, sourcehoehe,
-;                                targetbreite, targethoehe,
-;                                Titel, Fenstergroesse
+; CALLING SEQUENCE: ShowWeights, Matrix, Titel, Fenstergroesse
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
-;         Sourcebreite/-hoehe: Groesse des Source-Layers
-;         Targetbreite/-hoehe: Groesse des Target-Layers
+;                 Matrix ist eine vorher mit DelayWeigh definierte Struktur 
 ;         Titel: Titel des Fensters, das die Darstellung enthaelt 
 ;         Fenstergroesse: Faktor fuer die Vergroesserung der Darstellung
 ; 
 ; OPTIONAL INPUTS: ---
 ;
-; KEYWORD PARAMETERS:
+; KEYWORD PARAMETERS: TITEL: Titel des Fensters, das die Darstellung
+;                            enthalten soll 
+;                     GROESSE: Faktor fuer die Vergroesserung der Darstellung
+;                     WINNR: Nr des Fensters, in dem die Darstellung
+;                            erfolgen soll (muss natuerlich offen
+;                            sein). Ist WinNr gesetzt, sind evtl vorher angegebene
+;                            Titel und Groessen unwirksam (klar,
+;                            Fenster war ja schon vorher offen).
 ;
-; OUTPUTS: separates Fenster, das die Gewichtmatrix enthaelt
+; OUTPUTS: Gewichtsmatrix, an die Fenstergroesse angepasst.
 ;
-; OPTIONAL OUTPUTS: ---
+; OPTIONAL OUTPUTS: separates Fenster, das die Darstellung der Gewichtmatrix enthaelt
 ;
 ; COMMON BLOCKS: ---
 ;
@@ -36,28 +39,57 @@
 ; 
 ; PROCEDURE: ---
 ;
-; EXAMPLE: ShowWeights, W, 10, 10, 10, 10, 'wunderschoene Matrix', 5
-;          stellt die Matrix W zwischen zwei 10x10-Layern 5-fach
+; EXAMPLE: weights = IntArr(4,12)
+;          weights(2,5) = 1.0  ; connection from 5 --> 2
+;          weights(0,6) = 2.0  ; connection from 6 --> 0
+;
+;          MyMatrix =  DelayWeigh( INIT_WEIGHTS=weights, SOURCE_W=4, SOURCE_H=3, TARGET_W=2, TARGET_H=2)
+;          ShowWeights, MyMatrix, Titel='wunderschoene Matrix', Groesse=50
+;
+;          stellt die zuvor definierte MyMatrix zwischen dem Source-Layer der Breite 4 und
+;          Hoehe 3 und dem Target-Layer der Breite und Hoehe 2 50-fach
 ;          vergroessert in einem Fenster mit Titel 'wunderschoene
 ;          Matrix' dar.
 ;
-; MODIFICATION HISTORY: Version vom 25. Juli '97, Andreas.
+; MODIFICATION HISTORY: Erste Version vom 25. Juli '97, Andreas.
+;                       Diese Version (Verbesserte Parameterabfrage) vom 28. Juli '97, Andreas
 ;
 ;-
 
-PRO ShowWeights, Matrix, source_b, source_h, target_b, target_h, titel, gr
 
-anzahl = target_b*target_h
-Max_Amp = max(Matrix)
+PRO ShowWeights, Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR
+
+If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
+If Not Set(GROESSE) Then Begin 
+    XGroesse = 1
+    YGroesse = 1 
+Endif Else Begin 
+    XGroesse = Groesse
+    YGroesse = Groesse
+    Endelse
+
+If Not Set(WINNR) Then Begin
+    Window, 0 , XSize=XGroesse*Matrix.source_w*Matrix.target_w, YSize=YGroesse*Matrix.source_h*Matrix.target_h, Title=titel
+    WSet, 0
+         Endif Else Begin 
+                      XGroesse = !D.X_Size/(Matrix.Source_W*Matrix.Target_W)
+                      YGroesse = !D.Y_Size/(Matrix.Source_H*Matrix.Target_H)
+                      WSet, WinNr
+                  EndElse    
+
+
+anzahl = Matrix.target_w*Matrix.target_h
+Max_Amp = max(Matrix.Weights)
     
-Matrix_gesp = rotate(Matrix,4)
-Matrix_ref = reform(255*Matrix_gesp/Max_Amp,source_h,source_b,anzahl)	
+Matrix_gesp = rotate(Matrix.Weights,4)
 
-Window, /Free, XSize=gr*source_b*target_b, YSize=gr*source_h*target_h, Title=titel   
+Matrix_ref = reform(255*Matrix_gesp/Max_Amp,Matrix.source_w,Matrix.source_h,anzahl)	
+
 
 For nr = 0, (anzahl-1) Do Begin       
-	Tv, rebin(Matrix_ref(*,*,nr),gr*source_h,gr*source_b,/sample),nr ,/Order 
+	Tv, rebin(Matrix_ref(*,*,nr),XGroesse*Matrix.source_w,YGroesse*Matrix.source_h,/sample),nr ,/Order 
 EndFor
+
 
 
 
