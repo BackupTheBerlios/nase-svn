@@ -16,6 +16,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/04/04 13:04:56  saam
+;              it formerly closed all windows via CAW, which
+;              also destroyed all MIND windows; now the LOGO
+;              only closes itself
+;
 ;        Revision 1.5  1999/07/01 08:27:00  kupper
 ;        Added U to tvlct and tv.
 ;
@@ -46,12 +51,13 @@ Pro ShowLogo, SECS=secs
 
    device, get_screen_size=ss
    window, /free, COLORS=256, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
+   win = !D.WINDOW
    Utvlct, r, g, b
    Utv, logo
 
    if Keyword_Set(SECS) then begin
       wait, SECS
-      caw
+      wdelete, win
       loadct, 0
    endif
 end
