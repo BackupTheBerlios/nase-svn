@@ -60,6 +60,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/10/03 13:29:18  saam
+;     + extended to process several values simultaneously
+;     + new syntax still undocumented
+;     + just a test version
+;
 ;     Revision 1.6  2000/09/28 13:24:43  alshaikh
 ;           added AIM
 ;
@@ -82,14 +87,13 @@
 ;-
 FUNCTION InitLoop, struct
 
-   s = SIZE(struct)
-   IF s(N_Elements(s)-2) EQ 8 THEN BEGIN
-
+   IF TypeOf(struct) EQ "STRUCT" THEN BEGIN
 
       ntags = N_Tags(struct)
       maxcount = LonArr(ntags)
       FOR tag=0,ntags-1 DO BEGIN
-         maxcount(tag) = N_Elements(struct.(tag))
+          st = SIZE((struct.(tag)))        ; size of the current tag
+          IF st(0) EQ 0 THEN maxcount(tag) = 1 ELSE  maxcount(tag) = st(1) ; first dimension is always the number of iterations per loop digit 
       END
       LoopStruc = { info     : 'LoopStruc'          ,$
                     n        : ntags                ,$
@@ -98,14 +102,15 @@ FUNCTION InitLoop, struct
       RETURN, LoopStruc
       
 
-   END ELSE BEGIN
-      
-      MaxCount = N_Elements(struct)
-      LoopStruc = { info     : 'LoopArr'            ,$
-                    n        : 1                    ,$
-                    counter  : InitCounter(MaxCount),$
-                    struct   : {huhu:struct}        }
-      RETURN, LoopStruc
+  END ELSE BEGIN
+      Console, "array handling has been disabled, to test if anyone is still using it", /FATAL
+;      
+;      MaxCount = N_Elements(struct)
+;      LoopStruc = { info     : 'LoopArr'            ,$
+;                    n        : 1                    ,$
+;                    counter  : InitCounter(MaxCount),$
+;                    struct   : {huhu:struct}        }
+;      RETURN, LoopStruc
 
  
    END

@@ -57,6 +57,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/10/03 13:29:18  saam
+;     + extended to process several values simultaneously
+;     + new syntax still undocumented
+;     + just a test version
+;
 ;     Revision 1.4  2000/09/28 13:24:44  alshaikh
 ;           added AIM
 ;
@@ -82,15 +87,16 @@ FUNCTION LoopValue, LS, iter
       ; values for new structure
       latestLoop = CountValue(LS.counter)
 
-      newStruct =  Create_Struct(TagNames(0), (LS.struct.(0))(latestLoop(0)))
+      newStruct =  Create_Struct(TagNames(0), REFORM((LS.struct.(0))(latestLoop(0),*), /OVERWRITE))
       FOR tag = 1, LS.n-1 DO BEGIN 
-        newStruct = Create_Struct(newStruct, TagNames(tag),(LS.struct.(tag))(latestLoop(tag)) )
+        newStruct = Create_Struct(newStruct, TagNames(tag),REFORM((LS.struct.(tag))(latestLoop(tag),*), /OVERWRITE) )
       END
 
       dummy = CountValue(LS.counter, iter)
 
-      IF LS.info EQ 'LoopStruc' THEN RETURN, newStruct ELSE RETURN, newStruct.huhu
+                                ;IF LS.info EQ 'LoopStruc' THEN 
+      RETURN, newStruct         ;ELSE RETURN, newStruct.huhu  (disabled in initloop)
 
-   END ELSE Message, 'no valid loop structure passed'
+   END ELSE Console, 'no valid loop structure passed', /FATAL
 
 END

@@ -54,6 +54,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/10/03 13:29:18  saam
+;     + extended to process several values simultaneously
+;     + new syntax still undocumented
+;     + just a test version
+;
 ;     Revision 1.9  2000/09/28 13:24:44  alshaikh
 ;           added AIM
 ;
@@ -108,10 +113,13 @@ FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print, SEP=sep
           tagSize = SIZE(LS.struct.(tag))
           IF tagSize(N_Elements(tagSize)-1) GE 1 THEN BEGIN
               IF Keyword_Set(PRINT) THEN BEGIN
-                  Name = Name + STR(tagNames(tag))  + ' : ' + STR(STRING((LS.struct.(tag))(countVal(tag)))) + '    '
+                  Name = Name + STR(tagNames(tag))  + ' : ' + StrJoin(Str(REFORM((LS.struct.(tag))(countVal(tag),*))), ' ') + '    '
               END ELSE BEGIN
-                  IF NOT Keyword_Set(NOLONG) THEN Name = Name + STRCOMPRESS(STRING(tagNames(tag)))
-                  Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL) + sep
+                  IF NOT Keyword_Set(NOLONG) THEN Name = Name + STR(tagNames(tag))
+                  
+                  IF (Size((LS.struct.(tag))))(0) GT 1 THEN appendStr = Str(countVal(tag)) $
+                                                       ELSE appendStr = Str((LS.struct.(tag))(countVal(tag)))
+                  Name = Name + '_' + appendStr + sep
               END
           END 
       END
