@@ -7,6 +7,7 @@
 # Mirko Saam
 #
 CVSWORK=/vol/neuro/nase/www-nase-copy
+MAKEDOC=$CVSWORK/www-bin/makedoc
 
 USERNAME=`id --name --user`
 if ! [ "$USERNAME" == "www-data" ] ; then
@@ -21,11 +22,13 @@ cvs -d $CVSROOT checkout doc
 
 cd $CVSWORK/doc/standards
 ln -s $CVSWORK/doc/header.pro $CVSWORK/doc/header.pro.tex
-$CVSWORK/doc/www-bin/makedoc standards
+$MAKEDOC standards
 
 cd $CVSWORK/doc/workshop
-$CVSWORK/doc/www-bin/makedoc workshop
-$CVSWORK/doc/www-bin/makedoc todo
+$MAKEDOC workshop
+$MAKEDOC todo
 
+cd $CVSWORK/doc/simulation
+$MAKEDOC neurontypes
 
 exit 0
