@@ -9,7 +9,8 @@
 ;                     und in der Form y(x,iter) vorliegt.
 ;                     IMoment(y,1) liefert nun Mittelwert, Varianz, ...
 ;                     in Abhaengigkeit von x. Die Uebergabekonventionen
-;                     entsprechenden denen von UMoment
+;                     entsprechenden denen von UMoment. Fuer nicht definierte
+;                     Werte wird !NONE zurueckgegeben.
 ;
 ; CATEGORY:           STATISTICS.
 ;
@@ -17,7 +18,6 @@
 ;
 ; INPUTS:             X:  Eine n-dimensionale Matrix vom Typ integer, float or double.
 ;                     
-;
 ; KEYWORD PARAMETERS: MDEV/SDEV: siehe UMoment
 ;                     MIN/MAX  : definiert eine untere und/oder eine obere Grenze fuer
 ;                                Messwerte die in die Berechnung einbezogen werden sollen.
@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1998/08/10 09:53:28  saam
+;              now jitter scales with samplling period
+;
 ;       Revision 1.2  1998/06/17 08:57:16  saam
 ;             largest index could not be used
 ;
@@ -69,11 +72,11 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max
      ENDCASE
      IF SET(MIN) THEN BEGIN
         geMin = WHERE(Atmp GE min, c)
-        IF c NE 0 THEN Atmp = Atmp(geMin) ELSE Atmp = [0]
+        IF c NE 0 THEN Atmp = Atmp(geMin) ELSE Atmp = [!NONE]
      END
      IF SET(MAX) THEN BEGIN
         ltMax = WHERE(Atmp LT max, c)
-        IF c NE 0 THEN Atmp = Atmp(ltMax) ELSE Atmp = [0]
+        IF c NE 0 THEN Atmp = Atmp(ltMax) ELSE Atmp = [!NONE]
      END
      
 
