@@ -21,7 +21,7 @@ $VERSION = '1.1';
 
 # Preloaded methods go here.
 my ($DOCURL, $hostname);
-my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr);
+my ($INDEXDIR, $CVSROOT, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr);
 
 ## just default settings (START) ##
 # CVSROOT: the location of the repository, if unset no checkout will be performed
@@ -34,15 +34,15 @@ my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr);
 BEGIN {
   chop ($hostname = `uname -a`);
   {
-    #  $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-    #			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
-    #			       $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
-    #   			       $INDEXDIR="$DOCDIR";
+      $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
+    			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
+    			       $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+       			       $INDEXDIR="$DOCDIR"};
     
-    #			       last;};
-    $DOCDIR="/mhome/saam/sim"; 
-    $DOCURL="http://localhost/nase/"; 
-    $INDEXDIR="/tmp";
+#    			       last;};
+#    $DOCDIR="/mhome/saam/sim"; 
+#    $DOCURL="http://localhost/nase/"; 
+#    $INDEXDIR="/tmp";
   }
   
   $BASEURL  = "http://neuro.physik.uni-marburg.de/cgi-bin-neuro/nasedocu.pl";
