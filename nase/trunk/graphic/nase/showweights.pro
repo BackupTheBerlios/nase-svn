@@ -107,9 +107,7 @@ If Not Set(WINNR) Then Begin
                   EndElse    
 
 MaxFarbe = !D.Table_Size-1
-
-;SetColorIndex, MaxFarbe,  255,100,0
-erase, rgb(255,100,0)
+erase, rgb(255,100,0, INDEX=MaxFarbe)
 
 
 
