@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1998/07/21 09:46:00  saam
+;             two input signals were modified!!!
+;
 ;       Revision 1.6  1998/01/28 09:52:12  saam
 ;             documentation for keyword COVAR
 ;
@@ -77,11 +80,14 @@
 ;
 ;       Written by:     Thomas Wölbern, 23.09.94
 ;-
-FUNCTION CrossCor,x,y,PShift,CorrBranch=Branch,OverlapNorm=ONorm,Covariance=Covar
+FUNCTION CrossCor,_x,_y,PShift,CorrBranch=Branch,OverlapNorm=ONorm,Covariance=Covar
 
    Default, Branch, 0
    Default, ONorm, 0
    Default, Covar, 0
+
+   x = _x
+   y = _y
 
    Mean_x = Total(x)/N_Elements(x)
    Mean_y = Total(y)/N_Elements(y)
