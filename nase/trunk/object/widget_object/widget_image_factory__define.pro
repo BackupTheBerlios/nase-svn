@@ -19,40 +19,30 @@ End
 ;; these are overridden:
 Pro widget_image_factory::width, value
    self->image_factory::width, value
-   self->recompute ;; we have an external pointer to the image data, so we must
-                   ;; recompute explicitely 
    self->renew_plot, Range_In=[0, 1], /NASE ;we need to redraw whole plot!
    self->paint
 End
 
 Pro widget_image_factory::height, value
    self->image_factory::height, value
-   self->recompute ;; we have an external pointer to the image data, so we must
-                   ;; recompute explicitely
    self->renew_plot, Range_In=[0, 1], /NASE ;we need to redraw whole plot!
    self->paint
 End
 
 Pro widget_image_factory::type, string
    self->image_factory::type, string
-   self->recompute ;; we have an external pointer to the image data, so we must
-                   ;; recompute explicitely
    Widget_Control, self.w_type, SET_DROPLIST_SELECT=(Where(strupcase(*self.types) eq strupcase(string)))[0]
    self->paint
 End
 
 Pro widget_image_factory::size, value
    self->image_factory::size, value
-   self->recompute ;; we have an external pointer to the image data, so we must
-                   ;; recompute explicitely
    Widget_Control, self.w_size, SET_VALUE=value
    self->paint
 End
 
 Pro widget_image_factory::brightness, value
    self->image_factory::brightness, value
-   self->recompute ;; we have an external pointer to the image data, so we must
-                   ;; recompute explicitely
    Widget_Control, self.w_brightness, SET_VALUE=value
    self->paint
 End
@@ -78,9 +68,6 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
-
-   ;; let the image factory create the image:
-   self->recompute
 
    ;; fill in the types data member:
    self.types = Ptr_New(self->image_factory::types())
@@ -123,7 +110,7 @@ Pro widget_image_factory::cleanup, _REF_EXTRA = _ref_extra
 End
 
 Pro widget_image_factory::reset
-   self->prevent_paint          ;We don't want to have the image re-computed for 
+   self->prevent_paint          ;We don't want to have the image re-painted for 
                                 ;every single slider that is reset!
    self->image_factory::reset
    self->allow_paint
