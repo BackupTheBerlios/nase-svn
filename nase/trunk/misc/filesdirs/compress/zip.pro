@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/07/21 16:04:36  saam
+;           just a small bug
+;
 ;     Revision 2.6  1998/04/09 14:38:38  saam
 ;           now leaves opened files untouched
 ;
@@ -70,7 +73,7 @@ PRO Zip, filepattern, KEEPORG=keeporg, BZ2=bz2
       zip = 'gzip'
    END
    IF suffix NE '' THEN suffix = '.'+suffix
-   
+   r = StrArr(1)
    
    c = ZipStat(filepattern, NOZIPFILES=nzf, BOTHFILES=bf) 
    files = ''
