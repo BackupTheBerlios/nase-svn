@@ -42,14 +42,20 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1999/04/16 14:00:01  saam
+;          + numerical instable for mean near zero
+;          + test of new keyword CRIT
+;
 ;     Revision 1.1  1998/12/15 10:59:50  saam
 ;           inspired by Softky&Koch '93
 ;
 ;
 ;-
-FUNCTION CV, suas, MEAN=mean, SDEV=sdev
+FUNCTION CV, suas, MEAN=mean, SDEV=sdev, CRIT=crit
 
    On_Error, 2
+
+   Default, crit, 0.01
 
    IF N_Params() NE 1 THEN Message, 'suas expected!'
    
@@ -78,7 +84,7 @@ FUNCTION CV, suas, MEAN=mean, SDEV=sdev
       x = dindgen(n_elements(tisih))
       mean(i) = total(tisih*(x+1))-1
       sdev(i) =  sqrt(total(tisih*((x-mean(i))^2)))
-      R(i) = sdev(i)/mean(i)
+      IF (sdev(i) LT crit) AND (mean(i) LT crit) THEN R(i) = 0.0 ELSE R(i) = sdev(i)/mean(i)
    END
 
 
