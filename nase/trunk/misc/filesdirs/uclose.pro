@@ -20,6 +20,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1999/01/14 14:11:31  saam
+;           + error message -> warning message
+;
 ;     Revision 2.2  1998/11/08 15:01:27  saam
 ;           returns if an error occurs
 ;
@@ -34,8 +37,10 @@ PRO UClose, lun, VERBOSE=verbose, ALL=all, _EXTRA=e
 
    On_Error, 2
 
-   IF NOT Set(llun) THEN Message, 'this routine should only be used in conjenction with UOPENR !!!'
-
+   IF NOT Set(llun) THEN BEGIN
+      Message, /INFO, 'this routine should only be used in conjenction with UOPENR !!!'
+      RETURN
+   END
 
 
    IF Keyword_Set(ALL) THEN BEGIN
