@@ -57,12 +57,18 @@ Pro Label, _Title, TITLE=title, FILE=file, TEMPLATE=template
    Default, title, _Title
    Default, title, 'The Spiking Neuron'
 
+   tit = title
    title = title+'.vidinf'
 
 
    If Keyword_Set(FILE) then begin
       Spawn, "cp '"+file+"' LABEL_TEMP.label"
    endif else begin
+
+      d = LoadVideo(tit, /INFO)
+      print, '-------------- Press a Key to Enter a Label for this Video ---------------'
+      d = GET_Kbrd(1)
+
       If keyword_Set(TEMPLATE) then Spawn, "cp '"+template+"' LABEL_TEMP.label" 
       
       editor = GetEnv('EDITOR')
