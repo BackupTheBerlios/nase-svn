@@ -88,7 +88,7 @@ PRO SimTimeStep
       IF stat.console EQ -1 THEN BEGIN
          IF STAT.CLEAR EQ 1 THEN PRINT,!KEY.CLEAR
          print, '-----------------------------------------------'
-         print, '  Iteration              :  ', STRCOMPRESS(STRING(stat.step),/REMOVE_ALL)
+         print, '  Iteration              :  ', STRCOMPRESS(STRING(stat.step)+" / "+STR(stat.maxsteps),/REMOVE_ALL)
          print, '  Progress               :  ', STRCOMPRESS(STRING(((stat.step)/FLOAT(stat.maxsteps)*100)),/REMOVE_ALL),"%"
          print, '  Time in Progress       : ', Seconds2String(Total(stat.tpi))
          print, '  Time of last Iteration : ', Seconds2String(stat.tpi(stat.step-1))
