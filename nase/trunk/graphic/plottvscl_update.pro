@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.11  2000/10/27 18:59:57  gabriel
+;          utvscl now takes care of topcolor
+;
 ;     Revision 2.10  2000/10/01 14:50:42  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -221,11 +224,19 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
             ;; If defined, RANGE_IN overrides the value stored in info:
             Default, Range_In, Info.Range_In
             ;;scale as stored in info 
-               UTV, Scl(W, [0, Info.Top], Range_In), $
-                Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-                Info.y00_norm, $
-                X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
-                ORDER=UpSideDown, POLYGON=POLYGON
+               ;UTV, Scl(W, [0, Info.Top], Range_In), $
+               ; Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+               ; Info.y00_norm, $
+               ; X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+               ; ORDER=UpSideDown, POLYGON=POLYGON
+            
+            ;;utvscl now takes care of topcolor
+            UTVSCL, W , $
+             Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+             Info.y00_norm, $
+             X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
+             ORDER=UpSideDown, POLYGON=POLYGON
+               
          EndElse
 
      END
