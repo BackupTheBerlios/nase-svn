@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.9  1998/02/11 15:09:40  saam
+;             Zeit wird ohne Initialiseirung gemessen
+;
 ;       Revision 1.8  1998/02/11 14:58:20  saam
 ;             Zeitmessung hinzugefuegt
 ;
@@ -72,7 +75,6 @@
 ;
 ;-
  
-SimTimeInit
 Window, 1, TITLE='weights', XSIZE=320, YSIZE=320
 Window, 2, XSIZE=800, YSIZE=400
 
@@ -138,9 +140,8 @@ Window, 2, XSIZE=800, YSIZE=400
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
    Print, 'Starting main simulation loop...'
+   SimTimeInit      
    FOR t=0l,2000l DO BEGIN
-
-      
 
 ;-------------> CREATE INPUT
       ; generate two static squares
@@ -160,7 +161,7 @@ Window, 2, XSIZE=800, YSIZE=400
 ;-------------> LEARN SOMETHING
       TotalRecall, LP_L1_L1, CON_L1_L1
       LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
-
+ 
       IF t EQ 3000 THEN ShowNoMercy, CON_L1_L1, LESSTHAN=0.01
 
 ;-------------> PROCEED NEURONS
@@ -187,6 +188,9 @@ Window, 2, XSIZE=800, YSIZE=400
       END
       IF (t MOD 100 EQ 0) THEN Print, t, '  max weight: ', MAX(Weights(CON_L1_L1))
    END
+   SimTimeStep
+   SimTimeStop
+
    Print, 'Main Simulation Loop done'
 
 
@@ -198,8 +202,5 @@ Window, 2, XSIZE=800, YSIZE=400
    FreeLayer_1, L2
 
    FreeRecall, LP_L1_l1
-
-   SimTimeStep
-   SimTimeStop
 
 END
