@@ -1,0 +1,148 @@
+ 
+\documentclass[german]{article} \usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc} \usepackage{babel}
+
+% z.B. für \includegraphics
+\usepackage{graphicx}  % Option draft: Boxen statt Bilder
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{HowTo: Install Crystal Space and CSRemote}
+
+\maketitle
+
+
+\begin{enumerate}
+\item{Aktuellen CVS-Snapshot herunterladen
+    (http://crystal.sourceforge.net/cvs-snapshots/)}
+\item{Source-Verzeichnis anlegen (.../CS) und hineinwechseln}
+\item{Auspacken (tar xzvf cs-current-snapshot.tgz)}
+\item{Konfigurieren (in .../CS wechseln, ./configure ausführen}
+\item{Compilieren (in .../CS wechseln, make -k all)}
+\item{Beispielprogramme testen (.../CS/blocks, .../CS/walktest,
+    .../CS/simple1), falls diese nicht funktionieren, evtl. mit
+    Kommandozeilen-Parametern Konfiguration einstellen (z.B.
+    -video=software)}
+\item{Installieren (als root in .../CS, make install)}
+\item{CS-Umgebungsvariable setzen (/etc/X11/Xsession editieren: export
+    CRYSTAL=/usr/local/crystal)}
+\item{Dokumentation und Links sind zu finden in
+    .../CS/docs/README.html und .../CS/docs/html/cs\_toc.html}
+\item {rtfm: 5.1 Developing a Crystal Space Application}
+  
+\item{Erste selbstcompilierte Beispiel-Applikation ausprobieren
+    \begin{enumerate}
+    \item {Eigenes Arbeits-Verzeichnis anlegen}
+    \item{.../CS/apps/tutorial/simple1/simple1.cpp und
+        .../CS/apps/tutorial/simple1/simple1.h dort hineinkopieren}
+    \item{rtfm: 5.9.11 Creating an External Crystal Space Application}
+    \item{make simple1}
+    \item{./simple1}
+    \end{enumerate}
+  }
+  
+\item{Erste eigene Beispiel-Anwendung schreiben und csremote einbinden
+    \begin{enumerate}
+    \item {rtfm: 5.2 Simple Tutorial 1}
+    \item{Wie im Tutorial beschrieben die Simple-Anwendung zum Laufen
+        bringen}
+    \item{in simple.h folgenden Code einfügen: \\
+\begin{verbatim}
+...
+#include <stdarg.h>
+#include "remote.h"
+... 
+class Simple
+{
+private:
+...
+  csRemoteControl* remote; 
+  int port; 
+...
+public:
+  Simple (iObjectRegistry* object_reg, int port);
+\end{verbatim}
+}
+    \end{enumerate}
+  \item{in simple.cpp einfügen:\\
+\begin{verbatim}
+Simple::Simple (iObjectRegistry* object_reg, int port)
+{
+   Simple::object_reg = object_reg;
+   remote = new  csRemoteControl(object_reg);
+        Simple::port = port;
+}
+...
+bool Simple::Initialize ()
+{
+...
+  if (!remote->Initialize(g2d, port)) 
+    {
+      csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+                "crystalspace.application.simple",
+                "Error Initializing Remote Object");
+      return false;
+    }
+  return true;
+}
+void Simple::SetupFrame ()
+{
+...
+  iCamera* c = view->GetCamera();
+  float speed = 0.01;
+  csRemoteControlMessage RemoteMessage = CS_REMOTE_NOMESSAGE;
+  RemoteMessage = remote->TalkToRemote();
+
+  if (RemoteMessage == CS_REMOTE_KBD_LEFT)
+    {
+      c->GetTransform ().RotateThis (CS_VEC_ROT_LEFT, speed);
+      printf("got a Keybord_left from Remote, speed= %f\n", speed);
+    }
+
+  if (RemoteMessage == CS_REMOTE_KBD_RIGHT)
+    {
+      c->GetTransform ().RotateThis (CS_VEC_ROT_RIGHT, speed);
+      printf("got a Keybord_RIGHT, speed=%f\n", speed);
+    }
+
+  if (RemoteMessage == CS_REMOTE_SCREENSHOT_REQUEST)
+    {
+      printf("ScreenShot requested\n");
+      remote->SendScreenShot();
+    }
+
+  if (kbd->GetKeyState (CSKEY_SPACE))
+    {
+      remote->ConnectToLocalHost();
+    }
+...
+
+int main (int argc, char* argv[])
+{
+  int port=0;
+  if (argc > 1) 
+  {
+      printf("Commandline: %s\n", argv[1]);
+      port = atoi(argv[1]);
+      printf("PortNummer= %d\n", port);         
+  }
+
+  if ((port > 1000) and (port < 9999)) printf("Valid PortNumber\n");
+  else port=0;
+...
+  iObjectRegistry* object_reg =
+    csInitializer::CreateEnvironment (argc, argv);
+  if (!object_reg) return -1;
+\end{verbatim}
+{\em ZEILEN-ÄNDERUNG:}
+\begin{verbatim}
+  simple = new Simple (object_reg, port);
+\end{verbatim}
+    } }
+
+
+\end{enumerate}
+
+\end{document}
