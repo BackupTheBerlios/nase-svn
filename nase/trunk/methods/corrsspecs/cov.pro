@@ -1,6 +1,8 @@
 ;+
 ; NAME: COV
 ;
+; AIM:     computes the covariance matrix of n given signals
+;
 ;
 ; PURPOSE: Covariance matrix
 ;
@@ -32,21 +34,24 @@
 ;     ;    1.55556      1.88889    -0.888889
 ;     ;    1.88889      4.22222    -3.22222
 ;     ;   -0.888889    -3.22222     2.88889      
-;
+;-
 ; MODIFICATION HISTORY: 
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 14:06:41  gabriel
+;          AIM, message <> console
+;
 ;     Revision 1.2  1999/07/15 16:20:43  gabriel
 ;             Example added
 ;
 ;
-;-
+;
 FUNCTION COV,X,Y
    On_Error, 2
    ;; check for argument count
    np = N_Params()
-   IF (np GT 2) OR (np LT 1) THEN Message, 'wrong number of arguments'
+   IF (np GT 2) OR (np LT 1) THEN Console, /fatal, 'wrong number of arguments'
    IF np EQ 2 THEN A = [[X],[Y]] $ 
     ELSE A = X
    s = size(A)
