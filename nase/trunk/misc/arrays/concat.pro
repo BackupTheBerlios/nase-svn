@@ -1,6 +1,7 @@
 ;+
 ; NAME: CONCAT
 ;
+; VERSION: $Id:
 ;
 ; AIM:      concatenation of arrays 
 ;
@@ -14,18 +15,18 @@
 ;
 ;
 ; CALLING SEQUENCE:  
-;                     result=concat( A, B [, INDEX][,extend=extend][,add=add][, overwrite=overwrite] )
+;*                     result=concat( A, B [, INDEX][,extend=extend][,add=add][, overwrite=overwrite] )
 ;
 ;
 ;
 ;
-; INPUTS:             A:  n-dimensional array
-;                     B:  n-dimensional array
+; INPUTS:             A::  n-dimensional array
+;                     B::  n-dimensional array
 ;
 ;
 ;
 ; OPTIONAL INPUTS:
-;                     INDEX: the index of the array over which A and B 
+;                     INDEX:: the index of the array over which A and B 
 ;                            should be concatenated (default:0).   
 ;                            The dimension indices of A and B must have 
 ;                            the same range except the choosen index.
@@ -33,17 +34,17 @@
 ;
 ; KEYWORD PARAMETERS:
 ;
-;                     EXTEND: concatenation of A and B over an
+;                     EXTEND:: concatenation of A and B over an
 ;                             additional index at the position of INDEX.
 ;                             The dimensions of A and B must have the
 ;                             same range. 
 ;
-;                     OVERWRITE: if the contents of A and B are
+;                     OVERWRITE:: if the contents of A and B are
 ;                                rejected, this keyword should be 
 ;                                used for faster computations.
 ;
 ; OUTPUTS:
-;                     result: 
+;                     result:: 
 ;                               an array with the concatenation of A and B
 ;
 ;
@@ -54,39 +55,31 @@
 ;  
 ;
 ; EXAMPLE:
-;                     1.Example
-;                                a=indgen(10,20,30)
-;                                b=indgen(10,40,30)
-;                                ;concatenation of a and b over index 1
-;                                c=concat(a,b,1)
-;                                help,c
-;                                ;idl results ----
-;                                ;C  INT = Array[10, 60, 30]
-;
-;                     2.Example
-;                                a=indgen(10,20,30)
-;                                b=indgen(10,20,30)
-;                                ;concatenation of a and b over an
-;                                ;additional index at position 1
-;                                c=concat(a,b,1,/extend)
-;                                help,c
-;                                ;idl results ----
-;                                ;C  INT = Array[10, 2, 20, 30]
-;                                ;now concatenate c and a at index 1
-;                                d=concat(c,a,1)
-;                                help,d
-;                                ;idl results ----
-;                                D   INT = Array[10, 3, 20, 30] 
+;*                     1.Example::
+;*                                a=indgen(10,20,30)
+;*                                b=indgen(10,40,30)
+;*                                ;concatenation of a and b over index 1
+;*                                c=concat(a,b,1)
+;*                                help,c
+;*                                ;idl results ----
+;*                                ;C  INT = Array[10, 60, 30]
+;*
+;*                     2.Example::
+;*                                a=indgen(10,20,30)
+;*                                b=indgen(10,20,30)
+;*                                ;concatenation of a and b over an
+;*                                ;additional index at position 1
+;*                                c=concat(a,b,1,/extend)
+;*                                help,c
+;*                                ;idl results ----
+;*                                ;C  INT = Array[10, 2, 20, 30]
+;*                                ;now concatenate c and a at index 1
+;*                                d=concat(c,a,1)
+;*                                help,d
+;*                                ;idl results ----
+;**                               D   INT = Array[10, 3, 20, 30] 
 ;-     
-; MODIFICATION HISTORY:
-;        $Log$
-;        Revision 1.3  2000/09/29 08:26:30  gabriel
-;             Some header bugs fixed
-;
-;        Revision 1.2  2000/09/28 16:45:21  gabriel
-;             local variables for keyword extend
-;
-;
+
 function concat,A, B, index, extend=extend, overwrite=overwrite
 
 On_ERROR, 2
