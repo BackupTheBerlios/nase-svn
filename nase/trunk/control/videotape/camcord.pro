@@ -46,8 +46,7 @@ Function CamCord, Video, Frame, Anzahl, VERBOSE=verbose
    Default, Anzahl, 1
    If Anzahl ne 1 then message, 'Das "Anzahl"-Argument ist noch nicht implementiert!'
 
-   Template = Make_Array(SIZE=Video.FrameSize)
-   Data = Assoc(Video.unit, Template)
+   Data = Assoc(Video.unit, Make_Array(SIZE=Video.FrameSize, /NOZERO))
 
    Data(Video.FramePointer) = Frame
 
