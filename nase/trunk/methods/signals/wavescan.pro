@@ -136,6 +136,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.9  1998/07/20 14:28:04  gabriel
+;          Da war noch was mit NPARAM
+;
 ;     Revision 1.8  1998/07/20 11:38:17  gabriel
 ;          NPARAMS auf 1 gesetzt
 ;
@@ -166,7 +169,7 @@ FUNCTION wavescan, array,timearr,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,VELCR
                    SAMPLPERIOD=SAMPLPERIOD,NBARR=NBARR,PLOT=PLOT,TRANSP=TRANSP,NULLHYPO=NULLHYPO,PSPLOT=PSPLOT,$
                    FILENAME=filename,VIDREC=vidrec,VIDPLAY=VIDPLAY,XSIZE=XSIZE,YSIZE=YSIZE,VERBOSE=VERBOSE,_EXTRA=e
 
-   IF N_Params() NE 1 THEN Message, 'wrong number of parameters'
+   IF N_Params() LT 1 THEN Message, 'wrong number of parameters'
    IF KEYWORD_SET(vidrec) AND KEYWORD_SET(VIDPLAY) THEN Message, 'recording and playing is not possible'
 
    COMMON wavescan_BLOCK, SHEET_2, PLOTFLAG
