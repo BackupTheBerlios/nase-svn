@@ -25,8 +25,8 @@
 ;
 ; CALLING SEQUENCE:
 ;*My_RFScan = RFScan_Init( [Picture]
-;*                         {,INDW=EingabeDWStruktur | ,WIDTH=..., HEIGHT=...}
-;*                           ,OUTLAYER=...
+;*                         {,INDW=... | ,WIDTH=..., HEIGHT=...}
+;*                         {,OUTLAYER=... | OUTWIDTH=..., OUTHEIGHT=...}
 ;*                         [,/SHIFT_VERTICAL]
 ;*                         [,/SHIFT_HORIZONTAL]
 ;*                         [,/AUTO_SINGLEDOT
@@ -49,11 +49,16 @@
 ;    nicht direkt über DelayWeigh
 ;    geschieht, sondern beispielsweise über eine
 ;    mathematische Operation (Faltung), kann alternativ
-;    auch direkt Bildbreite und -höhe in WIDTH und
-;    HEIGHT übergeben werden.
-;  OUTLAYER::
+;    auch direkt Bildbreite und -höhe in <*>WIDTH</*> und
+;    <*>HEIGHT</*> übergeben werden.
+;
+;  OUTLAYER | OUTWIDTH, OUTHEIGHT::
 ;    Der Layer, für dessen Neuronen die RFs bestimmt
-;    werden sollen.
+;    werden sollen. If no NASE-Layer is used to represent the output
+;    (e.g., because the neuron output is not computed via the NASE
+;    kernel, but by some other means), the dimensions may
+;    alternatively be specified using the <*>OUTWIDTH</*> and
+;    <*>OUTHEIGHT</*> keywords.
 ;  
 ;
 ; OPTIONAL INPUTS:
@@ -227,6 +232,7 @@
 
 Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
                WIDTH=width, HEIGHT=height, $
+               OUTWIDTH=outwidth, OUTHEIGHT=outheight, $
                AUTO_SINGLEDOT=auto_singledot, $
                AUTO_RANDOMDOTS=auto_randomdots, $
                AUTO_VERTICALEDGE=auto_verticaledge, $
@@ -244,6 +250,13 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
       WIDTH = DWDim(InDW, /SW)
       HEIGHT = DWDim(InDW, /SH)
    endif   
+
+   If keyword_set(OutLayer) then begin
+      OUTWIDTH = LayerWidth(OutLayer)
+      OUTHEIGHT = LayerHeight(OutLayer)
+   endif   
+
+   
 
    ;;------------------> Implementation of AUTO-LINE-MODES:
    If keyword_set(AUTO_HORIZONTALLINE) then begin
@@ -321,7 +334,9 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
    ;;--------------------------------
 
    ;;------------------> DW-Structure for estimated RFs:
-   RFs = InitDW(S_WIDTH = WIDTH, S_HEIGHT=HEIGHT, T_LAYER=OUTLAYER, /OLDSTYLE)
+   RFs = InitDW(S_WIDTH = WIDTH, S_HEIGHT=HEIGHT,$
+                T_Width=OUTWIDTH, T_Height=OUTHEIGHT, $
+                /OLDSTYLE)
    ;;using old style DW-Struct (not SDW) for faster Operation...
    ;;--------------------------------
 
@@ -331,7 +346,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
       
       window, /free, xpos=0, ypos=30, Title="RFScan - Presented Picture", xsize=WIDTH*VISUALIZE(0), ysize=HEIGHT*VISUALIZE(0)
       WinIn = !D.Window
-      window, /free, xpos=WIDTH*VISUALIZE(0)+10, ypos=30, Title="RFScan - Observed Output", xsize=LayerWidth(OutLayer)*VISUALIZE(1), ysize=LayerHeight(OutLayer)*VISUALIZE(1)
+      window, /free, xpos=WIDTH*VISUALIZE(0)+10, ypos=30, Title="RFScan - Observed Output", xsize=OUTWIDTH*VISUALIZE(1), ysize=OUTHEIGHT*VISUALIZE(1)
       WinOut = !D.Window
       ShowWeights, RFs, /RECEPTIVE, Titel="RFScan - Estimated Receptive Fields", ZOOM=VISUALIZE(2), GET_WIN=WinRFs, GET_MAXCOL=MaxCol, GET_COLORMODE=ColorMode
       window, /free, Title="RFScan - Mean Estimated RF", xsize=300, ysize=300
