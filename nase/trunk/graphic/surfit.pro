@@ -23,11 +23,14 @@
 ;
 ; CATEGORY: Darstellung, Miscellaneous
 ;
-; CALLING SEQUENCE: SurfIt, Data_Array [,XPOS] [,YPOS] [,XSIZE]
-;                                      [,YSIZE] [,GROUP] [,JUST_REG]
+; CALLING SEQUENCE: SurfIt, Data_Array [,XPOS] [,YPOS] [,XSIZE] [,YSIZE]
+;                                      [,GROUP [,/MODAL]] [,JUST_REG] [,NO_BLOCK=0]
 ;                                      [,TITLE=Fenstertitel]
 ;                                      [,DELIVER_EVENTS=Array_of_Widget_IDs]
-;                                      [,GET_BASE=Base_ID]        
+;                                      [,GET_BASE=Base_ID]
+;                                      [,PLOT_TITLE=Plottitel]
+;                                      [,/NASE] [,/GRID]
+;                                      [weitere Shade_Surf- bzw. Surface-Parameter, insbesondere SHADES, LEGO...]
 ;
 ; 
 ; INPUTS: Data_Array: Das zu plottende Array
@@ -35,17 +38,38 @@
 ; KEYWORD PARAMETERS: XPOS, YPOS, XSIZE, YSIZE: Die Fenster-Koordinaten, wie üblich
 ;                     GROUP:    Die Widget-ID eines Widgets, das als "Group-Leader" dienen soll:
 ;                               Wird der Group-Leader gekillt, so stirbt auch unser Widget.
+;                     MODAL:    Wenn angegeben, ist das Widget modal,
+;                               d.h. alle anderen Widgets sind
+;                               deaktiviert, solange dieses existiert.
+;                               MODAL erfordert die Angabe eines
+;                               Group-Leaders in GROUP.
 ;                     JUST_REG: Dieses Keyword wird an der XMANAGER weitergereicht.
 ;                               Wird es gesetzt, so wird das Surf-Widget nur angemeldet, aber noch nicht gemanaged.
 ;                               Das ermöglicht es, mehrere solche Widgets anzumelden und dann erst mit dem letzten
 ;                               auch den Manager zu starten, so daß alle gleichzeitig laufen. (Vgl. Beispiel unten.)
+;                     NO_BLOCK: Wird ab IDL 5 an den XMANAGER
+;                               weitergegeben. (Beschreibung
+;                               s. IDL-Hilfe)
+;                               Der Default ist 1, also kein
+;                               Blocken. Wird Blocken gewünscht, so muß
+;                               NO_BLOCK explizit auf 0 gesetzt werden.
 ;                     DELIVER_EVENTS: Hier kann ein Array
 ;                                     von Widget-Indizes übergeben werden, an die alle 
 ;                                     ankommenden Events
 ;                                     weitergereicht werden.
 ;                     TITLE:    Ein Titel für das Fenster. (Default:
 ;                               "Surf It!")
-;                     GET_BASE: Die ID des erstellten Base-Widgets
+;                     PLOT_TITLE: Ein Titel für den Plot. (Default:
+;                                 Fenstertitel, falls angegeben)
+;                     NASE:     Das Array wird als NASE-Array
+;                               behandelt (z.B. keine NONES plotten...)
+;                     GRID:     Als Plot-Prozedur wird "Surface"
+;                               verwendet, sonst "Shade_Surf"
+;
+;                     Alle weiteren Parameter werden geeignet an
+;                     Shade_Surf bzw. Surface weitergegeben.
+;
+; OPTIONAL OUTPUTS: GET_BASE: Die ID des erstellten Base-Widgets
 ;
 ; PROCEDURE: Benutzte Routinen: Default
 ;
@@ -79,11 +103,19 @@
 ;		Urversion erstellt. Sollte eigentlich funktionieren.
 ;
 ;-
+
 Pro SurfIt_Event, Event
  
  WIDGET_CONTROL, Event.Top, GET_UVALUE=info, /NO_COPY
  If Event.Top eq Event.Id then Ev = info else WIDGET_CONTROL, Event.Id, GET_UVALUE=Ev
-  CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
+
+ ;;------------------> NASE-Array:
+ If Keyword_Set(info.NASE) then begin
+    PrepareNasePlot, (size(info.surface))(2), (size(info.surface))(1), get_old=oldplot, NONASE=1-info.nase, CENTER=info.center
+ endif
+ ;;-------------------------------- 
+
+    CASE TAG_NAMES(Event, /STRUCTURE_NAME) OF 
      "WIDGET_BASE": Begin ;Unser Main-Widget wird resized
         info.xsize = Event.X
         info.ysize = Event.Y
@@ -96,8 +128,9 @@ Pro SurfIt_Event, Event
         info.pixwin = !D.Window
 
         wset, info.drawwin ; und dann machen wir doch noch ein Paint
-        shade_surf, info.surface, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0)
-        xyouts, /device, 0, 0, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
+        If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MIN_VALUE=!NONE+1, _EXTRA=info._extra else $
+         call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
+        xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
      End      
      "WIDGET_DRAW": Begin
         Case Event.Type of
@@ -117,8 +150,9 @@ Pro SurfIt_Event, Event
                  info.delta = info.delta*360
                  info.delta(1) = -info.delta(1)
                  wset, info.pixwin
-                 shade_surf, info.surface, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0)
-                 xyouts, /device, 0, 0, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
+                 If info.nase then call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MIN_VALUE=!NONE+1, _EXTRA=info._extra else $
+                  call_Procedure, info.plotproc, info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
+                 xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
                  wset, info.drawwin
                  Device, copy=[0, 0, info.xsize-1, info.ysize-1, 0, 0, info.pixwin]
               endif
@@ -127,6 +161,11 @@ Pro SurfIt_Event, Event
      End
   Endcase
 
+  ;;------------------> NASE-Array:
+  If Keyword_Set(info.NASE) then begin
+     PrepareNasePlot, restore_old=oldplot
+  EndIf
+   ;;------------------
 
    ;;-----------Deliver Events to other Widgets?-------------------------
    deliver_events = info.deliver_events
@@ -151,48 +190,75 @@ Pro SurfIt_Event, Event
   WIDGET_CONTROL, Event.Top, SET_UVALUE=info, /NO_COPY
 End
 
-PRO SurfIt, data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, GROUP=group, JUST_REG=Just_Reg, $
+PRO SurfIt, _data, XPos=xpos, YPos=ypos, XSize=xsize, YSize=ysize, $
+            GROUP=group, JUST_REG=Just_Reg, NO_BLOCK=no_block, MODAL=modal, $
             DELIVER_EVENTS=deliver_events, GET_BASE=get_base, $
-            TITLE=title
+            TITLE=title, PLOT_TITLE=plot_title, $
+            NASE=nase, GRID=grid, SHADES=_shades, _EXTRA=_extra
 
+data = _data                    ;Do not change Contents!
+Default, shades, _shades        ;Do not change Contents!
 Default, xpos, 500
 Default, ypos, 100
 Default, xsize, 500
 Default, ysize, 500   
 Default, deliver_events, [-1]
 Default, title, "Surf It!"
+Default, plot_title, Title
+If plot_title eq "Surf It!" then plot_title = ""
+Default, nase, 0
+If not Keyword_Set(_extra) then _extra = {title: plot_title} else _extra = Create_Struct(_extra, 'title', plot_title)
+center = 0
+If extraset(_extra, "LEGO") then begin
+   grid = 1                     ;lego implies grid
+   center = 1
+endif
+If Keyword_Set(GRID) then plotproc = "SURFACE" else plotproc = "SHADE_SURF"
+Default, no_block, 1
+Default, modal, 0
+
+;;------------------> NASE-Array:
+If Keyword_Set(NASE) then begin
+   data = rotate(data, 3)
+   If Keyword_Set(Shades) then shades = rotate(shades, 3)
+endif
+;;--------------------------------
+PrepareNasePlot, (size(data))(2), (size(data))(1), get_old=oldplot, CENTER=center, NONASE=1-NASE
+
+If Keyword_Set(Shades) then _extra = Create_Struct(_extra, 'shades', shades)
 
 window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
 
   IF N_ELEMENTS(Group) EQ 0 THEN GROUP=0
 
-  junk   = { CW_PDMENU_S, flags:0, name:'' }
-
-
   SurfWidget = WIDGET_BASE(GROUP_LEADER=Group, $
-      MAP=1, $
-      TITLE=title, $
-      UVALUE={Widget        : "Main", $
-              surface       : data, $
-              Button_Pressed: (0 eq 1), $ ;FALSE
-              Press_x       :0, $
-              Press_y       :0, $
-              CurrentPos    :[30.0, 30.0, 0.0], $
-              delta         :[0.0, 0.0, 0.0], $; Diese Arrays haben nur der Bequemlichkeit halber drei Elemente...
-              pixwin        :!D.Window, $
-              drawwin       :0, $ ;still unknown!
-              xsize         :xsize, $
-              ysize         :ysize, $
-              deliver_events:deliver_events $
-             }, $
-      /NO_COPY, $
-;      XSIZE=xsize, $
-;      YSIZE=ysize, $           ;Will have natural-Size (auto)
-      XOFFSET=xpos, $
-      YOFFSET=ypos, $
-      /COLUMN, $
-      SPACE=10, $
-      /TLB_SIZE_EVENTS)
+                           MODAL=modal, $
+                           MAP=1, $
+                           TITLE=title, $
+                           UVALUE={Widget        : "Main", $
+                                   surface       : data, $
+                                   Button_Pressed: (0 eq 1), $ ;FALSE
+                                   Press_x       :0, $
+                                   Press_y       :0, $
+                                   CurrentPos    :[30.0, 30.0, 0.0], $
+                                   delta         :[0.0, 0.0, 0.0], $ ; Diese Arrays haben nur der Bequemlichkeit halber drei Elemente...
+                                   pixwin        :!D.Window, $
+                                   drawwin       :0, $ ;still unknown!
+                                   xsize         :xsize, $
+                                   ysize         :ysize, $
+                                   deliver_events:deliver_events, $
+                                   plot_title    :plot_title, $
+                                   nase          :nase, $
+                                   plotproc      :plotproc, $
+                                   center        :center, $
+                                   _extra        :_extra $
+                                  }, $
+                           /NO_COPY, $
+                           XOFFSET=xpos, $
+                           YOFFSET=ypos, $
+                           /COLUMN, $
+                           SPACE=10, $
+                           /TLB_SIZE_EVENTS)
 
   Draw =  WIDGET_DRAW(SurfWidget, $
                       COLORS=256, $
@@ -212,13 +278,19 @@ window, /free, /pixmap, colors=256, xsize=xsize, ysize=ysize
   WIDGET_CONTROL, SurfWidget, SET_UVALUE=info, /NO_COPY
   
   wset, drawwin
-  shade_surf, data
-  xyouts, /device, 0, 0, "AX="+string(30.0)+"      AZ="+string(30.0)
+  If Keyword_Set(NASE) then call_Procedure, plotproc, data, Title=plot_title, MIN_VALUE=!NONE+1, _EXTRA=_extra else $
+   call_Procedure, plotproc, data, Title=plot_title, _EXTRA=_extra
+  xyouts, /device, 10, 10, "AX="+string(30.0)+"      AZ="+string(30.0)
 
   get_base = SurfWidget
 
-  If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, /NO_BLOCK $
+  If fix(!VERSION.Release) ge 5 then XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg, NO_BLOCK=no_block $
   else XMANAGER, 'SurfIt', SurfWidget, JUST_REG=Just_Reg
  
-
+  ;;------------------> NASE-Array:
+  If Keyword_Set(NASE) then begin
+     PrepareNasePlot, restore_old=oldplot
+  EndIf
+   ;;------------------
+   
 END
