@@ -12,8 +12,6 @@
 ;
 ; INPUTS: Matrix: Eine DW-Struktur
 ;
-; OPTIONAL INPUTS: ---
-;
 ; KEYWORD PARAMETERS: PROJECTIVE(FROMS) / RECEPTIVE(TOS) :
 ;                                   Gibt an, ob ueber einlaufende oder
 ;                                   auslaufende Verbindugen gemittelt
@@ -44,6 +42,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1997/12/12 12:57:42  thiel
+;              Middleweights arbeitet jetzt auch mit
+;              Handles auf DW-Strukturen.
+;
 ;       Revision 1.5  1997/10/30 13:01:21  kupper
 ;              PROJECTIVE, RECEPTIVE als Alternative zu TOS, FROMS eingeführt.
 ;
@@ -61,8 +63,11 @@
 
 
 
-FUNCTION MiddleWeights, _Matrix, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
+FUNCTION MiddleWeights, __Matrix, FROMS=Froms, TOS=Tos, WRAP=Wrap, $
                         PROJECTIVE=projective, RECEPTIVE=receptive
+
+   Handle_Value, __Matrix, _Matrix, /NO_COPY 
+
 
    Default, FROMS, PROJECTIVE
    Default, TOS, RECEPTIVE
@@ -120,6 +125,10 @@ Endif Else Begin
         end
     end
     EndElse
+
+
+Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
+
 
 RETURN, middle/double(sum)
 
