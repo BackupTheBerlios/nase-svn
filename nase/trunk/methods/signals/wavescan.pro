@@ -106,17 +106,20 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1998/05/12 17:55:24  gabriel
+;          Falsches KEYWORD in Funktion (TRANSP ergaenzt)
+;
 ;     Revision 1.1  1998/05/12 13:14:05  gabriel
 ;          Geburt war schwer
 ;
 ;
 ;-
-FUNCTION wavescan, array,timearr,dim,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,WAVECRIT=WAVECRIT,ELDIST=ELDIST,$
-              SAMPLPERIOD=SAMPLPERIOD,NEIGHBORS=NEIGHBORS,PLOT=PLOT,AMPLITUDE=AMPLITUDE
+FUNCTION wavescan, array,timearr,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,WAVECRIT=WAVECRIT,ELDIST=ELDIST,$
+              SAMPLPERIOD=SAMPLPERIOD,NEIGHBORS=NEIGHBORS,PLOT=PLOT,AMPLITUDE=AMPLITUDE,TRANSP=TRANSP
    COMMON wavescan_BLOCK, SHEET_1, SHEET_2 ,PLOTFLAG
 
    DEFAULT,Plotflag,0
-   DEFAULT,dim,2
+   
    DEFAULT,WSIZE,128   
    DEFAULT,STEPSIZE,WSIZE/16
    DEFAULT,SAMPLPERIOD,0.001
@@ -131,7 +134,7 @@ FUNCTION wavescan, array,timearr,dim,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZ
    ENDIF  
 
    work_array = array
-   IF dim EQ 1 THEN work_array =  transpose(array)
+   IF set(TRANSP) THEN work_array =  transpose(array)
    datas = size(work_array)
 
    DEFAULT,NEIGHBORS,datas(2)
@@ -253,33 +256,33 @@ FUNCTION wavescan, array,timearr,dim,COUNT=COUNT,FBAND=FBAND,WSIZE=WSIZE,STEPSIZ
 END
 
 
-t_size = 1000                          ;;   Laenge der Messung [ms]
-m_size = 7                             ;; Anzahl der Messpunkte
-SAMPLPERIOD = 2.                        ;; 1/Samplefrequenz [ms] 
-fr = 50.                               ;;Frequenz des Inputs Hz 
-n_size = 51                            ;;Laenge des Wellen-Signals [ms]
-ushift = 10                           ;;kuenstlicher Phasenversatz [ms]
+;t_size = 1000                          ;;   Laenge der Messung [ms]
+;m_size = 7                             ;; Anzahl der Messpunkte
+;SAMPLPERIOD = 2.                        ;; 1/Samplefrequenz [ms] 
+;fr = 50.                               ;;Frequenz des Inputs Hz 
+;n_size = 51                            ;;Laenge des Wellen-Signals [ms]
+;ushift = 10                           ;;kuenstlicher Phasenversatz [ms]
 
-;; Einheiten anpassen
-ushift = ushift /SAMPLPERIOD 
-t_size = t_size /SAMPLPERIOD 
-;; Signal erzeugen
-n_size = FLOOR(n_size/SAMPLPERIOD)
-xh = findgen(n_size)
-w = 0.54 - 0.46*Cos(2*!Pi*xh/(n_size-1))
-cos_input = (cos(2.*!PI*fr*SAMPLPERIOD *xh/1000))   *w 
-;; Einheiten anpassen
-SAMPLPERIOD = SAMPLPERIOD /1000.
+;;; Einheiten anpassen
+;ushift = ushift /SAMPLPERIOD 
+;t_size = t_size /SAMPLPERIOD 
+;;; Signal erzeugen
+;n_size = FLOOR(n_size/SAMPLPERIOD)
+;xh = findgen(n_size)
+;w = 0.54 - 0.46*Cos(2*!Pi*xh/(n_size-1))
+;cos_input = (cos(2.*!PI*fr*SAMPLPERIOD *xh/1000))   *w 
+;;; Einheiten anpassen
+;SAMPLPERIOD = SAMPLPERIOD /1000.
 
-;;SignalArray erzeugen
-input = dblarr(t_size,m_size)
-;; bisschen Rauschen
-noise = randomn(S,t_size,m_size)/1000.
+;;;SignalArray erzeugen
+;input = dblarr(t_size,m_size)
+;;; bisschen Rauschen
+;noise = randomn(S,t_size,m_size)/1000.
 
-for i = 0 , m_size-1 do begin
-   input(200+i*ushift:200+n_size+i*ushift-1,i)=  cos_input(*)
-endfor
-input=input+noise
-erg = wavescan( input,COUNT=COUNT,FBAND=[35,65],SAMPLPERIOD=SAMPLPERIOD,/PLOT)
+;for i = 0 , m_size-1 do begin
+;   input(200+i*ushift:200+n_size+i*ushift-1,i)=  cos_input(*)
+;endfor
+;input=input+noise
+;erg = wavescan( input,COUNT=COUNT,FBAND=[35,65],SAMPLPERIOD=SAMPLPERIOD,/PLOT)
 
-END
+;END
