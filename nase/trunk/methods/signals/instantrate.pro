@@ -25,8 +25,8 @@
 ;* rate = Instantrate( spikes [,SAMPLEPERIOD=...]  
 ;*                            [,/GAUSS] [,SSIZE=...] [,SSHIFT=...]
 ;*                            [,TVALUES=...] [,TINDICES=...] 
-;*                            [,AVERAGE=...] [/MEMORYSAVE)
-;
+;*                            [,AVERAGE=...] 
+;*                            [,/MEMORYSAVE][,/CENTER])
 ;
 ; INPUTS: 
 ;  spikes:: A twodimensional binary array whose entries NE 0 are
@@ -53,7 +53,13 @@
 ;  /MEMORYSAVE:: Uses a loop for computing the firing rates seperately
 ;                for each neuron. This is slower, but needs less
 ;                memory than working with the whole
-;                <*>spikes</*>-array at once. Default: <*>MEMORYSAVE=0</*>. 
+;                <*>spikes</*>-array at once. Default:
+;                <*>MEMORYSAVE=0</*>.
+;  /CENTER:: Center the sliding spike count window such that the spike
+;            rate at time <*>t</*> is computed by counting the spikes
+;            in the interval <*>[t-ssize/2,t+ssize/2[</*>. If
+;            <*>CENTER</*> is not set, then the interval <*>[t,t+ssize[</*>
+;            is used. Default: <*>CENTER=1</*>.
 ;
 ; OUTPUTS: 
 ;  rate:: Twodimensional array, containing the firing rates at the
@@ -103,8 +109,10 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
                       , SSIZE=ssize, SSHIFT=sshift $
                       , TVALUES=tvalues, TINDICES=tindices $
                       , AVERAGE=average, GAUSS=gauss $
+                      , CENTER=center $
                       , MEMORYSAVE=memorysave
 
+   Default, center, 1
    Default, memorysave, 0
    Default, gauss, 0
    Default, sampleperiod, 0.001
@@ -129,34 +137,40 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
       gausslength = 8*__ssize
       gaussx = FIndGen(gausslength)-gausslength/2
       mask = Exp(-gaussx^2/2./__ssize^2)/__ssize/sqrt(2*!PI)
-      rates = Convol(Float(nt), mask, /EDGE_TRUNC)/sampleperiod
+      rates = Convol(Float(nt), mask, /EDGE_TRUNC, CENTER=center)/sampleperiod
    ENDIF ELSE BEGIN
       ;; Smooth() works faster and is equivalent to convolution with
       ;; rectangular array
       ;; rates = Smooth(Float(nt), [__ssize, 1], /EDGE_TRUNC)/sampleperiod
       ;; works in IDL5.6, but not IDL5.4???
 
-      ;; this version uses 1dim smoothing and correctly computes rates
-      ;; at edges by adding 0s
-      addlength = __ssize
-      add = FltArr(addlength, snt[2])
-
-      rates = [add, Float(nt), add]
-      
       IF Keyword_Set(MEMORYSAVE) THEN BEGIN
+         ;; compute rates for each neuron seperately to save memory.
+         ;; Add 0s at beginning and end to avoid Smooth adding the
+         ;; first and last value on its own
+         rates = Make_Array(SIZE=[snt[0:2], 4, snt[4]], /NOZERO)
          FOR i=0, snt[2]-1 DO BEGIN
-            rates(*, i) = Smooth(rates(*, i), 2*__ssize)/sampleperiod
+            IF NOT Keyword_Set(CENTER) THEN $
+             rates[*, i] = NoRot_Shift((Smooth([0., Float(nt[*, i]), 0.], 2*__ssize, /EDGE_TRUNC)/sampleperiod)[1:snt[1]], __ssize) $
+            ELSE $
+            rates[*, i] = (Smooth([0., Float(nt[*, i]), 0.], 2*__ssize, /EDGE_TRUNC)/sampleperiod)[1:snt[1]]
          ENDFOR
       ENDIF ELSE BEGIN
+         ;; this version uses 1dim smoothing and correctly computes rates
+         ;; at edges by adding 0s
+         addlength = __ssize
+         add = FltArr(addlength, snt[2])
+         rates = [add, Float(nt), add]
          rates = Reform(rates, snt[4]+(addlength*2*snt[2]), /OVERWRITE)
          rates = Smooth(rates, 2*__ssize)/sampleperiod
          rates = Reform(rates, snt[1]+addlength*2, snt[2], /OVERWRITE)
+         i1 = LIndGen(snt[1])+addlength
+         rates = rates[[i1], *]
+         IF NOT Keyword_Set(CENTER) THEN $
+          IF snt[0] EQ 1 THEN rates = NoRot_Shift(rates, __ssize) $
+         ELSE rates = NoRot_Shift(rates, __ssize, 0)
       ENDELSE ;; Keyword_Set(MEMORYSAVE)
-
-      
-      i1 = LIndGen(snt[1])+addlength
-      rates = (Temporary(rates))[[i1], *]
-
+     
       ;; old version: beware of edge effects if first or last entry is
       ;; a spike
       ;; mask = FltArr(2*__ssize+1)+1./(2.*__ssize+1)
@@ -164,7 +178,8 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
 
    ENDELSE ;; Keyword_Set(GAUSS)
 
-   rates = (Temporary(rates))[tindices, *]
+   IF __sshift NE 1 THEN $
+   rates = rates[tindices, *]
 
    IF snt[0] NE 1 THEN $
     average= Total(rates,2)/snt[2] $ ;; two dimensional array
