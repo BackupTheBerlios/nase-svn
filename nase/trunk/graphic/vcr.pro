@@ -1,102 +1,74 @@
 ;+
-; NAME:               VCR
+; NAME:
+;  VCR
 ;
+; VERSION:
+;  $Id$
+; 
 ; AIM:
 ;  Interactively display animated timesequence of one- or
 ;  two-dimensional array data.
 ;
-; PURPOSE:            Display of a 1- or 2-dimensional sequence with
-;                     controls similar to those of a videoplayer (not
-;                     recorder!).
-;                     One can find a similar routine in IDL
-;                     (CW_ANIMATE, at least suitable for 2D
-;                     sequences). Unfortunately this routine has the following
-;                     disadvantages:
-;                         - it takes an eternity to initialize for long
-;                           sequences
-;                         - at long sequences it is impossible to jump
-;                           to particular time steps
-;                         - if you may want to zoom it will engage a huge amount of memory 
-;                     VCR displays 2D-sequences via TV (and partners),
-;                     for 1D-sequences it uses the PLOT procedure.
+; PURPOSE:
+;  Display of a 1- or 2-dimensional sequence with
+;  controls similar to those of a videoplayer (not
+;  recorder!).<BR>
+;  One can find a similar routine in IDL
+;  (<C>CW_ANIMATE</C>, at least suitable for 2D
+;  sequences). Unfortunately this routine has the following
+;  disadvantages:<BR>
+;  * it takes an eternity to initialize for long sequences <BR>
+;  * with long sequences it is impossible to jump to particular time
+;    steps <BR>
+;  * if you may want to zoom it will engage a huge amount of memory 
+;    <*>VCR</*> displays 2D-sequences via <A>UTV</A> (and partners),
+;    for 1D-sequences it uses the <C>Plot</C> procedure.
 ;                    
-; CATEGORY:           GRAPHIC NONASE
+; CATEGORY:
+;  Animation
+;  Graphic
+;  Image
 ;
-; CALLING SEQUENCE:   VCR, Sequence [,/NASE] [,/ZOOM] [,DELAY=delay]
-;                     [,TITLE=title] [,/SCALE], [TAUMEMO=taumemo]
+; CALLING SEQUENCE:
 ;
-; INPUTS:             Sequence: either a 3d-Array of the form(x,y,t) or a 2d-Array
-;                               of the form (x,t) 
+; dim(seq) eq 3:
+;* VCR, seq [,TITLE=...] [,DELAY=...]
+;*          [,ZOOM=...] [,/SCALE], [TAUMEMO=...]
+;*
+; dim(seq) eq 2:
+;* VCR, seq [,TITLE=...] [,DELAY=...]
+;*          [,XSIZE=...] [,YSIZE=...]
 ;
-; KEYWORD PARAMETERS: NASE : a correct display of NASE-Layers        
-;                     DELAY: the minimal delay in between 2 frames in
-;                            msec, this will fix just the startvalue,
-;                            you can still change the
-;                            delay by dragging a slider while the
-;                            simulation is running
-;                     TITLE: a titel
+; INPUTS:
+;  seq:: either a 3d array of the form(t,x,y) or a 2d array
+;        of the form (t, x) 
 ;
-;                  3d specific keywords:
-;                     SCALE: Usually the whole video is scaled such
-;                            that one intensity of colour corresponds
-;                            to  one value of the array. SCALE can be used to scale
-;                            every single frame.
-;                   
-;                     ZOOM : One can enlarge the display by the chosen
-;                            zoomfactor.
-;                  TAUMEMO : Set this keyword to receive a decaying
-;                            impression of your video, corresponding to the
-;                            chosen value for the time constant.
-;                  2d specific keywords:
-;                     XSIZE/
-;                     YSIZE: Determines the size of the plot
-;                            (Default: 320x200).  
+; INPUT KEYWORDS:
+;  DELAY:: minimal delay between 2 frames in
+;          msec, this will fix just the startvalue,
+;          you can still change the
+;          delay by dragging a slider while the
+;          simulation is running
+;  TITLE:: you may provide a titel<BR>
 ;
+;  SCALE:: Usually the whole video is scaled such
+;          that one intensity of colour corresponds
+;          to  one value in the array. SCALE can be used to scale
+;          every single frame.
+;  ZOOM :: One can enlarge the display by the chosen zoomfactor.
+;  TAUMEMO :: Set this keyword to receive a decaying
+;             impression of your video, corresponding to the
+;             chosen value for the time constant.
+;   XSIZE, YSIZE:: Determines the size of the plot
+;                  (Default: 320x200).  
 ;
 ; EXAMPLE:
-;           l = RANDOMU(seed,40,10,100)
-;           VCR, l, ZOOM=5, DELAY=150, TITLE='TEST ME', TAUMEMO=2.0
-;           l = RANDOMU(seed,10,2000)
-;           VCR, l
-;
-; MODIFICATION HISTORY:
-;     ohjehohjeh
-;
-;     $Log$
-;     Revision 2.9  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.8  2000/06/09 09:58:22  ziemann
-;           added memory display by using new
-;           keyword TAUMEMO
-;
-;     Revision 2.8  2000/06/07 17:41:00 ziemann    
-;           very hopefully a running decay impression, to be started
-;           by setting the time constant taumemo to a desired value  
-;   
-;     Revision 2.6  1998/08/10 14:10:08  saam
-;           problems with 8bit display hopefully corrected
-;
-;     Revision 2.5  1998/07/21 08:55:48  saam
-;           + corrected wrong maxtime display for (x,t) displaying
-;           + DocHeader for (x,t) arrays
-;
-;     Revision 2.4  1998/07/20 12:56:50  saam
-;           now also displays (x,t) data via plot
-;
-;     Revision 2.3  1998/06/09 08:15:28  saam
-;           new button group for repeated playing
-;
-;     Revision 2.2  1998/06/07 19:54:55  saam
-;           + per video scaling of colortable is implemented and default
-;           + old per frame scaling got the new keyword SCALE
-;
-;     Revision 2.1  1998/06/05 10:15:16  saam
-;           first release
-;
+;* l = RANDOMU(seed,100,40,10)
+;* VCR, l, ZOOM=5, DELAY=150, TITLE='TEST ME', TAUMEMO=2.0
+;* l = RANDOMU(seed,2000,10)
+;* VCR, l
 ;
 ;-
-
 PRO VCR_DISPLAY, UD
 
    Handle_Value, UD._a, a, /NO_COPY
@@ -105,7 +77,7 @@ PRO VCR_DISPLAY, UD
    IF UD.modus EQ 0 THEN BEGIN
       WSet, UD.pm
       !P.Multi = [0,0,1]
-      plot, a(*,UD.t), YRANGE=[UD.min, UD.max]
+      plot, a(UD.t,*), YRANGE=[UD.min, UD.max]
       WSet, UD.did
       Device, COPY=[0,0,UD.xsize-1, UD.ysize, 0, 0, UD.pm]
 
@@ -114,15 +86,15 @@ PRO VCR_DISPLAY, UD
 
       IF UD.ismemory THEN BEGIN
       faktor=EXP(-1.0/UD.taumemo)
-      UD.memo= reform(a(*,*,UD.t))+faktor*UD.memo
+      UD.memo= reform(a(UD.t,*,*))+faktor*UD.memo
       ENDIF ELSE BEGIN
-      UD.memo= reform(a(*,*,UD.t))
+      UD.memo= reform(a(UD.t,*,*))
       ENDELSE 
 
       IF UD.scale THEN BEGIN
-         IF  UD.nase THEN NaseTvScl, UD.memo, STRETCH=ud.zoom ELSE UTvScl, UD.memo, STRETCH=ud.zoom
+         UTvScl, UD.memo, STRETCH=ud.zoom
       END ELSE BEGIN
-         IF  UD.nase THEN NaseTv, UD.memo, STRETCH=ud.zoom ELSE UTv, UD.memo, STRETCH=ud.zoom
+         UTv, UD.memo, STRETCH=ud.zoom
       END
    END
    WSet, oId
@@ -267,14 +239,13 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo
+PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo
 
    On_Error,2 
 
 
   ; COMPLETE COMMAND LINE SYNTAX
   Default, zoom , 1
-  Default, nase , 0
   Default, delay, 500
   Default, title, 'Videoplayer'
   Default, scale, 0
@@ -298,13 +269,8 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   ; DETERMINE WINDOW SIZE
   ; xsize and ysize are already set for 2darrays
   IF S(0) EQ 3 THEN BEGIN
-     xsize = S(1)*zoom
-     ysize = S(2)*zoom
-     IF Keyword_Set(NASE) THEN BEGIN
-        tmp = xsize
-        xsize = ysize
-        ysize = tmp
-     END
+     xsize = S(2)*zoom
+     ysize = S(3)*zoom
   END
   
   ;----->
@@ -313,12 +279,12 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   IF (s(0) EQ 2) THEN BEGIN
      w = xsize
      h = ysize
-     mt = s(2)
+     mt = s(1)
      modus = 0
   END ELSE BEGIN
-     w = s(1)
-     h = s(2)
-     mt = s(3)
+     w = s(2)
+     h = s(3)
+     mt = s(1)
      modus = 1
   END
 
@@ -735,7 +701,6 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
               timeid : FIELDTIME     ,$
                timer : LABEL44       ,$ ;its a trick, a label cant generate a timer event
                play  : 0             ,$
-               nase  : nase          ,$
                scale : scale         ,$
                delay : delay         ,$
                loop  : 0             ,$
