@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.33  2000/10/23 14:04:38  kupper
+;        Changed a debug message to use new DMsg command.
+;
 ;        Revision 1.32  2000/10/06 12:53:18  saam
 ;        rgb now always allocates private colors even if there
 ;        are matching entries in the lower part of the palette
@@ -255,7 +258,7 @@ if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
    ;; ---- NOALLOC --------------------------------------------------------------
    IF Keyword_Set(NOALLOC) THEN BEGIN 
        IF NOT Pseudocolor_Visual() THEN BEGIN
-           Console, "ignoring keyword NOALLOC in true color mode"
+           Dmsg, "ignoring keyword NOALLOC in true color mode"
        END ELSE BEGIN
            ;; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
            myCM = bytarr(!D.Table_Size,3) 
