@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.11  2000/05/17 08:44:06  saam
+;            marginal change
+;
 ;      Revision 1.10  2000/04/06 09:43:27  saam
 ;            enhanced robustness if paramaters (like DWW
 ;            structures) are missing
@@ -181,7 +184,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          curLayer = Handle_Val(P.LW(i))
          tLayer = Handle_Val(P.LW(TSSCL(i)))
          OpenSheet, CSIM_1, i
-         tmp = InitTrainspottingscope(OVERSAMPLING=os, NEURONS=curLayer.w*curLayer.h, TITLE = tLayer.NAME)
+         tmp = InitTrainspottingscope(OVERSAMPLING=os, NEURONS=tLayer.w*tLayer.h, TITLE = tLayer.NAME)
          IF SET(TSSClout) THEN TSSClout = [TSSClout, tmp] ELSE TSSClout = tmp
          CloseSheet, CSIM_1, i
       END
