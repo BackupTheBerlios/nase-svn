@@ -2,6 +2,9 @@
 ; NAME:
 ;  InitVideo()
 ;
+; VERSION:
+;   $Id$
+; 
 ; AIM:
 ;  initializes a video structure
 ;
