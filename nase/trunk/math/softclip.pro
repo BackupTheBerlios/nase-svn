@@ -31,11 +31,11 @@
 ;  This function can be used for restricting values to a given range,
 ;  not by hard clipping, but by softly squashing the values exceeding
 ;  a certain threshold: <BR> 
-;  1. Values in the range [lower,upper] are passed without
+;  1. Values in the range <*>[lower,upper]</*> are passed without
 ;     modification. <BR> 
-;  2. Values in the range (upper,oo) are squashed to (upper,top) by
+;  2. Values in the range <*>(upper,oo)</*> are squashed to <*>(upper,top)</*> by
 ;     the upper half of a fermi function. (See <A>Fermi()</A>.) <BR> 
-;  3. Values in the range (-oo,lower) are squashed to (bottom,lower)
+;  3. Values in the range <*>(-oo,lower)</*> are squashed to <*>(bottom,lower)</*>
 ;     by the lower half of a fermi function.
 ;
 ; CATEGORY:
