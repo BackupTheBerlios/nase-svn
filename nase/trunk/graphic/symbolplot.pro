@@ -1,0 +1,207 @@
+;+
+; NAME: SymbolPlot
+;
+; PURPOSE: Darstellung eines Arrays auf dem Bildschirm in allerlei
+;          hübscher und erbaulicher Weise...
+;          Die Arraywerte werden in der Symbolgröße codiert.
+;          Farb- und Orientierungswerte können überlagert werden.
+;
+; CATEGORY: Graphic, Visualisierung
+;
+; CALLING SEQUENCE: SymbolPlot, Array [,/OPLOT]
+;                               [,POSSYM = SymbolIndex] [,NEGSYM = SymbolIndex]
+;                               [,POSCOLOR = color] [,NEGCOLOR = color] [,COLORS = ColorIndexArray] [,/NASCOL]
+;                               [,POSORIENT= angle] [,NEGORIENT= angle] [,ORIENTATIONS=OrientArray] [,/RAD] [,/DIRECTION] [,/FILL]
+;                               [,/NASE] [,/NOSCALE]
+;                               [,THICK = LinienDicke]
+;                               [other Plot-Parameters]
+;
+; INPUTS: Array: Das zu plottende Array.
+;                Wird /NOSCALE angegeben, so sollten alle Werte im Bereich [-1,+1] liegen.
+;
+; OPTIONAL INPUTS: POSSYM: Das Symbol, das für positive Werte verwendet wird.
+;                          Default: leeres Kästchen.
+;                  NEGSYM: Das Symbol, das für positive Werte verwendet wird.
+;                          Default: X.
+;
+;                  zusätzlich zu den normalen IDL-Symbolen kennt SymbolPlot noch
+;                  das Symbol Nr.9, ein ausgefülltes Kästchen.
+;                  Es gibt also Folgende vordefinierte Symbole:
+;                     1	Plus sign (+)	
+;                     2	Asterisk (*)	
+;                     3	Period (.)	
+;                     4	Diamond	
+;                     5	Triangle	
+;                     6	Square	
+;                     7	X	
+;                     8	User-defined. See USERSYM procedure. (Standard-IDL)
+;                     9     Filled Square.
+;
+;                POSCOLOR: Die Farbe, mit der positive Werte geplottet werden.
+;                          Default: !P.COLOR.
+;                NEGCOLOR: Die Farbe, mit der positive Werte geplottet werden.
+;                          Default: RGB("red", /NOALLOC).
+;                  COLORS: Ein Array mit den gleichen Ausmaßen wie "Array", das für jedes Element
+;                          den zu verwendenden Farbindex enthält.
+;                          (Man beachte, daß hier -hoffentlich- auch auf TrueColor-Displays die Farbtabelle 
+;                          benutzt wird).
+;                          NEG/POSCOLOR wird dann ignoriert.
+;
+;               POSORIENT: Wenn angegeben, für positive Werte ein Orientierungs-/Richtungssymbol
+;                          mit entsprechendem Winkel benutzt (vgl. <A HREF="#ORIENTSYM">OrientSym</A>).
+;                          POSSYM wird dann ignoriert.
+;               NEGORIENT: Wenn angegeben, für negative Werte ein Orientierungs-/Richtungssymbol
+;                          mit entsprechendem Winkel benutzt  
+;                          NEGSYM wird dann ignoriert.
+;            ORIENTATIONS: Ein Array mit den gleichen Ausmaßen wie "Array", das für jedes Element
+;                          die zu verwendende Orientierung enthält.
+;                          POS/NEG-SYM/ORIENT werden dann ignoriert.
+;
+;                   THICK: Bei Liniensymbolen die Liniendicke. (Normal ist 1)
+;
+; [other Plot-Parameters]: Solche Dinge wie [X/Y]TITLE u.s.w.
+;
+; KEYWORD PARAMETERS: OPLOT: Das Koordinatensystem wird nicht neu gezeichnet, sondern nur die
+;                            Symbole in das bestehende Fenster geplottet.
+;                    NASCOL: Als Plotfarben wird die gebräuchliche NASE-Farbskalierung verwendet.
+;                            (vgl. <A HREF="#SHOWWEIGHTS_SCALE">ShowWeights_Scale()</A>, <A HREF="nonase/#PLOTTVSCL">PlotTVScl</A>.)
+;                            NEG/POSCOL und COLORS werden dann ignoriert.
+;                       RAD: Wird dieses Schlüsselwort gesetzt, so
+;                            werden alle Winkelangaben als Radiant
+;                            interpretiert, sonst als Grad.
+;                 DIRECTION: Es werden Richtungssymbole generiert
+;                            (Pfeile), sonst Orientierungssymbole
+;                            (gerade Linien).
+;                      FILL: Es werden ausgefüllt Orientierungssymbole verwendet.
+;                      NASE: Die Arrays werden NASEtypisch interpretiert (Hoehe,Breite)
+;                   NOSCALE: Die Werte im Array werden direkt übernommen.
+;                            Sie sollten dann im Bereich [0,1] für positive Arrays und
+;                            im Bereich [-1,1] für positiv/negative Arrays liegen.
+;                            Der Wert 0 hat stets die Symbolgröße 0 (kein Symbol).
+;
+; OUTPUTS: klar!
+;
+; SIDE EFFECTS: Das UserSymbol wird ev. umdefiniert.
+;
+; PROCEDURE: IDL-basiert, Plot, PlotS, UserSym usw.
+;
+; EXAMPLE: Naja, es kann halt ziemlich viel. Man probiere mal:
+;          1. SymbolPlot, Gauss_2d(32,32)
+;          2. ULoadCT,5 & SymbolPlot, Gauss_2d(32,32)-0.5
+;          3. ULoadCT,5 & SymbolPlot, Gauss_2d(32,32)-0.5, POSCOL=255, NEGCOL=255, POSSYM=9, NEGSYM=6
+;          4. ULoadCT,5 & SymbolPlot, Gauss_2d(32,32)-0.5, POSSYM=9, NEGSYM=9
+;          5. SymbolPlot, Gauss_2d(32,32)-0.5, /NASCOL, /NASE, POSSYM=9, NEGSYM=9
+;          Es kann sogar aussehen wie ein PlotTVScl:
+;          6. SymbolPlot, intarr(32,32)+1.5, /NOSCALE, POSSYM=9, NEGSYM=9, COLORS=ShowWeights_Scale(Gauss_2d(32,32)-0.5, /SETCOL), /NASE
+;          7. SymbolPlot, Gauss_2d(32,32)-0.5, POSORIENT=0, NEGORIENT=90
+;          8. SymbolPlot, Gauss_2d(32,32)-0.5, POSORIENT=0, NEGORIENT=90, /DIRECTION, /FILL
+;          9. SymbolPlot, Gauss_2d(32,32)-0.5, /NASE, /NASCOL, ORIENTATIONS=indgen(32,32)/1024.*360, /FILL, /DIRECTION
+;         10. SymbolPlot, Gauss_2d(32,32), POSORIENT=0
+;             SymbolPlot, /OPLOT, 1-Gauss_2d(32,32), POSORIENT=45
+;
+; SEE ALSO: <A HREF="#ORIENTSYM">OrientSym</A>, <A HREF="#PLOTTVSCL">PlotTVScl</A>.
+;
+; MODIFICATION HISTORY:
+;
+;        $Log$
+;        Revision 2.1  1998/05/26 14:42:25  kupper
+;               Neu und wunderschön...
+;
+;-
+
+Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, $
+               POSCOLOR=poscolor, NEGCOLOR=negcolor, COLORS=_colors, NASCOL=nascol, $
+               POSORIENT=posorient, NEGORIENT=negorient, ORIENTATIONS=_orientations, RAD=rad, DIRECTION=direction, $
+               NASE=nase, noscale=noscale, $
+               THICK=thick, FILL=fill, $
+               _EXTRA=_extra
+
+   Default, thick, 0
+   Default, nase, 0
+   Default, possym, 6
+   Default, negsym, 7
+   Default, POSCOLOR, !P.COLOR
+   Default, NEGCOLOR, RGB("red", /NOALLOC)
+
+   If Keyword_Set(NASCOL) then begin
+      If not Keyword_Set(NASE) then message, /INFORM, "/NASCOL-Schlüsselwort gesetzt, aber nicht /NASE - sicher?"
+      _colors = ShowWeights_Scale(_a, /SetCol)
+   Endif
+
+   If Keyword_Set(NASE) then begin 
+      a = rotate(_a, 3)
+      If Set(_colors) then colors = rotate(_colors, 3)
+      If Set(_orientations) then orientations = rotate(_orientations, 3)
+   Endif else begin
+      If Set(_colors) then colors = _colors
+      If Set(_orientations) then orientations = _orientations
+      a = _a
+   Endelse
+
+   If not Keyword_Set(NOSCALE) then a = a/float(max([max(a), -min(a)]))
+   
+   s = size(a)
+   width = s(1)
+   height = s(2)
+
+
+   ;;------------------> Ev. Plotting-Symbol als ausgef. Kästchen oder 
+   ;;                    Richtungsbalken definieren
+   If possym eq 9 then begin
+      usersym, [-1, 1, 1, -1], [-1, -1, 1, 1], /fill
+      possym = 8                ;use user Symbol
+   EndIf
+   If negsym eq 9 then begin
+      usersym, [-1, 1, 1, -1], [-1, -1, 1, 1], /fill
+      negsym = 8                ;use user Symbol
+   Endif
+   ;;--------------------------------
+
+
+   ;;------------------> !X und !Y geeignet setzen
+   PrepareNasePlot, height, width, /OFFSET, NONASE=1-NASE, GET_OLD=oldplot
+   ;;--------------------------------
+
+   ;;------------------> Koordinatensystem plotten
+   If Keyword_Set(OPLOT) then noerase = 1 else noerase = 0
+   plot, [0], /NODATA, NOERASE=noerase, _EXTRA=_extra
+   ;;--------------------------------
+
+   ;;------------------> PlotBereich bestimmen
+   dev00 = Convert_Coord(0, 0, /DATA, /TO_DEVICE)
+   dev11 = Convert_Coord(1, 1, /DATA, /TO_DEVICE)
+   pixelxsize = dev11(0)-dev00(0)
+   pixelysize = dev11(1)-dev00(1)
+   pixelsize = min([pixelxsize, pixelysize])
+   If !D.Name eq "PS" then symsize=pixelsize/250. else $
+    symsize = pixelsize/7.      ;SymSize für Wert 1.0
+   ;;--------------------------------
+
+   ;;------------------> Symbole plotten
+   If !D.Name eq "X" and keyword_set(COLORS) then device, BYPASS_TRANSLATION=0
+
+   For y=1, height do $
+    For x=1, width do begin
+      If a(x-1, y-1) gt 0 then begin
+         If set(COLORS) then col = COLORS(x-1, y-1) else col = poscolor
+         If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+         else If set(POSORIENT) then sym = OrientSym(posorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+         else sym = possym
+      endif
+      If a(x-1, y-1) lt 0 then begin
+         If set(COLORS) then col = COLORS(x-1, y-1) else col = negcolor
+         If set(ORIENTATIONS) then sym = OrientSym(orientations(x-1, y-1), RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+         else If set(NEGORIENT) then sym = OrientSym(negorient, RAD=rad, FILL=fill, THICK=thick, DIRECTION=direction) $
+         else sym = negsym
+      endif
+      If a(x-1, y-1) ne 0 then PlotS, x, y, PSym=-sym, Color=col, SYMSIZE=symsize*abs(a(x-1, y-1)), THICK=thick
+   EndFor
+
+   If !D.Name eq "X" and keyword_set(COLORS) then device, /BYPASS_TRANSLATION
+   ;;--------------------------------
+  
+   ;;------------------> !X und !Y restaurieren
+   PrepareNasePlot, RESTORE_OLD=oldplot
+   ;;--------------------------------
+
+End
