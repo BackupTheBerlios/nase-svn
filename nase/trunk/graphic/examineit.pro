@@ -10,6 +10,7 @@
 ;                                        [,/BOUND]
 ;                                        [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
 ;                                        [,GET_BASE=BaseID]
+;                                        [,DELIVER_EVENTS=Array_of_Widget_IDs]
 ;  
 ; INPUTS: Array: Das zu untersuchende Array (ein numerischer Typ!)
 ;
@@ -61,7 +62,8 @@
 ;             DELIVER_EVENTS: Hier kann ein Array
 ;                             von Widget-Indizes übergeben werden, an die alle 
 ;                             ankommenden Events
-;                             weitergereicht werden.
+;                             weitergereicht werden. (VORSICHT, BUGGY!
+;                             (s.u.))
 ;
 ; RESTRICTIONS: Kann bisher noch keine NASE-Typ-Arrays.
 ;
@@ -80,6 +82,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  1998/03/31 14:39:31  kupper
+;              Allerlei Schlüsselwörter hinzugefügt.
+;       	DELIVER_EVENTS funktioniert noch nicht ganz richtig bei
+;       	verschieden großen Fenstern (Umrechnungsfehler. Abhilfe
+;       	möglicherweise durch ein spezielles "Normalkoordinaten-Event")
+;       	Hab jetzt aber keine Lust, das zu beheben.
+;
 ;       Revision 2.2  1998/03/31 13:38:22  kupper
 ;              Sicherheits-Commit vor Änderung am Event-Handler.
 ;
@@ -128,20 +137,30 @@ end
 
 Pro ExamineIt_Event, Event
    
-   Widget_Control, Event.ID, GET_UVALUE=info, /NO_COPY
+;   Widget_Control, Event.ID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
    
-   case info.name of            ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
+   case TAG_NAMES(Event, /STRUCTURE_NAME) of       
 
-      "tv"   : begin            ;Das tv-Widget
+      "WIDGET_DRAW"   : begin   ;Das tv-Widget
                                 ;       case TAG_NAMES(Event, /STRUCTURE_NAME) of
                                 ;          "WIDGET_TRACKING" : if Event.Enter eq 1 then Widget_Control, Event.ID, /DRAW_MOTION_EVENTS else Widget_Control, Event.ID, DRAW_MOTION_EVENTS=0
                                 ;          "WIDGET_DRAW"    : begin
-         if Event.Type eq 0 then Widget_Control, Event.ID, /DRAW_MOTION_EVENTS ;Button Press
-         if Event.Type eq 1 then Widget_Control, Event.ID, DRAW_MOTION_EVENTS=0 ;Button Release
+         ActWin = !D.Window
+         Widget_Control, Event.Top, GET_UVALUE=topuval
+         tvid = topuval.tv_id
+         Widget_Control, tvID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
+         if Event.Type eq 0 then Widget_Control, tvID, /DRAW_MOTION_EVENTS ;Button Press
+         if Event.Type eq 1 then Widget_Control, tvID, DRAW_MOTION_EVENTS=0 ;Button Release
          
+         ;;------------------> Das ist nötig, damit überlieferte
+         ;;Events richtig ausgewertet werden:
+         ev_n = Convert_Coord(Event.X, Event.Y, /DEVICE, /TO_NORMAL);Umrechnung basiert auf Ausmaßen des Widgets, von dem das Event kommt
+         X = info.xsize*ev_n(0);Umrechnung basiert auf Ausmaßen "unseres" Widgets
+         Y = info.ysize*ev_n(1)
+         ;;--------------------------------
          
-         x_arr =  ( Event.X-info.position(0)-info.zoom/2 ) / info.zoom
-         y_arr =  ( Event.Y-info.position(1)-info.zoom/2 ) / info.zoom
+         x_arr =  ( X-info.position(0)-info.zoom/2 ) / info.zoom
+         y_arr =  ( Y-info.position(1)-info.zoom/2 ) / info.zoom
          x_arr = fix(x_arr) > 0 < (info.width-1)
          y_arr = fix(y_arr) > 0 < (info.height-1)
 
@@ -175,29 +194,49 @@ Pro ExamineIt_Event, Event
          wset, info.row_win     ;Reihe darstellen
          rowpos = info.position
          rowpos(3) = 15*info.zoom-rowpos(1)
-            plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
-             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-             yrange=[rowplotmin, rowplotmax]
-            rowrange = rowplotmax-rowplotmin
-            plots, [x_arr,x_arr], [rowplotmin-rowrange, rowplotmax+rowrange] ;ein (aber nicht zu langer!) Strich
+         plot, info.w(*, y_arr), xrange=[-1, info.width], /XSTYLE, /DEVICE, POSITION=rowpos, XMINOR=info.minor(0), $
+          xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+          yrange=[rowplotmin, rowplotmax]
+         rowrange = rowplotmax-rowplotmin
+         plots, [x_arr,x_arr], [rowplotmin-rowrange, rowplotmax+rowrange] ;ein (aber nicht zu langer!) Strich
 
          wset, info.col_win     ;Spalte darstellen
          colpos = info.position
          colpos(2) = 15*info.zoom-colpos(0)
-            plot, info.w(x_arr, *), indgen(info.height), yrange=[-1, info.height], /YSTYLE, /DEVICE, POSITION=colpos, YMINOR=info.minor(1), $
-             xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
-             xrange=[colplotmin, colplotmax]
-            colrange = colplotmax-colplotmin
-            plots, [colplotmin-colrange, colplotmax+colrange], [y_arr, y_arr]
+         plot, info.w(x_arr, *), indgen(info.height), yrange=[-1, info.height], /YSTYLE, /DEVICE, POSITION=colpos, YMINOR=info.minor(1), $
+          xticklen=1.0, yticklen=1.0, xgridstyle=1, ygridstyle=1, $
+          xrange=[colplotmin, colplotmax]
+         colrange = colplotmax-colplotmin
+         plots, [colplotmin-colrange, colplotmax+colrange], [y_arr, y_arr]
 
-
+         wset, Actwin
                                 ;end
                                 ;       endcase
+         ;;-----------Deliver Events to other Widgets?-------------------------
+         deliver_events = info.deliver_events
+         if deliver_events(0) ne -1 then begin
+            valid = WIDGET_INFO(deliver_events, /VALID_ID)
+            For wid=1, n_elements(deliver_events) do $
+             If valid(wid-1) then begin
+               sendevent = Event
+               sendevent.ID = deliver_events(wid-1)
+               next = deliver_events(wid-1)
+               repeat begin
+                  top = next
+                  next = WIDGET_INFO(top, /PARENT)
+               endrep until next eq 0
+               sendevent.TOP = top
+               sendevent.HANDLER = 0
+               WIDGET_CONTROL, deliver_events(wid-1), SEND_EVENT=sendevent, /NO_COPY
+            EndIf
+         endif
+         ;;-----------End: Deliver Events to other Widgets?-------------------------
+         Widget_Control, tvID, SET_UVALUE=info, /NO_COPY
       end                       ;tv
       
    endcase                      ;info.name
 
-   Widget_Control, Event.ID, SET_UVALUE=info, /NO_COPY
+
 End
 
 Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
@@ -264,15 +303,17 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    WIDGET_CONTROL, text, GET_VALUE=text_win
 
    wset, tv_win
-   plotweights, w, xmargin, ymargin, zoom, GET_POSITION=gp, GET_MINOR=gm
+   plotweights, tv_w, xmargin, ymargin, zoom, GET_POSITION=gp, GET_MINOR=gm
 
    default, bound, 0
+   WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
    WIDGET_CONTROL, tv, SET_UVALUE={name    : "tv", $
                                    width   : w_width, $
                                    height  : w_height, $
                                    zoom    : zoom, $
                                    position: gp, $
                                    minor   : gm, $
+                                   tv_win  : tv_win, $
                                    row_win : row_win, $
                                    col_win : col_win, $
                                    text_win: text_win, $
@@ -280,7 +321,9 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                                    wmax    : max(w), $
                                    wmin    : min(w), $
                                    bound   : bound, $
-                                   deliver_events:deliver_events}
+                                   deliver_events:deliver_events, $
+                                   xsize   : win_width, $
+                                   ysize   : win_height}
 
 ;   wset, row_win
 ;   plot, w(*, w_height/2), xrange=[0, w_width-1], /XSTYLE, POSITION=gp, XMINOR=gm(0)
