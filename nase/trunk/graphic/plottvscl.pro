@@ -47,10 +47,14 @@
 ;          window, xsize=500, ysize=600
 ;          PlotTvScl, W, 0.0, 0.1, XTITLE='X-AXEN-Beschriftungstext', /LEGEND, CHARSIZE=2.0
 ;
-;          
+; FNORD
+;       
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.4  1997/11/28 12:56:15  thiel
+;           Eine sinnlose Aenderung, damit das CVS-WATCH funktioniert.
+;
 ;     Revision 2.3  1997/11/28 12:50:10  thiel
 ;            Die erste scheinbar fertige Version.
 ;
