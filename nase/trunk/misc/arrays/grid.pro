@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/06/28 17:01:23  saam
+;              returns one dimensional in every case, now
+;
 ;        Revision 1.3  2000/06/19 13:26:21  saam
 ;              + removed main part
 ;              + fixed bug if count is not specified
@@ -89,5 +92,5 @@ FOR d=ndim-1,0,-1 DO BEGIN
     END
 END
 
-RETURN, idx
+RETURN, REFORM(idx, N_Elements(idx))
 END
