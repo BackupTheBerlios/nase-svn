@@ -64,7 +64,8 @@
 ;                         jeder verzoegerten Verbindung kann ein Lernpotential zugeordnet werden, Mirko, 4.8.97
 ;                         IDL-bug bei Array-Zuweisung umgangen, Mirko, 4.8.97
 ;                         Delays werden im nicht-Delay-Fall mit [-1,-1] initialisiert. Das ist ebenfalls wegen des Array/Skalar-Bugs, dem auch Mirko schon begegnet war. Rüdiger, 5.8.1997
-;
+;                         Initialisierung der Struktur Matrix nun bei jedem Zeitschritt, damit Gewichte die vorher Null
+;                         waren im foldenden auch wirksam sind, Mirko, 5.8.97
 ;-
 FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_delays,$
                      SOURCE_CL=source_cl, TARGET_CL=target_cl,$ 
@@ -110,7 +111,6 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                     VP      : FLOAT(vp),$
                     DP      : exp(-1.0/FLOAT(taup)),$
                     LP      : lp}
-         DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
       END
       RETURN, DelMat
       
@@ -123,6 +123,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
       IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
       RETURN, DelMat.Weights # In 
    END ELSE BEGIN
+      DelMat.Matrix( WHERE (DelMat.Weights NE 0.0) ) =  1
       tmp = DelMat.Matrix AND Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
       tmp = REFORM(tmp, N_Elements(tmp))
       
