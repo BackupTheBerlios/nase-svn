@@ -31,6 +31,10 @@
 ;  <A>Background</A> respect these
 ;  settings. <*>!TOPCOLOR <= !D.Table_Size-3</*> must apply, default
 ;  value is <*>!D.Table_Size-11</*> reserving 10 colors for NASE.<BR> 
+;  <*>!CHANGEFILENAME</*>:: A string that determines the behavior of
+;  <A>RealFilename()</A>. Possible values at the moment are 'marburg'
+;  (execute filename cleaning according to Marburg UNIX environment)
+;  and 'off' (don't change the filename).<BR> 
 ;  <*>NOTE!</*>:: several variables are still undocumented
 ;
 ; CATEGORY:
@@ -128,8 +132,8 @@ DefSysV, '!CREATEDIR', 0, 0
 ; os independent file separator
 DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
 
-
-
+; Tells "RealFilename" how to work
+DefSysV, '!CHANGEFILENAME', 'marburg'
 
 ; Master Handle
 DefSysV, '!MH', Handle_Create()
