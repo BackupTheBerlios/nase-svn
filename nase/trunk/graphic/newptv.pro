@@ -88,7 +88,11 @@
 ; RESTRICTIONS:
 ;  - The legend title is always on ths same side as the annotation to save
 ;  space. Usage of <*>LEGMID</*> is therefore not recommended, since
-;  the middle annotation would occur in the same place as the title.<BR>
+;  the middle annotation would occur in the same place as the
+;  title.<BR>
+;  - It is not possible to have axis tick values on the the top and
+;  right axes, because they are actively suppressed by
+;  <*>XYTICKFORMAT='noticks'</*>.<BR>  
 ;  <BR>
 ;  Not yet implemented: <BR>
 ;  - optional positioning <BR>
@@ -101,7 +105,7 @@
 ;  sense in PTVScale?<BR>
 ;
 ; PROCEDURE:
-;  Well.
+;  Don't ask.
 ;
 ; EXAMPLE:
 ;* NewPTV, Scl(IndGen(20,5),[0,!topcolor]), FIndGen(20)/50., /LEGEND, XRANGE=[0.1,0.3]
@@ -148,6 +152,7 @@ PRO newPTV, first, second, third $
             , XRANGE=xrange, YRANGE=yrange $
             , XTICKLEN=xticklen, YTICKLEN=yticklen $
             , XMINOR=xminor, YMINOR=yminor $
+            , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
             , TITLE=title, XTITLE=xtitle, YTITLE=ytitle $
             , FITPLOT=fitplot, CORNERS=corners $
             , POLYGON=polygon, ORDER=order $
@@ -157,7 +162,7 @@ PRO newPTV, first, second, third $
             , CHARSIZE=charsize $
             , _EXTRA=_extra
    
-   ;;On_Error, 2
+   On_Error, 2
 
    IF !D.Name EQ 'NULL' THEN RETURN
    
@@ -316,7 +321,7 @@ PRO newPTV, first, second, third $
    ;; save old region, without legend space
    oldreg = Region()
 
-   ;; reserve space for legend to the right of the plot.
+   ;; reserve space for legend to the right of the plot and for omargins.
    !P.REGION = Region()-[0,0,(RegionSize())(0)*legmargin,0]
 
    ;; Now determine the total plotting area minus the legend space,
@@ -462,11 +467,13 @@ PRO newPTV, first, second, third $
    Axis, 23., yo, XAXIS=0, /NORMAL, XSTYLE=1 $
     , XTICKINTERVAL=xtinter, XTICKS=xticks, XTICKNAME=xtickname $
     , XMINOR=xminor, XTICKLEN=xticklen*yfrac, XTITLE=xtitle $
+    , XTICKFORMAT=xtickformat $
     , CHARSIZE=charsize
 
    Axis, xo, 23., YAXIS=0, /NORMAL, YSTYLE=1 $
     , YTICKINTERVAL=ytinter, YTICKS=yticks, YTICKNAME=ytickname $
     , YMINOR=yminor, YTICKLEN=yticklen*xfrac, YTITLE=ytitle $
+    , YTICKFORMAT=ytickformat $
     , CHARSIZE=charsize
 
    Axis, 23., ye, XAXIS=1, /NORMAL, XSTYLE=1, XTICKFORMAT='noticks' $
