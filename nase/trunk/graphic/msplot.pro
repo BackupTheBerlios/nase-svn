@@ -9,7 +9,7 @@
 ;  Plot error values as a colored area around data.
 ;  
 ; PURPOSE:
-;  MSPLot plots onedimensional data and depicts supplied error values
+;  <*>MSPLot</*> plots onedimensional data and depicts supplied error values
 ;  by drawing a colored area around the data plot.
 ;  
 ; CATEGORY:
@@ -19,23 +19,24 @@
 ;*  MSPlot [,x] ,mean ,sd 
 ;*         [,MCOLOR=...] 
 ;*         [,SDCOLOR=...]
+;*         [,_EXTRA=...]
 ;
 ;  
 ; INPUTS:
-;  mean:: onedimensional array containing data
-;  sd:: array containing corresponding error values
+;  mean:: Onedimensional array containing data.
+;  sd:: Array containing corresponding error values.
 ;  
 ; OPTIONAL INPUTS:
-;  x:: abscissa values corresponding to mean/sd (equidistant, 0..n-1)
+;  x:: Abscissa values corresponding to mean/sd (equidistant, 0..n-1).
 ;
 ; INPUT KEYWORDS:
-;  mcolor:: colourindex used for plotting the data (default: white)
-;  sdcolor:: colourindex used to draw error area (default: darkblue)  
-;  other input keywords:: passed to the underlying Plot-and
-;   Axis-procedures.
+;  MCOLOR:: Colorindex used for plotting the data (default: white).
+;  SDCOLOR:: Colorindex used to draw error area (default: darkblue).  
+;  _EXTRA:: Passed to the underlying <*>Plot</*> and <*>Axis</*> procedures.
 ;  
 ; RESTRICTIONS:
-;  X- and YTITLE can only be plotted at left and bottom margins.
+;  X-, YTITLE and X-, YTICKFORMAT can only used for left and bottom
+;  axes, labeling of right and top axes is suppressed.
 ;
 ; PROCEDURE:
 ;  + plot empty coordinate system<BR>
@@ -109,6 +110,8 @@ PRO MSPLOT, z, zz, zzz $
    IF set(e) THEN BEGIN
       DelTag, e, 'xtitle'
       DelTag, e, 'ytitle'
+      DelTag, e, 'xtickformat'
+      DelTag, e, 'ytickformat'
    ENDIF
 
    Axis, XRANGE=xrange, XAXIS=1, XTICKN=emptytickn, _EXTRA=e
