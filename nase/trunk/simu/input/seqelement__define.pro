@@ -64,7 +64,7 @@
 ;*>
 ;
 ; SEE ALSO:
-;  <A>seqobject__define</A>
+;  <A>seqobject__define</A>, <A>seqobjinput__define</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,

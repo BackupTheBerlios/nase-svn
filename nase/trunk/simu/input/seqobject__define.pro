@@ -58,7 +58,7 @@
 ;*>
 ;
 ; SEE ALSO:
-;  <A>seqelement__define</A>
+;  <A>seqelement__define</A>, <A>seqobjinput__define</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
