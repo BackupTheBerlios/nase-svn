@@ -90,6 +90,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  2000/09/05 16:44:49  kupper
+;       min/max output is now also read if BOUND is set.
+;
 ;       Revision 1.5  2000/09/05 16:40:00  kupper
 ;       Changed BOUND indicators to orange color.
 ;
@@ -262,7 +265,11 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          xyouts, /NORMAL, 0.5, 0.2, "COL: "+str(x_arr), ALIGNMENT=0.5
          xyouts, /NORMAL, 0.5, 0.1, "min = "+mincol+"  max = "+maxcol, ALIGNMENT=0.5
          xyouts, /NORMAL, 0.5, 0.5, ALIGNMENT=0.5, "Array("+str(x_nr)+","+str(y_nr)+") = "+str(value)
-         xyouts, /NORMAL, 0.5, 0.4, "min = "+allmin+"  max = "+allmax, ALIGNMENT=0.5
+         if keyword_set(info.bound) then $
+          minmaxcolor = rgb("orange", /noalloc) $
+         else minmaxcolor = !P.Color
+         xyouts, /NORMAL, 0.5, 0.4, "min = "+allmin+"  max = "+allmax, $
+          ALIGNMENT=0.5, color=minmaxcolor
 
          if keyword_set(info.bound) then begin ;Die Begrenzungswerte für die Plots
             rowplotmin = info.range(0)
