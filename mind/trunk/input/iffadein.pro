@@ -24,6 +24,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/14 14:10:09  alshaikh
+;           bugfix
+;
 ;     Revision 1.1  2000/01/14 10:33:43  alshaikh
 ;           first filter ever made
 ;
@@ -64,6 +67,8 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
       END
 
       2: BEGIN
+         pattern = 0.0  
+         print,'INPUT:filter ''iffadein'' stopped'
 
          END
 

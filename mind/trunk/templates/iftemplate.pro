@@ -37,6 +37,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/14 14:08:45  alshaikh
+;           bugfix
+;
 ;     Revision 1.1  2000/01/14 10:35:02  alshaikh
 ;           done
 ;
@@ -89,7 +92,7 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 ;
       2:BEGIN
          
-
+         pattern = 0.0  
          print,'INPUT:filter ''iftemplate'' stopped'
 
       END

@@ -46,6 +46,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/14 14:10:10  alshaikh
+;           bugfix
+;
 ;     Revision 1.1  2000/01/14 13:45:37  alshaikh
 ;           done
 ;
@@ -139,7 +142,7 @@ IF fixed EQ 0 THEN angle =  angle + delta_alpha
 ;
       2:BEGIN
          
-
+         pattern = 0.0
          print,'INPUT:filter ''ifrotgrid'' stopped'
 
       END

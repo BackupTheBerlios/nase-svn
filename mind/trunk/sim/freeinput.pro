@@ -11,6 +11,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/14 14:10:38  alshaikh
+;           bugfix
+;
 ;     Revision 1.2  2000/01/14 10:26:58  alshaikh
 ;           NEW: 'EXTERN' input
 ;
@@ -23,16 +26,18 @@ PRO FreeInput, _IN
 
    Handle_Value, _IN, IN, /NO_COPY
 
- 
+IF (IN.TYPE EQ 11) THEN  BEGIN 
 ; free filters
    number_filter =  IN.number_filter
    
    pattern = 0.0
    FOR i=0, number_filter-1 DO BEGIN
       Handle_Value,IN.filters(i),act_filter 
-      pattern = CALL_FUNCTION(act_filter.NAME,MODE=2) 
-      print,'INPUT:Filter ->',act_filter.NAME,'<- stopped'
+      print,'INPUT:Filter ->',act_filter.NAME,'<- freeing'
+      pattern = CALL_FUNCTION(act_filter.NAME,MODE=2,temp_vals=IN.temps(i)) 
+      IF pattern EQ 0 THEN print,'done'
    ENDFOR 
+END 
    
    IF (IN.TYPE EQ 3) THEN Eject, IN.VID, /NOLABEL, /SHUTUP
    IF ExtraSet(IN, 'RECLUN') THEN Eject, IN.RECLUN, /NOLABEL, /SHUTUP
