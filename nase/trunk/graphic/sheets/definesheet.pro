@@ -63,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  1999/06/01 13:46:21  kupper
+;     Fixed bug in PRIVATE_COLORS-option.
+;
 ;     Revision 2.13  1999/06/01 13:41:29  kupper
 ;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
 ;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
@@ -139,7 +142,8 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 y     : !Y    ,$
                 z     : !Z    ,$
                 multi : multi ,$
-                extra : e     }
+                extra : e     ,$ 
+                private_colors : private_colors }
 
    END ELSE IF Keyword_Set(PS) THEN BEGIN
 
@@ -169,8 +173,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 z        : !Z           ,$
                 multi    : multi        ,$
                 extra    : e            ,$
-                open     : 0            ,$
-                private_colors : private_colors }
+                open     : 0 }
       Set_Plot, 'X'
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN
