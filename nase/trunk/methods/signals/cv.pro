@@ -1,6 +1,8 @@
 ;+
 ; NAME:               CV
 ;
+; AIM:                coefficient of variation (CV) of spiketrains
+;
 ; PURPOSE:            Berechnet den "Coefficient of Variation" (CV) fuer ein oder mehrere
 ;                     Spiketrains. Der CV ist ein Mass fuer die Irregularitaet eines
 ;                     Prozesses und ist definiert als Verhaeltnis von Standardabweichung
@@ -38,10 +40,13 @@
 ;                     -> 1.0 (variiert stark)
 ;       
 ; SEE ALSO:           <A HREF="#ISI">Isi</A>
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 09:59:03  gabriel
+;          AIM tag added , message <> console
+;
 ;     Revision 1.2  1999/04/16 14:00:01  saam
 ;          + numerical instable for mean near zero
 ;          + test of new keyword CRIT
@@ -50,17 +55,17 @@
 ;           inspired by Softky&Koch '93
 ;
 ;
-;-
+;
 FUNCTION CV, suas, MEAN=mean, SDEV=sdev, CRIT=crit
 
    On_Error, 2
 
    Default, crit, 0.01
 
-   IF N_Params() NE 1 THEN Message, 'suas expected!'
+   IF N_Params() NE 1 THEN Console, /fatal, 'suas expected!'
    
    s = SIZE(suas)
-   IF s(0) GT 2 THEN Message, 'one- or two-dimensional array expected'
+   IF s(0) GT 2 THEN Console, /fatal, 'one- or two-dimensional array expected'
 
 
    isih = ISI(suas)

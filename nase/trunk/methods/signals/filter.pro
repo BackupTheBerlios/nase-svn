@@ -1,5 +1,7 @@
 ;+
-; NAME: FILTER
+; NAME:         FILTER
+;
+; AIM:          digital filter for evenly spaced data points
 ;
 ;
 ; PURPOSE: 
@@ -46,11 +48,14 @@
 ;
 ;              Yout = CONVOL(Yin, Coeff)          ;To apply the filter.
 ;
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 10:00:42  gabriel
+;          AIM tag added , message <> console
+;
 ;     Revision 1.2  1998/08/17 16:20:05  gabriel
 ;           Keyword SAMPLPERIOD auf SAMPLEPERIOD umbenannt
 ;
@@ -58,7 +63,7 @@
 ;          First Commit
 ;
 ;
-;-
+;
 FUNCTION filter,flow,fhigh,a,Nterms,SAMPLEPERIOD=SamplePeriod
 
 default,Sampleperiod, 0.001
@@ -70,7 +75,7 @@ nyflow = flow/nyquistfreq
 
 nyfhigh = fhigh/nyquistfreq
 
-IF nyflow GT 1 OR nyfhigh GT 1 THEN message,'flow or fhigh greater than Nyquest-Frequency (1/(2*SamplePeriod))'
+IF nyflow GT 1 OR nyfhigh GT 1 THEN console, /fatal ,'flow or fhigh greater than Nyquest-Frequency (1/(2*SamplePeriod))'
 
 coeff = digital_filter(nyflow,nyfhigh,A,Nterms)
 
