@@ -12,57 +12,72 @@
 ;  <C>GRNTF_ThreshLinear()</C> can be used as a transfer function for
 ;  graded response neurons. It results in a linear transfer as long as
 ;  the input to the neuron is above a given threshold. Otherwise, the 
-;  constant threshold value is returned.
-;
+;  constant threshold value is returned. Graded response neurons generate
+;  a continuous output activation as opposed to pulse coding
+;  neurons. The way in which their membrane potentials are transformed
+;  into their output is determined by a so called transfer
+;  function. Most commonly used are sigmoidal, piecewise linear or
+;  threshold transfer functions.<BR>
+;  <C>GRNTF_ThreshLinear()</C> is normally not used by itself, but by
+;  <A>ProceedLayer_GRN</A>, and it has to be specified during
+;  initialization of a given layer, i.e. as an argument of
+;  <A>InitPara_GRN()</A>. 
+; 
 ; CATEGORY:
 ;  Layers
 ;  NASE
 ;  Simulation
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;* result =  GRNTF_ThreshLinear(m, tfpara)
 ;
 ; INPUTS:
-;  
-;
-; OPTIONAL INPUTS:
-;  
-;
-; INPUT KEYWORDS:
-;  
+;  m:: The argument of the function, the membrane potential or
+;      activation in neural terms.
+;  tfpara:: A structure containing two tags: <*>slope</*> and
+;           <*>threshold</*>.
+;  tfpara.slope:: Factor by which <*>m</*> is multiplied to obtain the
+;                 output that is above threshold.
+;  tfpara.threshold:: Values of <*>m*slope</*> below <*>threshold</*>
+;                     are clipped to <*>threshold</*>.
 ;
 ; OUTPUTS:
+;  result:: <*>tfpara.slope*m > tfpara.threshold</*>
 ;  
-;
-; OPTIONAL OUTPUTS:
-;  
-;
-; COMMON BLOCKS:
-;  
-;
-; SIDE EFFECTS:
-;  
-;
-; RESTRICTIONS:
-;  
-;
 ; PROCEDURE:
-;  
+;  Multiply input by slope and cut off lower part.
 ;
 ; EXAMPLE:
+;  The example shows a neuron whose output is twice its
+;  positive input while negative input is set to zero: 
+;* ug=FltArr(100)
+;* og=FltArr(100)
 ;*
-;*>
+;* tf = {func:'grntf_threshlinear', tfpara:{slope:2.0, threshold:0.0}}
+;* p = InitPara_GRN(tf, TAUF=0., TAUL=0.)
+;*
+;* lg = InitLayer(WIDTH=1, HEIGHT=1, TYPE=p)
+;* 
+;* FOR t=0,99 DO BEGIN
+;*    feed=RandomN(seed)
+;*    InputLayer, lg, FEEDING=Spassmacher(feed)
+;*    ProceedLayer, lg
+;*    LayerState_GRN, lg, potential=p, output=o
+;*    ug(t)=p
+;*    og(t)=o
+;* ENDFOR
+;* 
+;* OPlotMaximumFirst,[[ug],[og]],LINESTYLE=-1,COLOR=[RGB('yellow'),RGB('blue')]
 ;
 ; SEE ALSO:
 ;  <A>InitPara_GRN()</A>, <A>InitLayer_GRN()</A>,
-;  <A>InputLayer_GRN</A>, <A>ProceedLayer_GRN()</A>.
+;  <A>InputLayer_GRN</A>, <A>ProceedLayer_GRN()</A>, <A>LayerState_GRN()</A>.
 ;-
 
 
 
-FUNCTION grntf_threshlinear, m, slope, thresh
+FUNCTION grntf_threshlinear, m, tfpara
 
-   Return, slope*m > thresh
+   Return, tfpara.slope*m > tfpara.threshold
 
 END

@@ -10,7 +10,15 @@
 ;
 ; PURPOSE:
 ;  <C>InitPara_GRN()</C> is used to set the parameter values for a
-;  layer of graded response neurons.
+;  layer of graded response neurons. Graded response neurons generate
+;  a continuous output activation as opposed to pulse coding
+;  neurons. The way in which their membrane potentials are transformed
+;  into their output is determined by a so called transfer
+;  function. Most commonly used are sigmoidal, piecewise linear or
+;  threshold transfer functions. It is possible to create any desired
+;  transfer function, as long as it obeys to certain rules, see
+;  <*>transfunc</*> below and <A>GRNTF_Threshlinear</A> as an
+;  example. 
 ;
 ; CATEGORY:
 ;  Layers
@@ -18,75 +26,78 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
+;* para = InitPara_GRN( transfunc [,TAUF=...][,TAUL=...]
+;*                   [,SIGMA=...][,NOISYSTART=...] )
 ;
 ; INPUTS:
-;  
-;
-; OPTIONAL INPUTS:
-;  
+;  transfunc:: A structure containing the necessary information about
+;              the transfer function that shall be used to compute the neurons'
+;              output activations from their membrane
+;              potentials. <*>transfunc</*> must contain a string
+;              describing the name of the function and a structure in
+;              which the parameters of the function are passed. 
+;* tf = {func:'GRNTF_myfunc', tfpara:{pa1:2.0, pa2:3.0}}
+;              The first argument of <*>GRNTF_myfunc</*> has to be
+;              the mebrane potential, the second one the structure
+;              containing function parameters. Further arguments are not
+;              allowed. See e.g. <A>GRNTF_ThreshLinear()</A>.
 ;
 ; INPUT KEYWORDS:
-;  
+;  TAUF:: Feeding potential decay time constant. Set <*>TAUF=0</*> to
+;         avoid summation (i.e. lowpass filtering) of feeding
+;         input. Default: 10.BIN
+;  TAUL:: Linking potential decay time constant. Set <*>TAUL=0</*> to
+;         avoid summation (i.e. lowpass filtering) of linking
+;         input. Default: 10.BIN
+;  SIGMA:: Standard deviation of noise added to the neurons' membrane
+;          potentials during each simulation step. Default: 0.
+;  NOISYSTART:: Amplitude of random values used to initialize the
+;               feeding and linking potentials. This can be useful to
+;               avoid onset artifacts. Default: 0.
 ;
 ; OUTPUTS:
-;  
-;
-; OPTIONAL OUTPUTS:
-;  
-;
-; COMMON BLOCKS:
-;  
-;
-; SIDE EFFECTS:
-;  
-;
-; RESTRICTIONS:
-;  
+;  para:: Parameter structure including the following tags:
+;*        { info: 'PARA', $
+;*          type: 'GRN', $
+;*          transfunc: transfunc, $
+;*          df: df, $
+;*          dl: dl, $
+;*          tauf: Float(tauf), $
+;*          taul: Float(taul), $
+;*          sigma: sigma, $
+;*          ns: noisystart }
 ;
 ; PROCEDURE:
-;  
+;  Set some defaults, compute decrement from exp-function and generate
+;  structure.
 ;
 ; EXAMPLE:
+;  The example shows a neuron whose output is twice its
+;  positive input while negative input is set to zero: 
+;* ug=FltArr(100)
+;* og=FltArr(100)
 ;*
-;*>
+;* tf = {func:'grntf_threshlinear', tfpara:{slope:2.0, threshold:0.0}}
+;* p = InitPara_GRN(tf, TAUF=0., TAUL=0.)
+;*
+;* lg = InitLayer(WIDTH=1, HEIGHT=1, TYPE=p)
+;* 
+;* FOR t=0,99 DO BEGIN
+;*    feed=RandomN(seed)
+;*    InputLayer, lg, FEEDING=Spassmacher(feed)
+;*    ProceedLayer, lg
+;*    LayerState_GRN, lg, potential=p, output=o
+;*    ug(t)=p
+;*    og(t)=o
+;* ENDFOR
+;* 
+;* OPlotMaximumFirst,[[ug],[og]],LINESTYLE=-1,COLOR=[RGB('yellow'),RGB('blue')]
 ;
 ; SEE ALSO:
-;  <A>InitLayer_GRN()</A>, <A>InputLayer_GRN()</A>.
+;  <A>InitLayer_GRN()</A>, <A>InputLayer_GRN()</A>,
+;  <A>ProceedLayer_GRN()</A>, <A>LayerState_GRN()</A>
+;  <A>GRNTF_ThreshLinear()</A>.
 ;-
-
-;;; look in headerdoc.pro for explanations and syntax,
-;;; or view the NASE Standards Document
-
-
-
-; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 1 enthaelt
-;
-; CATEGORY:             SIMULATION /LAYERS
-;
-; CALLING SEQUENCE:     Para = InitPara_1( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VS=vs] [, TAUS=taus] $
-;                       [, TH0=th0] [SIGMA=sigma] [NOISYSTART=noisystart] [,SPIKENOISE=spikenoise] )
-;
-; KEYWORD PARAMETERS:   tauf       : Feeding-Zeitkonstante
-;                       taul       : Linking-Zeitkonstante
-;                       taui       : Inihibition-Zeitkonstante
-;                       th0        : Schwelle
-;                       sigma      : Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
-;                       noisystart : alle Input-Potential (F,L,I) werden mit gleichverteilten Zufalls-
-;                                    zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
-;                                    th0 angegeben.
-;                       spikenoise : mean spontanous activity in Hz 
-;
-; OUTPUTS:              Para : Struktur namens Para1, die alle Neuronen-Informationen enthaelt, s.u.
-;
-; RESTRICTIONS:         tau? muss > 0.0 sein
-;
-; EXAMPLE:              para1 = InitPara_1(tauf=10.0, vs=1.0)
-;
-
-
-
 
 FUNCTION InitPara_GRN, transfunc, TAUF=tauf, TAUL=taul $
                        , SIGMA=sigma, NOISYSTART=noisystart
