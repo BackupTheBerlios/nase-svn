@@ -79,6 +79,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1999/02/19 14:24:54  gabriel
+;          Handle_Free vergessen
+;
 ;     Revision 1.1  1999/02/19 14:01:48  gabriel
 ;          Damit IDL 3.x Benutzter auch toll transponieren koennen
 ;
@@ -89,7 +92,7 @@ FUNCTION UTRANSPOSE,ARRAY,P
 
    On_Error, 2
    sa = size(array)
-
+   
    IF sa(0) LT 2 THEN message,'Array dimensions must be greater than 1'
    IF sa(0) EQ 2 THEN return, transpose(ARRAY)
    default,P,REVERSE(indgen(sa(0)))
@@ -104,8 +107,9 @@ FUNCTION UTRANSPOSE,ARRAY,P
    indexer = lindgen(maxdim1)
    i_handle1 = lonarr(sa(0))
    i_handle2 = lonarr(sa(0))
+   MH = handle_create()
    FOR I=0L , sa(0)-1 DO BEGIN
-      i_handle1(i) = handle_create(!MH)
+      i_handle1(i) = handle_create(MH)
    ENDFOR
    i_handle2 = i_handle1(P) 
    Handle_Value,i_handle1(maxind1),indexer,/no_copy,/SET 
@@ -196,7 +200,8 @@ FUNCTION UTRANSPOSE,ARRAY,P
          message,'8 Dimensions not supported yet'
       END
    ENDCASE
-      return,TMPARRAY
+   HANDLE_FREE,MH
+   return,TMPARRAY
 END
 
 
