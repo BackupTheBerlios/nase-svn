@@ -39,29 +39,36 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/05/02 22:27:45  thiel
+;               Keyword-Implemetation vergessen!
+;
 ;        Revision 2.1  1998/05/02 21:48:08  thiel
 ;               Endlich ausgelagert!
 ;
 ;-
 
 
-FUNCTION NoNone, w
+FUNCTION NoNone, w, VALUE=value
+
+   Default, value, 0.0
 
    noneindex = where(w EQ !NONE, count)
 
    result = w
    
-   IF count NE 0 THEN result(noneindex) = 0.0
+   IF count NE 0 THEN result(noneindex) = value
 
    Return, result
 
 END
 
 
-PRO NoNone, w
+PRO NoNone, w, VALUE=value
+
+   Default, value, 0.0
 
    noneindex = where(w EQ !NONE, count)
    
-   IF count NE 0 THEN w(noneindex) = 0.0
+   IF count NE 0 THEN w(noneindex) = value
    
 END
