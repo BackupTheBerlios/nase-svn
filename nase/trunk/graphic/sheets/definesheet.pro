@@ -56,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1998/06/03 10:30:54  saam
+;           now ps works with multi
+;
 ;     Revision 2.9  1998/05/19 19:28:12  saam
 ;           also works for null- and perhaps for ps-sheets now
 ;
@@ -125,7 +128,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       Default, color, 0
 
       IF NOT Keyword_Set(FILENAME) THEN filename = 'sheet_'+STRING([BYTE(97+25*RANDOMU(seed,10))])
-
+      
       IF Keyword_Set(VERBOSE) THEN BEGIN
          Print, 'Defining a new Postscript:'
          IF encapsulated THEN ty = 'eps' ELSE ty = 'ps'
@@ -144,6 +147,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 x        : !X           ,$
                 y        : !Y           ,$
                 z        : !Z           ,$
+                multi    : multi        ,$
                 extra    : e            ,$                
                 open     : 0            }
       Set_Plot, 'X'

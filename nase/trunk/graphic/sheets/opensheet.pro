@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  1998/06/03 10:30:55  saam
+;           now ps works with multi
+;
 ;     Revision 2.11  1998/05/18 18:25:11  kupper
 ;            Multi-Sheets implementiert!
 ;
@@ -147,6 +150,8 @@ PRO OpenSheet, _sheet, multi_nr
          Set_Plot, 'ps'
 
          file = sheet.filename
+         IF Set(Multi_Nr) THEN file = file + '_' + STRCOMPRESS(Multi_nr, /REMOVE_ALL)
+
          IF sheet.inc NE 0 THEN BEGIN
             file = file + '_' + STRCOMPRESS(STRING(sheet.inc), /REMOVE_ALL)
             sheet.inc = sheet.inc + 1
