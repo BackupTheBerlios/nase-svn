@@ -7,9 +7,9 @@
 ; CATEGORY: SIMUALTION / CONNECTIONS
 ;
 ; CALLING SEQUENCE: Entweder als Funktion:
-;                      W_neu = NoNone(W_alt, [VALUE=wert])
+;                      W_neu = NoNone(W_alt [,VALUE=wert] [,NONES=Indices)
 ;                   oder als Prozedur:
-;                      NoNone, W_alt, [VALUE=wert]
+;                      NoNone, W_alt [,VALUE=wert] [,NONES=Indices]
 ;
 ; INPUTS: W_alt: Eine Gewichtsmatrix mit !NONE-Eintraegen,
 ;                in der Regel wohl das Ergebnis eines <A HREF="#WEIGHTS">Weights</A>-
@@ -19,7 +19,12 @@
 ;                        Gewichtsmatrix eingetragen bzw zurueckgeliefert wird.
 ;                        Default = 0.0
 ;
-; OUTPUTS: W_neu: Die Gewichtsmatrix, deren !NONE-Eintraege ersetzt wurden.
+; OUTPUTS: W_neu: Die Gewichtsmatrix, deren !NONE-Eintraege ersetzt
+;                 wurden.
+;
+; OPTIONAL OUPUTS: NONES: Die Indices der ersetzten Elemente.
+;                         Enthielt die Matrix keine !NONEs, so wird -1 
+;                         zurückgegeben.
 ;
 ; SIDE EFFECTS: Die Prozedur-Variante veraendert natuerlich die uebergebene
 ;               Matrix.
@@ -39,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/05/27 12:09:53  kupper
+;               NONES-Keyword hinzugefügt.
+;
 ;        Revision 2.2  1998/05/02 22:27:45  thiel
 ;               Keyword-Implemetation vergessen!
 ;
@@ -48,27 +56,27 @@
 ;-
 
 
-FUNCTION NoNone, w, VALUE=value
+FUNCTION NoNone, w, VALUE=value, NONES=nones
 
    Default, value, 0.0
 
-   noneindex = where(w EQ !NONE, count)
-
+   nones = where(w EQ !NONE, count)
+   
    result = w
    
-   IF count NE 0 THEN result(noneindex) = value
+   IF count NE 0 THEN result(nones) = value
 
    Return, result
 
 END
 
 
-PRO NoNone, w, VALUE=value
+PRO NoNone, w, VALUE=value, NONES=nones
 
    Default, value, 0.0
 
-   noneindex = where(w EQ !NONE, count)
+   nones = where(w EQ !NONE, count)
    
-   IF count NE 0 THEN w(noneindex) = value
+   IF count NE 0 THEN w(nones) = value
    
 END
