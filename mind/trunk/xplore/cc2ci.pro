@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/04/07 10:11:46  saam
+;              Keyword in call to CCI changed
+;
 ;        Revision 1.1  2000/04/06 12:24:51  saam
 ;              finally
 ;
@@ -47,7 +50,7 @@ Default, file, ''
 Default, layer, 0
 
 cL= Handle_Val(P.LW(layer))
-IF NOT Set(CC) THEN cc = CCI(IX='.'+cL.File+file, /R)
+IF NOT Set(CC) THEN cc = CCI(FILE='.'+cL.File+file, /R)
 
 S = size(cc)
 dim    = S(0)-1    ; without pshift
