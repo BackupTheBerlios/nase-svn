@@ -44,6 +44,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/03/18 19:51:04  thiel
+;            Bugfix: Funktioniert jetzt auch mit SDW-Strukturen
+;            die nur ein Gewicht enthalten.
+;
 ;     Revision 2.6  1998/03/15 17:20:28  kupper
 ;            DIMENSIONS-Schlüsselwort implementiert.
 ;
@@ -83,14 +87,14 @@ FUNCTION Weights, _DW, DIMENSIONS=dimensions
    sS = DWDim(_DW, /SW) * DWDim(_DW, /SH)
    tS = DWDim(_DW, /TW) * DWDim(_DW, /TH)
 
-   W = Make_Array(tS, sS, /FLOAT, VALUE=!NONE)
+   VW = Make_Array(tS, sS, /FLOAT, VALUE=!NONE)
 
    Handle_Value, _DW, DW, /NO_COPY
-   IF NOT (N_Elements(DW.W) EQ 1 AND DW.W(0) EQ !NONE) THEN BEGIN
-      FOR wi=0l, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
+   IF NOT (N_Elements(DW.W) EQ 1 AND (DW.W)(0) EQ !NONE) THEN BEGIN
+      FOR wi=0l, N_Elements(DW.W)-1 DO VW(DW.c2t(wi),DW.c2s(wi)) = (DW.W)(wi)
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
-   If Keyword_Set(DIMENSIONS) then W = Reform(W, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
-   RETURN, W
+   If Keyword_Set(DIMENSIONS) then VW = Reform(VW, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
+   RETURN, VW
 END
