@@ -34,7 +34,8 @@
 ;* SetColorIndex, 100, 255,0,0     ; sets color index 100 to red
 ;* SetColorIndex, 1, 'dark green'  ; sets color index   1 to a dark green
 ;
-; SEE ALSO: <A>RGB()</A>, <A>Color</A>.
+; SEE ALSO:
+;  <A>RGB</A>, <A>Color</A>
 ;
 ;-
 
