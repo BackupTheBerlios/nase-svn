@@ -67,6 +67,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.18  2001/01/24 13:59:42  kupper
+;        Oops! Was still using greyscale-PS for grey images. Shall not be used
+;        any more!
+;
 ;        Revision 1.17  2001/01/22 19:31:51  kupper
 ;        Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
 ;        shall not be used any longer (according to colormanagement guidelines
@@ -165,11 +169,11 @@ PRO TomWaits_Event, Event
 ;               oldtopcolor = !TOPCOLOR
                If data.colormode eq -1 then color = 1 else color = 0
 ;               If color then !TOPCOLOR = !D.Table_Size-1 ;use full color range!
-               s1 = DefineSheet(/PS, COLOR=color, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
+               s1 = DefineSheet(/PS, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
                OpenSheet, s1
                ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
                CloseSheet, s1
-               s2 = DefineSheet(/PS, /ENCAPS, COLOR=color, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
+               s2 = DefineSheet(/PS, /ENCAPS, XSIZE=15, YSIZE=15, BITS_PER_PIXEL=8, FILENAME="TomWaits_printed_Output")
                OpenSheet, s2
                ShowWeights, /NOWIN, PRINTSTYLE=1-color, data.DW, DELAYS=data.delay, ZOOM=data.zoom, RECEPTIVE=data.receptive, PROJECTIVE=data.projective
                CloseSheet, s2
