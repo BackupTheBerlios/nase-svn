@@ -1,51 +1,57 @@
 ;+
-; NAME:                StrJoin
+; NAME:
+;   StrJoin()
 ;
-; AIM:                 concatenates string array to a single string
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:             Konkatentiert ein Array von Strings zu einem einzigen
-;                      String und fuegt Separatoren zwischen den Strings ein.
-;                      Standard-Separator ist ein Leerzeichen.
+; AIM:
+;   concatenates string array to a single string
+;   (obsolete for IDL 5.3 and larger)
 ;
-; CATEGORY:            STRINGS
+; PURPOSE:
+;   Concatentes an array of strings to single
+;   string and inserts arbitrary separators between
+;   them. Default separator is the empty string.
+;   This routine is obsolete for IDL versions 5.3
+;   and above, but implements the same syntax and
+;   behaviour and therefore it isn't removed for
+;   compatibility reasons.
 ;
-; CALLING SEQUENCE:    res = StrJoin(strs [, sep])
+; CATEGORY:
+;   Strings
 ;
-; INPUTS:              strs: ein Stringarray
+; CALLING SEQUENCE:
+;   res = StrJoin(strs [, sep])
 ;
-; OPTIONAL INPUTS:     sep : ein Separatorstring (default: ' ')
+; INPUTS:
+;   strs :: an array of strings
 ;
-; OUTPUTS:             res: der konkatenierte String
+; OPTIONAL INPUTS:
+;   sep :: a separator string inserted between element of strs (default: '')
 ;
-; EXAMPLE:             print, StrJoin(['/usr/bin','/bin','/vol/bin'], ':')
-;                      '/usr/bin:/bin:/vol/bin'
+; OUTPUTS:
+;   res: the concatenated string
 ;
-;                      print, StrJoin(['/usr/bin'], ':')
-;                      '/usr/bin'
+; EXAMPLE:
+;*  print, StrJoin(['/usr/bin','/bin','/vol/bin'], ':')
+;*  >'/usr/bin:/bin:/vol/bin'
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.2  2000/09/25 09:13:11  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  1999/02/22 11:14:39  saam
-;           new & cool
-;
+;*  print, StrJoin(['/usr/bin'], ':')
+;*  >'/usr/bin'
 ;
 ;-
+
 FUNCTION StrJoin, strs, sep
 
-   Default, sep, ' '
+   Default, sep, ''
    
    IF TypeOf(strs) NE 'STRING' THEN Message, 'only works for strings in 1st arg'
    IF TypeOf(sep)  NE 'STRING' THEN Message, 'only works for strings in 2nd arg'
 
    rstr = strs(0)
    nstrs = N_Elements(strs)
-   FOR i=1,nstrs-1 DO rstr = rstr + sep + strs(i) 
+   FOR i=1,nstrs-1 DO rstr = rstr + sep + strs(i)
 
    RETURN, rstr
 END
