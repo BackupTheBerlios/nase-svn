@@ -116,6 +116,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.14  1998/11/08 17:49:45  saam
+;             + wrong implementation with TARGET_TO_SOURCE, SOURCE_TO_TARGET
+;
 ;       Revision 2.13  1998/03/24 11:32:21  kupper
 ;              ?_Init implementiert.
 ;
@@ -265,12 +268,12 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 
 
    IF set(S_LAYER) THEN BEGIN
-      s_width = s_layer.w
-      s_height = s_layer.h
+      s_width = LayerWidth(S_LAYER)
+      s_height = LayerHeight(S_LAYER)
    END
    IF set(T_LAYER) THEN BEGIN
-      t_width = t_layer.w
-      t_height = t_layer.h
+      t_width = LayerWidth(T_LAYER)
+      t_height = LayerHeight(T_LAYER)
    END
    
    If keyword_Set(D_INIT) then begin
@@ -392,10 +395,17 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
 ; ------------------------- NOCON: ----------------------------------------------------------------
       IF keyword_set(NOCON) THEN BEGIN
-         SetConstWeight, _DW, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
-         if HasDelay then begin
-            SetConstDelay, _DW, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
-         endif
+         If keyword_set(TARGET_TO_SOURCE) then begin ;------------Target -> Source: 
+            SetConstWeight, _DW, !NONE, nocon, T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+            if HasDelay then begin
+               SetConstDelay, _DW, !NONE, nocon, T_ROW=t_height/2, T_COL=t_width/2, S_HS_ROW=s_height/2, S_HS_COL=s_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+            endif
+         END ELSE BEGIN
+            SetConstWeight, _DW, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+            if HasDelay then begin
+               SetConstDelay, _DW, !NONE, nocon, S_ROW=s_height/2, S_COL=s_width/2, T_HS_ROW=t_height/2, T_HS_COL=t_width/2, /ALL, TRUNCATE=w_truncate, TRUNC_VALUE=!NONE, /INVERSE, TRANSPARENT=0
+            endif
+         END
       END
 ; ----------------------------------------------------------------------------------------------------------------------
 
