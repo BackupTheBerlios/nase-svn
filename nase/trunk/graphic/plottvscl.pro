@@ -24,6 +24,7 @@
 ;                             [, GET_PIXELSIZE=Pixelgroesse]
 ;                             [, LAGMARGIN=LEGMARGIN]
 ;                             [, /NEUTRAL]
+;                             [, /POLYGON]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
 ;
 ; INPUTS: Array : klar!
@@ -59,6 +60,7 @@
 ;                     leg_(max|min): alternative Beschriftung der Legende 
 ;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
+;                     POLYGON   : Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                 und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
@@ -86,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.36  1998/08/10 08:38:04  gabriel
+;           Keyword POLYGON neu
+;
 ;     Revision 2.35  1998/08/04 16:14:11  gabriel
 ;          Charsizes !P.MULTI angepasst
 ;
@@ -206,8 +211,6 @@
 ;
 ;
 ;-
-
-
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
                XRANGE=xrange, YRANGE=yrange, $
@@ -220,6 +223,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEG_MAX=leg_MAX,$
                LEG_MIN=leg_MIN,$
                NEUTRAL=neutral,$
+               POLYGON=POLYGON,$
                LEGMARGIN=LEGMARGIN,$
                _EXTRA=_extra
 
@@ -251,6 +255,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, ORDER, 0
    Default, LEGEND, 0
    Default,legmargin,0.25
+   Default,Polygon,0
+
    W = _W
    IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
       maxW = Max(W)
@@ -404,13 +410,26 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
    ;-----Plotten der UTVScl-Graphik:
    IF Keyword_Set(NASE) THEN BEGIN
-      If Keyword_Set(NOSCALE) then UTV, Transpose(W), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown $
-       else UTV, ShowWeights_Scale(Transpose(W),/SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
+      If Keyword_Set(NOSCALE) then BEGIN 
+         UTV, Transpose(W), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen,$
+          X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM,$
+          ORDER=UpSideDown, POLYGON=POLYGON
+      END ELSE BEGIN
+         UTV, ShowWeights_Scale(Transpose(W),/SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM,$
+          Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
+      ENDELSE
    END ELSE BEGIN
       IF Keyword_Set(NEUTRAL) THEN BEGIN
-         UTV, ShowWeights_Scale(W, /SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
+         UTV, ShowWeights_Scale(W, /SETCOL), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, $
+          Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
       END ELSE BEGIN
-         UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
+         UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen,$
+          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, $
+          X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, $
+          ORDER=UpSideDown, NOSCALE=NoScale, POLYGON=POLYGON
       END
    END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
