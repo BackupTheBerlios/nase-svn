@@ -26,7 +26,10 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE:
-;*activation = Simplecell( pic, orientation, wavelength, phase [,GET_FILTER=...] )
+;*activation = Simplecell( pic, orientation, wavelength, phase
+;*                         [,/NORM] [,/POWERNORM] [,/ABSNORM]
+;*                         [,/MAXONE] [,/NICEDETECTOR]
+;*                         [,GET_FILTER=...] )
 ;
 ; INPUTS:
 ;  pic        :: The input picture to be processed. This may be seen
@@ -37,6 +40,14 @@
 ;                specified in pixels.
 ;  phase      :: The preferred spatial phase shift of the simplecells,
 ;                specified in radians.
+;
+; INPUT KEYWORDS:
+;  NORM, POWERNORM, ABSNORM, MAXONE, NICEDETECTOR:: These keywords
+;                                                   influence the
+;                                                   exact form of the
+;                                                   gabor patch to be
+;                                                   used. See
+;                                                   <A>Gabor()</A>.
 ;
 ; OUTPUTS:
 ;  activation:: The convolution result. This may be seen as the
@@ -71,6 +82,8 @@
 ;-
 
 Function Simplecell, pic, orientation, wavelength, phase, $
+                     NORM=norm, POWERNORM=powernorm, ABSNORM=absnorm, $
+                     MAXONE=maxone, NICEDETECTOR=nicedetector, $
                      GET_FILTER = filter
 
    Default, phase, 0
@@ -90,7 +103,8 @@ Function Simplecell, pic, orientation, wavelength, phase, $
 
    filter = Gabor(size, Orientation=orientation, $
                   Wavelength=wavelength, Hmw=hmw, phase=phase, $
-                  /Nicedetector, /norm)
+                  NORM=norm, POWERNORM=powernorm, ABSNORM=absnorm, $
+                  MAXONE=maxone, NICEDETECTOR=nicedetector)
 
    return, Convol2dFFT(pic, filter)
 
