@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1997/12/16 13:49:18  saam
+;             no comment
+;
 ;       Revision 1.4  1997/12/16 10:59:11  saam
 ;             wieder ein Bug im Header
 ;
@@ -71,6 +74,10 @@
 ;       Written by:     Thomas Wölbern, 23.09.94
 ;-
 FUNCTION CrossCor,x,y,PShift,CorrBranch=Branch,OverlapNorm=ONorm,Covariance=Covar
+
+   Default, Branch, 0
+   Default, ONorm, 0
+   Default, Covar, 0
 
    Mean_x = Total(x)/N_Elements(x)
    Mean_y = Total(y)/N_Elements(y)
