@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1998/04/06 16:05:10  saam
+;           eats up less memory now
+;
 ;     Revision 2.8  1998/03/19 11:38:52  thiel
 ;            Der .W-Tag ist jetzt immer ein Array, auch wenn er
 ;            nur ein Element enthaelt.
@@ -57,8 +60,9 @@ PRO DW2SDW, _DW
 
    IF (Info(_DW) NE 'DW_DELAY_WEIGHT') AND (Info(_DW) NE 'DW_WEIGHT') THEN Message, 'DW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_DW))+' !'
 
-   sS = DWDim(_DW, /SW) * DWDim(_DW, /SH)
-   tS = DWDim(_DW, /TW) * DWDim(_DW, /TH)
+   dims = DWDim(_DW, /ALL)
+   sS = dims(0) * dims(1)
+   tS = dims(2) * dims(3)
    
    Handle_Value, _DW, DW
    FreeDW, _DW
@@ -104,31 +108,32 @@ PRO DW2SDW, _DW
    IF Contains(Info(DW), 'DELAY') THEN BEGIN            
       IF eWc NE 0 THEN D = DW.Delays(eW) ELSE D = Make_Array(1,1, /FLOAT, VALUE=0)
       
-
+      DW = 0 ; limit memory hunger
       DW = {  info    : 'SDW_DELAY_WEIGHT',$
-              source_w: DW.source_w,$
-              source_h: DW.source_h,$
-              target_w: DW.target_w,$
-              target_h: DW.target_h,$
-              s2c     : s2c        ,$
-              c2s     : c2s        ,$
-              t2c     : t2c        ,$
-              c2t     : c2t        ,$              
-              W       : [W]          ,$
-              D       : [D]          ,$
+              source_w: dims(0)           ,$
+              source_h: dims(1)           ,$
+              target_w: dims(2)           ,$
+              target_h: dims(3)           ,$
+              s2c     : s2c               ,$
+              c2s     : c2s               ,$
+              t2c     : t2c               ,$
+              c2t     : c2t               ,$              
+              W       : [W]               ,$
+              D       : [D]               ,$
               Queue   : InitSpikeQueue( INIT_DELAYS=D ),$
               Learn   : -1l         }
    END ELSE BEGIN
+      DW = 0 ; limit memory hunger
       DW = {  info    : 'SDW_WEIGHT',$
-              source_w: DW.source_w,$
-              source_h: DW.source_h,$
-              target_w: DW.target_w,$
-              target_h: DW.target_h,$
-              s2c     : s2c        ,$
-              c2s     : c2s        ,$
-              t2c     : t2c        ,$
-              c2t     : c2t        ,$              
-              W       : [W]          ,$
+              source_w: dims(0)     ,$
+              source_h: dims(1)     ,$
+              target_w: dims(2)     ,$
+              target_h: dims(3)     ,$
+              s2c     : s2c         ,$
+              c2s     : c2s         ,$
+              t2c     : t2c         ,$
+              c2t     : c2t         ,$              
+              W       : [W]         ,$
               Learn   : -1l         }
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
