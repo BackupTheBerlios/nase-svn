@@ -128,6 +128,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.22  1998/03/19 17:11:11  kupper
+;              Bet_Base liefert jetzt -1 zurück, falls ein gewöhnliches Fenster geöffnet
+;               wurde, so daß man bestimmen kann, wie man es wieder schließen muß
+;               (wdelete oder widget_control).
+;
 ;       Revision 2.21  1998/03/19 15:37:15  saam
 ;             mysteriously a bug occurred: variable containing
 ;               delays-keyword had the same name as function delays
@@ -429,7 +434,10 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
 ;   Handle_Value, __Matrix, _Matrix, /NO_COPY, /SET
 
    ;;------------------> Fensternummer zurückliefern:
-   If not keyword_set(SLIDE) then GET_WIN = !D.Window 
+   If not keyword_set(SLIDE) then begin
+      GET_WIN = !D.Window 
+      GET_BASE = -1
+   EndIf
    ;;--------------------------------
 
 END        
