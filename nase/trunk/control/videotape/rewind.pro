@@ -15,12 +15,6 @@
 ;	
 ; KEYWORD PARAMETERS:  VERBOSE: Für mehr Freude am Simulieren...
 ;
-; OUTPUTS: ---
-;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
 ; SIDE EFFECTS: Der interne FramePointer wird neu gesetzt.
 ;
 ; RESTRICTIONS: Ist die angegebene Position zu gross, so wird ein
@@ -30,9 +24,18 @@
 ;
 ; EXAMPLE: Rewind, MyVideo, 3
 ;
+; SEE ALSO: <A HREF="#INITVIDEO">InitVideo()</A>, <A HREF="#CAMCORD">CamCord</A>,
+;           <A HREF="#LOADVIDEO">LoadVideo()</A>, <A HREF="#REPLAY">Replay()</A>,
+;           <A HREF="#EJECT">Eject</A>, <A HREF="#LABEL">Label</A>,
+;           <A HREF="#INFORMATIONOVERKILL">InformationOverkill()</A>.
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  1997/11/27 14:50:56  kupper
+;              Hyperlinks in Header geschrieben.
+;              Kosmetische Änderungen im Output.
+;
 ;       Revision 2.2  1997/10/14 15:30:01  kupper
 ;              Kosmetische Änderung beim Textoutput.
 ;
@@ -54,6 +57,6 @@ Pro Rewind, Video, FrameNumber, VERBOSE=verbose
    If keyword_set(VERBOSE) then begin
       print, 'Ah! Eine besonders schöne Szene in "'+Video.title+'": Nummer '+strtrim(string(FrameNumber), 1)
    endif else begin
-      message, /inform, 'Video is now at Frame #'+strtrim(string(FrameNumber), 1)+'.'
+      message, /inform, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(FrameNumber), 1)+'.'
    endelse
 End
