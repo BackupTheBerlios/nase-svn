@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.4  2000/09/09 16:09:47  saam
+%            dunno whats changed
+%
 %       Revision 1.3  2000/08/25 10:09:22  saam
 %            compatability added
 %
@@ -175,8 +178,17 @@ END
 
 \begin{itemize}
 \item Use array operations rather than loops wherever possible. Try to avoid loops with high repetition counts.
-\item Use IDL system functions and procedures wherever possible.
-\item Use \texttt{Call\_Function} or \texttt{Call\_Procedure} instead of \texttt{Execute}.
+%
+\item Use IDL system functions and procedures wherever possible. A common operation is to find the sum of the elements in an array or subarray. The \texttt{TOTAL} function directly and efficiently evaluates this sum at least 10 times faster than directly coding the sum.
+\begin{verbatim}
+;Slow way: Initialize SUM and sum each element. 
+sum = 0. & FOR I = J, K DO sum = sum + array[I]
+;Efficient, simple way.
+sum = TOTAL(array[J:K])
+\end{verbatim}
+%
+\item Use \texttt{Call\_Function} or \texttt{Call\_Procedure} instead of \texttt{Execute} wherever possible.
+%
 \item The order in which an expression is evaluated can have a significant effect on program speed. Consider the following statement, where A is an array:
 \begin{verbatim}
 ;Scale A from 0 to 16.
@@ -187,10 +199,35 @@ This statement first multiplies every element in A by 16 and then divides each e
 ;Scale A from 0 to 16 using only one array operation.
 B = A * (16./MAX(A))
 \end{verbatim}
-\item Avoid if statements.
+%
+\item Avoid if statements. Programs with array expressions run faster than programs with scalars, loops, and IF statements. 
+\begin{verbatim}
+;Using a loop will be slow.
+FOR I = 0, (N-1) DO IF B[I] GT 0 THEN A[I] = A[I] + B[I]
+;Fast way: Mask out negative elements using array operations.
+A = A + (B GT 0) * B
+;Faster way: Add B > 0.
+A = A + (B > 0)
+\end{verbatim}
+
 \item Whenever possible, vector and array data should always be processed with IDL array operations instead of scalar operations in a loop. 
-\item Use constants of the correct type.
-\item Eliminate invariant expressions.
+%
+\item Use constants of the correct type. Consider the following expression:
+\begin{verbatim}
+A + 5
+\end{verbatim}
+If the variable \texttt{A} is of floating-point type, the constant \texttt{5} must be converted from short integer type to floating point each time the expression is evaluated. The type of a constant also has an important effect in array expressions. Care must be taken to write constants of the correct type. In particular, when performing arithmetic on byte arrays with the intent of obtaining byte results, be sure to use byte constants; e.g., \texttt{nB}. For example, if A is a byte array, the result of the expression \texttt{A + 5B} is a byte array, while \texttt{A + 5} yields a 16-bit integer array.
+%
+\item Eliminate invariant expressions. Expressions whose values do not change inside a loop should be moved outside the loop. For example, in the loop:
+\begin{verbatim}
+FOR I = 0, N - 1 DO arr[I, 2*J-1] = ...,
+\end{verbatim}
+the expression (2*J-1) is invariant and should be evaluated only once before the loop is entered:
+\begin{verbatim}
+temp = 2*J-1
+FOR I = 0, N-1 DO arr[I, temp] = ....
+\end{verbatim}
+%
 \end{itemize}
 
 
@@ -199,8 +236,8 @@ B = A * (16./MAX(A))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{itemize}
 \item If virtual memory is a problem, try to tailor your programming to minimize the number of images held in IDL variables. Keep in mind that IDL creates temporary arrays to evaluate expressions involving arrays.  
-\item Use the TEMPORARY function: A = TEMPORARY(A) + 1 instead of A = A + 1
-\item Avoid memory leaks when dealing with handles. This is easy, if you use the NASE system variable !MH as father for all handles you create. By freeing !MH (for master handle), you can also free the memory for all his children.3
+\item Use the \texttt{TEMPORARY} function: \texttt{A = TEMPORARY(A) + 1} instead of \texttt{A = A + 1}
+\item Avoid memory leaks when dealing with handles. This is easy, if you use the NASE system variable \texttt{!MH} as father for all handles you create. By freeing \texttt{!MH} (for master handle), you can also free the memory for all his children.
 \end{itemize}
 
 
