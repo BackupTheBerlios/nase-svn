@@ -79,8 +79,22 @@ FUNCTION Region, NORMAL=normal, DEVICE=device
 
    rpp = [mm[1]-1 - (pidx MOD mm[1]), (pidx  /  mm[1])  ]
 
-   pr = [[rpp(0)*ps(0)      ,rpp(1)*ps(1)        ] ,$
-         [rpp(0)*ps(0)+ps(0),rpp(1)*ps(1)+ps(1)] ]
+   ;; Take into account possible OMARGINS.
+   ;; They are in units of character size, so a little coord
+   ;; conversion is needed when normal coords are desired.
+   ;; Region() takes care of the size so we need correct only the
+   ;; origin here.
+   om = [!X.OMARGIN[0]*!D.X_CH_SIZE, !Y.OMARGIN[0]*!D.Y_CH_SIZE]
+
+   IF Keyword_Set(NORMAL) THEN BEGIN
+      om = UConvert_Coord(om, /DEVICE, /TO_NORMAL)
+   ENDIF
+
+; old version
+;   pr = [[rpp[0]*ps[0]+om[0]      ,rpp[1]*ps[1]+om[1]        ] ,$
+;         [rpp[0]*ps[0]+ps[0]+om[0],rpp[1]*ps[1]+ps[1]+om[1]] ]
+
+   pr = [[rpp*ps+om],[rpp*ps+ps+om]]
 
 ;   IF NOT KEYWORD_SET(DEVICE) THEN BEGIN
 ;       v= UConvert_Coord([0,pr(0)], [0,pr(1)], /DEVICE, /TO_NORMAL)

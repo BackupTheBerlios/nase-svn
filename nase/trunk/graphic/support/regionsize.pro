@@ -61,22 +61,29 @@ FUNCTION RegionSize, NORMAL=normal, DEVICE=device
    mm[1] = Max([1,mm[1]])
    mm[2] = Max([1,mm[2]])
 
+   ;; Take into account possible OMARGINS.
+   ;; They are in units of character size, so a little coord
+   ;; conversion is needed when normal ccords are desired
+   ;; Total() for adding left and / bottom and top margins
+   omdev = [Total(!X.OMARGIN)*!D.X_CH_SIZE, Total(!Y.OMARGIN)*!D.Y_CH_SIZE]
+
+   ;;DMsg, 'OMDev: '+PrettyArr(omdev)
+
    IF Keyword_Set(NORMAL) THEN BEGIN
-      ps = [1.d, 1.d] ;; the whole device in normal coordinates
+      omnorm = UConvert_Coord(omdev, /DEVICE, /TO_NORMAL)
+      ;; the whole device in normal coordinates minus omargins
+      ps = [1.d, 1.d]-omnorm
    ENDIF ELSE BEGIN
       IF (!D.WINDOW EQ -1) AND (!D.NAME NE 'PS') THEN Console, /FATAL $
        , 'No window to determine size for.'
       ;; size of visible window in pixel
-      ps = Double([!D.X_VSIZE, !D.Y_VSIZE]) 
+      ps = Double([!D.X_VSIZE, !D.Y_VSIZE])-omdev 
    ENDELSE
 
    ;; respect multiple plots
 ;   ps[0] = Fix(ps[0] / Double(mm[1]))
 ;   ps[1] = Fix(ps[1] / Double(mm[2]))
-   ps[0] = ps[0] / Double(mm[1])
-   ps[1] = ps[1] / Double(mm[2])
-
-
+   ps = ps / Double(mm[1:2])
 
 ;   IF NOT KEYWORD_SET(DEVICE) THEN BEGIN
 ;       v= UConvert_Coord([0,ps(0)], [0,ps(1)], /DEVICE, /TO_NORMAL)
