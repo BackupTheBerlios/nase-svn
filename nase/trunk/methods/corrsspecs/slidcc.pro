@@ -1,6 +1,8 @@
 ;+
 ; NAME:                SlidCC
 ;
+; AIM:                 computes the timeresolved cross correlation beetween two given signals
+;
 ; PURPOSE:             Computes the cross correlation with a sliding window.
 ;
 ; CATEGORY:            METHODS CORRS 
@@ -32,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/28 13:52:42  gabriel
+;          AIM, message <> console
+;
 ;     Revision 1.4  2000/06/19 13:09:07  saam
 ;           + replaced LExtrac call by nothing
 ;
@@ -85,7 +90,7 @@ FUNCTION SlidCC, A,B, PShift, taxis, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=sa
 
 
 
-   IF (SIZE(A))(0) NE 1 THEN Message, 'only for 1-d arrays'
+   IF (SIZE(A))(0) NE 1 THEN console, /fatal, 'only for 1-d arrays'
 
    SA = Slices(A, SAMPLEPERIOD=SAMPLEPERIOD, SSHIFT=sshift, SSIZE=ssize) ; SA(slice,time) 
    SB = Slices(B, SAMPLEPERIOD=SAMPLEPERIOD, SSHIFT=sshift, SSIZE=ssize) ; SB(slice,time)
