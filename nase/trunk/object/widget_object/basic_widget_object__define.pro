@@ -22,10 +22,6 @@ End
 
 
 
-;; ------------ Member access methods -----------------------
-Function basic_widget_object::widget
-   return, self.widget
-End
 
 ;; ------------ Constructor & Destructor --------------------
 Function basic_widget_object::init, PARENT=Parent, _REF_EXTRA=_extra
@@ -63,6 +59,18 @@ End
 
 
 ;; ------------ Public --------------------
+;; Member access methods:
+Function basic_widget_object::widget
+   return, self.widget
+End
+;; Other public methods:
+Pro basic_widget_object::uvalue, val, NO_COPY=no_copy 
+   Widget_Control, self.widget, Set_Uvalue=val, NO_COPY=no_copy
+End
+Function basic_widget_object::uvalue, NO_COPY=no_copy 
+   Widget_Control, self.widget, Get_Uvalue=val, NO_COPY=no_copy
+   return, val
+End
 
 ;; ------------ Private --------------------
 
