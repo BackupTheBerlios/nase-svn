@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  1998/11/13 21:19:40  saam
+;            now return on error
+;
 ;     Revision 1.6  1998/06/01 14:51:50  saam
 ;           problems with gonzo's new system corrected
 ;
@@ -61,6 +64,8 @@
 FUNCTION GetLocalDir, WishDir
 
    COMMON Random_Seed, seed
+
+   ON_ERROR,2 
 
    ; get hostname
    Spawn, 'hostname -s', Host
