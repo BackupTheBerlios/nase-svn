@@ -85,7 +85,7 @@
 ;<BR>
 ;                 <I>The keyword <C>GET_MAXCOL</C> is obsolete, but
 ;                 maintained for backwards compatibility.<BR>
-;                 The value returned is always:<BR>
+;                 The value returned is always
 ;                 <*>GET_MAXCOL = !TOPCOLOR</*></I>
 ;  GET_COLORMODE:: Liefert als Ergebnis <*>+1</*>, falls der
 ;                 schwarz/weiss-Modus zur Darstellung
@@ -106,13 +106,13 @@
 ;<BR>
 ;                 <I>The keyword <C>GET_RANGE_OUT</C> is obsolete, but
 ;                 maintained for backwards compatibility.<BR>
-;                 The value returned is always:<BR>
+;                 The value returned is always
 ;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*></I><BR> 
 ;<BR>
 ;                 Zur Information: Es gilt die Beziehung<BR>
-;                 <*>GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,</*><BR>
-;                 <*>              = [0, max(Array)]  sonst.</*><BR>
-;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*>
+;*  GET_RANGE_IN  = [0, Range_In  ], falls Range_In angegeben wurde,
+;                 = [0, max(Array)]  sonst.
+;*  GET_RANGE_OUT = [0, !TOPCOLOR]
 ;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
 ;        	Außerdem setzt es <*>!P.BACKGROUND</*> stets auf den Farbindex für schwarz
