@@ -1,6 +1,6 @@
 Pro Check_NASE_LIB
    ; ensure architecture dependent libdir exists
-   LIBDIR = (FileSplit(!NASE_LIB))(0)
+   LIBDIR = (File_Split(!NASE_LIB))(0)
    mkdir, LIBDIR
    
    PushD, !NASEPATH+"/shared"
