@@ -33,7 +33,7 @@
 ;                    is adjusted. Note: On slow systems, /DRAG performance can
 ;                    be inadequate. The default is DRAG = 0.
 ;     FONT_TITLE/
-;       FONT_LABE  : The font to use for the title (given in TITLE)
+;       FONT_LABEL : The font to use for the title (given in TITLE)
 ;                    and the label (given in FORMAT)
 ; 
 ;     FORMAT       : Provides the format in which the slider value is displayed.
@@ -107,12 +107,16 @@
 ;                 Event = {CW_FSLIDER2,
 ;                          ID:0L, TOP:0L, HANDLER:0L,
 ;                          VALUE:0.0D, DRAG:0}
+;               Value(double) ist der aktuelle Wert des Sliders.
+;               Drag=1, falls /DRAG angegeben wurde, und der Slider
+;               bei gedruecktem Mausknopf bewegt wurde, sonst 0.
 ;
 ; RESTRICTIONS:
 ;
 ; PROCEDURE: Dies ist ein "klassisches" Compound-Widget.
 ;
-; EXAMPLE: b=widget_base(/row)
+; EXAMPLE:
+;          b=widget_base(/row)
 ;          s1=cw_fslider2(b, $
 ;                         TITLE="TITEL1", FONT_TITLE='-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1', $
 ;                         FORMAT='("Wert: ", F6.2, "%")', FONT_LABEL='-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1', $
@@ -121,15 +125,19 @@
 ;                         TITLE="TITEL2", FONT_TITLE='-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1', $
 ;                         FORMAT='("Wert: ", F6.2, "%")', FONT_LABEL='-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1', $
 ;                         MINIMUM=-23, MAXIMUM=17, STEPWIDTH=0.01, /VERTICAL)
-;          XMANAGER, "SliderTest", b
+;          XMANAGER, "SliderTest", b, EVENT_HANDLER="DUMMY_EVENTHANDLER"
 ;          Widget_Control, b, /REALIZE
-;;
+;
 ; SEE ALSO: CW_FSLIDER (Standard-IDL)
 ;           WIDGET_SLIDER (Standard-IDL)
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1999/06/17 14:06:02  kupper
+;        Modified Example to use Dummy_EventHandler.
+;        Correct typing errors in Header.
+;
 ;        Revision 2.2  1999/06/17 13:31:00  kupper
 ;        Added Label-Position Keywords.
 ;        Added Example.
