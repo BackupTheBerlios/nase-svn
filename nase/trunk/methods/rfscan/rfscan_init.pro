@@ -40,7 +40,8 @@
 ;                                              ,OUTLAYER=AusgabeLayer
 ;                                            [,/SHIFT_VERTICAL ]
 ;                                            [,/SHIFT_HORIZONTAL ]
-;                                            [ ,AUTO_RANDOMDOTS=PunktHäufigkeit
+;                                            [,/AUTO_SINGLEDOT
+;                                             |,AUTO_RANDOMDOTS=PunktHäufigkeit
 ;                                             |,AUTO_VERTICALLINE=Linienbreite | ,AUTO_HORIZONTALLINE=Linienbreite
 ;                                             |,AUTO_VERTICALEDGE={-2|-1|1|2|3} | ,AUTO_HORIZONTALEDGE={-2|-1|1|2|3}
 ;                                            ]
@@ -140,6 +141,10 @@
 ;                                  Es braucht kein "Picture"-Argument
 ;                                  übergeben zu werden.
 ;            Die AUTO-Modi:
+;                  AUTO_SINGLEDOT: Als Input wird ein einzelner Pixel
+;                                  generiert, der gleichverteilt
+;                                  zufällig an jeder Position des
+;                                  Inputarrays erscheinen kann.
 ;                 AUTO_RANDOMDOTS: Als Input wird ein zufälliges
 ;                                  Punktmuster generiert. Der Wert
 ;                                  dieses Schlüsselwortes entscheidet
@@ -207,6 +212,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2000/06/16 08:53:01  kupper
+;        Some corrections for AUTO_SINGLEDOT.
+;        Adjusted header.
+;
 ;        Revision 1.7  2000/06/16 08:28:32  kupper
 ;        Added AUTO_SINGLEDOT mode.
 ;
@@ -306,7 +315,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
    ;;--------------------------------
 
    ;;------------------> Will Picture be manually defined?
-   MANUAL = not set(Picture) and not keyword_set(AUTO_RANDOMDOTS) and not keyword_set(AUTO_VERTICALEDGE) and not keyword_set(AUTO_HORIZONTALEDGE)
+   MANUAL = not set(Picture) and not keyword_set(AUTO_SINGLEDOT) and not keyword_set(AUTO_RANDOMDOTS) and not keyword_set(AUTO_VERTICALEDGE) and not keyword_set(AUTO_HORIZONTALEDGE)
    If MANUAL then message, /INFORM, "No Input Picture defined - will expect manual specification..."
    ;;--------------------------------
 
