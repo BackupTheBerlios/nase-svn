@@ -85,7 +85,18 @@
 ;
 ;
 ;
-; MODIFICATION HISTORY: ANDREAS GABRIEL 4. August 1997
+;
+;     
+;
+; MODIFICATION HISTORY: 
+;
+;
+;     $Log$
+;     Revision 1.4  1998/02/02 19:28:51  gabriel
+;          nochmal Log
+;
+;
+;        ANDREAS GABRIEL 4. August 1997
 ;
 ;
 ;
