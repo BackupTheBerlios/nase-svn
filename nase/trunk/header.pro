@@ -23,8 +23,9 @@
 ;  Fonts
 ;  Graphic
 ;  Help
-;  Input
 ;  Image
+;  Input
+;  Internal
 ;  IO
 ;  Layers
 ;  Math
@@ -64,7 +65,6 @@
 ; EXAMPLE:
 ;  
 ; SEE ALSO:
-;
 ;-
 
 ;;; look in ../doc/header.pro for explanations and syntax,
