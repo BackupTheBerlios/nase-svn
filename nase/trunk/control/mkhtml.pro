@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.10  1997/12/10 17:10:21  saam
+;             Fehler korrigiert
+;
 ;       Revision 1.9  1997/12/03 10:53:39  gabriel
 ;             filter fuer pwd eingebaut "/a/ax1303" wird geloescht
 ;
@@ -37,7 +40,7 @@
 
 PRO MkHTML
 
-Spawn, 'echo $(/bin/pwd) | sed  "s/\/a\/ax1303//g"', MainDir
+Spawn, '/bin/pwd | sed "s/\/a\/ax1303//g"', MainDir
 SubDirs   = ['control','input','graphic','graphic/nonase','misc', $
              'misc/array', 'misc/structures', 'simu', 'simu/connections',$
              'simu/layers', 'simu/plasticity', 'stat', 'video+tape']
