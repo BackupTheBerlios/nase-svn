@@ -7,35 +7,21 @@
 ;
 ; CALLING SEQUENCE:     MkHTML, Dir
 ;
-; INPUTS:               ---
-;
-; OPTIONAL INPUTS:      ---
-;
-; KEYWORD PARAMETERS:   ---
-;
-; OUTPUTS:              ---
-;
-; OPTIONAL OUTPUTS:     ---
-;
-; COMMON BLOCKS:        ---
-;
-; SIDE EFFECTS:         ---
-;
-; RESTRICTIONS:         ---
-;
-; PROCEDURE:            ---
-;
 ; EXAMPLE:              MkHTML
 ;
 ; MODIFICATION HISTORY: 
 ;
+;       $Log$
+;       Revision 1.6  1997/11/11 16:46:54  saam
+;             an neue Verzeichnisstruktur angepasst
+;
+;
 ;       Tue Aug 19 21:16:01 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;
 ;		Ergaenzung um stat-Ordner
 ;
-;                       initial version, Mirko Saam, 25.7.97
-;                       Aufruf nur im Haupt-Nasen-Verzeicnis sinnvoll, Mirko, 13.8.97
+;        initial version, Mirko Saam, 25.7.97
+;        Aufruf nur im Haupt-Nasen-Verzeicnis sinnvoll, Mirko, 13.8.97
 ;-
 
 
