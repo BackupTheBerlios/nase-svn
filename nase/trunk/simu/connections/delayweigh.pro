@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.38  1999/07/27 16:23:43  thiel
+;           DW.queuehdl: A handle to a spikequeue.
+;
 ;       Revision 1.37  1998/11/08 17:48:31  saam
 ;             + documentation update
 ;             + new layer type update
@@ -246,9 +249,9 @@ FUNCTION DelayWeigh, _DW, InHandle
       END
 
       ; enQueue it and deQueue results in ACILO
-      tmpQU = DW.Queue
+      Handle_Value, DW.queuehdl, tmpQU, /NO_COPY ; tmpQU = DW.Queue
       acilo = SpikeQueue( tmpQu, acili ) 
-      DW.Queue = tmpQu
+      Handle_Value, DW.queuehdl, tmpQU, /NO_COPY, /SET ; DW.Queue = tmpQu
 
       IF Handle_Info(DW.Learn) THEN Handle_Value, DW.Learn, acilo, /SET $
       ELSE DW.Learn = Handle_Create(_DW, VALUE=acilo)

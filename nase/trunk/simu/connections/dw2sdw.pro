@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1999/07/27 16:23:43  thiel
+;         DW.queuehdl: A handle to a spikequeue.
+;
 ;     Revision 2.9  1998/04/06 16:05:10  saam
 ;           eats up less memory now
 ;
@@ -120,7 +123,7 @@ PRO DW2SDW, _DW
               c2t     : c2t               ,$              
               W       : [W]               ,$
               D       : [D]               ,$
-              Queue   : InitSpikeQueue( INIT_DELAYS=D ),$
+              queuehdl: Handle_Create(VALUE=InitSpikeQueue( INIT_DELAYS=D )),$
               Learn   : -1l         }
    END ELSE BEGIN
       DW = 0 ; limit memory hunger

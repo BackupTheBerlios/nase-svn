@@ -18,6 +18,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.11  1999/07/27 16:23:43  thiel
+;           DW.queuehdl: A handle to a spikequeue.
+;
 ;       Revision 2.10  1998/04/01 15:42:44  saam
 ;             DW-structure-handles were not freed
 ;             -> memory hole corrected
@@ -76,7 +79,12 @@ PRO FreeDW, _DW
       DW.T2C(t) = -1
    END
 
-   IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN FreeSpikeQueue, DW.Queue 
+   IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN BEGIN
+      Handle_Value, DW.queuehdl, tmpqu
+      FreeSpikeQueue, tmpqu
+      Handle_Free, DW.queuehdl 
+   ENDIF
+
 
    IF DW.Learn NE -1 THEN Handle_Free, DW.Learn
 
