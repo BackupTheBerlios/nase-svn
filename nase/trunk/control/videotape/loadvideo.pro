@@ -49,6 +49,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.14  1998/11/09 09:48:37  saam
+;             function instead of procedure call for uclose
+;
 ;       Revision 2.13  1998/11/08 14:51:38  saam
 ;             + video-structure made a handle
 ;             + ZIP-handling replaced by UOpen[RW]
@@ -180,7 +183,7 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
         print, '** The Video-Cassette is not labeled.'
       endelse
 
-      UClose(infounit)
+      UClose,infounit
       return, 0
    endif
 ;------------------------------------   
