@@ -19,12 +19,15 @@
 ; CALLING SEQUENCE:
 ;*Scalebar,v, x, y  [,TEXT=...]
 ;*                  [,/HORIZONTAL | ,/VERTICAL] 
-;*                  [,/DATA | ,/NORMAL] [,_EXTRA=e]
+;*                  [,/DATA | ,/NORMAL]
+;*                  [,/BOTTOM | ,/VCENTER | ,/TOP]  
+;*                  [,_EXTRA=e]
 ;
 ; INPUTS:
 ;  v   :: length of the scale bar (in data coordinates)
-;  x,y :: center position of the scalebar in normal or data
-;         coordinates (using <*>/NORMAL</*> or <*>DATA</*>) 
+;  x,y :: position of the scalebar in normal or data
+;         coordinates (using <*>/NORMAL</*> or <*>DATA</*>). This is
+;         in general the center position of the bar, but see options.
 ;
 ; INPUT KEYWORDS:
 ;  TEXT       :: label scalebar with alternative text or scalars  
@@ -34,6 +37,9 @@
 ;                coordinates (Default)
 ;  NORMAL     :: <*>x</*> and <*>y</*> are interpreted as normal
 ;                coordinates 
+;  BOTTOM,VCENTER,TOP :: setting one of these these keywords changes the
+;                vertical alignment of the bar relative to the specified
+;                position <*>y</*>. <*>/VCENTER</*> is the default.
 ;
 ; EXAMPLE:
 ;* plot, sin(2*!Pi*findgen(2000)/500), yrange=[-2,2]
@@ -44,7 +50,8 @@
 
 
 PRO Scalebar, v, _x, _y, TEXT=_text, VALUE=value, HORIZONTAL=horizontal, VERTICAL=vertical, DATA=data, NORMAL=normal, $
-                         CHARSIZE=charsize, _EXTRA=e
+              CHARSIZE=charsize, $
+              TOP=top, BOTTOM=bottom, VCENTER=vcenter, _EXTRA=e
 
 Default, v, 1.
 Default, _x, 0.1
@@ -52,6 +59,8 @@ Default, _y, 0.1
 Default, vw, 0.05  ; width of limiting bars (percent of bar length)
 Default, CHARSIZE, 1.
 Default, text, string(format="(G0)", v) 
+IF Keyword_Set(TOP)+Keyword_Set(VCENTER)+Keyword_Set(BOTTOM) LT 1 THEN VCENTER=1
+IF Keyword_Set(TOP)+Keyword_Set(VCENTER)+Keyword_Set(BOTTOM) GT 1 THEN Console, 'please use only one option BOTTOM/VCENTER/TOP', /FATAL 
 
 IF Set(_text) THEN BEGIN
     IF TypeOf(_text) NE "STRING" THEN text = string(format="(G0)", _text) ELSE text=_text
@@ -76,6 +85,13 @@ END ELSE BEGIN
     y = _y
 END
 
+CASE 1 OF
+    Keyword_Set(TOP)    : y = y - Dy 
+    Keyword_Set(VCENTER): y = y - Dy/2. 
+    Keyword_Set(BOTTOM) : y = y 
+END  
+
+
 
 S = CHARSIZE*UConvert_coord(!D.X_CH_SIZE, !D.Y_CH_SIZE, /DEVICE, /TO_NORMAL)
 
@@ -85,10 +101,10 @@ IF Keyword_Set(HORIZONTAL) THEN BEGIN
     plots, [x+Dx/2.,x+Dx/2.], [y-Dx*vw, y+Dx*vw], /NORMAL, _EXTRA=e 
     XYouts, x, y-Dx*vw-S(1)/2.,  /NORMAL, text, ALIGNMENT=0.5, CHARSIZE=charsize, _EXTRA=e 
 END ELSE BEGIN 
-    plots, [x,x], [y-Dy/2., y+Dy/2.], /NORMAL, _EXTRA=e 
-    plots, [x-Dy*vw,x+Dy*vw], [y+Dy/2., y+Dy/2.], /NORMAL, _EXTRA=e 
-    plots, [x-Dy*vw,x+Dy*vw], [y-Dy/2., y-Dy/2.], /NORMAL, _EXTRA=e 
-    XYouts, x+S(0)/2., y-S(1)/2.,  /NORMAL, text, CHARSIZE=charsize, _EXTRA=e 
+    plots, [x,x]            , [y, y+Dy]   , /NORMAL, _EXTRA=e 
+    plots, [x-Dy*vw,x+Dy*vw], [y, y]      , /NORMAL, _EXTRA=e 
+    plots, [x-Dy*vw,x+Dy*vw], [y+Dy, y+Dy], /NORMAL, _EXTRA=e 
+    XYouts, x+S(0)/2., y+Dy/2.-S(1)/2.,  /NORMAL, text, CHARSIZE=charsize, _EXTRA=e 
 END
 
 
