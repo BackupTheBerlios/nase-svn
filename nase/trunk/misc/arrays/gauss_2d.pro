@@ -172,6 +172,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.29  2001/09/03 13:44:59  alshaikh
+;         can now handle rotated asymmetric gaussians on non-quadratic grids
+;
 ;        Revision 1.28  2001/05/23 13:42:37  kupper
 ;        Protected sigma from being changed.
 ;        Added COMPILE_OPT HIDDEN in service routines.
@@ -349,63 +352,86 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
 
 
    ;; 2-d result, xsigma != ysigma
-   IF set(XHWB) THEN BEGIN
-
-      dist = Distance(/Quadratic, $
-                      xlen,ylen,x0_arr,y0_arr, $
-                      scale=[sigmax, sigmay], $
-                      phi=phi, $
-                      WARP=WARP, ABSWARP=ABSWARP)
-
-      ERG = Gauss_function_x_sigma_quad(dist)
-
+   IF set(XHWB) THEN BEGIN   
+      if (xlen ne ylen) then begin
+         if xlen gt ylen then begin ; to prevent surface effects: compute gauss for quadratic grid.
+            len = xlen          
+            offset = (xlen-ylen)/2
+            dist = Distance(/Quadratic, $
+                            len,len,x0_arr,y0_arr+offset, $
+                            scale=[sigmax, sigmay], $
+                            phi=phi, $
+                            WARP=WARP, ABSWARP=ABSWARP)
+            ERG = (Gauss_function_x_sigma_quad(dist))[*, offset:offset+ylen-1]
+         end else begin         ; ylen gt xlen
+            len = ylen
+            offset = (ylen-xlen)/2
+            dist = Distance(/Quadratic, $
+                            len,len,x0_arr+offset,y0_arr, $
+                            scale=[sigmax, sigmay], $
+                            phi=phi, $
+                            WARP=WARP, ABSWARP=ABSWARP)
+            ERG = (Gauss_function_x_sigma_quad(dist))[offset:offset+xlen-1, *]
+         end
+         
+         
+      end else begin
+         dist = Distance(/Quadratic, $
+                         xlen,ylen,x0_arr,y0_arr, $
+                         scale=[sigmax, sigmay], $
+                         phi=phi, $
+                         WARP=WARP, ABSWARP=ABSWARP)
+         
+         ERG = Gauss_function_x_sigma_quad(dist)
+      end
+      
       If Keyword_Set(NORM) then begin
          i = TOTAL(ERG)
          ERG = temporary(ERG) / i
       Endif
-
+      
       ;; Ignore any floating underflows:
       IgnoreUnderflows
       
       return, ERG
+      
+   ENDIF
 
-  ENDIF
-
-
-  ;; 1-d result
-  if ylen eq 1 then begin
-     ERG = $
-      Gauss_function_x_sigma_quad(Distance(/Quadratic, $
-                                           xlen,1,x0_arr,0.5, $
-                                           scale=sigma, $
-                                           WARP=WARP, ABSWARP=ABSWARP) $
-                                 )
-
+   
+   ;; 1-d result
+   if ylen eq 1 then begin
+      ERG = $
+       Gauss_function_x_sigma_quad(Distance(/Quadratic, $
+                                            xlen,1,x0_arr,0.5, $
+                                            scale=sigma, $
+                                            WARP=WARP, ABSWARP=ABSWARP) $
+                                  )
+      
       If Keyword_Set(NORM) then begin
          i = TOTAL(ERG)
          ERG = temporary(ERG) / i
       Endif
-
-     ;; Ignore any floating underflows:
-     IgnoreUnderflows
-     
-     return, ERG
-  endif
-
+      
+      ;; Ignore any floating underflows:
+      IgnoreUnderflows
+      
+      return, ERG
+   endif
+   
 
   ;; 2-d result, xsigma=ysigma
-  If keyword_set(phi) then begin ;; rotate only center of gauss!
-     p = Scl(cyclic_value(phi, [0, 360]), [0, 2*!DPI], [0, 360])
-     
-     p = -p                     ;Rot counts clockwise by default!
-    
-     newx0 = x0*cos(p)-y0*sin(p)
-     newy0 = x0*sin(p)+y0*cos(p)
-     
-     x0_arr = Temporary(newx0)+(xlen-1)/2d
-     y0_arr = Temporary(newy0)+(ylen-1)/2d
-  endif
-
+   If keyword_set(phi) then begin ;; rotate only center of gauss!
+      p = Scl(cyclic_value(phi, [0, 360]), [0, 2*!DPI], [0, 360])
+      
+      p = -p                    ;Rot counts clockwise by default!
+      
+      newx0 = x0*cos(p)-y0*sin(p)
+      newy0 = x0*sin(p)+y0*cos(p)
+      
+      x0_arr = Temporary(newx0)+(xlen-1)/2d
+      y0_arr = Temporary(newy0)+(ylen-1)/2d
+   endif
+   
   ;; now call Distance without rotation!
 
   ERG = Gauss_function_x_sigma_quad(Distance(/Quadratic, $
