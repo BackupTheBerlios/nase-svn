@@ -30,6 +30,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  1998/02/12 13:25:12  saam
+;           Bug bei LocalHost = RemoteHost, aber
+;           LocalDir <> RemoteDir
+;
 ;     Revision 1.5  1998/02/09 20:14:22  thiel
 ;            Aufraeumen funktioniert jetzt noch besser.
 ;
@@ -108,7 +112,7 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
       IF N_Params() EQ 2 THEN BEGIN
          IF RemoteDir NE LocalDir THEN BEGIN
             ; the user seems to want a local copy
-            spawn, 'cp -R '+RemoteDir+'/* '+LocalDir
+            spawn, 'cp -R '+LocalDir+'* '+RemoteDir
             IF NOT Keyword_Set(NODEL) THEN BEGIN
                spawn, 'rm -f '+LocalDir+'*'
                spawn, 'rmdir -p '+LocalDir
