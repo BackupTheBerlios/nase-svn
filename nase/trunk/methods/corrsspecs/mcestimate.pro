@@ -12,15 +12,16 @@
 ;           Multiple Coherence (MC) Estimate. In 1963, the multiple coherence estimate or <I>sample multiple
 ;           coherence</I> was introduced in [1]. The MC estimate between
 ;           a reference channel x<SUB>j</SUB> and channels
-;           x<SUB>i</SUB>,..,x<SUB>j-1</SUB>,x<SUB>j+1</SUB>,..,x<SUB>M</SUB> 
-;           is defined as <BR><*>|c<SUB>j:1,..,j-1,j+1,..,M</SUB>(f)|<SUP>2</SUP> = 1 -
+;           <*>x<SUB>i</SUB>,..,x<SUB>j-1</SUB>,x<SUB>j+1</SUB>,..,x<SUB>M</SUB></*> 
+;           is defined as <BR><*>|C<SUB><FONT SIZE=-1>
+;           j:1,..,j-1,j+1,..,M</FONT></SUB>(f)|<SUP>2</SUP> = 1 -
 ;           1/(S<SUB>jj</SUB>(f)S<SUP>jj</SUP>(f))</*>,<BR>
 ;           where <*>S<SUB>jj</SUB>(f)</*> is the j-th diagonal element of
 ;           the estimatetd cross spectral density matrix
 ;           <*>S<SUB>xx</SUB>(f)</*> and
 ;           <*>S<SUP>jj</SUP>(f)</*> ist the j-th diagonal element of the
 ;           inverse of <*>S<SUB>xx</SUB>(f)</*>. As with the pairwise
-;           <a>COHERENCE</a>, the MC estimate is bounded between zero
+;           <A>COHERENCE</A>, the MC estimate is bounded between zero
 ;           and one. Furthermore, the MC estimate is equal 1 if and
 ;           only if <*>x<SUB>j</SUB></*> is exactly linearly related to the
 ;           other channels and if <*>x<SUB>j</SUB></*> is orthogonal to the
@@ -31,7 +32,7 @@
 ;           given in [1]. A multiple-channel nonparametric detector
 ;           based on MC estimate as defined before was introduced in [2].
 ;           <BR>Please note that the multiple
-;           coherence for two channels <*>N=2</*> is identical to the pairwise <a>COHERENCE</a>
+;           coherence for two channels <*>N=2</*> is identical to the pairwise <A>COHERENCE</A>
 ;
 ;           <BR>
 ;           [1] N. R. Goodman, "Statistical analysis based uppon a
@@ -110,7 +111,7 @@
 ;* Plot, f, mc(1,*), yrange = [0,1]
 ;* Plot, f, mc(2,*), yrange = [0,1]
 ; SEE ALSO:
-;  <A>COHERENCE</A>, <A>GCESTIMATE</A>
+;  <A>COHERENCE</A>
 ;-
 
 ;;; look in headerdoc.pro for explanations and syntax,
