@@ -6,8 +6,8 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: My_DWS = ( {S_Layer | S_Width, S_Height} {,T_Layer | T_Width, T_Height}
-;                                   [,DELAY  | ,D_RANDOM | ,D_NRANDOM | ,D_LINEAR | ,D_GAUSS] 
-;                                   [,WEIGHT | ,W_RANDOM | ,W_NRANDOM | ,W_LINEAR | ,W_GAUSS, W_DOG]
+;                                   [,DELAY  | ,D_RANDOM | ,D_NRANDOM | ,D_CONST | ,D_LINEAR | ,D_GAUSS] 
+;                                   [,WEIGHT | ,W_RANDOM | ,W_NRANDOM | ,W_CONST | ,W_LINEAR | ,W_GAUSS, W_DOG]
 ;                                   [,D_NONSELF] [,W_NONSELF] 
 ;                                   [,W_TRUNCATE [,W_TRUNC_VALUE]]
 ;                                   [,D_TRUNCATE [,D_TRUNC_VALUE]] )
@@ -17,7 +17,9 @@
 ; OPTIONAL INPUTS: DELAY,     WEIGHT    : Konstanter Wert, mit dem die Gewichte/Delays initialisiert werden. Default für WEIGHT ist 0.
 ;                  D_RANDOM,  W_RANDOM  : Array [Min,Max]. Die Gewichte/Delays werden gleichverteilt zufällig belegt im Bereich Min..Max. Diese Belegung wirkt additiv, wenn zusätzlich zu diesem Schlüsselwort noch ein anderes angegeben wird.
 ;                  D_NRANDOM, W_NRANDOM : Array [MW,sigma]. Die Gewichte/Delays werden normalverteilt zufällig belegt mit Mittelwert MW und Standardabweichung sigma. Diese Belegung wirkt additiv, wenn zusätzlich zu diesem Schlüsselwort noch ein anderes angegeben wird.
-;                             W_LINEAR  : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelförmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                             W_CONST   : Array [Value,Range]. Die Gewichte werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                  D_CONST              : Array [Value,Range]. Die Delays werden von jedem Soure-Neuron konstant mit Radius Range in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
+;                             W_LINEAR   : Array [Max,Range]. Die Gewichte werden von jedem Soure-Neuron kegelförmig in den Targetlayer gesetzt (mit Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_LINEAR             : Array [min,max,Range]. Die Delays werden von jedem Soure-Neuron umgekehrt kegelförmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Reichweite Range in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_GAUSS   : Array [Max,sigma]. Die Gewichte werden von jedem Source-Neuron gaußförmig in den Targetlayer gesetzt (mit Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                  D_GAUSS              : Array [Min,Max,sigma]. Die Delays werden von jedem Source-Neuron umgekehrt gaußförmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daß die HotSpots dort gleichmäßig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
@@ -57,17 +59,22 @@
 ;            Zur Abhängigkeit der ganzen Delay/Weight-Funktionen:
 ;
 ;
-;                         SetLinearDelay__
-;                        /                \
-;                       /                  SetDelay  -> DWS.Delays
-;                      /  SetGaussDelay___/
-;                     /  /
-;               InitDW----SetLinearWeight
-;                     \ \                \
-;                      \ \                \
-;                       \ SetGaussWeight---SetWeight -> DWS.Weights
-;                        \                /
-;                         SetDOGWeight___/
+;                            ___SetConstDelay__
+;                           /                  \
+;                          /  SetLinearDelay__  \
+;                         /  /                \  \
+;                        /  /                  SetDelay  -> DWS.Delays
+;                       /  /  SetGaussDelay___/
+;                      /  /  /
+;               InitDW--------SetLinearWeight
+;                      \  \ \                \
+;                       \  \ \                \
+;                        \  \ SetGaussWeight---SetWeight -> DWS.Weights
+;                         \  \                /  /
+;                          \  SetDOGWeight___/  /
+;                           \                  /
+;                            \_SetConstWeight_/
+;
 ;
 ;           ->->->-Richtung zunehmender Flexibilität->->->
 ;
