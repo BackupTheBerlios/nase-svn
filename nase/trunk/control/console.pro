@@ -39,6 +39,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.8  2000/06/19 12:44:56  saam
+;           replaced string processing by an IDL3.6
+;           conform version
+;
 ;     Revision 2.7  2000/04/03 12:13:34  saam
 ;           + removed side effect in console
 ;           + freeconsole now really closes the window
@@ -89,8 +93,11 @@ END
 
 help, calls=m
 m = m(1)
-pos1 = strpos(m,'/', /REVERSE_SEARCH) 
-_called_by =  strmid(m,pos1+1,strpos(m,'.pro')-pos1-1)
+
+_called_by = split(m,'/')
+_called_by = _called_by(N_elements(_called_by)-1)
+_called_by =  strmid(_called_by,0,strpos(_called_by,'.pro'))
+
 
 
 IF msg EQ 1 THEN level = 10
