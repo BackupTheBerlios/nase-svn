@@ -1,43 +1,58 @@
 ;+
-; NAME:                   TRAINSPOTTING
+; NAME: TRAINSPOTTING
 ;
-; PURPOSE:                Stellt ein Spikeraster dar (Ordinate: Neuronen, Abszisse: Zeit)
+; PURPOSE: Stellt ein Spikeraster dar (Ordinate: Neuronen, Abszisse: Zeit)
 ;
-; CATEGORY:               GRAPHICS
+; CATEGORY: GRAPHICS
 ;
-; CALLING SEQUENCE:       Trainspotting, nt 
-;                                        [, TITLE=title] [, STRETCH=stretch] [, LEVEL=level] 
-;                                        [, WIN=win] [, OFFSET=offset]
-;                                        [,/CLEAN] [, V_STRETCH=v_stretch]
+; CALLING SEQUENCE: Trainspotting, nt 
+;                                  [, TITLE=title] [, WIN=win], [CHARSIZE=Schriftgroesse]
+;                                  [, LEVEL=level] [, OFFSET=offset]
+;                                  [, XSYMBOLSIZE=Symbolbreite] [YSYMBOLSIZE=Symbolhoehe]
+;                                  [,/CLEAN]
+; INPUTS: nt: 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
 ;
-; INPUTS:                 nt      : 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
+; OPTIONAL INPUTS: Title:          der Titel des Plots 
+;                  Win:            oeffnet und benutzt Fenster NR. Win zur Darstellung
+;                  Schriftgroesse: die Groesse der Achsenbeschriftung.
+;                  Level:          gibt an, wie gro"s ein Eintrag in nt sein muss, um 
+;                  Offset:         Zahlenwert, der zur x-Achsenbeschriftung addiert wird; 
+;                                  sinnvoll, wenn man nur einen Teil der Zeitachse darstellen 
+;                                  will und der Prozedur, z.B. nt(*,500:1000) uebergibt; dann 
+;                                  kann man mit OFFSET=500 die Darstellung korrigieren
+;                                  dargestellt zu werden.
+;                                  Default: 1.0 (-> 1 Spike)
+;                  Symbolbreite:   Die Breite der zur Darstellung der Spikes verwendeten
+;                                  Symbole in Bruchteilen der verfuegbaren Plotbreite.
+;                                  (Diese seltsame Einheit wurde gewaehlt, um eine einheit-
+;                                  liche Darstellung auf unterschiedlichen Sheets zu erzielen.)
+;                                  Default: ein Pixel
+;                  Symbolhoehe:    Die Hoehe der zur Darstellung der Spikes verwendeten
+;                                  Symbole in Bruchteilen der verfuegbaren Plothoehe.
+;                                  Default: 1 / Anzahl der dargestellten Neuronen 
 ;
-; KEYWORD PARAMETERS:
-;                        TITLE     : der Titel des Plots
-;                        STRETCH   : Skalierungsfaktor fuer die Groesse der Symbole; 
-;                                     wird automatisch angepasst und muss nur selten von
-;                                     Hand gesetzt werden
-;                        LEVEL     : gibt an, wie gro"s ein Eintrag in nt sein muss, um 
-;                                     dargestellt zu werden, Default 1.0 (-> 1 Spike)
-;                        WIN       : oeffnet und benutzt Fenster NR. Win zur Darstellung
-;                        OFFSET    : Zahlenwert, der zur x-Achsenbeschriftung addiert wird; 
-;                                     sinnvoll, wenn man nur einen Teil der Zeitachse darstellen 
-;                                     will und der Prozedur, z.B. nt(*,500:1000) uebergibt; dann 
-;                                     kann man mit OFFSET=500 die Darstellung korrigieren
-;                        CLEAN     : unterdrueckt saemtliche Beschriftungen 
-;                                     (fuer Weiterbearbeitungen mit anderen Programmen)
-;                        V_STRETCH : vertikaler Verzerrungsfaktor fuer die Groesse der Symbole; 1.0 (Default) -> Quadrat
+; KEYWORD PARAMETERS: CLEAN : unterdrueckt saemtliche Beschriftungen und malt nur Spikes.
+;                             (fuer Weiterbearbeitungen mit anderen Programmen)
 ;
-; PROCEDURE:             Default
+; PROCEDURE: Default
 ;
 ; EXAMPLE:               
-;                        nt = randomu(seed,20,200) GE 0.8    
-;                        trainspotting, nt, TITLE='Spikeraster Layer 1', WIN=1, OFFSET=5000
-;                        trainspotting, nt, WIN=2, STRETCH=0.5,  /CLEAN
+;          nt = randomu(seed,20,200) GE 0.8    
+;          Trainspotting, nt, TITLE='Spikeraster Layer 1', WIN=1, OFFSET=5000
+;
+;          zur Verwendung der Symbolgroesse:
+;          Trainspotting, nt, TITLE='Spikes mit Idealgroesse'
+;          Trainspotting, nt, TITLE='Dickere Spikes', XSYMBOLSIZE=0.02
+;          Trainspotting, nt, TITLE='Niedliche Spikes', YSYMBOLSIZE=0.02
+;          Trainspotting, nt, TITLE='Richtig Fette Spikes', XSYMBOLSIZE=0.02, YSYMBOLSIZE=0.1
+
 ;
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.5  1998/01/17 17:13:57  thiel
+;            Neue Behandlung der Plotsymbolgroesse.
+;
 ;     Revision 1.4  1997/12/10 15:12:33  thiel
 ;            Jetzt mit neuen Usersymbols (zentriert)
 ;            und schoenerer Achsenbeschriftung (nicht negativ
@@ -53,60 +68,87 @@
 ;-
 
 
-PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, V_STRETCH=v_stretch
 
-;---------------> check syntax  IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
-   IF ((Size(nt))(0) NE 2) THEN Message, 'first arg must be a 2-dim array'
+PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, $
+                   STRETCH=stretch, V_STRETCH=v_stretch, CHARSIZE=Charsize, $
+                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize
+
+;-----Keine alten Keywords mehr verwenden:
+IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_STRETCH werden ab sofort per Order di Mufti X- und YSYMBOLSIZE verwendet. Die momentane Darstellung erfolgt mit deren Default-Werten. Noch Fragen???'
+
+
+;---------------> check syntax
+IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
+IF ((Size(nt))(0) NE 2) THEN Message, 'first arg must be a 2-dim array'
    
-   neurons = (SIZE(nt))(1)-1
-   IF (neurons LT 0) THEN Message, 'keine Neuronen zum Darstellen'
-   time =  (SIZE(nt))(2)-1
-   IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
+neurons = (SIZE(nt))(1)-1
+IF (neurons LT 0) THEN Message, 'keine Neuronen zum Darstellen'
+
+time =  Float((SIZE(nt))(2)-1)
+IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
    
    
-   Default, title  , 'Spikeraster'
-   Default, stretch, 1.0
-   Default, level  , 1.0
-   Default, offset , 0.0
-   
+Default, title  , 'Spikeraster'
+Default, level  , 1.0
+Default, offset , 0.0
+Default, Charsize, 1.0
+
    
 ;---------------> use own window if wanted
-  IF KEYWORD_SET(WIN) THEN BEGIN
-      Window,win,XSIZE=500,YSIZE=250, TITLE=title
-      !P.MULTI = [0,0,1,0,0]
-   END 
+IF KEYWORD_SET(WIN) THEN BEGIN
+   Window,win,XSIZE=500,YSIZE=250, TITLE=title
+   !P.MULTI = [0,0,1,0,0]
+END 
    
    
    
 ;---------------> plot axis
-   IF KEYWORD_SET(clean) THEN BEGIN
-      empty=StrArr(25)
-      for i=0,24 DO empty(i)=' '
-      plot, nt, /NODATA, XRANGE=[offset,time+offset+FIX(stretch)], YRANGE=[-FIX(stretch),neurons+FIX(stretch)], XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001, XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2]
-   END ELSE BEGIN
-      Plot, nt, /NODATA, CHARSIZE=1.5 ,XRANGE=[offset,time+offset+FIX(stretch)], YRANGE=[-FIX(stretch),neurons+FIX(stretch)], XSTYLE=1, YSTYLE=1, $
-       XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title, $
-       XTICKLEN=0.00001, YTICKLEN=0.00001, $
-       ytickformat='KeineNegativenUndGebrochenenTicks', $
-      Xtickformat='KeineNegativenUndGebrochenenTicks'
-   END
+IF KEYWORD_SET(clean) THEN BEGIN
+   empty=StrArr(25)
+   FOR i=0,24 DO empty(i)=' '
+   Plot, nt, /NODATA, XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], $
+    XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001, $
+    XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize
+END ELSE BEGIN
+   Plot, nt, /NODATA, CHARSIZE=Charsize , $
+    XRANGE=[offset,time+offset], $
+    YRANGE=[-1,neurons+1], $
+    XSTYLE=1, YSTYLE=1, $
+    XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title, $
+    XTICKLEN=0.00001, YTICKLEN=0.00001, $
+    YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks'
+ENDELSE 
 
 
-;----------------> define filled square
-   Default, v_stretch, 1.0
-  
-;   height = LONG(4*v_stretch)
-   height = LONG(2*v_stretch)
 
-;   UserSym, [ 0, 0, 4, 4, 0], [ 0, height, height, 0, 0], /FILL
-   UserSym, [ -2, 2, 2, -2, -2], [ -height, -height, height, height, -height], /FILL
-      
+;----------------> define UserSymbol: filled square
+PlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
+PlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
+
+PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
+
+Default, XSymbolSize, 0.0
+Default, YSymbolSize, 2.0/(Neurons+1)
+
+;----- Usersymbols, die nur ein Pixel breit sind (Stretch=0.0), duerfen
+;      nicht FILLed dargestellt werden, da sie dann nicht zu sehen sind:
+
+IF XSymbolSize EQ 0.0 THEN Fill = 0 ELSE Fill = 1
+
+xsizedevice = xsymbolsize*PlotAreaDevice(0)
+ysizedevice = ysymbolsize*PlotAreaDevice(1)
+
+xsizechar = xsizedevice/!D.X_CH_SIZE
+ysizechar = ysizedevice/!D.Y_CH_SIZE
+
+UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, -xsizechar/2.0, -xsizechar/2.0], [-ysizechar/2.0,-ysizechar/2.0,ysizechar/2.0,ysizechar/2.0,-ysizechar/2.0], FILL=Fill
+
+
 
 ;----------------> plot spikes
-   spikes = where(nt GE level, count)
-   IF (count NE 0) THEN BEGIN
-      PlotS, LONG(spikes / FLOAT(neurons+1) + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE= MAX([MIN([1.0, 35./time])*stretch,0.1])
-   END
+spikes = where(nt GE level, count)
+IF (count NE 0) THEN PlotS, LONG(spikes / FLOAT(neurons+1) + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
+
 
 
 END
