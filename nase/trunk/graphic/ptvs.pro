@@ -76,9 +76,11 @@
 ;               for an alternative [XY]-axis labeling. 
 ;  ZRANGE    :: Minimum and maximum value to scale the
 ;               <*>data</*>. The minimum will be scaled to color index
-;               0, the maximum to <*>TOP</*> or <*>!TOPCOLOR</*>. The
-;               passed range has to be larger than the actual scaling
-;               of <*>data</*>. 
+;               0, the maximum to <*>TOP</*> or <*>!TOPCOLOR</*>. If
+;               the actual data is larger than the provided range,
+;               values exeeding these limits will be clipped to the
+;               minimum or maximum allowed. If this happens, a warning
+;               will be placed at the right side of the plot. 
 ;  CUBIC, INTERP, MINUS_ONE:: will be passed to IDL routine
 ;                            <C>ConGrid</C>, to smooth the
 ;                            bitmap. This only works, if
@@ -325,7 +327,7 @@ PRO PTvS, data, XPos, YPos, $
       Plot, indgen(2), /NODATA,$
        xrange=XBeschriftung, xstyle=mystyle, xtickformat=xtf,$
        yrange=YBeschriftung, ystyle=mystyle, ytickformat=ytf,$
-       charsize=Charsize,$
+       charsize=Charsize,COLOR=color,$
        Position=[Origin_norm(0),Origin_norm(1),$
                  Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
                  Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
@@ -376,17 +378,44 @@ PRO PTvS, data, XPos, YPos, $
                                 ; subrange of the available color
                                 ; space therefore we can't use the
                                 ; scaled version   
-           IF ((min(data) LT _zrange(0)) OR (max(data) GT _zrange(1))) THEN Console, 'ZRANGE(0)<data<ZRANGE(1) violated..sorry', /FATAL
-                                ; this is necessary because otherwise
-                                ; data exceeds the valid color space
-                                ; if nonetheless wanted you have to
-                                ; implement some kind of clipping
-                                ; after the scale call 
 
-           UTV, Scl(data, [0, top], _ZRANGE), posbitmap_norm(0), posbitmap_norm(1), $
+
+
+           ;;;
+           ;;; clip data if required 
+           ;;;
+                                ; if the zrange is smaller than the actual data,
+                                ; we clip the data not fitting into the range and 
+                                ; generate a warning. i do not support
+                                ; a keyword to supress this warning,
+                                ; because i think the user should
+                                ; always be remembered that (s)he
+                                ; doesn't see the actual data
+
+           warnstr = ''
+
+           _data = data
+           print, _zrange(1), !nonel, long(_zrange(1)) NE !nonel
+           IF (LONG(_zrange(1)) NE !NONEl) THEN _data = _data < _zrange(1) 
+           IF (LONG(_zrange(0)) NE !NONEl) THEN _data = _zrange(0) > _data 
+;           _data = _zrange(0) > (data < _zrange(1))
+
+           IF MAX(data) GT _zrange(1) THEN warnstr = warnstr + 'maxima'
+           IF MIN(data) LT _zrange(0) THEN BEGIN
+               IF (MAX(data) GT _zrange(1)) THEN warnstr = warnstr + ' and '
+               warnstr = warnstr + 'minima'
+           END
+
+           ;;;
+           ;;; plot the clipped data 
+           ;;;
+           UTV, Scl(_data, [0, top], _ZRANGE), posbitmap_norm(0), posbitmap_norm(1), $
              X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
              ORDER=UpSideDown, POLYGON=POLYGON, $
              CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, TOP=top
+
+           IF (warnstr NE "") THEN Inscription, 'WARNING: '+warnstr+' clipped', /RIGHT, /MIDDLE, COLOR=color
+           
        END ELSE BEGIN
            UTVSCL, data, posbitmap_norm(0), posbitmap_norm(1), $
              X_SIZE=float(bitmap_dev(0))/!D.X_PX_CM, Y_SIZE=float(bitmap_dev(1))/!D.Y_PX_CM, $
@@ -405,6 +434,7 @@ PRO PTvS, data, XPos, YPos, $
              xrange=XBeschriftung, xstyle=1, xtickformat=xtf,$
              yrange=YBeschriftung, ystyle=1, ytickformat=ytf,$
              charsize=Charsize,$
+             COLOR=color,$
              Position=[Origin_norm(0),Origin_norm(1),$
                        Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.]),$
                        Origin_norm(1)+(xyrange_norm(1,1)-Origin_norm(1))*MIN([1./pixel_ratio,1.])],$
@@ -414,7 +444,8 @@ PRO PTvS, data, XPos, YPos, $
              Position=[Origin_norm(0),Origin_norm(1),xyrange_norm(0,1)-legwidth_norm(0),xyrange_norm(1,1)], $
              xrange=XBeschriftung, xstyle=1, xtickformat=xtf, $
              yrange=YBeschriftung, ystyle=1, ytickformat=ytf, $
-             charsize=Charsize,COLOR=color, _EXTRA=_extra
+             COLOR=color,$
+             charsize=Charsize, _EXTRA=_extra
        END
        !P.MULTI = PTMP
    END
