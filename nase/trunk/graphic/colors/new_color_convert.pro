@@ -1,37 +1,27 @@
 ;+
-; NAME:
+; NAME: New_Color_Convert
 ;
-; PURPOSE:
+; PURPOSE: Kann alles, was Color_Convert (standard-IDL) kann,
+;          beherrscht aber auch das YIC-Farbmodell.
 ;
-; CATEGORY:
+; CATEGORY: Graphic, allgemein, Farben
 ;
-; CALLING SEQUENCE:
+; CALLING SEQUENCE: s. Color_Convert, zusätzliche Keyords:
 ;
-; INPUTS:
+; KEYWORD PARAMETERS:   RGB_YIC, YIC_RGB,
+;                       HSV_YIC, YIC_HSV, 
+;                       HLS_YIC, YIC_HLS
 ;
-; OPTIONAL INPUTS:
+; OUTPUTS: s. Color_Convert
 ;
-; KEYWORD PARAMETERS:
-;
-; OUTPUTS:
-;
-; OPTIONAL OUTPUTS:
-;
-; COMMON BLOCKS:
-;
-; SIDE EFFECTS:
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-; EXAMPLE:
-;
-; SEE ALSO:
+; SEE ALSO: Color_Convert (Standard_IDL)
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1998/02/19 17:58:03  kupper
+;               Header geschrieben...
+;
 ;        Revision 2.4  1998/02/19 17:13:29  kupper
 ;               Fiese Skalar/Array-Seltsamkeit von IDL...
 ;
