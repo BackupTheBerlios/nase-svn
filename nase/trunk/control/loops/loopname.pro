@@ -10,7 +10,7 @@
 ;                         
 ; CATEGORY:           CONTROL
 ;
-; CALLING SEQUENCE:   Name = LoopName(LS [,/NOLONG])
+; CALLING SEQUENCE:   Name = LoopName(LS [,/NOLONG] [,/PRINT])
 ;
 ; INPUTS:             LS: eine mit InitLoop initialisierte LoopStructure
 ;
@@ -18,6 +18,9 @@
 ;                              
 ; KEYWORD PARAMETERS: NOLONG: der Tag-Name wird nicht zur Generierung des
 ;                             Strings verwendet
+;                     PRINT:  falls gesetzt liefert name einen String zurueck,
+;                             der auf dem Screen ausgegeben werden kann:
+;                                  'Parameter : Wert'
 ;
 ; EXAMPLE:
 ;                         MeineParameter={ a: 0.5, b:1.5432, $
@@ -47,6 +50,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1998/06/17 08:54:14  saam
+;          new keyword PRINT
+;
 ;     Revision 1.3  1998/01/21 21:39:47  saam
 ;           Wird ueberhaupt kein Parameter variiert
 ;           war der Name vorher leer, jetzt lautet
@@ -60,7 +66,7 @@
 ;
 ;
 ;-
-FUNCTION LoopName, LS, NOLONG=nolong
+FUNCTION LoopName, LS, NOLONG=nolong, PRINT=print
 
    IF Contains(LS.Info,'Loop') THEN BEGIN
       
@@ -72,11 +78,15 @@ FUNCTION LoopName, LS, NOLONG=nolong
       FOR tag = 0, LS.n-1 DO BEGIN 
          tagSize = SIZE(LS.struct.(tag))
          IF tagSize(N_Elements(tagSize)-1) GT 1 THEN BEGIN
-            IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
-            Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
+            IF Keyword_Set(PRINT) THEN BEGIN
+               Name = Name + STRCOMPRESS(STRING(tagNames(tag)))  + '  :  ' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL) + "\n"
+            END ELSE BEGIN
+               IF NOT Keyword_Set(NOLONG) THEN Name = Name + '_' + STRCOMPRESS(STRING(tagNames(tag)))
+               Name = Name + '_' + STRCOMPRESS(STRING((LS.struct.(tag))(countVal(tag))),/REMOVE_ALL)
+            END
          END 
       END
-      IF Name EQ '' THEN Name = '_'
+      IF (Name EQ '') AND NOT Keyword_Set(PRINT) THEN Name = '_'
       RETURN, Name
 
    END ELSE Message, 'no valid loop structure passed'
