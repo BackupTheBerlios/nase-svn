@@ -1,6 +1,7 @@
 ;+
 ; NAME:       SLIDCORR
 ;
+; AIM:        calculates the timeresolved crosscorrelation beetween two bandpassed signals
 ;
 ; PURPOSE:    Diese Prozedur berechnet eine gleitende Kreuzkorrelation zwischen zwei Kanälen im Zeitbereich.
 ;             
@@ -103,6 +104,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.13  2000/09/28 13:47:57  gabriel
+;          AIM tag added; message <> console
+;
 ;     Revision 1.12  2000/09/27 15:59:25  saam
 ;     service commit fixing several doc header violations
 ;
@@ -150,7 +154,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
                     HAMMING=hamming, DOUBLE=double, SAMPLPERIOD=samplperiod , PLOT=plot ,NOSAMPLE=nosample,$
                     SMOOTH=smooth,NULLHYPO=NULLHYPO,FYRANGE=FYRANGE, TITLE=title
 
-   IF N_Params() NE 3 THEN Message, 'wrong number of parameters'
+   IF N_Params() NE 3 THEN console, /fatal, 'wrong number of parameters'
 
    COMMON SLIDCORR_BLOCK,SHEET_3, PLOTFLAG
    COMMON common_random, seed
@@ -257,12 +261,12 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    ergsparrdim = size(ergsparr)
    DEFAULT,fband,[0,abs(fdata(N_ELEMENTS(fdata)-1))]
    plotfindex_R = where((fdata GE fband(0)) AND fdata LE fband(1),fcount) 
-   IF FCOUNT EQ 0 THEN message,"FBAND out of range"
+   IF FCOUNT EQ 0 THEN console, /fatal,"FBAND out of range"
    plotfindex_L = where((fdata LE -fband(0)) AND fdata GE -fband(1),fcount)
 
    fdata = shift(fdata,-ergsparrdim(2)/2)
    findex_R = where((fdata GE fband(0)) AND fdata LE fband(1),fcount) 
-   IF FCOUNT EQ 0 THEN message,"FBAND out of range"
+   IF FCOUNT EQ 0 THEN console, /fatal,"FBAND out of range"
    findex_L = where((fdata LE -fband(0)) AND fdata GE -fband(1),fcount)
 
    ;stop
