@@ -100,9 +100,9 @@ PRO  XYZBase, IntX_, wX, X,   IntY_, wY, Y,   IntZ_, wZ, Z
                               IntX = Float(IntX_(0:1))
    IF  N_Params() GE 6  THEN  IntY = Float(IntY_(0:1))
    IF  N_Params() GE 9  THEN  IntZ = Float(IntZ_(0:1))
-                              NX   = Floor((Max(IntX)-Min(IntX)) / Float(wX(0))) + 1
-   IF  N_Params() GE 6  THEN  NY   = Floor((Max(IntY)-Min(IntY)) / Float(wY(0))) + 1
-   IF  N_Params() GE 9  THEN  NZ   = Floor((Max(IntZ)-Min(IntZ)) / Float(wZ(0))) + 1
+                              NX   = Round((Max(IntX)-Min(IntX)) / Float(wX(0))) + 1
+   IF  N_Params() GE 6  THEN  NY   = Round((Max(IntY)-Min(IntY)) / Float(wY(0))) + 1
+   IF  N_Params() GE 9  THEN  NZ   = Round((Max(IntZ)-Min(IntZ)) / Float(wZ(0))) + 1
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Generating the X and Y planes:
