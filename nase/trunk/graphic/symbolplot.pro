@@ -21,11 +21,11 @@
 ; CALLING SEQUENCE:
 ;* SymbolPlot, Z [,X, Y [,OFFSET = Offset]]
 ;*  [,/OPLOT]
-;*  [,POSSYM = SymbolIndex] [,NEGSYM = SymbolIndex]
-;*  [,POSCOLOR = color] [,NEGCOLOR = color] [,COLORS = ColorIndexArray] [,/NASCOL]
-;*  [,POSORIENT= angle] [,NEGORIENT= angle] [,ORIENTATIONS=OrientArray] [,/RAD] [,/DIRECTION] [,/FILL]
+;*  [,POSSYM=...] [,NEGSYM=...] [,SYMSIZE=...]
+;*  [,POSCOLOR=...] [,NEGCOLOR=...] [,COLORS=...] [,/NASCOL]
+;*  [,POSORIENT=...] [,NEGORIENT=...] [,ORIENTATIONS=...] [,/RAD] [,/DIRECTION] [,/FILL]
 ;*  [,/NASE] [,/NOSCALE]
-;*  [,THICK = LinienDicke]
+;*  [,THICK=...]
 ;*  [other Plot-Parameters]
 ;
 ; INPUTS: 
@@ -52,6 +52,7 @@
 ;           Default: leeres Kästchen.
 ;  NEGSYM:: Das Symbol, das für positive Werte verwendet wird.
 ;          Default: X.
+;  SYMSIZE:: allows to adjust the maximal symbol size (default: 1)
 ;  NONESYM:: Das Symbol, das bei Angabe von /NASE für
 ;           NONE-Werte verwendet wird.
 ;           Default: N.
@@ -152,10 +153,12 @@ Pro SymbolPlot, _a, _posx, _posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NON
                THICK=thick, FILL=fill, $
                OFFSET=offset,$
                XTICKNAMESHIFT=xticknameshift, YTICKNAMESHIFT=yticknameshift, $
+                SYMSIZE=_symsize, $
                 _EXTRA=_extra
 
    ON_ERROR,2 
 
+   Default, _SYMSIZE, 1. ; this is just a scaling factor to modify the automatic symbolsize this routine choses
    Default, thick, 0
    Default, nase, 0
    Default, possym, 6
@@ -233,8 +236,8 @@ Pro SymbolPlot, _a, _posx, _posy, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NON
    pixelxsize = dev11(0)-dev00(0)
    pixelysize = dev11(1)-dev00(1)
    pixelsize = min([pixelxsize, pixelysize])
-   If !D.Name eq "PS" then symsize=pixelsize/250. else $
-    symsize = pixelsize/7.      ;SymSize für Wert 1.0
+   If !D.Name eq "PS" then symsize=_symsize*pixelsize/250. else $
+    symsize = _symsize*pixelsize/7.      ;SymSize für Wert 1.0
    ;;--------------------------------
 
    ;;------------------> Symbole plotten
