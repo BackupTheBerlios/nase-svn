@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1998/06/17 08:57:16  saam
+;             largest index could not be used
+;
 ;       Revision 1.1  1998/03/13 09:48:32  saam
 ;             creation
 ;
@@ -46,8 +49,9 @@ FUNCTION imoment, A, i, mdev = mdev, sdev = sdev, min=min, max=max
   ON_ERROR, 2
 
   s = Size(A)
-  IF s(0) LE i THEN Message, 'index too large for array'
-  IF i    GT 6 THEN Message, 'maximal index is 6'
+  IF s(0) LT i THEN Message, 'index too large for array'
+  IF i    GT 7 THEN Message, 'maximal index is 7'
+  IF i    LT 1 THEN Message, 'index has to be greater equal 1'
 
   
   m    = FltArr(s(i),4)
