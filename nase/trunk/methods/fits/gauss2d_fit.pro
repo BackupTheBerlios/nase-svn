@@ -131,6 +131,8 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ;		In this case, A(6) is always returned as 0.
 ;       XCENTER/
 ;       YCENTER = an initial guess where the center of the gaussian might be
+;       CONVERGED: If set to a named variable, the status of the fit will
+;               be returned.
 ;
 ; OUTPUTS:
 ;	The fitted function is returned.
@@ -177,6 +179,9 @@ Function Gauss2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = n
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  1998/03/10 16:51:41  saam
+;             new keyword CONVERGED
+;
 ;       Revision 1.3  1998/03/10 12:58:19  saam
 ;             new keywords [XY]CENTER
 ;             now uses ucurvefit
