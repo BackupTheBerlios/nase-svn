@@ -1,6 +1,8 @@
 ;+
 ; NAME:               Sincerpolate
 ;
+; AIM:                interpolation of discrete values in the signal theoretical sense
+;
 ; PURPOSE:            Interpoliert eine diskrete Zeitreihe (oder was
 ;                     auch immer) mit einer sin(x)/x Funktion.
 ;
@@ -44,10 +46,13 @@
 ;                dummy = get_kbrd(1)
 ;             END
 ;          END
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/28 09:35:05  gabriel
+;           AIM tag added
+;
 ;     Revision 1.3  1998/05/22 17:26:54  gabriel
 ;          sin x / x = 1 (x=0) fuer IDL 3.6 korrigiert
 ;
@@ -59,11 +64,11 @@
 ;           laenger als die Funktion
 ;
 ;
-;-
+;
 FUNCTION Sincerpolate, signal, delta, KSIZE=KSIZE, SINC=sinc
 
-   IF N_Params() NE 2 THEN Message, 'wrong number of parameters'
-   IF delta LT 1      THEN Message, 'Delta has to be 1,2,3,...'
+   IF N_Params() NE 2 THEN Console, 'wrong number of parameters', /FATAL
+   IF delta LT 1      THEN Console, 'Delta has to be 1,2,3,...',  /FATAL
 
 
    signalC = N_Elements(signal)
