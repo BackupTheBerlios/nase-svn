@@ -9,8 +9,8 @@
 ;  Control the debugging tools (DMsg and assert).
 ;   
 ; PURPOSE:
-;  <C>Debugging</C> is used to turn on or off <A
-;  NREF=DMSG>debugmessages</A> and <A NREF=ASSERT>assertions</A> in an
+;  <C>Debugging</C> is used to turn on or off 
+;  <A NREF=DMSG>debugmessages</A> and <A NREF=ASSERT>assertions</A> in an
 ;  effective way. Instead of simply suppressing output, the respective
 ;  routines are recompiled to an empty call.
 ;   
