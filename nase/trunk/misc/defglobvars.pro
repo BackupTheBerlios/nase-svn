@@ -44,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  1998/07/14 12:33:14  gabriel
+;          History-Buffer auf 200 Lines erhoeht
+;
 ;     Revision 1.1  1998/06/18 12:28:27  gabriel
 ;          Startup in Procedure
 ;
@@ -94,5 +97,8 @@ DefSysV, '!NASETABLE', {POS         : 0, $
 
 DefSysV, '!SIGMA2HWB', sqrt(alog(4d)), 1
 DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
+
+; input buffer (history) erhoehen
+!EDIT_INPUT = 200
 
 END
