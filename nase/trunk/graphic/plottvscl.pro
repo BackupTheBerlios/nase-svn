@@ -16,6 +16,11 @@
 ;                             [, /LEGEND]
 ;                             [, /ORDER]
 ;                             [, /NASE]
+;                             [, GET_POSITION=PlotPosition]
+;                             [, GET_COLOR=Farbe]
+;                             [, GET_XTICKS=XTicks]
+;                             [, GET_YTICKS=YTicks]
+;                             [, GET_PIXELSIZE=Pixelgroesse]
 ;
 ; INPUTS: Array : klar!
 ;
@@ -41,6 +46,16 @@
 ;                           D.h. z.B. werden Gewichtsmatrizen in der gleichen
 ;                           Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
 ;
+; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
+;                                  und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
+;                                  zurueckgibt.
+;                   Farbe: Gibt den Farbindex, der beim Zeichnen der Achsen verwendet wurde, zurueck.
+;                   [XY]Ticks: Ein Array, das die Zahlen enthaelt, mit denen die jeweilige Achse
+;                              ohne die Anwendung der 'KeineNegativenUndGebrochenenTicks'-Funktion
+;                              beschriftet worden waere. 
+;                   Pixelgroesse: Ein zweielementiges Array [XSize, YSize], das die Groesse der
+;                                 TV-Pixel in Normalkoordinaten zurueckliefert.
+;
 ; PROCEDURE: 1. Ermitteln des fuer die Darstellung zur Verfuegung stehenden Raums.
 ;            2. Zeichnen der Achsen an der ermittelten Position.
 ;            3. Ausfuellen mit einer entsprechend grossen UTVScl-Graphik
@@ -57,6 +72,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.13  1997/12/18 18:39:37  thiel
+;            Liefert jetzt auf Wunsch Informationen ueber PlotPosition,
+;            verwendete Farbe usw.
+;
 ;     Revision 2.12  1997/12/17 15:43:55  thiel
 ;            Weitere Verbesserung der /NOSCALE-Behandlung.
 ;
@@ -97,7 +116,13 @@
 
 
 PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
-                  LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, _EXTRA=_extra
+               LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
+               GET_Position=Get_Position, $
+               GET_COLOR=Get_Color, $
+               GET_XTICKS=Get_XTicks, $
+               GET_YTICKS=Get_YTicks, $
+               GET_PIXELSIZE=Get_PixelSize, $
+               _EXTRA=_extra
 
 
 ;-----Sichern der urspruenglichen Device-Parameter
@@ -116,6 +141,7 @@ save_rpsc = !REVERTPSCOLORS
 sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
 !REVERTPSCOLORS = save_rpsc
 
+Get_Color = sc
 
 Default, Charsize, 1.0
 Default, NOSCALE, 0
@@ -197,14 +223,17 @@ IF NOT Set(FullSheet) THEN BEGIN
      ENDELSE 
      Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
       xrange=XBeschriftung, /xstyle, xtickformat='KeineNegativenUndGebrochenenTicks', $
-      yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', charsize=charsize,_EXTRA=_extra
+      yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', $
+      XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
 ENDIF ELSE BEGIN
    !P.Region = [XPos,YPos,0.75,1.0]
    Plot, indgen(2), /NODATA, Color=sc, $
       xrange=XBeschriftung, /xstyle, xtickformat='KeineNegativenUndGebrochenenTicks', $
-      yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', charsize=charsize,_EXTRA=_extra
+      yrange=YBeschriftung, /ystyle, ytickformat='KeineNegativenUndGebrochenenTicks', $
+      XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
 ENDELSE
 
+Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
 
 TotalPlotWidthNormal = (!X.Window)(1)-(!X.Window)(0)
 TotalPlotHeightNormal = (!Y.Window)(1)-(!Y.Window)(0)
@@ -216,6 +245,8 @@ PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_
 
 ;-----Plotten der UTVScl-Graphik:
 UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown, NOSCALE=NoScale
+
+Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
 ;-----Legende, falls erwuenscht:
 IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
