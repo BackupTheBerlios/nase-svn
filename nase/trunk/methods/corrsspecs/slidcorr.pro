@@ -105,6 +105,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.9  1998/06/23 11:16:13  saam
+;           + indgen -> lindgen
+;           + fix -> long
+;           + new keyword TITLE
+;
 ;     Revision 1.8  1998/06/22 21:07:24  saam
 ;           loop variable in line 174 was only int :(
 ;
@@ -134,7 +139,7 @@
 
 function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=stepsize,$
                     HAMMING=hamming, DOUBLE=double, SAMPLPERIOD=samplperiod , PLOT=plot ,NOSAMPLE=nosample,$
-                    SMOOTH=smooth,NULLHYPO=NULLHYPO
+                    SMOOTH=smooth,NULLHYPO=NULLHYPO, TITLE=title
 
    IF N_Params() NE 3 THEN Message, 'wrong number of parameters'
 
@@ -145,6 +150,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    ;;xdata = reform(datarr(chan1,*))
    ;;ydata = reform(datarr(chan2,*))
    ;IF set(logplot) THEN plot = 1
+   Default, TITLE, "SLIDCROSSPOW- AND SLIDCROSSCORR-ANALYSIS"
    Default, Double, 0
    default,nosample,0
    default,NULLHYPO,0
@@ -160,14 +166,14 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    _wsize =  wsize/(SAMPLPERIOD * 1000)
    VERL = DBLARR(_wsize)
    dim = N_ELEMENTS(xdata)
-   default,taxis, indgen(dim) * SAMPLPERIOD * 1000
+   default,taxis, lindgen(dim) * SAMPLPERIOD * 1000
    steps = dim - _wsize
-   tdata = (indgen(steps/stepsize+1)*stepsize ) *   SAMPLPERIOD * 1000 + MIN(taxis)
+   tdata = (lindgen(steps/stepsize+1)*stepsize ) *   SAMPLPERIOD * 1000 + MIN(taxis)
    ;;stop
    XSIZE = 600 &  YSIZE=320
    IF plot eq 1 AND PLOTFLAG EQ 0 THEN BEGIN
       
-      sheet_3 = definesheet(/WINDOW,XSIZE=XSIZE,YSIZE=YSIZE*2.5,TITLE="SLIDCROSSPOW- AND SLIDCROSSCORR-ANALYSIS")
+      sheet_3 = definesheet(/WINDOW,XSIZE=XSIZE,YSIZE=YSIZE*2.5,TITLE=title)
       plotflag = 1
    ENDIF
 
@@ -245,7 +251,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    fx =  findgen(N_ELEMENTS(findex_R))
    fhamming =0.54 - 0.46*Cos(2*!Pi*fx/(N_ELEMENTS(findex_R)-1))
    fdim = N_ELEMENTS(fdata)
-   taudata = (indgen(fdim) - fdim/2)*(SAMPLPERIOD*1000)
+   taudata = (lindgen(fdim) - fdim/2)*(SAMPLPERIOD*1000)
    ergsparrdim = size(ergsparr)
 
 ;   IF set(setweight) THEN BEGIN
@@ -265,7 +271,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
 ;   ENDIF
    ;stop
 
-   FOR K=0,ergsparrdim(1)-1 DO BEGIN
+   FOR K=0l,ergsparrdim(1)-1 DO BEGIN
       cspectmp = reform(ergsparr(k,*))
       ;IF set(setweight) THEN cspectmp = reform(ergsparr(k,*)*weightarr(k,*))
      
@@ -310,7 +316,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
    ccorrsize = size(ccorrarr)
    ;;nach Peaks suchen
    flag = 0
-   FOR k=0, ccorrsize(1)-1 DO BEGIN 
+   FOR k=0l, ccorrsize(1)-1 DO BEGIN 
       ccorr = REFORM(ccorrarr(k,*))
       chuell = REFORM(chuellarr(k,*))
       index1 = where(abs(chuell) EQ max(abs(chuell)) ,count1)
