@@ -121,7 +121,7 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, AL
              last     : -1l, $
              sust     : SUSTAIN }
       
-      RETURN, Handle_Create(VALUE=LP, /NO_COPY)
+      RETURN, Handle_Create(!MH, VALUE=LP, /NO_COPY)
    END
 
    IF Keyword_Set(alpha) THEN BEGIN
@@ -140,7 +140,7 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, AL
              noacc    : NOACCUMULATION ,$
              last     : -1l, $
              sust     : SUSTAIN }
-      RETURN, Handle_Create(VALUE=LP, /NO_COPY)
+      RETURN, Handle_Create(!MH, VALUE=LP, /NO_COPY)
    END
 
 
@@ -157,7 +157,7 @@ FUNCTION InitRecall, S, WIDTH=width, HEIGHT=height, LINEAR=linear, EXPO=expo, AL
              last   : -1l ,$
              sust   : SUSTAIN }
 
-      RETURN, Handle_Create(VALUE=LP, /NO_COPY)
+      RETURN, Handle_Create(!MH, VALUE=LP, /NO_COPY)
    END
 
    
