@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/13 15:16:08  kupper
+;        Cosmetic change: Now using PUSHD/POPD.
+;
 ;        Revision 1.1  1999/09/07 16:20:13  thiel
 ;            Wrapper for two helpful perl-statements.
 ;
@@ -38,9 +41,7 @@
 
 PRO Faceit_Rename, dir, oldname, newname
 
-   Spawn, '$pwd', olddir
-
-   cd, dir
+   pushd, dir                   ;change to dir and store old dir on stack
 
    Message, /INFO, 'Executing perl commands.'
 
@@ -49,7 +50,7 @@ PRO Faceit_Rename, dir, oldname, newname
    Spawn, "perl -e 'while (<*.pro>) {$n=$_; s/"+oldname+"/"+newname+"/gi; rename $n, $_}'"
 
 
-   cd, olddir
+   popd                         ;return to old dir
 
    Message, /INFO, 'Renamed files in '+dir+' from '+oldname+ $
     '* to '+newname+'* and substituted occurences of '+oldname+ $
