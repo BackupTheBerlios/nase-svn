@@ -6,5 +6,6 @@ PushD, GetEnv("NASEPATH"); cd to nase
 .run graphic/widgets/swallow_events
 .run graphic/widgets/value
 .run graphic/widgets/uvalue
+.run misc/keywords/gethtag
 
 PopD ;Return to old dir
