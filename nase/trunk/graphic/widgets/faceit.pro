@@ -131,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.11  1999/11/29 16:07:02  kupper
+;        Implemented service function "FACEIT_NewUserbase".
+;
 ;        Revision 1.10  1999/11/16 18:03:23  kupper
 ;        Now sets black/white linear colortable after initialization is
 ;        finished. Thus, ShowIts with PRIVATE_COLORS not set don't look
@@ -189,6 +192,38 @@
 ;
 ;-
 
+
+
+Function Faceit_NewUserbase, W_userbase, _EXTRA=_extra
+   ;; W_userbase is the highest widget in hierarchy that the
+   ;; user ever gets his hands on. So he can only give us that
+   ;; information. We now need to get out W_Base from it. We
+   ;; know that W_userbase has a shell-base, which only purpose
+   ;; it is to store W_Base as it's User Value:
+   shell = Widget_Info(/PARENT, W_userbase)
+   Widget_Control, shell, GET_UVALUE=W_Base 
+   ;; now we will build a new top-level-base, which has W_Base
+   ;; as Group-Leader. It will also store W_Base as it's User
+   ;; Value. Moreover, it serves as a shell for the new
+   ;; userbase, which is returned to the user.
+   ;; The shell will have simname_USEREVENT as event handler,
+   ;; just like the shell of the standard W_userbase.
+   Widget_Control, W_Base, GET_UVALUE=uval
+   new_shell = Widget_Base(GROUP_LEADER=W_Base, $
+                           UVALUE=W_Base, $
+                           _EXTRA=_extra) ;event_pro see XMANAGER call below.
+   ;; now register this new top level base at the xmanager to
+   ;; have it's events processed:
+   XMANAGER, "FaceIt! "+uval.simname, new_shell, /NO_BLOCK, EVENT_HANDLER=uval.simname+'_USEREVENT'
+   ;; XMANAGER replaces the TLB's EVENT_PRO by this event-handler!
+
+   ;; finally, return the new user-base to the user:
+   return, Widget_Base(new_shell, $
+                       _EXTRA=_extra)
+   ;; by the way: is it okay to use the same _EXTRAs for
+   ;; new_shell (a top level base) and the base contained
+   ;; therein, or do we have to sort keywords???
+End
 
 
 PRO FaceIt_Compile, simname
@@ -497,13 +532,17 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
 
 
    ;--- User base:
-   W_UserBase = Widget_Base(W_Base, $
+   W_UserBaseShell = Widget_Base(W_Base, UVALUE=W_Base, $
+                                EVENT_PRO=simname+'_USEREVENT' )
+   ;; the only puropse of W_UserBaseShell is to supply the event 
+   ;; handler with the ID of W_Base. As now there is the
+   ;; function FaceIt_NewUserBase, W_Base may not simply be the 
+   ;; parent of W_UserBase!
+   W_UserBase = Widget_Base(W_UserBaseShell, $
                             FRAME=3, $
                             /ALIGN_CENTER, $
                             /BASE_ALIGN_CENTER, $
-                            /COLUMN, $
-                            EVENT_PRO=simname+'_USEREVENT' $
-                           )
+                            /COLUMN )
    
    
    Message, /INFO, ""
@@ -514,12 +553,7 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
 
    userstruct = Create_Struct( $
       'simname', simname, $
-      'dataptr', FaceIt_CreateData(simname) $
-   )
-
-   userstruct = Create_Struct(userstruct, $
-      'displayptr', FaceIt_CreateDisplay(simname, $
-                       userstruct.dataptr, W_UserBase), $
+      'dataptr', FaceIt_CreateData(simname), $
       'W_Base', W_Base, $
       'topmenu', topmenu, $                        
       'W_simlogo', w_simlogo, $
@@ -540,8 +574,19 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
       'continue_simulation', 0, $ ; Flags
       'display', 1 $
    )
-   
 
+   ;; we have to put these informations into W_Base's User
+   ;; Value, for it may be required when creating the display
+   ;; (currently, FaceIt_NewUserbase() is the only function that 
+   ;; uses it.)
+   Widget_Control, W_Base, SET_UVALUE=userstruct
+
+   userstruct = Create_Struct(userstruct, $
+      'displayptr', FaceIt_CreateDisplay(simname, $
+                       userstruct.dataptr, W_UserBase) $
+   )
+   
+   ;; Now update user value:
    Widget_Control, W_Base, SET_UVALUE=userstruct
             
 
