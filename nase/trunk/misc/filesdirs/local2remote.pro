@@ -8,7 +8,7 @@
 ;
 ; CATEGORY:           MISC
 ;
-; CALLING SEQUENCE:   Local2Remote, LocalDir, RemoteDir [, /NOZIP]
+; CALLING SEQUENCE:   Local2Remote, LocalDir, RemoteDir [, /NODEL] [, /NOZIP]
 ;
 ; INPUTS:             LocalDir: das Verzeichnis, was kopiert werden soll. 
 ;                     RemoteDir: das Zielverzeichnis. Der zugehoerige Host wird aus 
@@ -17,6 +17,7 @@
 ; KEYWORD PARAMETERS: NOZIP: Sind die Daten in RemoteDir bereits gepackt kostet das
 ;                            erneute packen viel Zeit und bringt keinen Gewinn. Daher
 ;                            kann man es abschalten
+;                     NODEL: in diesem Fall werden die lokalen Daten nicht geloescht
 ;
 ; RESTRICTIONS:
 ;                     - im .rhosts-File muessen alle beteiligten Rechner eingetragen sein
@@ -29,12 +30,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/10/29 13:04:08  saam
+;           NODEL-Option hinzugefuegt
+;
 ;     Revision 1.1  1997/10/29 12:38:46  saam
 ;           aus Remote2Local entstanden
 ;
 ;
 ;-
-PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip
+PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
 
 
    IF N_Params() NE 2 THEN Message, 'wrong syntax, read documentation'
@@ -94,5 +98,8 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip
          END
       END
    END
+
+   IF NOT Keyword_Set(NODEL) THEN spawn, 'rm -f '+LocalDir+'/*'
+
    
 END
