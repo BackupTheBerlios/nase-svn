@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.21  2000/07/07 13:38:49  gabriel
+;          !REVERTPSCOLORS=0 for color postscript
+;
 ;     Revision 2.20  1999/10/29 11:49:16  kupper
 ;     Setting Colortables using UTVSCL is VERY SLOW over the net, when
 ;     a TRUE_COLOR-Display is used.
@@ -258,7 +261,10 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
       sheet.z = old
       
       !PSGREY = NOT(sheet.color)
-      
+
+      ; color tables shouldn't be reverted
+      !REVERTPSCOLORS = NOT(sheet.color)
+
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       Set_Plot, 'NULL'
       Plot, Indgen(10) ; to establish a coordinate system, that PlotS will work
