@@ -67,7 +67,7 @@ Default, count , REPLICATE(!NONE, ndim)
 Default, step  , REPLICATE(1    , ndim)
 Default, cshift, REPLICATE(0    , ndim)
 
-if Set(uniform) then step = (dims+0.)/count
+if Set(uniform) then step = fix(dims/count)
 
 
 ;check grid method
