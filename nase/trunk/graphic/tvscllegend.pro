@@ -31,11 +31,27 @@
 ;*  [,/NOSCALE]
 ;*  [,STRETCH=...] [,H_STRETCH=...] [,V_STRETCH=...]
 ;*  [,NORM_X_SIZE=...] [, NORM_Y_SIZE=...]
-;*  [,/CENTER]
+;*  [,/[X|Y]CENTER]
 ;
 ; INPUTS:
-;  xnorm:: X-position of legend's center in normal coordinates.
-;  ynorm:: Y-position of legend's center in normal coordinates.
+;  xnorm:: X-position of the legend rectangle's lower left corner in normal
+;          coordinates. The legend rectangle includes the color code
+;          image and its min, mid and max annotations, but not its
+;          optional title. Thus, <*>xnorm</*> takes into account if
+;          annotations are put on the left by using the <*>/LEFT</*>
+;          switch. If the <*>[X]CENTER</*> keywords are used,
+;          <*>xnorm</*> gives 
+;          the x-position of the color code image's center, regardless
+;          of any annotation. 
+;  ynorm:: Y-position of legend rectangle's lower left corner in
+;          normal coordinates. The legend rectangle includes the color code
+;          image and its min, mid and max annotations, but not its
+;          optional title. Thus, <*>ynorm</*> takes into account if
+;          annotations are put to the top by using the <*>/CEILING</*>
+;          switch. If the <*>[Y]CENTER</*> keywords are used,
+;          <*>ynorm</*> gives 
+;          the y-position of the color code image's center, regardless
+;          of any annotation. 
 ;
 ; INPUT KEYWORDS:
 ;  CHARSIZE:: Factor determining the charsize relative to the standard
@@ -67,11 +83,15 @@
 ;          the opposite side as the minimal and maximal numbers and is
 ;          aligned at the long side of the legend. As usual in IDL,
 ;          the <*>CHARSIZE</*> is increased by a factor of 1.2.
-;  STRETCH, H_STRETCH, V_STRETCH, CENTER, NORM_X_SIZE, NORM_Y_SIZE:: See <A>UTVScl</A>.
+;  STRETCH, H_STRETCH, V_STRETCH, [X|Y]CENTER, NORM_X_SIZE, NORM_Y_SIZE:: See <A>UTVScl</A>. <B>Warning:</B> Due to the
+;                <A>ExtraSet()</A>
+;                procedure, setting <*>[X|Y]CENTER=0</*> does not have
+;                the desired effect. You rather have to remove the
+;                <*>[X|Y]CENTER</*> keywords from the call to unset them. 
 ;
 ; EXAMPLE:
-;* TvSclLegend, 0.5, 0.5, /CENTER
-;* TvSclLegend, 0.2, 0.2, MAX=10, MIN=-10, MID='Null', /VERTICAL, /LEFT 
+;* Plot, IndGen(10),/NODATA
+;* TvSclLegend, 0.4, 0.1, NORM_Y_SIZE=0.75, MAX=10, MIN=-10, MID='Null', /VERTICAL, /LEFT
 ;
 ; SEE ALSO: 
 ;  <A>PTVS</A>, <A>PTV</A>, <A>UTvScl</A>.
@@ -81,7 +101,7 @@
 PRO TvSclLegend, _xnorm, _ynorm $
                  ,TITLE=title $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
-                 ,MAX=max, MID=mid, MIN=min $
+                 ,MAX=ma, MID=mid, MIN=mi $
                  ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom $
                  , SAMESIDE=sameside $
                  ,CHARSIZE=_Charsize, COLOR=color $
@@ -120,28 +140,28 @@ PRO TvSclLegend, _xnorm, _ynorm $
    type = Size(mi)
    IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(mi, FORMAT='(G0.0)'), /REMOVE_ALL)
    
-
    ;; if center is set, the legend color array is centered to xnorm, ynorm
    ;; 
    IF NOT ExtraSet(e, 'CENTER') THEN BEGIN
       IF NOT ExtraSet(e, 'XCENTER') THEN BEGIN
          ;; determine space that is needed left to the legend for the text
-         IF Keyword_Set(LEFT) THEN xnorm=xnorm + (MAX(STRLEN([max,mid,min])))*x_ch_size $
-          ;; adding y_ch_size to xnorm seemed to be incorrect
+         IF Keyword_Set(LEFT) THEN $
+          xnorm=xnorm + (0.5+MAX(STRLEN([max,mid,min])))*x_ch_size 
+          ;; adding y_ch_size to xnorm was used to reserve space for a
+         ;; possible title, but maybe one does not want this
+         ;; space. Therefore, it is ommitted here and left to the
+         ;; user's responsibility.
          ;;                                ELSE xnorm=xnorm + y_ch_size
-         ;; adding x_ch_size only complicates the positioning,
-         ;; therefore it has been ommitted
-         ELSE xnorm=xnorm       ; + x_ch_size
       END
       IF NOT ExtraSet(e, 'YCENTER') THEN BEGIN
          ;; determine space that is needed at the bottom of the legend
-         IF Keyword_Set(CEILING) THEN ynorm=ynorm + y_ch_size*1.2 $
-          ;; adding y_ch_size only complicates the positioning,
-         ;; therefore it has been ommitted 
-         ELSE ynorm=ynorm       ; + y_ch_size
+         IF Keyword_Set(CEILING) THEN $
+          ;; no more space for title which is only optional
+          ynorm=ynorm $ ;; + y_ch_size*1.2 $ ;; add space for the title 
+         ELSE $ 
+          ynorm=ynorm + y_ch_size ;; add space for the annotation
       END
    END
-   
 
    norm_length = 0.8
    aspect_ratio = 0.2
@@ -169,7 +189,7 @@ PRO TvSclLegend, _xnorm, _ynorm $
    UTvScl, /NOSCALE, colorarray, xnorm, ynorm $
     , NORM_X_SIZE=norm_x_size, NORM_Y_SIZE=norm_y_size $
     , DIMENSIONS=legend_dims $
-    , YCENTER=ycenter, _EXTRA=e
+    , XCENTER=xcenter, YCENTER=ycenter, _EXTRA=e
 
    xpos  = legend_dims[0]
    ypos  = legend_dims[1]
