@@ -35,6 +35,7 @@
 ;                       verbindliche Keyword-Parameter, Mirko Saam, 25.7.97
 ;                       Ergaenzung um Lernpotential-Parameter,Andreas, 29. Juli 97
 ;                       Strukturnamen entfernt, Rüdiger Kupper, 30.7.97
+;                       Dafür Typ-Tag eingeführt, 30.7.97
 ;
 ;-
 FUNCTION InitLayer_3, WIDTH=width, HEIGHT=height, TYPE=type
@@ -43,7 +44,8 @@ FUNCTION InitLayer_3, WIDTH=width, HEIGHT=height, TYPE=type
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   Layer = { w      : width                ,$
+   Layer = { Type   : '3'                  ,$ 
+             w      : width                ,$
              h      : height               ,$
              para   : type                 ,$
              F      : DblArr(width*height) ,$
