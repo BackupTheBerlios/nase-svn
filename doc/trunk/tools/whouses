@@ -1,0 +1,84 @@
+#!/usr/bin/perl -w 
+#
+# $Id$
+#
+use strict;
+use Getopt::Std;
+
+my ($DIR, @occ, %opt);
+
+getopts("hd:", \%opt);
+
+if ($opt{"h"}) { usage(); }
+if ($opt{"d"}) { $DIR = $opt{"d"} } else { $DIR = "/vol/neuro/nase/nasedocu";}
+if ($#ARGV < 0) {usage(); }
+
+
+sub usage {
+  print STDERR "$0 [-h] [-d dir] r0 ... rn\n\n";
+  print STDERR "recursively searches all IDL source files for the occurrence of specific\n";
+  print STDERR "routines in the way grep does. In contrast to grep it knows the\n";
+  print STDERR "IDL syntax and ignores all CVS/RCS stuff.\n\n";
+  print STDERR "-h     : produces this help\n";
+  print STDERR "-d dir : searches dir instead of the default ($DIR)\n";
+  print STDERR "ri     : routine names to be searched for\n";
+  exit -1;
+}
+
+
+sub search_pro {
+  my ($data, $occ);
+
+  my ($file, @occ, @found) = @_;
+  
+  undef $/;
+  open(PRO, "<$file") || die "can't open $file for read: $!\n";
+  $data = <PRO>;
+  close(PRO) || die "can't close $file: $!\n";
+
+  $data =~ s/PRO\s+\w+//gi;      # kill PRO name
+  $data =~ s/FUNCTION\s+\w+//gi; # kill FUNCTION name
+  $data =~ s/;.*\n//gi;          # kill comments
+  $data =~ s/\".*\"//gi;         # kill "" strings 
+  $data =~ s/\'.*\'//gi;         # kill '' strings 
+  
+  foreach $occ (@occ){
+    $occ =~ s/\.pro$//gi;
+    $file =~ s/$DIR\///gi;
+    if ($data =~ /[^, \.\(0-9a-zA-Z=:\[\]\+_]\s*$occ\s*[^ \.0-9a-zA-Z=:\[\]\+_]/i){ 
+      push(@found, $occ);
+      next; 
+    }
+  }
+  if ($#found >= 0){ 
+    print "$file";
+    if ($#occ >= 1) { print ": ", join(" ",sort(@found)), "\n"; } else { print "\n"; }
+  }
+}
+
+
+sub search_dir {
+  my ($dir, @sdir, @file);
+
+  ($dir) = @_;
+
+  # search for non-dot subdirs and IDL files
+  opendir(DIR, "$dir") || print STDERR "can't opendir $dir: $!\n";
+  @sdir = grep { /^[^\.]/ && -d "$dir/$_" && ! /(CVS)|(RCS)/ } readdir(DIR);
+  rewinddir(DIR);
+  @file = sort grep { /\.pro$/i && -f "$dir/$_" } readdir(DIR);
+  closedir DIR;      
+
+
+  foreach (sort @file) {
+    search_pro("$dir/$_", @ARGV);
+  }
+  foreach (@sdir){
+    search_dir("$dir/$_");
+  }
+
+}
+
+
+search_dir($DIR);
+exit 0;
