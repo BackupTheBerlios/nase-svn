@@ -1,3 +1,47 @@
+;+
+; NAME:
+; (Hint: Insert name in THIS line, if you want it to appear in the
+; HTML-help. If you put it elsewhere, the HTML-help item will be 
+; generated from the filename.)
+;
+; PURPOSE: 
+;
+; CATEGORY: 
+;
+; CALLING SEQUENCE: 
+;
+; INPUTS: 
+;
+; OPTIONAL INPUTS: -please remove any sections that do not apply-
+;
+; KEYWORD PARAMETERS: 
+;
+; OUTPUTS: 
+;
+; OPTIONAL OUTPUTS: 
+;
+; COMMON BLOCKS: 
+;
+; SIDE EFFECTS: 
+;
+; RESTRICTIONS: 
+;
+; PROCEDURE: 
+;
+; EXAMPLE: 
+;
+; SEE ALSO: <A HREF="#MY_ROUTINE">My_Routine()</A>
+;
+; MODIFICATION HISTORY:
+;
+;        $Log$
+;        Revision 1.2  2000/03/09 16:04:53  kupper
+;        First version.
+;        should work.
+;
+;-
+
+
 ;; ------------ Member access methods -----------------------
 Pro leaky_integrator_array::tau, tau
    self.decay_factor = exp(-1/float(tau))
