@@ -35,22 +35,29 @@
 ;  Statistics
 ;
 ; CALLING SEQUENCE:
-;* aecxy = AEC(x, y, fX, fY, fS  [, BANDWIDTH=...] [, FLANKWIDTH=...] [, SSIZE=...] [, SSHIFT=...] [/SQUARED]
+;* aecxy = AEC(x, y, fX, fY, fS  [, BANDWIDTH=...] [, FLANKWIDTH=...]
+;                                [, SSIZE=...] [, SSHIFT=...] [/SQUARED] [,/DIAG]
 ;
 ; INPUTS:
 ;  x::   An integer or float array containing in the first dimension (!) the vector(s) which is (are) to be
 ;        "envelope-correlated" with the vector(s) in <*>y</*>.
 ;  y::   An integer or float array of the same dimensional structure as x.
 ;  fX::  An integer or float scalar or array giving the centre frequency (frequencies) of the pass-band(s) which is (are)
-;        to be used for computing the <*>x</*> envelopes.
+;        to be used for computing the <*>x</*> envelopes. You may
+;        specify <*>!NONE</*> to use the signal itself instead of the envelope.
 ;  fY::  An integer or float scalar or array giving the centre frequency (frequencies) of the pass-band(s) which is (are)
-;        to be used for computing the <*>y</*> envelopes.
+;        to be used for computing the <*>y</*> envelopes. You may
+;        specify <*>!NONE</*> to use the signal itself instead of the envelope.
 ;  fS::  An integer or float scalar giving the frequency (in Hz) which was used for sampling the signal epoch(s).
 ;
 ; INPUT KEYWORDS:
 ;  BANDWIDTH::    An integer or float scalar giving the full width (in Hz) of the pass-band(s) which is (are) to be used
 ;                 for computing the envelopes. By default, <*>BANDWIDTH</*> is set to 10 (Hz) if <*>SSIZE</*> is not set;
 ;                 otherwise it is set to 5000/<*>SSIZE</*> (Hz).
+;  DIAG     ::    The standard behaviour of this routine is to compute
+;                 the correlation between all combinations of
+;                 <*>fX</*> and <*>fY</*>. With this option, only
+;                 correlations between fX[i] and fY[i] are calculated.
 ;  FLANKWIDTH::   An integer or float scalar giving the width (in Hz) of the filter flanks when computing the envelopes.
 ;                 By default, <*>FLANKWIDTH</*> is set to <*>BANDWIDTH</*>/2.
 ;  SSIZE::        Set this keyword to an integer or float scalar giving the length (in ms) of one time-slice for the
@@ -99,7 +106,7 @@
 
 
 
-FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  $
+FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  DIAG=diag, $
                  bandwidth = bandwidth_, flankwidth = flankwidth_, ssize = ssize_, sshift = sshift_, squared = squared
 
 
@@ -171,11 +178,13 @@ FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  $
    EY = Make_Array(dimension = [NfY,DimsX], type = 4, /nozero)   ; array for the Y envelopes (frequency bands in 1st dimension)
    ; Determination of the envelopes:
    FOR  ifX = 0, NfX-1  DO  $
-     EX[ifX,*,*,*,*,*,*,*] = Envelope(Float(X), fS, flow = fX[ifX]-BandWidth/2, fhigh = fX[ifX]+BandWidth/2,  $
-                                                    wlow = FlankWidth, whigh = FlankWidth, /hertz)
+     IF fX[ifX] EQ !NONE THEN EX[ifX,*,*,*,*,*,*,*] = Float(X) ELSE $ 
+        EX[ifX,*,*,*,*,*,*,*] = Envelope(Float(X), fS, flow = fX[ifX]-BandWidth/2, fhigh = fX[ifX]+BandWidth/2,  $
+                                                       wlow = FlankWidth, whigh = FlankWidth, /hertz)
    FOR  ifY = 0, NfY-1  DO  $
-     EY[ifY,*,*,*,*,*,*,*] = Envelope(Float(Y), fS, flow = fY[ifY]-BandWidth/2, fhigh = fY[ifY]+BandWidth/2,  $
-                                                    wlow = FlankWidth, whigh = FlankWidth, /hertz)
+     IF fY[ifY] EQ !NONE THEN EY[ifY,*,*,*,*,*,*,*] = Float(Y) ELSE $ 
+        EY[ifY,*,*,*,*,*,*,*] = Envelope(Float(Y), fS, flow = fY[ifY]-BandWidth/2, fhigh = fY[ifY]+BandWidth/2,  $
+                                                       wlow = FlankWidth, whigh = FlankWidth, /hertz)
    ; The dimension coding the different frequency bands is now shifted to the last position, because time is needed
    ; in the first dimension:
    Permutation = [IndGen(SizeX[0])+1 , 0]
@@ -190,15 +199,26 @@ FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  $
    IF  NfY EQ 1  THEN  EYSlices = Reform(EYSlices, [1, Size(EYSlices, /dim)], /overwrite)  $
                  ELSE  EYSlices = Transpose(EYSlices, [SizeY[0]+1 , IndGen(SizeY[0]+1)])
 
-   ; array for the correlation values:
-   IF SizeX(0) GT 1 THEN AECxy = Make_Array(dimension = [ NfX , NfY , (Size(EXSlices, /dim))[2] , DimsX[1:*] ], type = 4, /nozero) $
-                    ELSE AECxy = Make_Array(dimension = [ NfX , NfY , (Size(EXSlices, /dim))[2] ]             , type = 4, /nozero)
-   ; The correlation values are computed:
-   FOR  ifX = 0, NfX-1  DO  FOR  ifY = 0, NfY-1  DO  AECxy[ifX,ifY,*,*,*,*,*,*] =  $
-     Correlation(Reform(EXSlices[ifX,*,*,*,*,*,*,*], /over), Reform(EYSlices[ifY,*,*,*,*,*,*,*], /over), 1, /energynorm)
-
-   IF  Keyword_Set(squared)  THEN  Return, AECxy^2 * Signum(AECxy)  $
-                             ELSE  Return, AECxy
-
+   IF Keyword_Set(DIAG) THEN BEGIN
+       ; array for the correlation values:
+       IF SizeX(0) GT 1 THEN AECxy = Make_Array(dimension = [ NfX , (Size(EXSlices, /dim))[2] , DimsX[1:*] ], type = 4, /nozero) $
+                        ELSE AECxy = Make_Array(dimension = [ NfX , (Size(EXSlices, /dim))[2] ]             , type = 4, /nozero)
+       ; The correlation values are computed:
+       FOR  ifX = 0, NfX-1  DO  AECxy[ifX,*,*,*,*,*,*] =  $
+         Correlation(Reform(EXSlices[ifX,*,*,*,*,*,*,*], /over), Reform(EYSlices[ifX,*,*,*,*,*,*,*], /over), 1, /energynorm)
+       
+       IF  Keyword_Set(squared)  THEN  Return, AECxy^2 * Signum(AECxy)  $
+                                 ELSE  Return, AECxy
+   END ELSE BEGIN
+       ; array for the correlation values:
+       IF SizeX(0) GT 1 THEN AECxy = Make_Array(dimension = [ NfX , NfY , (Size(EXSlices, /dim))[2] , DimsX[1:*] ], type = 4, /nozero) $
+                        ELSE AECxy = Make_Array(dimension = [ NfX , NfY , (Size(EXSlices, /dim))[2] ]             , type = 4, /nozero)
+       ; The correlation values are computed:
+       FOR  ifX = 0, NfX-1  DO  FOR  ifY = 0, NfY-1  DO  AECxy[ifX,ifY,*,*,*,*,*,*] =  $
+         Correlation(Reform(EXSlices[ifX,*,*,*,*,*,*,*], /over), Reform(EYSlices[ifY,*,*,*,*,*,*,*], /over), 1, /energynorm)
+       
+       IF  Keyword_Set(squared)  THEN  Return, AECxy^2 * Signum(AECxy)  $
+                                 ELSE  Return, AECxy
+   END
 
 END
