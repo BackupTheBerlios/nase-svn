@@ -71,7 +71,7 @@
 ;                           den maximalen Kontrast erreicht.
 ;                           Rüdiger, 1.8.1997
 ;                       Schluesselwort DELAYS hinzugefuegt, sodass nun auch alternativ auch die Verzoegerungen dargestellt werden koennen, Mirko, 3.8.97
-;
+;                       Bug bei WSet korrigiert, wenn WinNR uebergeben wird, Mirko, 3.8.97
 ;-
 
 
@@ -101,15 +101,15 @@ If Not Set(WINNR) Then Begin
     Window, 0 , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
     WSet, 0
          Endif Else Begin 
+                      WSet, WinNr
                       XGroesse = (!D.X_Size-Matrix.source_w)/(Matrix.target_W*Matrix.source_W)
                       YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
-                      WSet, WinNr
                   EndElse    
 
 MaxFarbe = !D.Table_Size-1
 
-SetColorIndex, MaxFarbe,  255,100,0
-erase, MaxFarbe
+;SetColorIndex, MaxFarbe,  255,100,0
+erase, rgb(255,100,0)
 
 
 
