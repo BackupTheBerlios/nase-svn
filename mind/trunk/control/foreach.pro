@@ -1,73 +1,82 @@
 ;+
-; NAME:               ForEach
+; NAME:
+;  ForEach
 ;
-; PURPOSE:            Performs a special action for various iterations and over several loop
-;                     variables.
-;                     The LoopValues have to be given by __TVxxx, the corresponding tag names by
-;                     __TNxxx in the AP-structure, where xxx may be an arbitrary string.
+; PURPOSE: 
+;  Performs a special action for various iterations and over several
+;  loop variables.
+;  The LoopValues have to be given by __TVxxx, the corresponding tag
+;  names by __TNxxx in the AP-structure, where xxx may be an arbitrary
+;  string.
 ;
-; CATEGORY:           MIND CONTROL
+; CATEGORY:
+;  MIND / CONTROL ROUTINES
 ;
-; CALLING SEQUENCE:   iter = ForEach(procedure [,p1 [,p2 [,p3 [,p4 [,p5 [,p6 [,p7 [p8 [,p9]]]]]]]]] $
-;                                     [,LSKIP=lskip] [,LCONST=lconst]
-;                                     [,__XX (see below!)]
-;                                     [,ZZYY (see below!)]
-;                                     [,SKEL=skel]
-;                                     [,/W] [,VALUES=values]
-;                                     [,/FAKE] [,/QUIET] [,_EXTRA=e] )
+; CALLING SEQUENCE:
+;  iter = ForEach(procedure [,p1[,p2[,p3[,p4[,p5[,p6[,p7[p8[,p9]]]]]]]]] $
+;                           [,LSKIP=lskip] [,LCONST=lconst]
+;                           [,__XX (see below!)]
+;                           [,ZZYY (see below!)]
+;                           [,SKEL=skel]
+;                           [,/W] [,VALUES=values]
+;                           [,/FAKE] [,/QUIET] [,_EXTRA=E] )
 ;
-; INPUTS:             procedure: the string of the procedure to be performed for each iteration
+; INPUTS:
+;  procedure: the string of the procedure to be performed for each
+;             iteration
 ;
-; OPTIONAL INPUTS:    p[1-9]: optional arguments for procedure
+; OPTIONAL INPUTS:
+;  p[1-9]: optional arguments for procedure
 ;
-; KEYWORD PARAMETERS: W     : wait for a keystroke after each iteration
-;                     VALUES: return the index of the tag where the loopcondition resides (does not work at the moment)
-;                     QUIET : supresses the output of the latest iteration
-;                     FAKE  : simulates the routine without actually calling procedure
-;                     E     : all other keywords are passed to procedure
-;                     LSKIP : various loops in a hierarchie can be
-;                             skipped, this is
-;                             especially useful for metaroutines that
-;                             evaluate data accross multiple iterations.
-;                             You can specify a scalar or an array of
-;                             loop indices to be skipped (1 denotes
-;                             the most inner loop).
-;                             negative values mean: skip all but this
-;                             index. Note that the loop is completely
-;                             omitted (including the filename). See
-;                             also LCONST.
-;                     LCONST: While LSKIP skips various loops, LCONST
-;                             just assumes a constant value for them
-;                             (the one they currently have). The
-;                             Syntax is the same as for LSKIP. 
-;                     SKEL  : iteration separator for filenames (default '_')
-;                     __XX  : Loop Variables may be modified/set as
-;                             Keywords. If you have a loop variable
-;                             ITER, you can change the default value by passing
-;                             __ITER={whatever_you_like}. ForEach will
-;                             then use your KeywordOptions.
-;                     ZZYY  : Keyword values to the client procedure can be
-;                             dependent on the current value of the
-;                             loop. IF you want the Keyword MYPARA to have
-;                             the value of loop PARA, you simply call
-;                             foreach ZZMYPARA='PARA'. 
-; 
+; KEYWORD PARAMETERS:
+;  W     : wait for a keystroke after each iteration
+;  VALUES: return the index of the tag where the loopcondition resides
+;          (does not work at the moment)
+;  QUIET : supresses the output of the latest iteration
+;  FAKE  : simulates the routine without actually calling procedure
+;  LSKIP : various loops in a hierarchie can be skipped, this is
+;          especially useful for metaroutines that evaluate data
+;          accross multiple iterations. You can specify a scalar or an
+;          array of loop indices to be skipped (1 denotes the
+;          innermost loop). negative values mean: skip all but this
+;          index. Note that the loop is completely omitted (including
+;          the filename). See also LCONST.
+;  LCONST: While LSKIP skips various loops, LCONST just assumes a
+;          constant value for them (the one they currently have). The
+;          syntax is the same as for LSKIP.  
+;  SKEL  : iteration separator for filenames (default '_')
+;  __XX  : Loop Variables may be modified/set as keywords. If you have
+;          a loop variable ITER, you can change the default value by passing
+;          __ITER={whatever_you_like}. ForEach will then use your
+;          KeywordOptions.
+;  ZZYY  : Keyword values to the client procedure can be dependent on
+;          the current value of the loop. IF you want the Keyword
+;          MYPARA to have the value of loop PARA, you simply call
+;          foreach ZZMYPARA='PARA'. 
+;  E     : all other keywords are passed to procedure
 ;         
+; OUTPUTS:
+;  iter  : the number of performed iterations 
 ;
-; OUTPUTS:            iter  : the number of performed iterations 
+; COMMON BLOCKS:
+;  ATTENTION
 ;
-; COMMON BLOCKS:      ATTENTION
+; RESTRICTIONS:
+;  all Keywords beginning with __ will not be passed to the client
+;  PROCEDURE
+; 
+; EXAMPLE:
+;  see <A HREF=http://neuro.physik.uni-marburg.de/mind/demo#DFOREACH>dforeach</A>
 ;
-; RESTRICTIONS:       all Keywords beginning with __ will not be
-;                     passed to the client PROCEDURE 
-;
-; EXAMPLE:            see <A HREF=http://neuro.physik.uni-marburg.de/mind/demo#DFOREACH>dforeach</A>
-;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/control#FAKEEACH>fakeeach</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#INITLOOP>initloop</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPVALUE>loopvalue</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPTAGS>looptags</A>
+; SEE ALSO:
+;  <A HREF=http://neuro.physik.uni-marburg.de/mind/control#FAKEEACH>fakeeach</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#INITLOOP>initloop</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPVALUE>loopvalue</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPTAGS>looptags</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/08/11 10:24:52  thiel
+;         Now it really WAITS for keypress if wanted.
+;
 ;     Revision 1.8  2000/06/08 10:32:13  saam
 ;           + keyword SKEL added
 ;
@@ -100,8 +109,10 @@
 ;
 ;
 ;-
-FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet,$
-                  LSKIP=_lskip, LCONST=_lconst, SKEL=skel, SEP=sep, _EXTRA=e
+
+FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9 $
+                  , W=w, values=values, ltags=ltags, fake=fake, quiet=quiet $
+                  , LSKIP=_lskip, LCONST=_lconst, SKEL=skel, SEP=sep, _EXTRA=e
 
    COMMON ATTENTION
    
@@ -214,7 +225,11 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
                9: CALL_PROCEDURE, procedure,p1,p2,p3,p4,p5,p6,p7,p8,_EXTRA=newextra
                10: CALL_PROCEDURE, procedure,p1,p2,p3,p4,p5,p6,p7,p8,p9,_EXTRA=newextra
             END
-            IF Keyword_Set(w) THEN Waiting
+            IF Keyword_Set(w) THEN BEGIN
+               Console, ' Press any key.', /MSG
+               key = Get_KBrd(1)
+            ENDIF
+
             SimTimeStep
             Looping, LS, dizzy
          END UNTIL dizzy
