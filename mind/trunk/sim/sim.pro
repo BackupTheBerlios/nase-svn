@@ -1,8 +1,9 @@
 ;+
 ; NAME: 
-;  SIM
+;  Sim
 ;
-; AIM: Simulate network topology, display variables and record results. 
+; AIM:
+;  Simulate network topology, display variables and record results. 
 ;
 ; PURPOSE: 
 ;  Simulates a defined network topology with variable input,
@@ -10,76 +11,29 @@
 ;  records the results.
 ;
 ; CATEGORY:
-;  MIND / SIMULATION ROUTINES
+;  Graphic
+;  MIND
+;  Simulation
 ;
 ; CALLING SEQUENCE: 
-;  SIM [,/WSTOP]
+;  Sim [,/WSTOP][,/NOGRAPHIC]
 ;
-; KEYWORD PARAMETERS: 
-;  WSTOP     : stop after weight initialization; DWs are in CON(i),  i=0..n-1
-;  NOGRAPHIC : dont show any graphics (is considerably faster!)
+; INPUT KEYWORDS: 
+;  WSTOP:: stop after weight initialization; DWs are in CON(i), i=0..n-1
+;  NOGRAPHIC:: dont show any graphics (is considerably faster!)
 ;
 ; COMMON BLOCKS: 
 ;  ATTENTION
 ;
+; EXAMPLE:
+;* DSim & Sim
+;
 ; SEE ALSO: 
-;  <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITINPUT>initinput</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INPUT>input</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITWEIGHTS>initweights</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>  
-;
-; MODIFICATION HISTORY:
-;
-;      $Log$
-;      Revision 1.15  2000/09/28 09:33:16  alshaikh
-;            optional saving of DW-structures (FILE='NULL')
-;
-;      Revision 1.14  2000/08/08 11:53:59  thiel
-;          Plotcilloscope now adds th0 to threshold.
-;
-;      Revision 1.13  2000/07/14 12:46:40  saam
-;            performance improvement by replacing
-;            a handle copy operation
-;
-;      Revision 1.12  2000/05/18 12:56:52  saam
-;            saves initial weights only when learning
-;
-;      Revision 1.11  2000/05/17 08:44:06  saam
-;            marginal change
-;
-;      Revision 1.10  2000/04/06 09:43:27  saam
-;            enhanced robustness if paramaters (like DWW
-;            structures) are missing
-;
-;      Revision 1.9  2000/02/01 18:06:49  saam
-;            analayer -> mind
-;            closeanalayer -> freeanalayer
-;
-;      Revision 1.8  2000/01/28 15:16:45  saam
-;            changend console call by putting the console
-;            data from the common block into the ap structure
-;
-;      Revision 1.7  2000/01/27 17:45:24  alshaikh
-;            new console-syntax
-;
-;      Revision 1.6  2000/01/26 16:19:52  alshaikh
-;            print,message -> console
-;
-;      Revision 1.5  2000/01/26 10:04:07  alshaikh
-;            + changed InitLearn-call
-;
-;      Revision 1.4  2000/01/24 15:31:31  alshaikh
-;            new layer-initialization
-;
-;      Revision 1.3  2000/01/14 11:02:02  saam
-;            changed dw structures to anonymous/handles
-;
-;      Revision 1.2  1999/12/10 09:36:48  saam
-;            * hope these are all routines needed
-;            * no test, yet
-;
-;      Revision 1.1  1999/12/09 18:21:00  saam
-;            renamed from simn5
-;
-;
+;  <A>InitInput</A>, <A>Input</A>, <A>InitWeights</A>, <A>ForEach</A>  
 ;-
+
+
+
 PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
    COMMON SH_SIM, SIMwins, CSIM_1, CSIM_2, CSIM_3, CSIM_4, CSIM_5, CSIM_6, CSIM_7, CSIM_8
@@ -368,10 +322,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          FOR i=0,NWmax DO BEGIN
             OpenSheet, CSIM_6, i
             NW = Handle_Val(P.NWATCH(i))
-            LayerData, L(NW.L), FEEDING=f, POTENTIAL=m, SCHWELLE=s $
-             , PARAMETERS=layerdatap
+            LayerData, L(NW.L), FEEDING=f, POTENTIAL=m, SCHWELLE=s
+;             , PARAMETERS=layerdatap
             Plotcilloscope, PCWN(i), [F(NW.h,NW.w), M(NW.h, NW.w) $
-                                      , S(NW.h, NW.w)+layerdatap.th0]
+                                      , S(NW.h, NW.w)]
             CloseSheet, CSIM_6, i
          END
          
