@@ -22,7 +22,7 @@ all :
 			"C_LD_FLAGS=-S -shared" ;; \
 	   "Linux" ) make libs \
 			"CC=cc" \
-			"CXX=c++" \
+			"CXX=g++" \
 			"C_LD=ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-shared" ;; \
