@@ -56,6 +56,10 @@
 ;          to  one value in the array. SCALE can be used to scale
 ;          every single frame.
 ;  ZOOM :: One can enlarge the display by the chosen zoomfactor.
+;  SMOOTH:: smoothes the plot, using congrid with <*>CUBIC=-0.5</*>
+;           and <*>/MINUS_ONE</*>, only in combination with <*>/ZOOM</*>
+;           
+;
 ;  TAUMEMO :: Set this keyword to receive a decaying
 ;             impression of your video, corresponding to the
 ;             chosen value for the time constant.
@@ -70,6 +74,8 @@
 ;
 ;-
 PRO VCR_DISPLAY, UD
+
+
 
    Handle_Value, UD._a, a, /NO_COPY
 
@@ -91,13 +97,21 @@ PRO VCR_DISPLAY, UD
       ENDIF ELSE BEGIN
       UD.memo= reform(a(UD.t,*,*))
       ENDELSE 
-
-      IF UD.scale THEN BEGIN
-         UTvScl, UD.memo, STRETCH=ud.zoom
-      END ELSE BEGIN
-         UTv, UD.memo, STRETCH=ud.zoom
-      END
+      if Keyword_Set(ud.smooth) then begin
+         IF UD.scale THEN BEGIN
+            UTvScl, UD.memo, STRETCH=ud.zoom, cubic=-0.5, /MINUS_ONE
+         END ELSE BEGIN
+            UTv, UD.memo, STRETCH=ud.zoom, cubic=-0.5, /MINUS_ONE
+         end 
+      end else begin
+         IF UD.scale THEN BEGIN
+            UTvScl, UD.memo, STRETCH=ud.zoom
+         END ELSE BEGIN
+            UTv, UD.memo, STRETCH=ud.zoom
+         end 
+      endelse
    END
+
    WSet, oId
 
    Handle_Value, UD._a, a, /NO_COPY, /SET
@@ -125,7 +139,7 @@ PRO VCR_Event, Event
 
      IF ((UD.Play EQ -1) AND (UD.t GT 0)) OR ((UD.Play EQ 1) AND (UD.t LT UD.MT-1)) THEN BEGIN
         UD.t = UD.t + UD.play
-        VCR_Display, UD
+        VCR_Display, UD 
         Widget_Control, UD.Timer, TIMER=UD.Delay/1000.
      END ELSE UD.play = 0
   END ELSE BEGIN
@@ -160,6 +174,8 @@ PRO VCR_Event, Event
            UD.Play = 0
            UD.t = UD.mt-1
            VCR_Display, UD
+
+
         END
         'BMPBTNEJECT': BEGIN
            UD.Play = 0
@@ -240,7 +256,7 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo
+PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize, TAUMEMO=taumemo, smooth=smooth
 
    On_Error,2 
 
@@ -250,6 +266,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE
   Default, delay, 500
   Default, title, 'Videoplayer'
   Default, scale, 0
+  Default, smooth, 0
   Default, XSIZE, 320
   Default, YSIZE, 200
   Default, taumemo, 0.0
@@ -697,6 +714,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, DELAY=delay, TITLE=title, SCALE=scale, XSIZE
                pm    : pm            ,$
                modus : modus         ,$
                t     : 0l            ,$
+               smooth : smooth       ,$
                zoom  : zoom          ,$
                did   : drawid        ,$ ;id of drawing area
               timeid : FIELDTIME     ,$
