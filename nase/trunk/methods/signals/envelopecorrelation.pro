@@ -104,7 +104,7 @@ FUNCTION  EnvelopeCorrelation,   X, Y, fX_, fY_, fS_,  $
    ; Checking parameters for errors:
    ;----------------------------------------------------------------------------------------------------------------------
 
-   On_Error, 2
+;   On_Error, 2
 
    IF  NOT(Set(X) AND Set(Y) AND Set(fX_) AND Set(fY_) AND Set(fS_))  THEN  Console, '   Not all arguments defined.', /fatal
 
@@ -188,7 +188,8 @@ FUNCTION  EnvelopeCorrelation,   X, Y, fX_, fY_, fS_,  $
                  ELSE  EnvYSlices = Transpose(EnvYSlices, [SizeY[0]+1 , IndGen(SizeY[0]+1)])
 
    ; array for the correlation values:
-   Cxy = Make_Array(dimension = [ NfX , NfY , (Size(EnvXSlices, /dim))[2] , DimsX[1:*] ], type = 4, /nozero)
+   IF (Size(X))(0) GT 1 THEN Cxy = Make_Array(dimension = [ NfX , NfY , (Size(EnvXSlices, /dim))[2] , DimsX[1:*] ], type = 4, /nozero) $
+                        ELSE Cxy = Make_Array(dimension = [ NfX , NfY , (Size(EnvXSlices, /dim))[2] ], type = 4, /nozero)
    ; The correlation values are computed:
    FOR  ifX = 0, NfX-1  DO  FOR  ifY = 0, NfY-1  DO  Cxy[ifX,ifY,*,*,*,*,*,*] =  $
      Correlation(Reform(EnvXSlices[ifX,*,*,*,*,*,*,*], /over), Reform(EnvYSlices[ifY,*,*,*,*,*,*,*], /over), 1, /energynorm)
