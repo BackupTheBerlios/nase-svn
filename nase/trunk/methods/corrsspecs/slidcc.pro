@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/06/19 13:09:07  saam
+;           + replaced LExtrac call by nothing
+;
 ;     Revision 1.3  1999/12/02 15:08:16  saam
 ;           simplified calculation of the real time shift
 ;
@@ -91,9 +94,9 @@ FUNCTION SlidCC, A,B, PShift, taxis, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=sa
    slicenr = (SIZE(SA))(1)
    SCC = FltArr(slicenr, 2*RShift+1)
    FOR i=0,slicenr-1 DO BEGIN
-      slicea = REFORM(LExtrac(SA, 1, i))
-      sliceb = REFORM(LExtrac(SB, 1, i))
-      SCC(i, *) = CrossCor(slicea, sliceb, rshift)
+       slicea = REFORM(SA(i,*))
+       sliceb = REFORM(SB(i,*))
+       SCC(i, *) = CrossCor(slicea, sliceb, rshift)
    END
 
 
