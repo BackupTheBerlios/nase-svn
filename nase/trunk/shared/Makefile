@@ -2,6 +2,10 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.3  1999/02/25 20:50:06  saam
+#               + nasec.c now split up in several .o files
+#               + only mtime at the moment
+#
 #         Revision 1.2  1999/02/24 20:41:50  saam
 #               working install option
 #
@@ -13,6 +17,8 @@
 SHELL=/bin/sh
 CFLAGS=
 FFLAGS=
+
+OBJECTS=mtime.o
 
 SHL_EXT=so
 SHL_LIBS=nasec.$(SHL_EXT) 
@@ -42,8 +48,8 @@ libs : $(SHL_LIBS)
 
 
 
-nasec.$(SHL_EXT) : nasec.o
-	$(C_LD) $(C_LD_FLAGS) -o nasec.$(SHL_EXT) nasec.o $(SIMPLE_EXPORT) \
+nasec.$(SHL_EXT) : $(OBJECTS)
+	$(C_LD) $(C_LD_FLAGS) -o nasec.$(SHL_EXT) $(OBJECTS) \
 		$(C_LD_POST)
 
 
