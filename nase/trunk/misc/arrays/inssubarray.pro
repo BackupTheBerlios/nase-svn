@@ -19,7 +19,11 @@
 ; OPTIONAL INPUTS:     i1/i2: relative position (i1,i2) according to the
 ;                             array's origin (0,0) or the center (if
 ;                             keyword CENTER is set). The default
-;                             value is zero for both, i1 and i2. 
+;                             value is zero for both, i1 and i2. You
+;                             can also omit i2, then the whole array
+;                             is inserted at the position specified by
+;                             the onedimensional index i1.
+; 
 ;
 ; KEYWORD PARAMETERS: CENTER: array b will be centered in array a with a
 ;                             relative offset (i1,i2)
@@ -40,6 +44,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/07/04 13:59:51  saam
+;           extended positional argument syntax
+;           for 1d positions
+;
 ;     Revision 1.3  2000/06/28 09:31:29  saam
 ;           + B may exeed A's borders now
 ;           + added new keyword WRAP
@@ -55,7 +63,7 @@
 ;
 ;
 ;-
-FUNCTION InsSubArray, _A, B, y, x, CENTER=CENTER, WRAP=wrap
+FUNCTION InsSubArray, _A, B, _y, _x, CENTER=CENTER, WRAP=wrap
 
    On_Error, 2
 
@@ -69,15 +77,28 @@ FUNCTION InsSubArray, _A, B, y, x, CENTER=CENTER, WRAP=wrap
       Console, "-- This warning may be removed in a coming revision. --", /WARN
    Endif
       
-   Default, x, 0
-   Default, y, 0
    
    A = _A
    sa = SIZE(A)
    sb = SIZE(B)
 
    IF (sa(1) LT sb(1)) OR (sa(2) LT sb(2)) THEN Console, 'array to be inserted is larger than original array', /FATAL
-   
+
+   CASE N_Params() OF
+       3: BEGIN
+           x = _y  /  SA(1)
+           y = _y MOD SA(1)
+          END
+       4: BEGIN
+           x = _x
+           y = _y
+          END
+    ELSE: BEGIN
+            Default, x, 0
+            Default, y, 0
+          END
+   END
+
    IF Keyword_Set(CENTER) THEN BEGIN
       x = x+sa(2)/2-sb(2)/2
       y = y+sa(1)/2-sb(1)/2
