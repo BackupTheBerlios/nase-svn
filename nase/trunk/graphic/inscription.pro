@@ -1,54 +1,48 @@
 ;+
-; NAME: INSCRIPTION
+; NAME:
+;  Inscription
 ;
-; AIM: Add text to a plot, with easy positioning.
-;
-; PURPOSE:            A proceure for plotting text inside, outside, left, right, ...  of a data plot box
-;                     with automatical arrangement.
-;
-; CATEGORY:  Graphics
-;
-;
-; CALLING SEQUENCE:   inscription ,TEXT[,INSIDE=INSIDE][,OUTSIDE=OUTSIDE][,LEFT=LEFT][,RIGHT=RIGHT][,$
-;                                 CENTER=CENTER][,BOTTOM=BOTTOM][,TOP=TOP][,$
-;                                 MIDDLE=MIDDLE][,XCORR=XCORR][,YCORR=ycorr][,_EXTRA=e]
-;
+; VERSION:
+;  $Id$
 ; 
-; INPUTS:             TEXT:   a string variable
+; AIM:
+;  Add text to a plot, with easy positioning.
 ;
-;	
-; KEYWORD PARAMETERS:      
-;                         INSIDE:  inside of data plot box
-;                         OUTSIDE: outside of data plot box (default)
-;                         LEFT:    near to the left border of data plot box (default)
-;                         CENTER:  in the vertical center of data plot box
-;                         RIGHT:   near to the right border of data plot box
-;                         TOP:     near to the top  of data plot box (default)
-;                         MIDDLE:  in the horizontal center of data plot box
-;                         BOTTOM:  near to the bottom of data plot box
-;                         XCORR:   coordinate correction of the text position in x direction (multiples of !D.X_CH_SIZE)
-;                         YCORR:   coordinate correction of the text position in y direction (multiples of !D.Y_CH_SIZE)
-;                         _EXTRA:  see the XYOUTS procedure
+; PURPOSE:
+;  A procedure for plotting text inside, outside, left, right, ...  of a data plot box
+;  with automatical arrangement.
+;
+; CATEGORY:
+;  Graphic
+;
+; CALLING SEQUENCE:
+;*  inscription ,TEXT [,INSIDE=...] [,OUTSIDE=...] [,/LEFT | ,/RIGHT | ,/CENTER]
+;*                    [,/BOTTOM | ,/TOP | ,/MIDDLE] [,XCORR=...] [,YCORR=...]
+;*                    [,_EXTRA=e]
+; 
+; INPUTS: 
+;  TEXT:: a string variable
+;
+; INPUT KEYWORDS:      
+;  INSIDE::  inside of data plot box
+;  OUTSIDE:: outside of data plot box (default)
+;  LEFT::    near to the left border of data plot box (default)
+;  CENTER::  in the vertical center of data plot box
+;  RIGHT::   near to the right border of data plot box
+;  TOP::     near to the top  of data plot box (default)
+;  MIDDLE::  in the horizontal center of data plot box
+;  BOTTOM::  near to the bottom of data plot box
+;  XCORR::   coordinate correction of the text position in x direction (multiples of !D.X_CH_SIZE)
+;  YCORR::   coordinate correction of the text position in y direction (multiples of !D.Y_CH_SIZE)
+;  _EXTRA::  see the XYOUTS procedure
 ;
 ; RESTRICTIONS:
-;                         Before using this procedure, a plot routine with a data plot box must be used.
+;  Before using this procedure, a plot routine with a data plot box must be used.
+;
 ; EXAMPLE:
-;                         plot, indgen(10) 
-;                         inscription,"left top inside",/INSIDE,/LEFT,/TOP
-;                         inscription,"right bottom outside ",/OUTSIDE,/RIGHT,/BOTTOM
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 2.3  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.2  1999/02/25 11:14:55  gabriel
-;          Da war was mit dem KEYWORD Default setting faul
-;
-;     Revision 2.1  1998/08/24 10:08:08  gabriel
-;           Was wir alle schon immer haben wollten
-;
+;*plot, indgen(10) 
+;*inscription,"left top inside",/INSIDE,/LEFT,/TOP
+;*inscription,"right bottom outside ",/OUTSIDE,/RIGHT,/BOTTOM
 ;
 ;-
 PRO inscription ,TEXT,INSIDE=INSIDE,OUTSIDE=OUTSIDE,LEFT=LEFT,RIGHT=RIGHT,CENTER=CENTER,BOTTOM=BOTTOM,TOP=TOP,$
