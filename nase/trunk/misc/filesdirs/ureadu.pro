@@ -129,7 +129,6 @@ FUNCTION _UReadU, lun, _EXTRA=e
           ELSE: ReadU, lun, x
       END
   END
-
   RETURN, x
 END
 
@@ -141,11 +140,23 @@ FUNCTION UReadU, _lun, _EXTRA=e
 
   IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenR(_lun,_EXTRA=e) ELSE lun=_lun
 
-  ; read version and ID
-  version = ''
-  readf, lun, version
 
-  if not (STRMID(version, 0, 8) EQ 'UWriteU/') THEN Console, "data not written using UWriteU, can't restore", /FATAL
+  ; small lookahead
+  Point_Lun, -lun, pos
+  version = ''
+  ReadF, lun, version
+
+  ;print, "*"+version+"*"
+
+  ;; if we have an old style, formatted version string
+  ;; we can simply proceed
+  IF NOT (STRMID(version, 0, 22) EQ 'UWriteU/$Revision: 1.3') THEN BEGIN
+      ;; we seem to have a new version string, rewind and try again
+      Point_Lun, lun, pos
+      version = _UReadU(lun)
+      ;; check if written with uwriteu
+      if not (STRMID(version, 0, 8) EQ 'UWriteU/') THEN Console, "data not written using UWriteU, can't restore", /FATAL
+  END 
 
   x = _ureadu(lun)
 
