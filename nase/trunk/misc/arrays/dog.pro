@@ -31,6 +31,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1998/03/09 15:24:02  kupper
+;              Nur interne Änderung, wegen nichtfunktionierender _EXTRA-Implementation.
+;
 ;       Revision 1.2  1997/11/25 12:51:18  kupper
 ;              Nur Header modifiziert.
 ;
@@ -45,13 +48,13 @@
 Function DOG, xlen,ylen, $
                    onsigma, offsigma, ONHWB=onhwb, OFFHWB=offhwb, $
                    x0, y0, $                
-                   _EXTRA=_extra
+                   X0_ARR=x0_arr, Y0_ARR=y0_arr
 
    Default, x0, 0
    Default, y0, 0
 
-   on  = Gauss_2D (xlen, ylen, onsigma,  HWB=onhwb,  x0, y0, _EXTRA=_extra)
-   off = Gauss_2D (xlen, ylen, offsigma, HWB=offhwb, x0, y0, _EXTRA=_extra)
+   on  = Gauss_2D (xlen, ylen, onsigma,  HWB=onhwb,  x0, y0, X0_ARR=x0_arr, Y0_ARR=y0_arr)
+   off = Gauss_2D (xlen, ylen, offsigma, HWB=offhwb, x0, y0, X0_ARR=x0_arr, Y0_ARR=y0_arr)
    
    on  = on /total(on ) ; => Integral 1
    off = off/total(off) ; => Integral 1
