@@ -10,6 +10,8 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @hentry %pro %catl $dbh);
 use DBI;
 use Tie::DBI;
 
+use Env qw(HTTPS);
+
 use constant DATABASE => 'nase';
 use constant AUSER    => 'chiefnase';
 use constant APASSWD  => 'misfitme';
@@ -104,7 +106,7 @@ BEGIN {
    $CVSROOT="/vol/neuro/nase/IDLCVS"; 
    $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
 
-   if($ENV{'HTTPS'} =~ /on/ ){
+   if($HTTPS =~ /on/ ){
      $DOCURL="https://neuro.physik.uni-marburg.de/nase/";
    }else{
      $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
@@ -117,7 +119,7 @@ BEGIN {
   }
   
 
-  if($ENV{'HTTPS'} =~ /on/ ){
+  if($HTTPS =~ /on/ ){
     $BASEURL  = "https://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
   }else{
     $BASEURL  = "http://neuro.physik.uni-marburg.de/perl/nasedocu.pl";
