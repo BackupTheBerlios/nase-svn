@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;  This routine is used to define a structure for device independent
-;  graphics output, a so called sheet. Sheets come in three differet
+;  graphics output, a so called sheet. Sheets come in three different
 ;  types: windows-, postscript- and null-sheets. The idea behind this
 ;  is that if the user wants his output to be written in a postscript
 ;  file instead of a window on the screen, only the definition of the
@@ -33,6 +33,7 @@
 ; CALLING SEQUENCE:   
 ;* sheet = DefineSheet( [ parent ]
 ;*                     [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=...]
+;*                     [PRODUCER=...]
 ;*                     [,/INCREMENTAL] [,/VERBOSE]
 ;*                     [,/PRIVATE_COLORS]
 ;*                     (,OPTIONS)* )
@@ -51,6 +52,16 @@
 ;          sheets. For detaisl on the multi-parameter see
 ;          <A>ScrollIt()</A>. If MULTI is set, the output of
 ;          <C>DefineSheet()</C> is an array of sheet handles.
+;  PRODUCER:: This may be used to pass information about the routine
+;             that generated the graphics to the sheet
+;             structure. <A>CloseSheet</A> will then print this info
+;             in the lower left corner of the sheet together with date
+;             and time. <*>producer</*>
+;             is allowed to be an arbitrary string, but the special
+;             value '/CALLER' also exists, which prints the name of
+;             the routine that called <A>CloseSheet</A> so that it is
+;             easier to trace back which program generated a certain
+;             graphics output. Default: <*>producer=''</*>. 
 ;  INCREMENTAL:: This option works in PS-type sheets. If the same
 ;                sheet is reopened and graphics output it repeatedly
 ;                sent to this sheet, INCREMENTAL actually results in
@@ -106,7 +117,7 @@
 FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
                       , FILENAME=filename, INCREMENTAL=incremental $
                       , ENCAPSULATED=encapsulated, COLOR=color $
-                      ,VERBOSE=verbose, MULTI=multi $
+                      ,VERBOSE=verbose, MULTI=multi, PRODUCER=producer $
                       , PRIVATE_COLORS=private_colors, _EXTRA=e
 
    COMMON Random_Seed, seed
@@ -115,6 +126,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
    Default, Parent, -1
    Default, multi, 0
    Default, private_colors, 0
+   Default, producer, ''
 
    IF NOT SET(sk) THEN BEGIN
       sk = BytArr(128)
@@ -137,6 +149,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
                 x     : !X    ,$
                 y     : !Y    ,$
                 z     : !Z    ,$
+                producer: producer ,$
                 multi : multi ,$
                 extra : e     ,$ 
                 private_colors : private_colors, $
@@ -175,6 +188,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps $
                 x        : !X           ,$
                 y        : !Y           ,$
                 z        : !Z           ,$
+                producer: producer ,$
                 multi    : multi        ,$
                 extra    : e            ,$
                 open     : 0 }

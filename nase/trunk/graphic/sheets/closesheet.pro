@@ -8,66 +8,65 @@
 ; AIM:
 ;  Close a sheet after finishing the graphics output.
 ;
-; PURPOSE:           Schliesst ein mit OpenSheet geoeffnetes Sheet. Das bedeutet,
-;                    dass das PS-File geschlossen wird. Auﬂerdem
-;                    werden alle aktiven Graphik-Settings in der
-;                    Sheet-Struktur gespeichert.
+; PURPOSE:
+;  Schliesst ein mit <A>OpenSheet</A> geoeffnetes Sheet. Das bedeutet, dass
+;  das PS-File geschlossen wird. Auﬂerdem werden alle aktiven
+;  Graphik-Settings in der Sheet-Struktur gespeichert.<BR>
 ;
-;                     Sofern bei definesheet
-;                    auch /PRIVATE_COLORS angegeben wurde, 
-;                    wird die aktuelle Farbtabelle ebenfalls
-;                    gespeichert (und zwar im User-Value des
-;                    Draw-Widgets, s. <A HREF="../#SCROLLIT">ScrollIt()</A>).
-;                    (Dieses Verhalten kann im Einzelfall ueber das
-;                    Schluesselwort SAVE_COLORS beeinflusst werden.)
+;  Sofern bei <A>DefineSheet()</A> auch /PRIVATE_COLORS angegeben
+;  wurde, wird die aktuelle Farbtabelle ebenfalls gespeichert (und
+;  zwar im User-Value des Draw-Widgets, s. <A>ScrollIt()</A>). (Dieses
+;  Verhalten kann im Einzelfall ueber das Schluesselwort SAVE_COLORS
+;  beeinflusst werden.)
 ;
 ; CATEGORY:
 ;  Graphic
+;  Widgets
 ;  Windows
 ;
 ; CALLING SEQUENCE:
-;*CloseSheet, Sheet [,Multi-Index] [,SAVE_COLORS=0]
+;* CloseSheet, Sheet [,Multi-Index] [,/SAVE_COLORS] [,FILE=...]
 ;
-; INPUTS:            Sheet:: eine mit DefineSheet definierte Sheet-Struktur
+; INPUTS:
+;  Sheet:: eine mit <A>DefineSheet()</A> definierte Sheet-Struktur.
 ;
-; OPTIONAL INPUTS:  Multi-Index:: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
-;                                 der Index des "Sheetchens", das
-;                                 geschlossen werden soll.
+; OPTIONAL INPUTS:
+;  Multi-Index:: Bei MultiSheets (s. MULTI-Option von
+;                <A>DefineSheet()</A>) der Index des "Sheetchens", das
+;                geschlossen werden soll.
 ;
-; INPUT KEYWORDS:         SAVE_COLORS:: Default: gesetzt.
-;                                 Dieses Schluesselwort hat nur
-;                                 Effekt, wenn bei <A HREF="#DEFINESHEET">DefineSheet()</A>
-;                                 die Option /PRIVATE_COLORS angegeben 
-;                                 wurde. Standardmaessig speichert
-;                                 CloseSheet dann die jeweils aktuelle 
-;                                 Farbtabelle mit den anderen
-;                                 Graphikdaten in der Sheet-Struktur
-;                                 ab. In einigen Faellen
-;                                 (beispielsweise bei haeufigen
-;                                 Graphik-Updates waehrend
-;                                 interaktiver Usereingaben) ist es
-;                                 wuenschenswert, dieses Verhalten zu
-;                                 unterdruecken. Durch explizite
-;                                 Angabe von SAVE_COLORS=0 wird die
-;                                 aktuelle Farbtabelle beim Schliessen 
-;                                 nicht abgespeichert. Beim naechsten
-;                                 Oeffnen wird daher die zuletzt
-;                                 gespeicherte Farbtabelle erneut gesetzt.
+; INPUT KEYWORDS:
+;  SAVE_COLORS:: Default: gesetzt. Dieses Schluesselwort hat nur
+;                Effekt, wenn bei <A>DefineSheet()</A> die Option
+;                /PRIVATE_COLORS angegeben wurde. Standardmaessig
+;                speichert <C>CloseSheet</C> dann die jeweils aktuelle
+;                Farbtabelle mit den anderen Graphikdaten in der
+;                Sheet-Struktur ab. In einigen Faellen (beispielsweise
+;                bei haeufigen Graphik-Updates waehrend interaktiver
+;                Usereingaben) ist es wuenschenswert, dieses Verhalten
+;                zu unterdruecken. Durch explizite Angabe von
+;                <*>SAVE_COLORS=0</*> wird die aktuelle Farbtabelle
+;                beim Schliessen nicht abgespeichert. Beim naechsten
+;                Oeffnen wird daher die zuletzt gespeicherte
+;                Farbtabelle erneut gesetzt.
 ;
 ; OPTIONAL OUTPUTS:
 ;  FILE:: contains the filepath to file that has just been closed, when
 ;         using postscript sheet and is an empty string else.
+;  
+; PROCEDURE:
+;  
 ;
 ; EXAMPLE:
-;*sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;*OpenSheet, sheety
-;*Plot, Indgen(200)
-;*CloseSheet, sheety
-;*dummy = Get_Kbrd(1)
-;*DestroySheet, sheety
+;* sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;* OpenSheet, sheety
+;* Plot, Indgen(200)
+;* CloseSheet, sheety
+;* dummy = Get_Kbrd(1)
+;* DestroySheet, sheety
 ;
-; SEE ALSO: <A>ScrollIt</A>,
-;           <A>DefineSheet</A>, <A>OpenSheet</A>, <A>DestroySheet</A>
+; SEE ALSO:
+;  <A>ScrollIt</A>, <A>DefineSheet()</A>, <A>OpenSheet</A>, <A>DestroySheet</A>.
 ;-
 
 PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file 
@@ -76,6 +75,23 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
    Default, save_colors, 1
 
    Handle_Value, __sheet, _sheet, /NO_COPY
+
+   ;; print info on producing routine in lower left corner
+   IF _sheet.producer NE '' THEN BEGIN
+      IF _sheet.producer EQ '/CALLER' THEN BEGIN
+         Help, CALLS=c
+         maxc = N_Elements(c)-1 ;; just in case it is called from the command line and c has only 1 element 
+         calledby = (Split(c[1 < maxc],' <'))[0]
+         out = calledby
+      ENDIF ELSE BEGIN
+         out = _sheet.producer
+      ENDELSE
+      XYOutS, 0.5*!D.X_CH_SIZE, 1.5*!D.Y_CH_SIZE $
+       , out, /DEVICE, CHARSIZE=0.75
+      XYOutS, 0.5*!D.X_CH_SIZE, 0.5*!D.Y_CH_SIZE $
+       , SysTime(), /DEVICE, CHARSIZE=0.75
+   ENDIF
+
 
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
@@ -120,7 +136,6 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
    END
       
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
-
 
    Handle_Value, __sheet, _sheet, /NO_COPY, /SET
 

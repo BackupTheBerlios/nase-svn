@@ -6,11 +6,11 @@
 ;  $Id$
 ; 
 ; AIM:
-;  opens a sheet for device-independent graphics output
+;  Opens a sheet for device-independent graphics output.
 ;
 ; PURPOSE:
 ;  Opens a sheet that was previously defined by
-;  <A>DefineSheet</A>. The corresponding window will be activated or
+;  <A>DefineSheet()</A>. The corresponding window will be activated or
 ;  openend, if generating postscript output the file will be opened.
 ;
 ; CATEGORY:
@@ -18,22 +18,22 @@
 ;  Windows
 ;
 ; CALLING SEQUENCE:  
-;*OpenSheet, sheet [,multindex]
+;* OpenSheet, sheet [,multindex]
 ;
 ; INPUTS:
-;  sheet :: defined sheet structure created using <A>DefineSheet</A>
+;  sheet:: defined sheet structure created using <A>DefineSheet</A>
 ;
 ; OPTIONAL INPUTS:   
-;  multindex :: The index referring to a specific window in a multi
-;               part sheet (see MULTI option of <A>DefineSheet</A>).
+;  multindex:: The index referring to a specific window in a multi
+;               part sheet (see MULTI option of <A>DefineSheet()</A>).
 ;
 ; EXAMPLE:
-;*sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
-;*OpenSheet, sheety
-;*Plot, Indgen(200)
-;*CloseSheet, sheety
-;*dummy = Get_Kbrd(1)
-;*DestroySheet, sheety
+;* sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
+;* OpenSheet, sheety
+;* Plot, Indgen(200)
+;* CloseSheet, sheety
+;* dummy = Get_Kbrd(1)
+;* DestroySheet, sheety
 ;
 ; SEE ALSO: <A>ScrollIt</A>,
 ;           <A>DefineSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>.
