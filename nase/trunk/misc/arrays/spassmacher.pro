@@ -47,9 +47,9 @@
 ;                array. This can be used to reconstruct the original
 ;                array from its sparse version, e.g. when displayed
 ;                with <A>Trainspotting</A>. The format is:<BR>
-;                sparse(0,sparse(0,0)+1): dimension<BR>
-;                sparse(0,sparse(0,0)+1+i): ith dimension<BR>
-;                sparse(1,sparse(0,0)+i): unused, but NE 0, since
+;                <*>sparse(0,sparse(0,0)+1)</*>: dimension<BR>
+;                <*>sparse(0,sparse(0,0)+1+i)</*>: ith dimension<BR>
+;                <*>sparse(1,sparse(0,0)+i)</*>: unused, but NE 0, since
 ;                                         sparse arrays are generated
 ;                                         with the <*>/NOZERO</*> option.
 ;

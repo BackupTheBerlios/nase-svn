@@ -40,8 +40,8 @@
 ;  ssparse:: Long array of the following structure:<BR>
 ;            <*>ssparse(0)</*>: Number of elements NE 0 in array<BR>
 ;            <*>ssparse(1)</*>: Total number of elements in array<BR>
-;            <*>ssparse(i)</*> with i > 1: Indices of elements ne 0 in array.<BR>
-;           If <*>/DIMENSION</*> is set:<BR>
+;            <*>ssparse(i)</*> with <*>i > 1</*>: Indices of elements ne 0 in array.<BR>
+;           If <*>/DIMENSIONS</*> is set:<BR>
 ;            <*>ssparse(ssparse(0)+2)</*>: Number of dimensions in array<BR>
 ;            <*>ssparse(ssparse(0)+2+j)</*>: jth dimension
 ;
