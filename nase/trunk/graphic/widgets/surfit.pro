@@ -24,7 +24,11 @@
 ;          zuerst in ein anderes Fenster und danach wieder in das
 ;          Surf-Fenster zu klicken.        
 ;
-;          Ab Revision 1.9 auch als Kind-Widget in einer Widget-Applikation. 
+;          Ab Revision 1.9 auch als Kind-Widget in einer
+;          Widget-Applikation.
+;
+;          The special NASE value !NONE will be handled as missing in
+;          any case.
 ;
 ; CATEGORY:
 ;  Animation
@@ -33,61 +37,70 @@
 ;  NASE
 ;  Widgets
 ;
-; CALLING SEQUENCE: SurfIt, Data_Array [, Parent ]
-;                                      [,XPOS=xpos] [,YPOS=ypos] [,XSIZE=xsize] [,YSIZE=ysize]
-;                                      [,GROUP=group [,/MODAL]] [,/JUST_REG] [,NO_BLOCK=0]
-;                                      [,TITLE=Fenstertitel]
-;                                      [,DELIVER_EVENTS=Array_of_Widget_IDs]
-;                                      [,GET_BASE=Base_ID]
-;                                      [,PLOT_TITLE=Plottitel]
-;                                      [,/NASE] [,/GRID]
-;                                      [weitere Shade_Surf- bzw. Surface-Parameter, insbesondere SHADES, LEGO...]
+; CALLING SEQUENCE: 
+;* SurfIt, Data_Array [, Parent ]
+;*                    [,XPOS=xpos] [,YPOS=ypos] [,XSIZE=xsize] [,YSIZE=ysize]
+;*                    [,GROUP=group [,/MODAL]] [,/JUST_REG] [,NO_BLOCK=0]
+;*                    [,TITLE=Fenstertitel]
+;*                    [,DELIVER_EVENTS=Array_of_Widget_IDs]
+;*                    [,GET_BASE=Base_ID]
+;*                    [,PLOT_TITLE=Plottitel]
+;*                    [,/NASE | ,/NSCALE]
+;*                    [,/GRID]
+;*                    [weitere Shade_Surf- bzw. Surface-Parameter, insbesondere SHADES, LEGO...]
 ;
 ; 
-; INPUTS: Data_Array: Das zu plottende Array
+; INPUTS: Data_Array:: Das zu plottende Array
 ;
-; OPTIONAL INPUTS: Parent: Eine Widget-ID des Widgets, dessen Kind das 
+; OPTIONAL INPUTS: Parent:: Eine Widget-ID des Widgets, dessen Kind das 
 ;                          neue ScrollIt-Widget werden soll.
 ;
-; KEYWORD PARAMETERS: XPOS, YPOS, XSIZE, YSIZE: Die Fenster-Koordinaten, wie üblich
-;                     GROUP:    Die Widget-ID eines Widgets, das als "Group-Leader" dienen soll:
-;                               Wird der Group-Leader gekillt, so stirbt auch unser Widget.
-;                     MODAL:    Wenn angegeben, ist das Widget modal,
-;                               d.h. alle anderen Widgets sind
-;                               deaktiviert, solange dieses existiert.
-;                               MODAL erfordert die Angabe eines
-;                               Group-Leaders in GROUP.
-;                     JUST_REG: Dieses Keyword wird an der XMANAGER weitergereicht.
-;                               Wird es gesetzt, so wird das Surf-Widget nur angemeldet, aber noch nicht gemanaged.
-;                               Das ermöglicht es, mehrere solche Widgets anzumelden und dann erst mit dem letzten
-;                               auch den Manager zu starten, so daß alle gleichzeitig laufen. (Vgl. Beispiel unten.)
-;                     NO_BLOCK: Wird ab IDL 5 an den XMANAGER
-;                               weitergegeben. (Beschreibung
-;                               s. IDL-Hilfe)
-;                               Der Default ist 1, also kein
-;                               Blocken. Wird Blocken gewünscht, so muß
-;                               NO_BLOCK explizit auf 0 gesetzt werden.
-;                     DELIVER_EVENTS: Hier kann ein Array
-;                                     von Widget-Indizes übergeben werden, an die alle 
-;                                     ankommenden Events
-;                                     weitergereicht werden.
-;                     TITLE:    Ein Titel für das Fenster. (Default:
-;                               "Surf It!")
-;                     PLOT_TITLE: Ein Titel für den Plot. (Default:
-;                                 Fenstertitel, falls angegeben)
-;                     NASE:     Das Array wird als NASE-Array
-;                               behandelt (z.B. keine NONES plotten...)
-;                     GRID:     Als Plot-Prozedur wird "Surface"
-;                               verwendet, sonst "Shade_Surf"
+; INPUT KEYWORDS:
+;  XPOS, YPOS, XSIZE, YSIZE:: Die Fenster-Koordinaten, wie üblich
+;  GROUP::   Die Widget-ID eines Widgets, das als "Group-Leader" dienen soll:
+;            Wird der Group-Leader gekillt, so stirbt auch unser Widget.
+;  MODAL::   Wenn angegeben, ist das Widget modal,
+;            d.h. alle anderen Widgets sind
+;            deaktiviert, solange dieses existiert.
+;            MODAL erfordert die Angabe eines
+;            Group-Leaders in GROUP.
+;  JUST_REG::Dieses Keyword wird an der XMANAGER weitergereicht.
+;            Wird es gesetzt, so wird das Surf-Widget nur angemeldet, aber noch nicht gemanaged.
+;            Das ermöglicht es, mehrere solche Widgets anzumelden und dann erst mit dem letzten
+;            auch den Manager zu starten, so daß alle gleichzeitig laufen. (Vgl. Beispiel unten.)
+;  NO_BLOCK::Wird ab IDL 5 an den XMANAGER
+;            weitergegeben. (Beschreibung
+;            s. IDL-Hilfe)
+;            Der Default ist 1, also kein
+;            Blocken. Wird Blocken gewünscht, so muß
+;            NO_BLOCK explizit auf 0 gesetzt werden.
+;  DELIVER_EVENTS::Hier kann ein Array
+;                  von Widget-Indizes übergeben werden, an die alle 
+;                  ankommenden Events
+;                  weitergereicht werden.
+;  TITLE::   Ein Titel für das Fenster. (Default:
+;            "Surf It!")
+;  PLOT_TITLE::Ein Titel für den Plot. (Default:
+;              Fenstertitel, falls angegeben)
+;  /NASE:: Setting this keyword is equivalent to setting <C>NORDER</C>
+;          (see below). It is maintained for backwards compatibility.<BR>
+;          <I>Note: In general, newer applications sould use the <C>NORDER</C>
+;          and <C>NSCALE</C> keywords to indicate array ordering and
+;          color scaling according to NASE conventions.</I>
+;  /NORDER:: Indicate that array ordering conforms to the NASE
+;            convention: The indexing order is <*>[row,column]</*>, and
+;            the array's origin <*>[0,0]</*> will be displayed on the
+;            upper left corner of the plot (unless <C>ORDER</C> is set,
+;            cf. IDL help on <C>TvScl</C>).
+;  /GRID::   Als Plot-Prozedur wird "Surface"
+;            verwendet, sonst "Shade_Surf"
+;<BR> 
+;  Alle weiteren Parameter werden geeignet an
+;  Shade_Surf bzw. Surface weitergegeben.
 ;
-;                     Alle weiteren Parameter werden geeignet an
-;                     Shade_Surf bzw. Surface weitergegeben.
+; OPTIONAL OUTPUTS: GET_BASE:: Die ID des erstellten Base-Widgets
 ;
-; OPTIONAL OUTPUTS: GET_BASE: Die ID des erstellten Base-Widgets
-;
-; PROCEDURE: Benutzte Routinen: Default
-;
-;            Die Routine erzeugt ein Base-Widget mit einem Draw-Widget
+; PROCEDURE: Die Routine erzeugt ein Base-Widget mit einem Draw-Widget
 ;            drin. Über die Motion-Events wird der Cursor
 ;            abgefragt. Man beachte, daß im Unterschied zu Int_Surf
 ;            der Knopf im Fenster gedrückt gehalten werden muß, wenn
@@ -98,24 +111,11 @@
 ;            Shade_Surf übergeben.
 ;            Resize-Events werden abgefragt und umgesetzt.
 ;
-; EXAMPLE: 1. SurfIt, Gauss_2D(30,30)
-;
-;          2. SurfIt, Gauss_2D(30,30), XPOS=100, /JUST_REG
-;             SurfIt, Dist(30,30), XPOS=700, XSIZE=300, YSIZE=300
-;
-; MODIFICATION HISTORY:
-;
-;       Tue Aug 19 17:00:55 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		Hier und da ein NO_COPY eingefügt. Geht jetzt
-;		vielleicht schneller.
-;
-;       Mon Aug 18 04:46:24 1997, Ruediger Kupper
-;       <kupper@sisko.physik.uni-marburg.de>
-;
-;		Urversion erstellt. Sollte eigentlich funktionieren.
-;
+; EXAMPLE:
+;* 1. SurfIt, Gauss_2D(30,30)
+;*
+;* 2. SurfIt, Gauss_2D(30,30), XPOS=100, /JUST_REG
+;*    SurfIt, Dist(30,30), XPOS=700, XSIZE=300, YSIZE=300
 ;-
 
 Pro SurfIt_Cleanup, ID
@@ -130,10 +130,12 @@ Pro SurfIt_Paint, info
    If (info.lun ne -1) and not(info.got_streamdata) then begin
       xyouts, /normal, 0.1, 0.5, "waiting for stream data..."
    endif else begin
-      PrepareNasePlot, (size(*info.surface))(2), (size(*info.surface))(1), get_old=oldplot, CENTER=info.center, NONASE=1-info.nase
+      PrepareNasePlot, (size(*info.surface))(2), (size(*info.surface))(1), get_old=oldplot, CENTER=info.center, NONASE=1-info.norder
       
-      If info.nase then call_Procedure, info.plotproc, *info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), MAX_VALUE=999998, _EXTRA=info._extra else $
-       call_Procedure, info.plotproc, *info.surface, title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), az=info.CurrentPos(0)+info.delta(0), _EXTRA=info._extra
+      call_Procedure, info.plotproc, *info.surface, $
+                      title=info.plot_title, ax=info.CurrentPos(1)+info.delta(1), $
+                      az=info.CurrentPos(0)+info.delta(0), $
+                      _EXTRA=info._extra
       xyouts, /device, 10, 10, "AX="+string(info.CurrentPos(1)+info.delta(1))+"      AZ="+string(info.CurrentPos(0)+info.delta(0))
       
       PrepareNasePlot, restore_old=oldplot
@@ -221,7 +223,7 @@ Pro SurfIt_Event, Event
                   DELIVER_EVENTS=Event.ID, $
                   TITLE=info.title, PLOT_TITLE=info.plot_title, $
                   AX=info.CurrentPos(1), AZ=info.CurrentPos(0), $
-                  NASE=info.nase, GRID=info.grid, _EXTRA=info._extra
+                  NASE=info.nase, NORDER=info.norder, GRID=info.grid, _EXTRA=info._extra
               End
               info.Button_Pressed = (1 eq 1) ;TRUE
               info.Press_x = Event.X
@@ -275,7 +277,8 @@ PRO SurfIt, _data, Parent, $
             GROUP=group, JUST_REG=Just_Reg, NO_BLOCK=no_block, MODAL=modal, $
             DELIVER_EVENTS=deliver_events, GET_BASE=get_base, $
             TITLE=title, PLOT_TITLE=plot_title, $
-            NASE=nase, GRID=grid, SHADES=_shades, $
+            NASE=nase, NORDER = norder, $
+            GRID=grid, SHADES=_shades, $
             AX=ax, AZ=az, $
             _EXTRA=_extra
 
@@ -291,7 +294,11 @@ PRO SurfIt, _data, Parent, $
    Default, title, "Surf It!"
    Default, plot_title, Title
    If plot_title eq "Surf It!" then plot_title = ""
+
    Default, nase, 0
+   ;;NASE implies NORDER in this routine:
+   Default, NORDER, NASE
+
    If not Keyword_Set(_extra) then _extra = {title: plot_title} else _extra = Create_Struct(_extra, 'title', plot_title)
    center = 0
    If extraset(_extra, "LEGO") then begin
@@ -311,14 +318,19 @@ PRO SurfIt, _data, Parent, $
    endelse
    got_streamdata = 0           ;For stream-update
    
-   ;;------------------> NASE-Array:
-   If Keyword_Set(NASE) then begin
-      data = rotate(data, 3)
-      nones = where(data eq !NONE, count)
-      If count ne 0 then data(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
-      If Keyword_Set(Shades) then shades = rotate(shades, 3)
+   ;;------------------> NORDER-Array:
+   If Keyword_Set(NORDER) then begin
+      data = rotate(Temporary(data), 3)
+      If Keyword_Set(Shades) then shades = rotate(Temporary(shades), 3)
    endif
    ;;--------------------------------
+
+   ;;------------------> None-handling:
+   ;; replace !NONES by !NaN for easy plotting.
+   ;; this is not IDL3-compatible, but we don't care any more.
+   NoNone, data, value=!VALUES.D_NAN
+   ;;--------------------------------
+
 
    If Keyword_Set(Shades) then _extra = Create_Struct(_extra, 'shades', shades)
 
@@ -348,6 +360,7 @@ PRO SurfIt, _data, Parent, $
                                         plot_title    :plot_title, $
                                         title         :title, $
                                         nase          :nase, $
+                                        norder        :norder, $
                                         plotproc      :plotproc, $
                                         center        :center, $
                                         grid          :grid, $
@@ -383,6 +396,7 @@ PRO SurfIt, _data, Parent, $
                                         title         :title, $
                                         plot_title    :plot_title, $
                                         nase          :nase, $
+                                        norder        :norder, $
                                         plotproc      :plotproc, $
                                         center        :center, $
                                         grid          :grid, $
@@ -416,6 +430,7 @@ PRO SurfIt, _data, Parent, $
                                             title         :title, $
                                             plot_title    :plot_title, $
                                             nase          :nase, $
+                                            norder        :norder, $
                                             plotproc      :plotproc, $
                                             center        :center, $
                                             grid          :grid, $
