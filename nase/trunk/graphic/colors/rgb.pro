@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.30  2000/10/05 16:42:44  saam
+;        i hate this nfs stuff
+;
 ;        Revision 1.29  2000/10/05 16:40:59  saam
 ;        added NOALLOC support for PSEUDOCOLOR visuals, again
 ;
@@ -245,7 +248,7 @@ if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
    ;; ---- NOALLOC --------------------------------------------------------------
    IF Keyword_Set(NOALLOC) THEN BEGIN 
        IF NOT Pseudocolor_Visual() THEN BEGIN
-           Console, "ignoring keyword NOALLOC in true color mode", /DEBUG
+           Console, "ignoring keyword NOALLOC in true color mode"
        END ELSE BEGIN
            ;; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
            myCM = bytarr(!D.Table_Size,3) 
