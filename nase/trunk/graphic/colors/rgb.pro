@@ -114,6 +114,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.15  1999/11/04 17:40:47  kupper
+;        typo.
+;
 ;        Revision 1.14  1999/11/04 17:31:41  kupper
 ;        Kicked out all the Device, BYPASS_TRANSLATION commands. They
 ;        -extremely- slow down performance on True-Color-Displays when
@@ -212,8 +215,9 @@ Common common_RGB, My_freier_Farbindex
                                 ;translation table on
                                 ;TrueColor-displays!  
 
-          loadct, 0             ;load linear ramp into translation table
-          message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
+       loadct, 0             ;load linear ramp into translation table
+       message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
+       endif
        Return, RGB_berechnen(R,G,B)
     endelse
 END      
