@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.3  1998/02/12 09:22:30  saam
+;             Info() wg. Effizienz hinaugeworfen
+;
 ;       Revision 2.2  1998/02/05 13:17:42  saam
 ;                  + Gewichte und Delays als Listen
 ;                  + keine direkten Zugriffe auf DW-Strukturen
@@ -83,7 +86,7 @@ PRO LearnHebbLP2, _DW, LP, TARGET_CL=Target_CL,SELF=Self,NONSELF=NonSelf, $
    ; tn : to ti belonging target neuron
    ; wi : weight indices belonging to neuron
 
-   IF Info(DW) EQ 'SDW_WEIGHT' THEN BEGIN
+   IF DW.Info EQ 'SDW_WEIGHT' THEN BEGIN
 
       FOR ti=2,Post(0)+1 DO BEGIN
          tn = Post(ti)
