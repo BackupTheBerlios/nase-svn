@@ -38,7 +38,7 @@
 ;  MIN/MAX:: Use these keywords to manually set the ranges inside which
 ;            you want to compute the histogram. Both <*>min</*> and
 ;            <*>max</*> have 
-;            to have n entries. See restrictions as well.  
+;            to have n entries.
 ;  BIN_START:: Return bin values as those where bins start, otherwise
 ;              return bin values as those in the middle of
 ;              bins. Default: <*>BIN_START=0</*>.
@@ -69,10 +69,7 @@
 ;                    <C>Histogram()</C> for an example.
 ;
 ; RESTRICTIONS:
-;  The <*>MIN</*> and <*>MAX</*> keywords have been added recently but
-;  not been tested extensively. For ranges that are larger than the
-;  data ranges, they seem to work ok, but it has not yet been tried to
-;  clip the data. 
+;  None, hopefully.
 ;
 ; PROCEDURE:
 ;  Generate onedimensional array form multidimensional one and apply
@@ -92,13 +89,16 @@
 ;*>           0           0           0
 ;*>           0           1           2
 ;* print, b
-;*>      3.00000      1.00000      2.00000      3.00000     -999999.     -999999.
-;*>      5.00000      10.0000      15.0000      20.0000      25.0000      30.0000
+;*>      3.00000      1.33333      2.00000      2.66667     -999999.     -999999.
+;*>       5.00000      12.0000      16.0000      20.0000      24.0000      28.0000
 ;
 ; Large example:
 ;* a=10.*RandomN(seed,1000)
 ;* b=2.*RandomN(seed,1000)
+;* !P.MULTI=[0,1,2,0,0]
 ;* h=HistMD([[a],[b]],NBINS=[20,30],GET_BINVALUES=bv)
+;* newPTVS, h, bv(1:bv(0,0),0), bv(1:bv(0,1),1)
+;* h=HistMD([[a],[b]],NBINS=[20,30],GET_BINVALUES=bv,min=[-10,-1],max=[10,5])
 ;* newPTVS, h, bv(1:bv(0,0),0), bv(1:bv(0,1),1)
 ;
 ; SEE ALSO:
@@ -108,7 +108,7 @@
 
 FUNCTION HistMD, s, NBINS=nbins $
                  , BIN_START=bin_start $
-                 , MAX=max, MIN=min $
+                 , MAX=usermax, MIN=usermin $
                  , GET_BINVALUES=get_binvalues $
                  , REVERSE_INDICES=reverse_indices
 
@@ -127,31 +127,65 @@ FUNCTION HistMD, s, NBINS=nbins $
    IF sdim NE N_Elements(nbins) THEN $
     Console, /FATAL, 'Need number of bins for each stimulus dimension.'
 
+   ;; Find true extents of arrays.
    IF sdim GT 1 THEN BEGIN
-      IF NOT Set(MIN) THEN smin = IMin(s, 1) ELSE smin = min
-      IF NOT Set(MAX) THEN smax = IMax(s, 1) ELSE smax = max
+      truemin = IMin(s, 1)
+      truemax = IMax(s, 1)
    ENDIF ELSE BEGIN
-      IF NOT Set(MIN) THEN smin = Min(s) ELSE smin = min
-      IF NOT Set(MAX) THEN smax = Max(s) ELSE smax = max
+      truemin = Min(s, MAX=truemax)
    ENDELSE 
 
-   ;;   sbinsize = (smax-smin)/(nbins-1) ;; old version
-   sbinsize = Float(smax-smin)/(nbins)
+   Default, usermin, truemin
+   Default, usermax, truemax
+
+   usermin = usermin[0:sdim-1]
+   usermax = usermax[0:sdim-1]
+
+   ;; Will truncation of values be needed due to user supplied
+   ;; restriction? 
+   noMinTruncation = Total((truemin-usermin) LT 0) EQ 0 
+   noMaxTruncation = Total((usermax-truemax) LT 0) EQ 0 
+
+   ;; rebin max and min for later comparison with data to find out
+   ;; which entries are inside max and min ranges
+   rebmin = Rebin(Transpose(usermin), sdur, sdim, /SAMPLE)
+   rebmax = Rebin(Transpose(usermax), sdur, sdim, /SAMPLE)
+
+   sbinsize = Float(usermax-usermin)/(nbins)
 
    ;; compute bin indices for the first dimension
    ;; the max values, which would be in the nbins+1 bin are restricted by
    ;; "< (nbins[0]-1)" so they are counted in the last bin, see also
    ;; in the loop below
-   combine = Long((s[*,0]-smin[0])/sbinsize[0]) < (nbins[0]-1)
+   combine = Long((s[*,0]-usermin[0])/sbinsize[0]) < (nbins[0]-1)
 
    ;; for multidimensional stimuli generate onedimensional combined
    ;; array, see IDL's hist_2d routine
    IF sdim GT 1 THEN BEGIN
       FOR sdimidx=1, sdim-1 DO $
        combine = Temporary(combine)+Product(nbins[0:sdimidx-1]) $
-       *(Long((s[*,sdimidx]-smin[sdimidx])/sbinsize[sdimidx]) $
+       *(Long((s[*,sdimidx]-usermin[sdimidx])/sbinsize[sdimidx]) $
          < (nbins[sdimidx]-1))
    ENDIF
+
+   ;; Construct an array of out-of-range (0) and in-range (1) values.
+   in_range = 1
+   IF (noMinTruncation EQ 0) THEN BEGIN ;; set lt min to zero
+      IF sdim EQ 1 THEN $
+       in_range = (s GE rebmin) EQ sdim $
+      ELSE $
+       in_range = Total((s GE rebmin), 2) EQ sdim
+   ENDIF   
+
+   IF (noMaxTruncation EQ 0) THEN BEGIN ;; set gt max to zero
+      IF sdim EQ 1 THEN $
+       in_range = Temporary(in_range) AND ((s LE rebmax) EQ sdim) $
+      ELSE $
+       in_range = Temporary(in_range) AND (Total((s LE rebmax), 2) EQ sdim)
+   ENDIF
+
+   ;; Set values that are out of range to -1
+   combine = (Temporary(combine) + 1L)*Temporary(in_range) - 1L
 
    shist = Hist(combine, sbinval, 1 $
                  , MINH=0, MAXH=Product(nbins)-1, /EXACT $
@@ -163,7 +197,7 @@ FUNCTION HistMD, s, NBINS=nbins $
    get_binvalues[0, *] = nbins
    FOR idx = 0, sdim-1 DO $
     get_binvalues[1:nbins[idx], idx] = $
-    smin[idx]+FIndGen(nbins[idx])*sbinsize[idx]+0.5*sbinsize[idx]*binmidflag
+    usermin[idx]+FIndGen(nbins[idx])*sbinsize[idx]+0.5*sbinsize[idx]*binmidflag
 
    Return, Reform(shist, nbins)
 
