@@ -12,7 +12,7 @@
 ;  Select one of the predefined sets of NASE color tables (for screen
 ;  and postscript output). These color tables will be used by all NASE
 ;  graphic routines that do color scaling. (See
-;  <A>ShowWeightsScale</A> for further information on NASE color scaling.)
+;  <A>ShowWeights_Scale</A> for further information on NASE color scaling.)
 ;
 ; CATEGORY:
 ;  Color
@@ -83,7 +83,7 @@
 ;*>standard exponential multicolor
 ;
 ; SEE ALSO:
-;  ShowWeightsScale, PlotTvScl, ShowWeights, ExamineIt
+;  ShowWeights_Scale, PlotTvScl, ShowWeights, ExamineIt
 ;-
 
 Pro SelectNASETable, number, $
