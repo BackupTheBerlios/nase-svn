@@ -1,0 +1,110 @@
+%
+% FILE:     workshop (Master)
+%
+% LOCATION: /mhome/saam/sim/doc/workshop/
+%
+% AUTHOR:   saam
+%
+% DATE:     Sun Oct  1 18:59:58 MEST 2000
+%
+% MODIFICATION HISTORY:
+%
+%       $Log$
+%       Revision 1.1  2000/10/02 16:35:10  saam
+%       append one entry
+%
+%
+%-
+\documentclass[12pt]{article}
+
+
+% Page Size & Formatting
+\usepackage[a4paper,dvips]{geometry}           % page layout [twoside]
+\setlength{\parindent}{0pt}                    % dont indent first paragraph
+%\renewcommand{\baselinestretch}{2.0}          % double line spacing
+%\usepackage{showlabels}                       % shows labels on side margin
+\usepackage{showkeys}                          % prints label, ref, cite and bib keys
+\usepackage{draftcopy}                         % displays draft in background of page (ps only!)
+\usepackage{changebar}                         % changebars at margin via \cbstart ... \cbend (ps only!)
+
+
+% References & Citations
+\usepackage{lastpage}                          % access last page by \pageref{LastPage}
+\usepackage[round]{natbib}                     % citestyle: Author (Year) by \cite or Author, Year with \citet
+\usepackage{prettyref}                         % generates references like Figure/Table/Equation x, instead of x 
+\newrefformat{fig}{Figure~\ref{#1}}
+\usepackage{acronym}                           % make sure acronyms are spelled out at least once
+
+% Version Control (rcs-latex must be installed!)
+\usepackage{rcs}
+\RCS $Header$
+%\RCS $keyword$  % for keyword all RCS/CVS tags (like Header, Id) may be inserted; this line defines an tex command
+%                % while the following command inserts it into the document
+%\RCSkeyword
+%                % there is also support for a formatted log history...
+
+% Language
+\usepackage[english,german]{babel}                    % set the language (german, english, ...)
+\usepackage[latin1]{inputenc}                  % allow special characters directly in source
+
+% Headers & Footers
+\usepackage{fancyheadings}                     % allows individual header and footers
+\pagestyle{fancy}
+\lhead{\tiny\RCSHeader}                        % include path/name/date/RCS/CVS-version in header
+\chead{}
+\rhead{}
+%\lfoot{}
+%\cfoot{}
+%\rfoot{}
+
+
+% Fonts
+%\usepackage{times}                            % use times, palatino, ...  ps-fonts instead of cm (dvi won't work!!)
+%\usepackage{soul}                             % typeset text in spaced out way via \st{...} and more
+\usepackage{SIunits}                           % use SI units by their name and produce upright greek symbols
+
+        
+% Figures & Captions
+\usepackage{graphicx}
+\usepackage[footnotesize,nooneline]{caption}
+\DeclareGraphicsRule{.tif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.gif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.bmp}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.jpg}{eps}{.bb}{`convert #1 eps:-}
+% TeX requirements for putting a figure onto a page
+% are rather strict (and therefore seldom fulfilled
+% the following command make the placement of figures
+% more sloppier
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+
+
+% Definitions
+% the way a bind figures into the document:
+\newcommand{\myfig}[5]{\begin{figure}[tbh]\begin{center}\includegraphics[#3]{#2}\caption{\label{#1}{\sc#4.} #5}\end{center}\end{figure}}
+
+
+% define an acronym by: 
+%   \acrodef{CCH}{cross coincidence histogram} 
+% following commands produce the shown output:
+%   \ac{CCH}  -> cross coincidence histogram (CCH)  % for the first appearance 
+%   \ac{CCH}  -> CCH                                % any further appearance
+%   \acf{CCH} -> cross coincidence histogram (CCH)  % always
+%   \acl{CCH} -> cross coincidence histogram        % always
+%   \acs{CCH} -> CCH                                % always
+% you can also make a list of acronyms (see documentation)
+
+
+% integrate figures by:
+%   \myfig{label}{filename}{width,height}{short-title}{description}
+
+
+\begin{document}
+
+\begin{itemize}
+\item modify \texttt{foreach} to process multiple parameter variations synchronously. 
+\end{itemize}
+
+
+\end{document}
