@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  2000/08/31 17:22:00  saam
+;           now also knows /vol/data
+;
 ;     Revision 1.6  1999/07/28 08:37:26  saam
 ;           fiex a bug for host ax1319
 ;
@@ -59,7 +62,7 @@ FUNCTION Path2Host, Path
    IF Contains(PPath, '/ax1317') OR Contains(PPath, '/home/gonzo')     THEN Host = 'gonzo'
    IF Contains(PPath, '/ax1318')                                       THEN Host = 'ax1318'
    IF Contains(PPath, '/ax1319')                                       THEN Host = 'ax1319'
-   IF Contains(PPath, '/usr/neuro') OR Contains(PPath, '/home/neuro')  THEN Host = 'neuro'
+   IF Contains(PPath, '/usr/neuro') OR Contains(PPath, '/home/neuro') OR Contains(PPath, '/vol')  THEN Host = 'neuro'
 
    IF Host EQ 'unknown' THEN BEGIN
       Message, /INFORMATIONAL, "can't resolve host for "+Path
