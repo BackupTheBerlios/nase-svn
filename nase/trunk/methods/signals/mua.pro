@@ -33,6 +33,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/04/01 17:35:09  saam
+;           only two recording sites were handled
+;           corrected -> now it hopefully with 1..n
+;
 ;     Revision 1.1  1998/04/01 16:27:28  saam
 ;           created by modification of lfp.pro
 ;           revision 1.3
@@ -53,27 +57,28 @@ FUNCTION MUA, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
       listS = SIZE(list)
    END
 
-   maxROI = listS(1)  
+   maxROI = listS(2)  
    maxT   = mtS(3)
 
    IF listS(0) NE 2 THEN Message, 'wrong format for second argument'
    IF mtS(0)   NE 3 THEN Message, 'wrong format for first argument'
 
 
-   roiSigs = DblArr(listS(1), maxT)
+   roiSigs = DblArr(maxROI, maxT)
    
    
    ; -----> GET THE INTEGRATION AREAS
    print, 'MUA: getting integration areas...'
+   print, ' '
    ROI = DblArr(maxROI, mtS(1), mtS(2))
    FOR i=0, maxROI-1 DO BEGIN
       IF Set(CONST) THEN BEGIN
-         print, 'MUA: using constant weighting with radius ',STRCOMPRESS(const,/REMOVE_ALL)
+         print, !KEY.UP, 'MUA: using constant weighting with radius ',STRCOMPRESS(const,/REMOVE_ALL)
          tmpArr = Make_Array(mtS(1), mtS(2), /INT, VALUE=1)
          tmpArr = CutTorus(tmpArr, const, X_CENTER=list(0,i)-mtS(1)/2, Y_CENTER=list(1,i)-mtS(2)/2)
          ROI(i,*,*) = tmpArr
       ENDIF ELSE IF Set(hmw_x2) THEN BEGIN
-         print, 'MUA: using x^(-2) weighting with HMW  ',STRCOMPRESS(hmw_x2,/REMOVE_ALL)
+         print, !KEY.UP, 'MUA: using x^(-2) weighting with HMW  ',STRCOMPRESS(hmw_x2,/REMOVE_ALL)
          tmpArr = SHIFT(DIST(mtS(1), mtS(2)), list(0,i), list(1,i) )
          tmpArr = 1./(HMW_X2^2)*(tmpArr^2)
          tmpArr = 1./(1.+tmpArr)
@@ -82,7 +87,7 @@ FUNCTION MUA, mt, list, CONST=const, HMW_X2=hmw_x2, ROI=roi
    ENDFOR
    
    ; -----> INTEGRATE REGIONS FOR EACH TIMESTEP
-   print, 'MUA: integrating potentials for '+STRCOMPRESS(listS(1),/REMOVE_ALL)+' recording site(s)'
+   print, 'MUA: integrating potentials for '+STRCOMPRESS(maxROI,/REMOVE_ALL)+' recording site(s)'
    print, '   '
    FOR t=0l, maxT-1 DO BEGIN
       FOR i=0, maxROI-1 DO BEGIN
