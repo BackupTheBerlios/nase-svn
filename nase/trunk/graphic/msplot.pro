@@ -46,7 +46,7 @@
 ;  SDMEAN  :: <*>sd</*> entries are interpreted as absolute values
 ;             (mean+-error). This kind of output is e.g. provided by <A>FZTmean</A>. 
 ;  _EXTRA  :: All other unrecognized options are passed to the
-;             underlying <*>Plot</*> procedures.
+;             underlying <*>Plot</*> and <*>Axis</*> procedures.
 ;  
 ; RESTRICTIONS:
 ;  <*>X-/YTITLE</*> and <*>X-/YTICKFORMAT</*> can only be used for
@@ -67,7 +67,7 @@
 ;*   , MCOLOR=RGB(200,100,100), SDCOLOR=RGB(100,50,50)
 ;  
 ; SEE ALSO:
-;  IDL's own routines <C>OPLOTERR</C>, <C>PLOT</C>, <C>PLOTERR</C>.
+;  IDL's own routines <C>Plot</C>, , <C>Axis</C>, <C>OPlotErr</C> and <C>PlotErr</C>.
 ;-
 
 
@@ -77,7 +77,7 @@ PRO MSPLOT, z, zz, zzz $
             , SDMEAN=sdmean $
             , BW=bw, OPLOT=oplot $
             , XSTYLE=xstyle, YSTYLE=ystyle $ 
-            , _EXTRA=e
+            , _EXTRA=extra
 
    On_Error, 2
 
@@ -87,7 +87,7 @@ PRO MSPLOT, z, zz, zzz $
    Default, xstyle, 0
    Default, ystyle, 0
 
-   IF N_Params() LT 2 THEN Message, 'wrong number of arguments'
+   IF N_Params() LT 2 THEN Console, /FATAL, 'Wrong number of arguments.'
    n = N_Elements(z)
    IF N_Params() EQ 3 THEN BEGIN
       x  = REFORM(z)
@@ -99,9 +99,10 @@ PRO MSPLOT, z, zz, zzz $
       sd = REFORM(zz)
    END
 
-   ; sd may be an (2,t) array containing lower and upper
-   ; if not it will be converted to be
-   IF (SIZE(sd))(0) LT 2 THEN sd = REBIN(REFORM(sd,1,N_Elements(sd)), 2, N_Elements(sd), /SAMPLE) 
+   ;; sd may be an (2,t) array containing lower and upper
+   ;; if not it will be converted to be
+   IF (SIZE(sd))(0) LT 2 THEN $
+    sd = Rebin(Reform(sd,1,N_Elements(sd)), 2, N_Elements(sd), /SAMPLE) 
 
    IF 2*N_Elements(m) NE N_Elements(sd) THEN $
     Console, 'Mean and deviation values are of different count.', /FATAL
@@ -126,31 +127,35 @@ PRO MSPLOT, z, zz, zzz $
    IF Set(YRANGE) THEN yr=YRANGE ;if not the default is already set above
    
 
-
    ;; initialize coordinate system, with actually plotting neither
    ;; data nor the axes :
    IF NOT Keyword_Set(OPLOT) THEN $
-     Plot, x, m, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4 $
-     , YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=e
+    Plot, x, m, /NODATA, XRANGE=xrange, XSTYLE=xstyle+4 $
+    , YRANGE=yr, YSTYLE=ystyle+4, _EXTRA=extra
 
    IF Keyword_Set(BW) THEN BEGIN
-       OPlot, x, m+sd(1,*), LINESTYLE=1
-       OPlot, x, m-sd(0,*), LINESTYLE=1
-       OPlot, x, m 
+      OPlot, x, m+sd(1,*), LINESTYLE=1
+      OPlot, x, m-sd(0,*), LINESTYLE=1
+      OPlot, x, m 
    END ELSE BEGIN
-       PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] ,$
-         [m+sd(1,*), m(n-1)-sd(0,n-1), REVERSE(m-sd(0,*)), m(0)+sd(1,0)],$
-         COLOR=sdcolor, NOCLIP=0
-       OPlot, x, m, COLOR=mcolor
+      PolyFill, [xf,xf(n-1),REVERSE(xf), xf(0)] ,$
+       [m+sd(1,*), m(n-1)-sd(0,n-1), REVERSE(m-sd(0,*)), m(0)+sd(1,0)],$
+       COLOR=sdcolor, NOCLIP=0
+      OPlot, x, m, COLOR=mcolor
    END
 
+   extratitles = ExtraDiff(extra, ['XTITLE', 'YTITLE'])
+   
    ; plot coordinate system only
-   IF NOT KEYWORD_Set(OPLOT) THEN begin
-;     Plot, x, m, /NODATA, /NOERASE, XRANGE=xrange, XSTYLE=xstyle, YRANGE=yr, YSTYLE=ystyle, _EXTRA=e
-       Axis, XAXIS=0, XRANGE=xrange, XSTYLE=xstyle, _EXTRA=e
-       Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks'
-       Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, _EXTRA=e
-       Axis, YAXIS=1, YRANGE=yrange, YSTYLE=ystyle, YTICKFORMAT='noticks'
-   endif
+   IF NOT Keyword_Set(OPLOT) THEN BEGIN 
+      Axis, XAXIS=0, XRANGE=xrange, XSTYLE=xstyle, XTITLE=extratitles.xtitle $
+       , _EXTRA=extra
+      Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks' $
+       , _EXTRA=extra
+      Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, YTITLE=extratitles.ytitle $
+       , _EXTRA=extra
+      Axis, YAXIS=1, YRANGE=yrange, YSTYLE=ystyle, YTICKFORMAT='noticks' $
+       , _EXTRA=extra
+   ENDIF
  
 END
