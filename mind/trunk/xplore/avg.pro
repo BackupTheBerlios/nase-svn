@@ -28,6 +28,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/06/20 13:21:38  saam
+;              + changed internal file format
+;              + slightly changed figure captions
+;
 ;        Revision 1.1  2000/04/07 09:45:11  saam
 ;              wow, i got it
 ;
@@ -47,7 +51,7 @@ END
 val = Replay(Video)
 Eject, Video, /SHUTUP
 
-dummy = CamCord(V, UMoment(val))
+dummy = CamCord(V, [UMoment(val), N_ELEMENTS(val)])
 
 END
 
@@ -114,7 +118,7 @@ OpenSheet, AVG_1
 abszissa = ValEach(LCONST=-lo)
 Plot, abszissa, REFORM(vals(*,0)), TITLE=title, _EXTRA=e
 Errplot, abszissa, REFORM(vals(*,0))-sd, REFORM(vals(*,0))+sd
-Inscription, info, /INSIDE, /RIGHT, /TOP
+Inscription, 'N = '+STR(LONG(vals(0,4))), /INSIDE, /RIGHT, /TOP
 Inscription, P.file+File, /INSIDE, /RIGHT, /BOTTOM, CHARSIZE=0.4, CHARTHICK=1
 CloseSheet, AVG_1
 
@@ -127,7 +131,7 @@ COMMON ATTENTION
 Default, FILE, ''
 
                            ; just a sample frame
-V = InitVideo( UMoment([0.2,0.4,0.2]), TITLE=P.File+FILE+'.avg', STARRING='umoment avergaged data', COMPANY='N = '+STR(N_Elements(valeach(LCONST=-lo))), /SHUTUP)
+V = InitVideo( [UMoment([0.2,0.4,0.2]),1.0], TITLE=P.File+FILE+'.avg', STARRING='umoment avergaged data', COMPANY='abszissa values: '+STR(N_Elements(valeach(LCONST=-lo))), /SHUTUP)
 iter = ForEach("_AVG", FILE=file, VIDEO=V, LCONST=-lo, _EXTRA=e)
 Eject, V, /NOLABEL, /SHUTUP
 
