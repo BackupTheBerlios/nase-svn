@@ -26,7 +26,7 @@
 ; CALLING SEQUENCE:
 ;*result = Gabor( size
 ;*                [,HMW=...] [,ORIENTATION=...] [,PHASE=...] [,WAVELENGTH=...]
-;*                [,/NORM] [,/MAXONE] [,/NICEDETECTOR] )
+;*                [,/NORM] [,/POWERNORM] [,/MAXONE] [,/NICEDETECTOR] )
 ;
 ; INPUTS:
 ;  size:: Size of the (square) array to be returned.
