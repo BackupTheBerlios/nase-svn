@@ -19,6 +19,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/04/12 13:30:44  saam
+;           added the initialization of P.FILE and P.OFILE
+;           here, so it is not in the master deffile any more.
+;
 ;     Revision 1.1  1999/12/21 08:56:25  saam
 ;           nothing to comment
 ;
@@ -28,7 +32,12 @@ PRO FakeEach
    
    COMMON ATTENTION
 
+   Spawn, 'pwd', WorkDir
+   WorkDir = WorkDir(0)
+   AP.OFile = RealFileName(WorkDir+'/'+AP.SIMULATION.ver+'/')
+   AP.File = RealFileName(WorkDir+'/'+AP.SIMULATION.ver+'/')
+
    P = AP
-   P.file = StrCompress(AP.FILE+'_', /REMOVE_ALL)
+   P.file = Str(AP.FILE+'_')
 
 END
