@@ -23,12 +23,6 @@
 ;                     Source_W bzw. Target_H x Target_W, je nachdem, ob TOS oder FROMS
 ;                     angegeben wurden)
 ;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
 ; RESTRICTIONS: Bisher kann nur ueber die gesamte Gewichtsmatrix
 ;               gemittelt werden.
 ;
@@ -48,6 +42,8 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Doc$
+;
 ;       Wed Sep 3 16:54:06 1997, Andreas Thiel
 ;		Normierung im WRAP-Fall korrigiert.
 ;
@@ -63,12 +59,21 @@ FUNCTION MiddleWeights, _Matrix, FROMS=Froms, TOS=Tos, WRAP=Wrap
 If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
 if keyword_set(TOS) then begin  ; Source- und Targetlayer vertauschen:
+   IF _Matrix.Info EQ 'DW_DELAY_WEIGHT' THEN BEGIN 
     Matrix = {Weights: Transpose(_Matrix.Weights), $
               Delays : Transpose(_Matrix.Delays),$
               source_w: _Matrix.target_w, $
               source_h: _Matrix.target_h, $
               target_w: _Matrix.source_w, $
               target_h: _Matrix.source_h}
+    ENDIF ELSE BEGIN 
+    Matrix = {Weights: Transpose(_Matrix.Weights), $
+              source_w: _Matrix.target_w, $
+              source_h: _Matrix.target_h, $
+              target_w: _Matrix.source_w, $
+              target_h: _Matrix.source_h}
+    ENDELSE 
+
 endif else Matrix = _Matrix
 
 
