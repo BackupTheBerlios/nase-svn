@@ -1,37 +1,49 @@
 ;+
-; NAME:                   DelayWeigh
+; NAME: DelayWeigh
 ;
-; PURPOSE:                realisiert (verzoegerte) Verbindungsmatrix
-;                         Matrizen-Indizierung:  G(target_neuron, source_neuron) 
+; AIM: Propagate spikes through a connection matrix.
 ;
-; CATEGORY:               SIMULATION
+; PURPOSE: Propagate the ouput of a Layer through a connection matrix
+;          (SDW structure). Weights, delays and synaptic depression is
+;          handled as specified in the SDW structure that is passed as
+;          the first argument. If more than one spike is passed ta a
+;          single target neuron, the weights are combined according to
+;          the conjunction method specified in the SDW structure.
 ;
-; CALLING SEQUENCE:       OutVector = DelayWeigh( Matrix, InHandle)
+; CATEGORY: SIMULATION
 ;
-; INPUTS:                 Matrix       : eine zuvor mit InitDW initialisierte Struktur 
-;                         InHandle     : Handle auf SSparse-Liste, i.a. LayerOut(Layer)
+; CALLING SEQUENCE: OutVector = DelayWeigh(Matrix, InHandle)
 ;
-; OUTPUTS:                OutVector: Sparse-Vektor, der den gewichteten (verzoegerten) Output aus der Verbindungsstruktur darstellt
+; INPUTS: Matrix       : a structure created by InitDW()
+;         InHandle     : handle to a SSpass-list, usually LayerOut(Layer)
 ;
-; RESTRICTIONS:           Elemente von INIT_DELAYS kleiner 15
-;                         InVektor enthaelt nur 0 oder 1
+; OUTPUTS: OutVector: spass-vector, containing the
+;                     input to the next layer
 ;
-; PROCEDURE:              SpikeQueue
+; PROCEDURE: SpikeQueue
 ;
 ; EXAMPLE:
-;                         MyDelMat = InitDW(S_WIDTH=2, T_HEIGHT=2, T_WIDTH=6, T_HEIGHT=2, $
-;                                           WEIGHT=3.0,$
-;                                           D_CONST=[4,2])
-;
-;                         In        = Handle_Create(!MH, VALUE=SSpassmacher([1,1,1,1,1,1,1]))
-;                         OutVector = DelayWeigh ( MyDelMat, In)
-;                         print, SpassBeiseite(OutVector)
-;
-;                         FOR z=0,6 DO print, SpassBeiseite(DelayWeigh( MyDelMat, Handle_Create(!MH, VALUE=Spassmacher([0,0,0,0,0,0,0]))) )
+;          MyDelMat = InitDW(S_WIDTH=2, T_HEIGHT=2, T_WIDTH=6, T_HEIGHT=2, $
+;                            WEIGHT=3.0,$
+;                            D_CONST=[4,2])
+;          
+;          In        = Handle_Create(!MH, VALUE=SSpassmacher([1,1,1,1,1,1,1]))
+;          OutVector = DelayWeigh ( MyDelMat, In)
+;          print, SpassBeiseite(OutVector)
+;          
+;          FOR z=0,6 DO print, SpassBeiseite(DelayWeigh( MyDelMat, Handle_Create(!MH, VALUE=Spassmacher([0,0,0,0,0,0,0]))) )
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.41  2000/07/18 16:38:46  kupper
+;       Implemented Poggio&Riesenhuber-like MAX conjuction operation.
+;
+;       Fixed bug in SDW2DW that currupted synaptic depression data.
+;
+;       Englishified headers (Sorry, InitDW still mostly german, it's just too
+;       long...)
+;
 ;       Revision 1.40  1999/11/05 13:09:56  alshaikh
 ;             1)jede synapse hat jetzt ihr eigenes U_se
 ;             2)keyword REALSCALE
@@ -175,6 +187,18 @@
 ;                         waren im foldenden auch wirksam sind, Mirko, 5.8.97
 ;
 ;-
+
+Pro register_Output, outvector, targetneuron, strength, method
+   case method of
+      ;; 1: SUM
+      1: outvector(targetneuron) = outvector(targetneuron) + strength
+      ;; 2: MAX
+      2: outvector(targetneuron) = outvector(targetneuron) > strength
+      else: Message, "SDW struct specified unknown conjunction-method '"+str(method)+"'."
+   endcase
+End
+
+
 FUNCTION DelayWeigh, _DW, InHandle
    
 
@@ -230,13 +254,13 @@ FUNCTION DelayWeigh, _DW, InHandle
                
             ; normierung :
             ; gleiches verhalten wie non-depressive synapsen bei transm=1 ; nicht mehr
-               IF dw.realscale EQ 0 THEN vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) $
-               ELSE vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) * dw.U_se(wi) 
+               IF dw.realscale EQ 0 THEN register_Output, vector, tN, DW.W(wi) * DW.TRANSM(wi), DW.conjunction_method $
+               ELSE register_Output, vector, tN, DW.W(wi) * DW.TRANSM(wi) * dw.U_se(wi), DW.conjunction_method
                                                                   
                DW.TRANSM(wi) =  (1- DW.U_se(wi))*DW.TRANSM(wi)
 
             ; nichtdepressiver fall :   
-            END ELSE vector(tN) = vector(tn) + DW.W(wi)
+            END ELSE register_Output, vector, tN, DW.W(wi), DW.conjunction_method
            
             Handle_Value, DW.S2C(asn), wi, /NO_COPY, /SET
          END
@@ -307,12 +331,12 @@ RETURN, Spassmacher(vector)
                DW.TRANSM(wi) = (1 - ((1 - DW.TRANSM(wi)) * DW.exp_array(DW.last_ap(wi) < (4*DW.tau_rec))))
                DW.LAST_AP(wi) = 0
                
-               IF dw.realscale EQ 0 THEN vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi) $
-                ELSE vector(tN) = vector(tn) + DW.W(wi) * DW.TRANSM(wi)*dw.U_se(wi)  
+               IF dw.realscale EQ 0 THEN register_Output, vector, tN, DW.W(wi) * DW.TRANSM(wi), DW.conjunction_method $
+                ELSE register_Output, vector, tN, DW.W(wi) * DW.TRANSM(wi)*dw.U_se(wi), DW.conjunction_method
                DW.TRANSM(wi) =  (1 - DW.U_se(wi))*DW.TRANSM(wi)
               
                
-            END ELSE vector(tN) = vector(tn) + DW.W(wi)
+            END ELSE register_Output, vector, tN, DW.W(wi), DW.conjunction_method
             
          END
          

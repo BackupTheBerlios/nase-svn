@@ -1,32 +1,44 @@
 ;+
 ; NAME:               SDW2DW
 ;
-; PURPOSE:            Wandelt ein SDW[_DELAY]_WEIGHT-Struktur in eine
-;                     DW[_DELAY]_WEIGHT-Struktur um. 
-;                     Diese Routine dient der INTERNEN Organisation
-;                     der DW-Strukturen und sollte nur benutzt werden,
-;                     WENN MAN WIRKLICH WEISS, WAS MAN TUT!!
+; AIM: Transform a SDW connection struct into a DW connection matrix.
 ;
-; CATEGORY:           INTERNAL SIMU CONNECTIONS
+; PURPOSE: Transform an SDW[_DELAY]_WEIGHT struct into a
+;          DW[_DELAY]_WEIGHT struct (respectively, handles to those).
+;          This procedure is intended for INTERNAL ORGANIZATION of
+;          connection matrices and should ONLY BE USED IF YOU ARE
+;          AWARE OF WHAT YOU'RE DOING! 
+;
+; CATEGORY: INTERNAL SIMU CONNECTIONS
 ;
 ; CALLING SEQUENCE:   DW = SDW2DW(SDW [,/KEEP_ARGUMENT])
 ;
-; INPUTS:             SDW: eine SDW[_DELAY]_WEIGHT-Struktur
+; INPUTS: SDW: a handle to a SDW[_DELAY]_WEIGHT struct, as
+;         created by InitDW or by DW2SDW.
+;         
+; KEYWORD PARAMETERS: KEEP_ARGUMENT: SDW is undefined after the call
+;                     by default. If this keyword is set, the original
+;                     argument stays defined.
 ;
-; KEYWORD PARAMETERS: KEEP_ARGUMENT: falls nicht gesetzt, ist SDW nach dem
-;                                    Aufruf undefiniert; ist es gesetzt bleibt
-;                                    SDW erhalten
+; OUTPUTS: DW: a handle to an equivalent DW[_DELAY]_WEIGHT struct.
 ;
-; OUTPUTS:            DW: ein korrespondoerende DW[_DELAY]_WEIGHT-Struktur
+; SIDE EFFECTS: SDW may be changed.
+;               learning potentials and queued spikes will not be
+;               contained in the resulting DW.
 ;
-; SIDE EFFECTS:       SDW wird veraendert, Lernpotentiale und Aktionspotentiale
-;                     in verzoegerten Verbindungen sind in DW nicht enthalten
-;
-; SEE ALSO:           <A HREF='#DW2SDW>DW2SDW</A>, <A HREF='#INITDW>InitDW</A>
+; SEE ALSO: <A HREF='#DW2SDW>DW2SDW</A>, <A HREF='#INITDW>InitDW</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/07/18 16:38:46  kupper
+;     Implemented Poggio&Riesenhuber-like MAX conjuction operation.
+;
+;     Fixed bug in SDW2DW that currupted synaptic depression data.
+;
+;     Englishified headers (Sorry, InitDW still mostly german, it's just too
+;     long...)
+;
 ;     Revision 2.7  1999/11/05 13:09:57  alshaikh
 ;           1)jede synapse hat jetzt ihr eigenes U_se
 ;           2)keyword REALSCALE
@@ -57,6 +69,13 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
 
    IF (Info(_SDW) NE 'SDW_DELAY_WEIGHT') AND (Info(_SDW) NE 'SDW_WEIGHT') THEN Message, 'SDW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_SDW))+' !'
 
+
+   ;; We need this again, because there are no(t yet) functions for
+   ;; accessing the depression-parameters and conjunction-method from
+   ;; a SDW-handle (like for Weights and Delays!):
+   Handle_Value, _SDW, SDW, /NO_COPY
+
+
    dims = DWDim(_SDW, /ALL)
 
    IF Info(_SDW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN            
@@ -78,17 +97,27 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
    END ELSE Message, 'this must not happen!!'
 
 ; kompatibilitaetsabfrage zu alten sdw-strukturen
-   IF NOT keyword_set(depress) THEN depress = 0
+   IF NOT ExtraSet(SDW,'depress') THEN depress = 0 else depress =  SDW.depress
       
 ; depressions-parameter  
    IF depress EQ 1 THEN begin  
-      settag,dw, 'U_se_const',U_se_const
-      settag,dw, 'tau_rec', tau_rec
-      settag,dw, 'realscale', realscale
+      settag,dw, 'U_se_const',SDW.U_se_const
+      settag,dw, 'tau_rec', SDW.tau_rec
+      settag,dw, 'realscale', SDW.realscale
    END 
-   settag,dw, 'depress', depress
+   settag,dw, 'depress', SDW.depress
    
-   
+; kompatibilitaetsabfrage zu alten sdw-strukturen
+   IF NOT ExtraSet(SDW,'conjunction_method') THEN conjunction_method=1 else depress=SDW.conjunction_method
+   ;; method 1 is "SUM".
+      
+
+   ;; We need this again, because there are no(t yet) functions for
+   ;; accessing the depression-parameters and conjunction-method from
+   ;; a SDW-handle (like for Weights and Delays!):
+   Handle_Value, _SDW, SDW, /NO_COPY, /SET
+
+  
    IF NOT Keyword_Set(KEEP_ARGUMENT) THEN FreeDW, _SDW
    
    RETURN, Handle_Create(!MH, VALUE=DW, /NO_COPY)

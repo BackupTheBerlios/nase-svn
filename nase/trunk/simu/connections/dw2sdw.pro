@@ -1,29 +1,40 @@
 ;+
-; NAME:               DW2SDW
+; NAME: DW2SDW
 ;
-; PURPOSE:            Wandelt ein DW[_DELAY]_WEIGHT-Struktur in eine
-;                     SDW[_DELAY]_WEIGHT-Struktur um. 
-;                     Diese Routine dient der INTERNEN Organisation
-;                     der DW-Strukturen und sollte nur benutzt werden,
-;                     WENN MAN WIRKLICH WEISS, WAS MAN TUT!!
+; AIM: Transform a DW connection matrix into a SDW connection struct.
 ;
-;                     Bemerkung: DW2SDW ersetzt Init_SDW
+; PURPOSE: Transform a DW[_DELAY]_WEIGHT struct into an
+;          SDW[_DELAY]_WEIGHT struct (respectively, handles to those).
+;          This procedure is intended for INTERNAL ORGANIZATION of
+;          connection matrices and should ONLY BE USED IF YOU ARE
+;          AWARE OF WHAT YOU'RE DOING! 
 ;
-; CATEGORY:           INTERNAL SIMU CONNECTIONS
+;          Note: DW2SDW replaces Init_SDW
+;
+; CATEGORY: INTERNAL SIMU CONNECTIONS
 ;
 ; CALLING SEQUENCE:   DW2SDW, DW
 ;
-; INPUTS:             DW: eine DW[_DELAY]_WEIGHT-Struktur
+; INPUTS: DW: a handle to a DW[_DELAY]_WEIGHT struct, as
+;         created by InitDW with the /OLDSTYLE option set, or by SDW2DW.
+;         
+; OUTPUTS: DW: a handle to an equivalent SDW[_DELAY]_WEIGHT struct.
 ;
-; OUTPUTS:            DW: die neue SDW[_DELAY]_WEIGHT-Struktur
+; SIDE EFFECTS: DW may be changed.
 ;
-; SIDE EFFECTS:       DW wird veraendert
-;
-; SEE ALSO:           <A HREF='#SDW2DW>SDW2DW</A>, <A HREF='#INITDW>InitDW</A>
+; SEE ALSO: <A HREF='#SDW2DW>SDW2DW</A>, <A HREF='#INITDW>InitDW</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  2000/07/18 16:38:46  kupper
+;     Implemented Poggio&Riesenhuber-like MAX conjuction operation.
+;
+;     Fixed bug in SDW2DW that currupted synaptic depression data.
+;
+;     Englishified headers (Sorry, InitDW still mostly german, it's just too
+;     long...)
+;
 ;     Revision 2.12  1999/11/05 13:09:56  alshaikh
 ;           1)jede synapse hat jetzt ihr eigenes U_se
 ;           2)keyword REALSCALE
@@ -136,6 +147,10 @@ IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
       U_se =  W*0+U_se_const
  END
 
+; conjunction_method:
+; Kompatibilitaet mit alten DW-strukturen. Pruefen, ob 'conjunction_method' existiert   
+ IF NOT ExtraSet(DW,'conjunction_method') THEN conjunction_method=1 else conjunction_method=DW.conjunction_method
+ ;; method 1 is "SUM".
 
 
    IF Contains(Info(DW), 'DELAY') THEN BEGIN            
@@ -156,6 +171,7 @@ IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
                  W       : [W]               ,$
                  D       : [D]               ,$
                  depress : depress           ,$
+                 conjunction_method: conjunction_method, $
                 
 
                  queuehdl: Handle_Create(VALUE=InitSpikeQueue( INIT_DELAYS=D )),$
@@ -175,6 +191,7 @@ IF NOT ExtraSet(DW,'depress') THEN depress = 0 else depress =  DW.depress
                  c2t     : c2t         ,$              
                  W       : [W]         ,$
                  depress : depress     ,$
+                 conjunction_method: conjunction_method, $
                
                  Learn   : -1l         }
       END

@@ -1,7 +1,14 @@
 ;+
 ; NAME: InitDW()
 ;
-; PURPOSE: Initialisierung einer Delay-Weight-Struktur
+; AIM: Init and define a connection matrix (SDW struct).
+;
+; PURPOSE: Create a connection matrix that will be used by the
+;          DelayWeigh() Function to propagate spikes from one layer to
+;          the next.
+;          Optionally, weights, delays, synaptic depression parameters
+;          and the combination method for conjunctive connections can
+;          be specified.
 ;
 ; CATEGORY: Simulation
 ;
@@ -14,7 +21,8 @@
 ;                                   [,/D_TRUNCATE [,D_TRUNC_VALUE]]
 ;                                   [,NOCON]
 ;                                   [,/OLDSTYLE]
-;                                   [,/DEPRESS [, TAU_REC] [, U_SE] ,[ REALSCALE] ] )
+;                                   [,/DEPRESS [, TAU_REC] [, U_SE] ,[REALSCALE] ]
+;                                   [CONJUNCTION_METHOD={"SUM","MAX"} )
 ; 
 ; INPUTS: S_Layer, T_Layer: Source-, TagetLayer. Alternativ nur die Ausmaße in S/T_Width/Height
 ;                                                oder implizit int W_INIT/D_INIT
@@ -41,7 +49,6 @@
 ;                  NOCON                : Neuronen, deren Abstand vom HotSpot groesser als NOCON ist, werden nicht verbunden;
 ;                                         zwischen diesen Neuronen koennen auch keine Gewichte gelernt werden
 ;               
-;
 ;                  Man beachte, daß die Angabe mehrerer W_-
 ;                  bzw. mehrerer D_- Schlüsselworte i.d.R. nicht
 ;                  sinnvoll ist. Eine Ausnahme bilden hier die
@@ -50,6 +57,16 @@
 ;                  es leicht möglich, etwa eine gaußförmige
 ;                  Gewichtsverteilung mit einem überlagerten Rauschen
 ;                  zu erzeugen.
+;
+;                  CONJUNCTION_METHOD: The operation that is used if
+;                                      more than one spike at a time
+;                                      arrive at a target
+;                                      neuron. Possible value are
+;                               "SUM": (default). Linear summation of
+;                                      weight values.
+;                               "MAX": Pick the greatest weight of all
+;                                      spikes. See REFERENCES for
+;                                      details.
 ;
 ; KEYWORD PARAMETERS: s.o.
 ;                     TRUNCATE, TRUNC_VALUE: s. SetWeight.
@@ -122,6 +139,11 @@
 ;         ----------------------------------------------------------
 ;
 ;
+; RESTRICTIONS: The MAX operation is sign-sensitive (mathematical
+;               correct "greater than", no absolute value). Hence,
+;               negative weights values should not be used with the
+;               MAX operation.
+;
 ; EXAMPLE: 1. My_DWS = InitDW (S_Layer=l1, T_Layer=l2, W_RANDOM=[0,1])
 ;          2. My_DWS = InitDW (S_Layer=My_Layer, T_Layer=My_Layer, W_GAUSS=[1,4], /W_NONSELF)
 ;          3. Vollständiges Beispiel:
@@ -135,9 +157,23 @@
 ;                  ShowWeights, My_DWS, /FROMS, Titel="Gewichte"
 ;                  ShowWeights, /DELAYS, My_DWS, /FROMS, Titel="Delays"
 ;        
+; REFERENCES: The MAX operation for conjunctive connections is
+;             described in: Riesenhuber, Poggio, "Hierarchical models
+;                           of object recognition in cortex", nature
+;                           neurosc., 2(11), Nov. 1999
+;                           (Papyrus #6409)
+;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.20  2000/07/18 16:38:46  kupper
+;       Implemented Poggio&Riesenhuber-like MAX conjuction operation.
+;
+;       Fixed bug in SDW2DW that currupted synaptic depression data.
+;
+;       Englishified headers (Sorry, InitDW still mostly german, it's just too
+;       long...)
+;
 ;       Revision 2.19  2000/01/20 15:05:02  saam
 ;             D_NONSELF is ignored if delays are not activated
 ;
@@ -300,13 +336,21 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  W_NOCON=w_nocon, NOCON=nocon, $
                  SOURCE_TO_TARGET=source_to_target, TARGET_TO_SOURCE=target_to_source, $
                  OLDSTYLE=oldstyle, depress=depress, tau_rec= tau_rec, U_se= U_se_const, $ 
-                 REALSCALE=realscale
+                 REALSCALE=realscale, $
+                 CONJUNCTION_METHOD=conjunction_method
 
    Default, nocon, w_nocon
    Default, tau_rec, 200.0
    Default, U_se_const, 0.35
    default, depress, 0
    Default, realscale, 0
+   Default, conjunction_method, "MAX"
+
+   Case strupcase(conjunction_method) of
+      "SUM": cm = 1
+      "MAX": cm = 2
+      else: Message, "Unknown conjunction method specified: " +"'"+conjunction_method+"'."
+   EndCase
 
    IF keyword_set(depress) THEN depress = 1
 
@@ -367,7 +411,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  target_h: t_height,$
                  Weights : temporary(w_init) ,$
                  depress : depress, $
-                 Delays  : temporary(d_init) }
+                 Delays  : temporary(d_init), $
+                 conjunction_method: cm }
 
          IF depress EQ 1 THEN BEGIN
             settag,tmp, 'tau_rec', tau_rec
@@ -385,7 +430,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                 target_w: t_width,$
                 target_h: t_height,$
                 Weights : reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE), $
-                depress : depress }
+                depress : depress, $
+                conjunction_method: cm}
  
 IF depress EQ 1 THEN BEGIN
 
