@@ -1,47 +1,28 @@
 ;+
-; NAME:               InitWeights
+; NAME:
+;   InitWeights()
 ;
-; AIM:                initializes weight structures for simultion (used by <A>Sim</A>) 
+; AIM:
+;   initializes weight structures for simulation (used by <A>Sim</A>) 
 ;
-; PURPOSE:            Initializes weigth matrices for simulation. It is internally called
-;                     by SIM.
+; PURPOSE:
+;   Initializes weigth matrices for simulation. It is internally called
+;   by SIM.
 ;
-; CATEGORY:           MIND SIM INTERNAL
+; CATEGORY:
+;  Input
+;  Internal
+;  MIND
+;  Simulation
 ;
-; CALLING SEQUENCE:   DW=InitWeights(DWW)
+; CALLING SEQUENCE:
+;   DW=InitWeights(DWW)
 ;
-; COMMON BLOCKS:      ATTENTION
+; COMMON BLOCKS:
+;   ATTENTION
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>
-;
-; MODIFACTION HISTORY:
-;
-;       $Log$
-;       Revision 1.7  2000/09/29 08:10:38  saam
-;       added the AIM tag
-;
-;       Revision 1.6  2000/08/31 09:45:53  saam
-;             fixed broken RandomU support for non-delayed DW structures
-;
-;       Revision 1.5  2000/08/11 14:07:27  thiel
-;           Now supports RandomU initialization of weights and delays.
-;
-;       Revision 1.4  2000/05/16 16:32:30  saam
-;             + new weight type INIT
-;             + fixed bug with undefined W_RANDOM
-;
-;       Revision 1.3  2000/01/20 14:41:51  saam
-;             the dinit may be completely omitted if
-;             no delays are necessary
-;
-;       Revision 1.2  2000/01/19 17:26:36  saam
-;             does non-delays as what they are (and
-;             doesn't emulate them as delay-0 delays)
-;
-;       Revision 1.1  1999/12/10 09:36:47  saam
-;             * hope these are all routines needed
-;             * no test, yet
-;
+; SEE ALSO:
+;   <A>Sim</A>
 ;
 ;-
 FUNCTION InitWeights, DWW
@@ -98,6 +79,8 @@ FUNCTION InitWeights, DWW
       IF ExtraSet(DWW, 'DINIT') THEN BEGIN
          IF Contains(DWW.DINIT.TYPE, 'CONST') THEN BEGIN      
             OPT = Create_Struct(OPT, 'D_CONST', [OS*DWW.DINIT.C, DWW.DINIT.R])
+        END ELSE IF Contains(DWW.DINIT.TYPE, 'INIT') THEN BEGIN
+            OPT = Create_Struct(OPT, 'D_INIT',[DWW.DINIT.D])
          END ELSE IF Contains(DWW.DINIT.TYPE, 'LINEAR') THEN BEGIN
             OPT = Create_Struct(OPT, 'D_LINEAR', [OS*DWW.DINIT.M, OS*DWW.DINIT.D, DWW.DINIT.R])
 ;      END ELSE IF Contains(DWW.DINIT.TYPE, 'NONE') THEN BEGIN
