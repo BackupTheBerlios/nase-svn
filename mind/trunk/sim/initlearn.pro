@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/01/27 10:49:42  saam
+;           some calls of console were broken
+;
 ;     Revision 1.8  2000/01/26 16:19:50  alshaikh
 ;           print,message -> console
 ;
@@ -245,12 +248,12 @@ PRO InitLearn, MaxWin,_CON, _LS, _EXTRA=e
    END ELSE IF InSet(lRule, [1,2]) THEN BEGIN
       CASE lWin OF 
          1: BEGIN; ALPHA
-            console, output, 'LEARNWIN: ALPHA, '+ STR(LS.tau_inc)+ ' ms, '+ STR(LS.tau_dec)+' ms','initlearn',/message 
+            console, output, 'LEARNWIN: ALPHA, '+ STR(LS.tau_inc)+ ' ms, '+ STR(LS.tau_dec)+' ms','initlearn',/msg 
             IF delay THEN win = InitRecall(_CON(LS.DW), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE) $
              ELSE win = InitRecall(P.LW(curDW.SOURCE), ALPHA=[1.0, LS.tau_inc, LS.tau_dec], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
          2: BEGIN; EXPO
-            console,output, 'LEARNWIN: EXPO, '+ STR(LS.tau)+ ' ms','initlearn',/message
+            console,output, 'LEARNWIN: EXPO, '+ STR(LS.tau)+ ' ms','initlearn',/msg
             win = InitRecall(_CON(LS.DW), EXPO =[1.0, LS.tau], SAMPLEPERIOD=P.SIMULATION.SAMPLE)
          END
          ELSE: console,output, 'Learning Window for these learning rule expected!','initlearn',/fatal
