@@ -232,11 +232,12 @@ sub createDirHash {
     closedir DIR;      
     
     foreach (sort @sdir){
-      createDirHash("$mydir/$_");
+      if (($_ ne "alien") && ($_ ne "object")){ createDirHash("$mydir/$_"); }
     }
 
     foreach $file (sort @file) {
       @hentry = ();
+      print STDERR "$mydir/$file\n";
       parseHeader("$DOCDIR/$mydir/$file"); # will modify @hentry
       unshift(@hentry, $mydir);
       $hdata{$file} = \@hentry;
