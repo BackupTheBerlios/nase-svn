@@ -33,7 +33,7 @@
 ;  Input
 ;
 ; CALLING SEQUENCE:
-;*result = ImageScale( pic, distance [,eye] [,SIZEFACTOR=...] [,BACKGROUND=...] )
+;*result = PerspectiveScale( pic, distance [,eye] [,SIZEFACTOR=...] [,BACKGROUND=...] )
 ;
 ; INPUTS:
 ;  pic:: The image to be scaled. This must eithe be a 2-dimensional
