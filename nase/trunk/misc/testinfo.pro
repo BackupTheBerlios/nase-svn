@@ -25,7 +25,7 @@
 ; SIDE EFFECTS: Bei Nichtübereinstimmung bricht die Programmausführung 
 ;               in der aufrufenden Prozedur ab.
 ;
-; PROCEDURE: TestInfo benutzt <A HREF="ARRAY/#CONTAINS">Contains</A>
+; PROCEDURE: TestInfo benutzt <A HREF="array/#CONTAINS">Contains</A>
 ;            mit der /IGNORECASE-Option zum Testen.
 ;
 ; EXAMPLE: Pro My_LayerProc, LayerStruct
@@ -38,11 +38,14 @@
 ;          "%TESTINFO: This is not a 'Layer'-Structure" ausgegeben und 
 ;          die Programmausführung in My_LayerProc abgebrochen.
 ;
-; SEE ALSO: <A HREF="ARRAY/#CONTAINS">Contains</A>
+; SEE ALSO: <A HREF="array/#CONTAINS">Contains</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/01/28 13:51:05  kupper
+;               Nur Hyperlink korrigiert.
+;
 ;        Revision 2.1  1998/01/28 13:44:08  kupper
 ;               Mal schnell geschrieben, um nicht immer wieder den typischen
 ;        	"If-Contains-Message"-Teil am Prozeduranfang tippen zu müssen...
