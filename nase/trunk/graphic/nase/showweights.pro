@@ -128,6 +128,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.20  1998/02/27 13:16:29  saam
+;             benutzt nun die U-Routinen
+;
 ;       Revision 2.19  1998/02/26 15:45:56  kupper
 ;              Get-ScreenSize() ersetzt durch Device-Befehl für Kompatibilität zu IDL 4
 ;
@@ -394,10 +397,10 @@ PRO ShowWeights, __Matrix, titel=TITEL, groesse=GROESSE, ZOOM=zoom, winnr=WINNR,
 ;   shared Colormap durcheinanderbringern!
    for YY= 0, Matrix.source_h-1 do begin
       for XX= 0, Matrix.source_w-1 do begin  
-         tv, rebin( /sample, $
+         utv, rebin( /sample, $
                     transpose(MatrixMatrix(*, *, YY, XX)), $
                     xGroesse*Matrix.target_w,  yGroesse*Matrix.target_h), $
-          /Order, $
+          /Order, /DEVICE, $
           XX*(1+Matrix.target_w*xGroesse), (Matrix.source_h-1-YY)*(1+Matrix.target_h*yGroesse)
       end
    end
