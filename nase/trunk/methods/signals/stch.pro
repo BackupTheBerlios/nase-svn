@@ -1,10 +1,15 @@
 ;+
-; NAME: STCH
+; NAME: STCH()
 ;
-; AIM:                 two dimensional time resolved spatiotemporal correalation histogramm (STCH)
+; VERSION:
+;  $Id$
+; 
+;
+; AIM:                  two dimensional time resolved spatiotemporal correalation histogramm (STCH)
 ;
 ;
-; PURPOSE:              A two dimensional spatiotemporal correalation function with sliding windows. The result is normed 
+; PURPOSE:              A two dimensional spatiotemporal correalation
+;                       function with sliding windows.  The result is normed 
 ;                       in relation to spatial overlap.
 ;
 ; CATEGORY: 
@@ -12,28 +17,37 @@
 ;
 ;
 ; CALLING SEQUENCE:      
-;* result=stch(A [,distance_ax][,delay_ax][,time_ax][,xpshift=xpshift][,tpshift=tpshift] [,ssize=ssize]
-;              [,sshift=_sshift][,SAMPLEPERIOD=SAMPLEPERIOD][,xsample=xsample],[POWER=POWER][,/VERBOSE])
+;* result=stch(A [,distance_ax][,delay_ax][,time_ax][,xpshift=xpshift]
+;*             [,tpshift=tpshift] [,ssize=ssize][,sshift=_sshift]
+;*             [,SAMPLEPERIOD=SAMPLEPERIOD][,xsample=xsample],[POWER=POWER][,/VERBOSE])
 ; 
 ; 
-; INPUTS:                A::    two dimensioonal array (space,time)
+; INPUTS:                
+;                         A::    two dimensioonal array (space,time)
 ;
 ;
-; KEYWORD PARAMETERS:    XPSHIFT::       the amount the window is spatially shifted against the origin window (spatial correlation interval)
-;                        TPSHIFT::       the amount the window is temporally shifted against the origin window (temporal correlation interval)
+; KEYWORD PARAMETERS:    
+;                        XPSHIFT::       the amount the window is
+;                                        spatially shifted against the
+;                                        origin window (spatial correlation interval)
+;                        TPSHIFT::       the amount the window is
+;                                        temporally shifted against
+;                                        the origin window (temporal correlation interval)
 ;                        SSIZE::         the size of the sliding time window, default is 20ms
 ;                        SSHIFT::        the amount the sliding window is shifted, default is SSIZE/2
 ;                        SAMPLEPERIOD::  the period of one sampled time value, default is 1ms 
 ;                        XSAMPLE::       the period of one sampled space value, default is 1mm 
-;                        SENORM::        single channel energy norm (default: 1)
+;                        SENORM::        single channel energy norm (default 1)
 ;                                
-;                        VERBOSE::       (default: 0)
+;                        VERBOSE::       (default 0)
 ;                                       
 ;
-; OUTPUTS:               RESULT:: three dimensional array  (spatial correlation, temporal correlation, time)
+; OUTPUTS:               
+;                        RESULT:: three dimensional array  (spatial correlation, temporal correlation, time)
 ;
 ;
-; OPTIONAL OUTPUTS:      DISTANCE_AX:: axis values for each correlation window in relation to spatial correlation
+; OPTIONAL OUTPUTS:      
+;                        DISTANCE_AX:: axis values for each correlation window in relation to spatial correlation
 ;                        delay_ax:: axis values for each correlation window in relation to temporal correlation
 ;                        time_ax:: time axis values for center position of each correlation window  
 ;                        POWER::    the power of each sliding window as an array of time 
@@ -42,15 +56,7 @@
 ; EXAMPLE:               s. <A>STCHFIT</A>
 ;
 ;-
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 1.1  2003/05/16 14:08:54  gabriel
-;           initial commit
-;
-;
-;
+
 FUNCTION stch,A,distance_ax,delay_ax,time_ax,xpshift=xpshift,tpshift=_tpshift,ssize=_ssize,verbose=verbose, $
                         sshift=_sshift,SAMPLEPERIOD=SAMPLEPERIOD, xsample=xsample,POWER=POWER, senorm=senorm
    on_Error, 2
