@@ -122,6 +122,9 @@
 ===============================================================================================================
 
         $Log$
+        Revision 1.4  2001/08/16 17:26:03  kupper
+        Added tmp_nam function for getting a temporary filename.
+
         Revision 1.3  2000/08/04 15:13:02  kupper
         Added system variable !NASEDIR.
 
@@ -142,9 +145,10 @@
 
 extern "C" 
 {
-  IDL_LONG  get_fd             (int argc, void* argv[]);
-  IDL_LONG  wait_for_data      (int argc, void* argv[]);
-  IDLBool_t non_block_readable (int argc, void* argv[]);
+  IDL_LONG   get_fd             (int argc, void* argv[]);
+  IDL_LONG   wait_for_data      (int argc, void* argv[]);
+  IDLBool_t  non_block_readable (int argc, void* argv[]);
+  char* tmp_nam (int argc, void* argv[]);
 }
 
 
