@@ -36,6 +36,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/17 14:29:52  kupper
+;     Typo!
+;     Must have been AGES ODL!
+;
 ;     Revision 1.1  1999/07/28 08:46:41  saam
 ;           there has to be a settag if there is a deltag!
 ;
@@ -50,7 +54,7 @@ PRO SetTag, S, TN, TV
    IF NOT Set(TV) THEN Message, 'third argument undefined'
 
    IF TypeOf(S)  NE 'STRUCT' THEN Message, 'first argument has to be a structure'
-   IF TypeOf(TN) NE 'STRING' THEN Messgage, 'second argument has to be a string'
+   IF TypeOf(TN) NE 'STRING' THEN message, 'second argument has to be a string'
 
    DelTag, S, TN
    S = Create_Struct(S, TN, TV)

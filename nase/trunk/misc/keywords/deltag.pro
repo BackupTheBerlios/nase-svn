@@ -33,6 +33,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/17 14:29:52  kupper
+;     Typo!
+;     Must have been AGES ODL!
+;
 ;     Revision 1.1  1999/03/19 14:10:35  saam
 ;           a little, cute routine
 ;
@@ -46,7 +50,7 @@ PRO DelTag, S, TN
    IF NOT Set(TN) THEN Message, 'second argument undefined'
 
    IF TypeOf(S)  NE 'STRUCT' THEN Message, 'first argument has to be a structure'
-   IF TypeOf(TN) NE 'STRING' THEN Messgage, 'second argument has to be a string'
+   IF TypeOf(TN) NE 'STRING' THEN message, 'second argument has to be a string'
 
    deleted = ExtraDiff(S, TN)
 
