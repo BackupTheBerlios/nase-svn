@@ -9,7 +9,7 @@
 ;
 ; CATEGORY:            STAT SIGNAL
 ;
-; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] )
+; CALLING SEQUENCE:    LFPS = LFP( mt, recSites { ,CONST=const | ,HMW_X2=xmw_x2 } [,ROI=roi] [,/NASE])
 ;
 ; INPUTS:              mt      : 3d-Array, das den Zeitverlauf der Membranpotentiale 
 ;                                enthaelt. Die Dimensionen sind (HOEHE, BREITE, ZEIT).
@@ -21,6 +21,7 @@
 ;                              mit einer Halbwertsbreite von hmw_x2.
 ;                      ROI   : nach Aufruf von LFP enthaelt ROI die verwendeten Masken
 ;                              fuer die Gewichtung der LFP's. Dimension (SIGNAL_NR,HOEHE,BREITE)
+;                      NASE  : korrekte Behandlung von Nase-Layern
 ;                       
 ; OUTPUTS:             LFPS  : Array das die LFP-Signale fuer die Ableitorte enthaelt.
 ;                              Dimension: (ABLEITINDEX, ZEIT)
@@ -34,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  1998/05/28 12:33:05  saam
+;           Keyword NASE added
+;
 ;     Revision 1.5  1998/05/18 19:45:55  saam
 ;           problems with nase layers corrected by new keyword NASE
 ;
