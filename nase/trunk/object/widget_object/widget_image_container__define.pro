@@ -207,26 +207,18 @@ Pro widget_image_container_event, event
    If Event.Type eq 0 then begin ;Mouse Button Press
       ;;This might take a while, so display hourglass:
       ;;Widget_Control, /Hourglass
-      
-      ;; get position of base:
-      Widget_Control, Event.Top, TLB_GET_OFFSET=BaseOffset ;von OBEN links
-      
+            
       If (Event.Press and 1) eq 1 then begin ;Left Mouse Button
          print, "not yet"
       endif                     ;Left Mouse Button
       
       If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
-         o->Surfit, xpos=BaseOffset[0], ypos=BaseOffset[1], $
-                    xsize=300, ysize=300, $
-                   /JUST_REG
+         o->Surfit, xsize=300, ysize=300, /JUST_REG
       Endif                     ;Middle Button
       
       If (Event.Press and 4) eq 4 then begin ;Right Mouse Button
-         o->ExamineIt, xpos=BaseOffset[0], ypos=BaseOffset[1], $
-                    xsize=300, ysize=300, $
-                   /JUST_REG
-         
-      Endif                     ;Middle Button
+         o->ExamineIt, /JUST_REG
+      Endif                     ;Right Button
       
    EndIf
 End
@@ -324,20 +316,32 @@ Pro widget_image_container::renew_plot, XPOS=xpos, YPOS=ypos, _EXTRA=_extra
    *self.extra = _extra         ;save any keywords to pass to PlotTvScl   
 End
 
-Pro widget_image_container::examineit, _EXTRA=_extra
+Pro widget_image_container::examineit, xpos=xpos, ypos=ypos, _EXTRA=_extra
+   ;; get position of base:
+   g = Widget_Info(self->widget(), /Geometry) ;von OBEN links
+   default, xpos, g.XOFFSET + g.SCR_XSIZE + (2* g.MARGIN)
+   default, ypos, g.YOFFSET; + g.SCR_YSIZE + (2* g.MARGIN)
+
    ;; we want examineit to inherit our widgets private color table, so
    ;; we open the showit berforehand.
    showit_open, self->showit()
    examineit, self->image(), $
               GROUP=self->widget(), $
+              XPOS=xpos, YPOS=ypos, $
               NASE=(*self.update_info).nase, $
               _EXTRA=_extra
    showit_close, self->showit()
 End
 
 Pro widget_image_container::surfit, _EXTRA=_extra
+   ;; get position of base:
+   g = Widget_Info(self->widget(), /Geometry) ;von OBEN links
+   default, xpos, g.XOFFSET + g.SCR_XSIZE + (2* g.MARGIN)
+   default, ypos, g.YOFFSET; + g.SCR_YSIZE + (2* g.MARGIN)
+
    surfit, self->image(), $
               GROUP=self->widget(), $
+              XPOS=xpos, YPOS=ypos, $
               NASE=(*self.update_info).nase, $
               _EXTRA=_extra
 End
