@@ -10,12 +10,12 @@
 ;
 ; PURPOSE:
 ;  IDL's <C>CONGRID()</C> does quite good interpolation when extending
-;  array (if <C>CUBIC</C> keyword is used), but it does simple pixel
+;  an array (if <C>CUBIC</C> keyword is used), but it does simple pixel
 ;  selection when shrinking, which can introduce bad aliasing
 ;  artefacts. The NASE routine <A>Subsample</A> does a better job at
 ;  shrinking, but cannot extend arrays.<BR>
 ;  This routine is a simple wrapper that detects if an array shall be
-;  extended or shrunk, and calls either <*>CONGRID</*> or <A>Subsample</A>. 
+;  extended or shrunken, and calls either <*>CONGRID</*> or <A>Subsample</A>. 
 ;
 ; CATEGORY:
 ;  Array
@@ -29,6 +29,7 @@
 ;          point array.
 ;  {x|y}size:: new x and y size of the returned image.
 ;
+; EXAMPLE:
 ;*> utvscl, alison()
 ;*> utvscl, resample(alison(),100,100)
 ;*> utvscl, resample(alison(),400,400)
