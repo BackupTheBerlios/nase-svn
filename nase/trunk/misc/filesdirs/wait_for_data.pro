@@ -8,9 +8,10 @@
 ;
 ; CATEGORY: I/O
 ;
-; CALLING SEQUENCE: ready_array=wait_for_data(lun_array [,SECS=secs, MICROSECS=microsecs] [,/HELP])
+; CALLING SEQUENCE: ready_array=wait_for_data(lun_array [,SECS=secs, MICROSECS=microsecs]
+;                                                       [,BOOL_MASK=bool_mask] [,/HELP])
 ;
-; INPUTS: lun_array           : An array of valid IDL-LogicalUnit-Numbers, or a scalar LONG.
+; INPUTS: lun_array           : An array of valid IDL-Logical-Unit-Numbers, or a scalar LONG.
 ;
 ; KEYWORED PARAMETERS: SECS, MICROSECS: Time to wait for one of the LUNs to get readable.
 ;		                        SECS=-1 or not specified: wait forever
@@ -22,6 +23,8 @@
 ;                       !NONE on error, or if time out before any LUN was readable
 ;
 ; OPTIONAL OUTPUTS: An informational message is issued if an error occurs.
+;                   BOOL_MASK: A boolean mask (Array, size of lun_array), indicating which LUNs are readable.
+;                   It is ready_array=lun_array(where(BOOL_MASK)).
 ;
 ; SIDE EFFECTS: IDL timer signals are suspended during execution.
 ;
@@ -43,12 +46,22 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/03/05 20:25:40  kupper
+;        Also:
+;        1) Get_fd() und non_block_readable() können jetzt wie "brave" IDL-Routinen
+;        auch Arrays verarbeiten.
+;        2) Wait_for_data() kann in BOOL_MASK optional die Maske der lesbaren LUNs zurückliefern.
+;        3) non_block_readable() kann mit /USE_SELECT angewiesen werden, die UNIX select()
+;           Funktion zu benutzen, anstatt wild drauflos Leseversuche zu starten.
+;           Auf Systemen, die das unterstützen (SVR4 und 4.3+BSD und ?), ist das die Methode der Wahl.
+;           (Man könnte drüber nachdenken, eine Systemvariable zu machen, die das anzeigt...)
+;
 ;        Revision 2.1  1999/03/05 14:30:22  kupper
 ;        Geburt der Wrapper-Routinen für CALL_EXTERNAL.
 ;
 ;-
 
-Function wait_for_data, lun_array ,SECS=secs, MICROSECS=microsecs, HELP=HELP
+Function wait_for_data, lun_array ,SECS=secs, MICROSECS=microsecs, BOOL_MASK=BOOL_MASK, HELP=HELP
 
    ;;------------------> Keyword HELP
    If Keyword_Set(HELP) then begin
@@ -67,7 +80,9 @@ Function wait_for_data, lun_array ,SECS=secs, MICROSECS=microsecs, HELP=HELP
 
    temp_luns = LONG(lun_array)
 
-   number_ready = Call_External (!NASE_LIB, "wait_for_data", temp_luns, N_ELEMENTS(lun_array), SECS, MICROSECS)
+   number_ready = Call_External (!NASE_LIB, "wait_for_data", temp_luns, N_ELEMENTS(temp_luns), SECS, MICROSECS)
+   
+   if (number_ready gt 0) then BOOL_MASK = temp_luns else BOOL_MASK = (lun_array-lun_array);all 0
 
    Case number_ready of
       
