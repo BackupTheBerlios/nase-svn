@@ -88,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.38  1999/02/12 15:26:04  saam
+;           tests for an unset argument
+;
 ;     Revision 2.37  1998/10/28 13:50:38  gabriel
 ;          !P.Multi fuer Postscript verbessert
 ;
@@ -231,6 +234,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                _EXTRA=_extra
 
 
+   On_Error, 2
+   IF NOT Set(_W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
 
    ;-----Sichern der urspruenglichen Device-Parameter
