@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.2  2000/10/02 16:39:52  saam
+%       todos from monday inserted
+%
 %       Revision 1.1  2000/10/02 16:35:10  saam
 %       append one entry
 %
@@ -101,6 +104,45 @@
 
 
 \begin{document}
+
+\begin{center}
+{\Huge\textbf{ToDos}}\\[2cm]
+Version: \$Id$ $\$ 
+\end{center}
+
+\section{Help System \& Documentation Header} 
+
+\begin{itemize}
+\item subscribe Andreas Bruns to mailing list
+\item Category: Kombination aus kurzen Keywords (feste Liste) zum Suchen, Syntax-Check?
+\item \texttt{Keyword Parameters} heissen jetzt \texttt{Input Keywords}
+\item Funktionen werden durch ein nachgestelltes rundes Klammerpaar angedeutet.
+\item Keywords werden komplett grossgeschrieben. 
+\item Abtrennung von Keywords und Beschreibung durch ``::''
+\item show path to file in header display
+\end{itemize}
+
+
+\section{Simulation Kernel}
+
+\begin{itemize}
+\item improve \texttt{mSetSDW} with \texttt{temporary}
+\item \texttt{saveDW} and \texttt{restoreDW} should work with \texttt{SDW}
+\item initialize T2C on demand and in a separate function
+\item extend \texttt{initDW} to work \texttt{SLOW} and \texttt{FAST} version
+\item check the functionality of weight display routines, when T2C is missing
+\item may \texttt{delayWeigh} be improved in processing speed and memory consumption?
+\item commit \texttt{floatWeigh}, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well
+\item commit neuron type file
+\end{itemize}
+
+
+\section{Misc}
+\begin{itemize}
+\item allow \texttt{console} to log into a file, simultaneously
+\end{itemize}ä
+
+\section{MIND}
 
 \begin{itemize}
 \item modify \texttt{foreach} to process multiple parameter variations synchronously. 
