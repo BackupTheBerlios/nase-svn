@@ -8,15 +8,30 @@
 ;
 ; CATEGORY: Darstellung, Visualisierung
 ;
-; CALLING SEQUENCE: Entspricht TV. Bis auf den ZOOM-Parameter.
+; CALLING SEQUENCE: Entspricht TV. Bis auf die zusätzlichen
+;                   Schlüsselworte ZOOM und BLACKBACK.
 ;
-; KEYWORD PARAMETERS: ZOOM: Vergrößerungsfaktor. Erspart ein explizites Rebin.
+; KEYWORD PARAMETERS: ZOOM     : Vergrößerungsfaktor. Erspart ein
+;                                explizites Rebin.
+;                     BLACKBACK: Ist dieses Schlüsselwort gesetzt, so
+;                                werden alle Null-Elemente im Array in 
+;                                der aktuellen Hintergrundfarbe
+;                                !P.BACKGROUND dargestellt. Das ist
+;                                z.B. dann nützlich, wenn die
+;                                NASE-typische rot/grün-Farbtabelle
+;                                installiert ist. Dann erscheinen
+;                                Nullelemente nämlich leuchtend rot,
+;                                was meist wohl nicht erwünscht ist.
+;                                Mit /BLACKBACK erscheinen sie dann schwarz.
 ;
-; EXAMPLE: NaseTV, MeinInput
+; EXAMPLE: NaseTV, MeinInput, ZOOM=4
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.3  1998/02/26 15:49:33  kupper
+;              Schlüsselwort BLACKBACK hinzugefügt.
+;
 ;       Revision 2.2  1997/09/12 11:32:51  kupper
 ;       Keyword ZOOM für automatisches Rebin zugefügt.
 ;
@@ -28,7 +43,7 @@
 ;
 ;-
 
-Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, _EXTRA = _extra
+Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackback, _EXTRA = _extra
      
    if keyword_set(ORDER) then order = 0 else order = 1
 
@@ -37,6 +52,11 @@ Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, _EXTRA = _extra
    xsize = (SIZE(array))(1) * zoom
    ysize = (SIZE(array))(2) * zoom
 
+   If Keyword_Set(BLACKBACK) then begin
+      nullen = Where(array eq 0, count)
+      If count ne 0 then array(nullen) = !P.BACKGROUND
+   Endif
+
    case N_Params() of
 
       1:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra
@@ -44,6 +64,10 @@ Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, _EXTRA = _extra
       3:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
       4:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
    endcase
+
+   ;;------------------> Veränderungen am Array rückgängig machen:
+   If Keyword_Set(BLACKBACK) then if (count ne 0) then array(nullen) = 0
+   ;;--------------------------------
 
 End
 
