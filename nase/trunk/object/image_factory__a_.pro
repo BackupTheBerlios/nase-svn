@@ -13,10 +13,8 @@ Pro image_factory::a_
    WDelete
    WSet, current_win
    
-   self.image = PTR_NEW( $
-                        inssubarray( fltarr(self.height, $
-                                            self.width), $ 
-                                     Transpose(temporary(image)), /Center )$
-                       )   
+   *self.image = inssubarray( fltarr(self.height, $
+                                     self.width), $ 
+                              Transpose(temporary(image)), /Center )
    
 End
