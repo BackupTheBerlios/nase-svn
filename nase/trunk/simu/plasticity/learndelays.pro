@@ -84,6 +84,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.4  1999/08/10 15:12:04  thiel
+;           Changed 'Print' to 'Message, /INFO'.
+;
 ;       Revision 1.3  1999/08/09 15:45:32  thiel
 ;           Now prints warning when spikes are lost due to queue-resets.
 ;
@@ -174,7 +177,7 @@ PRO LearnDelays, _DW, _PC, LW, SHUTUP=shutup;, SELF=Self, NONSELF=NonSelf;, DELE
       overunderflow = Where(newstarts LE 0, c)
       IF c NE 0 THEN BEGIN
          IF NOT Keyword_Set(SHUTUP) THEN $
-          Print, 'LEARNDELAYS: Warning: Queue-reset.'
+          Message, /INFO, 'Warning! Queue-reset. Possible loss of spikes.'
          FreeSpikeQueue, queue
          queue = InitSpikeQueue(INIT_DELAYS=DW.D)
       ENDIF ELSE BEGIN
