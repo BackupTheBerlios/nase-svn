@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.11  1998/01/21 22:20:40  saam
+;             HTML-Seiten haben nun einen NASE-Titel
+;
 ;       Revision 1.10  1997/12/10 17:10:21  saam
 ;             Fehler korrigiert
 ;
@@ -52,7 +55,7 @@ FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
 
    cd, actDir
    Spawn, 'rm -f '+HTMLFile
-   Mk_HTML_Help, actDir, actDir + '/' + HTMLFile
+   Mk_HTML_Help, actDir, actDir + '/' + HTMLFile, TITLE='N.A.S.E. -  '+SubDirs(i)
    
    ;Spawn, 'chmod g+w '+HTMLFile
 END
