@@ -2,18 +2,30 @@
 ; NAME:              Inertia
 ;
 ; PURPOSE:           Liefert das Traegheitsmoment einer zweidimensionalen
-;                    (Massen-)Verteilung relativ zu ihrem Schwerpunkt.
+;                    (Massen-)Verteilung relativ zu einem gegebenen Punkt oder
+;                    ihrem Schwerpunkt.
 ;
 ; CATEGORY:          MISC, ARRAYS
 ;
-; CALLING SEQUENCE:  I = Inertia (A [,COM=com])
+; CALLING SEQUENCE:  I = Inertia (A [,origin] [,COM=com])
 ;
-; INPUTS:            A  : ein zweidimensionales Array, das die Masseverteilung (oder was auch immer)
-;                          in aequidistanten (distanz=1) parallelen Flaechenstuecken enthaelt.
+; INPUTS:            A  : ein zweidimensionales Array, das die Masseverteilung
+;                          (oder was auch immer) in aequidistanten (distanz=1)
+;                          parallelen Flaechenstuecken enthaelt.
+;
+; OPTIONAL INPUTS:   origin: Ursprung, bezüglich dessen das Trägheitsmoment
+;                            berechnet werden soll. 
+;                            Ein zweidimensionales Array, das vom Typ Integer
+;                            sein sollte. (Nachkommastellen werden
+;                            abgeschnitten.)
+;                            Default: Scherpunkt der Verteilung.
 ;
 ; OUTPUTS:           I  : das resultierende Traegheitsmoment
 ;
-; OPTIONAL OUTPUTS:  COM: der Schwepunkt der Verteilung
+; OPTIONAL OUTPUTS:  COM: Sofern origin nicht spezifiziert wurde, wird hier der
+;                         Schwerpunkt der Verteilung, bezüglich dessen das
+;                         Trägheitsmoment berechnet wurde, zurückgegeben.
+;                         Zweidimensionales Array.
 ;
 ; RESTRICTIONS:      hat aber nicht mehr die Aussage eines Masseschwerpunktes, wenn das Array
 ;                    negative Wrte enthält... (Stichwort: Ladungsschwerpunkt) 
@@ -28,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  2000/03/22 16:11:11  kupper
+;        Added origin parameter.
+;
 ;        Revision 1.4  2000/03/22 15:52:36  kupper
 ;        Using eq instead of equal() for checking if total sum is zero.
 ;        equal tended to produce floating illeqal operands when using the Floor()
@@ -47,7 +62,7 @@
 ;
 ;
 ;-
-FUNCTION Inertia, A, COM=com
+FUNCTION Inertia, A, in_com, COM=com
 
    s = SIZE(A)
    dims = s(0)
@@ -59,8 +74,10 @@ FUNCTION Inertia, A, COM=com
    IF dims NE 2 THEN Message, 'only for 2-d array at the moment, sorry!'
    r = FLTARR(dims)
 
-   com = round(Schwerpunkt(A))
-
+   If n_params() eq 2 then $
+    com = round(in_com) else $
+    com = round(Schwerpunkt(A))
+   
    IF com(0) NE !NONE THEN BEGIN
       IF (tA eq 0.0) THEN $
        return, 0.0 ELSE $
