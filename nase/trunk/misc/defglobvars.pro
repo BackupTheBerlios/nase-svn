@@ -1,102 +1,46 @@
 ;+
-; NAME:                 DefGlobVars
+; NAME:
+;  DefGlobVars
 ;
-; AIM:                  defines all NASE specific system variables
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  defines all NASE specific system variables
 ;
-; PURPOSE:              Definiert eine Reihe von Systemvariablen, die von 
-;                       diversen NASE-Routinen benutzt werden (koennen).
-;                       Diese Routine wird vom Start-Script misc/startup
-;                       aufgerufen und braucht eigentlich nicht von Hand
-;                       benutzt zu werden.
+; PURPOSE:
+;  Defines a bunch of system variables, used by several NASE routines.
+;  This routine is part of the NASE startup sequence and you will
+;  generally not call it by hand.<BR>
+;  <*>!CREATEDIR</*>:: if set to 1, <A>UOpenW</A> will automatically create
+;  non-existent directories. Default is not to do so.   
+;  <*>!FILESEP</*>:: contains the operating system dependent file
+;  separator, namely a slash on unix and a backslash on windows platforms.
+;  <*>!NASE_LIB</*>:: path to the system-dependent dynamic NASE library
+;  <*>!REVERTPSCOLORS</*> :: Swaps foreground and background colors
+;  when using postscript output. This is useful, since IDLs standard
+;  colors are white on black (screen), while a postscript always has a
+;  white background, so this option assures that you see something in
+;  the output, when not changing any color. This option is turned on
+;  by default and is used by <A>ResetCM</A> and <A>OpenSheet</A> as
+;  far as i know. 
+;  <*>!TOPCOLOR</*> :: maximal user color index. All color indices
+;  above this value are used by the NASE color managment and <B>MUST
+;  NOT</B> be modified by the user. All NASE
+;  color routines like <A>ULoadCT</A>, <A>Foreground</A>,
+;  <A>Background</A> respect these
+;  settings. <*>!TOPCOLOR <= !D.Table_Size-3</*> must apply, default
+;  value is <*>!D.Table_Size-11</*> reserving 10 colors for NASE.<BR> 
+;  <*>NOTE!</*>:: several variables are still undocumented
 ;
-; CATEGORY:             Startup 
+; CATEGORY:
+;  Startup 
 ;
-; CALLING SEQUENCE:     DefGlobvars
+; CALLING SEQUENCE:
+;  DefGlobvars
 ;
-; SIDE EFFECTS:         sets several system variables
-;
-; AUTHOR:               Andreas Gabriel
-;
-;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.19  2001/02/08 18:32:15  kupper
-;     Packed NASE plotting related system variables into a struct names !NASEP.
-;
-;     Revision 1.18  2001/01/22 19:32:04  kupper
-;     Removed !PSGREY and !REVERTPSCOLORS handling, as greyscale PostScripts
-;     shall not be used any longer (according to colormanagement guidelines
-;     formed during first NASE workshop, fall 2000).
-;
-;     Revision 1.17  2000/10/12 14:53:11  saam
-;     there was a strange character in the windows checkout
-;
-;     Revision 1.16  2000/10/12 14:01:23  saam
-;     added !FILESEP for os independent usage
-;
-;     Revision 1.15  2000/10/05 16:24:31  saam
-;     decreased !TOPCOLOR to increase number
-;     of private colors
-;
-;     Revision 1.14  2000/09/25 09:10:32  saam
-;     * appended AIM tag
-;     * some routines got a documentation update
-;     * fixed some hyperlinks
-;
-;     Revision 1.13  2000/09/18 12:44:45  saam
-;           + removed !EXECPATHS because command
-;             doesn't need it anymore
-;
-;     Revision 1.12  2000/08/31 17:20:44  saam
-;           !NASE_LIB now points to an architecture
-;            dependent directory and fixes the
-;            broken support for multiple architecture.
-;            Confusion with object files of different
-;            systems is avoided.
-;
-;     Revision 1.11  2000/08/25 16:54:22  kupper
-;     Split startup procedure to protect from double execution of startup.
-;
-;     Revision 1.10  2000/08/04 15:13:01  kupper
-;     Added system variable !NASEDIR.
-;
-;     NASE C lib is now located in each users nase directory (no system wide
-;     install).
-;     The library is checked at startup and compiled if it doesn't exist.
-;
-;     Revision 1.9  2000/06/19 13:23:45  saam
-;           new sysv !CREATEDIR used by uopenw to be allowed
-;           to create nonexistent dirs. default is NO.
-;
-;     Revision 1.8  2000/03/28 12:52:08  saam
-;          new SysV !CONSOLE for use with console
-;
-;     Revision 1.7  2000/03/27 13:48:54  saam
-;           TOPCOLOR is now !D.Table_Size-2 which is
-;           much better (at least for TRUE COLOR Displays)
-;           cause the standard color remains white
-;           when calling rgb and friends
-;
-;     Revision 1.6  1999/03/09 14:41:27  kupper
-;     !NASE_LIB ist jetzt schreibbar, für Leute, die auf anderen Verzeichnisstrukturen arbeiten.
-;
-;     Revision 1.5  1999/03/05 14:27:45  kupper
-;
-;     !NASE_LIB hinzugefügt.
-;
-;     Revision 1.4  1999/02/22 11:21:57  saam
-;           added !EXECPATHS
-;
-;     Revision 1.3  1999/01/14 14:15:42  saam
-;           + thereis now !NONEl for integer nones
-;
-;     Revision 1.2  1998/07/14 12:33:14  gabriel
-;          History-Buffer auf 200 Lines erhoeht
-;
-;     Revision 1.1  1998/06/18 12:28:27  gabriel
-;          Startup in Procedure
+; SIDE EFFECTS:
+;  sets several system variables
 ;
 ;-
 PRO DefGlobVars
