@@ -5,7 +5,7 @@
 ;
 ; PURPOSE: Interaktives Editieren eines zweidimensionalen Arrays
 ;
-; CATEGORY: Misc, Arrays
+; CATEGORY: Array
 ;
 ; CALLING SEQUENCE: XMatEdit, Matrix, [GROUP=Base_ID]
 ;
@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/11/07 15:43:49  saam
+;        fixed wrong categories
+;
 ;        Revision 1.5  2000/09/25 09:12:56  saam
 ;        * added AIM tag
 ;        * update header for some files
