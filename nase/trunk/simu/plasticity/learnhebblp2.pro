@@ -21,7 +21,7 @@
 ; CATEGORY: SIMULATION PLASTICITY
 ;
 ; CALLING SEQUENCE:     LearnHebbLP, G, LP, TARGET_CL=TargetCluster, 
-;                                    ALPHA=alpha, GAMMA=gamma
+;                                    ALPHA=alpha, GAMMA=gamma, DELEARN=delearn
 ;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS:             G  : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder 
@@ -33,7 +33,11 @@
 ;                     ALPHA     : Ist das Lernpotential max. 1, dann bedeutet
 ;                                 ALPHA=0: kein Entlernen
 ;                                 ALPHA=1: kein Lernen 
-;                     GAMM      : Parameter, der den Grenzwert
+;                     DELEARN   : Gewichte werden jeden Zeitschritt um
+;                                 DELEARN verringert, es findet aber keine Umwandlung
+;                                 von exc. in inh. Synapsentypen statt, d.h. MIN(wij)=0;
+;                                 default is 0.0
+;                     GAMMA     : Parameter, der den Grenzwert
 ;                                 beeinflusst, gegen den die
 ;                                 Gewichte konvergieren.
 ;                     SELF      : Verbindungen zwischen Neuronen mit gleichen Index 
@@ -55,6 +59,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.4  1998/08/23 13:03:02  saam
+;             new keyword DELEARN for temporal, coincidence independent learning
+;
 ;       Revision 2.3  1998/02/12 09:22:30  saam
 ;             Info() wg. Effizienz hinaugeworfen
 ;
@@ -71,10 +78,10 @@
 ;
 ;-
 PRO LearnHebbLP2, _DW, LP, TARGET_CL=Target_CL,SELF=Self,NONSELF=NonSelf, $
-                ALPHA=alpha, GAMMA=gamma
+                ALPHA=alpha, GAMMA=gamma, DELEARN=delearn
   
    Handle_Value, _DW, DW, /NO_COPY
- 
+   
 
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then BEGIN
@@ -85,6 +92,10 @@ PRO LearnHebbLP2, _DW, LP, TARGET_CL=Target_CL,SELF=Self,NONSELF=NonSelf, $
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
    ; wi : weight indices belonging to neuron
+
+   IF Set(DELEARN) THEN BEGIN
+      DW.W = (DW.W - DELEARN) > 0.0
+   END
 
    IF DW.Info EQ 'SDW_WEIGHT' THEN BEGIN
 
