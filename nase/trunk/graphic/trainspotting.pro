@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.10  1999/06/16 09:16:39  thiel
+;         Hatte gar kein _EXTRA, jetzt schon.
+;
 ;     Revision 1.9  1999/02/03 12:51:50  saam
 ;           + problem with OFFSET corrected
 ;           + works for a one-dimensional spiketrain, also
@@ -92,7 +95,7 @@
 PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, $
                    STRETCH=stretch, V_STRETCH=v_stretch, CHARSIZE=Charsize, $
                    XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSampling=OverSampling, $
-                   XTITLE=xtitle
+                   XTITLE=xtitle, _EXTRA=_extra
 
 ;-----Keine alten Keywords mehr verwenden:
 IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_STRETCH werden ab sofort per Order di Mufti X- und YSYMBOLSIZE verwendet. Die momentane Darstellung erfolgt mit deren Default-Werten. Noch Fragen???'
@@ -141,7 +144,7 @@ IF KEYWORD_SET(clean) THEN BEGIN
    FOR i=0,24 DO empty(i)=' '
    Plot, nt, /NODATA, XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], $
     XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001, $
-    XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize
+    XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2], CHARSIZE=Charsize, _EXTRA=_extra
 END ELSE BEGIN
    Plot, nt, /NODATA, CHARSIZE=Charsize , $
     XRANGE=[offset,time+offset], $
@@ -149,7 +152,7 @@ END ELSE BEGIN
     XSTYLE=1, YSTYLE=1, $
     XTITLE=xtitle, YTITLE='Neuron #', TITLE=title, $
     XTICKLEN=0.00001, YTICKLEN=0.00001, $
-    YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks'
+    YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
 ENDELSE 
 
 
