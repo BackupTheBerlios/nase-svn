@@ -174,7 +174,8 @@ FUNCTION NiceNumber, x0, help=hlp, floor=flr, ceil=cel, minor=mnr
       if countlt gt 0 then out(wlt) = -out(wlt)	; Restore negatives.
    endif
  
-   if n_elements(out) eq 1 then out = out(0) ; 1 elem arr: return scalar.
+   IF n_elements(out) EQ 1 THEN out = out(0) ; 1 elem arr: return scalar.
  
-   return, out                  ; Return result. 
+   Return, out                  ; Return result. 
+
 END
