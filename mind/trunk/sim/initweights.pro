@@ -51,7 +51,9 @@ FUNCTION InitWeights, DWW
        CON = RestoreDW(tmp)
    ENDIF ELSE if Contains(DWW.WINIT.TYPE,'IMPORT') THEN BEGIN
                                 ; RESTORE ALREADY EXISTING DW 
-       tmp = UReadU(DWW.WINIT.FILE+'.dw', /COMPRESS)
+       if ExtraSet(DWW.WINIT, 'FILE') then filename=DWW.WINIT.FILE+'.dw' $
+       else filename=DWW.WINIT.FROM+'.'+DWW.FILE+'.dw'
+       tmp = UReadU(filename, /COMPRESS)
        CON = RestoreDW(tmp)
    ENDIF else  BEGIN
 
@@ -78,7 +80,7 @@ FUNCTION InitWeights, DWW
          OPT = Create_Struct(OPT, 'W_RANDOM', DWW.WINIT.randomu)
        
        IF ExtraSet(DWW, "DEPRESS") then begin
-           OPT = CREATE_STRUCT(OPT, 'DEPRESS', 1,'TAU_REC', DWW.TAU_REC, 'U_SE', DWW.U_SE)
+           OPT = CREATE_STRUCT(OPT, 'DEPRESS', 1,'TAU_REC', OS*DWW.TAU_REC, 'U_SE', DWW.U_SE)
        endif
        
 
