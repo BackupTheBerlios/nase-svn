@@ -230,7 +230,10 @@ End
 Pro widget_MyClass__DEFINE
    dummy = {widget_MyClass, $
             $
-            inherits basic_widget_object $
+            inherits basic_widget_object, $
+            inherits MyOtherSuperClass, $
+            $
+            example: 0 $
            }
 End
 
