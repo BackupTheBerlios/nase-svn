@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1999/06/16 12:51:11  kupper
+;     Fixed minor programming bug caused by new .DrawID tag in PS-sheets.
+;
 ;     Revision 2.8  1999/06/15 17:36:39  kupper
 ;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
 ;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
@@ -121,16 +124,17 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
       new = !Z
       !Z =  sheet.z
       sheet.z = new
-      If keyword_set(SAVE_COLORS) then begin
-                                ;get current palette and Save it in Draw-Widget's UVAL:
-         WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
-         UTVLCT, /GET, Red, Green, Blue
-         draw_uval.MyPalette.R = Red
-         draw_uval.MyPalette.G = Green
-         draw_uval.MyPalette.B = Blue
-         WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
-      EndIf
    END
+
+   If (sheet.type EQ 'X') and keyword_set(SAVE_COLORS) then begin
+                                ;get current palette and Save it in Draw-Widget's UVAL:
+      WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
+      UTVLCT, /GET, Red, Green, Blue
+      draw_uval.MyPalette.R = Red
+      draw_uval.MyPalette.G = Green
+      draw_uval.MyPalette.B = Blue
+      WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
+   EndIf
 
    IF sheet.type EQ 'ps' THEN BEGIN
       IF  sheet.open THEN BEGIN
