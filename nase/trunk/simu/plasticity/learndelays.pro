@@ -84,6 +84,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.5  1999/09/23 14:35:23  thiel
+;           More stable by rounding.
+;
 ;       Revision 1.4  1999/08/10 15:12:04  thiel
 ;           Changed 'Print' to 'Message, /INFO'.
 ;
@@ -131,9 +134,14 @@ PRO LearnDelays, _DW, _PC, LW, SHUTUP=shutup;, SELF=Self, NONSELF=NonSelf;, DELE
 
    FOR i=0, N_Elements(wi)-1 DO BEGIN
       DW.D(wi(i)) = ((DW.D(wi(i)) + LW(2+ConTiming(i,1)+LW(0)))) > 0.0
+      ; If no delayshift is necessary set delays back to their integer value
+      ; to avoid delay-drifting:
+      IF  ConTiming(i,1) EQ 1 THEN $
+       DW.D(wi(i))=Float(Round(DW.D(wi(i))))
 ;      print, 'i ',i,' DW.D(wi(',i,') ',dw.D(wi(i))
 ;      print, 'cont:', ConTiming(i,0), ConTiming(i,1)
    ENDFOR
+;      stop
 
    wi = wi(UNIQ(wi, SORT(wi)))
    
