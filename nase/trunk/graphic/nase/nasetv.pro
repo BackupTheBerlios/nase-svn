@@ -29,6 +29,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  1998/04/09 12:25:34  kupper
+;              Reform-Bug bei 2-dim. Arrays mit führender 1-Dim.
+;
 ;       Revision 2.5  1998/04/07 14:33:06  kupper
 ;              Macht nun automatisch ein reform(), falls das Array führende 1-Dimensionen hat...
 ;
@@ -49,11 +52,14 @@
 ;
 ;-
 
-Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackback, _EXTRA = _extra
+Pro NaseTv, _array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackback, _EXTRA = _extra
      
    if keyword_set(ORDER) then order = 0 else order = 1
 
-;   Default, zoom, 1
+   default, array, _array       ;Don't change contents
+   If (size(array))(0) gt 2 then array = reform(array, /overwrite) ;Try to get rid of leading 1's
+
+   Default, zoom, 1
 
 ;   xsize = (SIZE(array))(1) * zoom
 ;   ysize = (SIZE(array))(2) * zoom
@@ -69,10 +75,10 @@ Pro NaseTv, array, par1, par2, par3, ZOOM=zoom, ORDER=order, BLACKBACK=blackback
 ;      2:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1 
 ;      3:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2
 ;      4:    TV, rebin(/SAMPLE, transpose(array), ysize, xsize), ORDER=order, _EXTRA=_extra, par1, par2, par3
-      1:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
-      2:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
-      3:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
-      4:    UTVScl, /NOSCALE, transpose(reform(array)), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
+      1:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra
+      2:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1 
+      3:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2
+      4:    UTVScl, /NOSCALE, transpose(array), ORDER=order, STRETCH=ZOOM, _EXTRA=_extra, par1, par2, par3
 
    endcase
 
