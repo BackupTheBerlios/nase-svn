@@ -41,12 +41,12 @@
 ;
 ; EXAMPLE:
 ;*  o=initconsole()
-;*  >consolethreshold,o,THRESHOLD=7
+;*  consolethreshold,o,THRESHOLD=7
 ;*  >(10)CONSOLETHRESHOLD:Setting threshold to 7
 ;*  console,"HALLO",level=9
 ;*  >(9)$MAIN$:HALLO
 ;*  > console,"HUHU",level=3
-;   > no output 
+;*  >
 ;
 ;  
 ; SEE ALSO:
