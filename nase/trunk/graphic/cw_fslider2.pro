@@ -12,6 +12,7 @@
 ;                                           [,FORMAT     = format_string]
 ;                                           [,FRAME      = frame_thickness]
 ;                                           [,SUBFRAME   = subframe_thickness]
+;                                           [,/LABEL_{BOTTOM|LEFT|RIGHT|TOP}]
 ;                                           [,MAXIMUM    = maximum_value]
 ;                                           [,MINIMUM    = minimum_value]
 ;                                           [,/NO_COPY]
@@ -44,6 +45,11 @@
 ;
 ;     SUBFRAME     : Set this keyword to have a frame drawn just around the slider
 ;                    and the label. The default is FRAME = 0.
+;
+;     LABEL_{BOTTOM|
+;              LEFT|
+;             RIGHT|
+;               TOP}:Position of the label. Default is LABEL_BOTTOM
 ;
 ;     MAXIMUM      : The maximum value of the slider.
 ;                    The default is MAXIMUM = 100.
@@ -79,6 +85,8 @@
 ;                    if slider is manipulated by the mouse. However, the activated
 ;                    slider may always be controled by the cursor keys
 ;                    in steps given in STEPWIDTH.
+;                    Default: 0.1
+;
 ;     TITLE        : The title of the slider. 
 ;
 ;     UVALUE       : The "user value" to be assigned to the widget.
@@ -104,14 +112,28 @@
 ;
 ; PROCEDURE: Dies ist ein "klassisches" Compound-Widget.
 ;
-; EXAMPLE:
-;
+; EXAMPLE: b=widget_base(/row)
+;          s1=cw_fslider2(b, $
+;                         TITLE="TITEL1", FONT_TITLE='-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1', $
+;                         FORMAT='("Wert: ", F6.2, "%")', FONT_LABEL='-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1', $
+;                         MINIMUM=-17, MAXIMUM=23)
+;          s2=cw_fslider2(b, $
+;                         TITLE="TITEL2", FONT_TITLE='-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1', $
+;                         FORMAT='("Wert: ", F6.2, "%")', FONT_LABEL='-adobe-helvetica-bold-r-normal--12-120-75-75-p-70-iso8859-1', $
+;                         MINIMUM=-23, MAXIMUM=17, STEPWIDTH=0.01, /VERTICAL)
+;          XMANAGER, "SliderTest", b
+;          Widget_Control, b, /REALIZE
+;;
 ; SEE ALSO: CW_FSLIDER (Standard-IDL)
 ;           WIDGET_SLIDER (Standard-IDL)
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1999/06/17 13:31:00  kupper
+;        Added Label-Position Keywords.
+;        Added Example.
+;
 ;        Revision 2.1  1999/06/16 19:13:16  kupper
 ;        Initial version.
 ;        Provides functionality of CW_FSLIDER (standard IDL) but looks nicer
@@ -170,6 +192,10 @@ Function CW_FSLIDER2, Parent $
            ,FORMAT     = format $
            ,FRAME      = frame $
            ,SUBFRAME   = subframe $
+           ,LABEL_BOTTOM= label_bottom $
+           ,LABEL_LEFT = label_left $
+           ,LABEL_RIGHT= label_right $
+           ,LABEL_TOP  = label_top $
            ,MAXIMUM    = maximum $
            ,MINIMUM    = minimum $
            ,NO_COPY    = no_copy $
@@ -189,6 +215,12 @@ Function CW_FSLIDER2, Parent $
    Default, format, '(F6.2)'
    Default, uvalue, 0
 
+   ;Default Label position is bottom
+   If not Keyword_Set(LABEL_TOP)    and $
+    not   Keyword_Set(LABEL_BOTTOM) and $
+    not   Keyword_Set(LABEL_LEFT)   and $
+    not   Keyword_Set(LABEL_RIGHT)      $
+    then LABEL_BOTTOM = 1
 
    
    W_Base = Widget_Base(Parent, $
@@ -201,7 +233,7 @@ Function CW_FSLIDER2, Parent $
                         UVALUE=uvalue, NO_COPY=no_copy, $
                         EVENT_FUNC="CW_FSLIDER2_event_func")
    
-   If keyword_set(VERTICAL) then begin
+   If keyword_set(LABEL_TOP) or keyword_set(LABEL_BOTTOM) then begin
       column = 1
       row = 0
    endif else begin
@@ -217,6 +249,13 @@ Function CW_FSLIDER2, Parent $
                              COLUMN=column, ROW=row, $
                              /BASE_ALIGN_CENTER, FRAME=subframe)   
 
+   ;if LABEL_TOP or LABEL_LEFT, create Label NOW:
+   if Keyword_Set(LABEL_TOP) or Keyword_Set(LABEL_LEFT) then $
+    W_Label = Widget_Label(W_InnerBase, $
+                           $;/DYNAMIC_RESIZE, $
+                           FONT=font_label, $
+                           VALUE=string(value, FORMAT=format))
+
    maxslider = (maximum-minimum)/stepwidth
    W_Slider = Widget_Slider(W_InnerBase, $
                             VALUE=(value-minimum)/double(maximum)*maxslider, $
@@ -226,8 +265,10 @@ Function CW_FSLIDER2, Parent $
                             VERTICAL=vertical, $
                             XSIZE=xsize, YSIZE=ysize)
 
+   ;if LABEL_BOTTOM or LABEL_RIGHT, create Label NOW:
+   if Keyword_Set(LABEL_BOTTOM) or Keyword_Set(LABEL_RIGHT) then $
    W_Label = Widget_Label(W_InnerBase, $
-                          /DYNAMIC_RESIZE, $
+                          $;/DYNAMIC_RESIZE, $
                           FONT=font_label, $
                           VALUE=string(value, FORMAT=format))
 
