@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.7  1999/03/08 13:34:18  thiel
+;            Bugs korrigiert, die ich beim Bugfix gemacht hatte.
+;
 ;     Revision 2.6  1999/03/08 12:54:26  thiel
 ;            Bugfix bei der OVERSAMPLING-BIN-Umrechnung.
 ;
@@ -60,14 +63,14 @@ PRO TrainspottingScope, _SR, _y
       UserSym, [-xsc, xsc, xsc, -xsc, -xsc], [-ysc,-ysc,ysc,ysc,-ysc], FILL=SR.Fill
       
       neuronC = LIndGen(SR.neurons)
-      vertLine = Make_Array(SR.neurons, VALUE=SR.t/SR.os)
+      vertLine = Make_Array(SR.neurons, VALUE=Float(SR.t)/Float(SR.os))
 
       PlotS, vertLine(0:y(0)-1), y(2:y(0)+1), PSYM=8, SYMSIZE=1.0
    END
    SR.t = SR.t + 1
 
-   IF (SR.T MOD SR.TIME/SR.OS) EQ 0 THEN BEGIN
-      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[-1+SR.T/SR.os,(SR.T+SR.time)/SR.os+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=SR._extra
+   IF (SR.T MOD SR.TIME) EQ 0 THEN BEGIN
+      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[SR.T/SR.os,(SR.T+SR.time)/SR.os], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=SR._extra
    END
 
    Handle_Value, _SR, SR, /NO_COPY, /SET

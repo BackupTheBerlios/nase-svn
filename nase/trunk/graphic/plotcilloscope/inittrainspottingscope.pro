@@ -11,7 +11,7 @@
 ;                            [-other-Plot-Keywords-] 
 ;
 ; KEYWORD PARAMETERS: NEURONS      : Anzahl der darzustellenden Neurone
-;                     TIME         : die Laenge der dargestellten Zeitachse in ms (Def.:500)
+;                     TIME         : die Laenge der dargestellten Zeitachse in BIN (Def.:500)
 ;                     OVERSAMPLING : korrekte Umrechnung von BIN in ms bei
 ;                                    ueberabtastenden Neuronen
 ;
@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1999/03/08 13:34:18  thiel
+;            Bugs korrigiert, die ich beim Bugfix gemacht hatte.
+;
 ;     Revision 2.4  1999/03/08 12:54:26  thiel
 ;            Bugfix bei der OVERSAMPLING-BIN-Umrechnung.
 ;
@@ -73,7 +76,8 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
    EndElse
 
 
-   plot, FltArr(10), /NODATA, YRANGE=[-1, neurons], XRANGE=[-1,time/oversampling+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
+;   plot, FltArr(10), /NODATA, YRANGE=[-1, neurons], XRANGE=[-1,time/oversampling+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
+   plot, FltArr(10), /NODATA, YRANGE=[-1, neurons], XRANGE=[0,time/oversampling], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
 
 
    ;----------------> define UserSymbol: filled square
@@ -99,7 +103,7 @@ FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
    PS = { info   : 'SPIKERASTER'  ,$
           neurons: neurons        ,$
           t      : 0l             ,$
-          time   : LONG(time*oversampling)     ,$
+          time   : LONG(time)     ,$
           os     : oversampling   ,$
           xsc    : xsizechar/2.   ,$
           ysc    : ysizechar/2.   ,$
