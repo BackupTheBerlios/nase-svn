@@ -33,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.5  1998/06/23 11:15:08  saam
+;           fixed problems with 1d-Slices
+;
 ;     Revision 1.4  1998/06/10 12:38:33  saam
 ;           added multidimensional array support
 ;
@@ -56,8 +59,8 @@ FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALU
    OS = 1./(1000.*SAMPLEPERIOD)
    Default, SSIZE       , 128
    Default, SSHIFT      , SSIZE/2
-   SSIZE = FIX(ssize*os)
-   SSHIFT = FIX(sshift*os)
+   SSIZE = LONG(ssize*os)
+   SSHIFT = LONG(sshift*os)
 
    S = SIZE(A)   
   
@@ -66,7 +69,9 @@ FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALU
    tindices = LONARR(steps+1)
 
    Sn = N_Elements(S)
-   SB = [steps+1, S(1:S(0)-1), SSIZE]
+   SB = [steps+1]
+   IF S(0) GT 1 THEN SB = [SB, S(1:S(0)-1)] 
+   SB = [SB, SSIZE]
    SB = [S(0)+1, SB, S(S(0)+1), PRODUCT(SB)]
    B =  Make_Array(SIZE=SB)
 
