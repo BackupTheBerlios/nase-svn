@@ -29,7 +29,7 @@
 ;  suppression of error messages even for critical math errors. For
 ;  platforms supporting selective resetting of math error flags,
 ;  another method can be used: To selectively suppress <I>Floating
-;  Underflow</I> error messages, call <A>IgnoreUnderflows</A> whenever a
+;  Underflow</I> error messages, call <C>IgnoreUnderflows</C> whenever a
 ;  floating underflow is likely to have appeared in your
 ;  computations. This will reset the specific flag and prevent IDL from
 ;  printing an error message. Printing of other math errors is not
@@ -54,7 +54,7 @@
 ;  on the Windows platform (keyword <C>MASK</C> to
 ;  <C>CHECK_MATH</C>). Also, the <C>MASK</C> keyword to
 ;  <C>CHECK_MATH</C> is unknown in IDL version 3.<BR>
-;  In these cases, calls to <A>IgnoreUnderflows</A> are silently
+;  In these cases, calls to <C>IgnoreUnderflows</C> are silently
 ;  skipped. <B>If future versions of IDL support selective flag
 ;  handling for math errors on the windows platform, please adjust
 ;  this procedure!</B>
@@ -71,7 +71,6 @@
 ;
 ; SEE ALSO:
 ;  <C>CHECK_MATH</C>
-;
 ;-
 
 Pro IgnoreUnderflows
