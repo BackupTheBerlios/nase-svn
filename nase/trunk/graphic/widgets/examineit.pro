@@ -298,9 +298,23 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
          colrange = colplotmax-colplotmin
          plots, [info.Height-y_arr, info.Height-y_arr], [colplotmin-colrange, colplotmax+colrange]
          PrepareNASEPlot, RESTORE_OLD=oldplot
-         tv = tvrd()
-         wset, info.col_win           ;copy and rotate
-         utv, rotate(Temporary(tv), 3)
+         If Pseudocolor_Visual() then begin
+            ;; we have a pseudocolor display, array is [x,y]
+            tv = tvrd()
+            wset, info.col_win  ;copy and rotate
+            utv, rotate(Temporary(tv), 3)
+         endif else begin
+            ;; we have a truecolor display, array is [3,x,y]
+            tv = tvrd(/TRUE)
+            ;; make array of swapped dimensions x/y:
+            tv_size = size(tv, /Dimensions)
+            tv2 = make_array(/Byte, /Nozero, 3, tv_size[2], tv_size[1])
+            tv2[0, *, *] = rotate(reform(tv[0, *, *]), 3)
+            tv2[1, *, *] = rotate(reform(tv[1, *, *]), 3)
+            tv2[2, *, *] = rotate(reform(tv[2, *, *]), 3)
+            wset, info.col_win  ;copy and rotate
+            utv, tv2, /TRUE
+         endelse
          wset, Actwin
          !P.Color = ActCol
                                 ;end
