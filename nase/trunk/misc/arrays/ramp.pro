@@ -2,44 +2,48 @@
 ; NAME:
 ;  Ramp()
 ;
-; AIM: constructs one dimensional array filled with a linear ramp
+; VERSION:
+;  $Id$
+;
+; AIM:
+;  constructs one dimensional array filled with a linear ramp
 ;  
 ; PURPOSE:
-;  Ramp() is a generalization of the IDL INDGEN() function. It returns
+;  <C>Ramp()</C> is a generalization of the IDL <C>INDGEN()</C> function. It returns
 ;  a one-dimensional array filled with values according to a linear
 ;  ramp. The ramp may be specified by suitable combinations of the
 ;  following values: leftmost, rightmost, minimal, maximal or mean
 ;  value, and the slope or angle to the positive X-axis.
 ;  
 ; CATEGORY:
-;  ARRAY
+;  Array
 ;  
 ; CALLING SEQUENCE:
-;  result = Ramp( len,
-;              { (LEFT=l, RIGHT=r)
-;               |(LEFT=l,  {SLOPE=s|ANGLE=a})
-;               |(RIGHT=r, {SLOPE=s|ANGLE=a})
-;               |(MIN=min, {SLOPE=s|ANGLE=a})
-;               |(MAX=max, {SLOPE=s|ANGLE=a})
-;               |(MEAN=mn, {SLOPE=s|ANGLE=a})
-;              }
+;*result = Ramp( len,
+;*             { (LEFT=..., RIGHT=...)
+;*              |(LEFT=...,  {SLOPE=...|ANGLE=...})
+;*              |(RIGHT=..., {SLOPE=...|ANGLE=...})
+;*              |(MIN=..., {SLOPE=...|ANGLE=...})
+;*              |(MAX=..., {SLOPE=...|ANGLE=...})
+;*              |(MEAN=..., {SLOPE=...|ANGLE=...})
+;*             })
 ; 
 ; INPUTS:
-;  len: The length of the array to fill
+;  len:: The length of the array to fill
 ;  
 ; OPTIONAL INPUTS:
-;  LEFT:     value of the leftmost element (index 0)
-;  RIGHT:    value of the rightmost element (index len-1)
-;  MIN:      minimal value array shall contain
-;  MAX:      maximal value array shall contain
-;  MEAN:     mean value array shall contain
+;  LEFT::     value of the leftmost element (index 0)
+;  RIGHT::    value of the rightmost element (index len-1)
+;  MIN::      minimal value array shall contain
+;  MAX::      maximal value array shall contain
+;  MEAN::     mean value array shall contain
 ;
-;  SLOPE:    slope of the ramp (dy/dx)
-;  ANGLE:    angle between ramp and the positive X-axis
+;  SLOPE::    slope of the ramp (dy/dx)
+;  ANGLE::    angle between ramp and the positive X-axis
 ;  
 ; OUTPUTS:
-;  result: Array filled with a linear ramp. The values are floats by default.
-;          If one of the supplied values was a double, the result is double.
+;  result:: Array filled with a linear ramp. The values are floats by default.
+;           If one of the supplied values was a double, the result is double.
 ;  
 ; RESTRICTIONS:
 ;  Only the documented combinations of keywords are supported. For
@@ -56,28 +60,8 @@
 ;  Plot, Ramp(100, MEAN=0, ANGLE=30), /ISO
 ;  
 ; SEE ALSO:
-;  INDGEN(), Angle2Slope()
+;  <A>Span()</A>, INDGEN(), Angle2Slope()
 ;  
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.5  2000/09/25 09:12:55  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.4  2000/08/09 17:06:33  kupper
-;        Added some examples.
-;
-;        Revision 1.3  2000/06/14 19:20:10  kupper
-;        Now handling special case of len=1.
-;
-;        Revision 1.2  2000/06/14 18:55:28  kupper
-;        Oops! +/-1 error!
-;
-;        Revision 1.1  2000/06/14 14:07:42  kupper
-;        First version.
-;
 ;-
 
 Function Ramp, len, LEFT=left, RIGHT=right, MIN=min, MAX=max, $
