@@ -13,13 +13,18 @@
 ;  certain requirements. It was originally developed to clean
 ;  pathnames from automounter artifacts specific for the Marburgian UNIX
 ;  environment. By setting the system variable <C>!CHANGEFILENAME</C>
-;  to 'marburg', <C>RealFilename()</C> still works in this way. This
+;  to <I>'marburg'</I>, <C>RealFilename()</C> still works in this way. This
 ;  is also the default setting, done during execution of
-;  <A>DefGlobVars</A>.
+;  <A>DefGlobVars</A>.<BR>
 ;  It is
 ;  possible to implement new desired behaviors by adding
 ;  instructions for other values of <C>!CHANGEFILENAME</C>. Currently,
-;  the only other value is 'off', which
+;  there is one variation of the <I>'marburg'</I> mode, called
+;  <I>'moderatemarburg'</I>. It differs from the standard
+;  <I>'marburg'</I> behaviour only insofar as to leave the
+;  filename-prefix '/home' unchanged. (In <I>'marburg'</I> mode,
+;  '/home' is replaced by '/usr').<BR> 
+;  Another value is 'off', which
 ;  results in <C>RealFilename()</C> doing nothing. 
 ;
 ; CATEGORY:
@@ -58,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  2001/05/08 16:09:24  kupper
+;     Added 'moderatemarburg' mode.
+;
 ;     Revision 2.6  2001/05/08 15:37:18  thiel
 ;        !CHANGEFILENAME is now defined in DEFGLOBVARS.
 ;
@@ -113,6 +121,20 @@ FUNCTION RealFilename, FilePath
                                     slashified(2)+'/', '/')
             ENDIF
             Renorm = StrReplace(Renorm, '/home/', '/usr/')
+            Renorm = StrReplace(Renorm, '/gonzo/', '/ax1317/')
+            Renorm = StrReplace(Renorm, '/./','/')
+            Renorm = RemoveDup(Renorm, '/')
+         END ;; Marburg Unix specific actions
+
+         'moderatemarburg' : BEGIN ;; Marburg Unix specific actions
+            ;; only difference to 'marburg'-mode: /home/ is NOT changed.
+            Renorm = StrReplace(Renorm, '/tmp_mnt/', '/')
+            slashified = Str_Sep(Renorm, '/')
+            IF N_Elements(slashified) GT 1 THEN BEGIN
+               IF ((slashified(0) EQ '') AND (slashified(1) EQ 'a')) THEN  $
+                Renorm = StrReplace(Renorm, '/'+slashified(1)+'/'+ $
+                                    slashified(2)+'/', '/')
+            ENDIF
             Renorm = StrReplace(Renorm, '/gonzo/', '/ax1317/')
             Renorm = StrReplace(Renorm, '/./','/')
             Renorm = RemoveDup(Renorm, '/')
