@@ -174,7 +174,8 @@ FUNCTION Widget_ShowIt, Parent, $
                   private_colors : private_colors, $
                   tracking_events : tracking_events, $
                   MyPalette   : {R: Red, G: Green, B: Blue}, $
-                  YourPalette : {R: Red, G: Green, B: Blue}, $
+                  YourPalette : {R: Red, G: Green, B: Blue}, $ ;; used in tracking events on pseudocolor
+                  OldPalette  : {R: Red, G: Green, B: Blue}, $ ;; used in open/close
                   oldwin : 0l, $
                   opencount : 0 $
                 }

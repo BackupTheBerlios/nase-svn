@@ -34,6 +34,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.8  2003/08/25 15:51:34  kupper
+;        showits now also store the palette that was set when they were opened,
+;        and restore it when being closed. So they do not interfere with the
+;        "global" palette the user might use. Until now, they did.
+;
 ;        Revision 1.7  2003/08/25 13:43:50  kupper
 ;        showits now count the number of closes / opens to protect against
 ;        nested calls.
@@ -97,8 +102,15 @@ dmsg, "...opened."
       
       If not(PseudoColor_Visual()) then begin
                                 ;we've got a True-Color-Display, so
-                                ;we have to set the private color table:
-         UTVLCT, uservalue.MyPalette.R, uservalue.MyPalette.G, uservalue.MyPalette.B 
+                                ;we have to set the private color
+                                ;table:
+         ;; store old palette:
+         UTVLCT, /GET, Red, Green, Blue
+         uservalue.OldPalette.R = Red
+         uservalue.OldPalette.G = Green
+         uservalue.OldPalette.B = Blue
+         ;; set my palette:
+         UTVLCT, /OVER, uservalue.MyPalette.R, uservalue.MyPalette.G, uservalue.MyPalette.B 
       endif
    Endif
    

@@ -36,6 +36,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2003/08/25 15:51:34  kupper
+;        showits now also store the palette that was set when they were opened,
+;        and restore it when being closed. So they do not interfere with the
+;        "global" palette the user might use. Until now, they did.
+;
 ;        Revision 1.5  2003/08/25 13:43:50  kupper
 ;        showits now count the number of closes / opens to protect against
 ;        nested calls.
@@ -96,12 +101,18 @@ dmsg, "...closed."
          uservalue.z = new
          
          IF keyword_set(SAVE_COLORS) THEN BEGIN 
-                                ;get current palette and Save it in Draw-Widget's UVAL:
+            ;;get current palette and Save it in Draw-Widget's UVAL:
             UTVLCT, /GET, Red, Green, Blue
             uservalue.MyPalette.R = Red
             uservalue.MyPalette.G = Green
             uservalue.MyPalette.B = Blue
          ENDIF
+         If not(PseudoColor_Visual()) then begin
+            ;; we've got a True-Color-Display, so
+            ;; we have to
+            ;; restore the old palette:
+            UTVLCT, /OVER, uservalue.OldPalette.R, uservalue.OldPalette.G, uservalue.OldPalette.B
+         endif
       endif
    endelse
    
