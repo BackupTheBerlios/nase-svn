@@ -124,7 +124,7 @@ FUNCTION NIEuler, x, deqname, deqpara, DT=dt, G=g, DW=dw $
    Default, dt, 1.
    Default, g, 0.
 
-   IF g NE 0. THEN BEGIN
+   IF Max(g) NE 0. THEN BEGIN
       IF NOT Set(dw) THEN dw = Sqrt(dt)*RandomN(seed, N_Elements(x))
       addnoise = g*dw
    ENDIF ELSE addnoise = 0.
