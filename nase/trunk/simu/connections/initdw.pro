@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.11  1998/02/11 14:56:08  saam
+;             Handle-Hierarchie vervollstaendigt
+;
 ;       Revision 2.10  1998/02/05 13:16:02  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -269,7 +272,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
       
       Default, delay, 0
       
-      _DW = Handle_Create(VALUE={ info    : 'DW_DELAY_WEIGHT',$
+      _DW = Handle_Create(!MH, VALUE={ info    : 'DW_DELAY_WEIGHT',$
                                   source_w: s_width,$
                                   source_h: s_height,$
                                   target_w: t_width,$
@@ -278,7 +281,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                                   Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height )$
                                 }, /NO_COPY)
    END ELSE BEGIN         
-      _DW = Handle_Create(VALUE={info    : 'DW_WEIGHT', $
+      _DW = Handle_Create(!MH, VALUE={info    : 'DW_WEIGHT', $
                                  source_w: s_width,$
                                  source_h: s_height,$
                                  target_w: t_width,$
