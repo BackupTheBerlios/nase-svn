@@ -49,7 +49,16 @@
 ; DO NOT REMOVE THIS COMMENT: BEGIN MAIN13
 
 
-
+Pro NASE_Special          ;erledigt einige N.A.S.E.-spezifische Dinge (bisher nicht viele...)
+   Print
+   Print, "----------- Mehr Spaß für N.A.S.E.n:"
+   Print, "            Updating /usr/ax1303/neuroadm/nase ..."
+   CD, "/usr/ax1303/neuroadm", CURRENT=old_dir
+   Spawn, "cvs update nase"
+   Print, "            Updating HTML-Help ..."
+   MKHTML
+   CD, old_dir
+End
 
 PRO MAIN13_Event, Event
 common common_cvs, name
@@ -102,6 +111,7 @@ common common_cvs, name
       Print
       Print, "----------- Committing all your changed CVS-Files:"
       Spawn, "cvs commit"
+      if name eq "nase" then NASE_Special ;do some nosy things
       END
   'BUTTON28': BEGIN              ;Commit File
       file = PickFile(TITLE="Select File to Commit", /MUST_EXIST, FILTER="*.pro", PATH=name)
@@ -109,6 +119,7 @@ common common_cvs, name
          Print
          Print, "----------- Committing File "+file
          Spawn, "cvs commit "+file
+         if name eq "nase" then NASE_Special ;do some nosy things
       endif
       END
   ENDCASE
