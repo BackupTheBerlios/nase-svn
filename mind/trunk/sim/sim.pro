@@ -297,6 +297,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
    ;--------------> INIT LEARNING
    IF Learn THEN InitLearn, LDWmax+1, CON, P.LearnW, _EXTRA=e
+   IF Learn THEN InitNormalize, LDWmax+1, CON, P.LearnW, _EXTRA=e
 
  
    ;--------------> INIT CONNECTION STRUCTURE 
@@ -341,6 +342,9 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       
       ;-------------> LEARN SOMETHING
       FOR i=0, LDWmax DO Learn, L, CON, P.LEARNW(i), _TIME
+
+      ;-------------> Normalize Weights
+      FOR i=0, LDWmax DO Normalize, L, CON, P.LEARNW(i), _TIME
 
       ;;----- Proceed layers
       FOR i=0,Lmax DO ProceedLayer, L(i)
