@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.7  1998/04/06 16:04:15  saam
+;           some // in filenames made problems -> fixed
+;
 ;     Revision 1.6  1998/02/12 13:25:12  saam
 ;           Bug bei LocalHost = RemoteHost, aber
 ;           LocalDir <> RemoteDir
@@ -110,7 +113,7 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
       ; data is local
 
       IF N_Params() EQ 2 THEN BEGIN
-         IF RemoteDir NE LocalDir THEN BEGIN
+         IF RemoveDup(RemoteDir,'/') NE RemoveDup(LocalDir,'/') THEN BEGIN
             ; the user seems to want a local copy
             spawn, 'cp -R '+LocalDir+'* '+RemoteDir
             IF NOT Keyword_Set(NODEL) THEN BEGIN
