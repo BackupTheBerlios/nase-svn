@@ -9,7 +9,8 @@
 ;  converts value/s between inch, feet, millimeter and centimeter 
 ;
 ; PURPOSE:
-;  converts value/s between inch, feet, millimeter and centimeter 
+;  ucv means UnitConvert and converts value/s between inch, feet, 
+;  millimeter and centimeter 
 ; 
 ;
 ; CATEGORY:
@@ -17,30 +18,29 @@
 ;  Math
 ;
 ; CALLING SEQUENCE:
-;*result = FunctionName( value, SOURCE=source, TARGET=target )
+;*result = ucv( value, SOURCE=source, TARGET=target )
 ;
 ; INPUTS:
-;  VALUE:: value/array of values to convert (Default: 1.0)
-;  SOURCE:: source unit (Default: mm) [in, ft, mm, cm]
-;  TARGET:: target unit (Default: mm) [in, ft, mm, cm]
+;  value:: value/array of values to convert (Default: 1.0)
 ;
 ; OPTIONAL INPUTS:
 ;  
 ;
 ; INPUT KEYWORDS:
-;  
+;  SOURCE:: string, specifying source unit (Default: mm) [in, ft, mm, cm]
+;  TARGET:: string, specifying target unit (Default: mm) [in, ft, mm, cm]  
 ;
 ; OUTPUTS:
-;  value converted from source-unit to target-unit
+;  result:: value converted from source-unit to target-unit
 ;
 ; OPTIONAL OUTPUTS:
-;  none
+;
 ;
 ; COMMON BLOCKS:
-;  none
+;
 ;
 ; SIDE EFFECTS:
-;  none
+;
 ;
 ; RESTRICTIONS:
 ;  be careful with very large or very small values,
@@ -52,7 +52,7 @@
 ;
 ; EXAMPLE:
 ;*
-;*> pagewidth_in_cm = (10,SOURCE="in",TARGET="cm")
+;*> pagewidth_in_cm = ucv(10,SOURCE="in",TARGET="cm")
 ;
 ; SEE ALSO:
 ;
@@ -84,5 +84,3 @@ function ucv, value,SOURCE=source,TARGET=target
    
    return, result
 end
-
-
