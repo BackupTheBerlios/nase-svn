@@ -32,11 +32,15 @@ Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
 
    If Keyword_Set(Parent) then begin
       self.widget = widget_base(Parent, $
+                                UValue=self, $;; all widgets have self
+                                $  ;; as uvalue
                                 UName="basic_widget_object", $
                                 Func_Get_Value="basic_widget_object_get_value", $
                                 _EXTRA=_extra)
    endif else begin             ;create top-level-base
       self.widget = widget_base(UName="basic_widget_object", $
+                                UValue=self, $;; all widgets have self
+                                $  ;; as uvalue
                                 Func_Get_Value="basic_widget_object_get_value", $
                                 _EXTRA=_extra)
    Endelse
