@@ -17,7 +17,7 @@
 ;          <A>ShowIt_Open</A> die Ermittlung der Window-ID und
 ;          bereitet das entsprechende Fenster für die Graphikausgabe vor. 
 ;
-; CATEGORY: GRAPHIC /WIDGETS
+; CATEGORY: Graphic Widgets
 ;
 ; CALLING SEQUENCE:
 ;* widgetid = Widget_ShowIt(Parent 
@@ -79,6 +79,7 @@
 ;                     YSIZE<BR>
 ;                     X_SCROLL_SIZE<BR>
 ;                     Y_SCROLL_SIZE<BR>
+;<BR>
 ;                    Vgl. IDL-Hilfe zu 'Widget_Draw' und 'Widget_Base'
 ;
 ; OUTPUTS: widgetid:: Die Identifikationsnummer des generierten Widgets.
