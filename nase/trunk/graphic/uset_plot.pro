@@ -48,7 +48,7 @@ pro uset_plot, Device, _EXTRA=extra
       endif
      
    end else begin
-      if __Device EQ 'X' and GetEnv('DISPLAY') EQ "" then begin
+      if __Device EQ 'X' and not XAllowed() then begin
          printf,-2, "% WARN: (USET_PLOT) DISPLAY environment variable not set: cannot set device to '"+ __Device+"'"
          printf,-2, "% WARN: (USET_PLOT) Setting device to 'Z'"
          flush, -2
@@ -56,15 +56,16 @@ pro uset_plot, Device, _EXTRA=extra
       end
    endelse
 
-   If __Device eq 'X' and not XAllowed() then begin
-      printf, -2, "% WARN: (USET_PLOT) "+ $
-        "Connecting to X server is forbidden. Setting device to 'Z'."
-      flush, -2
-      __Device = 'Z'
-      return
-   endif 
+   ;following lines are obsolete and unfortunately false (return statement)!!!
+   ;If __Device eq 'X' and not XAllowed() then begin
+   ;   printf, -2, "% WARN: (USET_PLOT) "+ $
+   ;     "Connecting to X server is forbidden. Setting device to 'Z'."
+   ;   flush, -2
+   ;   __Device = 'Z'
+   ;   return
+   ;endif 
 
-
+   
 
    set_plot, __Device, _EXTRA=extra
 
