@@ -25,6 +25,7 @@
 ;   o = Obj_New("widget_leaky_image_container"
 ;               IMAGE=..., MAX_IN=..., TAU=... [,/COLUMN]
 ;               [,FRAME=...] [,SUBFRAME=...]
+;               [,L_CUBIC=...] [,/L_MINUS_ONE] [,/L_INTERP]
 ;               [-other keywords inherited from <A HREF="#CLASS MYSUPERCLASS">class widget_image_container</A>-]
 ;
 ; DESTRUCTION:
@@ -37,7 +38,8 @@
 ;  *please remove any sections that do not apply*
 ;
 ; KEYWORD PARAMETERS:
-;  *please remove any sections that do not apply*
+;  L_CUBIC, L_MINUS_ONE, L_INTERP:: interpolation keywords for the
+;                                   leaky integrator widget.
 ;
 ; SIDE EFFECTS: 
 ;  *please remove any sections that do not apply*
@@ -89,6 +91,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2003/07/04 14:04:21  kupper
+;        added L_CUBIC, L_INTERP, L_MINUS_ONE keywords.
+;
 ;        Revision 1.5  2001/09/21 13:52:13  kupper
 ;        Implemented FRAME und SUBFRAME keywords.
 ;        Rü
@@ -117,8 +122,12 @@ Function widget_leaky_image_container::init, IMAGE=image, $
                                      COLUMN=column, $
                                      FRAME=frame, $
                                      SUBFRAME=subframe, $
-                                     _REF_EXTRA=_ref_extra
+                                     L_CUBIC=l_cubic, L_MINUS_ONE=l_minus_one, L_INTERP=l_interp, $
+                                    _REF_EXTRA=_ref_extra
    DMsg, "I am created."
+
+   Default, L_CUBIC, -0.5
+   Default, L_INTERP, 1
 
    If keyword_set(Column) then row = 0 else row = 1
 
@@ -135,7 +144,7 @@ Function widget_leaky_image_container::init, IMAGE=image, $
   
    self.lia = Obj_New("widget_leaky_integrator_array", OParent=self, $
                       Dimensions=Size(IMAGE, /Dimensions), $
-                      CUBIC=-0.5, /MINUS_ONE, $
+                      CUBIC=L_CUBIC, MINUS_ONE=L_MINUS_ONE, INTERP=L_INTERP, $
                       FRAME=subframe, $
                       _EXTRA=_ref_extra)
 
