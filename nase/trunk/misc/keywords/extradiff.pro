@@ -9,12 +9,15 @@
 ;
 ; CATEGORY:            MISC KEYWORDS STRUCTURES
 ;
-; CALLING SEQUENCE:    B = ExtraDiff(A, diff [,/LEAVE])
+; CALLING SEQUENCE:    B = ExtraDiff(A, diff [,/LEAVE] [,/SUBSTRING])
 ;
 ; INPUTS:              A    : die Extra- oder eine andere Struktur
 ;                      diff : ein Array von Strings, die aus A extrahiert werden sollen
 ;
-; KEYWORD PARAMETERS:  LEAVE: bewirkt, dass A unveraendert bleibt
+; KEYWORD PARAMETERS:  LEAVE     : bewirkt, dass A unveraendert bleibt
+;                      SUBSTRING : Abschwaechung der Gleichheit der TagNames zwischen A und diff. 
+;                                  Alle Tags aus A deren Teilstrings in diff enthalten sind werden
+;                                  extrahiert.
 ;
 ; OUTPUTS:             B : eine anonyme Struktur mit den Tags aus diff, die in A enthalten
 ;                          sind. Hat keines uebereingestimmt wird !NONE zurueckgegeben.
@@ -43,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/11/08 17:54:49  saam
+;           new keyword SUBSTRING added
+;
 ;     Revision 2.3  1998/08/14 11:15:30  saam
 ;           now returns an undefined variable for B instead of !NONE
 ;
@@ -54,7 +60,7 @@
 ;
 ;
 ;-
-FUNCTION ExtraDiff, extra, keywords, LEAVE=leave
+FUNCTION ExtraDiff, extra, keywords, LEAVE=leave, SUBSTRING=substring
 
    IF N_Params() NE 2 THEN Message, 'wrong syntax'
 
@@ -71,14 +77,22 @@ FUNCTION ExtraDiff, extra, keywords, LEAVE=leave
    ; make a list of keywords found in the structure
    FOR i=0,extrac-1 DO BEGIN
       FOR j=0,keyc-1 DO BEGIN
-         IF StrUpCase(keywords(j)) EQ  StrUpCase(tNames(i)) THEN BEGIN
-            ; ok, we've got one keyword that is in the structure
-            IF Set(keysfound) THEN keysfound = [keysfound, keywords(j)] ELSE keysfound = keywords(j)
-            IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
+         IF Keyword_Set(SUBSTRING) THEN BEGIN
+            IF Contains(StrUpCase(tNames(i)), StrUpCase(keywords(j)))  THEN BEGIN
+                                ; ok, we've got one keyword that is in the structure
+               IF Set(keysfound) THEN keysfound = [keysfound, tNames(i)] ELSE keysfound = tNames(i)
+               IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
+            END
+         END ELSE BEGIN
+            IF StrUpCase(keywords(j)) EQ  StrUpCase(tNames(i)) THEN BEGIN
+                                ; ok, we've got one keyword that is in the structure
+               IF Set(keysfound) THEN keysfound = [keysfound, keywords(j)] ELSE keysfound = keywords(j)
+               IF Set(tagnumbers) THEN tagnumbers = [tagnumbers, i] ELSE tagnumbers = i
+            END
          END
       END
    END
-
+   
    ; create the result containing the tags found
    IF Set(keysfound) THEN BEGIN
       diff = Create_Struct(keysfound(0), extra.(tagnumbers(0)))
