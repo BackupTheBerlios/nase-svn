@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.22  1998/04/09 12:35:59  kupper
+;            Bug: Der Congrid-Aufruf stürzte ab bei zu kleinen Ausmaßen.
+;
 ;     Revision 2.21  1998/04/09 12:21:50  saam
 ;           first argument is not changed any more
 ;
@@ -222,7 +225,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
       END
 
    END ELSE BEGIN ; it is a WINDOW
-      IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, xsize*!D.X_PX_CM, ysize*!D.Y_PX_CM)
+      IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, (xsize*!D.X_PX_CM) > 1, (ysize*!D.Y_PX_CM) > 1)
       Device, BYPASS_TRANSLATION=0
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
          IF Keyword_Set(NOSCALE) THEN BEGIN
