@@ -1,0 +1,290 @@
+%
+% FILE: Neurontypes
+%
+% LOCATION: doc
+%
+% AUTHOR:   saam
+%
+% DATE:     Sun Oct  1 18:59:58 MEST 2000
+%
+% MODIFICATION HISTORY:
+%
+%       $Log$
+%       Revision 1.1  2000/10/03 17:54:19  thiel
+%           neurontype documentation, formerly "neuronen.txt"
+%
+%-
+\documentclass[12pt]{article}
+
+
+% Page Size & Formatting
+\usepackage[a4paper,dvips]{geometry}           % page layout [twoside]
+\setlength{\parindent}{0pt}                    % dont indent first paragraph
+%\renewcommand{\baselinestretch}{2.0}          % double line spacing
+%\usepackage{showlabels}                       % shows labels on side margin
+\usepackage{showkeys}                          % prints label, ref, cite and bib keys
+\usepackage{draftcopy}                         % displays draft in background of page (ps only!)
+\usepackage{changebar}                         % changebars at margin via \cbstart ... \cbend (ps only!)
+
+
+% References & Citations
+\usepackage{lastpage}                          % access last page by \pageref{LastPage}
+\usepackage[round]{natbib}                     % citestyle: Author (Year) by \cite or Author, Year with \citet
+\usepackage{prettyref}                         % generates references like Figure/Table/Equation x, instead of x 
+\newrefformat{fig}{Figure~\ref{#1}}
+\usepackage{acronym}                           % make sure acronyms are spelled out at least once
+
+% Version Control (rcs-latex must be installed!)
+%\usepackage{rcs}
+%\RCS $Header$
+%\RCS $keyword$  % for keyword all RCS/CVS tags (like Header, Id) may be inserted; this line defines an tex command
+%                % while the following command inserts it into the document
+%\RCSkeyword
+%                % there is also support for a formatted log history...
+
+% Language
+\usepackage[english,german]{babel}                    % set the language (german, english, ...)
+\usepackage[latin1]{inputenc}                  % allow special characters directly in source
+
+% Headers & Footers
+\usepackage{fancyheadings}                     % allows individual header and footers
+\pagestyle{fancy}
+\lhead{}%\tiny\RCSHeader}                        % include path/name/date/RCS/CVS-version in header
+\chead{}
+\rhead{}
+%\lfoot{}
+%\cfoot{}
+%\rfoot{}
+
+
+% Fonts
+%\usepackage{times}                            % use times, palatino, ...  ps-fonts instead of cm (dvi won't work!!)
+%\usepackage{soul}                             % typeset text in spaced out way via \st{...} and more
+\usepackage{SIunits}                           % use SI units by their name and produce upright greek symbols
+
+        
+% Figures & Captions
+\usepackage{graphicx}
+\usepackage[footnotesize,nooneline]{caption}
+\DeclareGraphicsRule{.tif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.gif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.bmp}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.jpg}{eps}{.bb}{`convert #1 eps:-}
+% TeX requirements for putting a figure onto a page
+% are rather strict (and therefore seldom fulfilled
+% the following command make the placement of figures
+% more sloppier
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+
+
+% Definitions
+% the way a bind figures into the document:
+\newcommand{\myfig}[5]{\begin{figure}[tbh]\begin{center}\includegraphics[#3]{#2}\caption{\label{#1}{\sc#4.} #5}\end{center}\end{figure}}
+
+
+% define an acronym by: 
+%   \acrodef{CCH}{cross coincidence histogram} 
+% following commands produce the shown output:
+%   \ac{CCH}  -> cross coincidence histogram (CCH)  % for the first appearance 
+%   \ac{CCH}  -> CCH                                % any further appearance
+%   \acf{CCH} -> cross coincidence histogram (CCH)  % always
+%   \acl{CCH} -> cross coincidence histogram        % always
+%   \acs{CCH} -> CCH                                % always
+% you can also make a list of acronyms (see documentation)
+
+
+% integrate figures by:
+%   \myfig{label}{filename}{width,height}{short-title}{description}
+
+
+\begin{document}
+
+\begin{center}
+{\Huge\textbf{NASE Neurontypes}}\\[2cm]
+Version: \$Id$ $\$ 
+\end{center}
+
+\tableofcontents
+
+\section{Leaky Integrate and Fire Neuron (LIF)}
+\begin{description}
+\item[Type:] 'LIF'
+
+\item[Parameters:] tauf, taul, taui, th0, sigma, noisystart, spikenoise
+
+\item[Synapses:] feeding, linking, inhibition, noise
+
+\item[Output:] \texttt{m = f * (1 + l) - i, o = m GE th0}
+
+\item[Comments:] First type with real name.
+\end{description}
+
+
+
+\section{Standard Marburg Model Neuron (SMMN)}
+\begin{description}
+\item[Type:] '1'
+
+\item[Parameters:] tauf, taul, taui, vs, taus, th0, sigma, noisystart, spikenoise
+
+\item[Synapses:] feeding, linking, inhibition
+
+\item[Output:] \texttt{m = f * (1 + l) - i, o = m GE (s + th0)}
+
+\item[Comments:] LIF +vs +taus
+\end{description}
+
+
+
+\section{Adaptive Marburg Model Neuron (AMMN)}
+\begin{description}
+\item[Type:] '2'
+
+\item[Parameters:] tauf, taul, taui, vs, taus, vr, taur, th0, sigma, noisystart,
+              spikenoise
+
+\item[Synapses:] feeding, linking, inhibition
+
+\item[Output:] \texttt{m = f * (1 + l) - i, o = m GE (r + s+ th0)}
+
+\item[Comments:] SMMN +vr +taur
+\end{description}
+
+
+
+\section{Learning Potential Neuron}
+\begin{description}
+\item[Type:] '3'
+\item[Comments:] Removed.
+\end{description}
+
+
+
+\section{Oversampling Neuron (OSN)}
+\begin{description}
+\item[Type:] '4'
+
+\item[Parameters:] tauf, taul, taui, vr, taur, vs, taus, th0, sigma, noisystart, 
+              oversampling, refperiod, spikenoise, fade
+
+\item[Synapses:] feeding, linking, inhibition
+
+\item[Output:] \texttt{m = f * (1 + l) - i, o = m GE (r + s + th0)}
+
+\item[Comments:] AMMN +oversampling +refperiod +fade
+\end{description}
+
+
+
+\section{NMDA Linking Neuron}
+\begin{description}
+\item[Type:] '5'
+
+\item[Parameters:] tauf, taul, taun, taui, vs, taus, th0, sigma
+
+\item[Synapses:] feeding, tp2feeding, linking, nmda, inhibition
+
+\item[Output:] \texttt{m = f * (1 + l + n) - i, o = m GE (s + th0)}
+
+\item[Comments:] SMMN -noisystart -spikenoise +taun, development stopped?
+\end{description}
+
+
+
+\section{Second Order EPSP Neuron}
+\begin{description}
+\item[Type:] '6'
+
+\item[Parameters:] [tauf1,tauf2], [taul1,taul2], taui, vr, taur, vs, taus, th0, 
+              sigma, noisystart, oversampling, refperiod, spikenoise, fade 
+
+\item[Synapses:] feeding, linking, inhibition, direct
+
+\item[Output:] \texttt{m = (f2-f1) * (1 + (l2-l1)) - i, o = m GE (r + s + th0)}
+
+\item[Comments:] OSN -tauf -taul +[tauf1,tauf2] +[taul1,taul2]
+\end{description}
+
+
+
+\section{Two Feeding Inhibition Neuron}
+\begin{description}
+\item[Type:] '7'
+
+\item[Parameters:] tauf1, tauf2, taul, taui1, taui2, vr, taur, vs, taus, th0, 
+              sigma, noisystart, spikenoise
+
+\item[Synapses:] feeding1, feeding2, linking, inhibition1, inhibition2
+
+\item[Output:] \texttt{m = (f1 + f2 - i1) * (1 + l) - i2, o = m GE (r+ s + th0)}
+
+\item[Comments:] AMMN -tauf -taui +tauf1 +tauf2 +taui1 +taui2
+\end{description}
+
+
+
+\section{Four Compartment Neuron (FCN)}
+\begin{description}
+\item[Type:] '8'
+
+\item[Parameters:] deltat, th, refperiod, tausyn, vna, vk, vl, vsyn, gna, gk, gm, 
+                gc, gsyn, cm, soma\_d, soma\_l, den1\_d, den1\_l, den2\_d, den2\_l,
+                den3\_d, den3\_l
+
+\item[Synapses:] curr1, curr2, curr3, syn1, syn2, syn3
+
+\item[Output:] \texttt{v = Hodgkin-Huxley fast-slow equations, o = v GE th0}
+
+\item[Comments:] Hodgkin-Huxley.
+\end{description}
+
+
+
+\section{Four Compartment Object Neuron}
+\begin{description}
+\item[Type:] '9'
+
+\item[Parameters:] deltat, th, refperiod, tausyn, vna, vk, vl, vsyn, gna, gk, gm,
+              gc, gsyn, cm, soma\_d, soma\_l, den1\_d, den1\_l, den2\_d, den2\_l,
+              den3\_d, den3\_l
+
+\item[Synapses:] curr1, curr2, curr3, syn1, syn2, syn3
+
+\item[Output:] \texttt{v = Hodgkin-Huxley fast-slow equations, o = v GE th0}
+
+\item[Comments:] FCN
+\end{description}
+
+
+
+\section{Poisson Neuron}
+\begin{description}
+\item[Type:] '10'
+
+\item[Parameters:] tauf, probability
+
+\item[Synapses:] feeding
+
+\item[Output:] \texttt{r = RandomU, o = r LE (probability + f)}
+
+\item[Comments:] probability is defined in \texttt{InitLayer\_10}.
+\end{description}
+
+
+
+\section{Inhibitory Linking Neuron}
+\begin{description}
+\item[Type:] '11'
+
+\item[Parameters:] tauf, taul1, taul2, taui, vs, taus, th0, sigma, noisystart, 
+              spikenoise
+
+\item[Synapses:] feeding, linking, ilinking, inhibition
+
+\item[Output:] \texttt{m = f * (1 + ((l1 - l2) > 0)) - i, o = m GE (s + th0)}
+
+\item[Comments:] SMMN -taul +taul1 +taul2 
+\end{description}
+\end{document}
