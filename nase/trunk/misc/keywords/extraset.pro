@@ -44,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/02/05 13:26:49  saam
+;           Verbesserte Argumentueberpruefung
+;
 ;     Revision 2.1  1998/01/21 23:31:34  saam
 ;           Creation
 ;
@@ -51,8 +54,11 @@
 ;-
 FUNCTION ExtraSet, extra, keyword
 
+   IF N_Params() NE 2 THEN Message, 'wrong syntax'
+
    ; is extra defined ??
    IF NOT Set(extra) THEN RETURN, 0
+   
    
    tNames = Tag_Names(extra)
 
