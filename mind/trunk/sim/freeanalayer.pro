@@ -1,6 +1,6 @@
 ;+
 ; NAME: 
-;  FreeLayer
+;  FreeAnaLayer
 ;
 ; AIM:
 ;  frees memory used by <A>AnaLayer</A> 
