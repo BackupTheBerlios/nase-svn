@@ -1,5 +1,15 @@
 ;+
 ;       $Log$
+;       Revision 1.15  1999/03/11 17:32:06  kupper
+;       Showlogo hat jetzt das SECS Keyword.
+;
+;       In startup wird jetzt getestet, ob eine interaktive IDL-Session vorliegt.
+;       (Test von stdout). Auﬂerdem wird die Umgebungsvariable NASELOGO abgefragt:
+;
+;       	NASELOGO=FALSE: Es wird nie   ein Logo angezeigt, auch nicht bei interaktiven Sessions.
+;       	NASELOGO=TRUE : Es wird stets ein Logo angezeigt, auch bei nicht-interaktiven (nohup) Sessions.
+;       	In allen anderen F‰llen wird bei interaktiven Sessions ein Logo gezeigt, sonst nicht.
+;
 ;       Revision 1.14  1998/09/02 19:07:48  gabriel
 ;             Leider ist ShowLogo fuer nohup total untauglich
 ;
@@ -35,10 +45,15 @@
 ;
 ;-
 
-;ShowLogo
+;; ----------- Show Logo on startup? ----------------------
+WillShowLogo = (GetEnv("NASELOGO") ne "FALSE") $
+		   AND ( $
+			fstat(-1)).interactive $
+			OR (GetEnv("NASELOGO") eq "TRUE" $
+			)
+;; --------------------------------------------------------
+
+
+If WillShowLogo then ShowLogo, SECS=3
 
 defglobvars
-
-;wait, 3
-;caw
-;loadct, 0
