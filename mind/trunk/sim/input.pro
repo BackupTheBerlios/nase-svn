@@ -17,6 +17,12 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/19 17:18:23  saam
+;           + commented out poissoninput (!!!) all poisson inputs
+;             with the old input system temporarily don't work
+;           + the params tag may be omitted like in checkinput
+;           + init/step call conventions updated like in checkinput
+;
 ;     Revision 1.3  2000/01/14 10:26:57  alshaikh
 ;           NEW: 'EXTERN' input
 ;
@@ -147,16 +153,16 @@ FUNCTION Input, L, _IN
       END
       2: BEGIN
          FUCKIDL = IN.DATA
-         R = PoissonInput(FUCKIDL)
+         ;R = PoissonInput(FUCKIDL)
          IN.DATA = FUCKIDL
          frame = Byte(SSpassBeiseite(R))
       END
       3: BEGIN
          FUCKIDL = IN.DATA
-         T = PoissonInput(FUCKIDL, PULSE=pulse) ;correlated
+         ;T = PoissonInput(FUCKIDL, PULSE=pulse) ;correlated
          IN.DATA = FUCKIDL
          FUCKIDL = IN.DATA2
-         U = PoissonInput(FUCKIDL)              ;uncorrelated
+         ;U = PoissonInput(FUCKIDL)              ;uncorrelated
          IN.DATA2 = FUCKIDL
          IF IN.dyn AND PULSE THEN BEGIN
             IF ((IN.uniqueSet) AND (IN.uniqueIdx EQ -1)) THEN BEGIN ; get new blob distribution
@@ -255,17 +261,22 @@ FUNCTION Input, L, _IN
                Handle_Value,IN.filters(i),act_filter 
               
                IF act_time EQ act_filter.start THEN BEGIN    ; initialize filter
-                  pattern = CALL_FUNCTION(act_filter.NAME,$
-                                          MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                          temp_vals=IN.temps(i),DELTA_T=delta_t) 
+                  IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                     pattern = CALL_FUNCTION(act_filter.NAME,$
+                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                             temp_vals=IN.temps(i),DELTA_T=delta_t) 
+                  END ELSE BEGIN
+                     pattern = CALL_FUNCTION(act_filter.NAME,$
+                                             MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                             temp_vals=IN.temps(i),DELTA_T=delta_t) 
+                  END
                   print,'INPUT:Filter ->',act_filter.NAME,'<- initialized'
                   print,''
                   
                   ; ELSE NextStep 
                END ELSE IF ((act_time GT act_filter.start) AND (act_time LE act_filter.stop)) THEN $
                 pattern = CALL_FUNCTION(act_filter.NAME,$
-                                        PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                        temp_vals=IN.temps(i),DELTA_T=delta_t) 
+                                        PATTERN=pattern, temp_vals=IN.temps(i)) 
                
             ENDFOR ; i  
             R = pattern 
