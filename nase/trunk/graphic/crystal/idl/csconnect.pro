@@ -56,7 +56,7 @@
 
 ;;; look in headerdoc.pro for explanations and syntax,
 ;;; or view the NASE Standards Document
-
+ 
 function csConnect, port=port, host=host, error=error, read_timeout=read_timeout
 
 default, port, 1234
