@@ -17,7 +17,11 @@
 ; CALLING SEQUENCE:   
 ;                     ignore_me  = IFTemplate2( MODE=0, 
 ;                                              TEMP_VALS=temp_vals
-;                                              [,WIDTH=width] [,HEIGHT=height] [,DELTA_T=delta_t] 
+;                                              [,WIDTH=width]
+;                                              [,HEIGHT=height]
+;                                              [,DELTA_T=delta_t]
+;                                              [,/WRAP]
+;                                              [,FILE=file]
 ;                                              [,LOGIC=logic] 
 ;                                              {various filter options} )
 ;
@@ -25,6 +29,8 @@
 ;                     ignore_me  = IFTemplate2( MODE=[2|3] )
 ;	
 ; KEYWORD PARAMETERS: DELTA_T   : passing time in ms between two sucessive calls of this filter function
+;                     FILE      : provides a file skeleton (string) to save
+;                                 data in an ordered way. 
 ;                     HEIGHT    : height of the input to be created
 ;                     MODE      : determines the performed action of the filter. 
 ;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
@@ -33,6 +39,8 @@
 ;                                 is initialized when MODE=0, read/modified for MODE=1 and freed for
 ;                                 MODE=2
 ;                     WIDTH     : width of the input to be created
+;                     WRAP      : set, if the underlying layer has
+;                                 toroidal boundary conditions
 ;                     LOGIC     : logical operation :
 ;                                 NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
 ;                                 valid values can be found <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#OPID>here</A>
@@ -51,6 +59,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.9  2000/06/29 14:55:21  saam
+;           + corrected console output
+;           + new keywords WRAP, FILE
+;
 ;     Revision 1.8  2000/06/27 17:00:16  saam
 ;          + now frees memory after usage
 ;
@@ -78,7 +90,7 @@
 ;
 
 
-FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
+FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, WRAP=wrap, FILE=file, $
                       LOGIC=op
 
    ON_ERROR, 2
@@ -97,7 +109,7 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
                 sim_time : .0d       ,$
                 myop     : opID(op)   $
                }
-         console, 'IFTEMPLATE2: initialized'         
+         console, 'initialized'         
       END
       
       ; STEP
@@ -116,15 +128,15 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
       ; FREE
       2: BEGIN
           Handle_Free, _TV
-          console, 'IFTEMPLATE2: done'
+          console, 'done'
       END 
 
       ; PLOT
       3: BEGIN
-         console, 'IFTEMPLATE2: display mode not implemented, yet'
+         console, 'display mode not implemented, yet'
       END
       ELSE: BEGIN
-         console, 'IFTEMPLATE2: unknown mode', /FATAL
+         console, 'unknown mode', /FATAL
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET
