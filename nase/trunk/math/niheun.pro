@@ -24,7 +24,9 @@
 ;* dx<SUB>i</SUB>(t)/dt = f(x<SUB>1</SUB>...x<SUB>n</SUB>)+g<SUB>i</SUB>(t)*GWN(t) ,
 ;  with <*>i=1...n</*> and <*>GWN(t)</*> being Gaussian white noise of
 ;  zero mean and standard deviation of 1. The routine cares for correctly
-;  scaling the noise amplitude as a function of time resolution.
+;  scaling the noise amplitude as a function of time resolution.<BR>
+;  Heun's method is described in: Gard, Introduction to
+;  stochastic differential equations, Dekker, New York (1988).
 ;
 ; CATEGORY:
 ;  Math
