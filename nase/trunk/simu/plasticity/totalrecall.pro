@@ -9,10 +9,10 @@
 ;
 ; CATEGORY:           LEARNING
 ;
-; CALLING SEQUENCE:   TotalRecall, LP [, In]
+; CALLING SEQUENCE:   TotalRecall, LP [, DW]
 ;
 ; INPUTS:             LP: Eine mit InitRecall erzeugte Struktur
-;                     IN: Vektor, der die praesynaptischen (auch gewichteten) Aktionspotentiale enthaelt
+;                     IN: die zugehoerige DW-Struktur
 ;
 ; SIDE EFFECTS:       LP wird beim Aufruf veraendert
 ;
@@ -29,7 +29,7 @@
 ;
 ;                  <Simulationsschleife START>
 ;                  InputForMyLayer = DelayWeigh( My_DWS, My_Layer.O)
-;                  TotalRecall, LP, InputForMyLayer
+;                  TotalRecall, LP, My_DWS
 ;                  <Learn Something between My_Layer and My_layer>
 ;                  LayerProceed(My_Layer, ....)
 ;                  <Simulationsschleife STOP>
@@ -38,6 +38,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  1998/02/05 14:26:51  saam
+;             huge bug in docu corrected
+;
 ;       Revision 2.6  1997/12/10 15:56:50  saam
 ;             Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;             nur noch Tags. Das hat den Vorteil, dass man mehrere
