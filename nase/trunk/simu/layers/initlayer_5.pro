@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.3  1998/11/09 10:53:37  saam
+;       possible memory hole sealed up
+;
 ; Revision 2.2  1998/11/08 17:27:15  saam
 ;       the layer-structure is now a handle
 ;
@@ -50,7 +53,7 @@ FUNCTION InitLayer_5, WIDTH=width, HEIGHT=height, TYPE=type
 
 
 
-   handle = Handle_Create(VALUE=[0, width*height])
+   handle = Handle_Create(!MH, VALUE=[0, width*height])
 
    Layer = { info   : 'LAYER', $
              Type   : '5'                  ,$

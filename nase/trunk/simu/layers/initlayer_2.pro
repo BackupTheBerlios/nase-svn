@@ -18,6 +18,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  1998/11/09 10:53:36  saam
+;             possible memory hole sealed up
+;
 ;       Revision 1.7  1998/11/08 17:27:14  saam
 ;             the layer-structure is now a handle
 ;
@@ -45,7 +48,7 @@ FUNCTION InitLayer_2, WIDTH=width, HEIGHT=height, TYPE=type
    IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
    IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
 
-   handle = Handle_Create(VALUE=[0, width*height])
+   handle = Handle_Create(!MH, VALUE=[0, width*height])
 
    Layer = { info   : 'LAYER'              ,$
              Type   : '2'                  ,$
