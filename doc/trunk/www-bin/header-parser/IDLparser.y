@@ -26,10 +26,15 @@
 %left URLSTART
 %token URLEND
 %left TEXT
+%token DEFAULT
 %token LBRACE
 %token RBRACE
+%token LANK
+%token RANK
+%token PRE
 %%
 %{
+  use NASE::globals;
   use NASE::xref;
   use CGI qw/:standard :html3 :netscape -debug/;
   use CGI::Carp qw(fatalsToBrowser);
@@ -40,13 +45,14 @@
   $prestr = ''; # string to be cut from pre environments
   $rbrace = 0;  # level of open round braces
   $name   = 0;  # are we in the NAME tag?
+  $tmp    = '';
 
   sub tagentry {
     if ($colon){ push(@lines, "</TD></TR></TABLE>"); 
                  $colon = 0;
                };
     if ($tag){ push(@lines, "</TD></TR>"); };
-    push (@lines, "<TR><TD VALIGN=TOP>".join(" ", @_)."</TD><TD VALIGN=TOP>");
+    push (@lines, "<TR><TD BGCOLOR=#FFFFE0 VALIGN=TOP>".join(" ", @_)."</TD><TD BGCOLOR=#EEEEFF VALIGN=TOP>");
     @line = ();
     $tag = 1;
     if ($pre) { push(@lines, "</PRE>") ; };
@@ -66,7 +72,7 @@
                       $prestr = $1;
                     };
 
-      $line =~ s,^$prestr,,; 
+      $line =~ s,^($prestr),,; 
       $pre++;
     }
     push(@lines, $line); @line=();
@@ -81,10 +87,11 @@ DOCHEADER : START LINES DOCEND EOL      { if ($pre) { push(@lines, "</PRE>") ; }
                                           if ($colon){ print "</TD></TR></TABLE>"; }; 
                                           print "</TD></TR></TABLE>\n"; exit(0); }
 
-START : DOCSTART EOL                    { print '<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">'."\n"; } 
+START : DOCSTART EOL                    
 
 
-URL  : URLSTART TEXT URLEND             { push(@line, makeURL($2)); }
+URL  : URLSTART TEXT URLEND                { push(@line, makeURL($2)); }
+     | URLSTART TEXT LBRACE RBRACE URLEND  { push(@line, makeURL($2)); }
      ;
 
 WORDS : WORD WORDS
@@ -92,13 +99,18 @@ WORDS : WORD WORDS
       ;
 
 WORD : TEXT                             { if ($name) {
-                                            push(@line, h1($1."<FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>")); 
+                                            ($tmp = $1) =~ s,[ \(\)],,g;
+                                            push(@line, h1($tmp."<FONT SIZE=-1><A HREF=".getBaseURL().getSubDir."?file=".lc($tmp)."&mode=text&show=source>source</A> <A HREF=".getBaseURL().getSubDir."?file=".lc($tmp)."&mode=text&show=log>modifications</A> ".showedit(lc($tmp))."</FONT>")); 
+					    push(@line, '<TABLE VALIGN=TOP COLS=2 WIDTH="35%,65%">');  
                                             $name=0;
                                           } else {
                                            push(@line, $1); 
                                           }
                                         }
+     | LANK                             { push(@line, $1); }
+     | RANK                             { push(@line, $1); }
      | URL
+     | DEFAULT                          { push(@line, $1); }
      | WS                               { push(@line, $1); }
      | LBRACE                           { push(@line, $1); $rbrace++; }
      | RBRACE                           { push(@line, $1); $rbrace--; }
@@ -106,11 +118,11 @@ WORD : TEXT                             { if ($name) {
                                           if ($pre || $rbrace) {					    
 					    push(@line, ":");
 					  } else {
-                                            $tab="<TR><TD VALIGN=TOP>";
+                                            $tab="<TR><TD VALIGN=TOP bgcolor=#CCCCCC>";
 					    if ($colon){ push(@lines, pop(@lines)."</TD></TR>\n"); } 
-					    else { $tab = "<TABLE COLS=3>\n".$tab; };
+					    else { $tab = "<TABLE COLS=2".$tab; };
 					    unshift(@line, $tab);
-					    push(@line, "</TD><TD VALIGN=TOP>:</TD><TD>");
+					    push(@line, "</TD><TD>");
 					    $colon=1;
 					  }
                                         }
@@ -138,7 +150,7 @@ ID   : EXAMP                           { tagentry($1); beginpre; }
      | COMBLO                          { tagentry($1); }
      | SIDEFF                          { tagentry($1); }
      | RESTR                           { tagentry($1); }
-     | PROCED                          { tagentry($1); beginpre; }
+     | PROCED                          { tagentry($1); }
      | SEEALSO                         { tagentry($1); }
      | AUTHOR                          { tagentry($1); }
      | MODHIST                         { tagentry($1); beginpre; }
