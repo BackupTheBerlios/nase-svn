@@ -1,19 +1,24 @@
 ;+
 ; NAME: asso_filesave
 ;
+; AIM: Module of assoziativ.pro (see also: FaceIt)
 ;
 ; PURPOSE: siehe assoziativ.pro
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
+;-
 ;
 ;     $Log$
+;     Revision 1.2  2000/09/27 12:14:06  alshaikh
+;           added aim
+;
 ;     Revision 1.1  1999/10/14 12:37:42  alshaikh
 ;           initial version
 ;
 ;
-;-
+;
 PRO asso_FILESAVE, dataptr, group
 
    ; wenn etwas schiefgeht, zu skip springen

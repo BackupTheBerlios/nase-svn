@@ -2,18 +2,24 @@
 ; NAME: asso_userevent
 ;
 ;
+; AIM: Module of assoziativ.pro (see also: FaceIt)
+;
 ; PURPOSE: siehe assoziativ.pro
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
+;-
 ;     $Log$
+;     Revision 1.2  2000/09/27 12:14:08  alshaikh
+;           added aim
+;
 ;     Revision 1.1  1999/10/14 12:37:45  alshaikh
 ;           initial version
 ;
 ;
-;-
+;
 PRO asso_USEREVENT, event
 
 
