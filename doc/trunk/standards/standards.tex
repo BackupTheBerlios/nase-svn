@@ -1,0 +1,192 @@
+%
+% FILE:     standards (Master)
+%
+% LOCATION: /neuro/cartman/user/saam/nase/doc/standards/
+%
+% AUTHOR:   saam
+%
+% DATE:     Thu Aug 24 10:29:40 CEST 2000
+%
+% MODIFICATION HISTORY:
+%
+%       $Log$
+%       Revision 1.1  2000/08/24 10:01:32  saam
+%             first version
+%
+%
+%-
+\documentclass[12pt]{article}
+
+
+% Page Size & Formatting
+\usepackage[a4paper,dvips]{geometry}           % page layout [twoside]
+\setlength{\parindent}{0pt}                    % dont indent first paragraph
+%\renewcommand{\baselinestretch}{2.0}          % double line spacing
+%\usepackage{showlabels}                       % shows labels on side margin
+\usepackage{showkeys}                          % prints label, ref, cite and bib keys
+\usepackage{draftcopy}                         % displays draft in background of page (ps only!)
+\usepackage{changebar}                         % changebars at margin via \cbstart ... \cbend (ps only!)
+
+
+% References & Citations
+\usepackage{lastpage}                          % access last page by \pageref{LastPage}
+\usepackage[round]{natbib}                     % citestyle: Author (Year) by \cite or Author, Year with \citet
+\usepackage{prettyref}                         % generates references like Figure/Table/Equation x, instead of x 
+\newrefformat{fig}{Figure~\ref{#1}}
+\usepackage{acronym}                           % make sure acronyms are spelled out at least once
+
+% Language
+\usepackage[english]{babel}                    % set the language (german, english, ...)
+\usepackage[latin1]{inputenc}                  % allow special characters directly in source
+
+% Headers & Footers
+\usepackage{fancyheadings}                     % allows individual header and footers
+\pagestyle{fancy}
+\lhead{\tiny \$Header$ $\$}                    % include path/name/date/RCS/CVS-version in header
+\chead{}
+\rhead{}
+%\lfoot{}
+%\cfoot{}
+%\rfoot{}
+
+
+% Fonts
+%\usepackage{times}                            % use times, palatino, ...  ps-fonts instead of cm (dvi won't work!!)
+%\usepackage{soul}                             % typeset text in spaced out way via \st{...} and more
+\usepackage{SIunits}                           % use SI units by their name and produce upright greek symbols
+
+        
+% Figures & Captions
+\usepackage{graphicx}
+\usepackage[footnotesize,nooneline]{caption}
+\DeclareGraphicsRule{.tif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.gif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.bmp}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.jpg}{eps}{.bb}{`convert #1 eps:-}
+% TeX requirements for putting a figure onto a page
+% are rather strict (and therefore seldom fulfilled
+% the following command make the placement of figures
+% more sloppier
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+
+
+% Definitions
+% the way a bind figures into the document:
+\newcommand{\myfig}[5]{\begin{figure}[tbh]\begin{center}\includegraphics[#3]{#2}\caption{\label{#1}{\sc#4.} #5}\end{center}\end{figure}}
+
+
+% define an acronym by: 
+%   \acrodef{CCH}{cross coincidence histogram} 
+% following commands produce the shown output:
+%   \ac{CCH}  -> cross coincidence histogram (CCH)  % for the first appearance 
+%   \ac{CCH}  -> CCH                                % any further appearance
+%   \acf{CCH} -> cross coincidence histogram (CCH)  % always
+%   \acl{CCH} -> cross coincidence histogram        % always
+%   \acs{CCH} -> CCH                                % always
+% you can also make a list of acronyms (see documentation)
+
+
+% integrate figures by:
+%   \myfig{label}{filename}{width,height}{short-title}{description}
+
+
+\begin{document}
+
+{\Huge\textbf{N.A.S.E. Standards}}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+\section{Documentation}
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+\section{Routines}
+%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
+\subsection{Naming}
+\subsection{Error Handling and Messaging}
+\begin{itemize}
+%
+\item Wrong number, type, dimensions of positional or keyword parameters should stop the routine at the position of the calling program segment. For this you should place 
+\begin{verbatim}
+On_Error, 2
+\end{verbatim}
+(after testing and debugging, of course) at the very beginning of your routine. To produce the actual error message, use
+\begin{verbatim}
+Console, 'error message', /FATAL .
+\end{verbatim}
+%
+\item All nonfatal errors and strange conditions occuring during the processing of the routine, should be logged via
+\begin{verbatim}
+Console, 'what happened' [,/MSG | ,/INFO] 
+\end{verbatim}
+With this policy the user can decide if he/she actually wants to see all this stuff by changing the console properties.
+%
+\item Fatal errors should stop the routine at the position of the calling program segment. You may implement a fallback, that the calling function may use to handle the error. Thi should look like:
+\begin{verbatim}
+PRO RoutineGeneratingError, ERROR=error
+...
+; a fatal error has occured
+IF Keyword_Set(Error) THEN BEGIN
+                             error=1 ; or another documented value/string
+                             RETURN
+                           END ELSE Console, 'fatal error', /FATAL
+...
+END
+\end{verbatim}
+%
+\item Console
+%
+\end{itemize}
+\subsection{Syntax Checking}
+\subsection{Calling Conventions}
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+\section{Programming}
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Improving Speed and Reducing Memory Consumption}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{itemize}
+\item Use array operations rather than loops wherever possible. Try to avoid loops with high repetition counts.
+\item Use IDL system functions and procedures wherever possible.
+\item Use \texttt{Call\_Function} or \texttt{Call\_Procedure} instead of \texttt{Execute}.
+\item The order in which an expression is evaluated can have a significant effect on program speed. Consider the following statement, where A is an array:
+\begin{verbatim}
+;Scale A from 0 to 16.
+B = A * 16. / MAX(A)
+\end{verbatim}
+This statement first multiplies every element in A by 16 and then divides each element by the value of the maximum element. The number of operations required is twice the number of elements in A. A much faster way of computing the same result is used in the following statement:
+\begin{verbatim}
+;Scale A from 0 to 16 using only one array operation.
+B = A * (16./MAX(A))
+\end{verbatim}
+\item Avoid if statements.
+\item Whenever possible, vector and array data should always be processed with IDL array operations instead of scalar operations in a loop. 
+\item Use constants of the correct type.
+\item Eliminate invariant expressions.
+\item If virtual memory is a problem, try to tailor your programming to minimize the number of images held in IDL variables. Keep in mind that IDL creates temporary arrays to evaluate expressions involving arrays.  
+\item Use the TEMPORARY function: A = TEMPORARY(A) + 1 instead of A = A + 1
+\item Avoid memory leaks when dealing with handles.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Traps and Bugs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{itemize}
+\item Respect the tag-by-value calling trap.
+\end{itemize}
+
+%\bibliography{standards}
+%\bibliographystyle{plainnat} 
+\end{document}
