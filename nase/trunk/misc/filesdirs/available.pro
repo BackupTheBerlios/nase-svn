@@ -24,12 +24,33 @@
 ;                                 IDL-wrapper) function.
 ;                                 If USE_SELECT is set, this function
 ;                                 calls wait_for_data().
-;                                 CAUTION: Do not mix both versions!
+;                                 Note: The usage of select() may lead 
+;                                 to different results on
+;                                 buffered streams. (See
+;                                 restrictions below.)
 ;                     
 ;
 ; OUTPUTS: ready ( (array of) BOOLEAN): TRUE or FALSE, indicating if a read attempt on the LUN will not block.
 ;
-; RESTRICTIONS: LUN has to be valid and open for reading
+; RESTRICTIONS: LUN has to be valid and open for reading.
+;
+;               Note that the select() function is a low-level
+;               I/O function call. It bypasses the buffering
+;               performed by the stdio-filestreams. This means
+;               that by a call to available(/USE_SELECT), the
+;               underlying filedescriptor is tested for
+;               available data, regardless of any data already
+;               waiting in a filestream-buffer. Thus,
+;               available(/USE_SELECT) should best be used on
+;               non-buffered files (Keyword BUFSIZE=0 or
+;               /NOSTDIO in a call to OPEN). This is no
+;               drawback, as available(/USE_SELECT) most oftenly will
+;               be used with pipes or FIFOs that are inherently
+;               memory buffered by the operating system and do
+;               not need buffering by the filestreams.
+;               However, if you have to test for data available
+;               on a buffered stream and get misleading results,
+;               do not use the /USE_SELECT option.
 ;
 ; PROCEDURE: CALL_EXTERNAL( ... )
 ;            (Obtain file-descriptors, set NON-BLOCKING-flag on it, attempt to read a character,
@@ -46,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1999/09/13 13:46:59  kupper
+;        Added warning about buffered streams and use of select(). (See Restrictions)
+;
 ;        Revision 2.2  1999/09/10 13:00:54  kupper
 ;        Re-corrected some names in the Header after renaming the file.
 ;

@@ -32,6 +32,24 @@
 ;               Works only on systems supporting the select() system-function. Use non_block_readable() on other systems!
 ;	        This routine checks only for reading. Could be changed to check for writing (quite?) easily.
 ;               (See documentation of select())
+;               Note that the select() function is a low-level
+;               I/O function call. It bypasses the buffering
+;               performed by the stdio-filestreams. This means
+;               that by a call to wait_for_data(), the
+;               underlying filedescriptor is tested for
+;               available data, regardless of any data already
+;               waiting in a filestream-buffer. Thus,
+;               wait_for_data() should best be used on
+;               non-buffered files (Keyword BUFSIZE=0 or
+;               /NOSTDIO in a call to OPEN). This is no
+;               drawback, as wait_for_data() most oftenly will
+;               be used with pipes or FIFOs that are inherently
+;               memory buffered by the operating system and do
+;               not need buffering by the filestreams.
+;               However, if you have to test for data available
+;               on a buffered stream and get misleading results
+;               from wait_for_data(), use <A HREF="#AVAILABLE">available()</A>
+;               instead.
 ;
 ; PROCEDURE: CALL_EXTERNAL(!NASE_LIB,"wait_for_data", ...)
 ;
@@ -40,12 +58,15 @@
 ;		  if n_elements(ready_luns) gt 0 then readf, ready_luns[0], data
 ;
 ; SEE ALSO: <A HREF="#GET_FD">get_fd()</A>,
-;           <A HREF="#NON_BLOCK_READABLE">non_block_readable()</A>,
+;           <A HREF="#AVAILABLE">available()</A>,
 ;           documentation of c++-routine in shared/IDL_IO_support.h
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1999/09/13 13:46:59  kupper
+;        Added warning about buffered streams and use of select(). (See Restrictions)
+;
 ;        Revision 2.2  1999/03/05 20:25:40  kupper
 ;        Also:
 ;        1) Get_fd() und non_block_readable() können jetzt wie "brave" IDL-Routinen
