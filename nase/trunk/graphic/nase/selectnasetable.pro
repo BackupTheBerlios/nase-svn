@@ -1,40 +1,39 @@
 ;+
-; NAME:
+; NAME: SelectNASEtable
 ;
-; PURPOSE:
+; PURPOSE: Auswählen eines der vordefinierten NASE-Colortable-Sätze
+;          (Bildschirm und Postscript).
 ;
-; CATEGORY:
+; CATEGORY: Graphic
 ;
-; CALLING SEQUENCE:
+; CALLING SEQUENCE: SelectNASEtable [,/STANDARD | ,/EXPONENTIAL | ,/MULTICOLOR]
 ;
-; INPUTS:
+; KEYWORD PARAMETERS: STANDARD (Default): Es werden die altbekannten
+;                                         linearen Farnverläufe
+;                                         verwendet.
+;                     EXPONENTIAL       : Die gleichen Farbverläufe
+;                                         exponentiell, zur besseren
+;                                         Auflösung niedriger Werte.
+;                     MULTICOLOR        : Vielfarbtabellen (bisher nur 
+;                                         für Bildschirm)
 ;
-; OPTIONAL INPUTS:
+; SIDE EFFECTS: Die !NASETABLE-Variable wird verändert.
 ;
-; KEYWORD PARAMETERS:
+; PROCEDURE: ebendies.
 ;
-; OUTPUTS:
+; EXAMPLE: SelectNASEtable, /EXPONENTIAL
 ;
-; OPTIONAL OUTPUTS:
-;
-; COMMON BLOCKS:
-;
-; SIDE EFFECTS:
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-; EXAMPLE:
-;
-; SEE ALSO:
+; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights</A>, <A HREF="#SHOWWEIGHTS_SCALE">ShowWeights_Scale()</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/05/26 13:27:44  kupper
+;               Header ergänzt.
+;
 ;        Revision 2.1  1998/05/26 13:18:47  kupper
 ;               NASE-Colortables neu eingeführt.
-;                STANDARD, EXPONENTIAL und MULTI
+;                STANDARD, EXPONENTIAL und MULTICOLOR
 ;
 ;-
 
