@@ -21,10 +21,7 @@
 Pro ShowLogo, SECS=secs
 
    IF TOTAL((IdlVersion(/FULL))(0:1) GT [5,3]) GE 1 THEN BEGIN
-       ; IDL5.4 does no longer support GIF
-       ; this should be only temporary a bmp, but the suggested IDL routine
-       ; read_png is NOT EXISTENT, which i absolutely do not understand!!! 
-       logo = Read_BMP( FilePath("naselogo2.bmp", ROOT_DIR=!NASEPATH, $
+       logo = Read_PNG( FilePath("naselogo2.png", ROOT_DIR=!NASEPATH, $
                           SUBDIRECTORY=["graphic"]), r, g, b )
    END ELSE BEGIN
        Read_GIF, FilePath("naselogo2.gif", ROOT_DIR=!NASEPATH, $
