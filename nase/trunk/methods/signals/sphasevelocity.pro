@@ -84,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.12  2000/09/29 17:52:04  gabriel
+;          FZT Bug fixed
+;
 ;     Revision 1.11  2000/09/28 14:25:03  gabriel
 ;           Console command corrected
 ;
@@ -206,8 +209,8 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       
       max_moment_fzt= umoment(FZT(tmpmax(tmpfindex),-1))
       max_moment = FZT(max_moment_FZT(0),1)
-      MAX_SDEV_ARR =  [(FZT(max_moment_FZT(0)+sqrt(max_moment_FZT(1)),1), $
-                   FZT(max_moment_FZT(0)-sqrt(max_moment_FZT(1)),1))]
+      MAX_SDEV_ARR =  [FZT(max_moment_FZT(0)+sqrt(max_moment_FZT(1)),1), $
+                   FZT(max_moment_FZT(0)-sqrt(max_moment_FZT(1)),1)]
       ;max_moment = umoment(tmpmax(tmpfindex),SDEV=MAX_SDEV )
       MAX_SDEV=(MAX_SDEV_ARR(0)- MAX_SDEV_ARR(1))/2.
       ;;TMP_MAX_SDEV=MAX_SDEV
