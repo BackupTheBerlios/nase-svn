@@ -1,11 +1,14 @@
 ;+
 ; NAME: ScrollIt()
 ;
-; PURPOSE: Darstellung großer Graphiken in kleinen Fenstern mit Scrollbalken
+; PURPOSE: Darstellung großer Graphiken in kleinen Fenstern mit
+;          Scrollbalken.
+;          Ab Revision 2.21 auch als Kind-Widgets in einer Widget-Applikation. 
 ;
-; CATEGORY: Darstellung, allgemein
+; CATEGORY: Darstellung, Widgets, allgemein
 ;
-; CALLING SEQUENCE: Win_Nr = ScrollIt ( [ TITLE=FensterTitel ]
+; CALLING SEQUENCE: Win_Nr = ScrollIt ( [ Parent ]
+;                                       [, TITLE=FensterTitel ]
 ;                                       [, XPOS=Hauptfenster_X_Position] [, YPOS=Hauptfenster_Y_Position ]
 ;                                       [, BASE_XSIZE=Hauptfenster_X_Größe] [, BASE_YSIZE=Hauptfenster_Y_Größe]
 ;                                       [, XSIZE=Fensterchen_X_Größe ]  [, YSIZE=Fensterchen_Y_Größe ]
@@ -17,6 +20,13 @@
 ;                                       [, MULTI=Multi-Array ]
 ;                                       [, GET_DRAWID=Array_of_Draw-Widget-IDs]
 ;                                       [, /PRIVATE_COLORS] [, NO_BLOCK=0])
+;
+; OPTIONAL INPUTS: Parent: Eine Widget-ID des Widgets, dessen Kind das 
+;                          neue ScrollIt-Widget werden soll.
+;                          Man beachte, dass in diesem Fall der
+;                          Rueckgabewert Win_Nr=-1 ist, da die
+;                          Fensternummer eines Draw-Widgets erst nach
+;                          dessen Realisierung ermittelt werden kann.
 ; 
 ; KEYWORD PARAMETERS: XPOS, YPOS              : Position des Fensters, das tatsächlich auf
 ;                                               dem Bilschirm erscheint.
@@ -84,6 +94,12 @@
 ;                   bzw. ein Array von Indizes im Fall von MULIT.
 ;                  Das geöffnete Fenster wird aber auch zum aktuellen Fenster.
 ;
+;                  Man beachte, dass wenn ein Parent-Widget angegeben wurde, der
+;                   Rueckgabewert Win_Nr=-1 ist, da die
+;                   Fensternummer eines Draw-Widgets erst nach
+;                   dessen Realisierung ermittelt werden kann.
+;                   (S. dazu Abschnitt RESTRICTIONS.)
+;
 ; OPTIONAL OUTPUTS: GET_BASE: ID des erstellten Base-Widgets.
 ;                   GET_DRAWID: ID des Draw-Widgets, bzw. ein Array
 ;                    von IDs im Fall von MULTI.
@@ -95,13 +111,30 @@
 ; SIDE EFFECTS: Wenn IDL V4.0 oder höher verwendet wird, wird das Widget beim XMANAGER registriert.
 ;               Dann werden nach aufruf von XMANAGER auch Resize-Events richtig verarbeitet.
 ;
-; RESTRICTIONS: Es bringt den XMANAGER durcheinander, wenn das Fenster mit
-;               WDelete, Win_Nr gelöscht wird.
-;               Lieber das Widget ordnungsgemäß mit dem Close-Knopf schließen
-;               oder, wenn es programmgesteuert geschlossen werden
-;               soll, das GET_BASE-Schlüsselwort benutzen und ein 
-;                  WIDGET_CONTROL, Widget_ID, /DESTROY
-;               machen.
+; RESTRICTIONS: 1) Es bringt den XMANAGER durcheinander, wenn das Fenster mit
+;                  WDelete, Win_Nr gelöscht wird.
+;                  Lieber das Widget ordnungsgemäß mit dem Close-Knopf schließen
+;                  oder, wenn es programmgesteuert geschlossen werden
+;                  soll, das GET_BASE-Schlüsselwort benutzen und ein 
+;                     WIDGET_CONTROL, Widget_ID, /DESTROY
+;                  machen.
+;
+;               2) Wird ein Parent-Widget angegeben, so kann die
+;                  Fensternummer des ScrollIt-Widgets erst nach dessen
+;                  Realisierung ermittelt werden. Zu diesem Zweck lasse
+;                  man sich die Widget-ID mittels GET_DRAWID=DrawId
+;                  zurueckliefern und bestimme dann die Fensternummer
+;                  mittels
+;                     WIDGET_CONTROL, DrawId, GET_VALUE=Fensternummer
+;                  Das ganze wird dem Benutzer abgenommen, wenn er <A HREF="sheets">Sheets</A>
+;                  benutzt, was wir ihm empfehlen moechten.
+;
+;               3) Man beachte, dass das
+;                  Hinzufuegen eines Sheets/ScrollIts zu einer
+;                  bereits realisierten Widget-Hierarchie in der
+;                  aktuellen IDL-Version (5.0.2) unter KDE zu einem
+;                  astreinen IDL-Absturz fuehrt!
+;
 ;
 ; PROCEDURE: Einfaches Base- und Draw-Widget mit einfachem Resize-Event-Handler.
 ;
@@ -120,6 +153,21 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.22  1999/06/15 17:36:38  kupper
+;       Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
+;       und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
+;       eingebaut werden. Die Modifikationen machten es notwendig, den
+;       WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
+;       Realisierung der Widget-Hierarchie bestimmt werden kann.
+;       Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
+;       WIDGET_CONTROL ab.
+;       Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
+;       ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
+;       Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
+;       entsprechend angepasst.
+;       Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
+;       nicht voellig auszuschliessen.
+;
 ;       Revision 2.21  1999/06/10 16:50:02  kupper
 ;       Bugfix: VARIABLE used with GETDTAWID-Keyword needs to be defines
 ;       before call with IDL 3.6
@@ -156,13 +204,13 @@
 ;
 ;-
 
-Pro Scrollit_Draw_Notify_Realize, DrawID
-   ;Store my WinID in my User-Value (needed by _sheetkilled)
-   Widget_Control, DrawID, GET_UVALUE=uval, /NO_COPY
-   Widget_Control, DrawID, GET_VALUE=winid
-   uval.Window_ID = winid
-   Widget_Control, DrawID, SET_UVALUE=uval, /NO_COPY
-End
+;Pro Scrollit_Draw_Notify_Realize, DrawID
+;   ;Store my WinID in my User-Value (needed by _sheetkilled)
+;   Widget_Control, DrawID, GET_UVALUE=uval, /NO_COPY
+;   Widget_Control, DrawID, GET_VALUE=winid
+;   uval.Window_ID = winid
+;   Widget_Control, DrawID, SET_UVALUE=uval, /NO_COPY
+;End
 
 
 Pro ScrollIt_Event, Event
@@ -350,7 +398,7 @@ Function ScrollIt, Parent, $
                                               Window_ID : -2, $
                                               MyPalette   : {R: Red, G: Green, B: Blue}, $
                                               YourPalette : {R: Red, G: Green, B: Blue} $
-                                             }, NOTIFY_REALIZE="Scrollit_Draw_Notify_Realize"
+                                             };, NOTIFY_REALIZE="Scrollit_Draw_Notify_Realize"
    EndFor
    
       

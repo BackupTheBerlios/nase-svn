@@ -9,13 +9,18 @@
 ;                     File schicken muss man nur diesen Aufruf aendern, alles andere bleibt gleich.
 ;                     Benutzt man dann noch die U-Routinen (UTvScl, ULoadCt,...) dann ist man voellig
 ;                     device-unabhaengig.
+;                     Ab Revision 2.15 Koennen Sheets auch Kind-Widgets in Widget-Applikationen sein.
 ;
-; CATEGORY:           GRAPHIC
+; CATEGORY:           GRAPHIC, WIDGETS, allgemein
 ;
-; CALLING SEQUENCE:   Sheet = DefineSheet( [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
+; CALLING SEQUENCE:   Sheet = DefineSheet( [ Parent ]
+;                                          [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
 ;                                          [,/INCREMENTAL] [,/VERBOSE]
 ;                                          [,/PRIVATE_COLORS]
 ;                                          (,OPTIONS)*
+;
+; OPTIONAL INPUTS: Parent: Eine Widget-ID des Widgets, dessen Kind das 
+;                          neue Sheet-Widget werden soll.
 ;
 ; KEYWORD PARAMETERS: WINDOW     : Das Sheet wird auf dem Bildschirm dargestellt
 ;                     PS         : Das Sheet wird als PS in ein File gespeichert.
@@ -45,6 +50,13 @@
 ; OUTPUTS:            Sheet: eine Struktur, die alle Sheet-Informationen enthaelt und an OpenSheet,
 ;                            CloseSheet und DestroySheet uebergeben wird.
 ;
+; RESTRICTIONS: Man beachte, dass das
+;               Hinzufuegen eines Sheets/ScrollIts zu einer
+;               bereits realisierten Widget-Hierarchie in der
+;               aktuellen IDL-Version (5.0.2) unter KDE zu einem
+;               astreinen IDL-Absturz fuehrt!
+;
+;
 ; EXAMPLE:
 ;                     window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
 ;                     ps_sheet1    = DefineSheet( /PS, /VERBOSE, /ENCAPSULATED, FILENAME='test')
@@ -63,6 +75,21 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  1999/06/15 17:36:39  kupper
+;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
+;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
+;     eingebaut werden. Die Modifikationen machten es notwendig, den
+;     WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
+;     Realisierung der Widget-Hierarchie bestimmt werden kann.
+;     Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
+;     WIDGET_CONTROL ab.
+;     Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
+;     ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
+;     Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
+;     entsprechend angepasst.
+;     Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
+;     nicht voellig auszuschliessen.
+;
 ;     Revision 2.14  1999/06/01 13:46:21  kupper
 ;     Fixed bug in PRIVATE_COLORS-option.
 ;
@@ -113,12 +140,13 @@
 ;
 ;
 ;-
-FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
+FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
                       ,VERBOSE=verbose, MULTI=multi, PRIVATE_COLORS=private_colors, _EXTRA=e
 
    COMMON Random_Seed, seed
    COMMON ___SHEET_KILLS, sk
 
+   Default, Parent, -1
    Default, multi, 0
    Default, private_colors, 0
 
@@ -134,16 +162,20 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       IF Keyword_Set(VERBOSE) THEN Print, 'Defining a new Window.'
       
       sheet = { type  : 'X'   ,$
-                winid : -2l    ,$
+                $               ;no longer in here, since scrollits may
+                $               ;not be realized at once:
+                $               ;winid : -2l    ,$
                 widid : -2l    ,$
-                drawid: 0l     ,$  ;The id of the draw widget for saving of palette!
+                drawid: -2l    ,$ ;The id of the draw widget for saving of palette!
                 p     : !P    ,$
                 x     : !X    ,$
                 y     : !Y    ,$
                 z     : !Z    ,$
                 multi : multi ,$
                 extra : e     ,$ 
-                private_colors : private_colors }
+                private_colors : private_colors, $
+                parent: Parent}
+      
 
    END ELSE IF Keyword_Set(PS) THEN BEGIN
 
@@ -184,5 +216,20 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
 
    If keyword_set(multi) then sheet = replicate(sheet, multi(0))
 
-   RETURN, Handle_Create(VALUE=sheet)
+   ;;create Handle on sheet:
+   sheethandle =  Handle_Create(VALUE=sheet)
+   
+   ;;Child-Window-Sheets must be opened once to become part of the Parent widget!
+   If Keyword_set(WINDOW) and (Parent ne -1) then begin
+      If Keyword_set(VERBOSE) then print, "Adding Sheet to Parent Widget."
+      If keyword_set(MULTI) then begin
+         opensheet, sheethandle, 0
+         closesheet, sheethandle, 0
+      Endif else begin
+         opensheet, sheethandle
+         closesheet, sheethandle
+      Endelse
+   EndIf
+   
+   RETURN, sheethandle
 END

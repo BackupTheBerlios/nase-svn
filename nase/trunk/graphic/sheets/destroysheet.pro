@@ -33,6 +33,21 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1999/06/15 17:36:39  kupper
+;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
+;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
+;     eingebaut werden. Die Modifikationen machten es notwendig, den
+;     WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
+;     Realisierung der Widget-Hierarchie bestimmt werden kann.
+;     Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
+;     WIDGET_CONTROL ab.
+;     Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
+;     ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
+;     Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
+;     entsprechend angepasst.
+;     Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
+;     nicht voellig auszuschliessen.
+;
 ;     Revision 2.7  1999/02/12 15:22:52  saam
 ;           sheets are mutated to handles
 ;
@@ -64,9 +79,10 @@ PRO DestroySheet, __sheet, multi_nr
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet(0)
 
    IF sheet.type EQ 'X' THEN BEGIN
-      UWSet, sheet.winid, exists
-      IF exists THEN WIDGET_CONTROL, sheet.widid, /DESTROY    
-      sheet.winid = -2
+      ;UWSet, sheet.winid, exists
+      ;IF exists THEN WIDGET_CONTROL, sheet.widid, /DESTROY    
+      ;sheet.winid = -2
+      IF Widget_Info(sheet.widid, /VALID_ID) THEN WIDGET_CONTROL, sheet.widid, /DESTROY
       sheet.widid = -2
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN
       IF sheet.open THEN CloseSheet, sheet

@@ -4,20 +4,45 @@
 ; PURPOSE:           Schliesst ein mit OpenSheet geoeffnetes Sheet. Das bedeutet,
 ;                    dass das PS-File geschlossen wird. Außerdem
 ;                    werden alle aktiven Graphik-Settings in der
-;                    Sheet-Struktur gespeichert. Sofern bei
-;                    definesheet auch /PRIVATE_COLORS angegeben wurde, 
+;                    Sheet-Struktur gespeichert.
+;
+;                     Sofern bei definesheet
+;                    auch /PRIVATE_COLORS angegeben wurde, 
 ;                    wird die aktuelle Farbtabelle ebenfalls
 ;                    gespeichert (und zwar im User-Value des
 ;                    Draw-Widgets, s. <A HREF="../#SCROLLIT">ScrollIt()</A>).
+;                    (Dieses Verhalten kann im Einzelfall ueber das
+;                    Schluesselwort SAVE_COLORS beeinflusst werden.)
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  CloseSheet, Sheet [,Multi-Index]
+; CALLING SEQUENCE:  CloseSheet, Sheet [,Multi-Index] [,SAVE_COLORS=0]
 ;
 ; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
 ;
 ; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
-;                                 der Index des "Sheetchens", das geschlossen werden soll.
+;                                 der Index des "Sheetchens", das
+;                                 geschlossen werden soll.
+;
+; KEYWORDS:          SAVE_COLORS: Default: gesetzt.
+;                                 Dieses Schluesselwort hat nur
+;                                 Effekt, wenn bei <A HREF="#DEFINESHEET">DefineSheet()</A>
+;                                 die Option /PRIVATE_COLORS angegeben 
+;                                 wurde. Standardmaessig speichert
+;                                 CloseSheet dann die jeweils aktuelle 
+;                                 Farbtabelle mit den anderen
+;                                 Graphikdaten in der Sheet-Struktur
+;                                 ab. In einigen Faellen
+;                                 (beispielsweise bei haeufigen
+;                                 Graphik-Updates waehrend
+;                                 interaktiver Usereingaben) ist es
+;                                 wuenschenswert, dieses Verhalten zu
+;                                 unterdruecken. Durch explizite
+;                                 Angabe von SAVE_COLORS=0 wird die
+;                                 aktuelle Farbtabelle beim Schliessen 
+;                                 nicht abgespeichert. Beim naechsten
+;                                 Oeffnen wird daher die zuletzt
+;                                 gespeicherte Farbtabelle erneut gesetzt.
 ;
 ; EXAMPLE:
 ;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
@@ -33,6 +58,21 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1999/06/15 17:36:39  kupper
+;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
+;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
+;     eingebaut werden. Die Modifikationen machten es notwendig, den
+;     WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
+;     Realisierung der Widget-Hierarchie bestimmt werden kann.
+;     Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
+;     WIDGET_CONTROL ab.
+;     Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
+;     ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
+;     Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
+;     entsprechend angepasst.
+;     Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
+;     nicht voellig auszuschliessen.
+;
 ;     Revision 2.7  1999/06/01 13:41:29  kupper
 ;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
 ;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
@@ -60,7 +100,9 @@
 ;
 ;
 ;-
-PRO CloseSheet, __sheet, multi_nr
+PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
+
+   Default, save_colors, 1
 
    Handle_Value, __sheet, _sheet, /NO_COPY
 
@@ -79,13 +121,15 @@ PRO CloseSheet, __sheet, multi_nr
       new = !Z
       !Z =  sheet.z
       sheet.z = new
-      ;get current palette and Save it in Draw-Widget's UVAL:
-      WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
-      UTVLCT, /GET, Red, Green, Blue
-      draw_uval.MyPalette.R = Red
-      draw_uval.MyPalette.G = Green
-      draw_uval.MyPalette.B = Blue
-      WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
+      If keyword_set(SAVE_COLORS) then begin
+                                ;get current palette and Save it in Draw-Widget's UVAL:
+         WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
+         UTVLCT, /GET, Red, Green, Blue
+         draw_uval.MyPalette.R = Red
+         draw_uval.MyPalette.G = Green
+         draw_uval.MyPalette.B = Blue
+         WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
+      EndIf
    END
 
    IF sheet.type EQ 'ps' THEN BEGIN

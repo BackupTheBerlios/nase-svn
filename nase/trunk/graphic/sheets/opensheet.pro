@@ -29,6 +29,21 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.16  1999/06/15 17:36:39  kupper
+;     Umfangreiche Aenderungen an ScrollIt und den Sheets. Ziel: ScrollIts
+;     und Sheets koennen nun als Kind-Widgets in beliebige Widget-Applikationen
+;     eingebaut werden. Die Modifikationen machten es notwendig, den
+;     WinID-Eintrag aus der Sheetstruktur zu streichen, da diese erst nach der
+;     Realisierung der Widget-Hierarchie bestimmt werden kann.
+;     Die GetWinId-Funktion fragt nun die Fensternummer direkt ueber
+;     WIDGET_CONTROL ab.
+;     Ebenso wurde die __sheetkilled-Prozedur aus OpenSheet entfernt, da
+;     ueber einen WIDGET_INFO-Aufruf einfacher abgefragt werden kann, ob ein
+;     Widget noch valide ist. Der Code von OpenSheet und DefineSheet wurde
+;     entsprechend angepasst.
+;     Dennoch sind eventuelle Unstimmigkeiten mit dem frueheren Verhalten
+;     nicht voellig auszuschliessen.
+;
 ;     Revision 2.15  1999/06/01 13:41:29  kupper
 ;     Scrollit wurde um die GET_DRAWID und PRIVATE_COLORS-Option erweitert.
 ;     Definesheet, opensheet und closesheet unterstützen nun das abspeichern
@@ -86,18 +101,18 @@
 ;
 ;-
 
-PRO _sheetkilled, id
+;PRO _sheetkilled, id            ;This is only called for Top-Level-Sheets,
+;                                ;not for Sheets that belong to a Parent Widget.
 
-   COMMON ___SHEET_KILLS, sk
+;   COMMON ___SHEET_KILLS, sk
 
-   Widget_Control, id, GET_UVAL=uval
+;   Widget_Control, id, GET_UVAL=uval;Get user-value of scrollit-draw-widget.
    
-   IF sk(uval.Window_ID) NE 0 THEN Message, 'Sheet already killed !'
-   IF uval.Window_ID GT 128 THEN Message, 'WinID > 128 !'
+;   IF uval.Window_ID GT 128 THEN Message, 'WinID > 128 !'
+;   IF sk(uval.Window_ID) NE 0 THEN Message, 'Sheet already killed !'
 
-   sk(uval.Window_ID) = 1
-END
-
+;   sk(uval.Window_ID) = 1
+;END
 
 
 PRO OpenSheet, __sheet, multi_nr
@@ -113,38 +128,59 @@ PRO OpenSheet, __sheet, multi_nr
 
       ; does window already exist?? then set it active
       exists = 0
-      IF sheet.winid NE -2 THEN BEGIN
-         IF sk(sheet.winid) EQ 0 THEN UWSet, sheet.winid, exists
+;      IF sheet.winid NE -2 THEN BEGIN
+      IF sheet.DrawID NE -2 THEN BEGIN
+;         IF sk(winid) EQ 0 THEN begin ;Sheet is not killed
+         If Widget_Info(sheet.DrawID, /VALID_ID) then begin;Sheet is not killed
+            Widget_Control, sheet.DrawID, /REALIZE
+            Widget_Control, sheet.DrawID, GET_VAL=winid
+            UWSet, winid, exists
+         Endif
       END
-      
       ; create a new window
       IF NOT exists THEN BEGIN
          tid = 23               ;muss fuer IDL 3.6 vor dem GET_BASE-Aufruf definiert werden, Wert ist egal.
+         did = 23               ;muss fuer IDL 3.6 vor dem GET_BASE-Aufruf definiert werden, Wert ist egal.
          If not set(multi_nr) then begin
             IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-               sheet.winid = ScrollIt(GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled')
+               If (sheet.parent ne -1) $
+                then dummy = ScrollIt(sheet.parent, GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did) $
+               else dummy = ScrollIt(GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did);, KILL_NOTIFY='_sheetkilled')
             END ELSE BEGIN
-               sheet.winid = ScrollIt(Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled', _EXTRA=sheet.extra)
+               If (sheet.parent ne -1) $
+                then dummy = ScrollIt(sheet.parent, Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, _EXTRA=sheet.extra) $
+               else dummy = ScrollIt(Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, _EXTRA=sheet.extra);, KILL_NOTIFY='_sheetkilled')
             END
             sheet.widid = tid
             sheet.DrawID = did
-            sk(sheet.winid) = 0
+            If (sheet.parent eq -1) then begin ;Sheet is already realized, get winid for _sheetkilled
+               Widget_Control, sheet.DrawID, GET_VALUE=winid
+;               sk(winid) = 0
+            Endif 
          Endif else begin       ;multi
             IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-               winids = ScrollIt(GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi)
+               If (sheet.parent ne -1) $
+                then dummy = ScrollIt(sheet.parent, GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, MULTI=sheet.multi) $
+               else dummy = ScrollIt(GET_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, MULTI=sheet.multi);, KILL_NOTIFY='_sheetkilled')
             END ELSE BEGIN
-               winids = ScrollIt(Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi, _EXTRA=sheet.extra)
+               If (sheet.parent ne -1) $
+                then dummy = ScrollIt(sheet.parent, Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, MULTI=sheet.multi, _EXTRA=sheet.extra) $
+               else dummy = ScrollIt(Get_BASE=tid, PRIVATE_COLORS=sheet.private_colors, GET_DRAWID=did, MULTI=sheet.multi, _EXTRA=sheet.extra);, KILL_NOTIFY='_sheetkilled')
             END
             for i=1, sheet.multi(0) do begin
                _sheet(i-1).widid = tid
-               _sheet(i-1).winid = winids(i-1)
-               sk(winids(i-1)) = 0
+               ;_sheet(i-1).winid = winids(i-1)
                _sheet(i-1).drawid = did(i-1)
-            Endfor
+;               If (sheet.parent eq -1) then begin ;Sheet is already realized, get winid for _sheetkilled
+;                  Widget_Control, _sheet(i-1).drawid, GET_VALUE=winid
+;                  sk(winid) = 0
+;               Endif 
+            Endfor 
             sheet = _sheet(multi_nr)
          Endelse                ;multi
       END                       ;create new
-      UWset, sheet.winid
+      Widget_Control, sheet.DrawId, GET_VALUE=winid
+      UWset, winid
       old = !P
       !P = sheet.p
       sheet.p = old
