@@ -16,6 +16,7 @@
 ;                             [, /LEGEND]
 ;                             [, /ORDER]
 ;                             [, /NASE]
+;                             [, XRANGE=xrange] [, YRANGE=yrange]
 ;                             [, GET_POSITION=PlotPosition]
 ;                             [, GET_COLOR=Farbe]
 ;                             [, GET_XTICKS=XTicks]
@@ -49,6 +50,8 @@
 ;                           (Inputs, Outputs, Potentiale, Gewichte...).
 ;                           D.h. z.B. werden Gewichtsmatrizen in der gleichen
 ;                           Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
+;                     [XY]RANGE: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
+;                                das erste Element gibt das Minimum, das zweite das Maximum der Achse an                      
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                  und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
@@ -76,8 +79,12 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.17  1998/01/29 16:13:52  saam
+;           new keywords [XY]Range for variable
+;           axis-labelling
+;
 ;     Revision 2.16  1998/01/29 15:55:18  saam
-;     *** empty log message ***
+;           *** empty log message ***
 ;
 ;     Revision 2.15  1997/12/31 11:49:58  thiel
 ;            Kombination von XNorm/YNorm-Parametern und
