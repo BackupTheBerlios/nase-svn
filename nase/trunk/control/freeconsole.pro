@@ -1,62 +1,43 @@
 ;+
-; NAME:   freeconsole.pro
+; NAME:              FREECONSOLE
 ;
+; PURPOSE:           frees console-structure
 ;
-; PURPOSE:  frees console-structure
-;
-;
-; CATEGORY:  mind graphic
-;
+; CATEGORY:          NASE CONTROL
 ;
 ; CALLING SEQUENCE:  freeconsole, MyCons
-;
 ; 
-; INPUTS:      MyCons  : Console-structure
+; INPUTS:            MyCons  : Console-structure
 ;
+; EXAMPLE:           MyCons = initconsole(MODE='win',LENGTH=30)
+;                    Console, MyCons, 'hi there',/MSG
+;                    ConsoleTime,MyCons,30,30.0
+;                    Freeconsole, MyCons 
 ;
-; OPTIONAL INPUTS:
-;
-;	
-; KEYWORD PARAMETERS:
-;
-;
-; OUTPUTS:
-;
-;
-; OPTIONAL OUTPUTS:
-;
-;
-; COMMON BLOCKS:
-;
-;
-; SIDE EFFECTS:
-;
-;
-; RESTRICTIONS:
-;
-; PROCEDURE:
-;
-;
-; EXAMPLE:
-;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/03/28 12:51:09  saam
+;           fixed non-working variant
+;           for non-win mode
+;
 ;     Revision 2.1  2000/01/26 17:03:36  alshaikh
 ;           initial version
 ;
 ;
-;-
-
-
 PRO freeconsole, _console
 
 Handle_Value,_console,status,/no_copy
 
-Widget_Control,status.cons,/destroy
-Widget_Control,status.timewid,/destroy
+IF status.mode EQ 1 THEN BEGIN
+    Widget_Control,status.cons,/destroy
+    Widget_Control,status.timewid,/destroy
+END
+
 Handle_Value,_console,status,/no_copy,/set
 Handle_Free,_console
+
 END
