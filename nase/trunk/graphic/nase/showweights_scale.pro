@@ -169,7 +169,8 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
                                 ;literal 0)
    Default, Range, max([max, -min]) ; for positive Arrays this equals max.
 
-   assert, N_Elements(Range) eq 1, "Range_In must be a scalar value for this routine."
+   assert, N_Elements(Range) eq 1, "Range_In must be a positive scalar value for this routine."
+   assert, Range gt 0, "Range_In must be a positive scalar value for this routine."
 
    ;;--------------------------------
    
