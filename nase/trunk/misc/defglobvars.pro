@@ -14,6 +14,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.13  2000/09/18 12:44:45  saam
+;           + removed !EXECPATHS because command
+;             doesn't need it anymore
+;
 ;     Revision 1.12  2000/08/31 17:20:44  saam
 ;           !NASE_LIB now points to an architecture
 ;            dependent directory and fixes the
@@ -115,9 +119,6 @@ DefSysV, '!HWB2SIGMA', 1d/sqrt(alog(4d)), 1
 ; input buffer (history) erhoehen
 !EDIT_INPUT = 200
 
-
-; eine Reihe von EXEC-Pfaden (benutzt von der COMMAND Routine)
-DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', '/usr/X11R6/bin', '/usr/bin/X11', '/vol/bin', '~/bin'], 1
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
 DefSysV, '!NASE_LIB', !NASEPATH+'/shared/'+!VERSION.OS+'_'+!VERSION.ARCH+'/nasec.so', 0
