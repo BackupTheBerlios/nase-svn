@@ -10,7 +10,14 @@
 ;
 ; PUBLIC METHODS:
 ;
-;   showit()       returns widget id of the contained showit_widget
+;   showit()             : returns widget id of the contained showit_widget
+;   paint_interval()     : return paint interval in seconds. Negative value means
+;                          auto-paint is off.
+;   paint_interval, secs : enables auto-paint with interval secs
+;   paint                : an empty procedure that issues an error message.
+;                          --OVERRIDE THIS METHOD IN DERIVED CLASSES!--
+;                          Do not call basic_draw_object::paint from within
+;                          overridden method.
 ;
 ; INPUTS: 
 ;
@@ -37,14 +44,19 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/03/10 21:06:30  kupper
+;        Should work and be complete.
+;
 ;        Revision 1.3  2000/03/10 20:49:40  kupper
 ;        Now passing correct keywords to wisget_showit.
 ;
 ;-
 ;; ------------ Widget support routines ---------------------
 Pro BDO_Notify_Realize, id
+   On_Error, 2
    Widget_Control, id, Get_Uvalue=object
    object->paint
+   Widget_Control, object->showit(), Timer=object->paint_interval()
 End
 
 Function BDO_Event_Func, event
@@ -136,9 +148,11 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
    ;; note: adding widgets will never fail.
 
    If Set(PAINT_INTERVAL) then begin
-      self.refresh_interval = paint_interval
-      Widget_Control, self.w_showit, Timer=paint_interval
-   End
+      self.paint_interval = paint_interval
+   End else begin
+      self.paint_interval = -1
+   Endelse
+      
 
    ;; If we reach this point, initialization of the
    ;; whole object succeeded, and we can return true:   
@@ -159,6 +173,8 @@ End
 ;; ------------ Public --------------------
 Pro basic_draw_object::paint
    ;; for overriding on subclass!
+   On_error, 2
+   message, "Abstract method 'paint' was not overridden in derived class '"+Obj_Class(self)+"'!"
 End
 
 ;; ------------ Private --------------------
