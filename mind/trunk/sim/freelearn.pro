@@ -1,43 +1,43 @@
 ;+
-; NAME:                FreeLearn
+; NAME:
+;  FreeLearn
 ;
-; AIM:                 cleans up after learning (used by <A>Sim</A>)
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:             Frees dynamic memory used by LEARN. This routine
-;                      is called from SIM. It makes nearly no sense to call it directly.
+; AIM:
+;  Cleans up after learning (used by <A>Sim</A>).
 ;
-; CATEGORY:            MIND SIM INTERNAL
+; PURPOSE:
+;  Free dynamic memory used by the learning rule in a MIND
+;  simulation. This routine is called from SIM. It makes nearly no
+;  sense to call it directly.
 ;
-; COMMON BLOCKS:
+; CATEGORY:
+;  Internal
+;  MIND
+;  Plasticity
+;  Simulation
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITLEARN>initlearn</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#LEARN>learn</A>
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.3  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.2  2000/08/11 14:09:31  thiel
-;         Now supports freeing for EXTERN rules.
-;
-;     Revision 1.1  1999/12/10 09:36:46  saam
-;           * hope these are all routines needed
-;           * no test, yet
-;
-;
+; SEE ALSO: 
+;  <A>Sim</A>, <A>InitLearn</A>, <A>Learn</A>.
 ;-
+
+
+
 PRO FreeLearn, _LS
 
    Handle_Value, _LS, LS, /NO_COPY
 
-   ; CLOSE VIDEO
-   Eject, LS._vidDist, /NOLABEL, /SHUTUP
-   DelTag, LS, '_VIDDIST'
+   IF ls.reccon GT 0 THEN BEGIN
+      ;; CLOSE VIDEO
+      Eject, LS._vidDist, /NOLABEL, /SHUTUP
+      DelTag, LS, '_VIDDIST'
 
-   ; FREE PLOT
-   FreePlotcilloscope, LS._PCW
-   DelTag, LS, '_PCW'
+      ;; FREE PLOT
+      FreePlotcilloscope, LS._PCW
+      DelTag, LS, '_PCW'
+   ENDIF ;; ls.reccon GT 0
 
    ; FREE LEARNING INFOS
    IF InSet(LS.TYPE, [1,2]) THEN BEGIN

@@ -1,47 +1,30 @@
 ;+
-; NAME:                Learn
+; NAME:
+;  Learn
 ;
-; AIM:                 cares for plasticity in MIND simulations (used by <A>Sim</A>)
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:             Learns connections in an arbitrary network. This routine
-;                      is called from SIM. It makes nearly no sense to call it directly.
+; AIM: 
+;  Cares for plasticity in MIND simulations (used by <A>Sim</A>).
 ;
-; CATEGORY:            MIND SIM INTERNAL
+; PURPOSE:
+;  Learns connections in an arbitrary network. This routine is called
+;  from <A>Sim</A>. It makes nearly no sense to call it directly. See
+;  comments in source for more information.
+;
+; CATEGORY:
+;  Internal
+;  MIND
+;  Plasticity
+;  Simulation
 ;
 ; COMMON BLOCKS:
-;                      ATTENTION
-;                      SH_LEARN  : shares sheets with INITLEARN
+;  ATTENTION
+;  SH_LEARN  : shares sheets with INITLEARN
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#INITLEARN>initlearn</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#FREELEARN>freelearn</A>
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.7  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.6  2000/08/11 14:11:29  thiel
-;         Now shows delays on demand.
-;
-;     Revision 1.5  2000/01/28 15:16:45  saam
-;           changend console call by putting the console
-;           data from the common block into the ap structure
-;
-;     Revision 1.4  2000/01/26 16:19:51  alshaikh
-;           print,message -> console
-;
-;     Revision 1.3  2000/01/26 10:42:29  alshaikh
-;          + new learning rule : EXTERN
-;          + EXTERN still doesn't work with delayed connections
-;
-;     Revision 1.2  2000/01/14 11:02:02  saam
-;           changed dw structures to anonymous/handles
-;
-;     Revision 1.1  1999/12/10 09:36:48  saam
-;           * hope these are all routines needed
-;           * no test, yet
-;
-;
+; SEE ALSO:
+;  <A>Sim</A>, <A>InitLearn</A>, <A>FreeLearn</A>
 ;-
 
 ;
@@ -59,8 +42,8 @@
 ;    CONTROL : learning control system       ['NONE', 'MEANWEIGHTS']
 ;    DW      : index to Matrix to be learned
 ;    RECCON  : check,plot & save convergence of learning every
-;              RECCON's timestep 
-;    SHOWW   : showweights every SHOWW ms
+;              RECCON's timestep (-1: disabled)
+;    SHOWW   : showweights every SHOWW timesteps
 ;    ZOOM    : showweights zoom
 ;    DELAYS  : ShowWeights with /DELAYS option.
 ;    TERM    : terminate if a weight exceeds TERM
@@ -165,7 +148,7 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
    END
 
 
-   IF ((t MOD LS.RECCON) EQ 0) THEN BEGIN
+   IF ((t MOD LS.RECCON) EQ 0) AND (ls.reccon GT 0) THEN BEGIN
       ;------------> DETERMINE MAX&MEAN OF LEARNING MATRICES
       Maxw  = MaxWeight(CON(LS.DW))
       MeanW = MeanWeight(CON(LS.DW))
@@ -205,7 +188,7 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
       dummy = CamCord(LS._vidDist, [DOUBLE(dist)/DOUBLE(LS.RECCON), MeanW, MaxW])
       Handle_Value, DM, Weights(CON(LS.index)), /SET
       LS._distMAT = DM
-   END
+   ENDIF ;; ((t MOD LS.RECCON) EQ 0) AND (ls.reccon GT 0)
 
    Handle_Value, _LS, LS, /NO_COPY, /SET
 END

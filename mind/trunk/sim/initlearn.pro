@@ -1,71 +1,31 @@
 ;+
-; NAME:                InitLearn
+; NAME:
+;  InitLearn
 ;
-; AIM:                 prepares learning (used by <A>Sim</A>)
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:             Prepares data structures for learning of connections. This routine
-;                      is called from SIM. It makes nearly no sense to call it directly.
+; AIM:
+;  Prepares learning (used by <A>Sim</A>).
 ;
-; CATEGORY:            MIND SIM INTERNAL
+; PURPOSE:
+;  Prepares data structures and graphic output for learning of
+;  connections. This routine is called from <A>Sim</A>. It makes
+;  nearly no sense to call it directly. See comments in source for
+;  more information.
+;
+; CATEGORY:
+;  Internal
+;  MIND
+;  Plasticity
+;  Simulation
 ;
 ; COMMON BLOCKS:
-;                      ATTENTION
-;                      SH_LEARN  : shares sheets with LEARN
+;  ATTENTION
+;  SH_LEARN  : shares sheets with LEARN
 ;
-; SEE ALSO:            <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#SIM>sim</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#LEARN>learn</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#FREELEARN>freelearn</A>
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.14  2000/09/29 08:10:38  saam
-;     added the AIM tag
-;
-;     Revision 1.13  2000/08/11 14:11:29  thiel
-;         Now shows delays on demand.
-;
-;     Revision 1.12  2000/01/28 15:16:44  saam
-;           changend console call by putting the console
-;           data from the common block into the ap structure
-;
-;     Revision 1.11  2000/01/28 14:29:27  alshaikh
-;           fixed some /nographic-bugs
-;
-;     Revision 1.10  2000/01/27 17:47:56  alshaikh
-;           new console-syntax
-;
-;     Revision 1.9  2000/01/27 10:49:42  saam
-;           some calls of console were broken
-;
-;     Revision 1.8  2000/01/26 16:19:50  alshaikh
-;           print,message -> console
-;
-;     Revision 1.7  2000/01/26 10:42:29  alshaikh
-;          + new learning rule : EXTERN
-;          + EXTERN still doesn't work with delayed connections
-;
-;     Revision 1.6  2000/01/26 10:02:26  alshaikh
-;           bugfix
-;
-;     Revision 1.5  2000/01/26 09:58:24  alshaikh
-;           + now initlearn is only called ONCE by sim
-;           + allows multiple SHOWWEIGHTS-sheets
-;
-;     Revision 1.4  2000/01/20 14:34:43  saam
-;           forgot to erase a debugging stop
-;
-;     Revision 1.3  2000/01/19 17:16:12  saam
-;           + handles learning of non-delay weight matrices
-;             for alpha learning (all other cases should be
-;             handled equally)
-;
-;     Revision 1.2  2000/01/14 11:02:01  saam
-;           changed dw structures to anonymous/handles
-;
-;     Revision 1.1  1999/12/10 09:36:47  saam
-;           * hope these are all routines needed
-;           * no test, yet
-;
-;
+; SEE ALSO:
+;  <A>Sim</A>, <A>Learn</A>, <A>FreeLearn</A>.
 ;-
 
 ;
@@ -82,8 +42,8 @@
 ;    CONTROL : learning control system       ['NONE', 'MEANWEIGHTS']
 ;    DW      : index to Matrix to be learned
 ;    RECCON  : check,plot & save convergence of learning every
-;              RECCON's timestep 
-;    SHOWW   : showweights every SHOWW ms
+;              RECCON's timestep, (-1: disabled).
+;    SHOWW   : showweights every SHOWW timesteps
 ;    ZOOM    : showweights zoom
 ;    DELAYS  : ShowWeights with /DELAYS option.
 ;    TERM    : terminate if a weight exceeds TERM
@@ -333,27 +293,33 @@ ENDELSE
    END
    
    
-   ;----->
-   ;-----> INIT PLOTTING
-   ;----->
-   OpenSheet, LEARN_1, LS.index
-   PCW = InitPlotcilloscope(TIME=200, /NOSCALEYMIN, RAYS=2, OVERSAMPLING=1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON), TITLE='Weight Watch '+curDW.NAME+' (Mean/Maximum)')
-   CloseSheet, LEARN_1, LS.index
-   SetTag, LS, '_PCW', PCW
+   IF ls.reccon GT 0 THEN BEGIN
+      ;;----->
+      ;;-----> INIT PLOTTING
+      ;;----->
+      OpenSheet, LEARN_1, LS.index
+      PCW = InitPlotcilloscope(TIME=200, /NOSCALEYMIN, RAYS=2, OVERSAMPLING= $
+                               1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON) $
+                               , TITLE='Weight Watch '+curDW.NAME+ $
+                               ' (Mean/Maximum)')
+      CloseSheet, LEARN_1, LS.index
+      SetTag, LS, '_PCW', PCW
 
 
-   ;----->
-   ;-----> INIT RECORDING OF WEIGHT CONVERGENCES
-   ;----->
-   ExampleFrame =  DblArr(3)
-   vidDist = InitVideo( ExampleFrame, TITLE=P.File+'.'+curDW.FILE+'.dist', /SHUTUP, /ZIP )
-   SetTag, LS, '_VIDDIST', vidDist
-   distMat = Handle_Create(!MH, VALUE=Weights(_CON(LS.DW)))
-   SetTag, LS, '_DISTMAT', distMat 
+      ;;----->
+      ;;-----> INIT RECORDING OF WEIGHT CONVERGENCES
+      ;;----->
+      ExampleFrame =  DblArr(3)
+      vidDist = InitVideo( ExampleFrame, TITLE=P.File+'.'+curDW.FILE+'.dist' $
+                           , /SHUTUP, /ZIP )
+      SetTag, LS, '_VIDDIST', vidDist
+      distMat = Handle_Create(!MH, VALUE=Weights(_CON(LS.DW)))
+      SetTag, LS, '_DISTMAT', distMat 
+   ENDIF ;; ls.reccon GT 0
 
 
    Handle_Value, _LS(LLoop),LS,/NO_COPY,/SET
-   ENDFOR ; LLoop
+   ENDFOR                       ; LLoop
 
    LEARNwins = 1
   
