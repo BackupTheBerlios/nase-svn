@@ -12,7 +12,7 @@
 ; 
 ; CATEGORY:           GRAPHIC NONASE
 ;
-; CALLING SEQUENCE:   VCR, Sequence [,/NASE] [,/ZOOM] [,DELAY=delay] [,TITLE=title]
+; CALLING SEQUENCE:   VCR, Sequence [,/NASE] [,/ZOOM] [,DELAY=delay] [,TITLE=title] [,/SCALE]
 ;
 ; INPUTS:             Sequence: ein 3d-Array der Form (x,y,t)
 ;
@@ -23,6 +23,9 @@
 ;                             waehrend der Animation durch einen Slider
 ;                             veraendert werden
 ;                     TITLE: ein Titel
+;                     SCALE: normalerweise wird das ganze Video so skaliert, dass
+;                            eine Farbintensitaet auch einem Arraywert entspricht.
+;                            SCALE bewirkt eine Skalierung jedes einzelnen Frames.
 ;
 ; EXAMPLE:
 ;           l = RANDOMU(seed,40,10,100)
@@ -31,6 +34,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/06/07 19:54:55  saam
+;           + per video scaling of colortable is implemented and default
+;           + old per frame scaling got the new keyword SCALE
+;
 ;     Revision 2.1  1998/06/05 10:15:16  saam
 ;           first release
 ;
@@ -43,8 +50,11 @@ PRO VCR_DISPLAY, UD
 
    oId = !D.Window
    WSet, UD.did
-   IF UD.nase THEN NaseTvScl, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTvScl, a(*,*,UD.t), STRETCH=ud.zoom
-   
+   IF UD.scale THEN BEGIN
+      IF  UD.nase THEN NaseTvScl, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTvScl, a(*,*,UD.t), STRETCH=ud.zoom
+   END ELSE BEGIN
+      IF  UD.nase THEN NaseTv, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTv, a(*,*,UD.t), STRETCH=ud.zoom
+   END
    WSet, oId
 
    Handle_Value, UD._a, a, /NO_COPY, /SET
@@ -170,7 +180,7 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title
+PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale
 
    On_Error,2 
 
@@ -180,6 +190,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title
   Default, nase , 0
   Default, delay, 500
   Default, title, 'Videoplayer'
+  Default, scale, 0
 
 
   IF N_Params() NE 1 THEN Message, 'exactly one argument expected'
@@ -188,7 +199,13 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title
 
   ; CREATE HANDLE TO VIDEO
   S = Size(A)
-  _A = Handle_Create(!MH, VALUE=A)
+  TMP = A
+  IF NOT Keyword_Set(SCALE) THEN BEGIN
+     tmin = MIN(TMP)
+     tmax = MAX(TMP)
+     TMP = BYTE((TMP-tmin)/(tmax-tmin)*255)
+  END
+  _A = Handle_Create(!MH, VALUE=TMP, /NO_COPY)
 
   
   ; DETERMINE WINDOW SIZE
@@ -582,6 +599,7 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title
                timer : LABEL44       ,$ ;its a trick, a label cant generate a timer event
                play  : 0             ,$
                nase  : nase          ,$
+               scale : scale         ,$
                delay : delay         }                 ;id of drawing area
 
 
