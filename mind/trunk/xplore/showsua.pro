@@ -83,7 +83,7 @@ PRO _ShowSUA, LayerIndex, VCR=vcr, STOP=stop, NOSHEETS=nosheets, _EXTRA=e
    IF NOT Keyword_Set(NOSHEETS) THEN OpenSheet, SS_1
    s = SIZE(NT)
    L = Handle_Val(P.LW(LayerIndex))
-   Trainspotting, Reform(Nt, s(1)*s(2), s(3)), OFFSET=0, TITLE='Spikeraster: '+L.NAME, _EXTRA=e 
+   Trainspotting, Transpose(Reform(Nt, s(1)*s(2), s(3))), OFFSET=0, TITLE='Spikeraster: '+L.NAME, _EXTRA=e 
      ; e.g. attribute XRANGE can be forwarded to TrainSpotting
    Inscription, AP.ofile, /OUTSIDE, /RIGHT, /TOP, CHARSIZE=0.4, CHARTHICK=1 
    IF NOT Keyword_Set(NOSHEETS) THEN CloseSheet, SS_1
