@@ -23,6 +23,7 @@
 ;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                         }
 ;                                         [ ,ALL [,LWX ,LWY] [,TRUNCATE [,TRUNC_VALUE]] ]
+;                                         [ ,TRANSPARENT]
 ;                                       )
 ;
 ;                            wizzig, nich? Wer's nicht kapiert: siehe GetWeight()!
@@ -58,6 +59,18 @@
 ;                               freiwerdenden Teile des Arrays
 ;                               aufgefüllt werden. (Vgl. Schlüsselwort
 ;                               WEIGHT in NoRot_Shift() )
+;
+;                     TRANSPARENT: Hier kann ein Wert angegeben werden
+;                                  (meist wohl 0), der transparent
+;                                  erscheint. D.h. an diesen Stellen
+;                                  werden die Gewichte in der Matrix
+;                                  NICHT ÜBERSCHRIEBEN, sondern
+;                                  bleiben unverändert.
+;                                  Wird dieses Keyword zusammen mit
+;                                  TRUNCATE verwendet, so wird als
+;                                  Default die transparente Farbe
+;                                  nachgeschoben. (Kann jedoch in
+;                                  TRUNC_VALUE explizit angegeben werden.)
 ;
 ;                     alles andere: siehe GetWeight()
 ;
@@ -95,6 +108,12 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Mon Aug 18 19:35:46 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Schlüsselwort TRANSPARENT zugefügt. Scheiss
+;		Arbeit. Sollte aber jetzt funktionieren.
+;
 ;       Tue Aug 5 17:15:27 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -118,14 +137,25 @@
 
 Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
-                                    ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
-    
+                                    ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+                                    TRANSPARENT=transparent
+   if set(TRANSPARENT) then Default, trunc_value, transparent
    s = size(Weight)
 
     if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
 
        if s(0) ne 2 then message, '2D-Array erwartet!'
        if (s(1) ne V_Matrix.source_h) or (s(2) ne V_Matrix.source_w) then message, 'Das übergebene Array muß die Ausmaße des Source-Layers haben!'
+
+       count = -1
+       if Set(TRANSPARENT) then begin
+          boolmaske = Weight ne transparent;Dies ist noch ein 2-dim Array!
+          maske =  Where(boolmaske, count); wo wird das Array neu gesetzt? (1-dim)
+       endif
+       if count eq -1 then begin
+          maske = indgen(n_elements(Weight)) ; ganzes Array neu setzen!
+          boolmask = Weight-Weight+(1 eq 0) ;lauter FALSEs
+       endif
 
        if not set(t_index) then begin
           t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
@@ -136,21 +166,36 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if keyword_set(ALL) then begin
           Default, LWX, V_Matrix.source_w/V_Matrix.target_w
           Default, LWY, V_Matrix.source_h/V_Matrix.target_h
-;          Weight = Shift(Weight, -LWY*t_row, -LWX*t_col)
+
           for x=-t_col, V_Matrix.target_w-1-t_col do begin
              for y=-t_row, v_Matrix.target_h-1-t_row do begin
-                if keyword_set(TRUNCATE) then V_Matrix.Weights(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
-                   else V_Matrix.Weights(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), *)=Shift(Weight, LWY*y, LWX*x)
+                if keyword_set(TRUNCATE) then begin ;truncate
+                   if count ne -1 then maske = where(NoRot_Shift(boolmaske, LWY*y, LWX*x, WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
+                   V_Matrix.Weights(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), maske)=(NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE))(maske)
+                endif else begin ;no truncate
+                   if count ne -1 then maske = where(Shift(boolmaske, LWY*y, LWX*x)) ;hat transparente stellen 
+                   V_Matrix.Weights(Layerindex(ROW=y+t_row, COL=x+t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h), maske)=(Shift(Weight, LWY*y, LWX*x))(maske)
+                endelse
              endfor
           endfor
-       end else V_Matrix.Weights(t_index, *) = Weight 
+       end else V_Matrix.Weights(t_index, maske) = Weight(maske) 
 
     end
-
+ 
  
    if not set(T_ROW) and not set(T_INDEX) then begin ; Array mit Verbindungen VON Source:
        if s(0) ne 2 then message, '2D-Array erwartet!'
        if (s(1) ne V_Matrix.target_h) or (s(2) ne V_Matrix.target_w) then message, 'Das übergebene Array muß die Ausmaße des Target-Layers haben!'
+
+       count = -1
+       if Set(TRANSPARENT) then begin
+          boolmaske = Weight ne transparent;Dies ist noch ein 2-dim Array!
+          maske =  Where(boolmaske, count); wo wird das Array neu gesetzt? (1-dim)
+       endif
+       if count eq -1 then begin
+          maske = indgen(n_elements(Weight)) ; ganzes Array neu setzen!
+          boolmaske = Weight-Weight+(1 eq 0) ;lauter FALSEs
+       endif
 
        if not set(s_index) then begin
           s_index = LayerIndex(ROW=s_row, COL=s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h)
@@ -161,14 +206,19 @@ Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
        if keyword_set(ALL) then begin
           Default, LWX, V_Matrix.target_w/V_Matrix.source_w
           Default, LWY, V_Matrix.target_h/V_Matrix.source_h
-;          Weight = Shift(Weight, -LWY*s_row, -LWX*s_col)
+
           for x=-s_col, V_Matrix.source_w-1-s_col do begin
              for y=-s_row, v_Matrix.source_h-1-s_row do begin
-                if Keyword_set(TRUNCATE) then V_Matrix.Weights(*, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE) $
-                else V_Matrix.Weights(*, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=Shift(Weight, LWY*y, LWX*x)
+                if Keyword_set(TRUNCATE) then begin ;truncate
+                   if count ne -1 then maske = where(NoRot_Shift(boolmaske, LWY*y, LWX*x, WEIGHT=(TRUNC_VALUE ne TRANSPARENT))) ;hat transparenten stellen 
+                   V_Matrix.Weights(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=(NoRot_Shift(Weight, LWY*y, LWX*x, WEIGHT=TRUNC_VALUE))(maske)
+                endif else begin ;no Truncate
+                   if count ne -1 then maske = where(Shift(boolmaske, LWY*y, LWX*x)) ;hat transparente stellen 
+                   V_Matrix.Weights(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=V_Matrix.source_w, HEIGHT=V_Matrix.source_h) )=(Shift(Weight, LWY*y, LWX*x))(maske)
+                endelse
              endfor
           endfor
-       end else V_Matrix.Weights(*, s_index) = Weight
+       end else V_Matrix.Weights(maske, s_index) = Weight(maske)
     end
 
 
