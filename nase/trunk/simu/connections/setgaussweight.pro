@@ -10,7 +10,9 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: SetGaussWeight ( DWS
-;                                   [,Maximum | ,Norm ] [[,Sigma | ,HWB=Halbwertsbreite] | [ ,XHWB=xhwb ,YHWB=yhwb]] 
+;                                   [,Maximum | ,Norm ] [[,Sigma |
+;                                   ,HWB=Halbwertsbreite] | [
+;                                   ,XHWB=xhwb ,YHWB=yhwb [,PHI=phi]]] 
 ;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
 ;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE | LESSTHAN=Abschneidewert ] ]
@@ -60,6 +62,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.15  2000/06/19 13:39:39  saam
+;             + new keyword PHI to allow rotated gaussians
+;
 ;       Revision 1.14  1998/12/15 13:02:20  saam
 ;             multiple bugfixes
 ;
@@ -114,7 +119,7 @@
 ;
 ;-
 
-Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESSTHAN=lessthan, $
+Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,phi=phi,NORM=norm ,LESSTHAN=lessthan, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
@@ -127,6 +132,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
 
 
    Default, Amp, 1
+   Default, phi, 0
 ;   IF Keyword_Set(Norm) THEN Amp = 1
    
    IF (set(lessthan) AND set(trunc_value)) THEN  message, 'Keywords: LESSTHAN und TRUNCVALUE koennen nicht gleichzeitig gesetzt werden !'
@@ -135,7 +141,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
    
       if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
-       GaussMask = Amp * Gauss_2D(th, tw, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
+       GaussMask = Amp * Gauss_2D(th, tw, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,PHI=phi,NORM=norm,$
                                   Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
        IF set(lessthan) THEN BEGIN
           g_index = where(GaussMask LT lessthan,g_count)
@@ -150,7 +156,7 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm ,LESS
       if not(set(t_row)) or not(set(t_col)) or not(set(s_hs_row)) or not(set(s_hs_col)) then $
        message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
 
-       GaussMask =Amp * Gauss_2D(sh, sw, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,NORM=norm,$
+       GaussMask =Amp * Gauss_2D(sh, sw, Sigma, HWB=hwb,xhwb=XHWB,yhwb=YHWB,PHI=phi,NORM=norm,$
                                  Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
        IF set(lessthan) THEN BEGIN
           g_index = where(GaussMask LT lessthan,g_count)
