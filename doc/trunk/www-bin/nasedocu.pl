@@ -2,52 +2,35 @@
 #
 # $Header$
 #
-
-
-use CGI qw/:standard :html3 :netscape -debug/;
-use CGI::Carp qw(fatalsToBrowser);
-use File::Basename;
-use NASE::globals;
-use NASE::parse;
-use NASE::xref;
 use strict;
 
-my ($hostname, $CVSROOT, $DOCDIR, $CGIROOT, $IDXDIR, $INDEXURL, $myurl, $fullurl, $sub, $lastmod,
-    $HTDOCS, $URL);
+use CGI qw/:standard :html3 -debug/;
+use CGI::Carp qw(fatalsToBrowser);
+use File::Basename;
+
+use NASE::globals;
+use NASE::xref;
+use NASE::parse;
+
+my ($hostname, $CVSROOT, $DOCDIR, $DOCURL, $myurl, $fullurl, $sub, $lastmod);
 
 $CGI::POSTMAX         = 1024; # maximal post is 1k
 $CGI::DISABLE_UPLOADS =    1; # no uploads
 import_names('P');
 
-# NASE/MIND Settings
-chop ($hostname = `uname -a`);
-{
-  $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
-			       $CGIROOT="/vol/neuro/www";
-			       $IDXDIR="$DOCDIR";
-			       $HTDOCS="/vol/neuro/www/htdocs/nase";
-			       $URL="http://neuro.physik.uni-marburg.de/nase/";
-			       last;};
-  $DOCDIR="/mhome/saam/sim"; 
-  $CGIROOT="/usr/lib"; 
-  $IDXDIR="/tmp";
-  $HTDOCS="/var/www/nase";
-  $URL="http://localhost/nase";
-}
-
 
 # global variables
-($myurl = $0) =~ s/$CGIROOT//;
-setIndexDir($IDXDIR);
-setDocDir($DOCDIR);
+($myurl = url(-absolute=>1)) =~ s,\/\.\/,,g;  # without the http://server/ stuff
 setBaseURL($myurl);
+$DOCURL = getDocURL();
+$DOCDIR = getDocDir();
 
-# the directory we are currently
-$sub = path_info();
-$sub =~ s/\/\//\//gi;
+
+$sub = path_info();          # the directory we are currently to display aims and routines
+$sub =~ s,\/\/,\/,gi;        # remove // artifacts 
 setSubDir($sub);
-$fullurl = "$myurl/$sub";
+
+$fullurl = "$myurl/$sub";    # still without the server stuff
 
 
 
@@ -67,128 +50,46 @@ sub updatedoc {
     print "CVSROOT is set to    ... $CVSROOT\n";
 
     opendir(DIR, $CVSROOT) || print "can't opendir $CVSROOT: $!\n";
-    @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i } readdir(DIR);
+    @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i && ! /doc/ } readdir(DIR);
     closedir DIR;      
-    print "looking for projects ... ", join(" ",@projects), "\n";
-    print "DOCDIR is set to ... $DOCDIR\n";
     
-    `rm -Rf $DOCDIR/*`;
-    foreach (@projects){
-      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_; chmod -R g+w $_`;
-      print "checking out $_ ... done\n";
-    }
+# this is hopefully done by loginfo from cvs directly
+#    `rm -Rf $DOCDIR/*`;
+#    foreach (@projects){
+#      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_; chmod -R g+w $_`;
+#      print "checking out $_ ... done\n";
+#    }
         
-  } else {print "CVSROOT: not set   ... ignoring checkout\n"; };
+  } else {
+    print "CVSROOT: not set   ... ignoring checkout, assuming modules nase and mind\n"; 
+    @projects = ("nase", "mind");
+  };
+  print "DOCDIR is set to ... $DOCDIR\n";
+  print "looking for projects ... ", join(" ",@projects), "\n";
 
 
   print "generating routine index..."; 
-  createRoutineIdx();
+#  createRoutineIdx();
   print "...done\n";
   print "generating directory indices...";
-  opendir(DIR, $DOCDIR) || print "can't opendir $DOCDIR: $!\n";
-  @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i && ! /doc/ } readdir(DIR); # ignore doc dir; no .pros are there
-  closedir DIR;      
-  foreach (@projects){
-    createAim("/$_");
-  }
+#  foreach (@projects){
+#   createAim("/$_");
+#  }
+  createAim("nase");
+
   print "generating keyword lists...";
   keylista();
   print "...done</PRE>";
   print "create HTML documentation...";
-  `$DOCDIR/doc/www-bin/automakedoc`;
+#  `$DOCDIR/doc/www-bin/automakedoc`;
   print "...done</PRE>";
-
 }
 
 
 
 
 
-###################################################################################
-###################################################################################
-###################################################################################
-sub showlog {
 
-  my ($file,$name);
-
-  $file = shift(@_);
-  $file .= ".pro" unless $file =~ /\.pro$/i;
-  $name = basename($file);
-  $name =~ s,\.pro$,,;
-  
-  print h1("$name <FONT SIZE=-1><A HREF=$fullurl?file=".lc($name)."&mode=text&show=header>header</A> <A HREF=$fullurl?file=".lc($name)."&mode=text&show=source>source</A> ".showedit($file)."</FONT>"); 
-  
-  open (CMD, "cd ".dirname($file)."; cvs log ".basename($file)."|") || warn "can't open pipe: $!\n";
-  print "<PRE>";
-  while (<CMD>){
-    print;
-  }
-  print "</PRE>";
-  close(CMD) || warn "can't close pipe: $!\n";
-  
-}
-
-
-
-
-
-###################################################################################
-###################################################################################
-###################################################################################
-sub showheader {
-
-  my ($file);
-
-  $file = shift(@_);
-  $file .= ".pro" unless $file =~ /\.pro$/i;
-  
-  parseHeader($file);
-}
-
-
-
-
-
-###################################################################################
-###################################################################################
-###################################################################################
-sub showsource {
-
-  my ($file, $namefound, $line, $keyword);
-  my @keywords = qw (AND BEGIN CASE COMMON DO ELSE END ENDCASE ENDELSE ENDFOR
-		     ENDIF ENDREP ENDWHILE EQ FOR FUNCTION GE GOTO GT IF INHERITS
-		     LE LT MOD NE NOT OF ON_IOERROR OR PRO REPEAT THEN UNTIL WHILE XOR
-		     RETURN);
-
-
-
-
-  $file = shift(@_);
-  $file .= ".pro" unless $file =~ /\.pro$/i;
-  
-  open(IN, "$file") || die "can't open $file";
-  print "<PRE>";
-  while ($line = <IN>){
-    if ((! $namefound) && ($line =~ /NAME\s*:\s*(\w+)/i)){
-      print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=header>header</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>");
-      $namefound = 1;
-    }
-    last if ($line =~ /^[PRO|FUNCTION]/i);
-  }
-  print $line;
-  {
-    local $/;
-    $_ = <IN>;
-    foreach $keyword (@keywords){
-      s/(\s)$keyword(\s)/$1<FONT COLOR="red">$keyword<\/FONT>$2/gi;
-    }
-    print;
-  }
-
-    print "</PRE>";
-    close(IN) || die "can't close $file";
-  
-}
 
 
 
@@ -240,27 +141,21 @@ sub showdir {
 ###################################################################################
 ###################################################################################
 ###################################################################################
-print header;
-#print start_html('NASE/MIND Documentation System'); # places body before frameset (netscape hates this!)
-print "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE>\n";
-#print '<style type="text/css">', "\n";
-#print "blockquote { margin-left:-25px; }\n";
-#print "</style>\n</HEAD>";
-
+print "Content-Type: text/html\n\n", myHeader();
 $lastmod = checkRoutineIdx();
 if ($P::mode){
   $_ = $P::mode;
  TRUNK: {
     /update/i && do { updatedoc();
 		      last TRUNK;};
-    /list/i   && do { print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>";
-		      print img({src=>"/icons/snase.gif",alt=>"[LOGO]",border=>"0"}),br;
+    /list/i   && do { print myBody();
+		      print img({src=>"$DOCURL/doc/www-doc/snasedoc.gif",alt=>"[LOGO]",border=>"0"}),br;
 		      showdir("/",$sub, 0);
 		      print hr,
 		      a({href=>"/nase.list/", target=>"text"}, "mailing list"), ", ",
-		      a({href=>"$URL/".getROUTINES, target=>"text"}, "routine index"), ", ",
-		      "keyword index (",a({href=>"$URL/".getKEYA, target=>"text"}, "name"), ", ",
-		      a({href=>"$URL/".getKEYO, target=>"text"}, "count"), ")",
+		      a({href=>$DOCURL.RoutinesHTML(), target=>"text"}, "routine index"), ", ",
+		      "keyword index (",a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), ", ",
+		      a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), ")",
 		      font({size=>"-2"}, 
 			   hr,
 			   "last update: $lastmod, ",
@@ -268,13 +163,13 @@ if ($P::mode){
 		      font({size=>"-2"}, 
 			   '$Id$ ');
 		      last TRUNK;};
-    /text/i   && do { print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>";
-		      if ($P::file){if ($P::show eq "header") { showheader($DOCDIR."/".$sub."/".$P::file); };
-				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
-				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
+    /text/i   && do { print myBody();
+		      if ($P::file){if ($P::show eq "header") { showHeader($P::file); };
+				    if ($P::show eq "source") { showSource($P::file); };
+				    if ($P::show eq "log"   ) { showLog($P::file);    };
 				  } else {
-				    `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout doc/www-doc`;
-				    if($sub eq '/'){
+#				    `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout doc/www-doc`;
+				    if (($sub eq '/')||($sub eq '/nase')||($sub eq '/mind')){
 				      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
 				    } else {
 				      open(IDX, "<".$DOCDIR."/".$sub."/"."index.html");
@@ -287,7 +182,7 @@ if ($P::mode){
 		     print frame({src=>"$fullurl?mode=list", name=>"list"});
 		     print frame({src=>"$fullurl?mode=text&show=aim", name=>"text"});
 		     print '</frameset>';
-		     print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>i cant handle frames!!";
+		     print myBody(), "i cant handle frames!!";
 		     last TRUNK;
 		   }
   }
@@ -296,7 +191,7 @@ if ($P::mode){
   print frame({src=>"$fullurl?mode=list", name=>"list"});
   print frame({src=>"$fullurl?mode=text", name=>"text"});
   print '</frameset>';
-  print "<BODY bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>i cant handle frames!!";
+  print myBody(), "i cant handle frames!!";
 };
 
 

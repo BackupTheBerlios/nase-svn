@@ -52,7 +52,7 @@
                  $colon = 0;
                };
     if ($tag){ push(@lines, "</TD></TR>"); };
-    push (@lines, "<TR><TD BGCOLOR=#FFFFE0 VALIGN=TOP>".join(" ", @_)."</TD><TD BGCOLOR=#EEEEFF VALIGN=TOP>");
+    push (@lines, '<TR><TD CLASS="xmpcode" VALIGN=TOP>'.join(" ", @_).'</TD><TD CLASS="xplcode" VALIGN=TOP>');
     @line = ();
     $tag = 1;
     if ($pre) { push(@lines, "</PRE>") ; };
@@ -118,7 +118,7 @@ WORD : TEXT                             { if ($name) {
                                           if ($pre || $rbrace) {					    
 					    push(@line, ":");
 					  } else {
-                                            $tab="<TR><TD VALIGN=TOP bgcolor=#CCCCCC>";
+                                            $tab='<TR><TD VALIGN=TOP CLASS="keycode">';
 					    if ($colon){ push(@lines, pop(@lines)."</TD></TR>\n"); } 
 					    else { $tab = "<TABLE COLS=2".$tab; };
 					    unshift(@line, $tab);

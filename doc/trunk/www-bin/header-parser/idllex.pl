@@ -13,9 +13,9 @@ sub _UCsymbol {
           "DOCSTART" => ';\+',
 	  "DOCEND"   => ';-',
           "CVSTAG"   => '\$[^\$]*\$',
-	  "NAME"     => '[Nn][Aa][Mm][Ee]\s*:[ \t]*' => \&_UCsymbol,
-	  "AIM"      => '[Aa][Ii][Mm]\s*:[ \t]*' => \&_UCsymbol,
-	  "PURP"     => '[Pp][Uu][Rr][Pp][Oo][Ss][Ee]\s*:[ \t]*' => \&_UCsymbol,
+	  "NAME"     => 'NAME\s*:[ \t]*' => \&_UCsymbol,
+	  "AIM"      => 'AIM\s*:[ \t]*' => \&_UCsymbol,
+	  "PURP"     => 'PURPOSE\s*:[ \t]*' => \&_UCsymbol,
 	  "CAT"      => '[Cc][Aa][Tt][Ee][Gg][Oo][Rr][Yy]\s*:[ \t]*' => \&_UCsymbol,
 	  "CALLSEQ"  => '[Cc][Aa][Ll][Ll][Ii][Nn][Gg] [Ss][Ee][Qq][Uu][Ee][Nn][Cc][Ee]\s*:[ \t]*' => \&_UCsymbol,
 	  "OPTINP"   => '[Oo][Pp][Tt][Ii][Oo][Nn][Aa][Ll] [Ii][Nn][Pp][Uu][Tt][Ss]\s*:[ \t]*' => \&_UCsymbol,
@@ -32,8 +32,9 @@ sub _UCsymbol {
 	  "AUTHOR"   => '[Aa][Uu][Tt][Hh][Oo][Rr]\s*:[ \t]*' => \&_UCsymbol,
 	  "MODHIST"  => '[Mm][Oo][Dd][Ii][Ff][Ii][Cc][Aa][Tt][Ii][Oo][Nn] [Hh][Ii][Ss][Tt][Oo][Rr][Yy]\s*:[ \t]*' => \&_UCsymbol,
           "DEFAULT"  => '[Dd][Ee][Ff][Aa][Uu][Ll][Tt]\s*:',
-	  "URLSTARTL" => '<A\s+HREF=',
-	  "URLSTART" => '<A[^>]*>',
+	    "URLSTARTL" => '<A\s+NREF=',
+	    "URLSTARTN" => '<A\s+HREF=',
+	    "URLSTART" => '<A( [^>]*)?>',
 	  "URLEND"   => '</A>',
 	  "LANK"     => '<',
 	  "RANK"     => '>',
@@ -43,8 +44,8 @@ sub _UCsymbol {
 	  "LBRACE"   => '\(',
 	  "RBRACE"   => '\)',
 	  "EOL"      => '\n',
-	  "COLON"    =>  ":",
-	  "TEXT"     => '[^ :\n\t<>\(\)]+(\s*\(\s*\))?'
+	  "DCOLON"   => "::",
+	  "TEXT"     => '[^ \n\t<>\(\)]+(\s*\(\s*\))?'
 	 );
 
 $lexer = Parse::Lex->new(@token);
