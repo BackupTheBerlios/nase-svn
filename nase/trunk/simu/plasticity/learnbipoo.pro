@@ -1,5 +1,5 @@
 ;+
-; NAME:               LearnHebbLP2
+; NAME:               LearnBiPoo
 ;
 ; PURPOSE:            Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;                     Aktivitaeten in Source- und Targetcluster
@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  1999/07/26 13:19:58  thiel
+;           Changed according to new InitLearnBiPoo-array contents.
+;
 ;       Revision 1.1  1999/07/21 07:17:29  saam
 ;             + this is learnbipoo version1
 ;             + no header yet, no time yet....
@@ -87,7 +90,7 @@ PRO LearnBiPoo, _DW, _PC, LW, SELF=Self, NONSELF=NonSelf, DELEARN=delearn
 ;   IF count NE 0 THEN deltaw(self) = 0.0
    
    wi = ConTiming(*,0)
-   DW.W(wi) = (DW.W(wi) + LW(3+ConTiming(*,1)+LW(0))); > 0.0
+   DW.W(wi) = (DW.W(wi) + LW(2+ConTiming(*,1)+LW(0))); > 0.0
 
 
    Handle_Value, PC.postpre, ConTiming, /NO_COPY, /SET
