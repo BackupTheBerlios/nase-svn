@@ -6,7 +6,7 @@
 ; CATEGORY: GRAPHICS / GENERAL
 ;
 ; CALLING SEQUENCE: PolarPlot, radiusarray, winkelarray
-;                              [,TITLE=title] 
+;                              [,TITLE=title] [,CHARSIZE=charsize]
 ;                              [,XRANGE=xrange] [,YRANGE=yrange]
 ;                              [,XSTYLE=xstyle] [,YSTYLE=ystyle]
 ;                              [,MINORANGLETICKS=minorangleticks]
@@ -17,6 +17,8 @@
 ;         winkelarray: Die zugehoerigen Winkel in Rad.
 ;
 ; OPTIONAL INPUTS: title: Ein String, der nachher ueber dem Plot steht.
+;                  charsize: Groesse der Beschriftung bezogen auf die Normalgroesse
+;                            von 1.0.
 ;                  xrange, yrange: Plotbereiche.
 ;                                  Default: [-Max(radiusarray),+Max(radiusarray)]
 ;                  xstyle, ystyle: Beeinflusst die Darstellung der Achsen.
@@ -44,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  1998/02/18 14:07:55  thiel
+;               CHARSIZE-Keyword hinzugefuegt.
+;
 ;        Revision 2.2  1998/01/22 14:11:02  thiel
 ;               Jetzt mit variabler Liniendicke, Keyword THICK.
 ;
@@ -55,6 +60,7 @@
 
 PRO PolarPlot, radiusarray, winkelarray, $
                TITLE=title, $
+               CHARSIZE=charsize, $
                XRANGE=xrange, YRANGE=yrange, $
                XSTYLE=xstyle, YSTYLE=ystyle, $
                MINORANGLETICKS=minorangleticks, $
@@ -67,6 +73,7 @@ Default, xrange, [-Max(RadiusArray),Max(RadiusArray)]
 Default, yrange, [-Max(RadiusArray),Max(RadiusArray)]
 
 Default, title, ''
+Default, charsize, 1.0
 
 Default, thick, 3.0
 
@@ -75,9 +82,9 @@ Plot, radiusarray, winkelarray, /polar, THICK=thick, $
  XRANGE=xrange, YRANGE=yrange, $
  TITLE=title
 Axis, 0,0, xax=0, /data, XTICKFORMAT=('AbsoluteTicks'), $
- XSTYLE=xstyle, XRANGE=xrange, XTICK_GET=TickArray
+ XSTYLE=xstyle, XRANGE=xrange, XTICK_GET=TickArray, CHARSIZE=charsize
 Axis, 0,0,0, yax=0, /data, YTICKFORMAT=('AbsoluteTicks'), $
- YSTYLE=ystyle, YRANGE=yrange
+ YSTYLE=ystyle, YRANGE=yrange, CHARSIZE=charsize
 
 Arcs, TickArray, LINESTYLE=1
 
