@@ -17,13 +17,16 @@
 ;
 ; COMMON BLOCKS:       UOPENW: enthaelt Filename und Zipstati der geoeffneten Files
 ;
-; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 20 begrenzt
+; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 40 begrenzt
 ;
 ; SEE ALSO:            UClose            
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/11/08 15:01:45  saam
+;           maximum file number is now 40
+;
 ;     Revision 2.1  1998/10/28 14:57:07  saam
 ;           simple but works
 ;
@@ -32,7 +35,7 @@
 FUNCTION UOpenW, file, VERBOSE=verbose, ZIP=zip, _EXTRA=e
 
    COMMON UOPENR, llun
-   MaxFiles = 20
+   MaxFiles = 40
 
    Default, ZIP, 0
 

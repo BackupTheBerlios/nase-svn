@@ -16,13 +16,16 @@
 ;
 ; COMMON BLOCKS:       UOPENR: enthaelt Filename und Zipstati der geoeffneten Files
 ;
-; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 20 begrenzt
+; RESTRICTIONS:        die Zahl der simultan offenen Dateinen ist auf 40 begrenzt
 ;
 ; SEE ALSO:            UClose            
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/11/08 15:01:44  saam
+;           maximum file number is now 40
+;
 ;     Revision 2.4  1998/10/28 14:58:55  saam
 ;           bug in docheader
 ;
@@ -39,7 +42,7 @@
 FUNCTION UOpenR, file, VERBOSE=verbose, _EXTRA=e
 
    COMMON UOPENR, llun
-   MaxFiles = 20
+   MaxFiles = 40
 
 
    On_Error, 2
