@@ -39,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/07/28 08:39:26  saam
+;           uses Command-routine for spawns now
+;
 ;     Revision 2.5  1998/06/16 12:24:49  saam
 ;           + new Keywords FORCE, VERBOSE
 ;           + misleading status-message changed
@@ -63,7 +66,7 @@ PRO UnZip, filepattern, NOKEEPORG=nokeeporg, FORCE=force, VERBOSE=verbose
 
    Default, suffix, 'gz'
    IF suffix NE '' THEN suffix = '.'+suffix
-   unzip = 'gunzip'
+   unzip = Command('gunzip')
 
 
    ok = ZipStat(filepattern, ZIPFILES=gzfiles, BOTHFILES=bfiles)
@@ -78,6 +81,7 @@ PRO UnZip, filepattern, NOKEEPORG=nokeeporg, FORCE=force, VERBOSE=verbose
             
             IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
                Spawn, unzip+' -c '+gzfiles(i)+suffix+' > '+gzfiles(i), r
+               Spawn, Command('touch')+' -r '+gzfiles(i)+suffix+' '+gzfiles(i)
             ENDIF ELSE BEGIN
                Spawn, unzip+' -f '+gzfiles(i)+suffix, r
             ENDELSE
