@@ -20,12 +20,18 @@
 ;                       Count, ThreeBits, overflow
 ;                       IF Overflow THEN Print,'Ueberlauf'
 ;                    END
+; 
+; PROCEDURE:         Diese Procedure benoetigt die Routine _Count
 ;
 ; SEE ALSO:          <A HREF="#INITCOUNTER">InitCounter</A>, <A HREF="#COUNTVALUE">CountValue</A>, <A HREF="#COUNTVALUE">ResetCounter</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1997/11/26 10:54:47  saam
+;           Probleme mit Rekursion&automatischer Compilation von CountIt
+;           Auslagerung in _Count
+;
 ;     Revision 2.6  1997/11/25 10:39:37  saam
 ;           yes another HTML-Bug
 ;
@@ -47,23 +53,8 @@
 ;
 ;
 ;-
-FUNCTION CountIt, CS, index
-   
-   IF index GE 0 THEN BEGIN
-      CS.counter(index) = CS.counter(index)+1
-      
-      ; Ueberlauf ??
-      IF CS.counter(index) GE CS.maxCount(index) THEN BEGIN
-         CS.counter(index) = 0
-         RETURN, CountIt(CS, index-1)
-      END ELSE RETURN, 0
-   END ELSE RETURN, 1
-END
-
-
-
 PRO Count, CS, overflow
    IF CS.info EQ 'Counter' THEN BEGIN
-      overflow = CountIt(CS, CS.n-1)
+      overflow = _Count(CS, CS.n-1)
    END ELSE MESSAGE, 'argument is no valid count structure'
 END
