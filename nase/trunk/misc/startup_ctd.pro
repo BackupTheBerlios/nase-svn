@@ -121,7 +121,12 @@ common commonrandom, seed
       DEVICE, DECOMPOSED=0
       ;; request private color map:
       Window, 0, COLORS=256, XSIZE=1, YSIZE=1, /PIXMAP
-      ;; NOTE: The following BYPASS_TRANSLATION=0 call seems to fix
+
+      ;; NOTE: the following section is not needed any more, as RSI
+      ;;       seem to have fixed the bug. I'll leave it here for some
+      ;;       time anyway, in case any problems arise... 
+      ;; -- BEGIN OBSOLETE SECTION -------------------------------------------------------------
+      ;;       The following BYPASS_TRANSLATION=0 call seems to fix
       ;;       the problem of wrong color management with IDL 5.5.
       ;;       Why, by heaven's sake, IDL bypasses it's internal
       ;;       translation table, when on the other hand, 
@@ -137,7 +142,10 @@ common commonrandom, seed
       ;;       Perhaps I'll try and ask RSI about it.
       ;;       By the way: DIRECT_COLOR visuals don't work in any
       ;;                   case, still. Just don't ask.
-      if float(strmid(!version.release,0,3)) gt 5.4 then DEVICE, BYPASS_TRANSLATION=0
+      ;;
+      ;;;;;not needed anymore: if float(strmid(!version.release,0,3)) gt 5.4 then DEVICE, BYPASS_TRANSLATION=0
+      ;; -- END OBSOLETE SECTION --------------------------------------------------------------
+
       WDelete, 0
    endif
 
@@ -159,6 +167,8 @@ common commonrandom, seed
    ;;Initialise (and restore, if logo was displayed) color map,
    ;;according to NASE color management:
    ULoadCt, 0 ;;(This is nohup-protected itself)
+   Foreground, "black" ;;(so is this, as it uses UTvLct)
+   Background, "white" ;;(so is this, as it uses UTvLct)
 
    ;;Initialise random seed, so that routines can expect it to be
    ;;defined:
