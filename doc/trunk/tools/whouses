@@ -19,6 +19,8 @@ sub usage {
   print STDERR "recursively searches all IDL source files for the occurrence of specific\n";
   print STDERR "routines in the way grep does. In contrast to grep it knows the\n";
   print STDERR "IDL syntax and ignores all CVS/RCS stuff.\n\n";
+  print STDERR "There may be some false alarms, because this routine can't distinguish\n";
+  print STDERR "between PRO/FUNCS and variables. You have to check this by hand.\n\n";
   print STDERR "-h     : produces this help\n";
   print STDERR "-d dir : searches dir instead of the default ($DIR)\n";
   print STDERR "ri     : routine names to be searched for\n";
@@ -45,7 +47,7 @@ sub search_pro {
   foreach $occ (@occ){
     $occ =~ s/\.pro$//gi;
     $file =~ s/$DIR\///gi;
-    if ($data =~ /[^, \.\(0-9a-zA-Z=:\[\]\+_]\s*$occ\s*[^ \.0-9a-zA-Z=:\[\]\+_]/i){ 
+    if ($data =~ /[^ \.\)0-9a-zA-Z\]_]\s*$occ\s*[^ \.0-9a-zA-Z:=\*\[\)\+-\/_]/i){ 
       push(@found, $occ);
       next; 
     }
