@@ -18,6 +18,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  1998/02/11 18:03:37  saam
+;             neuer Tag brachte keine Effizienz --> wieder weg
+;
 ;       Revision 2.8  1998/02/11 15:43:11  saam
 ;             Geschwindigkeitsoptimierung durch eine neue Liste
 ;             die source- auf target-Neuronen abbildet
@@ -64,11 +67,6 @@ PRO FreeDW, _DW
    FOR t=0, DW.target_w*DW.target_h-1 DO IF DW.T2C(t) NE -1 THEN BEGIN
       Handle_Free, DW.T2C(t)
       DW.T2C(t) = -1
-   END
-
-   FOR s=0, DW.source_w*DW.source_h-1 DO IF DW.S2T(s) NE -1 THEN BEGIN
-      Handle_Free, DW.S2T(s) 
-      DW.S2T(s) = -1
    END
 
    IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN FreeSpikeQueue, DW.Queue 

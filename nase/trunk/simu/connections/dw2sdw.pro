@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/02/11 18:03:37  saam
+;           neuer Tag brachte keine Effizienz --> wieder weg
+;
 ;     Revision 2.5  1998/02/11 15:46:23  saam
 ;           Bug korrigiert
 ;
@@ -87,16 +90,6 @@ PRO DW2SDW, _DW
       c2t = -1
    END
 
-   ; create Source->Target
-   s2t = Make_Array(sS, /LONG, VALUE=-1)
-   FOR s=0l, sS-1 DO BEGIN
-      IF s2c(s) NE -1 THEN BEGIN
-         Handle_Value, s2c(s), c
-         s2t(s) = Handle_Create(_DW, VALUE=c2t(c))
-      END
-   ENDFOR 
-   
-
    
    ; create delay list if needed
    IF eWc NE 0 THEN W = DW.Weights(eW) ELSE W = -1
@@ -128,7 +121,6 @@ PRO DW2SDW, _DW
               c2s     : c2s        ,$
               t2c     : t2c        ,$
               c2t     : c2t        ,$              
-              s2t     : s2t        ,$
               W       : W          ,$
               Learn   : -1l         }
    END
