@@ -13,7 +13,7 @@
 ;          feuern. Es verhält sich im wesentlichen wie das Tintenfisch-
 ;          Axon von Hodgkin und Huxley, allerdings sind deren vier Gleichungen
 ;          nach FitzHugh auf zwei reduziert worden. 
-;          Die Compartments sind in hintereinander angeordnet:
+;          Die Compartments sind hintereinander angeordnet:
 ;          Das Soma ist mit dem 3. Dendriten verbunden, dieser mit dem 2.
 ;          und dieser wiederum mit dem 1., ungefähr so:
 ;             ___   ____   _____     __ 
@@ -195,14 +195,17 @@
 ;  END
 ;
 ;
-; SEE ALSO: <A HREF="#IINTLAYER_8">InitLayer_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>, <A HREF="#PROCEEDLAYER_8">ProceedLayer_8</A>
+; SEE ALSO: <A HREF="#INITLAYER_8">InitLayer_8</A>, <A HREF="#INPUTLAYER_8">InputLayer_8</A>, <A HREF="#PROCEEDLAYER_8">ProceedLayer_8</A>
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/03/08 09:44:26  thiel
+;               Hyperlinks kaputt, wie immer.
+;
 ;        Revision 1.1  1999/03/05 14:30:19  thiel
-;               Der Paramterteil des Typ-8-Neurons.
+;               Der Parameterteil des Typ-8-Neurons.
 ;
 ;-
 
