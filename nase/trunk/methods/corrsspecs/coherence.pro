@@ -115,13 +115,13 @@
 ;  (possibly) multi-dimensional arrays.
 ;
 ; EXAMPLE:
-;  Generate two stochastic processes with a coherent oscillation at 40 Hz, and determine their coherence:
+;  Generate two stochastic processes with a coherent oscillation at 60 Hz, and determine their coherence:
 ;
-;* x = RandomN(seed, 128, 20)
-;* y = RandomN(seed, 128, 20)
+;* x = FltArr(seed, 128, 20)
+;* y = FltArr(seed, 128, 20)
 ;* RandomPhases = RandomU(seed, 20) * 2*!pi
-;* FOR  i = 0, 19  DO  x[*,i] = x[*,i] + Cosine(60.0, RandomPhases[i]           , 500.0, 128, /samples)
-;* FOR  i = 0, 19  DO  y[*,i] = y[*,i] + Cosine(60.0, RandomPhases[i] + 0.79*!pi, 500.0, 128, /samples)
+;* FOR  i = 0, 19  DO  x[*,i] = RandomN(seed, 128) + Cosine(60.0, RandomPhases[i]           , 500.0, 128, /samples)
+;* FOR  i = 0, 19  DO  y[*,i] = RandomN(seed, 128) + Cosine(60.0, RandomPhases[i] + 0.79*!pi, 500.0, 128, /samples)
 ;* c = Coherence(x, y, PADDING = 16, SAMPLEPERIOD = 0.002, F = f)
 ;* Plot, f, c, yrange = [0,1]
 ;
