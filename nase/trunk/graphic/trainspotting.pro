@@ -50,6 +50,10 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 1.6  1998/02/05 13:31:28  saam
+;           new keyword to handle other time resolutions
+;           abszissa in ms and not in BIN
+;
 ;     Revision 1.5  1998/01/17 17:13:57  thiel
 ;            Neue Behandlung der Plotsymbolgroesse.
 ;
@@ -71,7 +75,7 @@
 
 PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, $
                    STRETCH=stretch, V_STRETCH=v_stretch, CHARSIZE=Charsize, $
-                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize
+                   XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, OverSamp=OverSamp
 
 ;-----Keine alten Keywords mehr verwenden:
 IF Set(STRETCH) OR Set(V_STRETCH) THEN message, /INFORM, 'Statt STRETCH und V_STRETCH werden ab sofort per Order di Mufti X- und YSYMBOLSIZE verwendet. Die momentane Darstellung erfolgt mit deren Default-Werten. Noch Fragen???'
@@ -84,7 +88,9 @@ IF ((Size(nt))(0) NE 2) THEN Message, 'first arg must be a 2-dim array'
 neurons = (SIZE(nt))(1)-1
 IF (neurons LT 0) THEN Message, 'keine Neuronen zum Darstellen'
 
-time =  Float((SIZE(nt))(2)-1)
+Default, OverSamp, 1.0
+Offset = Offset / FLOAT(OverSamp)
+time =  Float((SIZE(nt))(2)-1) / FLOAT(OverSamp)
 IF (time LT 0) THEN Message, 'keine Zeit zum Darstellen :-)'
    
    
@@ -93,7 +99,7 @@ Default, level  , 1.0
 Default, offset , 0.0
 Default, Charsize, 1.0
 
-   
+
 ;---------------> use own window if wanted
 IF KEYWORD_SET(WIN) THEN BEGIN
    Window,win,XSIZE=500,YSIZE=250, TITLE=title
@@ -114,7 +120,7 @@ END ELSE BEGIN
     XRANGE=[offset,time+offset], $
     YRANGE=[-1,neurons+1], $
     XSTYLE=1, YSTYLE=1, $
-    XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title, $
+    XTITLE='Time / ms', YTITLE='Neuron #', TITLE=title, $
     XTICKLEN=0.00001, YTICKLEN=0.00001, $
     YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks'
 ENDELSE 
@@ -147,7 +153,7 @@ UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, -xsizechar/2.0, -xsizech
 
 ;----------------> plot spikes
 spikes = where(nt GE level, count)
-IF (count NE 0) THEN PlotS, LONG(spikes / FLOAT(neurons+1) + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
+IF (count NE 0) THEN PlotS, LONG((spikes / FLOAT(neurons+1))/OverSamp + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE=1.0
 
 
 
