@@ -227,21 +227,21 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    CASE  1 OF
 
      ((fLow EQ 0) OR (fLow EQ fN)) AND ((fHigh GT 0) AND (fHigh LT fN)) :  BEGIN   ; lowpass
-       Filter(*) = 1
+       Filter[*] = 1
        ZeroInd = WHERE( Frequency GT HFlankEnd )
        IF  HFlankInd[0] NE -1  THEN  Filter[HFlankInd] = COS(!pi/2*(Frequency[HFlankInd]-HFlankBegin)/wHigh)^2
        IF  ZeroInd[0]   NE -1  THEN  Filter[ZeroInd]   = 0
      END
 
      ((fLow GT 0) AND (fLow LT fN)) AND ((fHigh EQ 0) OR (fHigh EQ fN)) :  BEGIN   ; highpass
-       Filter(*) = 1
+       Filter[*] = 1
        ZeroInd = WHERE( Frequency LT LFlankBegin )
        IF  LFlankInd[0] NE -1  THEN  Filter[LFlankInd] = SIN(!pi/2*(Frequency[LFlankInd]-LFlankBegin)/wLow)^2
        IF  ZeroInd[0]   NE -1  THEN  Filter[ZeroInd]   = 0
      END
 
      (fLow GT 0) AND (fLow LT fN) AND (fHigh GT 0) AND (fHigh LT fN) AND (fLow LE fHigh) :  BEGIN   ; bandpass
-       Filter(*) = 1
+       Filter[*] = 1
        ZeroInd = WHERE((Frequency LT LFlankBegin) OR (Frequency GT HFlankEnd))
        IF  LFlankInd[0] NE -1  THEN  Filter[LFlankInd] = SIN(!pi/2*(Frequency[LFlankInd]-LFlankBegin)/wLow)^2
        IF  HFlankInd[0] NE -1  THEN  Filter[HFlankInd] = COS(!pi/2*(Frequency[HFlankInd]-HFlankBegin)/wHigh)^2 < Filter[HFlankInd]
@@ -255,7 +255,7 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
        IF  OneInd[0]    NE -1  THEN  Filter[OneInd]    = 1
      END
 
-     (fLow EQ  0) AND (fHigh EQ fN) :  Filter(*) = 1   ; no filter
+     (fLow EQ  0) AND (fHigh EQ fN) :  Filter[*] = 1   ; no filter
 
      ELSE:   ; zero-filter for all other cases (fLow=0 & fHigh=0;  fLow=fN & fHigh=0;  fLow=fN & fHigh=fN)
 
