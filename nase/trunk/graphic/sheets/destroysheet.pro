@@ -6,9 +6,18 @@
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  DestroySheet, Sheet
+; CALLING SEQUENCE:  DestroySheet, Sheet [,Multi-Index]
 ;
 ; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
+;
+; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
+;                                 kann hier der Index des "Sheetchens" 
+;                                 angegeben werden, das geschlossen
+;                                 werden soll.
+;                                 Da aber in jedem Fall das gesamte
+;                                 Multisheet mitsamt allen "Sheetchen" 
+;                                 vom Bildschirm verschwindet, kann
+;                                 die Angabe des Index auch unterbleiben.
 ;
 ; EXAMPLE:
 ;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
@@ -18,9 +27,15 @@
 ;                    dummy = Get_Kbrd(1)
 ;                    DestroySheet, sheety
 ;
+; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#OPENSHEET">OpenSheet</A>,<A HREF="#CLOSESHEET">CloseSheet</A>.
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/05/18 18:25:11  kupper
+;            Multi-Sheets implementiert!
+;
 ;     Revision 2.3  1998/04/19 13:17:46  saam
 ;           tried to set windid even for ps- or null-sheets
 ;
@@ -33,7 +48,9 @@
 ;
 ;
 ;-
-PRO DestroySheet, sheet
+PRO DestroySheet, _sheet, multi_nr
+
+   If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet(0)
 
    IF sheet.type EQ 'X' THEN BEGIN
       UWSet, sheet.winid, exists
@@ -45,4 +62,7 @@ PRO DestroySheet, sheet
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       CloseSheet, sheet
    END
+
+   If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
+
 END

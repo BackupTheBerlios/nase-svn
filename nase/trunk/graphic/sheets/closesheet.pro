@@ -6,9 +6,12 @@
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  CloseSheet, Sheet
+; CALLING SEQUENCE:  CloseSheet, Sheet [,Multi-Index]
 ;
 ; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
+;
+; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
+;                                 der Index des "Sheetchens", das geschlossen werden soll.
 ;
 ; EXAMPLE:
 ;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
@@ -18,9 +21,15 @@
 ;                    dummy = Get_Kbrd(1)
 ;                    DestroySheet, sheety
 ;
+; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#OPENSHEET">OpenSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/05/18 18:25:10  kupper
+;            Multi-Sheets implementiert!
+;
 ;     Revision 2.3  1998/01/21 21:57:25  saam
 ;           es werden nun ALLE (!!!) Window-Parameter
 ;           gesichert.
@@ -34,7 +43,9 @@
 ;
 ;
 ;-
-PRO CloseSheet, sheet
+PRO CloseSheet, _sheet, multi_nr
+
+   If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
    IF sheet.type EQ 'ps' OR sheet.type EQ 'X' THEN BEGIN 
       new = !P
@@ -62,6 +73,6 @@ PRO CloseSheet, sheet
       Set_Plot, 'X'
    END
       
-
+   If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
 
 END

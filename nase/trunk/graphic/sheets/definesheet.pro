@@ -12,11 +12,15 @@
 ;
 ; CATEGORY:           GRAPHIC
 ;
-; CALLING SEQUENCE:   Sheet = DefineSheet( [{,/WINDOW | ,/PS| ,/NULL}] [,/INCREMENTAL] [,/VERBOSE] (,OPTIONS)*
+; CALLING SEQUENCE:   Sheet = DefineSheet( [{,/WINDOW | ,/PS| ,/NULL}] [,MULTI=Multi_Array]
+;                                          [,/INCREMENTAL] [,/VERBOSE] (,OPTIONS)*
 ;
 ; KEYWORD PARAMETERS: WINDOW     : Das Sheet wird auf dem Bildschirm dargestellt
 ;                     PS         : Das Sheet wird als PS in ein File gespeichert.
 ;                     NULL       : Das Sheet unterdrueckt jegliche Ausgabe
+;                     MULTI      : Nur sinnvoll bei WINDOW. Mehrere "Sheetchen" in einem Fensterrahmen.
+;                                  Beschreibung des MULTI-Parameters s. <A HREF="#SCROLLIT">ScrollIt()</A>.
+;                                  Wenn angegeben, ist das Ergebnis von DefineSheet ein MultiSheet (Array von Sheets).
 ;                     INCREMENTAL: Nur sinnvoll bei PS. Mit CloseSheet wird das entsprechende
 ;                                  File geschlossen. Malt man nun mehrmals in ein Sheet gibt es 
 ;                                  zwei Moeglichkeit auf PS damit umzugehen. Entweder wird das
@@ -25,8 +29,9 @@
 ;                                  wird dabei um einen laufenden Index erweitert.
 ;                     VERBOSE    : DefineSheet wird gespraechig...
 ;                     OPTIONS    : Alle Optionen die das jeweilige Device versteht sind erlaubt.
-;                                  X-Fenster: siehe Hilfe von Window, z.B.
-;                                              [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS
+;                                  X-Fenster: siehe Hilfe von Window oder <A HREF="#SCROLLIT">ScrollIt()</A>, z.B.
+;                                              [XY]Title, [XY]Pos, [XY]Size, RETAIN, TITLE, COLORS,
+;                                              [XY]DrawSize
 ;                                  PS       : siehe Hilfe von Device, z.B.
 ;                                              /ENCAPSULATED, BITS_PER_PIXEL, /COLOR, FILENAME
 ;
@@ -45,9 +50,15 @@
 ;                     dummy = Get_Kbrd(1)
 ;                     DestroySheet, sheety
 ;
+; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+;           <A HREF="#OPENSHEET">OpenSheet</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  1998/05/18 18:25:10  kupper
+;            Multi-Sheets implementiert!
+;
 ;     Revision 2.7  1998/03/19 10:45:56  saam
 ;           now uses ScrollIt and remembers destroyed windows
 ;           resize events have no effect
@@ -76,11 +87,12 @@
 ;
 ;-
 FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREMENTAL=incremental, ENCAPSULATED=encapsulated, COLOR=color $
-                      ,VERBOSE=verbose, _EXTRA=e
+                      ,VERBOSE=verbose, MULTI=multi, _EXTRA=e
 
    COMMON Random_Seed, seed
    COMMON ___SHEET_KILLS, sk
 
+   Default, multi, 0
 
    IF NOT SET(sk) THEN BEGIN
       sk = BytArr(128)
@@ -94,13 +106,17 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       IF Keyword_Set(VERBOSE) THEN Print, 'Defining a new Window.'
       
       sheet = { type  : 'X'   ,$
-                winid : -2    ,$
-                widid : -2    ,$
+                winid : -2l    ,$
+                widid : -2l    ,$
                 p     : !P    ,$
                 x     : !X    ,$
                 y     : !Y    ,$
                 z     : !Z    ,$
+                multi : multi ,$
                 extra : e     }
+
+      If keyword_set(multi) then sheet = replicate(sheet, multi(0))
+
 
    END ELSE IF Keyword_Set(PS) THEN BEGIN
 

@@ -7,9 +7,13 @@
 ;
 ; CATEGORY:          GRAPHIC
 ;
-; CALLING SEQUENCE:  OpenSheet, Sheet
+; CALLING SEQUENCE:  OpenSheet, Sheet [,Multi-Index]
 ;
 ; INPUTS:            Sheet: eine mit DefineSheet definierte Sheet-Struktur
+;
+; OPTIONAL INPUTS:   Multi-Index: Bei MultiSheets (s. MULTI-Option von <A HREF="#DEFINESHEET">DefineSheet()</A>)
+;                                 der Index des "Sheetchens", das geöffnet werden soll. Befindet sich das MultiSheet
+;                                 noch nicht auf dem Bildschirm, so wird es dargestellt.
 ;
 ; EXAMPLE:
 ;                    sheety = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500)
@@ -19,9 +23,15 @@
 ;                    dummy = Get_Kbrd(1)
 ;                    DestroySheet, sheety
 ;
+; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt()</A>,
+;           <A HREF="#DEFINESHEET">DefineSheet()</A>, <A HREF="#CLOSESHEET">CloseSheet</A>,<A HREF="#DESTROYSHEET">DestroySheet</A>.
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  1998/05/18 18:25:11  kupper
+;            Multi-Sheets implementiert!
+;
 ;     Revision 2.10  1998/03/20 16:45:22  thiel
 ;            Weitere 3.6/4-Inkompatibilitaet beim
 ;            GET_BASE-Aufruf behoben.
@@ -61,6 +71,7 @@
 ;
 ;
 ;-
+
 PRO _sheetkilled, id
 
    COMMON ___SHEET_KILLS, sk
@@ -75,10 +86,11 @@ END
 
 
 
-
-PRO OpenSheet, sheet
+PRO OpenSheet, _sheet, multi_nr
 
    COMMON ___SHEET_KILLS, sk
+
+   If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
    IF sheet.type EQ 'X' THEN BEGIN
       Set_Plot, 'X'
@@ -92,14 +104,29 @@ PRO OpenSheet, sheet
       ; create a new window
       IF NOT exists THEN BEGIN
          tid = 23               ;muss fuer IDL 3.6 vor dem GET_BASE-Aufruf definiert werden, Wert ist egal.
-         IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
-            sheet.winid = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled')
-         END ELSE BEGIN
-            sheet.winid = ScrollIt(Get_BASE=tid, KILL_NOTIFY='_sheetkilled', _EXTRA=sheet.extra)
-         END
-         sheet.widid = tid
-         sk(sheet.winid) = 0
-      END
+         If not set(multi_nr) then begin
+            IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
+               sheet.winid = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled')
+            END ELSE BEGIN
+               sheet.winid = ScrollIt(Get_BASE=tid, KILL_NOTIFY='_sheetkilled', _EXTRA=sheet.extra)
+            END
+            sheet.widid = tid
+            sk(sheet.winid) = 0
+         Endif else begin       ;multi
+            IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
+               winids = ScrollIt(GET_BASE=tid, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi)
+            END ELSE BEGIN
+               winids = ScrollIt(Get_BASE=tid, KILL_NOTIFY='_sheetkilled', MULTI=sheet.multi, _EXTRA=sheet.extra)
+            END
+            for i=1, sheet.multi(0) do begin
+               _sheet(i-1).widid = tid
+               _sheet(i-1).winid = winids(i-1)
+               sk(winids(i-1)) = 0
+            Endfor
+            sheet = _sheet(multi_nr)
+         Endelse                ;multi
+      END                       ;create new
+      UWset, sheet.winid
       old = !P
       !P = sheet.p
       sheet.p = old
@@ -153,5 +180,6 @@ PRO OpenSheet, sheet
       Plot, Indgen(10) ; to establish a coordinate system, that PlotS will work
    END ELSE Message, 'no initialized sheet???'
 
+   If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
 
 END
