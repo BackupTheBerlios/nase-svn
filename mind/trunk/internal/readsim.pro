@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.8  2000/05/18 08:16:58  saam
+;            small bug fix
+;
 ;      Revision 1.7  2000/05/17 09:46:40  saam
 ;           removed the reminder cause time is ok now
 ;
@@ -66,7 +69,7 @@
 ;
 ;
 ;-
-FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, TIME=time, INFO=info, SELECT=select
+FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, MUA=mua, RMUA=rmua, TIME=time, INFO=info, SELECT=select
 
    On_Error, 2
 
@@ -75,7 +78,7 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
    END 
 
    IF N_Params() NE 1 THEN Message, 'filename expected'
-   kc = Set(INPUT)+Keyword_Set(OUTPUT)+Keyword_Set(MEMBRANE)+Keyword_Set(MUA)
+   kc = Set(INPUT)+Keyword_Set(OUTPUT)+Keyword_Set(MEMBRANE)+Keyword_Set(MUA)+Keyword_Set(RMUA)
    IF kc EQ 0 THEN BEGIN
       OUTPUT = 1
       kc = 1
@@ -102,6 +105,10 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
       filename = file+'.lfp'
       console, 'loading LFP...'
    END
+   IF Keyword_Set(RMUA) THEN BEGIN
+      filename = file+'.mua'
+      console, 'loading RMUA...'
+   END
 
 
    Video = LoadVideo( TITLE=filename, GET_SIZE=anz, GET_LENGTH=max_time, /SHUTUP, GET_STARRING=log1, GET_COMPANY=log2, ERROR=error)
@@ -127,7 +134,7 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
       END
       anz =  N_Elements(SELECT)
    END
-   IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
+   IF Keyword_Set(MEMBRANE) OR Keyword_Set(LFP) OR Keyword_Set(RMUA) THEN xt = DblArr(anz, TIME(1)-TIME(0)+1) ELSE xt = BytArr(anz, TIME(1)-TIME(0)+1)
 
    TIME = LONG(TIME)
    REWIND, Video, TIME(0), /SHUTUP
@@ -150,6 +157,7 @@ FUNCTION ReadSim, file, INPUT=input, OUTPUT=output, LFP=lfp, MEMBRANE=membrane, 
    IF Keyword_Set(OUTPUT)   THEN console, 'loading output spikes...done', /UP
    IF Keyword_Set(MEMBRANE) THEN console, 'loading membrane potentials...done', /UP
    IF Keyword_Set(MUA)      THEN console, 'loading MUA...done', /UP
+   IF Keyword_Set(RMUA)     THEN console, 'loading RMUA...done', /UP
    IF Keyword_Set(LFP)      THEN console, 'loading LFP...done', /UP
 
    RETURN, xt
