@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/11/09 15:14:54  saam
+;           passing of extra-arguments was corrupted
+;
 ;     Revision 2.2  1998/11/08 19:36:06  saam
 ;           some plotting details improved
 ;
@@ -46,6 +49,7 @@
 ;-
 FUNCTION InitTrainspottingScope, TIME=time, NEURONS=neurons, $
                                  OVERSAMPLING=oversampling, $
+                                 XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
                                  XTITLE=xtitle, YTITLE=ytitle, _EXTRA=_extra
 
    On_Error, 2

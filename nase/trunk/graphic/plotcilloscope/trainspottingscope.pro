@@ -30,6 +30,9 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.5  1998/11/09 15:14:55  saam
+;           passing of extra-arguments was corrupted
+;
 ;     Revision 2.4  1998/11/08 19:36:05  saam
 ;           some plotting details improved
 ;
@@ -44,9 +47,7 @@
 ;
 ;
 ;-
-PRO TrainspottingScope, _SR, _y, $
-                        XSYMBOLSIZE=XSymbolSize, YSYMBOLSIZE=YSymbolSize, $
-                        XTITLE=xtitle
+PRO TrainspottingScope, _SR, _y
 
    Handle_Value, _SR, SR, /NO_COPY
    y = Handle_Val(_y)
@@ -63,7 +64,7 @@ PRO TrainspottingScope, _SR, _y, $
    SR.t = SR.t + 1
 
    IF (SR.T MOD SR.TIME) EQ 0 THEN BEGIN
-      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[-1+SR.T,SR.T+SR.time/SR.os+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=_extra
+      plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[-1+SR.T,SR.T+SR.time/SR.os+1], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=SR._extra
    END
 
 
