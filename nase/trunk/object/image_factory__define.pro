@@ -28,6 +28,11 @@ Function image_factory::type
 End
 Pro image_factory::type, string
    self.type = string
+
+   Ptr_Free, self.image_info
+   self.image_info = Ptr_New()  ; NULL
+   ;; the above will request a completely new variation of the current
+   ;; image.
    self->recompute_
 End
 
@@ -67,6 +72,7 @@ End
 Pro image_factory::cleanup, _dummy=_dummy
    message, /Info, "I'm dying!"
    PTR_FREE, self.image
+   PTR_FREE, self.image_info
 End
 
 Pro image_factory::reset
@@ -118,7 +124,7 @@ Pro image_factory::recompute_
    endif else begin ;;recompute
       Message, /INFO, "Creating image."
       call_method, self.type+"_", self
-      *self.image = *self.image * self.brightness
+      *self.image = Temporary(*self.image) * self.brightness
    Endelse
 End
 
@@ -140,7 +146,10 @@ Pro image_factory__DEFINE
             brightness: 0.0, $
             $
             prevent_recompute_flag: 0, $
-            delayed_recompute_request_flag: 0b $
+            delayed_recompute_request_flag: 0b, $
+            $
+            image_info: PTR_NEW() $;; will hold any information (if
+            ;;          any) that is needed to recreate the current image.
            }
 End
 
