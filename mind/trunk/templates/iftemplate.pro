@@ -18,13 +18,12 @@
 ;                                              {various filter options} )
 ;
 ;                     newPattern = IFTemplate( [MODE=1], PATTERN=pattern )
-;
-;                     ignore_me  = IFTemplate( MODE=2 )
+;                     ignore_me  = IFTemplate( MODE=[2|3] )
 ;	
 ; KEYWORD PARAMETERS: DELTA_T   : passing time between two sucessive calls of this filter function
 ;                     HEIGHT    : height of the input to be created
 ;                     MODE      : determines the performed action of the filter. 
-;                                  0: INIT, 1: STEP (Default), 2: FREE
+;                                  0: INIT, 1: STEP (Default), 2: FREE, 3: PLOT (filter characteristics (if useful))
 ;                     PATTERN   : filter input
 ;                     TEMP_VALS : internal structure that reflects the filter function/status. This
 ;                                 is initialized when MODE=0, read/modified for MODE=1 and freed for
@@ -36,11 +35,15 @@
 ; OUTPUTS:            newPattern: the filtered version of PATTERN
 ;                     ignore_me : just ignore it
 ;
-; SIDE EFFECTS:       TEMP_VALS is changed by a function call!
+; SIDE EFFECTS:       TEMP_VALS is changed by the function call!
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/18 14:00:20  saam
+;           + supports plot as MODE=3
+;           + doc header updated and bugfixed
+;
 ;     Revision 1.3  2000/01/14 15:12:27  saam
 ;           + DocHeader rewritten
 ;           + default return pattern is !NONE now
@@ -60,56 +63,45 @@ FUNCTION iftemplate, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_t
    Default, mode   , 1          ; i.e. step
    Default, pattern, !NONE
    
-   Handle_Value,_temp_vals,temp_vals,/no_copy
+   Handle_Value, _temp_vals, temp_vals, /NO_COPY
    
    
    CASE mode OF
       
-;
 ; INITIALIZE
-;
       0: BEGIN                  
-         
          temp_vals =  { $
                        sim_time : 0l $
                       }
-         
-         print,'INPUT:filter ''iftemplate'' initialized'         
+         print,'IFTEMPLATE: initialized'         
       END
       
-
-;
 ; STEP
-;
-      1: BEGIN                    
-         
+      1: BEGIN                             
          FOR x=0,h-1 DO BEGIN   ; e.g. draw a vertical bar
             FOR y=w/2-3,w/2+3 DO BEGIN 
                pattern(y,x) = 1.0
             ENDFOR
          endfor 
-         
-         
          temp_vals.sim_time =  temp_vals.sim_time + delta_t
-         
       END
       
-      
-;
 ; FREE
-;
-      2:BEGIN
-         
-         print,'INPUT:filter ''iftemplate'' stopped'
-         
+      2: BEGIN
+         print,'IFTEMPLATE: done'
       END 
-      ELSE: BEGIN
-         Message, 'unknown mode'
+
+; PLOT
+      3: BEGIN
+         print, 'IFTEMPLATE: display mode not implemented, yet'
       END
-      
+      ELSE: BEGIN
+         Message, 'IFTEMPLATE: unknown mode'
+      END
+
    ENDCASE 
-   
-   Handle_Value,_temp_vals,temp_vals,/no_copy,/set
-   
-   RETURN, pattern 
-END 
+
+   Handle_Value, _temp_vals, temp_vals, /NO_COPY, /SET
+
+   RETURN, pattern
+END
