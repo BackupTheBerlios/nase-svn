@@ -21,16 +21,14 @@
 ; CALLING SEQUENCE: 
 ;  If you have the whole movie sequence in a three dimensional array,
 ;  just call 
-;* WRITE_MPEG, ims [,MPEGFILENAME=...] [,/TRUE]
-;                  [,TMPDIR=...] [,/DELAFT] [,REP=REP] 
+;* WRITE_MPEG, ims [,MPEGFILENAME=...] [,/TRUE] [,TMPDIR=...] [,/DELAFT] [,REP=REP] 
 ;
 ;  <BR>If the data is a sequence of image frames  (perhaps because the
 ;  whole movie would be too large for your working memory) use:
 ;
-;* WRITE_MPEG,INIT=nims,[,mpegFileName=mpegFileName] [,TMPDIR=...]
-;*                      [,/DELAFT] [,REP=..] 
-;* WRITE_MPEG,image,/WRITE [,/TRUE]
-;* WRITE_MPEG,/CLOSE
+;* WRITE_MPEG, INIT=..., [,mpegFileName=mpegFileName] [,TMPDIR=...] [,/DELAFT] [,REP=..] 
+;* WRITE_MPEG, image, /WRITE [,/TRUE]
+;* WRITE_MPEG, /CLOSE
 ;
 ; INPUTS:
 ;  ims:: sequence of images. For pseudocolor-images, this is a 3D array
@@ -48,14 +46,15 @@
 ;                  You should actually always do it otherwise you get
 ;                  problems with permissions on multiuser machines (since
 ;                  <*>/tmp</*> normally has the sticky bit set)
-;  INIT::          calls write_mpeg to initialice image writing,
+;  INIT::          calls write_mpeg to initialize image writing,
 ;                  where INIT is the number of images (default: 0)
 ;  MPEGFILENAME:: name of mpeg file (default: "test.mpg")
 ;  REP::          if given means repeat every image 'rep' times
 ;                  (as a workaround to modify replay speed)
 ;  TMPDIR::        directory for temporary data (default: "/tmp/idl2mpeg.frames")
 ;  WRITE::         calls write_mpeg to write the image
-;
+;  TRUE::         Set this keywrod to indicate that the image(s) to be
+;                 written is a truecolor image.
 ;
 ; COMMON BLOCKS:
 ;  COMMON WRITE_MPEG_BLOCK , info
