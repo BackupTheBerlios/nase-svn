@@ -13,7 +13,7 @@
 ; CALLING SEQUENCE:   UTvScl, Image [,XNorm] [,YNorm] [,/CENTER]
 ;                             [,X_SIZE=x_size] [,Y_SIZE=y_size]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
-;                             [,DIMENSIONS=dimensions]
+;                             [,/NOSCALE] [,DIMENSIONS=dimensions]
 ;
 ; INPUTS:             image: ein zweidimensionales Array
 ;
@@ -33,12 +33,15 @@
 ;                     H_STRETCH ,
 ;                     V_STRETCH : Das Bild kann mit diesen Parametern verzerrt werden. Alle 3 STRETCH
 ;                                 Parameter koennen gleichzeitig angegeben werden
+;                     NOSCALE   : Das Bild wird analog zu TV nicht skaliert
 ;                     DIMENSIONS: wird dem Keyword Dimensions eine definierte Variable uebergeben
 ;                                 (egal welchen Typs), werden die Darstellungsparameter in Normal-
 ;                                 Koordinaten zurueckgegeben: (xpos, ypos, xsize, ysize)
 ;                                 Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
 ;                                 gesetztem CENTER-Keyword)
 ;                     
+; RESTRICTIONS:
+;                
 ; EXAMPLE:
 ;          bild = FIndgen(100,100)
 ;          ULoadCt, 5
@@ -50,6 +53,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1997/12/17 14:26:00  saam
+;           Keyword NOSCALE hinzugefuegt
+;
 ;     Revision 2.9  1997/11/14 16:10:03  saam
 ;           Header ergaenzt
 ;
@@ -82,6 +88,7 @@ PRO UTvScl, _Image, XNorm, YNorm $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
             , DIMENSIONS=dimensions $
+            , NOSCALE=NOSCALE $
             , _EXTRA=e
 
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -136,18 +143,34 @@ PRO UTvScl, _Image, XNorm, YNorm $
          Image = MaxPix - Image 
       END
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
-         TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+         IF Keyword_Set(NOSCALE) THEN BEGIN
+            TV, Image, xnorm, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e 
+         END ELSE BEGIN
+            TVScl, Image, xnorm, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+         END
       END ELSE BEGIN
-         TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+         IF Keyword_Set(NOSCALE) THEN BEGIN
+            TV, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+         END ELSE BEGIN
+            TVScl, Image, xpos, ypos, XSIZE=xsize, YSIZE=ysize, /CENTIMETERS, _EXTRA=e
+         END
       END
 
    END ELSE BEGIN ; it is a WINDOW
       IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) OR Set(X_SIZE) OR Set(Y_SIZE) THEN Image = Congrid(Image, xsize*!D.X_PX_CM, ysize*!D.Y_PX_CM)
       Device, BYPASS_TRANSLATION=0
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
-         TVScl, Image, xnorm, /CENTIMETERS, _EXTRA=e
+         IF Keyword_Set(NOSCALE) THEN BEGIN
+            TV, Image, xnorm, /CENTIMETERS, _EXTRA=e
+         END ELSE BEGIN
+            TVScl, Image, xnorm, /CENTIMETERS, _EXTRA=e
+         END
       END ELSE BEGIN
-         TVScl, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+         IF Keyword_Set(NOSCALE) THEN BEGIN
+            TV, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+         END ELSE BEGIN
+            TVScl, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+         END
       END
       Device, /BYPASS_TRANSLATION
    END
