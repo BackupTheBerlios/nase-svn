@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/04/09 14:38:38  saam
+;           now leaves opened files untouched
+;
 ;     Revision 2.5  1998/03/16 14:31:25  saam
 ;           the file-check of the gzip-integrity is
 ;           broken on alpha (doesn't recognize gzip-
@@ -55,12 +58,18 @@
 ;
 ;
 ;-
-PRO Zip, filepattern, KEEPORG=keeporg
+PRO Zip, filepattern, KEEPORG=keeporg, BZ2=bz2
 
    
    Default, suffix, 'gz'
+   IF Keyword_Set(BZ2) THEN BEGIN
+      suffix = 'bz2'
+      zip = 'bzip2'
+   END ELSE BEGIN
+      suffix = 'gz'
+      zip = 'gzip'
+   END
    IF suffix NE '' THEN suffix = '.'+suffix
-   zip = 'gzip'
    
    
    c = ZipStat(filepattern, NOZIPFILES=nzf, BOTHFILES=bf) 
@@ -70,17 +79,12 @@ PRO Zip, filepattern, KEEPORG=keeporg
    IF N_Elements(files) NE 1 THEN BEGIN
       FOR i=1,N_Elements(files)-1 DO BEGIN
          IF FileExists(files(i), INFO=info) THEN BEGIN ;THE FILE MAY BE ERASED BY A ZIP-OPERATION
-;            IF Contains(info, 'gzip') THEN BEGIN 
-;               Print, 'ZIP: file already compressed...renaming it to the zipped version...'+files(i)+suffix
-;               Spawn, 'mv -f '+files(i)+' '+files(i)+suffix
-;            ENDIF ELSE BEGIN
-               IF Keyword_Set(KEEPORG) THEN BEGIN
-                  Spawn, zip+' -c '+files(i)+' > '+files(i)+suffix, r
-               ENDIF ELSE BEGIN
-                  Spawn, zip+' -f '+files(i), r
-               ENDELSE
-               IF r(0) NE '' THEN print, 'GZIP: ',r(0)
-;            ENDELSE
+            IF Keyword_Set(KEEPORG) THEN BEGIN
+               Spawn, zip+' -c '+files(i)+' > '+files(i)+suffix, r
+            ENDIF ELSE BEGIN
+               IF NOT FileOpen(files(i)) THEN Spawn, zip+' -f '+files(i), r ELSE Print, 'ZIP: file is open...doing nothing'
+            ENDELSE
+            IF r(0) NE '' THEN print, 'GZIP: ',r(0)
          ENDIF
       ENDFOR
    ENDIF ELSE BEGIN

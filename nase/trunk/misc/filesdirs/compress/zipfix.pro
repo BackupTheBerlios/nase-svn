@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/04/09 14:38:38  saam
+;           now leaves opened files untouched
+;
 ;     Revision 2.3  1998/03/13 14:46:11  saam
 ;           more tolerant, now uses zipstat
 ;
@@ -55,7 +58,9 @@ PRO ZipFix, filepattern
       FOR i=0,N_Elements(nzf)-1 DO Zip, nzf(i)
    END
    IF bf(0) NE '-1' THEN BEGIN
-      FOR i=0,N_Elements(bf)-1 DO spawn, 'rm -f '+bf(i)
+      FOR i=0,N_Elements(bf)-1 DO BEGIN
+         IF NOT FileOpen(bf(i)) THEN spawn, 'rm -f '+bf(i) ELSE Print, 'ZIPFIX: file is open...doing nothing'
+      END
    END
 
    
