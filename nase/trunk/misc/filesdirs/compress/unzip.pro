@@ -1,15 +1,15 @@
 ;+
 ; NAME:                UnZip
 ;
-; PURPOSE:             Dekomprimiert ein File. 
+; PURPOSE:             Dekomprimiert Files. 
 ;                       - Zipfile bleibt erhalten
 ;                       - "Sinnvolles" Fehlerhandling.
 ;
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    UnZip, file [, /NOKEEPORG]
+; CALLING SEQUENCE:    UnZip, filepattern [, /NOKEEPORG]
 ;
-; INPUTS:              file: das zu dekomprimierende File ohne
+; INPUTS:              filepattern: das zu dekomprimierende Filepattern ohne
 ;                            '.gz'-Endung
 ;
 ; KEYWORD PARAMETERS:  NOKEEPORG: das gezippte File wird geloescht
@@ -35,34 +35,48 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/03/10 13:34:23  saam
+;           wildcards in filenames are now accepted
+;
 ;     Revision 2.1  1998/02/24 08:40:53  saam
 ;           zip-zip-zippi-die-dip
 ;
 ;
 ;-
-PRO UnZip, file, NOKEEPORG=nokeeporg
+PRO UnZip, filepattern, NOKEEPORG=nokeeporg
 
    Default, suffix, 'gz'
    IF suffix NE '' THEN suffix = '.'+suffix
    unzip = 'gunzip'
 
 
-   IF FileExists(file+suffix, INFO=info) THEN BEGIN
-      IF NOT Contains(info, 'gzip') THEN BEGIN 
-         Print, 'UNZIP: file not compressed...renaming to original name...'+file
-         Spawn, 'mv -f '+file+suffix+' '+file
-      ENDIF ELSE BEGIN
-         IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
-            Spawn, unzip+' -c '+file+suffix+' > '+file, r
+   gzfiles = FindFile(filepattern+suffix,COUNT=c)
+   FOR i=0,c-1 DO BEGIN
+      IF FileExists(gzfiles(i), INFO=info) THEN BEGIN
+         
+         ; extract the unzipped filename
+         gzfile = gzfiles(i)
+         p = RSTRPOS(gzfile,suffix)
+         file = STRMID(gzfile, 0, p)
+
+         IF NOT Contains(info, 'gzip') THEN BEGIN 
+            Print, 'UNZIP: file not compressed...renaming to original name...'+file
+            Spawn, 'mv -f '+gzfile+' '+file
          ENDIF ELSE BEGIN
-            Spawn, unzip+' -f '+file+suffix, r
+            IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
+               Spawn, unzip+' -c '+gzfile+' > '+file, r
+            ENDIF ELSE BEGIN
+               Spawn, unzip+' -f '+gzfile, r
+            ENDELSE
+            IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
          ENDELSE
-         IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
-      ENDELSE
-
-   ENDIF ELSE BEGIN
-      Print, 'UNZIP: file doesnot exist...'+file
+         
+      ENDIF ELSE Message, 'this must not happen !!!'
+   ENDFOR
+      
+   IF c EQ 0 THEN BEGIN
+      Print,' UNZIP: there are no files matching '+filepattern+suffix
       Print, 'UNZIP: hoping that anybody else can handle that...'
-   ENDELSE
-
+   ENDIF
+      
 END

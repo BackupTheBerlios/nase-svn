@@ -3,13 +3,13 @@
 ;
 ; PURPOSE:             Stellt sicher, dass nach der 
 ;                      beliebigen Benutzung von [Un]Zip
-;                      nur noch das gezippte File erhalten bleibt.
+;                      nur noch gezippte Files erhalten bleibt.
 ;
 ; CATEGORY:            MISC
 ;
-; CALLING SEQUENCE:    ZipFix, file
+; CALLING SEQUENCE:    ZipFix, filepattern
 ;
-; INPUTS:              file: das zu fixende File
+; INPUTS:              filepattern: die zu fixenden Files
 ;
 ; EXAMPLE:             ; in einer Simulation, in zwei Schritten erfolgt:
 ;                      
@@ -32,31 +32,28 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/03/10 13:34:23  saam
+;           wildcards in filenames are now accepted
+;
 ;     Revision 2.1  1998/02/24 08:40:53  saam
 ;           zip-zip-zippi-die-dip
 ;
 ;
 ;-
-PRO ZipFix, file
+PRO ZipFix, filepattern
 
    
    Default, suffix, 'gz'
    IF suffix NE '' THEN suffix = '.'+suffix
    
    
-   IF FileExists(file) THEN BEGIN
-      
-      IF FileExists(file+suffix) THEN spawn, 'rm -f '+file ELSE BEGIN
-         Zip, file
-      ENDELSE
-      
-   ENDIF ELSE BEGIN
-
-      IF NOT FileExists(file+suffix) THEN BEGIN
-         Print, 'ZIPFIX: neither file nor zipfile exists...'+file
-         Print, 'ZIPFIX: hope that is not too bad...'
-      ENDIF
-
-   END   
-
+   files = FindFile(filepattern,COUNT=c)
+   FOR i=0,c-1 DO BEGIN
+      IF FileExists(files(i)) THEN BEGIN
+         
+         IF FileExists(files(i)+suffix) THEN spawn, 'rm -f '+files(i) ELSE Zip, files(i)
+         
+      ENDIF ELSE Message, 'this must not happen !!!'
+   ENDFOR
+   
 END
