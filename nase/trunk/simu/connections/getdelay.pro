@@ -80,7 +80,9 @@
 
 Function GetDelay, V_Matrix, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                                     T_ROW=t_row, T_COL=t_col, T_INDEX=t_index
-    
+
+   if V_Matrix.Delays eq [-1] then message, 'Die übergebene Delay-Weight-Struktur enthält gar keine Delays!'
+  
     if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
 
        if not set(t_index) then t_index = LayerIndex(ROW=t_row, COL=t_col, WIDTH=V_Matrix.target_w, HEIGHT=V_Matrix.target_h)
