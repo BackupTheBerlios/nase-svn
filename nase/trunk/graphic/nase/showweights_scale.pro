@@ -111,6 +111,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.15  1999/09/23 14:15:20  kupper
+;        Range_In=0 is now interpreted as not set, not as literal 0 as
+;        before.
+;        Removed false "Range=ABS(Range)".
+;
 ;        Revision 2.14  1999/09/23 08:21:00  kupper
 ;        Added some lines to docu.
 ;
@@ -179,13 +184,16 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    max = max(MatrixMatrix)
 
    ;;------------------> The Range value will be scaled to white/green:
-   Default, Range, Range_In     ;Range_In should not be changed.
+   If Keyword_Set(Range_In) then Range = Range_In ;Range_In should not be changed.
+                                ;cannot use "Default", by the way,
+                                ;as Range_In=0 should be
+                                ;interpreted as not set (not as
+                                ;literal 0)
    Default, Range, max([max, -min]); for positive Arrays this equals max.
    If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
       message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
       Range = Range(1)
    End
-   Range = ABS(Range)
    ;;--------------------------------
 
 
