@@ -85,6 +85,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/07/21 16:15:03  kupper
+;        Added some Temporary().
+;
 ;        Revision 2.1  2000/07/21 15:49:10  kupper
 ;        First version.
 ;        Thanks to Etel and Hans-Jörg for running into that problem :-).
@@ -98,7 +101,7 @@ Function _SoftClip_top, val, thresh, top
    range = (top-thresh)
    upper = range*2*(fermi(upper,0.5*range)-0.5)
 
-   return, lower+upper
+   return, Temporary(lower)+Temporary(upper)
 End
 
 Function SoftClip, val, UPPER=upper, TOP=top, LOWER=lower, $
