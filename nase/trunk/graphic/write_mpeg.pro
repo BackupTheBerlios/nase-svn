@@ -26,7 +26,7 @@
 ;  <BR>If the data is a sequence of image frames  (perhaps because the
 ;  whole movie would be too large for your working memory) use:
 ;
-;* WRITE_MPEG, INIT=..., [,mpegFileName=mpegFileName] [,TMPDIR=...] [,/DELAFT] [,REP=..] 
+;* WRITE_MPEG, INIT=... [,MPEGFILENAME=...] [,TMPDIR=...] [,/DELAFT] [,REP=..] 
 ;* WRITE_MPEG, image, /WRITE [,/TRUE]
 ;* WRITE_MPEG, /CLOSE
 ;
