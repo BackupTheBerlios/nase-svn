@@ -25,7 +25,8 @@
 ;  following points are checked in the given order until the first one
 ;  applies):<BR>
 ;
-;  o Allow X connections if running under Windows OS.
+;  o Return <*>TRUE</*> if running under Windows OS. (There is no such
+;    thing as X Servers and <*>nohup</*> sessions in this case.)<BR> 
 ;  o Forbid X connections, if environment variable DISPLAY is not
 ;    set or is set to the empty string. (As connecting the X
 ;    server would fail anyway.)<BR> 
@@ -73,7 +74,7 @@ Function XAllowed
    ;;  The following points are checked in the given order until the
    ;;  first one applies:
    ;;
-   ;;  o Allow X connections if running under Windows OS.
+   ;;  o Return TRUE if running under Windows OS.
    ;;  o Forbid X connections, if environment variable DISPLAY is not
    ;;    set or is set to the empty string. (As connecting the X
    ;;    server would fail anyway.)
