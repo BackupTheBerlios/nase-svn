@@ -55,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1998/03/19 12:01:33  kupper
+;              Bricht jetzt bei eindimensionalen Matrizen nicht mehr ab.
+;
 ;       Revision 1.9  1998/02/05 13:16:05  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -117,8 +120,11 @@ PRO SetDelay, DW, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
 
     if not set(S_ROW) and not set(S_INDEX) then begin ; Array mit Verbindung NACH Target:
 
-       if s(0) ne 2 then message, '2D-Array erwartet!'
-       if (s(1) ne sh) or (s(2) ne sw) then message, 'Das übergebene Array muß die Ausmaße des Source-Layers haben!'
+       if s(0) ne 2 then begin
+          message, /INFORM, 'WARNUNG: 2D-Array erwartet!'
+       endif else begin
+          if (s(1) ne sh) or (s(2) ne sw) then message, 'Das übergebene Array muß die Ausmaße des Source-Layers haben!'
+       EndElse
 
        count = -1
        if Set(TRANSPARENT) then begin
