@@ -129,9 +129,11 @@ PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
       ENDCASE
       
    END ELSE BEGIN
-
       CASE N_Params() OF
-         1 : TvLCt, v1,             _EXTRA=extra
+         1 : BEGIN
+             v1 = bytarr(256,3) 
+             TvLCt, v1,             _EXTRA=extra
+         END
          2 : TvLCt, v1, v2,         _EXTRA=extra
          3 : TvLCt, v1, v2, v3,     _EXTRA=extra
          4 : TvLCt, v1, v2, v3, v4, _EXTRA=extra
