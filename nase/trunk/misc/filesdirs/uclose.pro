@@ -1,43 +1,37 @@
 ;+
-; NAME:                UClose
+; NAME:
+;  UClose
 ;
-; AIM:                 generalized version of IDL's close function (allows zipping)
+; AIM:
+:  generalized version of IDL's close function (allows zipping)
 ;
-; PURPOSE:             Der Gegenspieler von UOpenR. Beide Routinen ermoeglichen
-;                      das transparente Arbeit mit gezippten Dateien.
+; PURPOSE:
+;   Der Gegenspieler von <A>UOpenR</A>. Beide Routinen ermoeglichen
+;   das transparente (sic!) Arbeiten mit gezippten Dateien.
 ; 
-; CATEGORY:            FILES+DIRS ZIP
+; CATEGORY:            
+;  Files
+;  Dirs
+;  IO
+;  OS
 ;
-; CALLING SEQUENCE:    UClose, lun [,/VERBOSE] [,/ALL])
+; CALLING SEQUENCE:
+;*UClose, lun [,/VERBOSE] [,/ALL]
 ;
-; INPUTS:              lun: die lun der zu schliessenden Datei
+; INPUTS:              
+;  lun:: die LUN der zu schliessenden Datei
 ;
-; KEYWORD PARAMETERS:  VERBOSE: die Routine wird geschwaetzig
-;                      ALL    : schliesst ALLE files
+; INPUT KEYWORDS:
+;   VERBOSE:: die Routine wird geschwaetzig
+;   ALL::     schliesst ALLE files
 ;
-; COMMON BLOCKS:       UOPENR: enthaelt Filename und Zipstati der geoeffneten Files
+; COMMON BLOCKS:
+;   UOPENR: enthaelt Filename und Zipstati der geoeffneten Files
 ;
-; SEE ALSO:            UOpenR
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.4  2000/09/25 09:13:03  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 2.3  1999/01/14 14:11:31  saam
-;           + error message -> warning message
-;
-;     Revision 2.2  1998/11/08 15:01:27  saam
-;           returns if an error occurs
-;
-;     Revision 2.1  1998/10/18 16:47:26  saam
-;           initial version
-;
-;
+; SEE ALSO:
+;   <A>UOpenR</A>
 ;-
+
 PRO UClose, lun, VERBOSE=verbose, ALL=all, _EXTRA=e
 
    COMMON UOPENR, llun
@@ -45,7 +39,8 @@ PRO UClose, lun, VERBOSE=verbose, ALL=all, _EXTRA=e
    On_Error, 2
 
    IF NOT Set(llun) THEN BEGIN
-      Message, /INFO, 'this routine should only be used in conjenction with UOPENR !!!'
+      Message, /INFO, 'this routine should only be used in conjunction with UOPENR !!!'
+      IF Keyword_Set(ALL) THEN Close, /ALL
       RETURN
    END
 
