@@ -61,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  2000/11/02 09:25:07  gabriel
+;          uset_plot instead of set_plot
+;
 ;     Revision 2.13  2000/10/01 14:51:35  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -151,17 +154,18 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
       draw_uval.MyPalette.G = Green
       draw_uval.MyPalette.B = Blue
       WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
+    
    EndIf
 
    IF sheet.type EQ 'ps' THEN BEGIN
       IF  sheet.open THEN BEGIN
          Device, /CLOSE
-         Set_Plot, ScreenDevice()
+         uSet_Plot, ScreenDevice()
          sheet.open = 0
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
-      Set_Plot, ScreenDevice()
+      uSet_Plot, ScreenDevice()
    END
       
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet
