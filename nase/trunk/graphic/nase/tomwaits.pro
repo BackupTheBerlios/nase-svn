@@ -44,7 +44,6 @@ PRO TomWaits_Event, Event
             end
             'TOMWAITS_PRINT': message, /INFO, "Print-Event not yet implemented!"
             'TOMWAITS_DONE': begin
-               !TOPCOLOR = data.old_topcolor
                Widget_Control, Event.Top, /DESTROY
                return
             end
@@ -56,7 +55,10 @@ PRO TomWaits_Event, Event
       'WIDGET_DRAW': begin   
          !TopColor = data.my_TopColor
          If Event.Type eq 1 then begin ;Mouse Button Release
-            If (Event.Release and 1) eq 1 then Widget_Control, Widget_Info(Event.ID, /SIBLING), /DESTROY ;Left Button
+            If (Event.Release and 1) eq 1 then begin ;Left Button
+               mag = Widget_Info(Event.ID, /SIBLING)
+               If mag ne 0 then Widget_Control, mag, /DESTROY 
+            endif
          Endif                  ;Mouse Button Release
 
          If Event.Type eq 0 then begin ;Mouse Button Press
@@ -80,10 +82,17 @@ PRO TomWaits_Event, Event
             xpos = BaseOffset(0)+10+data.tvinfo.x0+col*data.tvinfo.subxsize-ViewPos(0)
             ypos = BaseOffset(1)+20+data.tvinfo.y00+row*data.tvinfo.subysize-ViewPos(1)
             ;;--------------------------------
-            ;;------------------> Position für Magnify:
-            xmpos = data.tvinfo.x0+(col-0.5)*data.tvinfo.subxsize-ViewPos(0)
-            ympos = data.tvinfo.y00+(row-0.5)*data.tvinfo.subysize-ViewPos(1)
-            ;;--------------------------------
+            ;;------------------> Position und Größe für Magnify:
+            If data.projective then begin
+               xmsize = data.magnify*(1+DWDim(data.dw, /TW))*1.25
+               ymsize = data.magnify*(1+DWDim(data.dw, /TH))*1.25
+            endif else begin
+               xmsize = data.magnify*(1+DWDim(data.dw, /SW))*1.25
+               ymsize = data.magnify*(1+DWDim(data.dw, /SH))*1.25
+            endelse
+            xmpos = data.tvinfo.x0+(col+0.5)*data.tvinfo.subxsize-ViewPos(0)-xmsize/2
+            ympos = data.tvinfo.y00+(row+0.5)*data.tvinfo.subysize-ViewPos(1)-ymsize/2
+             ;;--------------------------------
             ;;------------------> Untermatrix auslesen:
             If data.projective then begin ;Projective
                If data.delay then begin ;Delays
@@ -118,9 +127,15 @@ PRO TomWaits_Event, Event
                mag = Widget_Draw(data.drawbase, $
                                  XOFFSET=xmpos, $
                                  YOFFSET=ympos, $
+                                 XSIZE=xmsize, YSIZE=ymsize, $
                                  FRAME=3)
-               nasetv, tv_w, ZOOM=data.magnify
-;               plotweights, tv_w
+;               nasetv, tv_w, ZOOM=data.magnify
+               PrepareNASEPlot, (size(reform(w, /OVERWRITE)))(1), (size(reform(w, /OVERWRITE)))(2), /OFFSET, GET_OLD=oldplot
+               plot, indgen(10), /NODATA, POSITION=[0.1, 0.1, 0.9, 0.9]
+               nxpixelgr = (convert_coord(data.magnify, 0, 0, /DEVICE, /TO_NORMAL))(0)
+               nypixelgr = (convert_coord(0, data.magnify, 0, /DEVICE, /TO_NORMAL))(1)
+               NaseTv, tv_w, 0.1+nxpixelgr/2., 0.1+nypixelgr/2., ZOOM=data.magnify
+               PrepareNASEPlot, Restore_old=oldplot
             Endif               ;Left Button
             
             If (Event.Press and 2) eq 2 then begin ;Middle Mouse Button
