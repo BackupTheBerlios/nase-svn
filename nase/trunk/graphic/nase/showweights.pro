@@ -98,6 +98,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.8  1997/12/08 12:48:02  kupper
+;       *** empty log message ***
+;
 ;       Revision 2.7  1997/12/01 16:06:53  kupper
 ;              Header überarbeitet, Hyperlinks eingefügt.
 ;
@@ -208,7 +211,7 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
                                           XSIZE=xvisible, YSIZE=yvisible, TITLE=titel, GET_BASE=get_base)
             endcase
          endif else begin
-            Window, PIXMAP=pix, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
+            Window, /FREE , XSize=(XGroesse*Matrix.target_w +1)*Matrix.source_w, YSize=(YGroesse*Matrix.target_h +1)*Matrix.source_h, Title=titel
          endelse
       Endif Else Begin 
          WSet, WinNr
