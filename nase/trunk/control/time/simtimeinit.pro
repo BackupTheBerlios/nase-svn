@@ -7,9 +7,9 @@
 ;
 ; CATEGORY:              ORGANISATION
 ;
-; CALLING SEQUENCE:      SimTimeInit [, GRAPHIC=graphic] [,/PRINT], [MAXSTEPS=maxsteps]
+; CALLING SEQUENCE:      SimTimeInit [,/GRAPHIC] [,/PRINT], [MAXSTEPS=maxsteps]
 ;
-; KEYWORD PARAMETERS:    graphic : falls angegeben, wird ein Fenster mit der ID graphic geoeffnet und die
+; KEYWORD PARAMETERS:    graphic : falls angegeben, wird werden ins aktuelle Device die
 ;                                  Zeiten inklusive Mittelwert und Standardabweichung angezeigt
 ;                        print   : nach jeder Iteration werden benoetigte Zeit/Iteration und Gesamtzeit 
 ;                                  ausgegeben (im Stunde/Minute/Sekunde-Format)
@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1997/11/13 13:59:39  saam
+;           Graphic nur noch Keyword, Output ins aktuellen Device
+;
 ;     Revision 1.1  1997/10/26 18:41:57  saam
 ;           vom Himmel gefallen
 ;
