@@ -53,7 +53,7 @@ sub createTablesIfNotExist {
 		  CREATE TABLE pro
 		  (  fname   CHAR(80) NOT NULL PRIMARY KEY,
 		     rname   CHAR(80) NOT NULL,
-		     aim     CHAR(255),
+		     aim     TEXT,
 		     dir     CHAR(255) NOT NULL,
 		     header  TEXT
 		  )
