@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.23  1998/04/18 15:09:02  kupper
+;            Fehler bei der !Revertpscolors-Verarbeitung.
+;
 ;     Revision 2.22  1998/04/09 12:35:59  kupper
 ;            Bug: Der Congrid-Aufruf stürzte ab bei zu kleinen Ausmaßen.
 ;
@@ -206,9 +209,10 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
    IF !D.Name EQ 'PS' THEN BEGIN ; a Postscript-Device
       ; flip array-values if wanted because B/W-Postcript doesn't use colortables
       IF !REVERTPSCOLORS THEN BEGIN
-         MinPix = MIN(Image)
-         MaxPix = MAX(Image)
-         Image = MaxPix - Image 
+;         MinPix = MIN(Image)
+;         MaxPix = MAX(Image)
+;         Image = MaxPix - Image 
+         Image = !D.Table_Size-1-Image
       END
       IF N_Params() EQ 2 THEN BEGIN; position implicitely
          IF Keyword_Set(NOSCALE) THEN BEGIN
