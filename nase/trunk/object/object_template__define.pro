@@ -16,36 +16,34 @@
 ; CATEGORY: 
 ;
 ; SUPERCLASSES:
-;   <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A>
-;   <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A>
+;   <A>class MySuperClass</A>
+;   <A>class MyOtherSuperClass</A>
 ;
 ; CONSTRUCTION: 
-;
-;   o = Obj_New("MyClass"
-;               [,KEYWORD=value]
-;               [-keywords inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A>-]
-;               [-keywords inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A>-])
+;*  o = Obj_New("MyClass"
+;*              [,KEYWORD=value]
+;*              [-keywords inherited from <A>class MySuperClass</A>-]
+;*              [-keywords inherited from <A>class MyOtherSuperClass</A>-])
 ;
 ; DESTRUCTION:
-;
-;   Obj_Destroy, o
-;               [,KEYWORD=value]
-;               [-keywords inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A>-]
-;               [-keywords inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A>-]
+;*  Obj_Destroy, o
+;*              [,KEYWORD=value]
+;*              [-keywords inherited from <A>class MySuperClass</A>-]
+;*              [-keywords inherited from <A>class MyOtherSuperClass</A>-]
 ;                                               
-; INPUTS: *please remove any sections that do not apply*
+; INPUTS:
+;  *please remove any sections that do not apply*
 ;
 ; OPTIONAL INPUTS:
 ;  *please remove any sections that do not apply*
 ;
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;  *please remove any sections that do not apply*
 ;
 ; SIDE EFFECTS: 
 ;  *please remove any sections that do not apply*
 ;
 ; METHODS:
-;
 ;  public: Public methods may be called from everywhere.
 ;   
 ;   foo(parameter)       : computes the meaning of life.
@@ -59,11 +57,10 @@
 ;           not decribed in this header. Refer to the source code for information.
 ;   *please remove any sections that do not apply*
 ;
-;  -plus those inherited from <A HREF="#CLASS MYSUPERCLASS">class MySuperClass</A> (see there for details)-
-;  -plus those inherited from <A HREF="#CLASS MYOTHERSUPERCLASS">class MyOtherSuperClass</A> (see there for details)-
+;  -plus those inherited from <A>class MySuperClass</A> (see there for details)-
+;  -plus those inherited from <A>class MyOtherSuperClass</A> (see there for details)-
 ;
 ; ABSTRACT METHODS:
-;
 ;  Abstract methods are used to indicate that a class is designed to have a
 ;  respective method, but that functionality needs to be defined
 ;  in a derived class. Abstract methods must be overriden in derived classes.
@@ -86,11 +83,8 @@
 ;
 ; EXAMPLE: 
 ;
-; SEE ALSO: <A HREF="#MY_ROUTINE">My_Routine()</A>
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
+; SEE ALSO:
+; <A>class MySuperClass</A>, <A>class MyOtherSuperClass</A>
 ;-
 
 
