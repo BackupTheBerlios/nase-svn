@@ -9,7 +9,8 @@
 ;  exchanges the values of two arbitrary variables
 ;
 ; PURPOSE:
-;  Exchanges the values of two variables.
+;  Exchanges the values of two variables. No temporary memory is
+;  used.
 ;
 ; CATEGORY:
 ;  DataStructures
@@ -34,10 +35,11 @@ PRO SWAP, a, b
 ;works for variables/array of the same type
 ;a=a+b
 ;b=a-b
-;a=a-b
+;a=a-a
 
-tmp=a
-a=b
-b=tmp
+;;this uses a temporary variable, but no temporary memory!
+tmp=Temporary(a)
+a=Temporary(b)
+b=Temporary(tmp)
 
 END
