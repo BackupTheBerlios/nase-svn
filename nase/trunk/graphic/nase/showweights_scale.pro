@@ -8,7 +8,7 @@
 ;
 ; CATEGORY: Grafik
 ;
-; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,/SETCOL]
+; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,/SETCOL] ,[/PRINTSTYLE]
 ;                                                       [,COLORMODE=mode]
 ;                                                       [,GET_COLORMODE={+1,-1}]
 ;                                                       [,GET_MAXCOL=Farbindex] )
@@ -27,6 +27,11 @@
 ;                             schwarz/weiss-Darstellung (COLORMODE=+1) 
 ;                             oder die rot/grün-Darstellung
 ;                             (COLORMODE=-1) erzwungen werden.
+;                 PRINTSTYLE: Wird dieses Schlüsselwort gesetzt, so
+;                             wird die gesamte zur Verfügung stehende Farbpalette
+;                             für Farbschattierungen benutzt. Die Farben orange
+;                             und blau werden NICHT gesetzt.
+;                             (gedacht für Ausdruck von schwarzweiss-Zeichnungen.)
 ;
 ; OUTPUTS: TV_Array: Das geeignet skalierte Array, das direkt mit TV
 ;                    oder NASETV dargestellt werden kann.
@@ -59,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1998/04/16 16:51:24  kupper
+;               Keyword PRINTSTYLE implementiert für TomWaits-Print-Output.
+;
 ;        Revision 2.4  1998/02/27 13:09:03  saam
 ;              benutzt nun UTvLCT
 ;
@@ -77,7 +85,8 @@
 ;-
 
 Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
-                    COLORMODE=colormode, GET_COLORMODE=get_colormode
+                    COLORMODE=colormode, GET_COLORMODE=get_colormode, $
+                    PRINTSTYLE=printstyle
 
    MatrixMatrix = Matrix
 
@@ -86,8 +95,14 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
 
    min = min(MatrixMatrix)
    max = max(MatrixMatrix)
-   ts = !TOPCOLOR+1             ;ehemals !D.Table_Size
-   GET_MAXCOL = ts-3
+
+   If not Keyword_set(PRINTSTYLE) then begin
+      ts = !TOPCOLOR+1          ;ehemals !D.Table_Size
+      GET_MAXCOL = ts-3
+   endif else begin
+      ts = !D.Table_Size
+      GET_MAXCOL = ts-1
+   endelse
 
    if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
 
@@ -99,6 +114,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       If Keyword_Set(SETCOL) then begin
          g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          utvlct, g, g, g         ;Grauwerte
+         !REVERTPSCOLORS = 1
          !P.BACKGROUND = 0      ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
@@ -107,18 +123,25 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
          g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
-         utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
-         !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
+         If !D.Name eq "PS" then begin ;helle Farbpalette
+            tvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
+            !REVERTPSCOLORS = 0
+         endif else begin       ;dunkle Farbpalette
+            utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
+         endelse
+         !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz bzw weiss
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
       MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
       MatrixMatrix = (MatrixMatrix+0.5)*GET_MAXCOL
    endelse
 
-   IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
-   If Keyword_Set(SETCOL) then begin
-      SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
-      SetColorIndex, ts-1, 255, 100, 0 ;Orange die für die Trennlinien
+   If not keyword_set(PRINTSTYLE) then begin
+      IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
+      If Keyword_Set(SETCOL) then begin
+         SetColorIndex, ts-2, 0, 0, 100 ;Blau sei die Farbe für nichtexistente Verbindungen
+         SetColorIndex, ts-1, 255, 100, 0 ;Orange die für die Trennlinien
+      Endif
    EndIf
 
    Return, MatrixMatrix

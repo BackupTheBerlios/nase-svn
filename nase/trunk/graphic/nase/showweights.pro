@@ -32,7 +32,7 @@
 ;                               [,YVISIBLE=Fensterhöhe] ]
 ;                               [,/SURF [,/GRID] [,/SUPERIMPOSE]]
 ;                               [ weitere Surface-/Shade_Surf-Parameter ]
-;                               [,COLORMODE=colormode]
+;                               [,COLORMODE=colormode] [,/PRINTSTYLE]
 ;                               [,GET_BASE=Base_ID] 
 ;                               [,GET_MAXCOL=Farbindex] [,GET_COLORMODE=cm]
 ;                             ( [,GET_INFO=positioninfo] [,GET_COLORS=usedcolors] )
@@ -84,6 +84,11 @@
 ;                             schwarz/weiss-Darstellung (COLORMODE=+1) 
 ;                             oder die rot/grün-Darstellung
 ;                             (COLORMODE=-1) erzwungen werden.
+;                 PRINTSTYLE: Wird dieses Schlüsselwort gesetzt, so
+;                             wird die gesamte zur Verfügung stehende Farbpalette
+;                             für Farbschattierungen benutzt. Die Farben orange
+;                             und blau werden NICHT gesetzt.
+;                             (gedacht für Ausdruck von schwarzweiss-Zeichnungen.)
 ;                       SURF: Wenn gesetzt, werden die
 ;                             rezeptiven/projektiven Felder als
 ;                             Surface-Plots dargestellt.
@@ -161,6 +166,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.26  1998/04/16 16:51:23  kupper
+;              Keyword PRINTSTYLE implementiert für TomWaits-Print-Output.
+;
 ;       Revision 2.25  1998/04/02 13:21:45  kupper
 ;              Tippfehler
 ;
@@ -297,6 +305,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
                  GET_MAXCOL=get_maxcol, GET_COLORMODE=get_colormode, COLORMODE=colormode, $
                  SURF=surf, GRID=grid, SUPERIMPOSE=superimpose, $
                  GET_INFO=get_info, GET_COLORS=get_colors, $
+                 PRINTSTYLE=printstyle, $
                  _EXTRA=_extra
 
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -308,6 +317,7 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
    Default, Groesse, 1l
    Default, XGroesse, Groesse
    default, YGroesse, Groesse
+   Default, PRINTSTYLE, 0
    default, _extra, {title:''}  ;Title wird eh nich benutzt
 
    If !D.Name ne "PS" then begin
@@ -315,8 +325,8 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
       xrand = 25
       yrand = 25                ;25 Pixel Rand zum Ursprung des Plots
    endif else begin
-      xrand = !D.X_PX_CM*3      ;3 cm Rand zum Ursprung des Plots
-      yrand = !D.Y_PX_CM*3
+      xrand = !D.X_PX_CM*1      ;1 cm Rand zum Ursprung des Plots
+      yrand = !D.Y_PX_CM*1
    endelse
    Default, COLORMODE, 0        ;Keine bestimmte Darstellung erzwingen
 
@@ -388,9 +398,13 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
       IF Keyword_Set(Delay) THEN MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w) $
       ELSE MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
         ;;------------------> Farben setzen und Matrix skalieren:
-      back = RGB("very dark yellow", INDEX=!TOPCOLOR)
-      fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
-      !TOPCOLOR = !TOPCOLOR-2
+      old_topcolor = !TOPCOLOR
+      IF NOT KEYWORD_SET(PRINTSTYLE) then begin
+         back = RGB("very dark yellow", INDEX=!TOPCOLOR)
+         fore = RGB("pale brown", INDEX=!TOPCOLOR-1)
+         !TOPCOLOR = !TOPCOLOR-2
+      endif
+
       If Keyword_Set(SURF) then begin
          If keyword_set(SUPERIMPOSE) then begin
             IF Keyword_Set(Delay) THEN begin
@@ -398,26 +412,32 @@ PRO ShowWeights, __Matrix, titel=TITEL, winnr=WINNR, $
             endif ELSE begin
                OtherOther= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
             endelse
-            OtherOther = ShowWeights_Scale(OtherOther, /SETCOL, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white)
+            OtherOther = ShowWeights_Scale(OtherOther, /SETCOL, COLORMODE=COLORMODE, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=printstyle)
          endif else begin 
-            dummy = ShowWeights_Scale(0, /SETCOL, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white) ;Grautabelle laden
-            nones = where(data eq !NONE, count)
-            If count ne 0 then data(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
+            dummy = ShowWeights_Scale(0, /SETCOL, COLORMODE=+1, GET_COLORMODE=GET_COLORMODE, GET_MAXCOL=white, PRINTSTYLE=PRINTSTYLE) ;Grautabelle laden
+            nones = where(MatrixMatrix eq !NONE, count)
+            If count ne 0 then MatrixMatrix(nones) = +999999 ;Weil ILD3.6 bei Plots nur MAX_Value kennt und kein MIN_Value
          endelse
-      endif else MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE)
+      endif else MatrixMatrix = ShowWeights_Scale(MatrixMatrix, /SETCOL, COLORMODE=COLORMODE, GET_MAXCOL=white, GET_COLORMODE=GET_COLORMODE, PRINTSTYLE=PRINTSTYLE)
 ;   erase, RGB('orange',/NOALLOC) ;GET_MAXCOL+2
       black = !P.Background
       GET_MAXCOL = white
+      If Keyword_Set(PRINTSTYLE) then begin
+         orange = black
+         fore = black
+         back = !D.Table_Size-1
+         !TOPCOLOR = back
+      endif else orange = RGB('orange',/NOALLOC)
       GET_COLORS = [black, back, fore, white, !TOPCOLOR]
-      !TOPCOLOR = !TOPCOLOR+2
+      !TOPCOLOR = old_TOPCOLOR
       ;;--------------------------------
    ;;--------------------------------
 
 
 If Set(WinNr) then WSet, WinNr
 If Set(WinNr) or keyword_Set(NOWIN) then Begin 
-      XGroesse = (!D.X_Size-Matrix.source_w-50)/float(Matrix.target_W*(Matrix.source_W+1))
-      YGroesse = (!D.Y_Size-Matrix.source_h-50)/float(Matrix.target_H*(Matrix.source_H+1))
+      XGroesse = (!D.X_Size-Matrix.source_w-2*xrand)/float(Matrix.target_W*(Matrix.source_W+1))
+      YGroesse = (!D.Y_Size-Matrix.source_h-2*yrand)/float(Matrix.target_H*(Matrix.source_H+1))
 EndIf    
 
    bildxsize = (1+Matrix.target_w*xGroesse) ;Groesse einer Untermatrix
@@ -530,12 +550,11 @@ EndIf
          end
       end
    endelse
-   col = RGB('orange',/NOALLOC)
    for XX= 0, Matrix.source_w do begin  
-      PLOTS, COLOR=col, /DEVICE, xoffset+[XX*bildxsize-1, XX*bildxsize-1], yoffset+[0, bildysize*Matrix.source_h-1]
+      PLOTS, COLOR=orange, /DEVICE, xoffset+[XX*bildxsize-1, XX*bildxsize-1], yoffset+[0, bildysize*Matrix.source_h-1]
    end
    for YY= 0, Matrix.source_h do begin
-      PLOTS, COLOR=col, /DEVICE, xoffset+[0, bildxsize*Matrix.source_w-1], yoffset+[YY*bildysize-1, YY*bildysize-1]
+      PLOTS, COLOR=orange, /DEVICE, xoffset+[0, bildxsize*Matrix.source_w-1], yoffset+[YY*bildysize-1, YY*bildysize-1]
    end
    ;;--------------------------------
 
