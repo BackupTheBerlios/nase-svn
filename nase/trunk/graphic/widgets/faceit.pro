@@ -131,6 +131,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.9  1999/10/27 12:01:11  kupper
+;        Added no_block-keyword.
+;
 ;        Revision 1.8  1999/09/21 13:15:35  kupper
 ;        Added Keyword COMPILE.
 ;
@@ -417,11 +420,11 @@ END ; faceit_EVENT
 
 
 
-PRO FaceIt, simname, COMPILE=compile
+PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
 
    COMMON WidgetSimulation, MyFont, MySmallFont
 
-
+   Default, NO_BLOCK, 1
    DEBUGMODE = 1; XMANAGER will terminate on error, if DEBUGMODE is set
    
 
@@ -558,7 +561,7 @@ PRO FaceIt, simname, COMPILE=compile
    XMANAGER, CATCH=1-DEBUGMODE
 
    XMANAGER, "FaceIt! "+SimName, W_Base, $
-    EVENT_HANDLER="FaceIt_EVENT", /NO_BLOCK
+    EVENT_HANDLER="FaceIt_EVENT", NO_BLOCK=no_block
 
 
 END ; FaceIt
