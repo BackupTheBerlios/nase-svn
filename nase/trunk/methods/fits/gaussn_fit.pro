@@ -1,6 +1,7 @@
 ;+
 ; NAME:
 ;	GAUSSN__FUNCT
+; AIM:  evaluate the sum of a gaussian and a 2nd order polynomial
 ;
 ; VERSION: $Id$
 ;
@@ -33,12 +34,13 @@
 ; PROCEDURE:
 ;	F = A(0)*EXP(-Z^A(3)/2)
 ;	Z = ABS((X-A(1))/A(2))
+;-
 ; MODIFICATION HISTORY:
 ;	WRITTEN, DMS, RSI, SEPT, 1982.
 ;	Modified, DMS, Oct 1990.  Avoids divide by 0 if A(2) is 0.
 ;	Added to Gauss_fit, when the variable function name to
 ;		Curve_fit was implemented.  DMS, Nov, 1990.
-;-
+;
 PRO	GAUSSN__FUNCT,X,A,F,PDER
 	n = n_elements(a)
 ;	ON_ERROR,2                      ;Return to caller if an error occurs
@@ -78,6 +80,7 @@ Function GaussN_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ;+
 ; NAME:
 ;	GAUSS_FIT
+; AIM:  fits the gaussian equation to given data
 ;
 ; PURPOSE:
 ; 	Fit the equation y=f(x) where:
@@ -139,10 +142,13 @@ Function GaussN_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ;	element.  The height is (MAX-AVG) or (AVG-MIN) respectively.
 ;	The width is found by searching out from the extrema until
 ;	a point is found less than the 1/e value.
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  2000/09/28 13:05:49  gabriel
+;            AIM tag added , message <> console
+;
 ;       Revision 1.2  2000/09/27 15:59:26  saam
 ;       service commit fixing several doc header violations
 ;
@@ -160,14 +166,14 @@ Function GaussN_Fit, x, y, a, NTERMS=nt, ESTIMATES=est, CONVERGED=converged
 ;       Thu Aug 21 10:56:14 1997, Mirko Saam
 ;		dies ist im wesentlichen die IDL 5 Routine von Gaussfit, die nun auch den Parameter NTerms akzeptiert
 ;
-;-
+;
 
 
 ;on_error,2                      ;Return to caller if an error occurs
 csave = !c
 if n_elements(nt) eq 0 then nt = 4
 if nt NE 4 then $
-   message,'NTERMS must have 4 values.'
+   console, /fatal ,'NTERMS must have 4 values.'
 n = n_elements(y)		;# of points.
 s = size(y)
 
@@ -176,7 +182,7 @@ if n_elements(est) eq 0 then begin	;Compute estimates?
    ; too much work :-(
    a = [MAX(y), 0.0, 2.0, 2.0]
 endif else begin
-    if nt ne n_elements(est) then message, 'ESTIMATES must have NTERM elements'
+    if nt ne n_elements(est) then console, /fatal, 'ESTIMATES must have NTERM elements'
     a = est
 endelse
 
