@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  Slope2Angle()
+;  Slope2Angle() 
 ;
 ; AIM: Compute slope of a straight line from its angle
 ;  
@@ -39,6 +39,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.3  2000/06/14 14:17:49  kupper
+;        Added one space to turn on the CVS watch.
+;
 ;        Revision 2.2  2000/06/14 12:59:36  kupper
 ;        Changed policy of floating / double computation.
 ;
