@@ -33,6 +33,9 @@
 ;               a value between 1 and the number of dimensions of <*>x</*>. Like in the <*>Total</*> syntax, "1" (not "0")
 ;               denotes the first dimension, and so on.
 ;
+; INPUT KEYWORDS:
+;  RM:: Set this keyword to a named variable to get what you have thrown away (i.e. the removed mean values)
+;
 ; OUTPUTS:
 ;  y::  A float array of the same dimensional structure as <*>x</*>, being the same as x, except that the mean value(s)
 ;       has (have) been subtracted.
@@ -62,7 +65,7 @@
 
 
 
-FUNCTION  RemoveMean,   X, Dimension
+FUNCTION  RemoveMean,   X, Dimension , RM=RM
 
 
    ;----------------------------------------------------------------------------------------------------------------------
@@ -100,7 +103,10 @@ FUNCTION  RemoveMean,   X, Dimension
 
    ; If DIM is zero (this includes the case that DIMENSION is not set) or if X is one-dimensional, the mean is subtracted
    ; from X as a whole:
-   IF  (Dim EQ 0) OR (NDims EQ 1)  THEN  Return,  X - Total(X) / N
+   IF  (Dim EQ 0) OR (NDims EQ 1)  THEN BEGIN
+     RM = Total(X) / N
+     Return,  X - RM
+   ENDIF
    ; => In the following it can be assumed that  1.) NDims >= 2,
    ;                                        and  2.) 1 <= Dim <= NDims.
    Assert, (NDims GE 2) AND (Dim GE 1) AND (Dim LE NDims)
@@ -109,8 +115,8 @@ FUNCTION  RemoveMean,   X, Dimension
    ; Computing the mean values array M and "blowing it up" to the size of X:
    ;----------------------------------------------------------------------------------------------------------------------
 
-   ; The mean value(s) is (are) computed:
-   M = Total(X,Dim) / N
+   ; The mean value(s) to be removed is (are) computed:
+   RM = Total(X,Dim) / N
 
    ; The following array contains the indices of the dimensions which have "survived" the TOTAL procedure, followed by the
    ; index of that dimension which has been eliminated (assuming the maximal number of dimensions being 8):
@@ -123,7 +129,7 @@ FUNCTION  RemoveMean,   X, Dimension
    ; Now M can be "blown up" with the REBIN routine to the same overall size as X; however, the dimension specified by
    ; DIM is now at the last position. (Unfortunately, by the way, the REBIN routine does not accept an array as the
    ; second argument, which makes the command line look somewhat confusing):
-   M = Rebin(M,  DX(DM(0)),DX(DM(1)),DX(DM(2)),DX(DM(3)),DX(DM(4)),DX(DM(5)),DX(DM(6)),DX(DM(7)), /sample)
+   M = Rebin(RM,  DX(DM(0)),DX(DM(1)),DX(DM(2)),DX(DM(3)),DX(DM(4)),DX(DM(5)),DX(DM(6)),DX(DM(7)), /sample)
 
    ; The dimension at the last position has to be shifted to the position originally specified by DIM. In principle,
    ; the corresponding permutation vector for the TRANSPOSE routine is not difficult to create; it is just obtained by
