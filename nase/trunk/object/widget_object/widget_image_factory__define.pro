@@ -34,16 +34,19 @@ End
 
 Pro widget_image_factory::type, string
    self->image_factory::type, string
+   Widget_Control, self.w_type, SET_DROPLIST_SELECT=(Where(strupcase(*self.types) eq strupcase(string)))[0]
    self->paint_
 End
 
 Pro widget_image_factory::size, value
    self->image_factory::size, value
+   Widget_Control, self.w_size, SET_VALUE=value
    self->paint_
 End
 
 Pro widget_image_factory::brightness, value
    self->image_factory::brightness, value
+   Widget_Control, self.w_brightness, SET_VALUE=value
    self->paint_
 End
 
@@ -60,6 +63,9 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
 
+   ;; fill in the types data member:
+   self.types = Ptr_New(self->image_factory::types())
+
    ;; all widgets we add here will have self as their user-value.
 
    ;; add showit to present picture
@@ -68,19 +74,19 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
                                   Notify_Realize="WIF_Notify_realize")
    
    ;; add a drop-list-widget to select the image type
-   dummy = widget_droplist(self.widget, Value=self->types(), UValue=self, $
-                           Event_Pro="WIF_type_handler")
+   self.w_type = widget_droplist(self.widget, Value=self->types(), UValue=self, $
+                                 Event_Pro="WIF_type_handler")
    subbase = widget_base(self.widget, /row)
    ;; add a slider to select image size
-   dummy = CW_fslider2(subbase, /Vertical, Minimum=0.0, Maximum=1.0, $
-                       StepWidth=0.01, Value=self.size, Title="size", $
-                       UValue=self, $
-                      Event_Pro="WIF_size_handler")
+   self.w_size = CW_fslider2(subbase, /Vertical, Minimum=0.0, Maximum=1.0, $
+                             StepWidth=0.01, Value=self.size, Title="size", $
+                             UValue=self, $
+                             Event_Pro="WIF_size_handler")
    ;; add a slider to select image brighness
-   dummy = CW_fslider2(subbase, /Vertical, Minimum=0.0, Maximum=1.0, $
-                       StepWidth=0.01, Value=self.size, Title="bright", $
-                       UValue=self, $
-                      Event_Pro="WIF_brightness_handler")
+   self.w_brightness = CW_fslider2(subbase, /Vertical, Minimum=0.0, Maximum=1.0, $
+                                   StepWidth=0.01, Value=self.brightness, Title="bright", $
+                                   UValue=self, $
+                                   Event_Pro="WIF_brightness_handler")
    ;; note: this will never fail.
 
    ;; If we reach this point, initialization of the
@@ -94,6 +100,7 @@ End
 
 Pro widget_image_factory::cleanup
    message, /Info, "I'm dying!"
+   Ptr_Free, self.types
    self->basic_widget_object::cleanup ;This also destroyes the widget 
    self->image_factory::cleanup
 End
@@ -141,7 +148,6 @@ Pro widget_image_factory::plotinfo_, value
    self.plotinfo = value
 End
 
-
 ;; ------------ Object definition ---------------------------
 Pro widget_image_factory__DEFINE
    dummy = {widget_image_factory, $
@@ -149,9 +155,18 @@ Pro widget_image_factory__DEFINE
             inherits basic_widget_object, $
             inherits image_factory, $
             $
+            types: PTR_NEW(), $ ;This will point to a string array containing
+            $                   ;the image types. (We do not want to ask
+            $                   ;image_factory::types() to scan the directory 
+            $                   ;whenever the droplist widget should be set!)
+            $
             showit_id: 0l, $
             plotinfo: {PLOTTVSCL_INFO}, $
-            post_paint_hook: "" $
+            post_paint_hook: "", $
+            $
+            w_size: 0l, $
+            w_brightness: 0l, $
+            w_type: 0l $
            }
 End
 
