@@ -52,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.5  1997/11/30 17:56:50  thiel
+;            Ich dacht, da waer ein Fehler drin, war aber nich...
+;
 ;     Revision 2.4  1997/11/28 12:56:15  thiel
 ;           Eine sinnlose Aenderung, damit das CVS-WATCH funktioniert.
 ;
@@ -181,7 +184,6 @@ PlotWidthNormal = TotalPlotWidthNormal - TotalPlotWidthNormal*2*!Y.Ticklen
 PlotHeightNormal = TotalPlotHeightNormal - TotalPlotHeightNormal*2*!X.Ticklen
 
 PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
-
 
 ;-----Plotten der UTVScl-Graphik:
 UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown
