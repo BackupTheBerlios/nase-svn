@@ -89,7 +89,7 @@ FUNCTION  Convol2DFFT, X, K
    N       = Product(NX)   ; the number of elements in one image
    NShift  = NK / 2        ; the number of data points by which the result of the inverse FFT must be shifted (see below)
    IF  Min(NX)         LT 2  THEN  Console, '  X epoch must have more than one element in each dimension.', /fatal
-   IF  Total(NK GT NX) GT 0  THEN  Console, '  K must be smaller in size than X.', /fatal
+   IF  Total(NK GT NX) GT 0  THEN  Console, '  K must not be greater in size than X.', /fatal
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Computing the convolution product in a FOR loop:

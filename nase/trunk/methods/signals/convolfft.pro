@@ -83,7 +83,7 @@ FUNCTION  ConvolFFT, X, K
    IF  (TypeK GE 7) AND (TypeK LE 11) AND (TypeK NE 9)  THEN  Console, '  X is of wrong type.', /fatal
    IF  SizeK(0) GT 1   THEN  Console, '  K must be one-dimensional.', /fatal
    IF  NX       LT 2   THEN  Console, '  X epoch must have more than one element.', /fatal
-   IF  NK       GT NX  THEN  Console, '  K must have less elements than X.', /fatal
+   IF  NK       GT NX  THEN  Console, '  K must not have more elements than X.', /fatal
 
    ;----------------------------------------------------------------------------------------------------------------------
    ; Computing the convolution product in a FOR loop:
