@@ -191,11 +191,13 @@ PRO PeakPicker, ydata,tdata, ypeak,tpeak,number, yvalley,tvalley, $
       Endif
    EndFor
    
-   If iPeak gt 0 And iValley Gt 0 then Begin
-      ypeak=ypeak(1:*)          ; truncate first elements (from initialization).
-      yvalley=yvalley(1:*)
-      tpeak=tpeak(1:*)
-      tvalley=tvalley(1:*)
+   If iPeak gt 0 then Begin
+     ypeak=ypeak(1:*)           ; truncate first elements (from initialization).
+     tpeak=tpeak(1:*)
+   Endif
+   If iValley Gt 0 then Begin
+     yvalley=yvalley(1:*)
+     tvalley=tvalley(1:*)
    Endif
    
    number=iPeak                 ; return number of peaks.
