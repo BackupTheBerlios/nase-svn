@@ -5,6 +5,8 @@
 ;                         + Device-unabhaegige Darstellung
 ;                         + Positionierung in Normalkoordinaten
 ;                         + Vergroesserung via STRETCH
+;                     UTvScl gibt (fuer UTvScl) unbekannte Optionen an
+;                     TvScl weiter, z.B. /ORDER
 ;
 ; CATEGORY:           GRAPHIC
 ;
@@ -48,6 +50,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1997/11/14 16:10:03  saam
+;           Header ergaenzt
+;
 ;     Revision 2.8  1997/11/13 13:15:41  saam
 ;           Device Null wird unterstuetzt
 ;
