@@ -67,6 +67,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.11  2000/04/03 12:02:56  saam
+;             Changed Default Values:
+;       	SYSTEM -> name of the calling routine
+;               YEAR   -> includes now hour:minutes:seconds
+;
 ;       Revision 2.10  1998/11/08 14:51:37  saam
 ;             + video-structure made a handle
 ;             + ZIP-handling replaced by UOpen[RW]
@@ -115,11 +120,16 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
    Default, ZIPPED, 0
    Default, __title, _title
    Default, __title, "The Spiking Neuron"   
-   Default, system, "CVS"
+
+   help, calls=m
+   m = m(1)
+   pos1 = strpos(m,'/', /REVERSE_SEARCH) 
+   Default, system, STRUPCASE(strmid(m,pos1+1,strpos(m,'.pro')-pos1-1))
+
    Default, starring, "Nerd ""die NASE"" Neuron"
    Default, company, "AG Neurophysik"
    Default, producer, GETENV("USER")
-   Default, year, strmid(systime(),0,11)+' '+strmid(systime(),20,24)
+   Default, year, systime()
  
    filename = __title+".vid"
    infoname = __title+".vidinf"
