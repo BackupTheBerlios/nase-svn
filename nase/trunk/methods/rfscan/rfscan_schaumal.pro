@@ -19,6 +19,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1998/03/03 14:44:20  kupper
+;               RFScan_Schaumal ist jetzt viel schneller, weil es
+;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
+;                   Das ist zwar unelegant, aber schnell.
+;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
+;                   macht und daher nur für die tatsächlich feuernden Neuronen
+;                   Berechnungen durchführt.
+;
 ;        Revision 1.3  1998/02/16 14:59:48  kupper
 ;               VISUALIZE ist jetzt implementiert. WRAP auch.
 ;
@@ -37,11 +45,18 @@ Pro RFScan_Schaumal, RFS, OutLayer
 
    TestInfo, RFS, "RFScan"
 
-   If RFS.OBSERVE_SPIKES     then LayerData, OutLayer, OUTPUT=Out
+   RFS.divide = RFS.divide+1
+
+   If RFS.OBSERVE_SPIKES     then begin
+      Handle_Value, OutLayer.O, SSOut
+      Out = Out2Vector(OutLayer, /DIMENSIONS)
+   End
    If RFS.OBSERVE_POTENTIALS then LayerData, OutLayer, POTENTIAL=Out
-      
+   
    ;;------------------> VIUALIZE?
    If Keyword_Set(RFS.VISUALIZE) then begin
+      ActWin = !D.Window
+      
       WSet, RFS.WinOut          ;Draw Observed Pattern
       If RFS.OBSERVE_SPIKES then NASETV, RFS.MaxCol*Out, ZOOM=RFS.VISUALIZE(1)
       If RFS.OBSERVE_POTENTIALS then begin
@@ -52,23 +67,43 @@ Pro RFScan_Schaumal, RFS, OutLayer
          ShowWeights, RFS.RFs, WIN=RFS.WinRFs, /RECEPTIVE, ZOOM=RFS.VISUALIZE(2), GET_COLORMODE=ColorMode
          RFS.ColorMode = colormode
          WSet, RFS.WinMean      ;Draw Mean RF
-         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap)
+         ActP = !P
+         !P.Multi = 0
+         !P.Position = [0, 0, 0, 0]
+         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), color=RGB('orange', /NOALLOC)
+         !P = ActP
       Endif
+
+      WSet, ActWin
    EndIf
    ;;--------------------------------
 
-   MyRFs = RFS.RFs              ;nötig, da Weights (vielleicht) den Handle verändert!
-   G = Weights(MyRFs)
+   ;;------------------> Muß überhaupt etwas getan werden?
+   If RFS.OBSERVE_SPIKES then If SSOut(0) eq 0 then return ;Es hat gar nichts gefeuert!
+   ;;--------------------------------
 
-   For i=0, LayerSize(OutLayer)-1 do begin
+;   MyRFs = RFS.RFs              ;nötig, da Weights (vielleicht) den Handle verändert!
+   Handle_Value, RFS.RFs, DW, /NO_COPY
+;   G = Weights(MyRFs)
+
+
+   If RFS.OBSERVE_POTENTIALS then begin
+      For i=0, LayerSize(OutLayer)-1 do begin
 ;      RF = GetWeight(MyRFs, T_INDEX=i)
 ;      RF = RF + Out(i)*RFS.Picture
 ;      SetWeight, MyRFs, T_INDEX=i, RF
-      G(i, *) = G(i, *) + Out(i)*RFS.Picture
-   endfor
+;         G(i, *) = G(i, *) + Out(i)*RFS.Picture
+        DW.Weights(i, *) = DW.Weights(i, *) + Out(i)*RFS.Picture
+      endfor
+   Endif
+   If RFS.OBSERVE_SPIKES then begin
+      For Neuron=1, SSOut(0) do begin ;SSOut(0) enthält die Anzahl der feuernden Neuronen
+;         G(SSOut(Neuron+1), *) = G(SSOut(Neuron+1), *) + RFS.Picture
+         DW.Weights(SSOut(Neuron+1), *) = DW.Weights(SSOut(Neuron+1), *) + RFS.Picture
+      Endfor
+   EndIf
 
-   SetWeights, MyRFs, G
-   RFS.RFs = MyRFs
-
-   RFS.divide = RFS.divide+1
+   Handle_Value, RFS.RFs, DW, /NO_COPY, /SET
+;   SetWeights, MyRFs, G
+;   RFS.RFs = MyRFs
 End

@@ -31,6 +31,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1998/03/03 14:44:21  kupper
+;               RFScan_Schaumal ist jetzt viel schneller, weil es
+;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
+;                   Das ist zwar unelegant, aber schnell.
+;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
+;                   macht und daher nur für die tatsächlich feuernden Neuronen
+;                   Berechnungen durchführt.
+;
 ;        Revision 1.3  1998/02/16 14:59:48  kupper
 ;               VISUALIZE ist jetzt implementiert. WRAP auch.
 ;
@@ -47,11 +55,38 @@
 
 Function ReturnPic, RFS
    If Keyword_Set(RFS.VISUALIZE) then begin
+      ActWin = !D.Window
+      
       WSet, RFS.WinIn
       NASETV, ShowWeights_Scale(RFS.Picture, COLORMODE=RFS.ColorMode), ZOOM=RFS.VISUALIZE(0)
+
+      WSet, ActWin
    EndIf
    Return, RFS.Picture
 End
+
+Function Make_OnOff, arry, arrx, onpos, offpos
+;
+; Array-Index:     0 1 2 3 4 5 6 . . n            n := arry-1
+;                 | | | | | | | | | | |
+;                 | | | | | | | | | | |
+; Kantenpos:      0 1 2 3 4 5 6 . . n 0
+;
+   common common_random, seed
+
+   a=fltarr(arry,arrx)
+   if onpos eq offpos then return, a
+
+   if onpos le offpos then begin
+      a(*, onpos:offpos-1) = 1.
+   endif else begin
+      a(*, offpos:onpos-1) = 1.
+      a = 1.-a
+   endelse
+
+   return, a
+end
+
 
 Function RFScan_Zeigmal, RFS, Picture
    common common_random, seed
@@ -80,35 +115,65 @@ Function RFScan_Zeigmal, RFS, Picture
 
    ;;------------------> (AUTO_HORIZONTALEDGE)
    If Keyword_Set(RFS.auto_horizontaledge) then begin
-      If RFS.count eq RFS.height-1 then begin
-         message, /INFORM, "Edge has been presented at all possible vertical positions"
-         message, /INFORM, " - new cycle starting NOW."
-         RFS.shiftpositions = all_random(RFS.height) 
+      If RFS.auto_horizontaledge le 2 then begin ;Einzelne Kanten
+         If RFS.count eq RFS.height-1 then begin
+            message, /INFORM, "Edge has been presented at all possible vertical positions"
+            message, /INFORM, " - new cycle starting NOW."
+            RFS.shiftpositions = all_random(RFS.height) 
+         Endif
+         RFS.count = (RFS.count+1) mod RFS.height ;Index of next Position
+         pos = RFS.shiftpositions(RFS.count) ;Next Position
+         RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
+         RFS.Picture(0:pos, *) = 1.0
+         If RFS.auto_horizontaledge eq 2 then RFS.Picture = 1.0-RFS.Picture
+      End
+      If RFS.auto_horizontaledge eq 3 then begin ;Zwei Kanten
+         If RFS.count eq RFS.height-1 then begin
+            message, /INFORM, "Edges have been presented at all possible vertical positions"
+            message, /INFORM, " - new cycle starting NOW."
+            RFS.shiftpositions = all_random(RFS.height)
+            RFS.shiftpositions2 = all_random(RFS.height)
+         Endif
+         RFS.count = (RFS.count+1) mod RFS.height ;Index of next Position
+         onpos  = RFS.shiftpositions(RFS.count) ;Next On-Position
+         offpos = RFS.shiftpositions2(RFS.count) ;Next Off-Position
+         RFS.Picture = Rotate( Make_OnOff(RFS.width, RFS.height, onpos, offpos), 1 )
       Endif
-      RFS.count = (RFS.count+1) mod RFS.height ;Index of next Position
-      pos = RFS.shiftpositions(RFS.count) ;Next Position
-      RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
-      RFS.Picture(0:pos, *) = 1.0
-      If RFS.auto_horizontaledge eq 2 then RFS.Picture = 1.0-RFS.Picture
       Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
 
    ;;------------------> (AUTO_VERTICALEDGE)
    If Keyword_Set(RFS.auto_verticaledge) then begin
-      If RFS.count eq RFS.width-1 then begin
-         message, /INFORM, "Edge has been presented at all possible horizontal positions"
-         message, /INFORM, " - new cycle starting NOW."
-         RFS.shiftpositions = all_random(RFS.width) 
+      If RFS.auto_verticaledge le 2 then begin ;Einzelne Kanten
+         If RFS.count eq RFS.width-1 then begin
+            message, /INFORM, "Edge has been presented at all possible horizontal positions"
+            message, /INFORM, " - new cycle starting NOW."
+            RFS.shiftpositions = all_random(RFS.width) 
+         Endif
+         RFS.count = (RFS.count+1) mod RFS.width ;Index of next Position
+         pos = RFS.shiftpositions(RFS.count) ;Next Position
+         RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
+         RFS.Picture(*, 0:pos) = 1.0
+         If RFS.auto_verticaledge eq 2 then RFS.Picture = 1.0-RFS.Picture
+      EndIf
+      If RFS.auto_verticaledge eq 3 then begin ;Zwei Kanten
+         If RFS.count eq RFS.width-1 then begin
+            message, /INFORM, "Edges have been presented at all possible vertical positions"
+            message, /INFORM, " - new cycle starting NOW."
+            RFS.shiftpositions = all_random(RFS.width)
+            RFS.shiftpositions2 = all_random(RFS.width)
+         Endif
+         RFS.count = (RFS.count+1) mod RFS.width ;Index of next Position
+         onpos  = RFS.shiftpositions(RFS.count) ;Next On-Position
+         offpos = RFS.shiftpositions2(RFS.count) ;Next Off-Position
+         RFS.Picture = Make_OnOff(RFS.height, RFS.width, onpos, offpos)
       Endif
-      RFS.count = (RFS.count+1) mod RFS.width ;Index of next Position
-      pos = RFS.shiftpositions(RFS.count) ;Next Position
-      RFS.Picture = fltarr(RFS.HEIGHT, RFS.WIDTH)
-      RFS.Picture(*, 0:pos) = 1.0
-      If RFS.auto_verticaledge eq 2 then RFS.Picture = 1.0-RFS.Picture
       Return, ReturnPic(RFS)
    EndIf
    ;;--------------------------------
+
+
 
    ;;------------------> Vertically Shift predefined Picture (SHIFT_VERTICAL)
    If Keyword_Set(RFS.shift_vertical) then begin

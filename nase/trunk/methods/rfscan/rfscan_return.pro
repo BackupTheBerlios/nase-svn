@@ -37,6 +37,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1998/03/03 14:44:20  kupper
+;               RFScan_Schaumal ist jetzt viel schneller, weil es
+;                1. direkt auf den Weights-Tag der (Oldstyle)-DW-Struktur zugreift.
+;                   Das ist zwar unelegant, aber schnell.
+;                2. Beim Spikes-Observieren von den SSParse-Listenm Gebrauch
+;                   macht und daher nur für die tatsächlich feuernden Neuronen
+;                   Berechnungen durchführt.
+;
 ;        Revision 1.3  1998/02/16 14:59:48  kupper
 ;               VISUALIZE ist jetzt implementiert. WRAP auch.
 ;
@@ -51,20 +59,39 @@
 ;
 ;-
 
-Function RFScan_Return, RFS
+Function RFScan_Return, RFS, FILENAME=filename
 
    TestInfo, RFS, "RFScan"
 
+
    If RFS.divide ne 0 then begin
+
       BoostWeight, RFS.RFs, 1.0/float(RFS.divide)
-      RFS.divide = 0
-      ;;------------------> VIUALIZE?
+      If Keyword_Set(FILENAME) then begin
+         Message, /INFORM, "Saving Estimated RFs in File '"+filename+".save'..."
+         Message, /INFORM, "     Restore using 'Restore' and 'RestoreDW()'!"
+         SaveRF = SaveDW(RFS.RFs)
+         Save, SaveRF, FILENAME=filename+".save", /VERBOSE
+         BoostWeight, RFS.RFs, float(RFS.divide) ;Soll ja noch weiter benutzt werden...   
+      Endif Else begin
+         RFS.divide = 0
+      End
+
+      ;;------------------> VISUALIZE?
       If Keyword_Set(RFS.VISUALIZE) then begin
+         ActWin = !D.Window
+
          ;;Draw Estimated RFs
          ShowWeights, RFS.RFs, WIN=RFS.WinRFs, /RECEPTIVE, ZOOM=RFS.VISUALIZE(2), GET_COLORMODE=ColorMode
          RFS.ColorMode = colormode
          WSet, RFS.WinMean      ;Draw Mean RF
-         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap)        
+         ActP = !P
+         !P.Multi = 0
+         !P.Position = [0, 0, 0, 0]
+         Shade_Surf, MiddleWeights(RFS.RFs, /RECEPTIVE, WRAP=RFS.wrap), color=RGB('orange', /NOALLOC)      
+         !P = ActP
+
+         WSet, ActWin
       EndIf
       ;;--------------------------------
    EndIf
