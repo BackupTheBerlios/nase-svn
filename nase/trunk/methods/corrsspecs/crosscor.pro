@@ -51,13 +51,16 @@
 ;       y = sin(2*!Pi*(Freq01/SamplingFreq)*DataVec)
 ;       PShift = 2*(SamplingFreq/Freq01)               ; 2 Perioden
 ;
-;       Cxy = CrossCor(x, y, PShift, Cxy, CorrBranch='-', /OverlappNorm)
+;       Cxy = CrossCor(x, y, PShift, CorrBranch='-', /OverlapNorm)
 ;       plot, DataVec(0:PShift)*1e03/SamplingFreq, Cxy, xTitle='time / ms'
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  1997/12/16 10:59:11  saam
+;             wieder ein Bug im Header
+;
 ;       Revision 1.3  1997/12/16 10:50:49  saam
 ;             Header korrigiert & Main entfernt
 ;
