@@ -191,8 +191,8 @@ FUNCTION  AEC,   X, Y, fX_, fY_, fS_,  DIAG=diag, $
    EX = Transpose(EX, Permutation)
    EY = Transpose(EY, Permutation)
    ; The envelopes signals are "time-sliced" and made mean-free:
-   EXSlices = RemoveMean(Slices(EX, ssize = SSize, sshift = SShift, sampleperiod = 1/fS, /tfirst), 1)
-   EYSlices = RemoveMean(Slices(EY, ssize = SSize, sshift = SShift, sampleperiod = 1/fS, /tfirst), 1)
+   EXSlices = RemoveMean(Slices(EX, ssize = SSize, sshift = SShift, sampleperiod = 1/fS), 1)
+   EYSlices = RemoveMean(Slices(EY, ssize = SSize, sshift = SShift, sampleperiod = 1/fS), 1)
    ; Now the dimension coding the different frequency bands is needed in the first position again:
    IF  NfX EQ 1  THEN  EXSlices = Reform(EXSlices, [1, Size(EXSlices, /dim)], /overwrite)  $
                  ELSE  EXSlices = Transpose(EXSlices, [SizeX[0]+1 , IndGen(SizeX[0]+1)])
