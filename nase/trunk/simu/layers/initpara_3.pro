@@ -38,7 +38,14 @@
 ;
 ; EXAMPLE:              para3 = InitPara_3(tauf=10.0, vs=1.0, taup=30.0)
 ;
-; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
+; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 1.3  1998/02/18 15:46:39  kupper
+;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
+;
+;             ------------------------------------------------------------------------------------
+;                       initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
 ;                       Neue Parameter fuers Lernpotential: Vp und taup, Andreas 29. Juli 97
 ;-
@@ -56,7 +63,7 @@ FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
    Default, sigma,  0.0
 
 
-   Para = { Para3               ,$
+   Para = { info : "PARA3"         ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             di   : exp(-1./taui)  ,$

@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.4  1998/02/18 15:46:39  kupper
+;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
+;
 ;       Revision 1.3  1998/01/21 21:44:08  saam
 ;             korrekte Behandlung der DGL durch Keyword CORRECT
 ;             in InputLayer_?
@@ -52,7 +55,7 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
    Default, sigma     ,  0.0
    Default, noisystart,  0.0
 
-   Para = { Para1               ,$
+   Para = { info : "PARA1"         ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             di   : exp(-1./taui)  ,$

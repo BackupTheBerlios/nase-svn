@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.2  1998/02/18 15:46:39  kupper
+;             Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
+;
 ;      Revision 2.1  1998/02/05 13:47:33  saam
 ;            Cool
 ;
@@ -61,7 +64,7 @@ FUNCTION InitPara_4, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, T
    DeltaT = Double(DeltaT)
 
 
-   Para = { Para4                    ,$
+   Para = { info : "PARA4"            ,$
             df   : exp(-deltat/tauf) ,$
             dl   : exp(-deltat/taul) ,$
             di   : exp(-deltat/taui) ,$

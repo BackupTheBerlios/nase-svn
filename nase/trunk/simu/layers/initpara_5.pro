@@ -1,7 +1,7 @@
 ;+
 ; NAME:                 InitPara_5
 ;
-; PURPOSE:              initialisiert Parameterstruktur Para1, die Neuronenparameter fuer Neuronentyp 1 enthaelt
+; PURPOSE:              initialisiert Parameterstruktur Para5, die Neuronenparameter fuer Neuronentyp 5 enthaelt
 ;
 ; CATEGORY:             SIMULATION
 ;
@@ -34,7 +34,14 @@
 ;
 ; EXAMPLE:              para5 = InitPara_5(tauf=10.0, vs=1.0)
 ;
-; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
+; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 2.2  1998/02/18 15:46:39  kupper
+;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
+;
+;             ------------------------------------------------------------------------------------
+;                       initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
 ;
 ;-
@@ -50,7 +57,7 @@ FUNCTION InitPara_5, TAUF=tauf, TAUL=taul,TAUN=taun, TAUI=taui, VS=vs, TAUS=taus
    Default, sigma,  0.0
 
 
-   Para = { Para5                 ,$
+   Para = { info : "PARA5"         ,$
             df   : exp(-1./tauf)  ,$
             dl   : exp(-1./taul)  ,$
             dn   : exp(-1./taun)  ,$

@@ -28,7 +28,14 @@
 ;
 ; EXAMPLE:              para2 = InitPara_2(tauf=10.0, vs=1.0)
 ;
-; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
+; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 1.3  1998/02/18 15:46:39  kupper
+;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
+;
+;   ------------------------------------------------------------------------------------
+;       initial version, Mirko Saam, 22.7.97
 ;
 ;-
 FUNCTION InitPara_2, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart
@@ -45,7 +52,7 @@ FUNCTION InitPara_2, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, T
    Default, sigma     ,  0.0
    Default, noisystart,  0.0
 
-   Para = { Para2                ,$
+   Para = { info: "PARA2"         ,$
             df : exp(-1./tauf)   ,$
             dl : exp(-1./taul)   ,$
             di : exp(-1./taui)   ,$
