@@ -64,6 +64,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  1998/05/18 19:46:42  saam
+;              minor problem with colortable on true color displays fixed
+;
 ;        Revision 2.5  1998/04/16 16:51:24  kupper
 ;               Keyword PRINTSTYLE implementiert für TomWaits-Print-Output.
 ;
@@ -115,7 +118,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
          utvlct, g, g, g         ;Grauwerte
          !REVERTPSCOLORS = 1
-         !P.BACKGROUND = 0      ;Index für Schwarz
+         IF !D.N_COLORS LE 256 THEN !P.BACKGROUND = 0      ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
       MatrixMatrix = MatrixMatrix/double(max)*GET_MAXCOL
@@ -124,12 +127,12 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       If Keyword_Set(SETCOL) then begin
          g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
          If !D.Name eq "PS" then begin ;helle Farbpalette
-            tvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
+            utvlct, 255-g, 255-rotate(g,2), 255-(g+rotate(g,2)) ;Rot-Grün
             !REVERTPSCOLORS = 0
          endif else begin       ;dunkle Farbpalette
             utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
          endelse
-         !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz bzw weiss
+         IF !D.N_COLORS LE 256 THEN !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz bzw weiss
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
       MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
