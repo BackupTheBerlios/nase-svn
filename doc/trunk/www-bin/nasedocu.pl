@@ -2,17 +2,19 @@
 #
 # $Header$
 #
+use diagnostics;
 use strict;
 
 use CGI qw/:standard :html3 -debug/;
-use CGI::Carp qw(fatalsToBrowser);
+use CGI::Carp;
 use File::Basename;
 
 use NASE::globals;
 use NASE::xref;
 use NASE::parse;
 
-my ($hostname, $CVSROOT, $DOCDIR, $DOCURL, $myurl, $fullurl, $sub, $lastmod);
+local $SIG{__WARN__} = \&Carp::cluck;
+my ($hostname, $DOCDIR, $DOCURL, $myurl, $fullurl, $sub, $lastmod);
 
 $CGI::POSTMAX         = 1024*100; # maximal post is 100k
 #$CGI::DISABLE_UPLOADS =    1; # no uploads
@@ -42,51 +44,7 @@ $fullurl = "$myurl/$sub";    # still without the server stuff
 ###################################################################################
 ###################################################################################
 sub updatedoc {
-  my (@projects,@stat);
-
-  print h1("updating documentation...");
-  print "<PRE>\n";
-  
-  if ($CVSROOT){ 
-    print "CVSROOT is set to    ... $CVSROOT\n";
-
-    opendir(DIR, $CVSROOT) || print "can't opendir $CVSROOT: $!\n";
-    @projects = grep { /^[^\.]/ && -d "$CVSROOT/$_" && ! /CVS|RCS/i && ! /doc/ } readdir(DIR);
-    closedir DIR;      
-    
-# this is hopefully done by loginfo from cvs directly
-#    `rm -Rf $DOCDIR/*`;
-#    foreach (@projects){
-#      `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout $_`;
-#      print "checking out $_ ... done\n";
-#    }
-        
-  } else {
-    print "CVSROOT: not set   ... ignoring checkout, assuming modules nase and mind\n"; 
-    @projects = ("nase", "mind");
-  };
-  print "DOCDIR is set to ... $DOCDIR\n";
-  print "looking for projects ... ", join(" ",@projects), "\n";
-
-
-#  print "generating routine index..."; 
-#  createRoutineIdx();
-#  print "...done\n";
-
-
-  createAim(@projects);
-
-  print "generating routines by name...";
-  RoutinesByName();
-  print "...done</PRE>";
-
-  print "generating routine by category...";
-  RoutinesByCat();
-  print "...done</PRE>";
-
-#  print "generating keyword lists...";
-#  keylista();
-#  print "...done</PRE>";
+  my $DOCDIR = getDocDir();
 
   print "create HTML documentation...";
   `$DOCDIR/doc/www-bin/automakedoc`;
@@ -109,6 +67,7 @@ sub updatedoc {
 ###################################################################################
 sub showdir {
   my ($mydir, $targetdir, $level, $reldir, @sdir, @file, $tmprep);
+  my $DOCDIR = getDocDir();
 
   ($mydir, $targetdir, $level) = @_;
   $mydir     =~ s,\/$,,g;
@@ -116,7 +75,7 @@ sub showdir {
   ($reldir = $mydir) =~ s,.*\/,,;
 
   # display yourself
-  print a({href=>"$myurl/$mydir?mode=dir",target=>"_top"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."$reldir"), br;
+  print a({href=>getBaseURL()."/$mydir?mode=dir",target=>"_top"}, img({src=>"/icons/folder.gif",alt=>"[DIR]",border=>"0"})."$reldir"), br;
   
 
   # if you are the target path display all, otherwise do nothing
@@ -136,7 +95,7 @@ sub showdir {
     }
     foreach (sort @file) {
       s/\.pro//i;
-      print a({href=>"$myurl/$mydir?file=$_&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]",border=>"0"})."  $_"), br;
+      print a({href=>getBaseURL()."/$mydir?file=$_&show=header&mode=text",target=>"text"}, img({src=>"/icons/text.gif",alt=>"[DIR]",border=>"0"})."  $_"), br;
     }
 
     print "</BLOCKQUOTE>" if $level;
@@ -151,7 +110,6 @@ sub showdir {
 ###################################################################################
 ###################################################################################
 print "Content-Type: text/html\n\n", myHeader();
-$lastmod = checkRoutineIdx();
 if ($P::mode){
   $_ = $P::mode;
  TRUNK: {
@@ -175,10 +133,10 @@ if ($P::mode){
 			    '<TR CLASS="title"><TD CLASS="title">Indices</TD></TR>',
 			    '<TR><TD CLASS="left">',
 			      "<LI>", a({href=>"/nase.list/", target=>"text"}, "mailing list"), "</LI>",
-			      "<LI>routines by ", a({href=>$DOCURL.RoutinesHTML(), target=>"text"}, "name"), "</LI>",
-			      "<LI>routines by ", a({href=>$DOCURL.RoutinesCatHTML(), target=>"text"}, "category"), "</LI>",
-			      "<LI>keywords by ", a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), "</LI>",
-			      "<LI>keywords by ", a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), "</LI>  ",
+			      "<LI>routines by ", a({href=>getBaseURL()."?show=rbyn&mode=text", target=>"text"}, "name"), "</LI>",
+			      "<LI>routines by ", a({href=>getBaseURL()."?show=rbyc&mode=text", target=>"text"}, "category"), "</LI>",
+#			      "<LI>keywords by ", a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), "</LI>",
+#			      "<LI>keywords by ", a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), "</LI>  ",
 			  "</TD></TR></TABLE>",
 			"</TD></TR><TR><TD>",
 			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
@@ -208,8 +166,7 @@ if ($P::mode){
 			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
 			  '<TR CLASS="title"><TD CLASS="title">Update</TD></TR>',
 			  '<TR><TD CLASS="left">',
-			    "<LI>last update: $lastmod</LI>",
-			    "<LI>",a({href=>"$myurl?mode=update", target=>"_new"}, "update now"), "</LI>", 
+#			    "<LI>",a({href=>getBaseURL()."?mode=update", target=>"_new"}, "update now"), "</LI>", 
 			    '<LI>$Id$ </LI>',
 			  "</TD></TR></TABLE>",
 			"</TD></TR>",
@@ -219,17 +176,21 @@ if ($P::mode){
 		      if ($P::file){if ($P::show eq "header") { showHeader(key=>$P::file); };
 				    if ($P::show eq "source") { showSource($P::file); };
 				    if ($P::show eq "log"   ) { showLog($P::file);    };
-				  } else {
-#				    `cd $DOCDIR; /usr/bin/cvs -d $CVSROOT checkout doc/www-doc`;
-				    if (($sub eq '/')||($sub eq '/nase')||($sub eq '/mind')){
-				      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
-				    } else {
-				      open(IDX, "<".$DOCDIR."/".$sub."/"."index.html");
-				    }
-				    while(<IDX>){print;};
-				    close(IDX) || die "can't close index: $!\n";
-				    last TRUNK;};
-				  };
+		      } else {
+			if ($P::show eq "rbyn"  ) { RoutinesByName(); } else {
+			  if ($P::show eq "rbyc" ) { RoutinesByCat(); } else {
+			    if (($sub eq '/')||($sub eq '/nase')||($sub eq '/mind')){
+			      open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
+			      while(<IDX>){print;};
+			      close(IDX) || die "can't close index: $!\n";
+			    } else {
+			      DirAim($sub);
+			    }
+			  }
+			}
+		      }
+		      last TRUNK;
+		    };
     /search/i   && do { print myBody();
 			quickSearch($P::QuickSearch, param('sfields'));
 			last TRUNK;
