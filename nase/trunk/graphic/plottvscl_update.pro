@@ -4,6 +4,10 @@
 ;
 ; PURPOSE: Auffrischung einer zuvor mittels <A HREF="#PLOTTVSCL">PlotTVScl</A> dargestellten
 ;          Graphik
+;          Starting from revision 2.8, this routine does not need to be called
+;          directly. Instead, a PlotInfo structure can be passed through the
+;          UPDATE_INFO keyword to PlotTvScl.
+;          However, you may still call this routine directly.
 ;
 ; CATEGORY: GRAPHICS / GENERAL
 ;
@@ -20,7 +24,8 @@
 ; KEYWORD PARAMETERS: 
 ;
 ;         INIT: Wenn gesetzt, wird eine neue Farbskalierung
-;               durchgeführt, so, als ob <A HREF="#PLOTTVSCL">PlotTvScl</A> aufgerufen
+;               durchgeführt, so, als ob <A HREF="#PLOTTVSCL">PlotTvScl</A> (ohne 
+;               das Schlüsselwort UPDATE_INFO) aufgerufen
 ;               worden wäre. Alle Schlüsselworte, die <A HREF="#PLOTTVSCL">PlotTvScl</A>
 ;               ursprünglich übergeben wurden (NASE, SETCOL,
 ;               COLORMODE,...) werden, soweit sie sich auf die
@@ -57,6 +62,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.9  2000/03/06 15:56:59  kupper
+;     Added some comments in header.
+;
 ;     Revision 2.8  2000/03/06 14:59:57  kupper
 ;     Added RANGE_IN-Keyword.
 ;
