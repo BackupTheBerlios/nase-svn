@@ -8,7 +8,8 @@
 ;
 ; CALLING SEQUENCE: ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel] 
 ;                                        [,/BOUND]
-;                                        [,GROUP=Widget_Leader] [,/JUST_REG]
+;                                        [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
+;                                        [,GET_BASE=BaseID]
 ;  
 ; INPUTS: Array: Das zu untersuchende Array (ein numerischer Typ!)
 ;
@@ -21,6 +22,8 @@
 ;                            sollen (man denke z.B. an
 ;                            N.A.S.E.-!NONE-Verbindungen).
 ;	
+; OPTIONAL OUTPUTS: GET_BASE: Hier kann die ID des produzierten Widgets erfahren werden.
+;
 ; KEYWORD PARAMETERS: ZOOM:   Vergrößerungsfaktor (Ein Arraypixel im
 ;                             TV-Feld wird als Quadrat der Größe ZOOM
 ;                             Bildschirmpixel dargestellt).
@@ -39,11 +42,26 @@
 ;                             irritierend wirken kann.
 ;                     GROUP:  Eine Widget-ID des Widgets, das als
 ;                             Übervater dienen soll.
+;                     MODAL:  Wenn angegeben, ist das Widget modal,
+;                             d.h. alle anderen Widgets sind
+;                             deaktiviert, solange dieses existiert.
+;                             MODAL erfordert die Angabe eines
+;                             Group-Leaders in GROUP.
 ;                  JUST_REG:  Wird direkt an den XMANAGER
 ;                             weitergereicht und dient dazu, mehrere
 ;                             Instanzen von ExamineIt gleichzeitig zu
 ;                             benutzen. (Vgl. <A HREF="#SURFIT">SurfIt</A> oder 
 ;                             Beispiel.)
+;                  NO_BLOCK:  Wird ab IDL 5 an den XMANAGER
+;                             weitergegeben. (Beschreibung
+;                             s. IDL-Hilfe)
+;                             Der Default ist 1, also kein
+;                             Blocken. Wird Blocken gewünscht, so muß
+;                             NO_BLOCK explizit auf 0 gesetzt werden.
+;             DELIVER_EVENTS: Hier kann ein Array
+;                             von Widget-Indizes übergeben werden, an die alle 
+;                             ankommenden Events
+;                             weitergereicht werden.
 ;
 ; RESTRICTIONS: Kann bisher noch keine NASE-Typ-Arrays.
 ;
@@ -62,6 +80,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.2  1998/03/31 13:38:22  kupper
+;              Sicherheits-Commit vor Änderung am Event-Handler.
+;
 ;       Revision 2.1  1997/12/15 16:24:45  kupper
 ;              Schöpfung.
 ;
@@ -179,9 +200,14 @@ Pro ExamineIt_Event, Event
    Widget_Control, Event.ID, SET_UVALUE=info, /NO_COPY
 End
 
-Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, DONT_PLOT=dont_plot, GROUP=group, JUST_REG=just_reg, $
+Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
+               GROUP=group, JUST_REG=just_reg, NO_Block=no_block, MODAL=modal, $
+               GET_BASE=get_base, DELIVER_EVENTS=deliver_events, $
                BOUND=bound
    
+   Default, no_block, 1
+   Default, modal, 0
+   Default, deliver_events, [-1]
    Default, tv_w, w
    w_width = (size(w))(1)
    w_height = (size(w))(2)
@@ -200,8 +226,10 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, DONT_PLOT=dont_plot, GROUP=group
    Default, title, "Examine It!"
 
    base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
+                      MODAL=modal, $
                       SPACE=1, $
                       UVALUE={name:"base"})
+   GET_BASE = base
    
    upper_base = WIDGET_BASE(base, /ROW, $
                             SPACE=7, $
@@ -251,10 +279,12 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, DONT_PLOT=dont_plot, GROUP=group
                                    w       : w, $
                                    wmax    : max(w), $
                                    wmin    : min(w), $
-                                   bound   : bound}
+                                   bound   : bound, $
+                                   deliver_events:deliver_events}
 
 ;   wset, row_win
 ;   plot, w(*, w_height/2), xrange=[0, w_width-1], /XSTYLE, POSITION=gp, XMINOR=gm(0)
 
-   XMANAGER, "ExamineIt", base, JUST_REG=JUST_REG
+   If fix(!VERSION.Release) ge 5 then XMANAGER, 'ExamineIt', Base,NO_BLOCK=no_block, JUST_REG=just_reg $
+    else XMANAGER, "ExamineIt", base, JUST_REG=JUST_REG
 End
