@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/04/05 13:51:53  saam
+;           now conversion is less memory intensive
+;
 ;     Revision 2.1  1998/02/05 11:36:18  saam
 ;           Cool
 ;
@@ -37,29 +40,26 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
 
    IF (Info(_SDW) NE 'SDW_DELAY_WEIGHT') AND (Info(_SDW) NE 'SDW_WEIGHT') THEN Message, 'SDW[_DELAY]_WEIGHT expected, but got '+STRING(Info(_SDW))+' !'
 
-   W = Weights(_SDW)
-   IF (Info(_SDW) EQ 'SDW_DELAY_WEIGHT') THEN D = Delays(_SDW)
+   dims = DWDim(_SDW, /ALL)
 
-   Handle_Value, _SDW, SDW, /NO_COPY
-   IF Info(SDW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN            
+   IF Info(_SDW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN            
       DW = {  info    : 'DW_DELAY_WEIGHT',$
-              source_w: SDW.source_w ,$
-              source_h: SDW.source_h ,$
-              target_w: SDW.target_w ,$
-              target_h: SDW.target_h ,$
-              Weights : W            ,$
-              Delays  : D             }
+              source_w: dims(0) ,$
+              source_h: dims(1) ,$
+              target_w: dims(2) ,$
+              target_h: dims(3) ,$
+              Weights : Weights(_SDW),$
+              Delays  : Delays(_SDW)  }
    END ELSE IF Info(SDW) EQ 'SDW_WEIGHT' THEN BEGIN
       DW = {  info    : 'DW_WEIGHT'  ,$
-              source_w: SDW.source_w ,$
-              source_h: SDW.source_h ,$
-              target_w: SDW.target_w ,$
-              target_h: SDW.target_h ,$
-              Weights : W             }
+              source_w: dims(0) ,$
+              source_h: dims(1) ,$
+              target_w: dims(2) ,$
+              target_h: dims(3) ,$
+              Weights : Weights(_SDW) }
       
-   END ELSE Message, 'this mustnot happen!!'
-   Handle_Value, _SDW, SDW, /NO_COPY, /SET
+   END ELSE Message, 'this must not happen!!'
    IF NOT Keyword_Set(KEEP_ARGUMENT) THEN FreeDW, _SDW
    
-   RETURN, Handle_Create(!MH, VALUE=DW)
+   RETURN, Handle_Create(!MH, VALUE=DW, /NO_COPY)
 END
