@@ -10,7 +10,7 @@
 ;
 ; CATEGORY:           GRAPHIC
 ;
-; CALLING SEQUENCE:   UTvScl, Image [,XNorm] [,YNorm] [,/CENTER]
+; CALLING SEQUENCE:   UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
 ;                             [,X_SIZE=x_size] [,Y_SIZE=y_size]
 ;                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
 ;                             [,/NOSCALE] [,DIMENSIONS=dimensions]
@@ -21,6 +21,11 @@
 ;                                   bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
 ;                                   ;wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
 ;                                   von XNorm nebeneinander positioniert, siehe Docu von TV
+; OPTIONAL OUTPUTS:   Dimension : die Darstellungsparameter werden in Normal-Koordinaten zurueckgegeben: 
+;                                 (xpos, ypos, xsize, ysize)
+;                                 Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
+;                                 gesetztem CENTER-Keyword)
+;                         
 ;
 ; KEYWORD PARAMETERS: CENTER    : Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
 ;                     X_SIZE    ,
@@ -55,6 +60,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.14  1997/12/17 15:28:58  saam
+;           Ergaenzung um optionalen Output Dimension
+;
 ;     Revision 2.13  1997/12/17 14:47:18  saam
 ;          reden wir nicht davon
 ;
@@ -94,7 +102,7 @@
 ;
 ;
 ;-
-PRO UTvScl, _Image, XNorm, YNorm $
+PRO UTvScl, _Image, XNorm, YNorm, Dimension $
             , CENTER=center $
             , STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
             , X_SIZE=x_size, Y_SIZE=y_size $
@@ -188,7 +196,9 @@ PRO UTvScl, _Image, XNorm, YNorm $
 
    IF Set(Dimensions) THEN dimensions = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $
                                          xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
-   
+   IF N_Params() EQ 4 THEN dimension = [xpos*!D.X_PX_CM/FLOAT(!D.X_Size), ypos*!D.Y_PX_CM/FLOAT(!D.Y_SIZE), $
+                                         xsize*!D.X_PX_CM/FLOAT(!D.X_Size), ysize*!D.Y_PX_CM/FLOAT(!D.Y_SIZE)]
+
 END
 
 
