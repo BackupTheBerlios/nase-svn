@@ -125,6 +125,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.49  1999/09/22 08:15:05  kupper
+;     Corrected typo.
+;
 ;     Revision 2.48  1999/09/21 16:18:58  kupper
 ;     Changed something looking like copy&paste error in GET_INFO
 ;     struct. If we encounter strange behaviour of any related
@@ -523,7 +526,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
-   GET_INFO = {PLOTTVSCL_INFO, 
+   GET_INFO = {PLOTTVSCL_INFO, $
                x0      : 0                ,$
                y0      : 0                ,$
                x1      : long(PlotAreaDevice(0)),$
