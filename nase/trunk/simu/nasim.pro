@@ -1,7 +1,7 @@
 ;+
-; NAME:
+; NAME: NASim
 ;
-; PURPOSE:
+; PURPOSE: Grundfunktionen einer graphischen Simulationsoberfläche.
 ;
 ; CATEGORY:
 ;
@@ -21,7 +21,7 @@
 ;
 ; SIDE EFFECTS:
 ;
-; RESTRICTIONS:
+; RESTRICTIONS: Dies ist der Alpha-Release.
 ;
 ; PROCEDURE:
 ;
@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/08/13 15:38:13  thiel
+;            Alphe release: Now separted basic functions and user definitions.
+;
 ;        Revision 1.1  1999/08/09 16:43:23  kupper
 ;        Ein Sub-Alpha-Realease der neuen graphischen
 ;        Simulationsoberflaeche.
@@ -39,143 +42,137 @@
 ;
 ;-
 
-;vvvvvvvvvvvvvvvvvvvvvvvv User defined actions vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-Function NASim_Init, W_Base, W_UserBase
-   Common WidgetSimulation, MyFont, MySmallFont
 
+
+FUNCTION NASim_INIT, simname, W_base, W_userbase
+
+   P = PTR_NEW( {info : simname+"_globalvariables", $
+              dataptr : PTR_NEW({ info : simname+'_data'}) $
+                 })
    
-   P = PTR_NEW( {info                    : "NASim_Parameters" $
-               } )
- 
+   Call_Procedure, simname+'_INITDATA', (*P).dataptr
+   Call_Procedure, simname+'_INITDISPLAY', W_base, W_userbase, P
+
    Return, P
-End
 
-Function NASim_Kill_Request, W_Base, W_UserBase, P
-   ;;------------------> Cleanup
-   Message, /INFO, "cleaning up"
-   ;;--------------------------------
-   print, "ouch!"
-   Return, (1 eq 1)             ;TRUE
-End
-
-Function NASim_Simulate, W_Base, W_UserBase, P, display
-   Return, 1                    ;TRUE
-End
+END ; NASim_INIT
 
 
-Function NASim_UserEvent, Event
-   W_UserBase = Event.Handler
-   W_Base     = Event.Top
-   EventName =  TAG_NAMES(Event, /STRUCTURE_NAME)
-   WIDGET_CONTROL, W_Base, GET_UVALUE=UV, /NO_COPY
-   P = UV.P
+;--- This handles the basic events
+PRO NASim_EVENT, Event
 
-   Case Event.ID of
-
-;      (*P).THIS_IS_AN_EXAMPLE: Begin
-;                              If (Event.Value eq -1) then (*P).RETINARF = Gabor((*P).GaborSize, WAVELENGTH=(*P).GaborWavelength, HWB=(*P).GaborHWB, /MAXONE) $
-;                                                     else (*P).RETINARF = Gabor((*P).GaborSize, WAVELENGTH=(*P).GaborWavelength, HWB=(*P).GaborHWB, ORIENTATION=Event.Value, PHASE=0.5*!PI, /MAXONE)
-;                              opensheet, (*P).layersheet, (*P).RFtv
-;                              SelectNaseTable, /EXPONENTIAL
-;                              PlotTvScl, /NASE, SETCOL=0, (*P).RETINARF, TITLE="RETINA-RF", xrange=[-(*P).GaborSize/2, (*P).GaborSize/2], yrange=[-(*P).GaborSize/2, (*P).GaborSize/2], /LEGEND, LEGMARGIN=0.1, PLOTCOL=255
-;                              closesheet, (*P).layersheet, (*P).RFtv, SAVE_COLORS=0
-;                              SelectNaseTable
-;                             End
-                             
-      else                 : Message, /INFO, "Caught unhandled User-Event!"
-
-   EndCase
-      
-   WIDGET_CONTROL, W_Base, SET_UVALUE=UV, /NO_COPY
-   Return, 0                 ;We handled it, so swallow event
-End
-;^^^^^^^^^^^^^^^^^^^^^ End: User defined actions ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
-
-Pro NASim_Event, Event
    WIDGET_CONTROL, Event.Top, GET_UVALUE=UV, /NO_COPY
    widget_killed = 0
-   continue_simulation = 0
-   
+  
    EventName =  TAG_NAMES(Event, /STRUCTURE_NAME)
 
-   Case Event.ID of
+   CASE Event.ID OF
+
+
+      ;--- Basic events from outside, possibly sent to the simulation:
+      UV.W_Base : CASE EventName OF 
+         "WIDGET_TIMER" : $
+          BEGIN
+            IF UV.continue_simulation THEN BEGIN 
+               ;Initiate next simulation cycle
+               WIDGET_CONTROL, UV.W_Base, TIMER=UV.SimDelay
+               UV.continue_simulation = $
+                Call_FUNCTION(UV.simname+'_SIMULATE', (*(UV.P)).dataptr)
+               CurrentTime = SysTime(1)
+               Widget_Control, UV.W_SimStepTime, SET_VALUE=str(round((CurrentTime-UV.SimAbsTime)*1000))
+               UV.SimAbsTime = CurrentTime
+               IF (UV.display) THEN BEGIN 
+                  UV.display = $
+                   Call_FUNCTION(UV.simname+'_DISPLAY', UV.W_Base, UV.W_UserBase, UV.P) 
+               ENDIF
+            ENDIF
+         END ; WIDGET_TIMER
+                                              
+         "WIDGET_KILL_REQUEST" : $
+          IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.W_Base, UV.W_UserBase, UV.P) THEN BEGIN
+            Ptr_Free, (*(UV.P)).dataptr 
+            Ptr_Free, UV.P
+            WIDGET_CONTROL, Event.Top, /DESTROY
+            widget_killed = 1
+         ENDIF ; WIDGET_KILL_REQUEST
+  
+         "SIMULATION_START" : $
+          IF NOT UV.continue_simulation THEN BEGIN
+            UV.continue_simulation = 1
+            UV.SimAbsTime = SysTime(1)
+            WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
+         ENDIF
+
+         "SIMULATION_STOP" : UV.continue_simulation = 0
+                                              
+         'SIMULATION_RESET' : BEGIN
+               Call_Procedure, UV.simname+'_FREEDATA', (*(UV.P)).dataptr
+               Ptr_Free, (*(UV.P)).dataptr 
+               (*(UV.P)).dataptr = Ptr_New({info : UV.simname+'_data'})
+               Call_Procedure, UV.simname+'_InitData', (*(UV.P)).dataptr
+               Call_Procedure, UV.simname+'_RESET', UV.W_base, UV.W_userbase, UV.P
+            END 
+
+         ELSE : Message, "Unexpected event caught from W_Base: "+ EventName
+              
+      ENDCASE 
+  
       
-     UV.W_Base    : Case EventName of
-                      "WIDGET_TIMER"        : Begin
-                                              If (*UV.continue_simulation_p) then begin
-                                               WIDGET_CONTROL, UV.W_Base, TIMER=UV.SimDelay ;Initiate next simulation cycle
-                                               *UV.continue_simulation_p = NASim_Simulate(UV.W_Base, UV.W_UserBase, UV.P, UV.display)
-                                               CurrentTime = SysTime(1)
-                                               Widget_Control, UV.W_SimStepTime, SET_VALUE=str(round((CurrentTime-UV.SimAbsTime)*1000))
-                                               UV.SimAbsTime = CurrentTime
-                                              EndIf
-                                             End
-                                              
-                      "WIDGET_KILL_REQUEST" : If NASim_Kill_Request(UV.W_Base, UV.W_UserBase, UV.P) then begin
-                                              PTR_FREE, UV.P
-                                              PTR_FREE, UV.continue_simulation_p
-                                              WIDGET_CONTROL, Event.Top, /DESTROY
-                                              widget_killed = 1
-                                             EndIf
-  
-                      "SIMULATION_START"    : $
-                                             If not(*UV.continue_simulation_p) then Begin
-                                              *UV.continue_simulation_p = 1
-                                              UV.SimAbsTime = SysTime(1)
-                                              WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
-                                             EndIf
 
-                      "SIMULATION_STOP"     : *UV.continue_simulation_p = 0
-                                              
-                      else                 : Message, "Unexpected event caught from W_Base: "+ EventName
-                   Endcase
-  
-     UV.W_SimDelay: Case EventName of
-                     "WIDGET_SLIDER"       : Begin
-                                             WIDGET_CONTROL, UV.W_SimDelay, GET_VALUE=NewDelay
-                                             UV.SimDelay = (NewDelay/1000.0) > UV.minSimDelay
-                                            End
+
+      ;--- Internal basic events, button presses and such:
+      UV.W_SimDelay: CASE EventName OF  
+         "WIDGET_SLIDER" : BEGIN
+            WIDGET_CONTROL, UV.W_SimDelay, GET_VALUE=NewDelay
+            UV.SimDelay = (NewDelay/1000.0) > UV.minSimDelay
+         END 
      
-                     else                 : Message, "Unexpected event caught from W_SimDelay: "+ EventName
-                  Endcase
+         ELSE : Message, "Unexpected event caught from W_SimDelay: "+ EventName
+      ENDCASE 
  
-     UV.W_SimStart: $ ;"Pressed" is the only event that this will generate
-                    If not(*UV.continue_simulation_p) then begin
-                     *UV.continue_simulation_p = 1
-                     UV.SimAbsTime = SysTime(1)
-                     WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
-                    EndIf
+     
+      UV.W_SimStart: $ ; "Pressed" is the only event that this will generate
+       IF NOT UV.continue_simulation THEN BEGIN  
+         UV.continue_simulation = 1
+         UV.SimAbsTime = SysTime(1)
+         WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
+      ENDIF 
 
-     UV.W_SimStop : *UV.continue_simulation_p = 0 ;"Pressed" is the only event that this will generate
+      UV.W_SimStop : UV.continue_simulation = 0 ; "Pressed" is the only event that this will generate
 
-     UV.W_SimDisplay: Begin
-                       UV.display = Event.Select
-                       Widget_Control, UV.W_SimDelay, SENSITIVE=UV.display
-                       If UV.display then begin
-                          UV.SimDelay = UV.oldsimdelay
-                       endif else begin
-                          UV.oldsimdelay = UV.SimDelay
-                          UV.SimDelay = UV.MinSimDelay
-                       EndElse 
-                      End
+      UV.W_SimReset : BEGIN
+         Call_Procedure, UV.simname+'_FREEDATA', (*(UV.P)).dataptr
+         Ptr_Free, (*(UV.P)).dataptr 
+         (*(UV.P)).dataptr = Ptr_New({info : UV.simname+'_data'})
+         Call_Procedure, UV.simname+'_InitData', (*(UV.P)).dataptr
+         Call_Procedure, UV.simname+'_RESET', UV.W_base, UV.W_userbase, UV.P
+      END
 
-     else         : begin
-                     message, /INFO, "Caught unhandled event!"
-                    end
+      UV.W_SimDisplay: BEGIN
+         UV.display = Event.Select
+         Widget_Control, UV.W_SimDelay, SENSITIVE=UV.display
+         IF UV.display THEN BEGIN 
+            UV.SimDelay = UV.oldsimdelay
+         ENDIF ELSE BEGIN 
+            UV.oldsimdelay = UV.SimDelay
+            UV.SimDelay = UV.MinSimDelay
+         ENDELSE  
+      END 
+
+      ELSE : Message, /INFO, "Caught unhandled event!"
  
-   EndCase
-
-   If not(widget_killed) then WIDGET_CONTROL, Event.Top, SET_UVALUE=UV, /NO_COPY
-End
+   ENDCASE 
 
 
-Pro NASim
-   Common WidgetSimulation
 
-   SimulationName = "NASim"
+   IF NOT(widget_killed) THEN WIDGET_CONTROL, Event.Top, SET_UVALUE=UV, /NO_COPY
+END ; all2all_EVENT
+
+
+
+PRO NASim, simname
+
+
    DEBUGMODE = 1; XMANAGER will terminate on error, if DEBUGMODE is set
    
 
@@ -219,11 +216,15 @@ Pro NASim
                               VALUE="Stop", FONT=MyFont $
                              )
    
+   W_SimReset  = Widget_Button(W_SimControl, $
+                              VALUE="Reset", FONT=MyFont $
+                             )
+   
    W_UserBase = Widget_Base(W_Base, $
                             FRAME=3, $
                             /BASE_ALIGN_CENTER, $
                             /COLUMN, $
-                            EVENT_FUNC="NASim_UserEvent" $
+                            EVENT_FUNC=simname+'_USEREVENT' $
                            )
    
    
@@ -231,22 +232,35 @@ Pro NASim
    Message, /INFO, "          ******************************"
    Message, /INFO, "          *** Calling Initialization ***"
    Message, /INFO, "          ******************************"
-   Widget_Control, W_Base, /NO_COPY, SET_UVALUE={P             : NASim_Init(W_Base, W_UserBase), $
-                                                 W_Base        : W_Base, $
-                                                 W_SimDisplay  : W_SimDisplay, $
-                                                 W_SimDelay    : W_SimDelay, $
-                                                 W_SimStepTime : W_SimStepTime, $
-                                                 SimAbsTime    : SysTime(1), $
-                                                 W_SimStart    : W_SimStart, $
-                                                 W_SimStop     : W_SimStop, $
-                                                 W_UserBase    : W_UserBase, $
-                                                 minSimDelay   : minSimDelay, $
-                                                 oldSimDelay   : minSimDelay, $
-                                                 SimDelay      : minSimDelay, $ ;SimulationDelay/ms
-                                          continue_simulation_p: PTR_NEW(0), $
-                                                 display       : 1 $
-                                                }
- 
+   Widget_Control, W_Base, /NO_COPY, $
+    SET_UVALUE={P             : NASim_Init(simname, W_Base, W_UserBase), $
+                W_Base        : W_Base, $
+                W_SimDisplay  : W_SimDisplay, $
+                W_SimDelay    : W_SimDelay, $
+                W_SimStepTime : W_SimStepTime, $
+                SimAbsTime    : SysTime(1), $
+                W_SimStart    : W_SimStart, $
+                W_SimStop     : W_SimStop, $
+                W_SimReset    : W_SimReset, $
+                W_simlogo     : DefineSheet(W_simcontrol, /WINDOW,   XSize=75,   YSize=50, /PRIVATE_COLORS), $
+                W_UserBase    : W_UserBase, $
+                minSimDelay   : minSimDelay, $
+                oldSimDelay   : minSimDelay, $
+                SimDelay      : minSimDelay, $ ;SimulationDelay/ms
+                continue_simulation : 0, $
+                display       : 1, $
+                simname : simname $
+                 }
+                
+   ;--- display nase-logo:
+   WIDGET_CONTROL, W_Base, GET_UVALUE=UV
+   OpenSheet, UV.w_simlogo
+   Read_GIF, GETENV("NASEPATH")+"/graphic/naselogo2_small.gif", logo, r, g, b
+   Utvlct, r, g, b
+   Utv, logo
+   CloseSheet, UV.w_simlogo             
+
+
    Message, /INFO, ""
    Message, /INFO, "          ********************************"
    Message, /INFO, "          *** Registering Main Widget  ***"
@@ -254,5 +268,9 @@ Pro NASim
    Widget_Control, W_Base, /REALIZE  
    ;;Widget_Control, W_Base, TIMER=0 ;Initiate Simulation loop
    XMANAGER, CATCH=1-DEBUGMODE
-   XMANAGER, "Simulation: "+SimulationName, W_Base, EVENT_HANDLER=SimulationName+"_Event", /NO_BLOCK
-end
+;   XMANAGER, "Simulation: "+SimulationName, W_Base, EVENT_HANDLER=SimulationName+"_EVENT", /NO_BLOCK
+   XMANAGER, "Simulation: "+SimName, W_Base, EVENT_HANDLER="NASim_EVENT", /NO_BLOCK
+
+
+END ; i_all2all
+
