@@ -55,6 +55,15 @@ Pro PLOTTVSCL_INFO__Define
           allowcolors  : 0, $
 ;
 ; Scaling Information to be stored by PlotTvScl_update:
-               range_in: [-1.0d, -1.0d]}
+               range_in: [-1.0d, -1.0d], $
+                       $;;
+                       $;;Data needed to (re)produce the legend:
+                       leg_x: 0.0, $
+                       leg_y: 0.0, $
+                       leg_hstretch: 0.0, $
+                       leg_vstretch: 0.0, $
+                       charsize: 0.0, $
+                       legend: 0 $
+              }
 
 End
