@@ -39,6 +39,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/11/04 14:45:28  thiel
+;              Variablenzuweisung gespart.
+;
 ;       Revision 2.1  1998/11/04 14:19:07  thiel
 ;              Neue Rahmenprozedur, die die korrekte
 ;              ProceedLayer_x-Prozedur selbstaendig
@@ -48,8 +51,6 @@
 
 PRO ProceedLayer, Layer, CORRECT=correct
 
-procname='ProceedLayer_'+Layer.Type
-
-Call_Procedure, procname, Layer, CORRECT=correct
+	Call_Procedure, 'ProceedLayer_'+Layer.Type, Layer, CORRECT=correct
 
 END
