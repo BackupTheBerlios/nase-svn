@@ -88,6 +88,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  2000/10/10 14:28:33  kupper
+;        Now queue struct contains the sample value, for DeQueue() needs
+;        something to fill in!
+;
 ;        Revision 1.3  2000/09/25 09:13:13  saam
 ;        * added AIM tag
 ;        * update header for some files
@@ -112,6 +116,7 @@ Function InitFQueue, length, sample
 
    return, {info   : 'FIXED_QUEUE', $
             Q      : make_array(length, VALUE=sample), $
+            sample : sample, $ ;; for later filling in by DeQueue()
             Pointer: length-1, $ ;Dieser Zeiger weist stets auf das zuletzt
                                 ;beschriebene Element, also auf den
                                 ;Schwanz der Queue.
