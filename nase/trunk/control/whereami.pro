@@ -30,7 +30,7 @@
 ;       stack depth.
 ;
 ; OUTPUTS:
-;  name:: (uppercase) string containing the routine name that called
+;  name:: (lowercase) string containing the routine name that called
 ;         <C>WhereAmI</C>. This will be $MAIN$, if called from the
 ;         main execution level.
 ;
@@ -41,7 +41,7 @@
 ; EXAMPLE:
 ;  Assume you are on the main execution (i.e. by typing <C>retall</C>)
 ;*c = WhereAmI(SOURCE=s,LINE=l) & help, c, s, l
-;*>C               STRING    = '$MAIN$'
+;*>C               STRING    = '$main$'
 ;*>S               STRING    = ''
 ;*>L               LONG      =           -1
 ;
@@ -73,6 +73,6 @@ IF N_Elements(m) GT 1 THEN BEGIN ;; main execution level does not provide the fo
 END
 
 
-return, _called_by
+return, strlowcase(_called_by)
 
 END
