@@ -13,6 +13,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/08/11 14:09:31  thiel
+;         Now supports freeing for EXTERN rules.
+;
 ;     Revision 1.1  1999/12/10 09:36:46  saam
 ;           * hope these are all routines needed
 ;           * no test, yet
@@ -38,6 +41,10 @@ PRO FreeLearn, _LS
    END ELSE IF LS.TYPE EQ 3 THEN BEGIN
       DelTag, LS, '_WIN'
       DelTag, LS, '_WIN2'
+   END ELSE IF LS.TYPE EQ 4 THEN BEGIN
+      name = LS.FREE.NAME
+      CALL_PROCEDURE, name, LS._WIN
+      DelTag, LS, '_WIN'
    END ELSE Message, 'unknown Learning Rule'
    DelTag, LS, 'TYPE'
 
