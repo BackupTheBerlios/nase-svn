@@ -138,6 +138,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.6  1999/08/24 11:30:26  thiel
+;            Negative minimum: Event_Func had to be changed also.
+;
 ;        Revision 2.5  1999/08/24 10:03:36  thiel
 ;            Corrected value computation for negative minima.
 ;
@@ -196,7 +199,7 @@ Pro CW_FSLIDER2_pro_set_value, id, value
    Widget_Control, FirstChild, GET_UVALUE=uval, /NO_COPY
 
    uval.value = value
-   Widget_Control, uval.W_Slider, SET_VALUE=(value-uval.minimum)/double(uval.maximum)*uval.maxslider
+   Widget_Control, uval.W_Slider, SET_VALUE=(value-uval.minimum)/double(uval.maximum-uval.minimum)*uval.maxslider
    
    Widget_Control, uval.W_Label, SET_VALUE=string(value, FORMAT=uval.format)
 
