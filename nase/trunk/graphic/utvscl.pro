@@ -1,41 +1,50 @@
 ;+
-; NAME:               UTvScl
+; NAME:
+;  UTvScl
 ;
-; VERSION: $Id$
+; VERSION:
+;  $Id$
 ;
 ; AIM:
 ;  Device independent, color coded display of two-dimensional array
 ;  contents.
 ;
-; PURPOSE:            Ersetzt TvScl und hat folgende tolle, neue Features:
-;*                         + Device-unabhaegige Darstellung
-;*                         + Positionierung in Normalkoordinaten
-;*                         + Vergroesserung via STRETCH
-;                     UTvScl gibt (fuer UTvScl) unbekannte Optionen an
-;                     TvScl weiter, z.B. /ORDER
+; PURPOSE:
+;  Ersetzt TvScl und hat folgende tolle, neue Features:
+;* + Device-unabhaegige Darstellung
+;* + Positionierung in Normalkoordinaten
+;* + Vergroesserung via STRETCH
+;  <C>UTvScl</C> gibt (fuer UTvScl) unbekannte Optionen an
+;  TvScl weiter, z.B. /ORDER
 ;
-; CATEGORY:           GRAPHIC
+; CATEGORY:
+;  Array
+;  Graphic
+;  Image
 ;
 ; CALLING SEQUENCE:   
-;*                     UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
-;*                             [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
-;*                             [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
-;*                             [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
-;*                             [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
+;*UTvScl, Image [,XNorm [,YNorm [,Dimension]]] [,/CENTER]
+;*              [,X_SIZE=x_size | ,NORM_X_SIZE] [,Y_SIZE=y_size | ,NORM_Y_SIZE]
+;*              [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
+;*              [,/NOSCALE] [,DIMENSIONS=dimensions] [,/DEVICE]
+;*              [,CUBIC=cubic] [,/INTERP] [,/MINUS_ONE]
 ;
-; INPUTS:             image:: ein ein- oder zweidimensionales Array
+; INPUTS:
+;  image:: ein ein- oder zweidimensionales Array
 ;
-; OPTIONAL INPUTS:    XNorm, YNORM:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
-;                                    bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
-;                                    ;wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
+; OPTIONAL INPUTS:
+;  XNorm, YNORM:: linke untere Ecke der Bildposition in Normalkoordinaten (Def.: 0.0)
+;                 bzw. Mitte des Bildes mit Keyword /CENTER (dann ist Def.: 0.5)
+;                 wird nur XNorm angegeben werden die Bilder entsprechend dem Wert
 ;                                    von XNorm nebeneinander positioniert, siehe Docu von TV
-; OPTIONAL OUTPUTS:   Dimension::    die Darstellungsparameter werden in Normal-Koordinaten zurueckgegeben: 
-;                                    (xpos, ypos, xsize, ysize)
-;                                    Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
-;                                    gesetztem CENTER-Keyword)
+; OPTIONAL OUTPUTS:
+;   Dimension:: die Darstellungsparameter werden in Normal-Koordinaten zurueckgegeben: 
+;               (xpos, ypos, xsize, ysize)
+;               Dabei gegen xpos und ypos immer die linke untere Ecke an (auch bei
+;               gesetztem CENTER-Keyword)
 ;                         
 ;
-; KEYWORD PARAMETERS: 
+; INPUT KEYWORDS: 
 ;              CENTER::              Bild wird an den angegebenen Koordinaten zentriert ausgerichtet
 ;              X_SIZE, Y_SIZE::      Es kann die gewuenschte Groesse des Bildes in CM angegeben werden,
 ;                                    wobei 1cm !D.PX_CM Pixeln entspricht. (40 für das X-Device.) Wird
@@ -70,14 +79,15 @@
 ;                     nicht sinnvoll ist! Die NONEs gehen i.d.R. durch die Interpolation veroren!
 ;                
 ; EXAMPLE:
-;*          bild = FIndgen(100,100)
-;*          ULoadCt, 5
-;*          UTvScl, bild
-;*          UTVScl, bild, /CENTER, STRETCH=2.0
-;*          UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
-;*          UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
+;*bild = FIndgen(100,100)
+;*ULoadCt, 5
+;*UTvScl, bild
+;*UTVScl, bild, /CENTER, STRETCH=2.0
+;*UTvScl, bild, 0.8, 0.8, /CENTER, STRETCH=0.5, H_STRETCH=2.0
+;*UTvScl, bild, /CENTER, XSIZE=5  ; erzeugt 5cm langes Bild auf PS und 200 Pixel auf Screen
 ;
-; SEE ALSO:           <A HREF="#UTV">UTv</A>
+; SEE ALSO:
+;  <A>UTv</A>
 ; 
 ;-
 
