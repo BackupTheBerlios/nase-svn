@@ -79,8 +79,8 @@ FUNCTION InitWeights, DWW
        IF ExtraSet(DWW.WINIT, "RandomU") THEN $
          OPT = Create_Struct(OPT, 'W_RANDOM', DWW.WINIT.randomu)
        
-       IF ExtraSet(DWW, "DEPRESS") then begin
-           OPT = CREATE_STRUCT(OPT, 'DEPRESS', 1,'TAU_REC', OS*DWW.TAU_REC, 'U_SE', DWW.U_SE)
+       IF ExtraSet(DWW, "DEPRESS") then if keyword_set(DWW.DEPRESS) then begin
+               OPT = CREATE_STRUCT(OPT, 'DEPRESS', 1,'TAU_REC', OS*DWW.TAU_REC, 'U_SE', DWW.U_SE)               
        endif
        
 
