@@ -3,7 +3,10 @@
 ;
 ; PURPOSE: Belegen eines Arrays mit dem euklidischen Abstand des jeweiligen
 ;          Eintrags von einem zentralen Punkt des Arrays ohne zyklische 
-;          Randbedingungen. 
+;          Randbedingungen.
+;
+;          THIS FUNCTION IS OBSOLETE SINCE MAR 22 2000. PLEASE USE <A HREF="#DISTANCE()">Distance()</A>
+;          INSTEAD.
 ;
 ; CATEGORY: MISCELLANEOUS / ARRAY OPERATIONS
 ;
@@ -42,6 +45,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/22 16:24:48  kupper
+;        Now passing call to Distance().
+;        Added informational message.
+;        Updated header.
+;
 ;        Revision 1.1  1998/05/12 09:29:44  thiel
 ;               Neue Routine als Ergaenzung zu DIST.
 ;
@@ -53,19 +61,25 @@ FUNCTION NoRot_Dist, n, m, CENTERCOL=centercol, CENTERROW=centerrow
    Default, centercol, 0
    Default, centerrow, 0
 
-   x=findgen(n)-centercol       ;Make a row
-   x = x ^ 2                    ;column squares
+   Message, /Informational, "Passing call to faster routine Distance()."
+   Message, /Informational, "NoRot_Dist() is obsolete since Mar 22 2000."
+   Message, /Informational, "Please use Distance()."
 
-   IF n_elements(m) LE 0 THEN m = n
+   Return, Distance(n, m, centercol, centerrow)
+
+;   x=findgen(n)-centercol       ;Make a row
+;   x = x ^ 2                    ;column squares
+
+;   IF n_elements(m) LE 0 THEN m = n
    
-   a = FLTARR(n,m,/NOZERO)      ;Make array
+;   a = FLTARR(n,m,/NOZERO)      ;Make array
 
-   FOR i=0L, m-1 DO BEGIN       ;Row loop
-      y = sqrt(x + (i-centerrow)^2) ;Euclidian distance
-      a(0,i) = y                ;Insert the row
-   ENDFOR
+;   FOR i=0L, m-1 DO BEGIN       ;Row loop
+;      y = sqrt(x + (i-centerrow)^2) ;Euclidian distance
+;      a(0,i) = y                ;Insert the row
+;   ENDFOR
 
-   Return, a
+;   Return, a
 
 END
 
