@@ -131,8 +131,8 @@ Pro examineit_bound_off_handler, event
 End
 
 pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
-                 NOSCALE=noscale, GET_POSITION=get_position, GET_MINOR=get_minor, $
-                 COLOR = color;_EXTRA=_extra
+                 NOSCALE=noscale, GET_POSITION=get_position, $
+                 COLOR = color
    COMPILE_OPT HIDDEN
 
    height = (size(w))(2)
@@ -146,32 +146,7 @@ pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
    PrepareNASEPlot, RESTORE_OLD=oldplot
    GET_POSITION = devpos
  
-;   plotwx = (width+1)*zoom
-;   plotwy = (height+1)*zoom
-;   devplotpx = xpos-zoom/2
-;   devplotpy = ypos-zoom/2
-;   devplotpx1 = devplotpx+(width+1)*zoom
-;   devplotpy1 = devplotpy+(height+1)*zoom
-
-;   plotpx = (convert_coord([devplotpx, devplotpy], /device, /to_normal))(0)
-;   plotpx1 = (convert_coord([devplotpx1, devplotpy1], /device, /to_normal))(0)
-;   plotpy = (convert_coord([devplotpx, devplotpy], /device, /to_normal))(1)
-;   plotpy1 = (convert_coord([devplotpx1, devplotpy1], /device, /to_normal))(1)
-
-;   plot, indgen(2), /NODATA, position=[plotpx, plotpy, plotpx1, plotpy1], $
-;    xrange=[-1, width], /xstyle, xtick_get=xt, $
-;    yrange=[-1, height], /ystyle, ytick_get=yt, _EXTRA=_extra
-;   plot, indgen(2), /NODATA, position=[plotpx, plotpy, plotpx1, plotpy1], $
-;    xrange=[-1, width], /xstyle, xminor=xt(1), $
-;    yrange=[-1, height], /ystyle, yminor=yt(1), $
-;    xticklen=ticklen(0), yticklen=ticklen(1), _EXTRA=_extra
-
-;   get_position = [devplotpx, devplotpy, devplotpx1, devplotpy1]
-;   get_minor = [xt(1), yt(1)]
-
-   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale
-
-
+   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale, /Allowcolors
 end
 
 Pro examineit_refresh_plots, info, x_arr, y_arr
@@ -302,7 +277,7 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
             ;; we have a pseudocolor display, array is [x,y]
             tv = tvrd()
             wset, info.col_win  ;copy and rotate
-            utv, rotate(Temporary(tv), 3)
+            utv, rotate(Temporary(tv), 3), /Allowcolors
          endif else begin
             ;; we have a truecolor display, array is [3,x,y]
             tv = tvrd(/TRUE)
@@ -509,7 +484,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    Widget_Control, base, /hourglass
 
    wset, tv_win
-   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, COLOR=color, GET_POSITION=gp, GET_MINOR=gm
+   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-nase, COLOR=color, GET_POSITION=gp
    WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
    
    info={name    : "tv", $
@@ -519,7 +494,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
          win_height: win_height, $
          zoom    : zoom, $
          position: gp, $
-         $ ;; minor   : gm, $
+         $
          tv_win  : tv_win, $
          row_win : row_win, $
          col_win : col_win, $
