@@ -51,6 +51,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.10  1998/05/16 16:28:42  kupper
+;            Stürzt nun nicht mehr ab bei TIME=1
+;
 ;     Revision 2.9  1998/05/14 09:03:45  saam
 ;           keyword oversampling now in doc-header
 ;
@@ -120,7 +123,7 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
           os    : oversampling  ,$
           _extra: _extra}
    
-   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, _EXTRA=_extra
+   plot, [PS.y], /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, _EXTRA=_extra
 
    RETURN, PS
 END
