@@ -20,15 +20,14 @@
 ;                          in dem  man COLORS auf einen Farbwert setzt.         
 ;	
 ; KEYWORD PARAMETERS:
-;                  OFFSET:   Abstand der Balken von der Nullachse
-;                  CENTER:   Balken werden zentriert um den x-Wert
-;                  BARSPACE: Abstand zwischen den Balken (default: 0.2 [= 20% der Klassenbreite])
-;                  _EXTRA:   alle gewoehnlichen PLOT-OPTIONEN
+;                  OFFSET   : Abstand der Balken von der Nullachse
+;                  CENTER   : Balken werden zentriert um den x-Wert
+;                  BARSPACE : Abstand zwischen den Balken (default: 0.2 [= 20% der Klassenbreite])
+;                  SYMMETRIC: Darstellung symmetrisch um die Null 
+;                  _EXTRA   : alle gewoehnlichen PLOT-OPTIONEN
+;                  
 ; OUTPUTS:
 ;                  Balkendiagramm von YDATA
-;
-
-;
 ;
 ; EXAMPLE:
 ;           xdata = indgen(20)
@@ -38,6 +37,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.5  1998/07/21 15:41:31  saam
+;           new keyword SYMMETRIC implemented
+;
 ;     Revision 2.4  1998/07/20 14:30:01  gabriel
 ;          Verbessert und an die Routine hist angepasst
 ;
@@ -54,7 +56,7 @@
 ;-
 
 
-PRO ubar_plot,xdata,ydata,COLORS=COLORS,OFFSET=OFFSET,CENTER=CENTER,BARSPACE=BARSPACE,_EXTRA=e
+PRO ubar_plot,xdata,ydata,COLORS=COLORS,OFFSET=OFFSET,CENTER=CENTER,BARSPACE=BARSPACE,SYMMETRIC=SYMMETRIC,_EXTRA=e
 
 DEFAULT,offset,0
 DEFAULT,colors,!P.COLOR
@@ -82,8 +84,12 @@ PTMP = !P.MULTI
 CASE 1 OF
    ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/XSTYLE,_EXTRA=e
    ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
-   ELSE :plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
-
+   ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
+             maxr = MAX([ABS(xdata(0)-stepl),ABS(MAX(xdata)+stepr)])
+             plot,xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
+          END ELSE BEGIN
+             plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
+          END 
 ENDCASE
 PTMP2 = !P.MULTI
 ;print,!P.MULTI
@@ -101,8 +107,12 @@ END
 CASE 1 OF
    ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/NOERASE,/XSTYLE,_EXTRA=e
    ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
-   ELSE :plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
-
+   ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
+             maxr = MAX([ABS(xdata(0)-stepl),ABS(MAX(xdata)+stepr)])
+             plot,xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
+          END ELSE BEGIN
+             plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
+          END
 ENDCASE
 !P.MULTI = PTMP2
 ;print,!P.MULTI
