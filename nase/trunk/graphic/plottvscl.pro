@@ -81,6 +81,11 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.26  1998/05/26 13:16:08  kupper
+;            Noch nicht alle Routinen kannten das !PSGREY. Daher mal wieder
+;               Änderungen an der Postcript-Sheet-Verarbeitung.
+;               Hoffentlich funktioniert alles (war recht kompliziert, wie immer.)
+;
 ;     Revision 2.25  1998/05/18 19:43:30  saam
 ;           alternative legend by new keywords LEG_(MIN|MAX)
 ;           new get_position keyword for procedure plot2plus1 (internal)
@@ -195,11 +200,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 
    ;-----Optimale Farbe fuer die Achsen ermitteln:
    bg = GetBGColor()
-   ; if device is PS and REVERTPS is on 
-   save_rpsc = !REVERTPSCOLORS
-   !REVERTPSCOLORS = 0
+   ; if device is !PSGREY and !REVERTPS is on 
+   If !PSGREY then begin
+      save_rpsc = !REVERTPSCOLORS
+      !REVERTPSCOLORS = 0
+   EndIf
    sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-   !REVERTPSCOLORS = save_rpsc
+   If !PSGREY then !REVERTPSCOLORS = save_rpsc
    
    Get_Color = sc
    
