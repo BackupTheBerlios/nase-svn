@@ -30,24 +30,24 @@
 ;* XYZBase, intx, wx, x,  inty, wy, y,  intz, wz, z
 ;
 ; INPUTS:
-;  intx:  A 2-elements integer or float array specifying the <*>x</*> interval in the form [Min,Max].
-;  wx:    An integer or float scalar giving the sample step width in the <*>x</*> direction. Setting, for example,
-;         <*>intx</*> to <*>[-2,2]</*> and <*>wx</*> to <*>0.1</*> results in a grid with 41 samples in the <*>x</*>
-;         direction.
-;  inty:  The <*>y</*> analogue of <*>intx</*> in the 2- or 3-dimensional case.
-;  wy:    The <*>y</*> analogue of <*>wx</*> in the 2- or 3-dimensional case.
-;  intz:  The <*>z</*> analogue of <*>intx</*> in the 3-dimensional case.
-;  wz:    The <*>z</*> analogue of <*>wx</*> in the 3-dimensional case.
+;  intx::  A 2-elements integer or float array specifying the <*>x</*> interval in the form [Min,Max].
+;  wx::    An integer or float scalar giving the sample step width in the <*>x</*> direction. Setting, for example,
+;          <*>intx</*> to <*>[-2,2]</*> and <*>wx</*> to <*>0.1</*> results in a grid with 41 samples in the <*>x</*>
+;          direction.
+;  inty::  The <*>y</*> analogue of <*>intx</*> in the 2- or 3-dimensional case.
+;  wy::    The <*>y</*> analogue of <*>wx</*> in the 2- or 3-dimensional case.
+;  intz::  The <*>z</*> analogue of <*>intx</*> in the 3-dimensional case.
+;  wz::    The <*>z</*> analogue of <*>wx</*> in the 3-dimensional case.
 ;
 ; OUTPUTS:
-;  x:  A 1-, 2- or 3-dimensional array, respectively, giving the x-coordinates for each point of the 1-, 2- or
-;      3-dimensional grid. In the 2-dimensional case, for example, with <*>intx</*>=[-2,2], <*>inty</*>=[-3,3],
-;      <*>wx</*>=0.1 and <*>wy</*>=0.3, <*>x</*> would be a 41X21-array with values increasing linearly from -2 to 2
-;      along each vector <*>x[*,j]</*> (and therefore values being constant along each vector <*>x[i,*]</*>).
-;  y:  The <*>y</*> analogue of <*>x</*> in the 2- or 3-dimensional case. In the above example, <*>y</*> would also
-;      be a 41X21-array, but with values increasing linearly from -3 to 3 along each vector <*>y[i,*]</*> and values
-;      being constant along each vector <*>y[*,j]</*>.
-;  z:  The <*>z</*> analogue of <*>x</*> in the 3-dimensional case.
+;  x::  A 1-, 2- or 3-dimensional array, respectively, giving the x-coordinates for each point of the 1-, 2- or
+;       3-dimensional grid. In the 2-dimensional case, for example, with <*>intx</*>=[-2,2], <*>inty</*>=[-3,3],
+;       <*>wx</*>=0.1 and <*>wy</*>=0.3, <*>x</*> would be a 41X21-array with values increasing linearly from -2 to 2
+;       along each vector <*>x[*,j]</*> (and therefore values being constant along each vector <*>x[i,*]</*>).
+;  y::  The <*>y</*> analogue of <*>x</*> in the 2- or 3-dimensional case. In the above example, <*>y</*> would also
+;       be a 41X21-array, but with values increasing linearly from -3 to 3 along each vector <*>y[i,*]</*> and values
+;       being constant along each vector <*>y[*,j]</*>.
+;  z::  The <*>z</*> analogue of <*>x</*> in the 3-dimensional case.
 ;
 ; PROCEDURE:
 ;  The outputs <*>x</*>, <*>y</*> and <*>z</*> are generated using IDL's ReBin function with the <*>SAMPLE</*> keyword
