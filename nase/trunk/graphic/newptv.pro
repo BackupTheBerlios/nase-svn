@@ -15,20 +15,6 @@
 ;  usual <*>XYRANGE</*>-keywords and does not draw tick marks where there are
 ;  no array entries. It is intended to inherit all of PTV's
 ;  functionality in the future, but this has not yet been accomplished.<BR>
-;  Not yet implemented: <BR>
-;  - optional positioning <BR>
-;  - ranges that extend beyond the array values <BR>
-;  - ranges with first value larger than second <BR>
-;  - legend options, eg other annotation than min and max <BR>
-;  - onedim arrays, and onedim arrays after ranges! <BR>
-;  - quadratic pixels <BR>
-;  - where should extra go? <BR>
-;  - true color support <BR>
-;  - scale counterpart: newPTVS <BR>
-;  - private charsize <BR>
-;  - optionally suppress minor ticks <BR>
-;  - ZRANGE, without clipping but stretching instead , makes only
-;  sense in PTVScale?<BR>
 ;
 ; CATEGORY:
 ;  Array
@@ -41,7 +27,7 @@
 ;*                   [,/LEGEND] [,LEGMARGIN=...]
 ;
 ; INPUTS:
-;  image:: Two dimensional array interpreted as color indices.
+;  image:: Two dimensional array of color indices.
 ;
 ; OPTIONAL INPUTS:
 ;  x, y:: x and y values corresponding to the array indices.
@@ -70,7 +56,10 @@
 ;             out of polygons results in huge PS files. Note that
 ;             setting the <*>/POLYGON</*> option disables the function of
 ;             <*>/CUBIC</*>, <*>/INTERP</*> and <*>/MINUS_ONE</*>.
-; /CORNERS:: Draw corners.
+; /CORNERS:: In addition to the axes that start and end in the middle
+;            of the array pixels, setting this option draws additional
+;            corners that result in a normal IDL axes box surrounding
+;            the image. Default: 1.
 ; CUBIC, /INTERP, /MINUS_ONE:: These will be passed to the underlying
 ;                              IDL routine <C>ConGrid</C> to smooth
 ;                              the bitmap. See <C>Congrid</C>'s documentation
@@ -95,8 +84,20 @@
 ;  
 ;
 ; RESTRICTIONS:
-;  - The legend title is always on ths same side as annotation to save
-;  space.<BR>
+;  - The legend title is always on ths same side as the annotation to save
+;  space. Usage of <*>LEGMID</*> is therefore not recommended, since
+;  the middle annotation would occur in the same place as the title.<BR>
+;  Not yet implemented: <BR>
+;  - optional positioning <BR>
+;  - ranges that extend beyond the array values <BR>
+;  - ranges with first value larger than second <BR>
+;  - onedim arrays without /POLY -> UTVScl <BR>
+;  - quadratic pixels <BR>
+;  - where should extra go? <BR>
+;  - true color support <BR>
+;  - scale counterpart: newPTVS <BR>
+;  - ZRANGE, without clipping but stretching instead , makes only
+;  sense in PTVScale?<BR>
 ;
 ; PROCEDURE:
 ;  
@@ -105,7 +106,7 @@
 ;* NewPTV, Scl(IndGen(20,5),[0,!topcolor]), FIndGen(20)*0.02, /LEGEND, XRANGE=[0.1,0.3]
 ;
 ; SEE ALSO:
-;  <A>PTVS</A>, <A>PTV</A>.
+;  <A>PTVS</A>, <A>PTV</A>, <A>PlotTV</A>, IDL's <C>TV</C> and <C>Congrid</C>.
 ;-
 
 
@@ -145,11 +146,14 @@
 PRO newPTV, first, second, third $
             , XRANGE=xrange, YRANGE=yrange $
             , XTICKLEN=xticklen, YTICKLEN=yticklen $
+, XMINOR=xminor, YMINOR=yminor $
             , TITLE=title, XTITLE=xtitle, YTITLE=ytitle $
             , FITPLOT=fitplot, CORNERS=corners $
             , POLYGON=polygon, ORDER=order $
             , LEGEND=legend, LEGMARGIN=legmargin, LEGCHARSIZE=legcharsize $
+, LEGMIN=legmin, LEGMAX=legmax $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth $
+, CHARSIZE=charsize $
             , _EXTRA=_extra
    
    ;On_Error, 2
@@ -166,6 +170,7 @@ PRO newPTV, first, second, third $
    Default, cubic, 0
    Default, interp, 0
    Default, minus_one, 0
+   Default, charsize, !P.CHARSIZE
 
    IF Keyword_Set(SMOOTH) THEN BEGIN
        cubic=-0.5
@@ -174,7 +179,7 @@ PRO newPTV, first, second, third $
 
    IF Keyword_Set(LEGEND) THEN BEGIN
       Default, legmargin,  0.15
-      Default, legcharsize, !P.CHARSIZE
+      Default, legcharsize, charsize
    ENDIF ELSE BEGIN
       legmargin = 0.
    ENDELSE
@@ -211,7 +216,7 @@ PRO newPTV, first, second, third $
       ENDIF
    ENDIF ELSE Console, /FATAL, 'Only 1- or 2-dimensional arrays can be displayed.'
    
-   ;; Deal with different paramter combinations and set the ranges
+   ;; Deal with different parameter combinations and set the ranges
    ;;
    ;; xrange = actual data range
    ;; xr = start and end index
@@ -242,18 +247,20 @@ PRO newPTV, first, second, third $
             i = Where((second GE xrange[0]) AND (second LE xrange[1]), count)
             IF count NE 0 THEN BEGIN
                xr = [i[0], Last(i)]
+               xrange = Double(second[xr])
             ENDIF ELSE Console, /FATAL, 'XRANGE wrong.'
          ENDIF ELSE BEGIN
             xr = [0, N_Elements(second)-1]
-            xrange = [second[0], Last(second)]
+            xrange = Double([second[0], Last(second)])
          ENDELSE
          IF Set(YRANGE) THEN $
           yr = yrange $
          ELSE BEGIN
             yr = [0, (Size(first))[2]-1]
-            yrange = yr
+            yrange = Double(yr)
          ENDELSE
-         a = first[xr[0]:xr[1], yr[0]:yr[1]]
+;         a = first[xr[0]:xr[1], yr[0]:yr[1]]
+         a = Reform(first[xr[0]:xr[1], yr[0]:yr[1]], xr[1]-xr[0]+1, yr[1]-yr[0]+1) 
          sa = Size(a)
          nx = sa[1]
          ny = sa[2]
@@ -266,21 +273,24 @@ PRO newPTV, first, second, third $
             i = Where((second GE xrange[0]) AND (second LE xrange[1]), count)
             IF count NE 0 THEN BEGIN
                xr = [i[0], Last(i)]
+               xrange = Double(Second[xr])
             ENDIF ELSE Console, /FATAL, 'XRANGE wrong.'
          ENDIF ELSE BEGIN
             xr = [0, N_Elements(second)-1]
-            xrange = [second[0], Last(second)]
+            xrange = Double([second[0], Last(second)])
          ENDELSE
          IF Set(YRANGE) THEN BEGIN
             i = Where((third GE yrange[0]) AND (third LE yrange[1]), count)
-            IF count NE 0 THEN BEGIN
+           IF count NE 0 THEN BEGIN
                yr = [i[0], Last(i)]
+               yrange = Double(third[yr])
             ENDIF ELSE Console, /FATAL, 'YRANGE wrong.'
          ENDIF ELSE BEGIN
             yr = [0, N_Elements(third)-1]
-            yrange = [third[0], Last(third)]
+            yrange = Double([third[0], Last(third)])
          ENDELSE
-         a = first[xr[0]:xr[1], yr[0]:yr[1]]
+         a = Reform(first[xr[0]:xr[1], yr[0]:yr[1]], xr[1]-xr[0]+1, yr[1]-yr[0]+1) 
+;         a = first[xr[0]:xr[1], yr[0]:yr[1]]
          sa = Size(a)
          nx = sa[1]
          ny = sa[2]
@@ -308,7 +318,7 @@ PRO newPTV, first, second, third $
    ;; but do not draw 
    ;; anything except a possible title of the plot.
    Plot, IndGen(5), /NODATA, XSTYLE=4, YSTYLE=4 $
-    , TITLE=title
+    , TITLE=title, CHARSIZE=charsize
 
    xo = !X.WINDOW[0] ;; corners of plot area in normal coords
    yo = !Y.WINDOW[0]
@@ -354,68 +364,106 @@ PRO newPTV, first, second, third $
     UTVScl, a, xarro, yarro, NORM_X_SIZE=warr, NORM_Y_SIZE=harr $
     , ORDER=order, /NOSCALE, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one
 
+   ;; have a single number indicating whether the array has a single
+   ;; entry, is a single row or column or a normal two dim array
+   dimflag = 2*(ny GT 1)+(nx GT 1)
+   CASE dimflag OF
+      0: BEGIN
+         ;; DMsg, '1x1 array'
+         !P.POSITION = [xo, yo, xe, ye]
+         xfrac = 1.
+         yfrac = 1.
+      END
+      1: BEGIN
+         ;; DMsg, 'nx1 array'
+         !P.POSITION = [xtickpos[0], yo, Last(xtickpos), ye]
+         xfrac = (xe-xo)/(Last(xtickpos)-xtickpos[0])
+         yfrac = 1.
+      END
+      2: BEGIN
+         ;; DMsg, '1xm array'
+         !P.POSITION = [xo, ytickpos[0], xe, Last(ytickpos)]
+         xfrac = 1.
+         yfrac = (ye-yo)/(Last(ytickpos)-ytickpos[0])
+      END
+      3: BEGIN
+         ;;DMsg, 'nxm array'
+         !P.POSITION = [xtickpos[0], ytickpos[0], Last(xtickpos), Last(ytickpos)]
+         ;; since the plotting area is modified, XYTICKLEN do no longer apply
+         ;; to the correct coordinates, they have to be corrected by the
+         ;; following fractions 
+         xfrac = (xe-xo)/(Last(xtickpos)-xtickpos[0])
+         yfrac = (ye-yo)/(Last(ytickpos)-ytickpos[0])
+      END
+      ELSE: Console, /FATAL, 'Cannot happen.'
+   ENDCASE
+
    ;; Change the default axis positions such that axes start at the
    ;; pixels. This is needed since AXIS does only allow positioning
    ;; the axis in the direction perpendicular to the axis direction.
    ;; Also get xtg/ytg = which ticks does IDL want to draw
-   !P.POSITION = [xtickpos[0], ytickpos[0], Last(xtickpos), Last(ytickpos)]
-
-
    Plot, IndGen(5), /NODATA, XSTYLE=5, YSTYLE=5 $
     , XRANGE=xrange, YRANGE=yrange, /NOERASE $
-    , XTICK_GET=xtg, YTICK_GET=ytg
-   
+    , XTICK_GET=xtg, YTICK_GET=ytg, CHARSIZE=charsize
 
    ;; dont allow IDL to use more ticks than array entries. If it wants
    ;; to, set tickinterval = difference between axis array
-   ;; entries. This is computed via xtg because double precision is
-   ;; needed for XYTICKINTERVAL later
+   ;; entries. 
    IF N_Elements(xtg) GE nx THEN BEGIN
-      IF nx EQ 1 THEN $
-       xtinter = 0 $
-      ELSE xtinter = (Last(xtg)-xtg[0])/(nx-1)
+      IF nx EQ 1 THEN BEGIN
+         ;; a one column array? Then set keywords such that only a center
+         ;; tick appears with a single value
+         xticks = 2
+         xtickname = [' ', Str(xrange[0], FORMAT='(G0.0)'), ' ']
+      ENDIF ELSE $
+;xtinter = (Last(xtg)-xtg[0])/(nx-1)
+xtinter = (xrange[1]-xrange[0])/(nx-1)
       ;; no minor tick marks, since each array column is marked by a
       ;; major tick
-      xmin = -1
+      Default, xminor, -1
    ENDIF ELSE BEGIN
       ;; major ticks as desired by IDL
       xtinter = xtg[1]-xtg[0]
       ;; no more than 5 minors 
-      xmin = nx/N_Elements(xtg) < 5
+      Default, xminor, (nx/N_Elements(xtg)) < 5
    ENDELSE
+
    IF N_Elements(ytg) GE ny THEN BEGIN
-      IF ny EQ 1 THEN $
-       ytinter = 0 $
-      ELSE ytinter = Abs((Last(ytg)-ytg[0]))/(ny-1)
+      IF ny EQ 1 THEN BEGIN
+         ;; a one row array? Then set keywords such that only a center
+         ;; tick appears with a single value
+         yticks = 2
+         ytickname = [' ', Str(yrange[0], FORMAT='(G0.0)'), ' ']
+      ENDIF ELSE $
+;ytinter = Abs((Last(ytg)-ytg[0]))/(ny-1)
+ytinter = Abs(yrange[1]-yrange[0])/(ny-1)
       ;; Abs() because /ORDER may have reversed the annotation
-      ymin = -1
+      Default, yminor, -1
    ENDIF ELSE BEGIN
       ytinter = Abs(ytg[1]-ytg[0])
-      ymin = ny/N_Elements(ytg) < 5
+     Default, yminor, (ny/N_Elements(ytg)) < 5
    ENDELSE
 
    ;; Draw the axes. In the axis direction, they start and end at the
    ;; middle of the pixels, since the modified plotting area is set
    ;; this way. In the other direction, they are displaced such they
    ;; appear below/left the array plot
+   Axis, 23., yo, XAXIS=0, /NORMAL, XSTYLE=1 $
+, XTICKINTERVAL=xtinter, XTICKS=xticks, XTICKNAME=xtickname $
+    , XMINOR=xminor, XTICKLEN=xticklen*yfrac, XTITLE=xtitle $
+, CHARSIZE=charsize
 
-   ;; since the plotting area is modified, XYTICKLEN do no longer apply
-   ;; to the correct coordinates, they have to be corrected by the
-   ;; following fractions 
-   xfrac = (xe-xo)/(Last(xtickpos)-xtickpos[0])
-   yfrac = (ye-yo)/(Last(ytickpos)-ytickpos[0])
-
-   Axis, 23., yo, XAXIS=0, /NORMAL, XSTYLE=1, XTICKINTERVAL=xtinter $
-    , XMINOR=xmin, XTICKLEN=xticklen*yfrac, XTITLE=xtitle
-
-   Axis, xo, 23., YAXIS=0, /NORMAL, YSTYLE=1, YTICKINTERVAL=ytinter $
-    , YMINOR=ymin, YTICKLEN=yticklen*xfrac, YTITLE=ytitle
+   Axis, xo, 23., YAXIS=0, /NORMAL, YSTYLE=1 $
+, YTICKINTERVAL=ytinter, YTICKS=yticks, YTICKNAME=ytickname $
+    , YMINOR=yminor, YTICKLEN=yticklen*xfrac, YTITLE=ytitle $
+, CHARSIZE=charsize
 
    Axis, 23., ye, XAXIS=1, /NORMAL, XSTYLE=1, XTICKFORMAT='noticks' $
-    , XTICKINTERVAL=xtinter, XMINOR=xmin, XTICKLEN=xticklen*yfrac
+    , XTICKS=xticks, XTICKNAME=xtickname , XTICKINTERVAL=xtinter, XMINOR=xminor, XTICKLEN=xticklen*yfrac $
+, CHARSIZE=charsize
 
    Axis, xe, 23., YAXIS=1, /NORMAL, YSTYLE=1, YTICKFORMAT='noticks' $
-    , YTICKINTERVAL=ytinter, YMINOR=ymin, YTICKLEN=yticklen*xfrac
+     , YTICKS=yticks, YTICKINTERVAL=ytinter, YMINOR=yminor, YTICKLEN=yticklen*xfrac, CHARSIZE=charsize
 
 
    ;; Add the corners
@@ -432,10 +480,11 @@ PRO newPTV, first, second, third $
    ENDIF
 
    ;; plot a legend if requested (modified from PTVS)
-   ;;
    IF Keyword_Set(LEGEND) THEN BEGIN
+      Default, legmin, Str(Min(a), FORMAT='(G0.0)')
+      Default, legmax, Str(Max(a), FORMAT='(G0.0)')
+      maxstr = [legmin, legmax]
       x_ch_size = !D.X_CH_SIZE*legcharsize / FLOAT(!D.X_SIZE)
-      maxstr = Str([Min(a), Max(a)], FORMAT='(G0.0)')
       ;; add 4 character widths for left and right margins
       annotwidth = (4+Max(StrLen(maxstr)))*x_ch_size
       ;; make legend including the values of max and min as wide as
@@ -443,11 +492,11 @@ PRO newPTV, first, second, third $
       finalwidth = (oldreg[2]-xe)-annotwidth
       IF finalwidth LT 0 THEN Console, /WARN $
        , 'Legend plus annotation too broad.'
-      ;; Displace legend by 1 charwidth from the end of the axis,
-      ;; thereby cenetering it inside the remaining area left of the
+      ;; Displace legend by 2 charwidth from the end of the axis,
+      ;; thereby centering it inside the remaining area left of the
       ;; plot. 
       TVSclLegend, xe+2*x_ch_size, yo+0.5*h $
-       , RANGE=[Min(a), Max(a)], /NOSCALE $
+       , MIN=legmin, MAX=legmax, /NOSCALE $
        , /VERTICAL, /YCENTER $
        , NORM_X_SIZE=finalwidth $
        , NORM_Y_SIZE=0.75*h $
