@@ -125,6 +125,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.51  1999/09/22 08:48:48  kupper
+;     Removed unnecessary copying of _W. This is now done by
+;     PlotTvScl_update.
+;
 ;     Revision 2.50  1999/09/22 08:43:37  kupper
 ;     *** empty log message ***
 ;
@@ -358,18 +362,20 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    default, MINUS_ONE, 0
    default, COLORMODE, 0
 
-   W = _W
+; copying of _W is no longer necessary (it is done by
+; PlotTvScl_update), R Kupper, Sep 22 1999
+;   W = _W 
    IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
-      maxW = Max(W)
-      minW = Min(NoNone_Func(W))
+      maxW = Max(_W)
+      minW = Min(NoNone_Func(_W))
    END
 
    IF Keyword_Set(NASE) THEN BEGIN
-      ArrayHeight = (size(w))(1)
-      ArrayWidth  = (size(w))(2)
+      ArrayHeight = (size(_w))(1)
+      ArrayWidth  = (size(_w))(2)
    END ELSE BEGIN
-      ArrayHeight = (size(w))(2)
-      ArrayWidth  = (size(w))(1)
+      ArrayHeight = (size(_w))(2)
+      ArrayWidth  = (size(_w))(1)
    END
    
    
