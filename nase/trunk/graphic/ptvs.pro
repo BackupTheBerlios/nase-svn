@@ -494,10 +494,24 @@ PRO PTvS, data, XPos, YPos, $
 
        
        ; these values are a bit empirical, however they seem be quite ok
-       TVSclLegend, Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.])+0.05*legwidth_norm(0),Origin_norm(1)+Hbitmap_Norm/2.0, $
-         V_Stretch=hbitmap_Norm/4.*Rs_Dev(1)/(!D.Y_PX_CM), $
-         H_Stretch=wbitmap_Norm/20.*Rs_Dev(0)/(!D.X_PX_CM), $
-         Max=LEGMAX, Min=LEGMIN, $
+
+;; old version
+;       TVSclLegend, Origin_norm(0)+(xyrange_norm(0,1)-Origin_norm(0)-legwidth_norm(0))*MIN([pixel_ratio,1.])+0.05*legwidth_norm(0),Origin_norm(1)+Hbitmap_Norm/2.0, $
+;         V_Stretch=hbitmap_Norm/4.*Rs_Dev(1)/(!D.Y_PX_CM), $
+;         H_Stretch=wbitmap_Norm/20.*Rs_Dev(0)/(!D.X_PX_CM), $
+;         Max=LEGMAX, Min=LEGMIN, $
+;         CHARSIZE=Charsize, $
+;         /Vertical, /YCenter, TOP=top, COLOR=color, _EXTRA=LEGEXTRA
+
+       ;; reserve additional space for a possible rotatetd title of
+       ;; the legend by adding the height of a char
+       y_ch_size = !D.Y_CH_SIZE*Charsize / FLOAT(!D.Y_SIZE)
+       TVSclLegend $
+        , (xyrange_norm(0,1)-legwidth_norm(0))*MIN([pixel_ratio,1.])+0.05*legwidth_norm(0)+1.5*y_ch_size $
+        , Origin_norm(1)+Hbitmap_Norm/2.0 $
+        , NORM_Y_SIZE=hbitmap_Norm*0.75 $
+        , NORM_X_SIZE=wbitmap_Norm/20. $
+        , Max=LEGMAX, Min=LEGMIN, $
          CHARSIZE=Charsize, $
          /Vertical, /YCenter, TOP=top, COLOR=color, _EXTRA=LEGEXTRA
    END
