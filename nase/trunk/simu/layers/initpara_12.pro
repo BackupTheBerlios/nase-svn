@@ -45,7 +45,7 @@
 ;
 ;-
 
-FUNCTION InitPara_12, TAUF=tauf, TAUL=taul, TAUI=taui, TAUX=taux, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAPLEPERIOD=sampleperiod
+FUNCTION InitPara_12, TAUF=tauf, TAUL=taul, TAUI=taui, TAUX=taux, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAMPLEPERIOD=sampleperiod
 
    Default, SAMPLEPERIOD, 0.001
    deltat = SAMPLEPERIOD*1000.

@@ -43,6 +43,13 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.6  2005/04/04 12:02:17  michler
+;
+;      Modified Files:
+;      	initpara_6.pro initpara_11.pro initpara_12.pro
+;
+;      spell corrections in sampleperiod keyword
+;
 ;      Revision 2.5  2004/09/27 14:03:32  michler
 ;
 ;      Modified Files:
@@ -77,7 +84,7 @@
 ;
 ;-
 FUNCTION InitPara_6, TAUF=tauf, TAUL=taul, TAUI=taui, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, $
-                 NOISYSTART=noisystart, Oversampling=oversampling, REFPERIOD=RefPeriod, SPIKENOISE=spikenoise, FADE=fade, SAPLEPERIOD=sampleperiod
+                 NOISYSTART=noisystart, Oversampling=oversampling, REFPERIOD=RefPeriod, SPIKENOISE=spikenoise, FADE=fade, SAMPLEPERIOD=sampleperiod
 
    Default, SAMPLEPERIOD, 0.001
    deltat = SAMPLEPERIOD*1000.
