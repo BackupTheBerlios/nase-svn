@@ -10,7 +10,7 @@
 ;
 ; PURPOSE:
 ;  Ever needed a name for the neuroscientific journal you're just
-;  about to start? <C>journalize()</C> will invent one for you.)
+;  about to start? <C>journalize()</C> will invent one for you.
 ;
 ; CATEGORY:
 ;  Help
@@ -31,7 +31,7 @@
 ;  results. I don't care either.
 ;
 ; PROCEDURE:
-;  Put together journal-pre- and suffixs, adjectives, and the subject,
+;  Put together journal-pre- and suffixes, adjectives, and the subject,
 ;  and you've got it. It's that easy...
 ;
 ; EXAMPLE:
