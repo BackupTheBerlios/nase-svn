@@ -51,6 +51,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/19 09:08:05  saam
+;           + params tag may be omitted now
+;           + still wrong handling of oversampling
+;           + removed redundancies in call of IFfilters
+;
 ;     Revision 1.2  2000/01/18 09:47:28  saam
 ;           bug with period=-1 fixed
 ;
@@ -153,15 +158,20 @@ Default, NUMBER, 0
             IF i NE 0 THEN filter_list =  filter_list +'*'
             filter_list = filter_list + act_filter.NAME
             IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
-               pattern = CALL_FUNCTION(act_filter.NAME,$
-                                       MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                       temp_vals=INn.temps(i),DELTA_T=delta_t) 
-               
+               IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
+                  pattern = CALL_FUNCTION(act_filter.NAME,$
+                                          MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
+                                          temp_vals=INn.temps(i),DELTA_T=delta_t) 
+               END ELSE BEGIN
+                  pattern = CALL_FUNCTION(act_filter.NAME,$
+                                          MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
+                                          temp_vals=INn.temps(i),DELTA_T=delta_t) 
+               END
+
                                 ; ELSE NextStep 
             END ELSE IF ((act_time GT act_filter.start) AND (act_time LE act_filter.stop)) THEN $
              pattern = CALL_FUNCTION(act_filter.NAME,$
-                                     PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
-                                     temp_vals=INn.temps(i),DELTA_T=delta_t) 
+                                     PATTERN=pattern, temp_vals=INn.temps(i)) 
                                
              
             INn.pattern = pattern     ; store for future use
