@@ -10,8 +10,10 @@
 ; CALLING SEQUENCE:   TvSclLegend, xnorm, ynorm [,/HORIZONTAL] [,/VERTICAL] 
 ;                     [,/LEFT] [,/RIGHT] [,/TOP] [,/BOTTOM]
 ;                     [,MAX=max] [,MID=mid] [,MIN=min]
+;
+;                     alle Argumente von UTvScl werden ebenfalls akzeptiert, i.w.
+;                     [,/CENTER]
 ;                     [,STRETCH=stretch] [,H_STRETCH=h_stretch] [,V_STRETCH=v_stretch]
-;                     [,/NEG_COLORS] 
 ;
 ; INPUTS:             xnorm: x-Position des Zentrums der Legende in Normalkoordinaten
 ;                     ynorm: y-Position des Zentrums der Legende in Normalkoordinaten
@@ -26,21 +28,20 @@
 ;                     MAX/MID/MIN: Beschriftung des maximalen, mittleren und minimalen
 ;                                  Legendenwertes als String oder Zahl 
 ;                                  (Def.: MAX=1, MID='', MIN=0)
-;                     STRETCH    ,
-;                     H_STRETH   ,
-;                     V_STRETCH  : Dehnungsfaktoren fuer die gesamte , horizontale
-;                                  und vertikale Ausdehnung der Legende (Def.: alles 1.0)
-;                     NEG_COLORS : invertiert die gesamte Farbpalette zur Darstellung auf
-;                                  SW-Postscript
 ;
 ; EXAMPLE:
-;           TvSclLegend, 0.5, 0.5
+;           TvSclLegend, 0.5, 0.5, /CENTER
 ;           TvSclLegend, 0.2, 0.2, MAX=10, MIN=-10, MID='Null', /VERTICAL, /TOP 
 ;
 ;        
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/11/06 14:57:20  saam
+;           statt eigenem TvScl wird nun UTvScl benutzt
+;           NEG_COLORS-Option wird durch SysVar !REVERTPSCOLORS geregelt
+;           Argumente von UTvScl werden weitergereicht
+;
 ;     Revision 2.1  1997/11/05 10:04:06  saam
 ;           man war das ne Arbeit; diese Procedure
 ;           ist NICHT vom Himmel gefallen
@@ -49,110 +50,76 @@
 ;-
 PRO TvSclLegend, xnorm, ynorm $
                  ,HORIZONTAL=horizontal, VERTICAL=vertical $
-                 ,STRETCH=stretch, V_STRETCH=v_stretch, H_STRETCH=h_stretch $
                  ,MAX=max, MID=mid, MIN=min $
                  ,LEFT=left, RIGHT=right, TOP=top, BOTTOM=bottom $
-                 ,NEG_COLORS = neg_colors
-
+                 ,_EXTRA = e
    
-   Default, stretch  , 1.0
-   Default, v_stretch, 1.0
-   Default, h_stretch, 1.0
-
+   
    Default, max, 1.0
    Default, mid, ''
    Default, min, 0.0
-
+   
    type = Size(max)
    IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(max, FORMAT='(G0.0)'), /REMOVE_ALL)
-
    type = Size(mid)
    IF type(type(0)+1) NE 7 THEN mid = STRCOMPRESS(STRING(mid, FORMAT='(G0.0)'), /REMOVE_ALL)
-   
    type = Size(min)
    IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(min, FORMAT='(G0.0)'), /REMOVE_ALL)
-
-
-   xpos = xnorm * !D.X_Size
-   ypos = ynorm * !D.Y_Size
-
-
+   
+   
+   
    bg = GetBGColor()
    sc =  RGB(255-bg(0), 255-bg(1), 255-bg(2), /NOALLOC)
-
+   
    IF Keyword_Set(VERTICAL) THEN BEGIN
-      x_cm = 0.5
-      y_cm = 2.5
-
-      xsize =  LONG(x_cm*!D.X_PX_CM*stretch*h_stretch)
-      ysize =  LONG(y_cm*!D.Y_PX_CM*stretch*v_stretch)
-      
-      colorarray = FindGen(ysize)
-      colorarray = Transpose(Rebin(colorarray, ysize, xsize))
-
-      IF Keyword_Set(NEG_COLORS) THEN BEGIN
-         colorarray = MAX(colorarray) - colorarray
-         sc = !D.N_COLORS-sc-1
-      END
-      
-      IF !D.Name NE 'PS' THEN Device, BYPASS_TRANSLATION=0
-      TVScl, colorarray, xpos/!D.X_PX_CM-x_cm/2, ypos/!D.Y_PX_CM-y_cm/2, XSIZE=x_cm, YSIZE=y_cm, /CENTIMETERS
-      IF !D.Name NE 'PS' THEN Device, /BYPASS_TRANSLATION
-
-      PlotS, [xpos-xsize/2, xpos+xsize/2, xpos+xsize/2,xpos-xsize/2,xpos-xsize/2], [ypos-ysize/2,ypos-ysize/2,ypos+ysize/2,ypos+ysize/2,ypos-ysize/2], COLOR=sc, /DEVICE
-
-      
+      x_pix =  20
+      y_pix = 100
+      colorarray = FindGen(y_pix)
+      colorarray = Transpose(Rebin(colorarray, y_pix, x_pix))
+   END ELSE BEGIN
+      x_pix = 100
+      y_pix =  20
+      colorarray = FindGen(x_pix)
+      colorarray = Rebin(colorarray, x_pix, y_pix)
+   END      
+   
+   
+   legend_dims = 0              ; needed for UTvScl-call
+   UTvScl, colorarray, xnorm, ynorm, DIMENSIONS=legend_dims, _EXTRA=e
+   
+   xpos  = legend_dims(0)
+   ypos  = legend_dims(1)
+   xsize = legend_dims(2)
+   ysize = legend_dims(3)
+   x_ch_size = !D.X_CH_SIZE / FLOAT(!D.X_SIZE)
+   y_ch_size = !D.Y_CH_SIZE / FLOAT(!D.Y_SIZE)
+   
+   
+   ; draw a frame around the colors
+   PlotS, [xpos, xpos+xsize, xpos+xsize,xpos,xpos], [ypos,ypos,ypos+ysize,ypos+ysize,ypos], COLOR=sc, /NORMAL
+   
+   IF Keyword_Set(VERTICAL) THEN BEGIN
       IF Keyword_Set(LEFT) THEN BEGIN
-         XYOuts, xpos-xsize/2-!D.X_CH_SIZE/2, ypos-ysize/2-!D.Y_CH_SIZE/2, STRCOMPRESS(STRING(min), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=1.0
-         XYOuts, xpos-xsize/2-!D.X_CH_SIZE/2, ypos        -!D.Y_CH_SIZE/2, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=1.0
-         XYOuts, xpos-xsize/2-!D.X_CH_SIZE/2, ypos+ysize/2-!D.Y_CH_SIZE/2, STRCOMPRESS(STRING(max), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=1.0
+         XYOuts, xpos-X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=1.0
       END ELSE BEGIN
-         XYOuts, xpos+xsize/2+!D.X_CH_SIZE/2, ypos-ysize/2-!D.Y_CH_SIZE/2, STRCOMPRESS(STRING(min), /REMOVE_ALL), /DEVICE, COLOR=sc
-         XYOuts, xpos+xsize/2+!D.X_CH_SIZE/2, ypos        -!D.Y_CH_SIZE/2, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /DEVICE, COLOR=sc
-         XYOuts, xpos+xsize/2+!D.X_CH_SIZE/2, ypos+ysize/2-!D.Y_CH_SIZE/2, STRCOMPRESS(STRING(max), /REMOVE_ALL), /DEVICE, COLOR=sc
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc
       END         
-   END ELSE BEGIN   
-      x_cm = 2.5
-      y_cm = 0.5
-
-      xsize = LONG(x_cm*!D.X_PX_CM*stretch*h_stretch)
-      ysize = LONG(y_cm*!D.Y_PX_CM*stretch*v_stretch)
-      
-      colorarray = FindGen(xsize)
-      colorarray = Rebin(colorarray, xsize, ysize)
-
-      IF Keyword_Set(NEG_COLORS) THEN BEGIN
-         colorarray = MAX(colorarray) - colorarray
-         sc = !D.N_Colors-sc-1
-      END
-
-      Device, BYPASS_TRANSLATION=0
-      TVScl, colorarray,  xpos/!D.X_PX_CM-x_cm/2, ypos/!D.Y_PX_CM-y_cm/2, XSIZE=x_cm, YSIZE=y_cm, /CENTIMETERS 
-      Device, /BYPASS_TRANSLATION
-      
-      PlotS, [xpos-xsize/2, xpos+xsize/2, xpos+xsize/2,xpos-xsize/2,xpos-xsize/2], [ypos-ysize/2,ypos-ysize/2,ypos+ysize/2,ypos+ysize/2,ypos-ysize/2], COLOR=sc, /DEVICE
-
+   END ELSE BEGIN
       IF Keyword_Set(TOP) THEN BEGIN
-         XYOuts, xpos-xsize/2, ypos+ysize/2+!D.Y_CH_SIZE/5, STRCOMPRESS(STRING(min), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos        , ypos+ysize/2+!D.Y_CH_SIZE/5, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos+xsize/2, ypos+ysize/2+!D.Y_CH_SIZE/5, STRCOMPRESS(STRING(max), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/5, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
       END ELSE BEGIN
-         XYOuts, xpos-xsize/2, ypos-ysize/2-!D.Y_CH_SIZE, STRCOMPRESS(STRING(min), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos        , ypos-ysize/2-!D.Y_CH_SIZE, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=0.5
-         XYOuts, xpos+xsize/2, ypos-ysize/2-!D.Y_CH_SIZE, STRCOMPRESS(STRING(max), /REMOVE_ALL), /DEVICE, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos        , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
+         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=sc, ALIGNMENT=0.5
       END
    END
-
 END
-
-
-;FOR i=0,16 DO BEGIN
-;   IF !D.Name NE 'PS' THEN device, BYPASS_TRANSLATION=0
-;   loadct, i
-;   IF !D.Name NE 'PS' THEN device, /BYPASS_TRANSLATION
-;   tvscllegend, 0.5, 0.5
-;   dummy = get_kbrd(1)
-;END
 
 
 END
