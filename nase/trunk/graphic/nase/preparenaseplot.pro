@@ -11,44 +11,48 @@
 ;
 ; CALLING SEQUENCE:
 ;* PrepareNASEPlot, Height, Width [,/CENTER] [,/OFFSET] [,/NONASE]
-;                    [,/X_ONLY | ,/Y_ONLY] 
-;                    [, XTICKNAMESHIFT=xshift] [,YTICKNAMESHIFT=yshift]       
-;                    [,GET_OLD=alteParameter]
+;*                   [,/X_ONLY | ,/Y_ONLY] 
+;*                   [, XTICKNAMESHIFT=xshift] [,YTICKNAMESHIFT=yshift]       
+;*                   [,GET_OLD=alteParameter]
 ;* PrepareNASEPlot, RESTORE_OLD=alteParameter
 ;
-; INPUTS: Height,Width: Ausmaße des Arrays (beachte Reihenfolge!)
+; INPUTS:
+;  Height,Width:: Ausmaße des Arrays (beachte Reihenfolge!)
 ;
-; OPTIONAL INPUTS: alteParameter in RESTORE_OLD: Die beim vorangegengenen Aufruf mit
-;                                                GET_OLD geretteten Plot-Parameter.
-;                  xshift, yshift: hilft, wenn man nicht will, dass die
-;                                  Beschriftung von 0 bis Breite/Hoehe des Arrays
-;                                  geht. Gibt man x/yshift an, so wird die
-;                                  Beschriftung um den angegebenen Wert verschoben.
-;                                  Soll zB die Null in der Mitte der X-Achse stehen,
-;                                  wuerde XTICKNAMESHIFT = -width/2 den Job tun.
+; OPTIONAL INPUTS:
+;  RESTORE_OLD:: Die beim vorangegengenen Aufruf mit
+;                GET_OLD geretteten Plot-Parameter.
+;  xshift, yshift:: hilft, wenn man nicht will, dass die
+;                  Beschriftung von 0 bis Breite/Hoehe des Arrays
+;                  geht. Gibt man x/yshift an, so wird die
+;                  Beschriftung um den angegebenen Wert verschoben.
+;                  Soll zB die Null in der Mitte der X-Achse stehen,
+;                  wuerde XTICKNAMESHIFT = -width/2 den Job tun.
 ;
-; KEYWORD PARAMETERS: /CENTER:: Wenn gesetzt, werden die Tickmarks so
-;                              verschoben, daß sie in die Mitte der
-;                              ArrayPunkte zeigen ( 0 liegt also
-;                              nicht im Koordinatenursprung, sondern
-;                              um einen halben "Pixel" verschoben).
-;                              Nötig z.B. für einen LEGO-SurfacePlot
-;                              oder für das Beschriften eines TV, wenn 
-;                              die Achsen unmittelbar am Array anliegen.
-;                              (s.OFFSET)
-;                     /OFFSET:: Ähnlich CENTER, wenn gesetzt werden die 
-;                              Tickmarks geeignet gesetzt für die
-;                              Beschriftung eines TV, wenn die Achsen
-;                              einen halben "Pixel" vom Array entfernt 
-;                              gezeichnet werden sollen.
-;                     /?_ONLY:: Parametzer werden nur für x- oder nur
-;                              für y-Achse gesetzt.
-;                     /NONASE:: Tickbeschriftungen werden IDL-üblich gesetzt.
+; KEYWORD PARAMETERS:
+;  /CENTER:: Wenn gesetzt, werden die Tickmarks so
+;            verschoben, daß sie in die Mitte der
+;            ArrayPunkte zeigen ( 0 liegt also
+;            nicht im Koordinatenursprung, sondern
+;            um einen halben "Pixel" verschoben).
+;            Nötig z.B. für einen LEGO-SurfacePlot
+;            oder für das Beschriften eines TV, wenn 
+;            die Achsen unmittelbar am Array anliegen.
+;            (s.OFFSET)
+;   /OFFSET:: Ähnlich CENTER, wenn gesetzt werden die 
+;            Tickmarks geeignet gesetzt für die
+;            Beschriftung eines TV, wenn die Achsen
+;            einen halben "Pixel" vom Array entfernt 
+;            gezeichnet werden sollen.
+;   /?_ONLY:: Parametzer werden nur für x- oder nur
+;            für y-Achse gesetzt.
+;   /NONASE:: Tickbeschriftungen werden IDL-üblich gesetzt.
 ;
-; OPTIONAL OUTPUTS:      alteParameter in GET_OLD:: Die Plotparameter, so, wie
-;                                         sie vor dem Aufruf waren,
-;                                         zur späteren
-;                                         Wiederherstellung mit RESTORE_OLD.
+; OPTIONAL OUTPUTS:      
+;  GET_OLD:: Die Plotparameter, so, wie
+;            sie vor dem Aufruf waren,
+;            zur späteren
+;            Wiederherstellung mit RESTORE_OLD.
 ;
 ; SIDE EFFECTS: !X und !Y werden verändert.
 ;
