@@ -14,6 +14,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  2000/08/25 16:54:22  kupper
+;     Split startup procedure to protect from double execution of startup.
+;
 ;     Revision 1.10  2000/08/04 15:13:01  kupper
 ;     Added system variable !NASEDIR.
 ;
@@ -56,7 +59,6 @@
 ;-
 PRO DefGlobVars
 
-DefSysV, '!NASEPATH', GetEnv("NASEPATH"), 0
 DefSysV, '!NONE' , -999999.0, 1
 DefSysV, '!NONEl', -999999  , 1
 DefSysV, '!NOMERCYFORPOT', 0.01, 1
