@@ -43,6 +43,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/06/19 13:26:21  saam
+;              + removed main part
+;              + fixed bug if count is not specified
+;
 ;        Revision 1.2  2000/05/18 08:18:57  saam
 ;              added keyword CSHIFT
 ;
@@ -66,7 +70,7 @@ Default, cshift, REPLICATE(0    , ndim)
 
 ;check grid method
 FOR d=ndim-1,0,-1 DO BEGIN
-    IF count(d) EQ !NONE THEN ccount = (dims(d)+1)/step(d) ELSE ccount = count(d)
+    IF count(d) EQ !NONE THEN ccount = (dims(d)+1)/step(d) ELSE ccount = MAX([1,count(d)])
 
     t = REVERSE((LindGen(ccount)*step(d)))
     t=t - (MAX(t)-MIN(t))/2 + cshift(d)
@@ -86,13 +90,4 @@ FOR d=ndim-1,0,-1 DO BEGIN
 END
 
 RETURN, idx
-END
-
-
-x=intarr(20,10)
-y=grid(SIZE=size(x), step=[1,2])
-x(y)=1
-plottvscl, x
-
-
 END
