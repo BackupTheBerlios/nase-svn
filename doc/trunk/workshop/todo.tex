@@ -150,6 +150,13 @@ Rüdiger\\[2cm]
   \item The /NASE keyword has inconsistent semantics: sometimes it
     refers to color scaling, sometimes it refers to transposition
     only.
+  \item \texttt{widget\_image\_container}:
+    \begin{itemize}
+      \item When renew\_scaling-method is called before widget is
+        realized, all options that were passed during intialization
+        will be forgotten. (renew\_scaling overwrites (*self).extra.
+        Should better only add.)
+    \end{itemize}
 \end{itemize}
 
 
