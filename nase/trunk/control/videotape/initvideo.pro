@@ -65,6 +65,12 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Fri Aug 29 15:04:41 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Der YEAR-Tag enth‰lt jetzt defaultm‰ﬂig auch den Tag
+;		und Monat der Aufzeichnung.
+;
 ;       Thu Aug 28 15:54:26 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -88,7 +94,7 @@ Function InitVideo, Frame, TITLE=title, $
    Default, starring, "Nerd ""die NASE"" Neuron"
    Default, company, "AG Neurophysik"
    Default, producer, GETENV("USER")
-   Default, year, strmid(systime(), 20, 24)
+   Default, year, strmid(systime(),0,11)+' '+strmid(systime(),20,24)
  
    filename = title+".vid"
    infoname = title+".vidinf"
