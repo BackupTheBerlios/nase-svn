@@ -74,6 +74,7 @@
 ;		 erste Version vom 30 Juli
 ;                '97. Andreas.  neue Keyword-Abfrage und
 ;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
+;-
 
 FUNCTION LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
