@@ -26,12 +26,8 @@
 ;*    KS_Two_w, data1, data2, d, p
 ;
 ; INPUTS:
-;  positional input arguments necessarily needed to use
-;  the routine. They are written in lower case.
 ;  data1:: n element vector representing sample one
-;  data2:: m element vector representing sample one  (in general m not equal n)
-;  d:: named variable, Kolmogorov-Smirnov statistics (i.e. critical value for the test)
-;  p:: named variable, p value
+;  data2:: m element vector representing sample two  (in general m not equal n)
 ;
 ;
 ; OUTPUTS:
@@ -50,14 +46,10 @@
 ;  Modified from code by  Han Wen (astro lib, Washington, August 1996).
 ;
 ; EXAMPLE:
-;  Please provide a simple example here. Things
-;  you specifiy on IDLs command line should be written
-;  as
 ;* data1 = [1., 2., 1., 1., 2., 1., 2., 1., 3., 2., 5.]
 ;* data2 = [4., 2., 3., 2., 1., 4., 1., 5., 2., 4., 6., 3., 4., 2., 1.]
 ;* KS_Two_W, data1, data2, d, p
 ;* print, d,p
-;  IDLs output should be shown using
 ;*  >0.37578  0.26142743
 ;
 ;-
