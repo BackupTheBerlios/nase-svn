@@ -6,12 +6,22 @@
 ;
 ; CATEGORY:            SIMULATION CONNECTIONS
 ;
-; CALLING SEQUENCE:    W = Delays(DW)
+; CALLING SEQUENCE:    D = Delays(DW [,/DIMENSIONS])
 ;
 ; INPUTS:              DW: Eine mit InitDW initialisierte DelayWeigh-
 ;                          Struktur
 ;
-; OUTPUTS:             die Gewichtsmatrix
+; OUTPUTS:             die Delay-matrix
+;                         Dies ist eine zweidimensionales Array der Form
+;                         W ( Target_Neuron, Source_Neuron ), wenn
+;                         nicht das Schlüsselwort /DIMENSIONS
+;                         angegeben wurde.
+;
+; KEYWORDS:            DIMENSIONS: Wird dieses Schlüsselwort
+;                                  angegeben, so ist D eine
+;                                  vierdimensionale Matrix (Matrix von 
+;                                  Matrizen) der Form
+;                                  D ( Target_Row,Target_Col, Source_Row,Source_Col )
 ;
 ; EXAMPLE:             DW = InitDW(S_WIDTH=10, S_HEIGHT=10, 
 ;                                  T_WIDTH=5, T_HEIGHT=5,
@@ -27,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/03/24 12:54:18  kupper
+;            Völlig überflüssige Schleife im SDW-Teil rausgeworfen.
+;             Sollte jetzt schneller sein.
+;
 ;     Revision 2.5  1998/03/19 15:27:43  kupper
 ;            copy&pase-bug korrigiert (muss chon ganz alt sein...)
 ;
@@ -48,12 +62,13 @@
 ;
 ;
 ;-
-FUNCTION Delays, _DW
+FUNCTION Delays, _DW, DIMENSIONS=dimensions
    
    IF (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') THEN BEGIN
       Handle_Value, _DW, DW, /NO_COPY
       D = DW.Delays
       Handle_Value, _DW, DW, /NO_COPY, /SET
+      If Keyword_Set(DIMENSIONS) then D = Reform(D, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
       RETURN, D
    END
 
@@ -66,8 +81,11 @@ FUNCTION Delays, _DW
 
    Handle_Value, _DW, DW, /NO_COPY
    IF NOT (N_Elements(DW.D) EQ 1 AND DW.D(0) EQ 0) THEN BEGIN
-      FOR wi=0l, N_Elements(DW.D)-1 DO D(DW.c2t(wi),DW.c2s(wi)) = DW.D(wi)
+;      FOR wi=0l, N_Elements(DW.D)-1 DO D(DW.c2t(wi),DW.c2s(wi)) = DW.D(wi)
+      D(DW.c2t,DW.c2s) = DW.D
    END
    Handle_Value, _DW, DW, /NO_COPY, /SET
+   
+   If Keyword_Set(DIMENSIONS) then D = Reform(D, DWDim(_DW,/TH), DWDim(_DW,/TW), DWDim(_DW,/SH), DWDim(_DW,/SW))
    RETURN, D
 END
