@@ -30,12 +30,15 @@ PRO	EXP2__FUNCT, X, A, F, PDER
 ;
 ; MODIFICATION HISTORY:
 ;	$Log$
+;	Revision 1.3  1998/03/14 15:01:51  pauly
+;	Header completed
+;
 ;	Revision 1.2  1998/03/14 14:11:38  pauly
 ;	*** empty log message ***
-;
+;	
 ;	Revision 1.1  1998/03/13 20:23:52  pauly
 ;	     Analog gauss2d_fit fuer exp-Abfall programmiert, erste Version
-;	
+;-	
 ;
 
 nx = long(x(0))		;Retrieve X and Y vectors
@@ -186,6 +189,9 @@ Function Exp2d_fit, z, a, x, y, XCENTER=xcenter, YCENTER=ycenter, NEGATIVE = neg
 ;
 ; MODIFICATION HISTORY:
 ;       $Log$
+;       Revision 1.3  1998/03/14 15:01:51  pauly
+;       Header completed
+;
 ;       Revision 1.2  1998/03/14 14:11:38  pauly
 ;       *** empty log message ***
 ;
