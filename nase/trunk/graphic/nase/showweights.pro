@@ -87,17 +87,20 @@
 ;          Matrix' dar.
 ;
 ;
-; SEE ALSO: <A HREF="#INITDW">InitDW()</A>, <A HREF="#FREEDW">FreeDW</A>, <A HREF="#RESTOREDW">RestoreDW</A>,
-;           <A HREF="#SETWEIGHT">SetWeight</A>, <A HREF="#SETDELAY">SetDelay</A>,
-;           <A HREF="#SETCONSTWEIGHT">SetConstWeight</A>, <A HREF="#SETCONSTDELAY">SetConstDelay</A>,
-;           <A HREF="#SETLINEARWEIGHT">SetLinearWeight</A>, <A HREF="#SETLINEARDELAY">SetLinearDelay</A>,
-;           <A HREF="#SETGAUSSWEIGHT">SetGaussWeight</A>, <A HREF="#SETGAUSSDELAY">SetGaussDelay</A>,
-;           <A HREF="#SETDOGWEIGHT">SetDogWeight</A>,
-;           <A HREF="#DELAYWEIGH">DelayWeigh()</A>
+; SEE ALSO: <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#INITDW">InitDW()</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#FREEDW">FreeDW</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#RESTOREDW">RestoreDW</A>,
+;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETWEIGHT">SetWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETDELAY">SetDelay</A>,
+;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETCONSTWEIGHT">SetConstWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETCONSTDELAY">SetConstDelay</A>,
+;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETLINEARWEIGHT">SetLinearWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETLINEARDELAY">SetLinearDelay</A>,
+;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETGAUSSWEIGHT">SetGaussWeight</A>, <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETGAUSSDELAY">SetGaussDelay</A>,
+;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#SETDOGWEIGHT">SetDogWeight</A>,
+;           <A HREF="file:/usr/ax1303/neuroadm/nase/simu/connections/index.html#DELAYWEIGH">DelayWeigh()</A>
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.7  1997/12/01 16:06:53  kupper
+;              Header überarbeitet, Hyperlinks eingefügt.
+;
 ;       Revision 2.6  1997/12/01 15:32:28  kupper
 ;              SLIDE-Keyword hat jetzt zwei mögliche Optionen.
 ;              GET_BASE implementiert.
