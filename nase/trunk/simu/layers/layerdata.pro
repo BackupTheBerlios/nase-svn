@@ -1,14 +1,14 @@
 ;+
-; NAME: LayerData
+; NAME:            LayerData
 ;
-; PURPOSE: Liefert Informationen über einen Layer zurück
-;          (s.u. OPTIONAL OUTPUTS)
+; PURPOSE:         Liefert Informationen über einen Layer zurück
+;                  (s.u. OPTIONAL OUTPUTS)
 ; 
-;          Für Breite und Höhe des Layers stehen außerdem die Funktionen
-;          <A HREF="#LAYERWIDTH">LayerWidth()</A> und <A HREF="#LAYERHEIGHT">LayerHeight()</A> zur Verfügung,
-;          die ein klein wenig schneller sein dürften, weil dort keine Arrays herumkopiert werden.
+;                   Für Breite und Höhe des Layers stehen außerdem die Funktionen
+;                   <A HREF="#LAYERWIDTH">LayerWidth()</A> und <A HREF="#LAYERHEIGHT">LayerHeight()</A> zur Verfügung,
+;                   die ein klein wenig schneller sein dürften, weil dort keine Arrays herumkopiert werden.
 ;
-; CATEGORY: Simulation
+; CATEGORY:         SIMULATION LAYERS
 ;
 ; CALLING SEQUENCE: LayerData, Layer 
 ;                              [,TYPE=Type]
@@ -20,7 +20,7 @@
 ;                              [,LERNPOTENTIAL=Lernpotential]
 ;                              [,OUTPUT=Output]
 ;
-; INPUTS: Layer: Eine initialisierte NASE-Layer-Struktur
+; INPUTS:           Layer: Eine mit <A HREF="#INITLAYER>InitLayer</A> initialisierte NASE-Layer-Struktur
 ;
 ; OPTIONAL OUTPUTS: Alle Daten werden in Schlüssesworten
 ;                   zurückgegeben. 
@@ -43,18 +43,25 @@
 ;                   Output           : Output-Spikes (ByteArray[HeightxWidth])
 ;
 ;
-; EXAMPLE: LayerData ( FEEDING=MyFeeding, POTENTIAL=MyMembranpotential )
+; EXAMPLE:
+;                    LP = InitPara_1()
+;                    L = InitLayer(5,5,TYPE=LP)
+;                    LayerData, L, FEEDING=MyFeeding, POTENTIAL=MyMembranpotential
 ;
-; SEE ALSO: <A HREF="#INITLAYER_1">InitLayer_1()</A>,  <A HREF="#INITLAYER_2">InitLayer_2()</A>,  <A HREF="#INITLAYER_3">InitLayer_3()</A>, 
-;           <A HREF="#INITPARA_1">InitPara_1()</A>,   <A HREF="#INITPARA_2">InitPara_2()</A>,   <A HREF="#INITPARA_3">InitPara_3()</A>,  
-;           <A HREF="#LAYERWIDTH">LayerWidth()</A>,   <A HREF="#LAYERHEIGHT">LayerHeight()</A>,  <A HREF="#LAYERSIZE">LayerSize()</A>, 
-;           <A HREF="#INPUTLAYER_1">InputLayer_1</A>,   <A HREF="#INPUTLAYER_2">InputLayer_2</A>, 
-;           <A HREF="#PROCEEDLAYER_1">ProceedLayer_1</A>, <A HREF="#PROCEEDLAYER_2">ProceedLayer_2</A>, <A HREF="#PROCEEDLAYER_3">ProceedLayer_3</A>, 
-;           <A HREF="#OUT2VECTOR">Out2Vector()</A>
+; SEE ALSO:          <A HREF="#INITPARA_1">InitPara_i</A> (i=1..7), <A HREF="#INITLAYER">InitLayer</A>,  
+;                    <A HREF="#INPUTLAYER">InputLayer</A>, <A HREF="#PROCEEDLAYER">ProceedLayer</A>,
+;                    <A HREF="#LAYERWIDTH">LayerWidth</A>, <A HREF="#LAYERHEIGHT">LayerHeight</A>,  <A HREF="#LAYERSIZE">LayerSize</A>, 
+;                    <A HREF="#OUT2VECTOR">Out2Vector()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.5  1998/11/08 17:33:27  saam
+;              + wrong procedure name LAYERDATATEST in last revision
+;              + keywords INHIBITION[12], FEEDING[12] renamed to [FS]INHIBITITON,
+;                [FS]FEEDING
+;              + adapted to new layer definition
+;
 ;        Revision 2.4  1998/11/05 18:07:35  niederha
 ;               funktioniert jetzt auch für Neuronentyp 7
 ;
@@ -69,42 +76,71 @@
 ;               Schöpfung.
 ;
 ;-
-
-Pro LayerDataTest, Layer, $
+PRO LayerData, _Layer, $
                TYPE=type, $
                WIDTH=width, HEIGHT=height, $
                PARAMETERS=parameters, $
-               FEEDING=feeding, FEEDING1=feeding1, FEEDING2=feeding2, LINKING=linking, INHIBITION=inhibition, $
+               FEEDING=feeding, FFEEDING1=ffeeding, SFEEDING=sfeeding, LINKING=linking, INHIBITION=inhibition, $
+               FINHIBITION=finihibition, SINHIBITION=sinhibition,$
                POTENTIAL=potential, $
                SCHWELLE=schwelle, LSCHWELLE=lschwelle, $
                LERNPOTENTIAL=lernpotential, $
                OUTPUT=output
 
-   TestInfo, Layer, "Layer"
+   TestInfo, _Layer, "Layer"
+   Handle_Value, _Layer, Layer, /NO_COPY
    
+
+   ; same for ALL TYPES
    type       = Layer.Type
    width      = Layer.W
    height     = Layer.H
    parameters = Layer.Para
+   potential  = REFORM(Layer.M, Layer.H, Layer.W)
 
 
-   linking                                 = Reform(Layer.L, Layer.H, Layer.W)
-   potential                               = Reform(Layer.M, Layer.H, Layer.W)
-   schwelle                                = Reform(Layer.S, Layer.H, Layer.W)
-   if Layer.Type eq '2' then lschwelle     = Reform(Layer.R, Layer.H, Layer.W)
-   if Layer.Type eq '3' then lernpotential = Reform(Layer.P, Layer.H, Layer.W)
-   output                                  = Out2Vector(Layer, /DIMENSIONS)
-   if Layer.Type eq '7' then begin 
-                             feeding1      = Reform(Layer.F1, Layer.H, Layer.W)
-                             feeding2      = Reform(Layer.F2, Layer.H, Layer.W)   
-                             inhibition1   = Reform(Layer.I1, Layer.H, Layer.W)
-                             inhibition2   = Reform(Layer.I2, Layer.H, Layer.W)
-                        end else begin
-                             feeding       = Reform(Layer.F, Layer.H, Layer.W)
-                             inhibition    = Reform(Layer.I, Layer.H, Layer.W)   
-                        end
+   ; handle FEEDING
+   CASE Layer.TYPE OF
+      '6' : feeding  = REFORM(Layer.para.corrAmpF*(Layer.F2-Layer.F1), Layer.H, Layer.W)
+      '7' : BEGIN
+               ffeeding = REFORM(Layer.F1, Layer.H, Layer.W)
+               sfeeding = REFORM(Layer.F2, Layer.H, Layer.W)   
+            END
+      ELSE: feeding = REFORM(Layer.F, Layer.H, Layer.W)
+   END   
 
-End
+   ; handle LINKING
+   CASE Layer.TYPE OF
+      '6' : linking = REFORM(Layer.para.corrAmpL*(Layer.L2-Layer.L1), Layer.H, Layer.W)
+      ELSE: linking = REFORM(Layer.L, Layer.H, Layer.W)
+   END   
+
+   ; handle INHIBITION
+   CASE Layer.TYPE OF
+      '7' : BEGIN
+               finhibition = REFORM(Layer.I1, Layer.H, Layer.W)
+               sinhibition = REFORM(Layer.I2, Layer.H, Layer.W)
+            END
+      ELSE: inhibition = REFORM(Layer.I, Layer.H, Layer.W)
+   END   
+
+
+   ; handle THRESHOLD
+   CASE Layer.TYPE OF
+      '6' : schwelle = REFORM(Layer.R + Layer.S + Layer.Para.th0, Layer.H, Layer.W)
+      ELSE: schwelle = REFORM(Layer.S, Layer.H, Layer.W)
+   END
+
+   ; handle SPECIAL TAGS
+   IF Layer.Type EQ '2' THEN lschwelle     = Reform(Layer.R, Layer.H, Layer.W)
+   IF Layer.Type EQ '3' THEN lernpotential = Reform(Layer.P, Layer.H, Layer.W)
+
+
+   Handle_Value, _Layer, Layer, /NO_COPY, /SET
+   output = LayerSpikes(_Layer, /DIMENSIONS)
+
+;;;   output                                  = Out2Vector(Layer, /DIMENSIONS)
+END
 
 
 
