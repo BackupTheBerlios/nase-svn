@@ -13,7 +13,8 @@
 ;  trains of action
 ;  potentials. Computation is done either by counting the spikes
 ;  inside a given time window sliding over the trains or by convolving
-;  the spike trains with a Gaussian window of given width. Averaging
+;  the spike trains with a Gaussian window of given width, wich
+;  results in a smoothed firing rate time course. Averaging
 ;  over a number of spiketrains is also supported. Fnord.
 ;
 ; CATEGORY: 
@@ -22,55 +23,50 @@
 ;
 ; CALLING SEQUENCE: 
 ;* rate = Instantrate( spikes [,SAMPLEPERIOD=...]  
-;*                            [,SSIZE=...] [,SSHIFT=...]
+;*                            [,/GAUSS] [,SSIZE=...] [,SSHIFT=...]
 ;*                            [,TVALUES=...] [,TINDICES=...] 
-;*                            [,AVERAGE=...]
-;*                            [,/GAUSS] [,/TFIRST] )
+;*                            [,AVERAGE=...])
 ;
 ;
 ; INPUTS: 
 ;  spikes:: A twodimensional binary array whose entries NE 0 are
 ;           interpreted as action potentials. First index: time, second
-;           index: neuron- or trialnumber. See keyword <*>TFIRST</*>.
+;           index: neuron- or trialnumber.
 ;
 ; INPUT KEYWORDS:
 ;  SAMPLEPERIOD:: Length of a BIN in seconds, default: 0.001s
+;  /GAUSS:: Calculates firing rate by convolving the spiketrain with a
+;         Gaussian filter, resembling a probabilistic
+;         interpretation. Otherwise, a rectangular mask is used for
+;         convolution, corresponding to simply counting the spikes in
+;         a given time window.
+;         Using a gaussian gives a smoother result. Note
+;         that <*>SSIZE</*> may have to be adjusted depending on
+;         whether <*>GAUSS</*> is set or not. 
 ;  SSIZE:: Width of window used to calculate the firing rate. If
-;         keyword <*>/GAUSS</*> is set, <*>SSIZE</*> sets the standard deviation of
-;         the Gaussian filter. Default: <*>GAUSS=0</*>: 128ms, <*>GAUSS=1</*>: 20ms.
+;         keyword <*>/GAUSS</*> is set, <*>SSIZE</*> sets the standard
+;         deviation of 
+;         the Gaussian filter, if <*>GAUSS=0</*>, <*>SSIZE</*> sets
+;         the total width of the rectangular convolution mask. Default: 20ms.
 ;  SSHIFT:: Shift of positions where firing rate is to be
-;          computed. Default: 1BIN with keyword <*>/GAUSS</*> set, else <*>SSIZE/2</*>.
-;  GAUSS:: Calculates firing rate by convolving the spiketrain with a
-;         Gaussian filter, resembling a probabilistic interpretation.
-;         Computation takes longer, but gives a smoother result. Note
-;         that defaults for <*>SSIZE</*> and <*>SSHIFT</*> are different when
-;         setting this keyword.
-;  TFIRST:: Turn around index interpretation of the input and output
-;           arrays. If <*>TFIRST=0</*>, the first index is taken as neuron
-;           number, the second index as time. This option is included
-;           for compatibility reasons. Default: <*>TFIRST=1</*>.
+;          computed. Default: 1BIN.
 ;
 ; OUTPUTS: 
 ;  rate:: Twodimensional array, containing the firing rates at the
 ;        desired times in Hz. First index: time, second index:
-;        neuron-/trialnumber (See keyword <*>TFIRST</*>). 
-;        The result may be shorter than
-;        the original depending on <*>SSHIFT</*>.
+;        neuron-/trialnumber.
 ;
 ; OPTIONAL OUTPUTS: 
 ;  TVALUES:: Array containing the starting positions of the windows
-;           used for rate calculation in ms. (See also <A>Slices()</A>.)
+;           used for rate calculation in ms.
 ;  TINDICES:: Array containing the starting indices of the windows
 ;            used for rate calculation relative to the original
-;            array. (See also <A>Slices()</A>.)
+;            array.
 ;  AVERAGE:: Array containing the firing rate averaged over all 
 ;            neurons/trials.
 ;
 ; PROCEDURE: 
-;  1. Rectanglular window: using <A>Slices</A> to obtain parts of the
-;     spiketrains, then summing over those parts using <*>Total</*>.<BR>
-;  2. Gaussian window: Constructing Gaussian filter and convoling
-;     spiktrain with this.
+;  Construct filter and convolve spiktrain with this. Average if desired.
 ;
 ; EXAMPLE: 
 ;*  a=fltarr(1000,10)
@@ -79,99 +75,58 @@
 ;*  r=instantrate(a, ssize=100, sshift=10, tvalues=axis, average=av)
 ;*  rg=instantrate(a, /GAUSS, ssize=20, tvalues=axisg, average=avg)
 ;*  !p.multi=[0,1,4,0,0] 
-;*  trainspotting, Transpose(a) 
-;*  plot, axis+50, r(*,0) ; axis contains starting times of windows.
-;*                          Interpreting results as firing rates at the
-;*                          time in the middle of the window,
-;*                          axis+ssize/2 corrects the display 
-;*                          
-;*  plot, axis+50, av
+;*  trainspotting, a 
+;*  plot, axis, r(*,0)      
+;*  plot, axis, av
 ;*  plot, axisg, avg
 ;
-; SEE ALSO: <A>Slices()</A>, <A>ISI()</A>.
+; SEE ALSO: <A>ISI()</A>.
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.7  2002/01/29 15:44:22  thiel
-;           Corrected misspelling of AVERAGE-Keyword.
-;
-;        Revision 1.6  2001/06/12 11:41:55  thiel
-;           Now uses new NASE spiketrain array convention: first index: time.
-;           Still can be turned to old behavior by TFIRST=0.
-;
-;        Revision 1.5  2000/09/28 10:02:55  gabriel
-;             AIM tag added
-;
-;        Revision 1.4  2000/08/01 15:04:13  thiel
-;            Now handles 1-dim spiketrains with /GAUSS correctly.
-;
-;        Revision 1.3  2000/04/11 12:11:13  thiel
-;            Rates may also be computed by convolution with Gaussian.
-;
-;        Revision 1.2  1999/12/06 16:27:02  thiel
-;            Turn on watch?
-;
-;        Revision 1.1  1999/12/06 15:37:12  thiel
-;            Neu.
-;
-;
 
-FUNCTION InstantRate, _nt, SAMPLEPERIOD=sampleperiod $
+
+FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
                       , SSIZE=ssize, SSHIFT=sshift $
                       , TVALUES=tvalues, TINDICES=tindices $
-                      , AVERAGE=average, GAUSS=gauss, TFIRST=tfirst
+                      , AVERAGE=average, GAUSS=gauss
 
    Default, gauss, 0
    Default, sampleperiod, 0.001
-   Default, tfirst, 1
+   Default, ssize, 20
+   __ssize = ssize*0.001/sampleperiod
 
-   IF NOT Keyword_Set(TFIRST) THEN BEGIN
-      Console, /WARNING $
-       , 'Why not swap your array indices and set TFIRST=1?'
-      nt = Transpose(_nt)
-   ENDIF ELSE nt = _nt
+   snt = Size(nt)
+
+   IF Set(sshift) THEN __sshift = sshift*0.001/sampleperiod $
+   ELSE __sshift = 1
+      
+   tindices = __sshift*LIndGen(snt[1]/__sshift)
+   tvalues = tindices*1000.*sampleperiod
 
    IF Keyword_Set(GAUSS) THEN BEGIN
 
-      Default, ssize, 20
-      __ssize = ssize*0.001/sampleperiod
-      
-      IF Set(sshift) THEN __sshift = sshift*0.001/sampleperiod $
-      ELSE __sshift = 1
-      
-      tindices = __sshift*LIndGen((Size(nt))(1)/__sshift)
-      tvalues = tindices*1000.*sampleperiod
+      ;; generate gaussian for convolution
       gausslength = 8*__ssize
       gaussx = FIndGen(gausslength)-gausslength/2
-      gaussarr= Exp(-gaussx^2/2/__ssize^2)/__ssize/sqrt(2*!PI)
+      mask = Exp(-gaussx^2/2./__ssize^2)/__ssize/sqrt(2*!PI)
 
-;      IF (Size(nt))(1) NE 1 THEN $
-;       result = Convol(Float(nt), gaussarr, /EDGE_TRUNC)/sampleperiod $
-;      ELSE $
-      result = Convol(Float(nt), gaussarr, /EDGE_TRUNC)/sampleperiod
+   ENDIF ELSE BEGIN
 
-      result = (Temporary(result))(tindices, *)
+      ;; rectangular array for convolution
+      mask = Make_Array(__ssize, /FLOAT, VALUE=1./__ssize)
 
-   ENDIF ELSE BEGIN ;; Keyword_Set(GAUSS) 
+   ENDELSE ;; Keyword_Set(GAUSS)
 
-      sli = Slices(nt, SSIZE=ssize, SSHIFT=sshift, TVALUES=tvalues $
-                   , TINDICES=tindices, SAMPLEPERIOD=sampleperiod, /TFIRST)
-;      result = Transpose(Float(Total(sli,3))/ssize/sampleperiod)
-      result = Float(Total(sli,1))/ssize/sampleperiod
+   rates = Convol(Float(nt), mask, /EDGE_TRUNC)/sampleperiod
 
-   ENDELSE ;; Keyword_Set(GAUSS) 
-   
-   IF (Size(nt))(0) NE 1 THEN $
-    average= Total(result,2)/(Size(result))(2) $ ;; two dimensional array
+   rates = (Temporary(rates))[tindices, *]
+
+   IF snt[0] NE 1 THEN $
+    average= Total(rates,2)/snt[2] $ ;; two dimensional array
    ELSE $
-    average = result ;; one dimensional array
+    average = rates ;; one dimensional array
    
-   IF NOT Keyword_Set(TFIRST) THEN result = Temporary(Transpose(result))
-
-   Return, result
+   Return, rates
 
 
 END
