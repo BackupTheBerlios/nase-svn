@@ -107,6 +107,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  1998/06/02 11:29:43  gabriel
+;          Fehler im Common Block
+;
 ;     Revision 1.4  1998/06/02 11:26:40  gabriel
 ;          Keyword NULLHypo neu, Energieanteil des Freqb. korrigiert
 ;
@@ -128,7 +131,7 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
 
    IF N_Params() NE 3 THEN Message, 'wrong number of parameters'
 
-   COMMON SLIDCORR_BLOCK,SHEET_3, PLOTFLAG, RANDS
+   COMMON SLIDCORR_BLOCK,SHEET_3, PLOTFLAG
    COMMON common_random, seed
    datsize = SIZE(datarr)
 
