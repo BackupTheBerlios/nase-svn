@@ -3,8 +3,10 @@
 #
 package NASE::xref;
 
-use strict;
+#use diagnostics;
+#use strict;
 use CGI qw/:standard :html3 :netscape -debug/;
+use CGI::Carp;
 use File::Basename;
 use File::Find;
 use NASE::globals;
@@ -17,24 +19,12 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw( makeURL readRoutineIdx createRoutineIdx checkRoutineIdx RoutinesByName RoutinesByCat showedit );
+@EXPORT = qw( makeURL RoutinesByName RoutinesByCat showedit );
 
 $VERSION = '1.1';
 
 
 # Preloaded methods go here.
-
-###################################################################################
-###################################################################################
-###################################################################################
-my($INDEXDIR, $DIRINDEX, $ALPHINDEX, @ridx, %aim, %alpha); 
-
-
-$INDEXDIR=getIndexDir();
-$DIRINDEX="$INDEXDIR/index-by-dir";
-$ALPHINDEX="$INDEXDIR/index-by-name";
-
-
 
 
 ###################################################################################
@@ -54,7 +44,11 @@ sub makeURL {
   $routine =~ s,[\"\'],,g;
 
   $routine .= ".pro" unless $routine =~ /\.pro$/i;
-  ($dir,$rname) = @{$hdata{$routine}} if exists $hdata{$routine} ;
+
+  if (exists $pro{$routine}) {
+    $dir = $pro{$routine}->{'dir'};
+    $rname = $pro{$routine}->{'rname'};
+  }
   $routine =~ s,\.pro$,,i;
 
   $link = $routine;
@@ -70,13 +64,6 @@ sub makeURL {
 }
 
 
-###################################################################################
-# returns string of last update
-###################################################################################
-sub checkRoutineIdx {
-  return checkH();
-}
-
 
 ####################################################################################
 ####################################################################################
@@ -88,38 +75,34 @@ sub checkRoutineIdx {
 sub RoutinesByName {
   my ($lastkey, $key);
 
-  open (IDX, ">".getDocDir()."/".RoutinesHTML()) || die "can't open ".getDocDir()."/".RoutinesHTML()." for write: $!\n";
-
-  print IDX myHeader(), myBody(),
-            h1("Routines by Name"),p,
-            "<A NAME=top><FONT SIZE=+2>";
-
+  print myHeader(), myBody(),
+  h1("Routines by Name"),p,
+  "<A NAME=top><FONT SIZE=+2>";
+  
   foreach ('_','A'..'Z'){
-    print IDX "<A HREF=#$_>$_</A> ";
+    print "<A HREF=#$_>$_</A> ";
   }
-  print IDX "</FONT></A>";
+  print "</FONT></A>";
 
-  print IDX '<TABLE><COLGROUP SPAN=2></COLGROUP>'; 
+  print '<TABLE><COLGROUP SPAN=2></COLGROUP>'; 
 
   $lastkey = "1";
-  openHread(); 
-  foreach $key (sort keys %hdata){ 
+
+  foreach $key (sort keys %pro){ 
     # print the new leading character
     if (uc(substr($key, 0, 1)) ne $lastkey){
       $lastkey = uc(substr($key, 0, 1));  
-      print IDX '<TR CLASS="title"><TD CLASS="title" ALIGN="LEFT">',br,a({-name=>"$lastkey"}, $lastkey), "</TD>",
+      print '<TR CLASS="title"><TD CLASS="title" ALIGN="LEFT">',br,a({-name=>"$lastkey"}, $lastkey), "</TD>",
       '<TD CLASS="ltitle" VALIGN="BOTTOM">', a({-href=>"#top"}, "top"), "</TD></TR>\n";
     }
-    print IDX '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
-              makeURL($key, undef, "routidx"),
-              '</TD><TD CLASS="xplcode" VALIGN=TOP>',
-              @{$hdata{$key}}[2],
-              "</TD></TR>\n";
+    print  '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
+           makeURL($key, undef, "routidx"),
+           '</TD><TD CLASS="xplcode" VALIGN=TOP>',
+           $pro{$key}->{aim},
+           "</TD></TR>\n";
   }; 
-  closeHread(); 
-  print IDX "</TABLE>", end_html;
+  print "</TABLE>", end_html;
 
-  close (IDX);
 }
 
 
@@ -132,55 +115,53 @@ sub RoutinesByName {
 ####################################################################################
 ####################################################################################
 sub RoutinesByCat {
-  my ($key, $cat, $data, %cat, $count);
+  my ($cat, @cat, $count); 
+  my ($sql, @pro, $pro);
 
-  open (IDX, ">".getDocDir()."/".RoutinesCatHTML()) || die "can't open ".getDocDir()."/".RoutinesCatHTML()." for write: $!\n";
-
-  print IDX myHeader(), myBody(),
-            h1("Routines by Category"),p,
-            "<A NAME=top><FONT SIZE=+2>";
+  print myHeader(), myBody(),
+        h1("Routines by Category"),p,
+        "<A NAME=top><FONT SIZE=+2>";
 
   # create unique list of categories
-  openHread(); 
-  while ((undef, $data) = each %hdata){
-    foreach (split(",",@{$data}[3])){
-      $cat{$_}++;
-    }
-  }
-  
+  $sql = "SELECT DISTINCT cname FROM cat";
+  @cat = @{$dbh->selectcol_arrayref($sql)};
+  warn "$DBI::errstr\n" if $DBI::err;
+  die "create table error: $DBI::errstr\n" if $DBI::err;
 
-  print IDX '<TABLE><TR>'; 
+  print '<TABLE><TR>'; 
   $count = 0;
-  foreach (sort keys %cat){    
-    print IDX '<TD CLASS="xmpcode" VALIGN=TOP>', "<A HREF=#$_>$_</A>", "</TD>\n";
-    if (($count % 5) == 4){ print IDX "</TR><TR>"; }
+  foreach (@cat){    
+    print '<TD CLASS="xmpcode" VALIGN=TOP>', "<A HREF=#$_>$_</A>", "</TD>\n";
+    if (($count % 5) == 4){ print "</TR><TR>"; }
     $count++;
   }
-  print IDX "</TR></TABLE></FONT></A>";
+  print "</TR></TABLE></FONT></A>";
 
 
   # now output all cats and routines
-  print IDX '<TABLE><COLGROUP SPAN=2></COLGROUP>'; 
+  print '<TABLE><COLGROUP SPAN=2></COLGROUP>'; 
   
-  foreach $cat (sort keys %cat){ 
+  foreach $cat (@cat){ 
     # print the new leading category
-    print IDX '<TR CLASS="title"><TD CLASS="title" ALIGN="LEFT">',br,a({-name=>"$cat"}, $cat), "</TD>",
-    '<TD CLASS="ltitle" VALIGN="BOTTOM">', a({-href=>"#top"}, "top"), "</TD></TR>\n";
+    print '<TR CLASS="title"><TD CLASS="title" ALIGN="LEFT">',br,a({-name=>"$cat"}, $cat), "</TD>",
+          '<TD CLASS="ltitle" VALIGN="BOTTOM">', a({-href=>"#top"}, "top"), "</TD></TR>\n";
 
-    while (($key, $data) = each %hdata){
-      if (@{$data}[3] =~ /$cat/){
-	print IDX '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
-                  makeURL($key, undef, "routidx"),
-                  '</TD><TD CLASS="xplcode" VALIGN=TOP>',
-                  @{$data}[2],
-                  "</TD></TR>\n";
-      }
+    # get routines matching latest category
+    $sql = 'SELECT fname FROM cat WHERE cname like "'.$cat.'"';
+    @pro = @{$dbh->selectcol_arrayref($sql)};
+    warn "$DBI::errstr\n" if $DBI::err;
+    die "create table error: $DBI::errstr\n" if $DBI::err;
+
+    foreach $pro (@pro){
+      print '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
+            makeURL($pro, undef, "routidx"),
+            '</TD><TD CLASS="xplcode" VALIGN=TOP>',
+            $pro{$pro}->{aim},
+            "</TD></TR>\n";
     }
   }
-  closeHread(); 
-  print IDX "</TABLE>", end_html;
+  print "</TABLE>", end_html;
   
-  close (IDX);
 }
 
 

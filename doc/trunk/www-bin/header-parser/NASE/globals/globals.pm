@@ -3,11 +3,16 @@
 #
 package NASE::globals;
 
-use strict;
-use MLDBM qw(DB_File Storable);
-use Fcntl;
-use LockFile::Simple qw(lock trylock unlock);
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %hdata @hentry);
+#use diagnostics;
+#use strict;
+use CGI::Carp;
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK @hentry %pro %catl $dbh);
+use DBI;
+use Tie::DBI;
+
+use constant DATABASE => 'nase';
+use constant AUSER    => 'root';
+use constant APASSWD  => 'hds23wkP';
 
 require Exporter;
 
@@ -15,13 +20,13 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir checkH openHwrite closeHwrite openHread closeHread KeyByNameHTML KeyByCountHTML RoutinesHTML RoutinesCatHTML KeyByName KeyByCount parseAim getDocURL %hdata @hentry myHeader myBody);
+@EXPORT = qw(setIndexDir getIndexDir setDocDir getDocDir setBaseURL getBaseURL setSubDir getSubDir KeyByNameHTML KeyByCountHTML KeyByName KeyByCount getDocURL @hentry myHeader myBody getCVS setCVS %pro %catl $dbh); 
 $VERSION = '1.1';
 
 
 # Preloaded methods go here.
 my ($DOCURL, $hostname);
-my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr, $CVSROOT);
+my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $CVSROOT); #, $lockmgr
 
 ## just default settings (START) ##
 # CVSROOT: the location of the repository, if unset no checkout will be performed
@@ -31,34 +36,127 @@ my ($INDEXDIR, $DOCDIR, $BASEURL, $SUBDIR, $_parseAim, $lockmgr, $CVSROOT);
 # DOCURL : specifies the URL to docdir with trailing slash, please! 
 
 
+
+###################################################################################
+###################################################################################
+###################################################################################
+sub createTablesIfNotExist {
+  my ($sql, $sth);
+  my @cats = ("Animation", "Array", "Color", "Connections", "DataStorage", "DataStructures", "Demonstration", 
+	      "Dirs", "ExecutionControl", "Files", "Fonts", "Graphic", "Help", "Image", "Input", "Internal",
+	      "IO", "Layers", "Math", "MIND", "NASE", "Objects", "OS", "Plasticity", "Startup", "Signals",
+	      "Simulation", "Strings", "Structures", "Widgets", "Windows", "_Error");
+  # _Error is an internal category that contains doc headers with errors
+
+  if (not grep(/^pro$/, $dbh->func('_ListTables'))){
+    $dbh->do ( qq{
+		  CREATE TABLE pro
+		  (  fname   CHAR(80) NOT NULL PRIMARY KEY,
+		     rname   CHAR(80) NOT NULL,
+		     aim     CHAR(255),
+		     dir     CHAR(255) NOT NULL,
+		     header  TEXT
+		  )
+		 }
+	     );
+  }
+  die "create table routines: $DBI::errstr\n" if $DBI::err;
+
+
+  if (not grep(/^catl$/, $dbh->func('_ListTables'))){
+    $dbh->do ( qq{
+		  CREATE TABLE catl
+		  (  cname   CHAR(80) NOT NULL PRIMARY KEY
+		  )
+		 }
+	     );
+    
+    $sql = "INSERT INTO catl VALUES (?)";
+    $sth = $dbh->prepare($sql);
+    die "$DBI::errstr\n" if $DBI::err;
+    foreach (@cats){
+      $sth->execute($_);
+      warn "$DBI::errstr\n" if $DBI::err;
+    }      
+    $sth->finish();
+  }
+  die "create table error: $DBI::errstr\n" if $DBI::err;
+
+
+  if (not grep(/^cat$/, $dbh->func('_ListTables'))){
+    $dbh->do ( qq{
+		  CREATE TABLE cat
+		  (  fname   CHAR(80) NOT NULL,  # points to fname in pro
+		     cname   CHAR(80) NOT NULL,  # points to cname in catl
+		     PRIMARY KEY (fname, cname)		   
+		  )
+		 }
+	     );
+  }
+  die "create table cat: $DBI::errstr\n" if $DBI::err;
+}
+
+
+
 BEGIN {
   chop ($hostname = `uname -a`);
   {
-      $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-    			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
-    			       $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
-       			       $INDEXDIR="$DOCDIR"};
+#      $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
+#    			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
+#    			       $DOCURL="http://neuro.physik.uni-marburg.de/nase/";
+#       			       $INDEXDIR="$DOCDIR"};
     
 #    			       last;};
-#    $DOCDIR="/mhome/saam/sim"; 
-#    $DOCURL="http://localhost/nase/"; 
-#    $INDEXDIR="/tmp";
+    $DOCDIR="/mhome/saam/sim"; 
+    $DOCURL="http://localhost/nase/"; 
+    $INDEXDIR="/tmp";
   }
   
   $BASEURL  = "http://neuro.physik.uni-marburg.de/cgi-bin-neuro/nasedocu.pl";
   $SUBDIR   = "/";
-  $_parseAim = 0;
   ## just default settings (END) ##
 
-  # configure file locking policy
-  $lockmgr = LockFile::Simple->make(-nfs=>1, -stale=>1, -hold=>600);
 
+  # manage database
+  $dbh = DBI->connect("DBI:mysql:database=".DATABASE, AUSER, APASSWD);
+  die "connect error: $DBI::errstr\n" if $DBI::err;
+  # create tables if not existent
+  createTablesIfNotExist();
+  # tie to tables
+  tie %pro, 'Tie::DBI', {
+			 db       => "dbi:mysql:database=" . DATABASE,
+			 table    => 'pro',
+			 key      => 'fname',
+			 user     => AUSER,
+			 password => APASSWD,
+			 CLOBBER  => 2
+			}
+    || die "can't tie to database: $!\n";
+
+  tie %catl, 'Tie::DBI', {
+			 db       => "dbi:mysql:database=" . DATABASE,
+			 table    => 'catl',
+			 key      => 'cname',
+			 user     => AUSER,
+			 password => APASSWD,
+			 CLOBBER  => 0
+			}
+    || die "can't tie to database: $!\n";
+
+}
+
+END {
+  untie %pro;
+  untie %catl;
+  $dbh->disconnect();
 }
 
 
 
 sub setIndexDir { $INDEXDIR = shift @_; }
 sub getIndexDir { return $INDEXDIR; }
+sub setCVS { $CVSROOT = shift @_; }
+sub getCVS { return $CVSROOT; }
 sub setDocDir { $DOCDIR = shift @_; }
 sub getDocDir { return $DOCDIR; }
 sub getDocURL { return $DOCURL; }
@@ -69,59 +167,13 @@ sub getSubDir { return $SUBDIR; }
 
 
 
-sub parseAim        { if ($#_ ge 0) { $_parseAim = shift @_;  } else { return $_parseAim; } }
 sub KeyByNameHTML   { return "keywords-by-name.html"; } 
 sub KeyByCountHTML  { return "keywords-by-count.html"; }
-sub RoutinesHTML    { return "routines-by-name.html"; } 
-sub RoutinesCatHTML { return "routines-by-cat.html"; } 
 sub KeyByName       { return getIndexDir()."keywords-by-name"; }
 sub KeyByCount      { return getIndexDir()."keywords-by-count"; }
 
-
-##
-## implement a simple locking, persistent hash
-##
-## %hdata is a hash of lists, the key is the filename 
-## the lists has the following organization [dir, name, aim, catlist ]
-my $hfiler = "/tmp/nasedocu.db";
-my $hfilew = "/tmp/nasedocu.new.db";
+# globally used to transfer data from IDLparser.pm (IDLparser.y) to parse.pm
 @hentry = ();
-
-sub openHwrite {
-  $lockmgr->lock ($hfilew) || die "can't get lock for $hfilew: $!\n";
-  tie (%hdata, 'MLDBM', $hfilew, O_CREAT | O_RDWR, 0666) || die "can't tie to $hfilew: $!\n";
-  print STDERR "tied $hfilew for write\n";
-}
-
-sub closeHwrite {
-  untie(%hdata) || die "can't untie $hfilew: $!\n";
-  $lockmgr->unlock($hfilew) || die "can't unlock $hfilew: $!\n"; 
-  print STDERR "untied $hfilew\n";
-
-  $lockmgr->lock ($hfiler) || die "can't get lock for $hfiler: $!\n";
-  `cp $hfilew $hfiler`;
-  unlink ($hfilew);
-  $lockmgr->unlock ($hfiler);
-}
-
-
-sub checkH {
-  my $lastmod = (stat($hfiler))[9] || return;
-  return localtime($lastmod);
-}
-
-
-sub openHread {
-  $lockmgr->lock ($hfiler) || die "can't get lock for $hfiler: $!\n";
-  tie (%hdata, 'MLDBM', $hfiler, O_CREAT | O_RDWR, 0666) || die "can't tie to $hfiler: $!\n";
-  print STDERR "tied $hfiler for read\n";
-}
-
-sub closeHread {
-  untie(%hdata) || die "can't untie $hfiler: $!\n";
-  $lockmgr->unlock($hfiler) || die "can't unlock $hfiler: $!\n"; 
-  print STDERR "untied $hfiler\n";
-}
 
 sub myHeader {
   return join("\n", ( "<HTML><HEAD><TITLE>NASE/MIND Documentation System</TITLE>" 

@@ -1,12 +1,13 @@
 package NASE::parse;
 
-use strict;
+#use diagnostics;
+#use strict;
 use CGI qw/:standard :html3 :netscape -debug/;
-#use File::Basename;
-use File::Find;
+use CGI::Carp;
+use File::Basename;
 
 # just for debug
-# use Data::Dumper;
+#use Data::Dumper;
 
 use NASE::globals;
 use NASE::xref;
@@ -22,16 +23,20 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw( parseHeader createAim showHeader showSource showLog quickSearch);
+@EXPORT = qw( updateDB deleteDB showHeader showSource showLog quickSearch DirAim scanFile deleteFile );
 $VERSION = '1.2';
 
 
 
-my (@token, $lexer, $parser, @subdir);
+my (@token, $lexer, $parser);
 
 
 
+###################################################################################
+###################################################################################
+###################################################################################
 sub _yyerror { print STDERR "$.: $@\n"; }      
+
 BEGIN {
   # initialize scanner and parser
   @token = (
@@ -97,9 +102,9 @@ BEGIN {
   Parse::YYLex->ytab("IDLparser.ph");
   $lexer = Parse::YYLex->new(@token);
   $lexer->skip('');
-  $parser = IDLparser->new($lexer->getyylex, &_yyerror, 0);
-}
+  $parser = IDLparser->new($lexer->getyylex, &_yyerror);
 
+}
 
 
 # Preloaded methods go here.
@@ -110,78 +115,41 @@ BEGIN {
 
 
 
-###################################################################################
-###################################################################################
-###################################################################################
-# calls createAimandKeylist and writes index files if on top level dir
-#
-# arg1: directory to create aim for
-###################################################################################
-sub createAim {
-  my ($key, $count, %count, $fh);
-
+sub updateDB {
   (my $mydir) = @_;
-
-  openHwrite();
-
-  # pipe parser output to hell
-  open(NULL, ">>/dev/null") || die "can't open /dev/null for write: $!\n";
-  $fh = select(NULL);
-  parseAim(1); # just parse the aim
 
   createDirHash($mydir);
   createDirHash($mydir); # run twice to get MakeURL in AIM working
-  
-  # restore STDOUT
-  select($fh);
-  close(NULL) || die "can't close /dev/null: $!\n";
+}
 
-  closeHwrite();
-  Aim2Html($mydir);
+
+sub deleteDB {
+  my $sql;
+
+  $sql = "DROP TABLE catl\n";
+  $dbh->do($sql);
+  warn "$DBI::errstr\n" if $DBI::err;
+
+  $sql = "DROP TABLE cat\n";
+  $dbh->do($sql);
+  warn "$DBI::errstr\n" if $DBI::err;
+
+  $sql = "DROP TABLE pro\n";
+  $dbh->do($sql);
+  warn "$DBI::errstr\n" if $DBI::err;
 }
 
 
 
-###################################
-## works only from createAim
-###################################
-sub Aim2Html {
-  my ($mydir) = @_;
-  my ($dir, $key, @data, $fh);
-  my $DOCDIR = getDocDir();
-  my @subdir = ();
-  
-  sub wanted {
-    push(@subdir, $File::Find::dir) if -d;
-  }
-  find(\&wanted, "$DOCDIR/$mydir");
-  
-  
-  
-  openHread();
-  
-  foreach $dir (@subdir){
-    $dir =~ s,$DOCDIR/,,;
-    print "processing $dir\n";
-    @data = ();
-    while (defined ($key = each %hdata)){
-      if (@{$hdata{$key}}[0] eq $dir){
-	push(@data, $key);
-      }
-    }
-    
-    if (open (AIM, ">$DOCDIR/$dir/index.html")){
-      $fh = select(AIM);
-      print 
-	start_html('NASE/MIND Documentation System');
-      R2HTML($dir, sort(@data));
-      select($fh);
-      close (AIM);
-    } else {
-      print STDERR "can't open $DOCDIR/$dir/index.html for write: $!\n";
-    }
-  }
-  closeHread();  
+sub DirAim {
+  my ($dir) = @_;
+  $dir =~ s,^/,,g;
+  $dir =~ s,/$,,g;
+
+  my @data = tied(%pro)->select_where('dir like "'.$dir.'"');
+  print 
+    start_html('NASE/MIND Documentation System');
+  R2HTML($dir, @data);
 }
 
 
@@ -189,8 +157,7 @@ sub Aim2Html {
 ###################################################################################
 ###################################################################################
 # give him a list of routines and he will display it as  NAME:AIM 
-#
-# assumes that openHread is already called
+###################################################################################
 sub R2HTML {
   my $title = shift;
 
@@ -199,8 +166,8 @@ sub R2HTML {
   foreach (@_){
     print 
       '<TR>',
-      '<TD CLASS="xmpcode" VALIGN=TOP>', makeURL($_), '</TD>',
-      '<TD CLASS="xplcode" VALIGN=TOP>', @{$hdata{$_}}[2], '</TD>',
+      '<TD CLASS="xmpcode" VALIGN=TOP>', makeURL($pro{$_}->{'fname'}), '</TD>',
+      '<TD CLASS="xplcode" VALIGN=TOP>', $pro{$_}->{'aim'}, '</TD>',
       "</TR>\n";
   }
   print "</TABLE>\n", end_html;
@@ -213,31 +180,32 @@ sub R2HTML {
 ###################################################################################
 ###################################################################################
 sub quickSearch {
-  # just searches the routine names
   my $sstr = shift;
   my @results = ();
+  my @tmpsearch = ();
   my $key;
 
-  openHread();
-  while (defined ($key = each %hdata)){
-    if ((grep (/name/, @_)) && (@{$hdata{$key}}[1] =~ /$sstr/i)){push (@results, $key); next};
-    if ((grep (/aim/, @_)) && (@{$hdata{$key}}[2] =~ /$sstr/i)){push (@results, $key); next};
+  if (grep (/name/, @_)){ 
+    @tmpsearch = tied(%pro)->select_where('rname like "%'.$sstr.'%"');
+    if (@tmpsearch){ push(@results, @tmpsearch) };
   }
+  if (grep ( /aim/, @_)){ 
+    @tmpsearch = tied(%pro)->select_where('aim rlike "%'.$sstr.'%"');
+    if (@tmpsearch){ push(@results, @tmpsearch) };
+  }
+
  SWITCH: {
     if ($#results == -1){
-      closeHread();
       print h2("Search Results");
       print h4("sorry, nothing found");
       print h4("try to refine your search");      
       last SWITCH;
     }
     if ($#results == 0){
-      closeHread();
       showHeader(key=>$results[0]);
       last SWITCH;
     }
     R2HTML("Search Results", sort(@results));
-    closeHread();
   }
 }
 
@@ -245,17 +213,10 @@ sub quickSearch {
 
 
 
-
-
-
 ###################################################################################
 ###################################################################################
 ###################################################################################
-# recursively enlarges %hdata per directory 
-# %hdata must be already tied
-# called by createHash
-#
-# arg1: directory to scan
+# arg1: directory to scan recursively
 ###################################################################################
 sub createDirHash {
   my ($mydir, $DOCDIR, @sdir, @file, $file);
@@ -278,13 +239,10 @@ sub createDirHash {
     }
 
     foreach $file (sort @file) {
-      print STDERR "$mydir/$file\n";
-      @hentry = ();
-      parseHeader("$DOCDIR/$mydir/$file"); # will modify @hentry
-      $hentry[0] = $mydir;
-      $hdata{$file} = \@hentry;
+#      print STDERR "processing $file\n";
+      scanFile(file=>$file, path=>$mydir);
     }
-  } else { print STDERR "error processing $DOCDIR/$mydir: $!\n"; }
+  } #else { print STDERR "error processing $DOCDIR/$mydir: $!\n"; }
 }
 
 
@@ -294,27 +252,25 @@ sub createDirHash {
 ###################################################################################
 sub showLog {
 
-  my ($file, $key, @entry);
+  my ($file, $key, %entry);
   
   $key = lc(shift(@_));
   $key .= ".pro" unless $key =~ /\.pro$/i;
 
-  openHread();
-  @entry = @{$hdata{$key}};
-  $file = getDocDir()."/".$entry[0]."/".$key;
+  %entry = %{$pro{$key}};
+  $file = getDocDir()."/".$entry{dir}."/".$key;
 
-  print h1( $entry[1], 
+  print h1( $entry{rname}, 
 	    "<FONT SIZE=-1>",
-	    makeURL($entry[1], "header", undef, "header"),
+	    makeURL($entry{rname}, "header", undef, "header"),
 	    ", ", 
-	    makeURL($entry[1], "source", undef, "source"),
+	    makeURL($entry{rname}, "source", undef, "source"),
 	    showedit($file),
 	    "</FONT>"), 
         "\n";  
 
-  closeHread();
   
-  open (CMD, "cd ".getDocDir()."/".$entry[0]."; cvs log $file |") || warn "can't open pipe: $!\n";
+  open (CMD, "cd ".getDocDir()."/".$entry{dir}."; cvs log $file |") || warn "can't open pipe: $!\n";
   print "<PRE>";
   while (<CMD>){
     print;
@@ -332,25 +288,23 @@ sub showLog {
 ###################################################################################
 sub showSource {
 
-  my ($file, $key, @entry);
+  my ($file, $key, %entry);
 
   $key = lc(shift(@_));
   $key .= ".pro" unless $key =~ /\.pro$/i;
 
-  openHread();
-  @entry = @{$hdata{$key}};
-  $file = getDocDir()."/".$entry[0]."/".$key;
+  %entry = %{$pro{$key}};
+  $file = getDocDir()."/".$entry{dir}."/".$key;
 
-  print h1( $entry[1], 
+  print h1( $entry{rname}, 
 	    "<FONT SIZE=-1>",
-	    makeURL($entry[1], "header", undef, "header"),
+	    makeURL($entry{rname}, "header", undef, "header"),
 	    ", ", 
-	    makeURL($entry[1], "modifications", undef,"log"),
+	    makeURL($entry{rname}, "modifications", undef,"log"),
 	    showedit($file),
 	    "</FONT>"), 
         "\n";  
 
-  closeHread();
 
   open(IN, "$file") || die "can't open $file";
   print "<PRE>\n";
@@ -371,24 +325,23 @@ sub showSource {
 ###################################################################################
 sub showHeader {
   my %params = @_;
-  my ($file, $key, @entry);
+  my ($file, $key, %entry);
 
-  openHread();
 
   if (defined $params{"key"}){
     $key = lc($params{"key"});
     $key .= ".pro" unless $key =~ /\.pro$/i;
 
-    @entry = @{$hdata{$key}};
-    
-    $file = getDocDir()."/".$entry[0]."/".$key;
+    %entry = %{$pro{$key}};
+
+    $file = getDocDir()."/".$entry{dir}."/".$key;
 
     print 
       '<TABLE VALIGN=TOP>'."\n",
-      '<TR CLASS="title"><TD CLASS="title">',$entry[1],
+      '<TR CLASS="title"><TD CLASS="title">',$entry{rname},
       '</TD><TD VALIGN="BOTTOM" CLASS="ltitle">', 
-      makeURL($entry[1], "source", undef,"source"), " ",
-      makeURL($entry[1], "modifications", undef,"log"), " ",
+      makeURL($entry{rname}, "source", undef,"source"), " ",
+      makeURL($entry{rname}, "modifications", undef,"log"), " ",
       showedit($file),
       '</TD></TD>';
       
@@ -398,47 +351,125 @@ sub showHeader {
       '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
       "LOCATION:",
       '</TD><TD CLASS="xplcode" VALIGN=TOP>',
-      '<A TARGET="_top" HREF="'.getBaseURL()."/".@{$hdata{$key}}[0].'?mode=dir">',
-      @{$hdata{$key}}[0],
+      '<A TARGET="_top" HREF="'.getBaseURL()."/".$entry{dir}.'?mode=dir">',
+      $entry{dir},
       "</A></TD></TR>\n";
+    print $entry{header};
   } else {    
     $file = $params{"file"};
+    %entry = scanFile(path=>dirname($file), file=>basename($file,""), test=>1);
 
     print 
-      h1("RoutineName (will be resoved later)"), 
-      "\n".'<TABLE VALIGN=TOP><COLGROUP SPAN=2></COLGROUP>'."\n";  
+      h1($entry{rname}." (Check)"), 
+      "\n".'<TABLE VALIGN=TOP><COLGROUP SPAN=2></COLGROUP>'."\n",
+      $entry{aim};
   }    
 
-
-  parseAim(0); # parse the full header
-  parseHeader($file);
-  closeHread();
-  
   print "</TABLE>\n";
 }
 
 
 
+
+
 ###################################################################################
 ###################################################################################
 ###################################################################################
-# initializes & calls the Parser
-# @hentry  will be set if parseAIM is true
-# parse results go to STDOUT
-#
-# arg1: file to scan
+# updates database by one file or just checks syntax
 ###################################################################################
-sub parseHeader {
-  my $file = shift;
+sub scanFile {
   
-  open(IDLSOURCE, $file) or die "can't open file $file: $!\n";
+  my %p= (
+	  skel => getDocDir(),
+	  path => '',
+	  file => 'header.pro',
+	  test => 0,
+	  @_
+	 );
+  
+  my $filepath = $p{'path'}."/".$p{'file'};
+  if (! $p{test}){ $filepath = $p{skel}."/".$filepath; };
+
+  my $cat;
+  my $ix = 0;
+  my %FN = map { $ix++ => $_ } qw (dir rname aim catlist header);
+  my $sql;
+  
+
+  # scan file with parser
+  open(IDLSOURCE, $filepath) or die "can't open file $filepath: $!\n";
   $lexer->from(\*IDLSOURCE);
-  $parser->yyparse(\*IDLSOURCE);
+  eval {
+    $parser->yyparse(\*IDLSOURCE);
+  };
+  if ($@) {
+#    print STDERR "error processing $filepath\n";
+    @hentry = (undef, $p{'file'}, "_error", "_Error", "An error has occurred while parsing the doc header. Please check for correct syntax!");
+  }
+
   close(IDLSOURCE);
+
+  $hentry[0] = $p{'path'};
+
+
+  if ($p{test}){
+    foreach $cat (split (",",$hentry[3])) {
+      if (! defined $catl{$cat}) {
+	print STDERR "error: unknown category '$cat'\n";
+	$hentry[1]="_error";
+      } 
+    }
+    return ("dir"=>$hentry[0], "rname"=>$hentry[1], "aim"=>$hentry[2], "cats"=>$hentry[3], "aim"=>$hentry[4] );
+  } else {
+    # insert routine into pro
+    delete $pro{$p{'file'}} if exists $pro{$p{'file'}}; # next command is not atomar
+    $pro{$p{'file'}} = { map { $FN{$_} => $hentry[$_] } (0,1,2,4) }  ;
+    
+    # delete old cats for routine
+    $sql = 'DELETE FROM cat WHERE fname LIKE "'.$p{'file'}.'"'."\n";
+    $dbh->do($sql);
+    warn "$DBI::errstr\n" if $DBI::err;
+    
+    # insert new cats for routine
+    foreach $cat (split (",",$hentry[3])) {
+      if (defined $catl{$cat}) {
+	$sql = 'INSERT INTO cat VALUES ("'.$p{'file'}.'", "'.($catl{$cat})->{'cname'}.'")'."\n";
+	$dbh->do($sql);
+	warn "$DBI::errstr\n" if $DBI::err;
+      } else {print STDERR "unknown category: $cat\n";}
+    }
+  }
 }
+
+
+
+
+
+###################################################################################
+###################################################################################
+###################################################################################
+# updates database by deleting one file
+###################################################################################
+sub deleteFile {
+  
+  my %p= (
+	  file => 'header.pro',
+	  @_
+	 );
   
   
+  # delete cats for routine
+  $sql = 'DELETE FROM cat WHERE fname LIKE "'.$p{'file'}.'"'."\n";
+  $dbh->do($sql);
+  warn "$DBI::errstr\n" if $DBI::err;
   
+  # delete routine itself
+  delete $pro{$p{'file'}} if exists $pro{$p{'file'}}; 
+    
+}
+
+
+
 
 
 

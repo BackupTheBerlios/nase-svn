@@ -61,11 +61,90 @@
 
 %%
 %{
+#  use diagnostics;
+#  use strict;
   use NASE::globals;
   use NASE::xref;
   use CGI qw/:standard :html3 :netscape -debug/;
   use CGI::Carp qw(fatalsToBrowser);
 
+  # to let the parser code run with strict
+  my ($DCOLON,
+      $CVSTAG,
+      $AIM,
+      $COMMENT,
+      $WS,
+      $VER,
+      $DOCSTART,
+      $DOCEND,
+      $NAME,
+      $EOL,
+      $PURP,
+      $CAT,
+      $CALLSEQ,
+      $OPTINP,
+      $INP,
+      $KEYS,
+      $OUT,
+      $OPTOUT,
+      $COMBLO,
+      $SIDEFF,
+      $RESTR,
+      $PROCED,
+      $EXAMP,
+      $SEEALSO,
+      $AUTHOR,
+      $MODHIST,
+      $URLSTARTN,
+      $URLSTARTL,
+      $URLSTART,
+      $TTSTART,
+      $TTEND,
+      $BSTART,
+      $BEND,
+      $CSTART,
+      $CEND,
+      $ISTART,
+      $IEND,
+      $SUPSTART,
+      $SUPEND,
+      $SUBSTART,
+      $SUBEND,
+      $BREAK,
+      $URLEND,
+      $TEXT,
+      $DEFAULT,
+      $LBRACE,
+      $RBRACE,
+      $CLBRACE,
+      $CRBRACE,
+      $LANK,
+      $RANK,
+      $SUPERCLASSES,
+      $CONSTRUCTION,
+      $DESTRUCTION,
+      $ABMETHODS,
+      $METHODS,
+      $PRE,
+      $COLON,
+      $YYERRCODE,
+      @yylhs,
+      @yylen,
+      @yydefred,
+      @yydgoto,
+      @yysindex,
+      @yyrindex,
+      @yygindex,
+      $YYTABLESIZE,
+      @yytable,
+      @yycheck,
+      $YYFINAL,
+      $YYMAXTOKEN,
+      @yyname,
+      @yyrule
+      );
+
+  my $tab;
   my $colon  = 0;  # 0: no; 1: yes
   my $tag    = 0;
   my $pre    = 0;  # format like in source file
@@ -77,6 +156,10 @@
   my $cat    = 3;  # we are in the cat tag, 1:yes 2:just left >2:no
   my @cat    = ();
   my $str    = '';
+  my @str    = ();
+  my @line   = ();
+  my @lines  = ();
+  my $line   = '';
 
   sub endpre {
     if ($pre) { push(@line, "</PRE>") ; };
@@ -124,8 +207,8 @@
     if ($cat == 1) {
                     ($str = $line) =~ s,(^\s+|\s+$),,gi;
                     $str =~ s,\s\s+, ,gi;
-		    split (/[^_a-zA-Z0-9]/, $str);
-		    foreach $str (@_){
+		    @str = split (/[^_a-zA-Z0-9]/, $str);
+		    foreach $str (@str){
 		      if (($str ne '') && ($str ne ' ')){ push(@cat, $str); }
 		    }
                    }
@@ -141,9 +224,10 @@
   sub PrintAll {
     line2lines;
     if ($pre) { push(@lines, "</PRE>") ; };
-    print join("\n", @lines);
-    if ($colon){ print "</TD></TR></TABLE>"; }; 
-    print "</TD></TR>\n"; 
+    if ($colon){ push(@lines, "</TD></TR></TABLE>"); }; 
+    push(@lines, "</TD></TR>"); 
+    $hentry[4] = join("\n", @lines);
+    @lines = ();
     return 0;
   }
 
@@ -214,7 +298,7 @@ LINE : COMMENT EOL                      { line2lines; }
      | COMMENT WORDS EOL                { line2lines; }
      | COMMENT WORDS ID EOL             { line2lines; }
      | COMMENT WORDS ID WORDS EOL       { line2lines; }
-     | PRE { beginpre; } EOL            { endpre; line2lines;  }
+     | PRE EOL                          { beginpre; endpre; line2lines;  }
      | PRE { beginpre; } WORDS EOL      { endpre; line2lines;  }
      ;
 
@@ -231,7 +315,7 @@ ID   : EXAMP                           { $cat++; $aim++; tagentry($1); }
      | AIM                             { $cat++; $aim=1; tagentry($1); }
      | PURP                            { $cat++; $aim++; tagentry($1); }
      | CAT                             { $cat=1; $aim++; tagentry($1); }
-     | CALLSEQ                         { $cat++; $aim++; if (parseAim()) { PrintAll(); return 0; } else { tagentry($1);}; }
+     | CALLSEQ                         { $cat++; $aim++; tagentry($1); }
      | COMBLO                          { $cat++; $aim++; tagentry($1); }
      | SIDEFF                          { $cat++; $aim++; tagentry($1); }
      | RESTR                           { $cat++; $aim++; tagentry($1); }
