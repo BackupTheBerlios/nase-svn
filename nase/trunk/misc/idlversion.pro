@@ -63,7 +63,7 @@ FUNCTION IDLVERSION, FULL=full, FLOAT=FLOAT
       ;; Versions up to IDL5.2 use STR_SEP for separating strings,
       ;; later versions use STRSPLIT!
       if IdlVersion(/Float) ge 5.3 then $
-        return, long(strsplit(!version.release, ".", /Extract)) $
+        return, long(split(!version.release, ".")) $
       else $
         return, long(str_sep(!version.release, "."))
    end
