@@ -203,8 +203,6 @@ IDL_LONG set_nonblocking (int argc, void* argv[])
   IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun, IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_STDIO);
   // ------------------------------
 
-  IDL_FileFlushUnit(lun);
-
   // Get FILE and filedescriptor: -
   IDL_FILE_STAT file_info;
   FILE *fptr;
@@ -234,8 +232,6 @@ IDL_LONG set_blocking (int argc, void* argv[])
   // Check for file properties: ---
   IDL_FileEnsureStatus(IDL_MSG_LONGJMP, lun, IDL_EFS_OPEN|IDL_EFS_READ|IDL_EFS_STDIO);
   // ------------------------------
-
-  IDL_FileFlushUnit(lun);
 
   // Get FILE and filedescriptor: -
   IDL_FILE_STAT file_info;
