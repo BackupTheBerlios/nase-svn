@@ -8,6 +8,11 @@
 ;          daneben usw.
 ;          Seit Version 1.5 können alternativ auch die Verbindungen VON
 ;          den Neuronen dargestellt werden (Keyword, /FROMS).
+;          Set Version 1.13 werden auch Matrizen mit negativen Werten
+;          verarbeitet. Sie werden in grün/rot-Schattierungen für
+;          positive/negative Werte angezeigt.
+;
+;          Merke: DER WERT 0 HAT STETS DIE FARBE SCHWARZ!
 ;
 ;   
 ; CATEGORY: GRAPHIC
@@ -61,7 +66,8 @@
 ;
 ; MODIFICATION HISTORY: Erste Version vom 25. Juli '97, Andreas.
 ;                       Diese Version (Verbesserte Parameterabfrage) vom 28. Juli '97, Andreas
-;                       Versucht, Keyword FROMS zuzufügen, Rüdiger, 30.7.1997
+;                       Versucht, Keyword FROMS zuzufügen, Rüdiger,
+;                       30.7.1997
 ;                       Es ist mir gelungen! Außerdem hat die Darstellung jetzt Gitterlinien!, Rüdiger, 31.7.1997
 ;                       Ich hab die interne Verarbeitung von Source und Target vertauscht, da sie so unseren Arraystrukturen angemessener ist.
 ;                           Ausserdem hab ich die Array-Operationen beim TV zusammengefasst.
@@ -73,6 +79,7 @@
 ;                       Schluesselwort DELAYS hinzugefuegt, sodass nun auch alternativ auch die Verzoegerungen dargestellt werden koennen, Mirko, 3.8.97
 ;                       Bug bei WSet korrigiert, wenn WinNR uebergeben wird, Mirko, 3.8.97
 ;                       wird WINNR nicht gesetzt, so wird NEUES Fenster aufgemacht, Mirko, 3.8.97
+;                       Matrizen mit negativen Gewichten werden jetzt in rot/grün dargestellt. Rüdiger, 5.8.97
 ;-
 
 
@@ -106,24 +113,33 @@ If Not Set(WINNR) Then Begin
                       YGroesse = (!D.Y_Size-Matrix.source_h)/(Matrix.target_H*Matrix.source_H)
                   EndElse    
 
-MaxFarbe = !D.Table_Size-1
-erase, rgb(255,100,0, INDEX=MaxFarbe)
-
 
 
 IF Keyword_Set(Delays) THEN BEGIN
-   Max_Amp = max(Matrix.Delays)*1.0
+   MatrixMatrix= reform(Matrix.Delays, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
 END ELSE BEGIN
-   Max_Amp = max(Matrix.Weights)
+   MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
 END
 
-if Max_Amp eq 0 then Max_Amp = 1 ;falls Array nur Nullen enthält
+min = min(MatrixMatrix)
+max = max(MatrixMatrix)
+ts = !D.Table_Size-1
 
-IF Keyword_Set(Delays) THEN BEGIN
-   MatrixMatrix= reform(Matrix.Delays/Max_Amp*(MaxFarbe-1), Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-END ELSE BEGIN
-   MatrixMatrix= reform(Matrix.Weights/Max_Amp*(MaxFarbe-1), Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
-END
+if min eq 0 and max eq 0 then max = 1; Falls Array nur Nullen enthält!
+
+if min ge 0 then begin
+   g = indgen(ts)/double(ts-1)*255
+   tvlct, g, g, g                    ;Grauwerte
+   MatrixMatrix = MatrixMatrix/double(max)*(ts-2)
+endif else begin
+   g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
+   tvlct, rotate(g, 2), g, bytarr(ts)         ;Rot-Grün
+   MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
+   MatrixMatrix = (MatrixMatrix+0.5)*(ts-2)
+endelse
+
+erase, rgb(255,100,0, INDEX=ts-1)
+
 
 for YY= 0, Matrix.source_h-1 do begin
    for XX= 0, Matrix.source_w-1 do begin  
