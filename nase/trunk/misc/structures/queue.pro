@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1998/06/20 13:51:11  kupper
+;               Funktionierte nicht bei Queues der Laenge 1 (offensichtlich gings mit IDL4 aus irgendwelchen Gruenden...)
+;
 ;        Revision 1.2  1998/05/19 18:58:44  kupper
 ;               VALID implementiert.
 ;
@@ -65,7 +68,7 @@ Function Queue, Queue, VALID=valid
 
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
       If Keyword_Set(VALID) and (Queue.valid lt Queue.length) then return, Queue.Q(0:((Queue.valid-1)>0))
-      return, shift(Queue.Q, -Queue.Pointer-1)
+      return, shift([Queue.Q], -Queue.Pointer-1)
    EndIf
 
    If contains(Queue.info, 'DYNAMIC_QUEUE', /IGNORECASE) then message, 'Not yet implemented for Dynamic Queues!'
