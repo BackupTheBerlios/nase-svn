@@ -26,7 +26,7 @@
 ;  Help
 ;
 ; CALLING SEQUENCE:
-;  result = callstack( [pick] )
+;* result = callstack( [pick] )
 ;  
 ; OPTIONAL INPUTS:
 ;  pick:: The number of the routine on the callstack that information
