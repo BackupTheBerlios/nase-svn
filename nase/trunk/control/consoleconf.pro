@@ -21,8 +21,8 @@
 ;*  Widgets
 ;
 ; CALLING SEQUENCE:
-;*  ConsoleThreshold [,con] [,THRESHOLD=...] [,TOLERANCE=...]
-;*                    [FILENAME=...] [/FILEON | /FILEOFF]
+;*  ConsoleConf [,con] [,THRESHOLD=...] [,TOLERANCE=...]
+;*              [FILENAME=...] [/FILEON | /FILEOFF] [,/SILENT]
 ;
 ; OPTIONAL INPUTS:
 ;   con:: An initialized <A>CONSOLE</A>-structure. If no con is
@@ -43,6 +43,8 @@
 ;               FILENAME has ever been given to the console, it will
 ;               log into "console.log"
 ;   FILEOFF  :: Start writing the console output into a file. 
+;   SILENT   :: supresses all informational messages of
+;               <C>ConsoleConf</C> itself.
 ;               
 ; SIDE EFFECTS:
 ;   con (or !CONSOLE) properties are changed
@@ -62,7 +64,7 @@
 ;  
 ;-
 
-PRO ConsoleConf,  __console, THRESHOLD=threshold, TOLERANCE=tolerance, FILENAME=filename, FILEON=fileon, FILEOFF=fileoff
+PRO ConsoleConf,  __console, THRESHOLD=threshold, TOLERANCE=tolerance, FILENAME=filename, FILEON=fileon, FILEOFF=fileoff, SILENT=silent
    
    ON_ERROR, 2
    
@@ -105,9 +107,10 @@ PRO ConsoleConf,  __console, THRESHOLD=threshold, TOLERANCE=tolerance, FILENAME=
    END
 
    tol = GetHTag(_console, "tolerance")
-   IF Set(THRESHOLD) THEN CONSOLE, _console, 'setting threshold to '+str(threshold), LEVEL=tol-1
-   IF Set(TOLERANCE) THEN CONSOLE, _console, 'setting tolerance to '+str(tolerance), LEVEL=tol-1
-   IF Set(FILEON)    THEN CONSOLE, _console, 'logging console output to '+FILENAME,  LEVEL=tol-1
-   IF Set(FILEOFF)   THEN CONSOLE, _console, 'stopped logging console output to '+FILENAME,  LEVEL=tol-1
-   
+   IF NOT Keyword_Set(SILENT) THEN BEGIN
+       IF Set(THRESHOLD) THEN CONSOLE, _console, 'setting threshold to '+str(threshold), LEVEL=tol-1
+       IF Set(TOLERANCE) THEN CONSOLE, _console, 'setting tolerance to '+str(tolerance), LEVEL=tol-1
+       IF Set(FILEON)    THEN CONSOLE, _console, 'logging console output to '+FILENAME,  LEVEL=tol-1
+       IF Set(FILEOFF)   THEN CONSOLE, _console, 'stopped logging console output to '+FILENAME,  LEVEL=tol-1
+   END
 END
