@@ -91,7 +91,7 @@ sub showdir {
     
     print '<BLOCKQUOTE>' if $level;
 
-    foreach (@sdir){
+    foreach (sort @sdir){
       showdir("$mydir/$_", $targetdir, $level+1);
     }
     foreach (sort @file) {
