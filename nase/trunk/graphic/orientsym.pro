@@ -37,7 +37,7 @@
 ;                          perpendicular to the symbol
 ;                          orientation. This may be used to prevent
 ;                          covering of symbols when overplotting with
-;                          the <*>/OPLOT</*> option. <*>DISPLACE</*>
+;                          <*>OPLOT</*>. <*>DISPLACE</*>
 ;                          should be set to a small value, in the
 ;                          range of <*>[-1,1]</*>. <BR>
 ;                          Note: When using
