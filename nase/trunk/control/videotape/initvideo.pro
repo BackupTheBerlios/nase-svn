@@ -65,6 +65,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Sun Sep 7 17:17:13 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Nimmt jetzt auch Skalare richtig auf.
+;
 ;       Fri Aug 29 15:04:41 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -121,7 +126,7 @@ Function InitVideo, Frame, TITLE=title, $
    Get_Lun, infounit
    openw, infounit, infoname
    
-   writeu, infounit, size(Frame)   ; Das SIZE-Array eines Frames
+   writeu, infounit, size([Frame])   ; Das SIZE-Array eines Frames
    writeu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
    ;später wird noch die FrameAnzahl angehängt.
    
@@ -133,7 +138,7 @@ Function InitVideo, Frame, TITLE=title, $
             title       : title, $
             unit        : unit, $
             infounit    : infounit, $
-            FrameSize   : size(Frame), $
+            FrameSize   : size([Frame]), $
             FramePointer: 0l}
             
 End

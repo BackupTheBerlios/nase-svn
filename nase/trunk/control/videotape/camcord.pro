@@ -32,6 +32,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Sun Sep 7 17:16:49 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Nimmt jetzt auch Skalare richtig auf.
+;
 ;       Wed Aug 27 17:05:23 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -48,7 +53,7 @@ Function CamCord, Video, Frame, Anzahl, VERBOSE=verbose
 
    Data = Assoc(Video.unit, Make_Array(SIZE=Video.FrameSize, /NOZERO))
 
-   Data(Video.FramePointer) = Frame
+   Data(Video.FramePointer) = [Frame]
 
    Video.FramePointer = Video.FramePointer+1
 
