@@ -41,6 +41,9 @@
 ;      obtained via (abs(fft(result,1))^2.
 ;      Note that for a good uniform distribution f*n>=50 should hold.
 ;
+; COMMON BLOCKS:
+;  COMMON_RANDOM  
+;
 ; EXAMPLE:
 ;*R=RandomuLP(1000,0.2,/taper)
 ;  Result contains a vector of n uniformly distributed random values, which are correlated
