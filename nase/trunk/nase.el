@@ -184,6 +184,8 @@
 
 
 
+
+
 ;; --tell XEmacs to use idlwave-mode for *.pro files--
 ;; -- this is probably already done in the user's .emacs file,
 ;; -- but it won't hurt if it is two times in the list.
@@ -304,7 +306,7 @@ unless the optional second argument NOINDENT is non-nil."
 (defun idlwave-nase-commonrandom ()
   (interactive)
   (idlwave-nase-template
-   (idlwave-rw-case "common commonrandom, seed\n")
+   (idlwave-rw-case "Common Common_Random, seed\n")
    (idlwave-rw-case "")
    "common block inserted" t))
 
@@ -323,13 +325,14 @@ unless the optional second argument NOINDENT is non-nil."
    "linebreak inserted" t))
 ;; --End: templates--
 
+
 ;; --End: define NASE-specific functions--
 
 
 	
 ;; --define nase hook--  
 (defun install-nase ()
-
+  (interactive)
   (message "Installing NASE idlwave extention...")
   
   ;; --add key bindings--
@@ -373,8 +376,10 @@ unless the optional second argument NOINDENT is non-nil."
       "--"
       ["fill paragraph" idlwave-fill-paragraph t]
       "--"
-      ["Insert commonrandom" idlwave-nase-commonrandom t]
+      ["Insert Common_Random" idlwave-nase-commonrandom t]
       ["Commented Block" idlwave-nase-commentedblock t]
+      "--"
+      ["CVS annotate this buffer" vc-annotate t]
       )
     )
   
@@ -403,14 +408,54 @@ unless the optional second argument NOINDENT is non-nil."
   ;; --End: relax idl prompt matching--
 
 
-;(defun idlwave-prev-index-position ()
-;  "Search for the previous procedure or function.
-;Return nil if not found.  For use with imenu.el."
-;  (save-match-data
-;    (cond
-;     ((idlwave-find-key "\\(\\<\\(pro\\|function\\|\\(mark\\)\\)\\>\\)" -1 'nomark))
-;     ;;   ((idlwave-find-key idlwave-begin-unit-reg 1 'nomark)
-;     (t nil))))
+  ;; ---- speedbar support functions: ----
+
+  ;; The following function is an exact copy of "idlwave-find-key" from
+  ;; idlwave.el 4.5. The only difference is that it will also search
+  ;; inside comments (using "idlwave-in-quote" instead of "idlwave-quoted".
+  (defun idlwave-nase-find-key (key-re &optional dir nomark limit)
+    "Move to next match of the regular expression KEY-RE.
+Matches inside string constants will be ignored. Matches inside
+comments will be found.
+If DIR is negative, the search will be backwards.
+At a successful match, the mark is pushed unless NOMARK is non-nil.
+Searches are limited to LIMIT.
+Searches are case-insensitive and use a special syntax table which
+treats `$' and `_' as word characters.
+Return value is the beginning of the match or (in case of failure) nil."
+    (message "idlwave-nase-find-key")
+    (setq dir (or dir 0))
+    (let ((case-fold-search t)
+          (search-func (if (> dir 0) 're-search-forward 're-search-backward))
+          found)
+      (idlwave-with-special-syntax
+       (save-excursion
+         (catch 'exit
+           (while (funcall search-func key-re limit t)
+             (if (not (idlwave-in-quote))
+                 (throw 'exit (setq found (match-beginning 0))))))))
+      (if found
+          (progn
+            (if (not nomark) (push-mark))
+            (goto-char found)
+            found)
+        nil)))
+
+
+  ;; overwrite "idlwave-prev-index-position". This works exactly like
+  ;; idlwave version 4.5, but uses "idlwave-nase-find-key" and searches
+  ;; for NASEMARKs.
+  (defun idlwave-prev-index-position ()
+    "Search for the previous procedure, function or NASE mark.
+Return nil if not found.  For use with imenu.el and nase.el"
+    (message "idlwave-prev-index-position")
+    (save-match-data
+      (cond
+       ((idlwave-nase-find-key "\\(\\<\\(^pro\\|^function\\|nasemark\\)\\>\\)" -1 'nomark))
+       ;;   ((idlwave-find-key idlwave-begin-unit-reg 1 'nomark)
+       (t nil))))
+
+  ;; End: ---- speedbar support functions ----
 
   (message "NASE idlwave extention ($Revision$).")
 
@@ -424,4 +469,3 @@ unless the optional second argument NOINDENT is non-nil."
 
 
 ;; --End: define nase hook--
- 
