@@ -31,6 +31,11 @@
 ; MODIFICATION HISTORY:  
 ;
 ;     $Log$
+;     Revision 2.9  2000/08/23 13:45:11  kupper
+;     Changed point of plotting new time slice by one step, as display was
+;     erased one step too early (Display was erased at plotting the last
+;     step!)
+;
 ;     Revision 2.8  1999/03/17 10:24:14  saam
 ;           new keyword NONASE implemented
 ;
@@ -75,7 +80,7 @@ PRO TrainspottingScope, _SR, _y
    END
    SR.t = SR.t + 1
 
-   IF (SR.T MOD SR.TIME) EQ 0 THEN BEGIN
+   IF (SR.T MOD SR.TIME) EQ 1 THEN BEGIN
       plot, FltArr(10), /NODATA, YRANGE=[-1, SR.neurons], XRANGE=[SR.T/SR.os,(SR.T+SR.time)/SR.os], XSTYLE=1, YSTYLE=1, XTICKLEN=0.00001, YTICKLEN=0.00001, YTICKFORMAT='KeineNegativenUndGebrochenenTicks', XTICKFORMAT='KeineNegativenUndGebrochenenTicks', _EXTRA=SR._extra
    END
 
