@@ -128,11 +128,12 @@ PRO PolyTV, image $
 
    
    ;; Draw polygons, use image array to choose appropriate color
-   FOR iy=0, nyp-1 DO BEGIN
-      FOR ix=0, nxp-1 DO BEGIN
+   FOR iy=0l, nyp-1 DO BEGIN
+      FOR ix=0l, nxp-1 DO BEGIN
          xbox = [ix, ix+1, ix+1, ix]
          ybox = [iy, iy, iy+1, iy+1]
-         PolyFill, xpsize*xbox+orpos(0), ypsize*ybox+orpos(1) $
+         PolyFill, xpsize*xbox+orpos(0)+[-1.E-3, 1.E-3, 1.E-3, -1.E-3] $
+          , ypsize*ybox+orpos(1)+[-1.E-3, -1.E-3, 1.E-3, 1.E-3] $
           , COLOR=image(ix, order*(nyp-1)+(-2*order+1)*iy), /Normal
       ENDFOR
    ENDFOR
