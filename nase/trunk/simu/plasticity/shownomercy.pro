@@ -2,7 +2,8 @@
 ; NAME:
 ;  ShowNoMercy
 ;
-; AIM: Eliminate connections with strengths less than certain value (pruning).
+; AIM:
+;  Eliminate connections with strengths less than certain value (pruning).
 ;
 ; PURPOSE: Elimination von Verbindungen mit kleinen Gewichten
 ;          Klein bedeutet hier: abs(Gewicht) ist klein.
@@ -25,12 +26,14 @@
 ; EXAMPLE: ShowNoMercy, W90_90, LessThan=0.01
 ;          Setzt die Gewichte in der Delay-Weigh-Struktur W90_90, die
 ;          absolut genommen kleiner als 0.01 sind, auf !NONE
-;
 ;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.13  2000/10/12 16:15:17  thiel
+;           Had to use old version of SetWeights to correctly delete connections.
+;
 ;       Revision 1.12  2000/09/26 15:13:43  thiel
 ;           AIMS added.
 ;
@@ -78,17 +81,16 @@
 PRO ShowNoMercy, DW, LESSTHAN=LessThan
 
 
-   IF NOT Set(LESSTHAN) THEN message, 'Also, LESSTHAN müßte schon angegeben werden...'
+   IF NOT Set(LESSTHAN) THEN Console, 'LESSTHAN has to be set.', /FATAL
 
-   IF NOT Contains(Info(DW), 'DW_') THEN Message,'[S]DW[_DELAY]_WEIGHT structure expoected, but got '+Info(_DW)+' !'
+   IF NOT Contains(Info(DW), 'DW_') THEN Console, '[S]DW[_DELAY]_WEIGHT structure expected, but got '+Info(_DW)+' !', /FATAL
    
-
    W = Weights(DW)
    die = where(W LT LessThan, count)
    
    IF count NE 0 THEN BEGIN
       W(die) = !NONE
-      SetWeights, DW, W
+      SetWeights, DW, W, NO_INIT=0
    END
 
 END
