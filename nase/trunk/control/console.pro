@@ -41,6 +41,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.10  2000/10/03 15:35:04  alshaikh
+;           LEVEL-bug fixed
+;
 ;     Revision 2.9  2000/09/28 13:23:54  alshaikh
 ;           added AIM
 ;
@@ -83,7 +86,7 @@ ON_ERROR,2
 Default, Msg , 1                ; Message Mode
 Default, warning,0
 Default, fatal,0
-Default, level,10
+Default, level,-1
 
 CASE N_Params() OF
     1: BEGIN                    ;use standard console
@@ -104,15 +107,16 @@ _called_by = _called_by(N_elements(_called_by)-1)
 _called_by =  strmid(_called_by,0,strpos(_called_by,'.pro'))
 
 
-
-IF msg EQ 1 THEN level = 10
-IF warning EQ 1 THEN level = 20 
-IF fatal EQ 1 THEN level = 30
+if level eq -1 then begin 
+   IF msg EQ 1 THEN level = 10
+   IF warning EQ 1 THEN level = 20 
+   IF fatal EQ 1 THEN level = 30
+   if level eq -1 then level = 10
+endif 
 
 Handle_Value,_console,status,/no_copy
 
 IF level GE status.threshold THEN begin
-    
 
     yell = '('+str(level)+')'+strupcase(_called_by)+':'+_message
     
