@@ -10,18 +10,24 @@
 ;
 ; CALLING SEQUENCE: TV_Array = ShowWeights_Scale( Array [,/SETCOL] ,[/PRINTSTYLE]
 ;                                                       [,COLORMODE=mode]
+;                                                       [,RANGE_IN=upper_boundary]
 ;                                                       [,GET_COLORMODE={+1,-1}]
-;                                                       [,GET_MAXCOL=Farbindex] )
 ;
-; INPUTS: Array: Ein (nicht notwendigerweise, ober wohl meist)
+;                                                       [,GET_MAXCOL=Farbindex]
+;                                                       [,GET_RANGE_IN =scaling_boundaries_in ]
+;                                                       [,GET_RANGE_OUT=scaling_boundaries_out])
+;
+; INPUTS: Array: Ein (nicht notwendigerweise, aber wohl meist)
 ;                NASE-Array. (D.h. es darf auch !NONE-Werte
 ;                enthalten..., ganz positiv oder positiv/negativ sein.)
 ;
 ; KEYWORD PARAMETERS: SETCOL: Wird dieses Schlüsselwort gesetzt, so
-;                             initialisiert die Routine auch dei
+;                             initialisiert die Routine auch die
 ;                             Farbtabelle.
 ;                             (Graustufen für positive Arrays,
 ;                             Rot/Grün für gemischtwertige.)
+;                             Hat nur Effekt, wenn /NASE oder
+;                             /NEUTRAL angegeben wurde.
 ;                  COLORMODE: Mit diesem Schlüsselwort kann unabhängig 
 ;                             von den Werten im Array die
 ;                             schwarz/weiss-Darstellung (COLORMODE=+1) 
@@ -32,6 +38,19 @@
 ;                             für Farbschattierungen benutzt. Die Farben orange
 ;                             und blau werden NICHT gesetzt.
 ;                             (gedacht für Ausdruck von schwarzweiss-Zeichnungen.)
+;                   RANGE_IN: The positive scalar value given in RANGE_IN
+;                             will be scaled to the maximum
+;                             color (white / full green). Note
+;                             that this exact value does not
+;                             have to be contained in the array.
+;                             If the array contains values
+;                             greater than RANGE_IN, the result
+;                             will contain invalid color
+;                             indices.
+;                             By default, this value will be
+;                             determined from the arrays
+;                             contents such as to span the whole 
+;                             available color range.
 ;
 ; OUTPUTS: TV_Array: Das geeignet skalierte Array, das direkt mit TV
 ;                    oder NASETV dargestellt werden kann.
@@ -49,6 +68,17 @@
 ;                               positive Werte), und -1, falls der
 ;                               rot/grün-Modus benutzt wurde (DW-Matrix
 ;                               enthielt negative Werte).
+;                GET_RANGE_IN,
+;                GET_RANGE_OUT: Diese Werte können direkt an den 
+;                               Befehl <A HREF="../../misc/arrays/#SCL">Scl</A> weitergereicht
+;                               werden, um weitere Arrays so zu
+;                               skalieren, daß deren Farbwerte
+;                               direkt vergleichbar sind
+;                               (d.h. ein Wert w eines so
+;                               skalierten Arrays wird auf den
+;                               gleichen Farbindex abgebildet,
+;                               wie ein Wert w, der im
+;                               Originalarray enthalten war).
 ;
 ; SIDE EFFECTS: Gegebenenfalls wird Farbtabelle geändert.
 ;
@@ -58,12 +88,25 @@
 ;          2. Window, /FREE, TITLE="Membranpotential"
 ;             LayerData, MyLayer, POTENTIAL=M
 ;             NASETV, ShowWeights_Scale( M, /SETCOL), ZOOM=10
+;          3. a = gauss_2d(100,100)
+;             WINDOW, 0
+;             NASETV, ShowWeights_Scale( a, /SETCOL, $
+;                                        GET_RANGE_IN=ri, GET_RANGE_OUT=ro )
+;             WINDOW, 1
+;             NASETV, Scl( 0.5*a, ro, ri )
+;            Die Werte der Arrays in den beiden Fenstern können 
+;            nun direkt verglichen werden.
+;            Der letzte Befehl ist übrigens identisch mit
+;             NASETV, ShowWeights_Scale( 0.5*a, RANGE_IN=ri(1) )
 ;
 ; SEE ALSO: <A HREF="#SHOWWEIGHTS">ShowWeights()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.13  1999/09/22 16:49:51  kupper
+;        Implemented Keywords RANGE_IN, GET_RANGE_IN and GET_RANGE_OUT.
+;
 ;        Revision 2.12  1999/09/22 09:55:44  kupper
 ;        Added a "Temporary" here and there to save memory.
 ;
@@ -112,15 +155,29 @@
 
 Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
                     COLORMODE=colormode, GET_COLORMODE=get_colormode, $
-                    PRINTSTYLE=printstyle
+                    PRINTSTYLE=printstyle, $
+                    RANGE_IN=range_in, $
+                    GET_RANGE_IN=get_range_in, GET_RANGE_OUT=get_range_out
 
-   MatrixMatrix = Matrix
-
-   no_connections = WHERE(MatrixMatrix EQ !NONE, count)
-   IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
+   
+   ;;------------------> Make local copy and wipe out !NONEs
+   MatrixMatrix = NoNone_Func( Matrix, NONES=no_connections, COUNT=count )
+   ;;Named MatrixMatrix for historical reasons...
+   ;;--------------------------------
 
    min = min(MatrixMatrix)
    max = max(MatrixMatrix)
+
+   ;;------------------> The Range value will be scaled to white/green:
+   Default, Range, Range_In     ;Range_In should not be changed.
+   Default, Range, max([max, -min]); for positive Arrays this equals max.
+   If N_Elements(Range) gt 1 then begin ;was a 2-Element Array supplied?
+      message, /INFO, "Lower Range_In boundary is always 0 for NASE scaling. Ignored supplied value."
+      Range = Range(1)
+   End
+   Range = ABS(Range)
+   ;;--------------------------------
+
 
    If not Keyword_set(PRINTSTYLE) then begin
       ts = !TOPCOLOR+1          ;ehemals !D.Table_Size
@@ -130,12 +187,20 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_MAXCOL = ts-1
    endelse
 
+   ;;------------------> Optional Outputs
+   GET_RANGE_IN  = [0, Range]
+   GET_RANGE_OUT = [0, GET_MAXCOL]
+   ;;--------------------------------
+
    if min eq 0 and max eq 0 then max = 1 ; Falls Array nur Nullen enthält!
 
    If not Keyword_Set(COLORMODE) then $
     If min ge 0 then COLORMODE = 1 else COLORMODE = -1
 
+
+
    if COLORMODE eq 1 then begin       ;positives Array
+
       GET_COLORMODE = 1
       If Keyword_Set(SETCOL) then begin
 ;         g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
@@ -160,8 +225,10 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = 0 ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
-      MatrixMatrix = Temporary(MatrixMatrix)/double(max)*GET_MAXCOL
+      MatrixMatrix = Temporary(MatrixMatrix)/double(Range)*GET_MAXCOL
+
    endif else begin             ;pos/neg Array
+
       GET_COLORMODE = -1
       If Keyword_Set(SETCOL) then begin
 ;         g = ((2*indgen(GET_MAXCOL+1)-GET_MAXCOL) > 0)/double(GET_MAXCOL)*255
@@ -175,9 +242,12 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          IF (!D.NAME eq "X") and (!D.N_COLORS LE 256) THEN !P.BACKGROUND = GET_MAXCOL/2 ;Index für Schwarz
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
-      MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(max([max, -min]))
+      MatrixMatrix = Temporary(MatrixMatrix)/2.0/double(Range)
       MatrixMatrix = (Temporary(MatrixMatrix)+0.5)*GET_MAXCOL
+
    endelse
+
+
 
    If not keyword_set(PRINTSTYLE) then begin
       IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
