@@ -77,6 +77,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.11  2000/09/15 15:23:17  thiel
+;           Removed control outputs.
+;
 ;       Revision 1.10  2000/09/15 15:12:01  thiel
 ;           Queue reset is no longer necessary.
 ;
@@ -219,7 +222,6 @@ PRO LearnDelays, _DW, _PC, LW
             ENDFOR
          END
          1: BEGIN               ; more basicqueues needed   
-            Message, /INFO, 'more basicqueues needed '+String(numqu)
             qunew = LonArr(numqu+1+N_Elements(tmpdelay))
             qunew(0) = numQu    ; Number of BasicSpikeQueues
             qunew(numqu+1:N_Elements(qunew)-1) = Round(tmpdelay)
@@ -236,7 +238,6 @@ PRO LearnDelays, _DW, _PC, LW
             qu = qunew
          END
          -1: BEGIN              ; delete one basicqueue
-            Message, /INFO, 'delete one basicqueue'+String(numqu)
             qunew = LonArr(numqu+1+N_Elements(tmpdelay))
             qunew(0) = numQu    ; Number of BasicSpikeQueues
             qunew(numqu+1:N_Elements(qunew)-1) = Round(tmpdelay)
