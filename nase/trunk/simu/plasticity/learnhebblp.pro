@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.14  1997/11/03 17:33:46  saam
+;             Variable st war etwas sinnentleert -> rausgeworfen
+;
 ;       Revision 1.13  1997/10/03 14:09:03  kupper
 ;       Schreibfehler in "Lerrate" korrigiert!
 ;
@@ -139,11 +142,9 @@ PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then Return
 
-   ; st : total number of source neurons
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
    ; tsn: the list of source neurons connected to tn
-   st = LP.source_s
 
    IF DW.info EQ 'DW_WEIGHT' THEN BEGIN
 
