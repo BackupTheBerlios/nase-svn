@@ -19,7 +19,7 @@
 ;               enthält.
 ;
 ;         FaceIt erwartet, daß es die unten aufgeführten Routinen finden kann. 
-;         Beim Aufruf der Routine durch FaceIt werden die angeführten Parameter
+;         Beim ihrem Aufruf durch FaceIt werden die angeführten Parameter
 ;         übergeben. Dabei handelt es sich um die beiden Pointer dataptr und 
 ;         displayptr, das Widget w_userbase und die Struktur event.
 ;
@@ -32,7 +32,7 @@
 ;          FUNCTION <A HREF="#HAUS2_SIMULATE">name_SIMULATE</A>, dataptr 
 ;           ---> Return, 1
 ;             Sollte den Simulationskern enthalten: Inputbestimmung, Lernen,
-;             Berechnen des neun Netwerkzustands und dergleichen.
+;             Berechnen des neuen Netwerkzustands und dergleichen.
 ;          FUNCTION <A HREF="#HAUS2_DISPLAY">name_DISPLAY</A>, dataptr, displayptr, w_userbase
 ;           ---> Return, 1
 ;             Hier soll die Darstellung des Netzwerkzustands während der 
@@ -43,8 +43,16 @@
 ;             Ereignisse (Mausklicks, Sliderbewegungen) muß hier festgelegt
 ;             werden.
 ;          PRO <A HREF="#HAUS2_RESET">name_RESET</A>, dataptr, displayptr, w_userbase
-;             Falls notwendig können hier Aktionen bestimmt werden, die bei
+;             Falls notwendig, können hier Aktionen bestimmt werden, die bei
 ;             Betätigung des RESET-Buttons ausgeführt werden sollen.
+;          PRO <A HREF="#HAUS2_FILEOPEN">name_FileOpen</A>, dataptr, group
+;             Diese Routine wird vom Menüpunkt 'File.Open' aufgerufen. Hier
+;             können zuvor gespeicherte Simulationsdaten eingelesen werden.
+;             (Der 'group'-Parameter dient dem Dateiauswahl-Widget als Eltern-
+;             teil, ist für den Benutzer uninteressant.)
+;          PRO <A HREF="#HAUS2_FILE_SAVE">name_FileSave</A>, dataptr, group
+;             Der Menüeintrag 'File.Save' ruft diese Routine auf. Der Benutzer
+;             kann damit bei Bedarf Simulationsdaten speichern.
 ;          FUNCTION <A HREF="#HAUS2_KILL_REQUEST">name_KILL_REQUEST</A>, dataptr, displayptr, w_userbase
 ;           ---> Return, 1
 ;             Die hierin enthaltenen Befehle werden vor der Zerstörung des
@@ -52,6 +60,8 @@
 ;             werden.
 ;
 ; OUTPUTS: Eine IDL-Widget-Anwendung mit folgenden Bedienelementen:
+;           FILE-Menü: Die bisher enthaltenen Unterpunkte dienen dem Laden
+;                      und Speichern und dem Verlassen der Simulation.
 ;           DISPLAY: Schaltet die Darstellung während der Simulation ein oder 
 ;                    aus.
 ;           Steps: Zeigt die Zahl der Simulationsschritte an. Der Zähler wird
@@ -64,8 +74,9 @@
 ;                             bremsen.
 ;           START / STOP: Startet / stoppt die Simulation. Nach einem Stop wird
 ;                         der Simulationablauf bei erneutem Start-Drücken 
-;                         fortgesetzt.
-;           RESET: Führt die Prozedur name_RESET aus, zB, um die 
+;                         an der gleichen Stelle fortgesetzt. Ein Zurücksetzen
+;                         erfolgt nicht (siehe RESET).
+;           RESET: Führt die Prozedur <A HREF="#HAUS2_RESET">name_RESET</A> aus, zB, um die 
 ;                  Simulationsdaten auf ihren ursprünglichen Stand zu setzen
 ;                  oder die Bildschirmdarstellung zu erneuern. Außerdem wird
 ;                  der Zähler 'Steps' zurückgesetzt.
@@ -100,6 +111,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/08/30 16:16:39  thiel
+;            New File-menu.
+;
 ;        Revision 1.2  1999/08/24 14:28:26  thiel
 ;            Beta release.
 ;
@@ -151,6 +165,7 @@ PRO FaceIt_EVENT, Event
    widget_killed = 0
   
    EventName =  TAG_NAMES(Event, /STRUCTURE_NAME)
+
 
    CASE Event.ID OF
 
@@ -244,6 +259,29 @@ PRO FaceIt_EVENT, Event
          ENDELSE  
       END 
 
+      uv.topmenu: BEGIN
+         CASE event.value OF
+            'File.Quit' : BEGIN 
+               IF Call_FUNCTION(UV.simname+'_KILL_REQUEST', UV.dataptr, UV.displayptr, UV.W_UserBase) THEN BEGIN
+                  Ptr_Free, UV.dataptr 
+                  Ptr_Free, UV.displayptr
+                  WIDGET_CONTROL, Event.Top, /DESTROY
+                  widget_killed = 1
+               ENDIF            ; WIDGET_KILL_REQUEST
+            END
+
+            'File.Save' : $
+               Call_Procedure, UV.simname+'_FILESAVE', UV.dataptr, uv.topmenu
+
+            'File.Open' : $
+               Call_Procedure, UV.simname+'_FILEOPEN', UV.dataptr, uv.topmenu
+
+
+            ELSE : Message, /INFO, "Caught unhandled menu event!"
+         ENDCASE
+      END
+
+
       ELSE : Message, /INFO, "Caught unhandled event!"
  
    ENDCASE 
@@ -273,58 +311,55 @@ PRO FaceIt, simname
 
 
 
+
+   ;--- Base:
    W_Base = Widget_Base (TITLE='FaceIt! '+simname, $
-                         /BASE_ALIGN_CENTER, $
-                         /COLUMN, $
+                         /BASE_ALIGN_LEFT, /COLUMN, $
                          /TLB_KILL_REQUEST_EVENTS $ ;test: IF TAG_NAMES(event, /STRUCTURE_NAME) EQ 'WIDGET_KILL_REQUEST' THEN ...
                          $      ;Note that widgets that have this keyword set are responsible for killing themselves
                          $      ; after receiving a WIDGET_KILL_REQUEST event. They cannot be destroyed using the usual window system controls.
                         )
-   
-   W_SimControl = Widget_Base(W_Base, $
-                              FRAME=3, $
-                              /BASE_ALIGN_CENTER, $
-                              /ALIGN_TOP, /ROW $
-                             )
+
+
+   ;--- Menu:
+   desc = ['3\File', $
+           '0\Open', $
+           '0\Save', $
+           '2\Quit']
+
+   topmenu = CW_PDMenu(w_base, desc, /RETURN_FULL_NAME, FONT=myfont) 
+
+
+   ;--- Control buttons:
+   W_SimControl = Widget_Base(W_Base, FRAME=3, $
+                              /BASE_ALIGN_CENTER, /ROW)
+
    W_simlogo  = Widget_ShowIt(W_simcontrol, XSIZE=75, YSIZE=50, $
-                                /PRIVATE_COLORS)
+                              /PRIVATE_COLORS)
 
-   W_SimDisplay = CW_BGroup(W_SimControl, "Display", $
-                            /NONEXCLUSIVE, $
-                            SET_VALUE=1, $
-                            FONT=MyFont $
-                           )
+   W_SimDisplay = CW_BGroup(W_SimControl, "Display", /NONEXCLUSIVE, $
+                            SET_VALUE=1, FONT=MyFont)
 
-   W_simtimes = Widget_Base(W_simcontrol, $
-                             /BASE_ALIGN_LEFT, /COL $
-                             )
+   W_simtimes = Widget_Base(W_simcontrol, /BASE_ALIGN_LEFT, /COL)
 
-   W_SimStepCounter = Widget_Label(W_simtimes, $
-                                FONT=MySmallFont, $
-                                FRAME=0, $
-                                VALUE='Steps: ----' $
-                               )
-   W_SimStepTime = Widget_Label(W_simtimes, $
-                                FONT=MySmallFont, $
-                                FRAME=0, $
-                                VALUE='Duration: ----' $
-                               )
-   W_SimDelay = Widget_Slider(W_SimControl, $
-                              MINIMUM=0, MAXIMUM=1000, XSIZE=238, $
-                              TITLE="Simulation Delay / ms", FONT=MySmallFont $
-                             )
-   W_SimStart = Widget_Button(W_SimControl, $
-                              VALUE="Start", FONT=MyFont $
-                             )
-   W_SimStop  = Widget_Button(W_SimControl, $
-                              VALUE="Stop", FONT=MyFont $
-                             )
+   W_SimStepCounter = Widget_Label(W_simtimes, FONT=MySmallFont, $
+                                   VALUE='Steps: ----')
+
+   W_SimStepTime = Widget_Label(W_simtimes, FONT=MySmallFont, $
+                                VALUE='Duration: ----')
+
+   W_SimDelay = Widget_Slider(W_SimControl, MINIMUM=0, MAXIMUM=1000, $
+                              XSIZE=238, TITLE="Simulation Delay / ms", $
+                              FONT=MySmallFont)
+
+   W_SimStart = Widget_Button(W_SimControl, VALUE="Start", FONT=MyFont)
+
+   W_SimStop  = Widget_Button(W_SimControl, VALUE="Stop", FONT=MyFont)
    
-   
-   W_SimReset  = Widget_Button(W_SimControl, $
-                              VALUE="Reset", FONT=MyFont $
-                             )
-   
+   W_SimReset  = Widget_Button(W_SimControl, VALUE="Reset", FONT=MyFont)
+
+
+   ;--- User base:
    W_UserBase = Widget_Base(W_Base, $
                             FRAME=3, $
                             /BASE_ALIGN_CENTER, $
@@ -348,6 +383,7 @@ PRO FaceIt, simname
       'displayptr', FaceIt_CreateDisplay(simname, $
                        userstruct.dataptr, W_UserBase), $
       'W_Base', W_Base, $
+      'topmenu', topmenu, $                        
       'W_simlogo', w_simlogo, $
       'W_SimDisplay', W_SimDisplay, $
       'W_SimStepCounter', W_SimStepCounter, $
@@ -366,6 +402,7 @@ PRO FaceIt, simname
       'display', 1 $
    )
    
+
    Widget_Control, W_Base, SET_UVALUE=userstruct
             
 
@@ -373,6 +410,7 @@ PRO FaceIt, simname
    Message, /INFO, "   ********************************"
    Message, /INFO, "   *** Registering Main Widget  ***"
    Message, /INFO, "   ********************************"
+
    Widget_Control, W_Base, /REALIZE  
 
 
@@ -385,7 +423,9 @@ PRO FaceIt, simname
 
 
    XMANAGER, CATCH=1-DEBUGMODE
-   XMANAGER, "Simulation: "+SimName, W_Base, EVENT_HANDLER="FaceIt_EVENT", /NO_BLOCK
+
+   XMANAGER, "Simulation: "+SimName, W_Base, $
+    EVENT_HANDLER="FaceIt_EVENT", /NO_BLOCK
 
 
 END ; FaceIt
