@@ -6,6 +6,9 @@
 ; MODIFICATION HISTROY:
 ;
 ;       $Log$
+;       Revision 1.2  1999/12/14 16:07:53  alshaikh
+;             Jetzt auch IDL3-kompatibel!
+;
 ;       Revision 1.1  1999/12/08 14:37:49  saam
 ;             adapted from NASE startup
 ;
@@ -18,11 +21,13 @@ IF MINDPATH eq "" THEN BEGIN $
 	MESSAGE, "%%%% MIND Error: Environment variable 'MINDPATH' not set! %%%%%" & $
 	MESSAGE, "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" & $
 END
-     
-IF !version.OS_FAMILY EQ "unix"    THEN separator=":"
-IF !version.OS_FAMILY EQ "Windows" THEN separator=";"
-IF !version.OS_FAMILY EQ "vms"     THEN separator=","
-IF !version.OS_FAMILY EQ "MacOS"   THEN separator=","
+
+if (fix(!VERSION.Release) ge 4) then OS_FAMILY=!version.OS_FAMILY else OS_FAMILY='unix'     
+
+IF OS_FAMILY EQ "unix"    THEN separator=":"
+IF OS_FAMILY EQ "Windows" THEN separator=";"
+IF OS_FAMILY EQ "vms"     THEN separator=","
+IF OS_FAMILY EQ "MacOS"   THEN separator=","
 
 MINDDIRS = FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["control"]) + separator
 MINDDIRS = MINDDIRS + FilePath("", ROOT_DIR=MINDPATH, SUBDIRECTORY=["demo"])    + separator
