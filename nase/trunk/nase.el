@@ -395,6 +395,10 @@ unless the optional second argument NOINDENT is non-nil."
   (setq idlwave-file-header (list headerfile "") )
   ;; --End: set location of the document header template--
 
+  ;; --relax idl prompt matching--
+  (setq idlwave-shell-prompt-pattern "^.*> ")
+  ;; this allows for anything, followed by "> ".
+  ;; --End: relax idl prompt matching--
 
   (message "NASE idlwave extention ($Revision$).")
 
