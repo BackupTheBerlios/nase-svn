@@ -44,7 +44,7 @@
 ;                             screen display) or white (good for
 ;                             postscripts), respectively. Default is <*>ZEROBLACK</*>. 
 ;  BOTTOMRED,BOTTOMGREEN,BOTTOMBLUE :: negative values are displayed red, green
-;                             or blue (default: <*>BOTTOMBLUE<*/>)
+;                             or blue (default: <*>BOTTOMBLUE</*>)
 ;
 ; SIDE EFFECTS:
 ;  overwrites the existing colormap
