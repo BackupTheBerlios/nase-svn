@@ -56,17 +56,17 @@ function InformationOverkill, title, $
    endif else begin
       for f=1l, vid.Length do if Set(_EXTRA) then begin
          case n_params() of
-            1: erg = erg+Call_Function(process, replay(vid), _EXTRA=_extra)
-            2: erg = erg+Call_Function(process, replay(vid), p1, _EXTRA=_extra)
-            3: erg = erg+Call_Function(process, replay(vid), p1, p2, _EXTRA=_extra)
-            4: erg = erg+Call_Function(process, replay(vid), p1, p2, p3, _EXTRA=_extra)
+            1: erg = erg+Call_Function(process, float(replay(vid)), _EXTRA=_extra)
+            2: erg = erg+Call_Function(process, float(replay(vid)), p1, _EXTRA=_extra)
+            3: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, _EXTRA=_extra)
+            4: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, p3, _EXTRA=_extra)
          endcase
       endif else begin
          case n_params() of
-            1: erg = erg+Call_Function(process, replay(vid))
-            2: erg = erg+Call_Function(process, replay(vid), p1)
-            3: erg = erg+Call_Function(process, replay(vid), p1, p2)
-            4: erg = erg+Call_Function(process, replay(vid), p1, p2, p3)
+            1: erg = erg+Call_Function(process, float(replay(vid)))
+            2: erg = erg+Call_Function(process, float(replay(vid)), p1)
+            3: erg = erg+Call_Function(process, float(replay(vid)), p1, p2)
+            4: erg = erg+Call_Function(process, float(replay(vid)), p1, p2, p3)
          endcase
       endelse
    endelse
