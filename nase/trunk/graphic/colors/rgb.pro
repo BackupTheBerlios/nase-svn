@@ -1,28 +1,36 @@
 ;+
 ; NAME: RGB()
 ;
-; AIM: Define color for plotting, works on truecolor and pseudocolor displays.
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Ermöglicht die Angabe von Farbwerten im RGB-Format, und
-;           zwar ohne Änderung sowohl auf Echtfarb- als auch auf ColorTable-Systemen.
+; AIM:
+;  Define color for plotting, works on truecolor and pseudocolor displays.
 ;
-; CATEGORY: Graphic
+; PURPOSE:
+;  Ermöglicht die Angabe von Farbwerten im RGB-Format, und zwar ohne
+;  Änderung sowohl auf Echtfarb- als auch auf ColorTable-Systemen. 
 ;
-; CALLING SEQUENCE: Der übliche Aufruf von RGB() geschieht in einer
-;                    Graphikprozedur im COLOR-Schlüsselwort.
+; CATEGORY:
+;  Color
+;  Graphic
+;
+; CALLING SEQUENCE: 
+;  Der übliche Aufruf von RGB() geschieht in einer Graphikprozedur im
+;  COLOR-Schlüsselwort.
 ;                   
-;                   COLOR= RGB( {Rot,Grün,Blau | Farbname}
-;                               [,INDEX=Farbindex] [,START=Startindex] 
-;                               [,/NOALLOC] )
+;* COLOR= RGB( {Rot,Grün,Blau | Farbname}
+;*              [,INDEX=Farbindex] [,START=Startindex] 
+;*              [,/NOALLOC] )
 ;                    
 ; INPUTS: Entweder Rot, Grün, Blau: Werte im Bereich 0..255, die die
 ;                                   gewünschte Farbe definieren,
 ;         oder            Farbname: Ein String mit einem bekannten
-;                                   Farbnamen (s. <A HREF="../../alien/#COLOR">Color</A>.) 
+;                                   Farbnamen (see <A>Color</A>.)
 ;
 ; KEYWORD PARAMETERS:
 ;
-;         Farbindex      : Dieser Wert hat nur Bedeutung, wenn man sich auf einem
+;         Farbindex:: Dieser Wert hat nur Bedeutung, wenn man sich auf einem
 ;                          ColorTable-Display befindet. Dann kann hier
 ;                          nämlich der Farbindex angegeben werden, der
 ;                          mit der neuen Farbe belegt werden soll.
@@ -31,19 +39,19 @@
 ;                          begonnen wird, sofern nicht im
 ;                          Schlüsselwort START etwas anderes definiert
 ;                          wird. (S.a. Erläuterung unten)
-;         Startindex     : Dieser Wert hat nur Bedeutung, wenn man sich auf einem
+;         Startindex:: Dieser Wert hat nur Bedeutung, wenn man sich auf einem
 ;                          ColorTable-Display befindet. Dann kann hier
 ;                          nämlich der Startwert für den (also der erste zu
 ;                          belegende) Farbindex angegeben werden, der
 ;                          dann von Aufruf zu Aufruf hochgezählt
 ;                          wird. (S.a. Erläuterung unten)
-;         NOALLOC         :Falls gesetzt, wird bei 8-bit-Displays keine Farbe allokiert,
+;         NOALLOC:: Falls gesetzt, wird bei 8-bit-Displays keine Farbe allokiert,
 ;                          sondern eine moeglichst aehnliche zurueckgegeben. Auf allen
 ;                          anderen Displays wird diese Option ignoriert
 ;
 ;                 
 ; OUTPUTS: 
-;          Auf einem Pseudocolor/Truecolor-Display (vgl. <A HREF="../../misc/#PSEUDOCOLOR_VISUAL()">Pseudocolor_Visual()</A>):
+;          Auf einem Pseudocolor/Truecolor-Display (vgl. <A>Pseudocolor_Visual()</A>):
 ;                 Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
 ;                 der Farbindex einer moeglichst aehnlichen Farbe bei
 ;                 Keyword NOALLOC
@@ -59,59 +67,56 @@
 ;                        etabliert sein. D.h. es muß vorher mindestens
 ;                        einmal ein Fenster geöffnet worden sein!
 ;
-; PROCEDURE:                    1. bestimmen des nächsten freien Farbindex I:
-;                                     
-;                                  Ist INDEX=Farbindex gesetzt?
-;                                   ja  : I=Farbindex.
-;                                   nein: Ist START=Startindex gesetzt?
-;                                          ja  : I=Startindex.
-;                                          nein: Ist dies der erste Aufruf von RGB()?
-;                                                 ja  : I=1.
-;                                                 nein: I=letzter nicht mit INDEX produzierter Farbindex+1. 
+; PROCEDURE:
+;* 1. bestimmen des nächsten freien Farbindex I:
+;*     Ist INDEX=Farbindex gesetzt?
+;*     ja  : I=Farbindex.
+;*     nein: Ist START=Startindex gesetzt?
+;*           ja  : I=Startindex.
+;*           nein: Ist dies der erste Aufruf von RGB()?
+;*                 ja  : I=1.
+;*                 nein: I=letzter nicht mit INDEX produzierter Farbindex+1.
+;*
+;*
+;* 2. Index I mit der neuen Farbe besetzen und I als Ergebnis zurückgeben.
 ;
+; Das heißt: Wird RGB() ohne Keyword-Parameter aufgerufen, so belegt
+; es beim ersten Aufruf den Index 1 und liefert auch als Ergebnis 1
+; zurück. Im nächsten Aufruf wird dann Index 2 belegt und
+; zurückgeliefert, dann 3 u.s.w. Zu jeder Zeit kann man einen
+; bestimmten Index in INDEX wählen, der dann belegt und
+; zurückgeliefert wird, was das kontinierliche Belegen der Indizes
+; nicht beeinflußt (Beim nächsten normalen Aufruf wird beispielsweise
+; mit Index 4 fortgefahren). Wird genau das gewünscht, so kann
+; jederzeit in START ein neuer Startwert für die kontinuierliche
+; Belegung angegeben werden.<BR>
 ;
-;                                2. Index I mit der neuen Farbe besetzen und I als Ergebnis zurückgeben. 
+; Bspl: -Neustart von IDL-
+;* print, RGB(255,0,0)  -> Ausgabe: 1 (und der Farbindex 1 wird mit rot belegt.)
+;* print, RGB(0,255,0)  -> Ausgabe: 2 (entsprechend)
+;* print, RGB(0,0,255,INDEX=23) -> Ausgabe: 23 (und der Farbindex 23 wird mit blau belegt)
+;* print, RGB(0,0,0)    -> Ausgabe: 3
+;* print, RGB(4,5,6,START=100) -> Ausgabe: 100
+;* print, RGB(7,8,9)    -> Ausgabe: 101
 ;
-;                                Das heißt: Wird RGB() ohne
-;                                Keyword-Parameter aufgerufen, so
-;                                belegt es beim ersten Aufruf den
-;                                Index 1 und liefert auch als Ergebnis
-;                                1 zurück. Im nächsten Aufruf wird
-;                                dann Index 2 belegt und
-;                                zurückgeliefert, dann 3 u.s.w.
-;                                Zu jeder Zeit kann man einen
-;                                bestimmten Index in INDEX wählen, der
-;                                dann belegt und zurückgeliefert wird,
-;                                was das kontinierliche Belegen der
-;                                Indizes nicht beeinflußt (Beim
-;                                nächsten normalen Aufruf wird
-;                                beispielsweise mit Index 4
-;                                fortgefahren).
-;                                Wird genau das gewünscht, so kann
-;                                jederzeit in START ein neuer
-;                                Startwert für die kontinuierliche
-;                                Belegung angegeben werden.
-;
-;                                Bspl: -Neustart von IDL-
-;                                      print, RGB(255,0,0)  -> Ausgabe: 1 (und der Farbindex 1 wird mit rot belegt.)
-;                                      print, RGB(0,255,0)  -> Ausgabe: 2 (entsprechend)
-;                                      print, RGB(0,0,255,INDEX=23) -> Ausgabe: 23 (und der Farbindex 23 wird mit blau belegt)
-;                                      print, RGB(0,0,0)    -> Ausgabe: 3
-;                                      print, RGB(4,5,6,START=100) -> Ausgabe: 100
-;                                      print, RGB(7,8,9)    -> Ausgabe: 101
-;
-;                               HINWEIS: IN DER REGEL BRAUCHT MAN SICH UM DIESEN GANZEN
-;                                        INDEXKRAM NICHT ZU KUEMMERN! (S. EXAMPLE)    
+; HINWEIS: IN DER REGEL BRAUCHT MAN SICH UM DIESEN GANZEN INDEXKRAM
+; NICHT ZU KUEMMERN! (S. EXAMPLE) 
 ;        
-; EXAMPLE: Plot, Array, COLOR=RGB(255,255,255) 
-;           liefert auf jedem Display einen weißen Plot! Ein anschließendes
-;          OPlot, Array2, COLOR=RGB(255,0,0)
-;           liefert dann auf jedem Display einen roten Plot, ohne daß
-;           sich die Farbe des ersten Plots ändert!
+; EXAMPLE:
+;* Plot, Array, COLOR=RGB(255,255,255) 
+; liefert auf jedem Display einen weißen Plot! Ein anschließendes
+;* OPlot, Array2, COLOR=RGB(255,0,0)
+; liefert dann auf jedem Display einen roten Plot, ohne daß sich die
+; Farbe des ersten Plots ändert!
+;
+;-
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.34  2000/11/29 14:25:27  thiel
+;            Header cosmetics.
+;
 ;        Revision 1.33  2000/10/23 14:04:38  kupper
 ;        Changed a debug message to use new DMsg command.
 ;
@@ -224,7 +229,7 @@
 ;        Revision 1.6  1997/11/04 12:24:51  kupper
 ;               Nur Dokumentation in den Header geschrieben!
 ;
-;-
+
 
 FUNCTION RGB_berechnen, R,G,B  ; je 0..255      
    Return, long(R) + long(256)*G + long(65536)*B      
