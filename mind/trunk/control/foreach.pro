@@ -11,6 +11,7 @@
 ; CALLING SEQUENCE:   iter = ForEach(procedure [,p1 [,p2 [,p3 [,p4 [,p5 [,p6 [,p7 [p8 [,p9]]]]]]]]] $
 ;                                     [,ISKIP=iskip] [,OSKIP=oskip]
 ;                                     [,__XX (see below!)]
+;                                     [,ZZYY (see below!)]
 ;                                     [,/W] [,VALUES=values]
 ;                                     [,/FAKE] [,/QUIET] [,_EXTRA=e] )
 ;
@@ -34,6 +35,12 @@
 ;                             ITER, you can change the default value by passing
 ;                             __ITER={whatever_you_like}. ForEach will
 ;                             then use your KeywordOptions.
+;                     ZZYY  : Keyword values to the client procedure can be
+;                             dependent on the current value of the
+;                             loop. IF you want the Keyword MYPARA to have
+;                             the value of loop PARA, you simply call
+;                             foreach ZZMYPARA='PARA'. 
+; 
 ;         
 ;
 ; OUTPUTS:            iter  : the number of performed iterations 
@@ -50,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/04/06 09:32:13  saam
+;           new keyword setting system
+;
 ;     Revision 1.5  2000/04/04 15:05:18  saam
 ;           added the Commandline modification tool
 ;           by keywords __
@@ -71,7 +81,7 @@
 ;
 ;
 ;-
-FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet, setvalues=setvalues ,$;, pname=pname, $
+FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet,$; setvalues=setvalues ,$;, pname=pname, $
                   ISKIP=_iskip, OSKIP=_oskip, _EXTRA=e
 
    COMMON ATTENTION
@@ -117,6 +127,9 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
        END
    END
 
+   ; if the users sets keyword parameters on the commandline (or elsewhere)
+   kset = ExtraDiff(e, 'ZZ', /SUBSTRING)  ; and also removes these keywords!
+
 
 
    ltags = 0
@@ -141,17 +154,24 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
             P = AP
             P.file = StrCompress(AP.FILE+LoopName(LS), /REMOVE_ALL)  ; pname=pname
             ;P.pfile = pname
-            ;Set values
+            ;Set loop values, if requested
             FOR i=0, N_Tags(LV)-1 DO BEGIN
                 SetHTag, P, TSN.(i), LV.(i)
             END
             
-            
+            IF TypeOF(kset) EQ 'STRUCT' THEN BEGIN
+                FOR i=0,N_TAGS(kset)-1 DO BEGIN
+                    GetHTag, P, kset.(i), val
+                    FOR i=0,N_TAGS(kset)-1 DO IF Set(e) THEN SetTag, e, StrMid((Tag_Names(kset))(i),2), val $
+                                                        ELSE e = Create_Struct(StrMid((Tag_Names(kset))(i),2), val)
+                END
+            END
             IF NOT Keyword_Set(QUIET) THEN Console, LoopName(LS, /PRINT)
             
-            IF Keyword_Set(SETVALUES) THEN BEGIN
-               IF Set(E) THEN newextra = Create_Struct(e, 'LOOPVALUE', LV) ELSE newextra = {LOOPVALUE : LV}
-            END ELSE IF SET(E) THEN newextra = e
+;            IF Keyword_Set(SETVALUES) THEN BEGIN
+;               IF Set(E) THEN newextra = Create_Struct(e, 'LOOPVALUE', LV) ELSE newextra = {LOOPVALUE : LV}
+;            END ELSE 
+            IF SET(E) THEN newextra = e
             CASE N_Params() OF
                1: CALL_PROCEDURE, procedure,_EXTRA=newextra
                2: CALL_PROCEDURE, procedure,p1,_EXTRA=newextra
