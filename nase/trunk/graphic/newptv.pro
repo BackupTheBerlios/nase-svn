@@ -27,7 +27,7 @@
 ;*                   [,/LEGEND] [,LEGMARGIN=...]
 ;
 ; INPUTS:
-;  image:: Two dimensional array of color indices.
+;  image:: One- or two dimensional array of color indices.
 ;
 ; OPTIONAL INPUTS:
 ;  x, y:: x and y values corresponding to the array indices.
@@ -78,20 +78,20 @@
 ;          personal needs. 
 ;
 ; OPTIONAL OUTPUTS:
-;  
+;  None yet.
 ;
 ; SIDE EFFECTS:
-;  
+;  None yet.
 ;
 ; RESTRICTIONS:
 ;  - The legend title is always on ths same side as the annotation to save
 ;  space. Usage of <*>LEGMID</*> is therefore not recommended, since
 ;  the middle annotation would occur in the same place as the title.<BR>
+;  <BR>
 ;  Not yet implemented: <BR>
 ;  - optional positioning <BR>
 ;  - ranges that extend beyond the array values <BR>
 ;  - ranges with first value larger than second <BR>
-;  - onedim arrays without /POLY -> UTVScl <BR>
 ;  - quadratic pixels <BR>
 ;  - where should extra go? <BR>
 ;  - true color support <BR>
@@ -100,7 +100,7 @@
 ;  sense in PTVScale?<BR>
 ;
 ; PROCEDURE:
-;  
+;  Well.
 ;
 ; EXAMPLE:
 ;* NewPTV, Scl(IndGen(20,5),[0,!topcolor]), FIndGen(20)*0.02, /LEGEND, XRANGE=[0.1,0.3]
