@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1999/10/25 08:14:18  alshaikh
+;           Fehler korrigiert
+;
 ;     Revision 2.5  1999/10/12 14:36:50  alshaikh
 ;           neues keyword '/depress'... synapsen mit kurzzeitdepression
 ;
@@ -77,7 +80,8 @@ FUNCTION SDW2DW, _SDW, KEEP_ARGUMENT=keep_argument
    IF depress EQ 1 THEN begin  
       settag,dw, 'U_se',U_se
       settag,dw, 'tau_rec', tau_rec
-   END ELSE settag,dw, 'depress', depress
+   END 
+   settag,dw, 'depress', depress
    
    
    IF NOT Keyword_Set(KEEP_ARGUMENT) THEN FreeDW, _SDW
