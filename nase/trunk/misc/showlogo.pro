@@ -16,6 +16,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  1999/07/01 08:27:00  kupper
+;        Added U to tvlct and tv.
+;
 ;        Revision 1.4  1999/03/11 17:42:05  kupper
 ;        KLeinigkeit, aber wichtig: WINDOW muﬂ vor TVLCT kommen, damit man eine private Colormap bekommt!
 ;
@@ -43,8 +46,8 @@ Pro ShowLogo, SECS=secs
 
    device, get_screen_size=ss
    window, /free, COLORS=256, xsize=320, ysize=191, title="Welcome to N.A.S.E.!", xpos=ss(0)/2-150, ypos=ss(1)*0.6-95
-   tvlct, r, g, b
-   tv, logo
+   Utvlct, r, g, b
+   Utv, logo
 
    if Keyword_Set(SECS) then begin
       wait, SECS
