@@ -21,6 +21,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.8  2000/10/05 10:27:05  saam
+;     shrinks color palette to !TOPCOLOR
+;
 ;     Revision 2.7  2000/10/01 14:50:57  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -58,7 +61,7 @@ PRO ULoadCt, nr, _Extra=e
 
    IF NOT Contains(!D.Name, 'NULL', /IGNORECASE) THEN BEGIN
 
-      Loadct, nr, _Extra=e
+      Loadct, nr, NCOLORS=!TOPCOLOR+1, _Extra=e
       IF  !D.NAME NE 'PS' THEN BEGIN
          !P.Background = RGB(0,0,0,/NOALLOC)
       ENDIF
