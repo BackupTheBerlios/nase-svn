@@ -72,45 +72,46 @@ FUNCTION IFShiftedSine, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS
    CASE mode OF      
       ; INITIALIZE
       0: BEGIN      
-Default,iwidth, w*10   
-   Default,iheight,h*10
-          Default, a, 500.
-          Default, stimorient, 0
-          Default, detectorient, 0
-          Default, stimphase, 0
-          Default, stimshift, 0
-          Default, stimperiod, 1
-          mdx = fix(iwidth+2*detectsize)
-          mdy = fix(iheight+2*detectsize)
-	  mdy= ((mdy+1)/2)*2
-          mdx= ((mdx+1)/2)*2
-          y1=sin(2*!DPi*((dindgen(mdy) - mdy/2)/stimperiod + stimphase/360.d))          
-          y2=sin(2*!DPi*((dindgen(mdy) - mdy/2)/stimperiod + (stimphase+stimshift)/360.d))          
-
-          lstim1=(1+rebin(y1,mdy,mdx/2,/SAMPLE))*0.5
-          lstim2 =(1+rebin(y2,mdy,mdx-mdx/2,/SAMPLE))*0.5
+         Default,iwidth, w*10   
+         Default,iheight,h*10
+         Default, a, 500.
+         Default, stimorient, 0
+         Default, detectorient, 0
+         Default, stimphase, 0
+         Default, stimshift, 0
+         Default, stimperiod, 1
+         mdx = fix(iwidth+2*detectsize)
+         mdy = fix(iheight+2*detectsize)
+         mdy= ((mdy+1)/2)*2
+         mdx= ((mdx+1)/2)*2
+         y1=sin(2*!DPi*((dindgen(mdy) - mdy/2)/stimperiod + stimphase/360.d))          
+         y2=sin(2*!DPi*((dindgen(mdy) - mdy/2)/stimperiod + (stimphase+stimshift)/360.d))          
+         
+         lstim1=(1+rebin(y1,mdy,mdx/2,/SAMPLE))*0.5
+         lstim2 =(1+rebin(y2,mdy,mdx-mdx/2,/SAMPLE))*0.5
           lstim = fltarr(mdy,mdx)
           lstim(*,0:(mdx/2)-1) = lstim1
           lstim(*,(mdx/2):mdx-1) = lstim2
-
+          
           stim = (rot(lstim,STIMORIENT,1,mdy/2,mdx/2,/cubic,/pivot))
           odm=Orient_2d(detectsize, DEGREE=DETECTORIENT-90.)    
           temp = (a*((convol(stim, odm))^2))(detectsize:iheight+detectsize-1,detectsize:iwidth+detectsize-1)
+          
+          
+          Default, pick, grid(size=size(temp),count=[h,w], /UNIFORM)	
 
-	
-	Default, pick, grid(size=size(temp),count=[h,w])	
-
-	  mem=temp(pick)
-	  mem=reform(mem,h,w)
-	
+          mem=temp(pick)
+          mem=reform(mem,h,w)
+          
         	 
-
-
+          
+          
           TV =  {                             $
                   a            : a           ,$
                   w            : w           ,$
                   h            : h           ,$
                   mem          : mem         ,$
+                  stim         : stim, $
                   stimperiod   : stimperiod  ,$
                   stimphase    : stimphase   ,$
                   stimshift    : stimshift   ,$
@@ -179,13 +180,22 @@ console, outputstring
 
       ; PLOT
       3: BEGIN
-         console, 'display mode not implemented, yet', /WARN
+         
+         cuttedstim = TV.stim(TV.detectsize:TV.iheight+TV.detectsize-1,TV.detectsize:TV.iwidth+TV.detectsize-1)
+         pick = reform(TV.pick, TV.h, TV.w)
+         d=subscript(cuttedstim,TV.pick)    
+         balancect, cuttedstim-.5
+         plottvscl, cuttedstim, /LEGEND
+         oplot, d(*, 0), d(*, 1), psym=4, color=rgb("white")
+
       END
       ELSE: BEGIN
          console, 'unknown mode', /FATAL
       END
-   ENDCASE 
-   Handle_Value, _TV, TV, /NO_COPY, /SET
 
+
+   ENDCASE 
+    Handle_Value, _TV, TV, /NO_COPY, /SET
+   
    RETURN, R
 END
