@@ -12,6 +12,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.3  1997/09/20 17:44:25  thiel
+;              TOTALRECALL muss jetzt in der Simulation
+;       	   vor der Lernregel aufgerufen werden
+;
 ;       Revision 1.2  1997/09/18 08:09:14  saam
 ;            Anpassung an veraenderte Syntax&Semantik
 ;
@@ -62,7 +66,7 @@ Window, 2, XSIZE=800, YSIZE=400
    ;   ++ connections with a distance greater then 4 are not drawn and therefore can't be learned (W_NOCON)
    ;   ++ connections exceeding the layer-dimensions are truncated and not cyclically continued (W_TRUNCATE)
    CON_L1_L1 = InitDW(S_LAYER=L1, T_LAYER=L1, $
-                      W_CONST=[0.001, 4], /W_TRUNCATE, /W_NONSELF, W_NOCON=4)
+                      W_CONST=[0.001, 4], /W_TRUNCATE, /W_NONSELF, NOCON=4)
 
    LP_L1_L1 = InitRecall(CON_L1_L1, EXPO=[5.0,10.0])
 
@@ -95,7 +99,7 @@ Window, 2, XSIZE=800, YSIZE=400
       tmp(1:3,1:3) = 1
       tmp(6:8,6:8) = 1
 
-      I_L1_F = Vector2Spass(REFORM(tmp, w*h))
+      I_L1_F = Spassmacher(REFORM(tmp, w*h))
 
 
 ;-------------> PROCEED CONNECTIONS
@@ -119,7 +123,8 @@ Window, 2, XSIZE=800, YSIZE=400
       
 
 ;-------------> LEARN SOMETHING
-      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.02, ALPHA=0.02
+      TotalRecall, LP_L1_L1, CON_L1_L1.Learn
+      LearnHebbLP, CON_L1_L1, LP_L1_L1, Target_CL=L1, Rate=0.01, ALPHA=0.02
 
 
 ;-------------> DISPLAY RESULTS
