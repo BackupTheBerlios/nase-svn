@@ -9,7 +9,7 @@
 
 latex2html -split 0 -no_navigation -no_subdir -info '' $1.tex
 perl -e 's/HREF=.*\.css/HREF="http:\/\/neuro.physik.uni-marburg.de\/nase\/www-doc\/shtml.css/gi' -p -i~ index.html
-perl -e 's/<\s*body\s*>/<body bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>/gi' -p -i~ index.html
+#perl -e 's/<\s*body\s*>/<body bgcolor=#FFFFFF text=#000000 link=#AA5522 vlink=#772200 alink=#000000>/gi' -p -i~ index.html
 rm -f $1.html~ index.html~ $1.css labels.pl $1.html
 
 exit 0
