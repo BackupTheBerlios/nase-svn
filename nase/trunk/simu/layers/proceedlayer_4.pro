@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;      $Log$
+;      Revision 2.3  1998/06/01 15:10:48  saam
+;            spontanous activity with keyword spikenoise implemented
+;
 ;      Revision 2.2  1998/02/11 14:57:36  saam
 ;            Spike hat nun wieder normale Hoehe
 ;
@@ -45,15 +48,20 @@ common common_random, seed
 
    firedLast = WHERE(Layer.AR EQ 1, count); neurons with abs refractory period gone
    IF count NE 0 THEN BEGIN
-      Layer.R(firedLast) = Layer.R(firedLast) + Layer.para.vr;*(1.-Layer.para.dr)
-      Layer.S(firedLast) = Layer.S(firedLast) + Layer.para.vs;*(1.-Layer.para.ds)
+      Layer.R(firedLast) = Layer.R(firedLast) + Layer.para.vr
+      Layer.S(firedLast) = Layer.S(firedLast) + Layer.para.vs
       Layer.AR(firedLast) = 0
    END
 
 
    Layer.M = Layer.F*(1.+Layer.L)-Layer.I
-   IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
+   IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w*Layer.h)
    
+   ; do some spike noise by temporarily incresing membrane potential
+   spikenoise = WHERE(RandomU(seed, Layer.w*Layer.h) LT Layer.para.sn, c)
+   IF c NE 0 THEN Layer.M(spikenoise) = Layer.M(spikenoise)+Layer.Para.th0*1.05
+   
+
    ; absolute refractory period if needed
    refN = WHERE(Layer.AR GT 0, count)
    IF count NE 0 THEN BEGIN
@@ -61,6 +69,8 @@ common common_random, seed
       Layer.AR(refN) = Layer.AR(refN)-1
    END
 
+
+   
    result  = WHERE(Layer.M GE (Layer.R + Layer.S + Layer.Para.th0), count) 
 
 

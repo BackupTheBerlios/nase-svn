@@ -8,7 +8,7 @@
 ; CALLING SEQUENCE:     Para = InitPara_3( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] 
 ;                                          [, VS=vs] [, TAUS=taus] [,TH0=th0] 
 ;                                          [, VP=Vp] [,TAUP=taup]
-;                                          [, SIGMA=sigma] )
+;                                          [, SIGMA=sigma] [,SPIKENOISE=spikenoise])
 ;
 ; INPUTS:               ---
 ;
@@ -23,6 +23,7 @@
 ;                       Vp    : Lernpotential-Verstaerkung
 ;                       taup  : Lernpotential-Zeitkonstante (Lernfenster)
 ;                       sigma : Standard-Abweichung des normalverteilten Rauschens des Membranpotentials
+;                       spikenoise  : mean spontanous activity in Hz 
 ;
 ; OUTPUTS:              Para : Struktur namens Para3, die alle Neuronen-Informationen enthaelt, s.u.
 ;
@@ -41,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.4  1998/06/01 15:10:46  saam
+;             spontanous activity with keyword spikenoise implemented
+;
 ;       Revision 1.3  1998/02/18 15:46:39  kupper
 ;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
 ;
@@ -49,7 +53,7 @@
 ;                       Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
 ;                       Neue Parameter fuers Lernpotential: Vp und taup, Andreas 29. Juli 97
 ;-
-FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, VP=Vp, TAUP=taup, SIGMA=sigma
+FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, VP=Vp, TAUP=taup, SIGMA=sigma, SPIKENOISE=spikenoise
 
    Default, tauf , 10.0
    Default, taul , 10.0
@@ -59,6 +63,7 @@ FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
    Default, th0  ,  1.0
    Default, Vp   , 1.0
    Default, taup , 10.0
+   Default, spikenoise  ,  0.0
    
    Default, sigma,  0.0
 
@@ -72,6 +77,7 @@ FUNCTION InitPara_3, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
             th0  : th0            ,$
             Vp   : Vp             ,$
             dp   : exp(-1./taup)  ,$
+            sn   : spikenoise/1000.,$
             sigma: sigma          }
 
    RETURN, Para

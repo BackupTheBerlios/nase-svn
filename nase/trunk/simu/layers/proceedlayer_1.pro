@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.8  1998/06/01 15:10:47  saam
+;             spontanous activity with keyword spikenoise implemented
+;
 ;       Revision 1.7  1998/01/21 21:44:09  saam
 ;             korrekte Behandlung der DGL durch Keyword CORRECT
 ;             in InputLayer_?
@@ -76,6 +79,9 @@ COMMON common_random, seed
    
    IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
 
+   ; do some spike noise by temporarily incresing membrane potential
+   spikenoise = WHERE(RandomU(seed, Layer.w*Layer.h) LT Layer.para.sn, c)
+   IF c NE 0 THEN Layer.M(spikenoise) = Layer.M(spikenoise)+Layer.Para.th0*1.05
 
    result = WHERE(Layer.M GE (Layer.S + Layer.Para.th0), count) 
 

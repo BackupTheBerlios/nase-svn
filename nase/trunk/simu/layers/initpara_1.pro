@@ -6,7 +6,7 @@
 ; CATEGORY:             SIMULATION
 ;
 ; CALLING SEQUENCE:     Para = InitPara_1( [TAUF=tauf] [, TAUL=taul] [, TAUI=taui] [, VS=vs] [, TAUS=taus] $
-;                       [, TH0=th0] [SIGMA=sigma] [NOISYSTART=noisystart] )
+;                       [, TH0=th0] [SIGMA=sigma] [NOISYSTART=noisystart] [,SPIKENOISE=spikenoise] )
 ;
 ; KEYWORD PARAMETERS:   tauf       : Feeding-Zeitkonstante
 ;                       taul       : Linking-Zeitkonstante
@@ -18,6 +18,7 @@
 ;                       noisystart : alle Input-Potential (F,L,I) werden mit gleichverteilten Zufalls-
 ;                                    zahlen belegt. Der Wert von noisystart wird in Einheiten der Ruheschwelle
 ;                                    th0 angegeben.
+;                       spikenoise : mean spontanous activity in Hz 
 ;
 ; OUTPUTS:              Para : Struktur namens Para1, die alle Neuronen-Informationen enthaelt, s.u.
 ;
@@ -28,6 +29,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.5  1998/06/01 15:10:46  saam
+;             spontanous activity with keyword spikenoise implemented
+;
 ;       Revision 1.4  1998/02/18 15:46:39  kupper
 ;              Strukturen sind jetzt wie alle NASE-Strukturen unbenannt und haben den info-Tag.
 ;
@@ -44,7 +48,7 @@
 ;                Ergaenzung um Rauschen des Membranpotetials, Mirko Saam, 25.7.97
 ;
 ;-
-FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart
+FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise
 
    Default, tauf      , 10.0
    Default, taul      , 10.0
@@ -54,6 +58,7 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
    Default, th0       ,  1.0
    Default, sigma     ,  0.0
    Default, noisystart,  0.0
+   Default, spikenoise  ,  0.0
 
    Para = { info : "PARA1"         ,$
             df   : exp(-1./tauf)  ,$
@@ -67,6 +72,7 @@ FUNCTION InitPara_1, TAUF=tauf, TAUL=taul, TAUI=taui, VS=vs, TAUS=taus, TH0=th0,
             taus : FLOAT(taus)    ,$
             th0  : th0            ,$
             sigma: sigma          ,$
+            sn   : spikenoise/1000.,$
             ns   : noisystart*th0 }
 
    RETURN, Para

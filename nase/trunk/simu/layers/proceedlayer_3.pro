@@ -67,6 +67,10 @@ common common_random, seed
    Layer.M = Layer.F*(1.+Layer.L)-Layer.I + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
    Layer.O(*) = 0
 
+   ; do some spike noise by temporarily incresing membrane potential
+   spikenoise = WHERE(RandomU(seed, Layer.w*Layer.h) LT Layer.para.sn, c)
+   IF c NE 0 THEN Layer.M(spikenoise) = Layer.M(spikenoise)+Layer.Para.th0*1.05
+
    spike  = WHERE(Layer.M GE (Layer.S + Layer.Para.th0), count) 
    IF (count NE 0) THEN BEGIN
       Layer.O(spike) = 1
