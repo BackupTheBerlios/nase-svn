@@ -20,7 +20,7 @@
 ; CATEGORY: GRAPHIC
 ;
 ; CALLING SEQUENCE: ShowWeights, Matrix {, /FROMS |, /TOS }
-;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr]
+;                               [,TITEL='Titel'][,GROESSE=Fenstergroesse][,WINNR=FensterNr][,/DELAYS]
 ;                               [/SLIDE [,XVISIBLE] [,YVISIBLE] ]
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
@@ -63,6 +63,11 @@
 ;          Matrix' dar.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       $Log$
+;       Revision 2.3  1997/10/14 15:46:18  saam
+;              Delays konnten zwischenzeitlich nicht dargestellt
+;              werden...geht wieder
 ;
 ;       Thu Sep 4 17:12:07 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -109,13 +114,22 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
    If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
    if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
-      Matrix = {Weights: Transpose(_Matrix.Weights), $
-;                Delays : Transpose(_Matrix.Delays),$
-                source_w: _Matrix.target_w, $
-                source_h: _Matrix.target_h, $
-                target_w: _Matrix.source_w, $
-                target_h: _Matrix.source_h}
-   endif else Matrix = _Matrix
+
+      IF _Matrix.info EQ 'DW_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Transpose(_Matrix.Weights), $
+                   source_w: _Matrix.target_w, $
+                   source_h: _Matrix.target_h, $
+                   target_w: _Matrix.source_w, $
+                   target_h: _Matrix.source_h}
+      END ELSE IF _Matrix.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+         Matrix = {Weights : Transpose(_Matrix.Weights), $
+                   Delays : Transpose(_Matrix.Delays),$
+                   source_w: _Matrix.target_w, $
+                   source_h: _Matrix.target_h, $
+                   target_w: _Matrix.source_w, $
+                   target_h: _Matrix.source_h}
+      END ELSE Message, 'keine gueltige DelayWeigh-Struktur uebergeben'
+   ENDIF ELSE Matrix = _Matrix
 
 
 ;no_connections = WHERE(Matrix.Weights EQ !NONE, count)
