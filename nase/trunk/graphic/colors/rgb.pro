@@ -76,7 +76,7 @@ Common common_RGB, ucc
    ;; ---- NOALLOC --------------------------------------------------------------
    IF Keyword_Set(NOALLOC) THEN BEGIN 
        IF NOT Pseudocolor_Visual() THEN BEGIN
-           Dmsg, "ignoring keyword NOALLOC in true color mode"
+;;           Dmsg, "ignoring keyword NOALLOC in true color mode"
        END ELSE BEGIN
            ;; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
            myCM = bytarr(!D.Table_Size,3) 
