@@ -33,8 +33,8 @@
 ;                                  sin(x)/x function. 
 ;                                  Smooth specifies the degree of
 ;                                  interpolation (1 means NO
-;                                  interpolation). Sets Keyword CLOSE
-;                                  to 1.
+;                                  interpolation). Only works if angle
+;                                  array ranges over 360 degree.
 ;                          mcolor: Color index for the mean data
 ;                                  points (default: white) 
 ;                          dcolor: Color index for the original data
@@ -54,15 +54,19 @@
 ;            4. plot circle at any tickmarks position (uses ARCS in alien)
 ;            5. plot intermediate axes (uses RADII in alien)  
 ;
-; EXAMPLE: radius = findgen(33)
-;          angle = findgen(33)*2.0*!PI/32.0
+; EXAMPLE: radius = findgen(8)
+;          angle = findgen(8)*2.0*!PI/7.0
 ;          PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
-;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50)
+;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50), SMOOTH=5
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  2000/09/01 19:51:45  saam
+;              fixed several confusions with SMOOTH,
+;              CLOSE und arrays larger 30 elements
+;
 ;        Revision 2.3  2000/07/24 13:18:40  saam
 ;              + added keyword DPLOT
 ;
@@ -88,7 +92,7 @@ PRO OPolarPlot, radiusarray, anglearray, sdevarray,           $
                 winkelinterpol=winkelinterpol,                $
                 _EXTRA=e
 
-On_Error, 2
+;'On_Error, 2
 
 IF (N_Params() LT 2) OR (N_Params() GT 3) THEN Console, 'wrong parameter count', /FATAL
 IF Set(radiusinterpol) THEN Console, 'keyword RADIUSINTERPOL is undocumented, please document if you need it', /WARN
@@ -108,7 +112,7 @@ BGCOLOR = RGB(BGCOLOR(0), BGCOLOR(1), BGCOLOR(2),/NOALLOC)
 Default, MCOLOR , !P.COLOR
 Default, DCOLOR , MCOLOR
 Default, SDCOLOR, RGB(150,150,200,/NOALLOC)
-IF set(SMOOTH) THEN DEFAULT,CLOSE ,1
+IF SMOOTH GT 1.0 THEN DEFAULT,CLOSE ,1
 
 DEFAULT,CLOSE ,0
 Default, thick, 3.0
@@ -117,11 +121,11 @@ default, origpt, 0
 
 IF SMOOTH GT 1 THEN BEGIN
     index = 0
-    WHILE N_ELEMENTS(_radiusarray) LT 30 DO BEGIN 
+    REPEAT BEGIN
         index = N_ELEMENTS(_radiusarray) + index
         _radiusarray = [_radiusarray,_radiusarray,_radiusarray]
         IF set(_SDEVARRAY) THEN  _sdevarray=[_sdevarray,_sdevarray,_sdevarray]
-    ENDWHILE
+    ENDREP UNTIL N_ELEMENTS(_radiusarray) GE 30 
     
     
     _radiusarray = Sincerpolate(_radiusarray,smooth)
@@ -131,8 +135,9 @@ IF SMOOTH GT 1 THEN BEGIN
         _sdevarray =   Sincerpolate(_sdevarray ,smooth)
         _sdevarray = _sdevarray(index*smooth : (index+ N_ELEMENTS(radiusarray))*smooth-1+close)
     END
-    
-    _anglearray = (signum(last(_anglearray))*(abs(last(_anglearray))+close*abs(_anglearray(1)-_anglearray(0)))-_anglearray(0))*findgen(smooth*(N_ELEMENTS(_anglearray))+close)/FLOAT(N_ELEMENTS(_anglearray)*SMOOTH+close-1)+_anglearray(0)
+
+    _anglearray = [_anglearray,last(_anglearray)+_anglearray(1)-_anglearray(0)]
+    _anglearray = _anglearray(0)+findgen(N_ELEMENTS(_radiusarray))/FLOAT(N_ELEMENTS(_radiusarray)-1)*(last(_anglearray)-_anglearray(0))
     
 END ELSE BEGIN
     

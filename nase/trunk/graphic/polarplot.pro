@@ -66,8 +66,8 @@
 ;                                  sin(x)/x function. 
 ;                                  Smooth specifies the degree of
 ;                                  interpolation (1 means NO
-;                                  interpolation). Sets Keyword CLOSE
-;                                  to 1.
+;                                  interpolation). Only works if angle
+;                                  array ranges over 360 degree.                                  
 ;                          mcolor: Color index for the mean data
 ;                                  points (default: white) 
 ;                          dcolor: Color index for the original data
@@ -87,15 +87,20 @@
 ;            4. plot circle at any tickmarks position (uses ARCS in alien)
 ;            5. plot intermediate axes (uses RADII in alien)  
 ;
-; EXAMPLE: radius = findgen(33)
-;          angle = findgen(33)*2.0*!PI/32.0
+; EXAMPLE: radius = findgen(8)
+;          angle = findgen(8)*2.0*!PI/7.0
 ;          PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
-;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50)
+;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50), SMOOTH=5
+;
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.22  2000/09/01 19:51:45  saam
+;              fixed several confusions with SMOOTH,
+;              CLOSE und arrays larger 30 elements
+;
 ;        Revision 2.21  2000/07/24 13:18:41  saam
 ;              + added keyword DPLOT
 ;
@@ -176,7 +181,7 @@ PRO PolarPlot, radiusarray, anglearray, sdevarray,                              
                _EXTRA=e
 
 
-On_Error, 2
+;On_Error, 2
 
 IF (N_Params() LT 2) OR (N_Params() GT 3) THEN Console, 'wrong parameter count', /FATAL
 IF Set(radiusinterpol) THEN Console, 'keyword RADIUSINTERPOL is undocumented, please document if you need it', /WARN
@@ -231,10 +236,25 @@ corr_fac(min_size_ind) = 1.0
 plotregion_device_new = [[plotregion_device(*,0)]-shift_plotregion_device,$
                          [plotregion_device(*,0)+xy_dim*corr_fac]-shift_plotregion_device]
 
-plot, radiusarray, anglearray,/POLAR, $
-  XSTYLE=xstyle, YSTYLE=ystyle, $
-  XRANGE=xrange, YRANGE=yrange, $
-  TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e
+IF SET(e) THEN BEGIN
+    e2 = ExtraDiff(e, ["ORIGPT","SMOOTH","THICK","DELTA","MCOLOR","DCOLOR","SDCOLOR"], /LEAVE) 
+    IF TypeOF(e2) NE 'STRUCT' THEN BEGIN
+        plot, radiusarray, anglearray,/POLAR, $
+          XSTYLE=xstyle, YSTYLE=ystyle, $
+          XRANGE=xrange, YRANGE=yrange, $
+          TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA
+    END ELSE BEGIN
+        plot, radiusarray, anglearray,/POLAR, $
+          XSTYLE=xstyle, YSTYLE=ystyle, $
+          XRANGE=xrange, YRANGE=yrange, $
+          TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA,_EXTRA=e2
+    END
+END ELSE BEGIN
+    plot, radiusarray, anglearray,/POLAR, $
+      XSTYLE=xstyle, YSTYLE=ystyle, $
+      XRANGE=xrange, YRANGE=yrange, $
+      TITLE=title,POSITION=plotregion_device_new,/DEVICE,/NODATA
+END
 
 
 ; now, we can do the data plot
