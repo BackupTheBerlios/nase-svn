@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.4  2000/01/19 14:45:12  alshaikh
+;           oversampling-bug fixed
+;
 ;     Revision 1.3  2000/01/19 09:08:05  saam
 ;           + params tag may be omitted now
 ;           + still wrong handling of oversampling
@@ -144,12 +147,16 @@ Default, NUMBER, 0
    IF period EQ -1 THEN period = P.SIMULATION.time
    
    delta_t =   INN.delta_t      ; resolution in ms
+   IF delta_t EQ -1 THEN delta_t = P.SIMULATION.SAMPLE*1000.0
+
    number_filter =  INn.number_filter
    
-   FOR act_time=0l, period-1 DO BEGIN 
+   FOR time=0l, (p.simulation.time/(1000.0*P.SIMULATION.SAMPLE))-1 DO BEGIN 
       
-      IF ((delta_t EQ -1) OR (act_time MOD delta_t EQ 0)) THEN BEGIN
-         
+      act_time =  round(time*1000*1000*P.SIMULATION.SAMPLE MOD round(period*1000))    ; time in microsec ;-)
+
+      IF (round(act_time*1000) MOD round(delta_t*1000) EQ 0) THEN BEGIN
+
          pattern = fltarr(h,w)  ; initialize input-matrix
          
          filter_list = ''
@@ -157,7 +164,7 @@ Default, NUMBER, 0
             Handle_Value,INn.filters(i),act_filter 
             IF i NE 0 THEN filter_list =  filter_list +'*'
             filter_list = filter_list + act_filter.NAME
-            IF act_time EQ act_filter.start THEN BEGIN ; initialize filter
+            IF act_time/1000.0 EQ act_filter.start THEN BEGIN ; initialize filter
                IF ExtraSet(act_filter, 'PARAMS') THEN BEGIN
                   pattern = CALL_FUNCTION(act_filter.NAME,$
                                           MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,_EXTRA=act_filter.params,$
@@ -167,14 +174,16 @@ Default, NUMBER, 0
                                           MODE=0,PATTERN=pattern,WIDTH=w,HEIGHT=h,$
                                           temp_vals=INn.temps(i),DELTA_T=delta_t) 
                END
-
+               
                                 ; ELSE NextStep 
-            END ELSE IF ((act_time GT act_filter.start) AND (act_time LE act_filter.stop)) THEN $
+            END ELSE $ 
+             IF ((act_time/1000.0 GT act_filter.start) AND (act_time/1000.0 LE act_filter.stop)) THEN $
              pattern = CALL_FUNCTION(act_filter.NAME,$
                                      PATTERN=pattern, temp_vals=INn.temps(i)) 
-                               
-             
-            INn.pattern = pattern     ; store for future use
+
+            IF act_time/1000.0 eq act_filter.stop THEN print,'INPUT:filter '''+act_filter.NAME+''' inactive'
+            
+            INn.pattern = pattern ; store for future use
             
             
             IF viz_mode[i] EQ 3 THEN BEGIN 
@@ -183,23 +192,24 @@ Default, NUMBER, 0
                closesheet,sheet,i
             END ELSE BEGIN 
                IF i NE 0 THEN title = filter_list $
-                ELSE $
-               title = filter_list+string(round(act_time))
+               ELSE $
+                title = filter_list+string((act_time/1000.0))
                wset,0
                IF viz_mode[i] EQ 1 THEN $
                 PlotTvScl, INn.pattern,TITLE=title
                IF viz_mode[i] EQ 2 THEN $
                 surface, INn.pattern,TITLE=title
-                             
-                opensheet, sheet,i               
-                Device,Copy=[0,0,256,256,0,0,0]
-                closesheet,sheet,i
-             END 
-          ENDFOR 
-       END        
-       
-       handle_value,in(number),inn,/set
-       INn.t = INn.t + 1
+               
+               opensheet, sheet,i               
+               Device,Copy=[0,0,256,256,0,0,0]
+               closesheet,sheet,i
+            END 
+         ENDFOR 
+      END        
+      
+ 
+      handle_value,in(number),inn,/set
+      ;INn.t = INn.t + 1
    
 
     ENDFOR  
