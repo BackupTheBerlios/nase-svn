@@ -1,7 +1,7 @@
 ;+
 ; NAME:  cornsweet_display
 ;
-; AIM : Module of cornsweet.pro (see also: FaceIt)
+; AIM : Module of cornsweet.pro  (see also  <A>faceit</A>)
 ;
 ; PURPOSE:
 ;
@@ -46,6 +46,9 @@
 ;-
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 12:06:29  alshaikh
+;           AIM bugfixes
+;
 ;     Revision 1.2  2000/09/27 15:08:03  alshaikh
 ;           AIM-tag added
 ;
