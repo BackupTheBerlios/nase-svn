@@ -29,6 +29,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.19  1999/10/28 16:16:03  kupper
+;     Color-Management with sheets was not correct on a
+;     true-color-display.
+;     (Table was not set when the sheet was opened).
+;     We now do different things for pseudocolor and
+;     truecolor-displays, to make them "feel" alike... (hopefully).
+;
 ;     Revision 2.18  1999/08/16 16:47:08  thiel
 ;         Change to activate File-Watching.
 ;
@@ -201,6 +208,13 @@ PRO OpenSheet, __sheet, multi_nr
       old = !Z
       !Z = sheet.z
       sheet.z = old
+
+      If not(PseudoColor_Visual()) then begin
+                                ;we've got a True-Color-Display, so
+                                ;we have to set the private color table:
+         WIDGET_CONTROL, sheet.DrawId, GET_UVALUE=draw_uval
+         UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
+      End
 
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN
       Set_Plot, 'ps'

@@ -158,6 +158,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.2  1999/10/28 16:16:05  kupper
+;       Color-Management with sheets was not correct on a
+;       true-color-display.
+;       (Table was not set when the sheet was opened).
+;       We now do different things for pseudocolor and
+;       truecolor-displays, to make them "feel" alike... (hopefully).
+;
 ;       Revision 1.1  1999/09/01 16:43:53  thiel
 ;           Moved from other directory.
 ;
@@ -325,6 +332,11 @@ Function ScrollIt, Parent, $
    Default,  kill_notify, ''
    Default,  deliver_events, [-1]
    Default, button_events, 0
+
+   If Not(PseudoColor_Visual()) then begin
+	message, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
+	private_colors = 0
+   end
 
    button_events = button_events * Set(deliver_events) 
    ; Tell DrawWidget to generate BUTTON_EVENTS which can then be 
