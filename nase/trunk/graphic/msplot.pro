@@ -85,7 +85,7 @@ PRO MSPLOT, z, zz, zzz $
     Message, 'Abszissa and ordinate values are of different count.'
    
    IF Set(XRANGE) THEN BEGIN
-      xri = [(Where(x GE xrange(0)))(0), (Where(x GT xrange(1)))(0)] 
+      xri = [(Where(x GE xrange(0)))(0), last((Where(x LE xrange(1))))] 
       xf = x > XRANGE(0) < XRANGE(1)
       yr = [MIN(m(xri(0):xri(1))-sd(xri(0):xri(1))) $
             , MAX(m(xri(0):xri(1))+sd(xri(0):xri(1)))]
