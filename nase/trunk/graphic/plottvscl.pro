@@ -125,6 +125,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.50  1999/09/22 08:43:37  kupper
+;     *** empty log message ***
+;
 ;     Revision 2.49  1999/09/22 08:15:05  kupper
 ;     Corrected typo.
 ;
@@ -344,9 +347,16 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, NOSCALE, 0
    Default, ORDER, 0
    Default, LEGEND, 0
-   Default,legmargin,0.25
-   Default,Polygon,0
+   Default, legmargin,0.25
+   Default, Polygon,0
    DEFAULT, top, !D.TABLE_SIZE
+
+; Added for passing to PlotTvScl_update, R Kupper, Sep 22 1999
+   default, NASE, 0
+   default, CUBIC, 0
+   default, INTERP, 0
+   default, MINUS_ONE, 0
+   default, COLORMODE, 0
 
    W = _W
    IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
@@ -500,30 +510,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
    PlotAreaDevice = Convert_Coord([PlotWidthNormal,PlotHeightNormal], /Normal, /To_Device)
 
-   ;-----Plotten der UTVScl-Graphik:
-   IF Keyword_Set(NASE) THEN BEGIN
-      If Keyword_Set(NOSCALE) then BEGIN 
-         UTV, Transpose(W), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen,$
-          X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM,$
-          ORDER=UpSideDown, POLYGON=POLYGON
-      END ELSE BEGIN
-         UTV, ShowWeights_Scale(Transpose(W),SETCOL=setcol, COLORMODE=colormode), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM,$
-          Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
-      ENDELSE
-   END ELSE BEGIN
-      IF Keyword_Set(NEUTRAL) THEN BEGIN
-         UTV, ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode), OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, $
-          Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, ORDER=UpSideDown , POLYGON=POLYGON
-      END ELSE BEGIN
-         UTVScl, W, OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
-          OriginNormal(1)+TotalPlotHeightNormal*!X.Ticklen, $
-          X_SIZE=PlotAreaDevice(0)/!D.X_PX_CM, Y_SIZE=PlotAreaDevice(1)/!D.Y_PX_CM, $
-          ORDER=UpSideDown, NOSCALE=NoScale, POLYGON=POLYGON, TOP=top
-      END
-   END
+   ;---- Optionale Outputs:
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
    GET_INFO = {PLOTTVSCL_INFO, $
@@ -547,8 +534,25 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                tvxsize : long(PlotAreaDevice(0)),$
                tvysize : long(PlotAreaDevice(1)),$
                subxsize: long(2.0*TotalPlotWidthNormal*!Y.Ticklen*!D.X_SIZE),$
-               subysize: long(2.0*TotalPlotHeightNormal*!X.Ticklen*!D.Y_SIZE)}
+               subysize: long(2.0*TotalPlotHeightNormal*!X.Ticklen*!D.Y_SIZE), $
+;
+; Keywords to be passed to PlotTvScl_update:
+               order   : ORDER, $
+               nase    : NASE, $
+               noscale : NOSCALE, $
+               polygon : POLYGON, $
+               top     : TOP, $
+               cubic   : CUBIC, $
+               interp  : INTERP, $
+              minus_one: MINUS_ONE, $
+              colormode: COLORMODE, $
+              setcol  : SETCOL}
+
    Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
+
+   ;-----Plotten der UTVScl-Graphik:
+   PlotTvScl_update, _W, GET_INFO
+
    
    ;-----Legende, falls erwuenscht:
    IF Keyword_Set(LEGEND) THEN BEGIN
