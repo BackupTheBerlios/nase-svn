@@ -73,9 +73,9 @@ PRO ULoadCt, nr, NCOLORS=ncolors, BOTTOM=bottom, REVERT=revert, FILE=file, NASE=
 
    Default, bottom, 0
    bottom = bottom > 0
-   If bottom gt (!TOPCOLOR+2) then begin
-      console, /Warning, "BOTTOM argument clipped to !TOPCOLOR+2 ("+str(!TOPCOLOR+2)+")"
-      bottom = !TOPCOLOR+2
+   If bottom gt (!TOPCOLOR) then begin
+      console, /Warning, "BOTTOM argument clipped to !TOPCOLOR ("+str(!TOPCOLOR)+")"
+      bottom = !TOPCOLOR
    endif
 
    Default, ncolors, !TOPCOLOR-BOTTOM+1
