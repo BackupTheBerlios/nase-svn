@@ -89,7 +89,7 @@
 ;*for i=0,360,5 do tvscl, coil100(1,i), TRUE=1
 ;
 ; SEE ALSO:
-;  <A>COIL20(), FadeToGrey()</A>
+;  <A>COIL20()</A>, <A>FadeToGrey()</A>
 ;-
 
 Function Coil100, object, angle, NASE=NASE, FLOAT=FLOAT, GREY=GREY
