@@ -62,21 +62,23 @@ FUNCTION RegionSize, NORMAL=normal, DEVICE=device
    mm[2] = Max([1,mm[2]])
 
    ;; Take into account possible OMARGINS.
-   ;; They are in units of character size, so a little coord
-   ;; conversion is needed when normal ccords are desired
-   ;; Total() for adding left and / bottom and top margins
-   omdev = [Total(!X.OMARGIN)*!D.X_CH_SIZE, Total(!Y.OMARGIN)*!D.Y_CH_SIZE]
-
-   ;;DMsg, 'OMDev: '+PrettyArr(omdev)
-
+   ;; They are in units of character size, so a coord conversion is
+   ;; needed when normal ccords are desired. Normal coords of charsize
+   ;; are computed directly, to avoid error message of Convert_Coord()
+   ;; when no window is yet open. 
+   ;; Total() is for for adding left and / bottom and top margins
    IF Keyword_Set(NORMAL) THEN BEGIN
-      omnorm = UConvert_Coord(omdev, /DEVICE, /TO_NORMAL)
+      chsizenorm = [Double(!D.X_CH_SIZE)/!D.X_VSIZE $
+                   , Double(!D.Y_CH_SIZE)/!D.Y_VSIZE]
+      omnorm = [Total(!X.OMARGIN)*chsizenorm[0] $
+               , Total(!Y.OMARGIN)*chsizenorm[1]]
       ;; the whole device in normal coordinates minus omargins
       ps = [1.d, 1.d]-omnorm
    ENDIF ELSE BEGIN
       IF (!D.WINDOW EQ -1) AND (!D.NAME NE 'PS') THEN Console, /FATAL $
        , 'No window to determine size for.'
-      ;; size of visible window in pixel
+      omdev = [Total(!X.OMARGIN)*!D.X_CH_SIZE, Total(!Y.OMARGIN)*!D.Y_CH_SIZE]
+      ;; size of visible window in pixel minus omargins
       ps = Double([!D.X_VSIZE, !D.Y_VSIZE])-omdev 
    ENDELSE
 

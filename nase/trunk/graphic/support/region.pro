@@ -80,20 +80,24 @@ FUNCTION Region, NORMAL=normal, DEVICE=device
    rpp = [mm[1]-1 - (pidx MOD mm[1]), (pidx  /  mm[1])  ]
 
    ;; Take into account possible OMARGINS.
-   ;; They are in units of character size, so a little coord
-   ;; conversion is needed when normal coords are desired.
+   ;; They are in units of character size, so a coord conversion is
+   ;; needed when normal ccords are desired. Normal coords of charsize
+   ;; are computed directly, to avoid error message of Convert_Coord()
+   ;; when no window is yet open. 
    ;; Region() takes care of the size so we need correct only the
    ;; origin here.
-   om = [!X.OMARGIN[0]*!D.X_CH_SIZE, !Y.OMARGIN[0]*!D.Y_CH_SIZE]
-
    IF Keyword_Set(NORMAL) THEN BEGIN
-      om = UConvert_Coord(om, /DEVICE, /TO_NORMAL)
-   ENDIF
+      chsizenorm = [Double(!D.X_CH_SIZE)/!D.X_VSIZE $
+                   , Double(!D.Y_CH_SIZE)/!D.Y_VSIZE]
+      om = [!X.OMARGIN[0]*chsizenorm[0] $
+           , !Y.OMARGIN[0]*chsizenorm[1]]
+   ENDIF ELSE BEGIN
+      om = [!X.OMARGIN[0]*!D.X_CH_SIZE, !Y.OMARGIN[0]*!D.Y_CH_SIZE]
+   ENDELSE
 
 ; old version
 ;   pr = [[rpp[0]*ps[0]+om[0]      ,rpp[1]*ps[1]+om[1]        ] ,$
 ;         [rpp[0]*ps[0]+ps[0]+om[0],rpp[1]*ps[1]+ps[1]+om[1]] ]
-
    pr = [[rpp*ps+om],[rpp*ps+ps+om]]
 
 ;   IF NOT KEYWORD_SET(DEVICE) THEN BEGIN
