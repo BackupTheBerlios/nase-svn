@@ -79,25 +79,20 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
    If Set(multi_nr) then sheet = _sheet(multi_nr) else sheet = _sheet
 
    ;; print info on producing routine in lower left corner
-;   if set(_sheet.producer) then begin
-       IF sheet.producer NE '' THEN BEGIN
-           IF sheet.producer EQ '/CALLER' THEN BEGIN
-               Help, CALLS=c
-               maxc = N_Elements(c)-1 ;; just in case it is called from the command line and c has only 1 element 
-               calledby = (Split(c[1 < maxc],' <'))[0]
-               out = calledby
-           ENDIF ELSE BEGIN
-               out = sheet.producer
-           ENDELSE
-           XYOutS, 0.5*!D.X_CH_SIZE, 1.5*!D.Y_CH_SIZE $
-                   , out, /DEVICE, CHARSIZE=0.75
-           XYOutS, 0.5*!D.X_CH_SIZE, 0.5*!D.Y_CH_SIZE $
-                   , SysTime(), /DEVICE, CHARSIZE=0.75
-       ENDIF
-;   endif
-
-
-
+   IF sheet.producer NE '' THEN BEGIN
+       IF sheet.producer EQ '/CALLER' THEN BEGIN
+           Help, CALLS=c
+           maxc = N_Elements(c)-1 ;; just in case it is called from the command line and c has only 1 element 
+           calledby = (Split(c[1 < maxc],' <'))[0]
+           out = calledby
+       ENDIF ELSE BEGIN
+           out = sheet.producer
+       ENDELSE
+       XYOutS, 0.5*!D.X_CH_SIZE, 1.5*!D.Y_CH_SIZE $
+               , out, /DEVICE, CHARSIZE=0.75
+       XYOutS, 0.5*!D.X_CH_SIZE, 0.5*!D.Y_CH_SIZE $
+               , SysTime(), /DEVICE, CHARSIZE=0.75
+   ENDIF
 
 
    IF sheet.type EQ 'ps' OR sheet.type EQ 'X' THEN BEGIN ;it is PS or
