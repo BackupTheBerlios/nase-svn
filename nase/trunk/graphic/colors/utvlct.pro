@@ -7,11 +7,14 @@
 ;
 ; CATEGORY:            GRAPHIC GENERAL
 ;
-; SEE ALSO:            <A HREF="#ULOADCT>ULoadCt</A>, <A HREF="#UTVSCL>UTvScl</A>
+; SEE ALSO:            <A HREF="#ULOADCT">ULoadCt</A>, <A HREF="#UTVSCL">UTvScl</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1998/02/27 13:20:57  saam
+;           na was?? Bug in den HREFs
+;
 ;     Revision 2.1  1998/02/27 13:15:44  saam
 ;           hoffentlich hat sich's bald mit den U-Dingern
 ;
