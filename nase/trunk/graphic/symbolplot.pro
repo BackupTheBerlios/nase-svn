@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1998/06/08 10:28:29  thiel
+;               NoNone durch NoNone_Proc ersetzt.
+;
 ;        Revision 2.3  1998/06/07 14:23:15  kupper
 ;               Bug bei Arrays mit Nullelement am Anfang behoben.
 ;
@@ -146,7 +149,7 @@ Pro SymbolPlot, _a, OPLOT=oplot, POSSYM=possym, NEGSYM=negsym, NONESYM=nonesym, 
 
    If Keyword_Set(NASE) then begin 
       a = rotate(_a, 3)
-      NoNone, a, NONES=nones
+      NoNone_Proc, a, NONES=nones
       If Set(_colors) then colors = rotate(_colors, 3)
       If Set(_orientations) then orientations = rotate(_orientations, 3)
    Endif else begin
