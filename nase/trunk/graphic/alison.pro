@@ -43,6 +43,11 @@
 ;
 ; EXAMPLE:
 ;*PlotTvScl, Alison()
+;*PlotTvScl, Alison(/NORDER)
+;*PlotTvScl, Alison(/NORDER), /NORDER
+;
+; SEE ALSO:
+;  <A>UTvScl</A>, <A>PlotTvScl</A>, IDL's <C>READ_IMAGE</C>.
 ;-
 
 Function alison, NORDER = norder
