@@ -72,9 +72,11 @@ Pro Startup_ctd
    ;; --------------------------------------------------------
 
    ;; --- in a nohup-session, don't connect to X-Server ------
-   if IsInteractiveSession then $
+   ;; --- but always connect to X-Server, if display of ------
+   ;; --- the NASE logo was requested!                  ------
+   if IsInteractiveSession or (GetEnv("NASELOGO") eq "TRUE") then $
     if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24       ; try to get it, if available, but no DIRECT_COLOR!
-   if IsInteractiveSession then $
+   if IsInteractiveSession or (GetEnv("NASELOGO") eq "TRUE") then $
     DEVICE, DECOMPOSED=0
    ;; --------------------------------------------------------
 
