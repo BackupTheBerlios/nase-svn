@@ -47,7 +47,7 @@ use DBIx::HTMLView;
 
 sub dbi {
   my ($usr, $pw)=@_;
-  return mysqlDB("DBI:mysql:nase", "chiefnase", "nisfitme", 
+  return mysqlDB("DBI:mysql:nase", "chiefnase", "misfitme", 
 		 Table('news', Id('time'), Text('news'))
 		);
 }
