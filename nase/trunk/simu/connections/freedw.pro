@@ -18,16 +18,18 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
-;       Revision 2.4  1997/10/27 14:28:49  kupper
-;       1. Der Learn-Tag wird jetzt nur noch freigegeben, wenn er auch existiert!
-;       2. Im Header stand kein Log-Eintrag, daher ist die Mod.Hist. nicht vollständig.
+;       Revision 2.5  1997/12/02 10:04:55  saam
+;             Funktionalitaet der SpikeQueue wurde auf dynamische
+;             Speicherbelegung umgestellt. Deshalb muss im ver-
+;             zoegerten Fall, dieser Speicher freigegeben werden.
 ;
+;       Revision 2.4  1997/10/27 14:28:49  kupper
+;             1. Der Learn-Tag wird jetzt nur noch freigegeben, wenn er auch existiert!
+;             2. Im Header stand kein Log-Eintrag, daher ist die Mod.Hist. nicht vollständig.
 ;
 ;       Fri Sep 12 10:47:40 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
-;      
-;
-;		Schoepfung 
+;	      Schoepfung 
 ;
 ;-
 PRO FreeDW, DW
@@ -41,6 +43,8 @@ PRO FreeDW, DW
       Handle_Free, DW.SSource(target)
       DW.SSource(target) = -1
    END
+
+   IF Contains(DW.info, 'DELAY', /IGNORECASE) THEN FreeSpikeQueue, DW.Queue 
 
    IF DW.Learn NE -1 THEN Handle_Free, DW.Learn
 
