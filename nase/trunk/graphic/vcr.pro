@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/07/20 12:56:50  saam
+;           now also displays (x,t) data via plot
+;
 ;     Revision 2.3  1998/06/09 08:15:28  saam
 ;           new button group for repeated playing
 ;
@@ -52,11 +55,19 @@ PRO VCR_DISPLAY, UD
    Handle_Value, UD._a, a, /NO_COPY
 
    oId = !D.Window
-   WSet, UD.did
-   IF UD.scale THEN BEGIN
-      IF  UD.nase THEN NaseTvScl, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTvScl, a(*,*,UD.t), STRETCH=ud.zoom
+   IF UD.modus EQ 0 THEN BEGIN
+      WSet, UD.pm
+      !P.Multi = [0,0,1]
+      plot, a(*,UD.t), YRANGE=[UD.min, UD.max]
+      WSet, UD.did
+      Device, COPY=[0,0,UD.xsize-1, UD.ysize, 0, 0, UD.pm]
    END ELSE BEGIN
-      IF  UD.nase THEN NaseTv, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTv, a(*,*,UD.t), STRETCH=ud.zoom
+      WSet, UD.did
+      IF UD.scale THEN BEGIN
+         IF  UD.nase THEN NaseTvScl, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTvScl, a(*,*,UD.t), STRETCH=ud.zoom
+      END ELSE BEGIN
+         IF  UD.nase THEN NaseTv, a(*,*,UD.t), STRETCH=ud.zoom ELSE UTv, a(*,*,UD.t), STRETCH=ud.zoom
+      END
    END
    WSet, oId
 
@@ -200,7 +211,7 @@ END
 
 
 
-PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale
+PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=scale, XSIZE=xsize, YSIZE=ysize
 
    On_Error,2 
 
@@ -211,32 +222,36 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   Default, delay, 500
   Default, title, 'Videoplayer'
   Default, scale, 0
+  Default, XSIZE, 320
+  Default, YSIZE, 200
 
 
   IF N_Params() NE 1 THEN Message, 'exactly one argument expected'
-  IF (SIZE(A))(0) NE 3 THEN Message, 'array is not 3d!'
+  IF ((SIZE(A))(0) LT 2) OR ((SIZE(A))(0) GT 3) THEN Message, 'array is neither 2d nor 3d!'
 
 
   ; CREATE HANDLE TO VIDEO
   S = Size(A)
   TMP = A
-  IF NOT Keyword_Set(SCALE) THEN BEGIN
-     tmin = MIN(TMP)
-     tmax = MAX(TMP)
-     TMP = BYTE((TMP-tmin)/(tmax-tmin)*255)
-  END
+  tmin = MIN(TMP)
+  tmax = MAX(TMP)
+  IF ((SIZE(A))(0) EQ 3) AND (NOT Keyword_Set(SCALE)) THEN TMP = BYTE((TMP-tmin)/(tmax-tmin)*255)
   _A = Handle_Create(!MH, VALUE=TMP, /NO_COPY)
 
   
   ; DETERMINE WINDOW SIZE
-  xsize = S(1)*zoom
-  ysize = S(2)*zoom
-  IF Keyword_Set(NASE) THEN BEGIN
-     tmp = xsize
-     xsize = ysize
-     ysize = tmp
+  ; xsize and ysize are already set for 2darrays
+  IF S(0) EQ 3 THEN BEGIN
+     xsize = S(1)*zoom
+     ysize = S(2)*zoom
+     IF Keyword_Set(NASE) THEN BEGIN
+        tmp = xsize
+        xsize = ysize
+        ysize = tmp
+     END
   END
- 
+  
+      
 
 
   IF N_ELEMENTS(Group) EQ 0 THEN GROUP=0
@@ -622,14 +637,42 @@ PRO VCR, GROUP=Group, A, zoom=zoom, NASE=nase, DELAY=delay, TITLE=title, SCALE=s
   WIDGET_CONTROL, DRAW4, GET_VALUE=drawid, /REALIZE
 
 
-           
+
+  ;----->
+  ;-----> SET PARAEMTERS FOR 2d OR 3d DATA
+  ;----->
+  IF (s(0) EQ 2) THEN BEGIN
+     w = xsize
+     h = ysize
+     mt = s(2)
+     modus = 0
+  END ELSE BEGIN
+     w = s(1)
+     h = s(2)
+     mt = s(3)
+     modus = 1
+  END
+
+  ;----->
+  ;-----> CREATE A PIXMAP IF NEEDED
+  ;----->
+  IF (s(0) EQ 2) THEN BEGIN
+     Window, /FREE, /PIXMAP, XSIZE=xsize, YSIZE=ysize 
+     pm = !D.WINDOW
+  END ELSE pm = 0
 
   WIDGET_CONTROL, MAIN_VCR,$
    SET_UVALUE={info  : 'VCR_BASE',$
                _A    : _A            ,$
-               w     : s(1)          ,$
-               h     : s(2)          ,$
-               mt    : s(3)          ,$
+               w     : w             ,$
+               h     : h             ,$
+               mt    : mt            ,$
+               min   : tmin          ,$
+               max   : tmax          ,$
+               xsize : xsize         ,$
+               ysize : ysize         ,$
+               pm    : pm            ,$
+               modus : modus         ,$
                t     : 0l            ,$
                zoom  : zoom          ,$
                did   : drawid        ,$ ;id of drawing area
