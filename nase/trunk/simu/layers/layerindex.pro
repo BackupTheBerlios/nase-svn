@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY: Urversion, 25.7.1997, Rüdiger Kupper
 ;
 ;       $Log$
+;       Revision 1.3  1997/11/11 09:42:03  thiel
+;              Syntax Error korrigiert.
+;
 ;       Revision 1.2  1997/11/08 14:35:15  kupper
 ;              Die layer...-Routinen können nun auch auf
 ;               DW-Strukturen angewandt werden.
@@ -70,7 +73,7 @@ Function LayerIndex, Layer, ROW=row, COL=col, $
               if col ge Layer.Source_w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groß!'
               return, col * Layer.Source_h + row
            endif
-           if Keyword_set(TARGET) then 
+           if Keyword_set(TARGET) then begin
               if row ge Layer.Target_h then print, 'LayerIndex WARNUNG: Zeilenindex (Row) ist zu groß!'
               if col ge Layer.Target_w then print, 'LayerIndex WARNUNG: Spaltenindex (Col) ist zu groß!'
               return, col * Layer.Target_h + row
