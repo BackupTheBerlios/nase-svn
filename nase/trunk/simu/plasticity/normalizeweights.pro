@@ -156,6 +156,8 @@ endif else begin
     endelse
 endelse
 
+dw.w = dw.w > 0  ;da bei sehr kleiner Gewichts-Summe 0./0. passieren kann
+
 ;ENDIF  ELSE BEGIN 
 ;    IF DW.Info EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
 ;        Message, 'illegal first argument'
