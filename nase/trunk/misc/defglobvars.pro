@@ -35,7 +35,7 @@
 ;  <A>Background</A> respect these
 ;  settings. <*>!TOPCOLOR <= !D.Table_Size-3</*> must apply, default
 ;  value is <*>!D.Table_Size-11</*> reserving 10 colors for NASE.<BR> 
-;  <*>!NASEWIDGETFONT</*> and <*>!NASEWIDGETFONTSMALL</*> are two
+;  <*>!NASEWIDGETFONT</*> and <*>!NASEWIDGETFONTSMALL</*>:: Two
 ;  device fonts that may be used to achieve a consistent appearance of
 ;  the NASE widgets. At present, these fonts are set to Helvetica
 ;  bold, but this may be changed as one pleases. Note that the string
