@@ -1,7 +1,7 @@
 ;+
 ; NAME:     SPHASEVELOCITY
 ;
-; AIM:                 detecting linear phaseshifts within the timeresolved <A NREF=spatiotempcorr >STCH</A>  
+; AIM:                 detecting linear phaseshifts within the timeresolved <A NREF=spatiotempcorr>STCH</A>  
 ;
 ; PURPOSE:             A function for detecting linear phaseshifts (incl. phase velocity) from a spatiotemporal correlation.
 ;                      The points used for the linear regression fit are the maxima of each spatiotemporal correlation window
@@ -84,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.10  2000/09/28 14:04:22  saam
+;     service checkin: doc header violation
+;
 ;     Revision 1.9  2000/09/28 12:09:29  gabriel
 ;          AIM tag added , message <> console, CORRSTRENGTH_CRIT now uses FZT
 ;
