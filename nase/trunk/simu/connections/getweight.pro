@@ -6,6 +6,7 @@
 ; PURPOSE: Liest ein oder mehrere Gewichte aus einer
 ;          Delay_Weight-Struktur aus
 ;
+;          Dies ist das Gegenstück zu SetWeight.
 ;
 ;
 ; CATEGORY: Simulation
