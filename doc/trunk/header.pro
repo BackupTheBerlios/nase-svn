@@ -137,7 +137,7 @@
 ;  Mention routines that are related to, depend on or
 ;  are used by your routine/implementation. Look at the
 ;  <A>DemoSim</A>. If you are bored, click 
-; <A HREF=CVS>here</A>.
+; <A NREF=CVS>here</A>.
 ;  
 ; AUTHOR:
 ;  FORNAME SURNAME
