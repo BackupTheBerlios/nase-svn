@@ -165,6 +165,20 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
             Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color, _EXTRA=sheet.extra
          END
 
+         old = !P
+         !P = sheet.p
+         sheet.p = old
+         old = !X
+         !X = sheet.x
+         sheet.x = old
+         old = !Y 
+         !Y = sheet.y
+         sheet.y = old
+         old = !Z
+         !Z = sheet.z
+         sheet.z = old
+      
+
          IF ((NOT !REVERTPSCOLORS) AND (TOTAL(CIndex2RGB(GetBackground()) NE [255,255,255]) NE .0)) THEN BEGIN
                                 ; the user wants all colors as on the
                                 ; screen in the postscript file. since
@@ -172,23 +186,11 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
                                 ; background, we plot a rectangle with
                                 ; the background color by hand
              Polyfill, [0,0,1,1,0], [0,1,1,0,0], /NORMAL, COLOR=GetBackground()
-             !P.MULTI = (!P.MULTI)(1)*(!P.Multi)(2) ; prevent clearing of screen
+             !P.MULTI(0) = MAX([1,(!P.MULTI)(1)*(!P.Multi)(2)]) ; prevent clearing of screen
          END
          
-      END ELSE Message, /INFORM, 'OpenSheet: PS-Sheet already open!'
+      END ELSE Console, /FATAL, 'postscript sheet is already open!'
       
-      old = !P
-      !P = sheet.p
-      sheet.p = old
-      old = !X
-      !X = sheet.x
-      sheet.x = old
-      old = !Y 
-      !Y = sheet.y
-      sheet.y = old
-      old = !Z
-      !Z = sheet.z
-      sheet.z = old
       
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
       uSet_Plot, 'NULL'
