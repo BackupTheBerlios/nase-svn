@@ -1,5 +1,8 @@
 ;+
 ;       $Log$
+;       Revision 1.23  1999/09/01 13:52:57  thiel
+;           Added simu/faceit_demo directory to repository.
+;
 ;       Revision 1.22  1999/07/15 14:55:37  kupper
 ;       !PATH wird jetzt von der startup-Routine auf die NASE-Verzeichnisse
 ;       gesetzt. Die Benutzung des nasedirs.{bash|csh}-Skriptes entfaellt damit.
@@ -104,6 +107,7 @@ NASEDIRS = NASEPATH+"/alien:"$
  +NASEPATH+"/simu:"$
  +NASEPATH+"/simu/input:"$
  +NASEPATH+"/simu/connections:"$
+ +NASEPATH+"/simu/faceit_demo:"$
  +NASEPATH+"/simu/layers:"$
  +NASEPATH+"/simu/plasticity"
 SetEnv, "NASEDIRS="+NASEDIRS    ;for compatibility reasons
