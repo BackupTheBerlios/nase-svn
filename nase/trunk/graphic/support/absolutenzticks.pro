@@ -25,14 +25,16 @@
 ;
 ; SEE ALSO: IDL Online Help: Graphics Keywords, continued - [XYZ]TICKFORMAT keyword 
 ;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  2000/07/24 10:20:59  saam
+;              removed MODHIST from documentation
+;
 ;        Revision 2.1  2000/07/24 10:20:23  saam
 ;             stolen and translated from absoluteticks
 ;
-;
-;-
 
 
 FUNCTION AbsoluteNZTicks, axis, index, value
