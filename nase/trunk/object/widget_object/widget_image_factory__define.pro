@@ -19,30 +19,40 @@ End
 ;; these are overridden:
 Pro widget_image_factory::width, value
    self->image_factory::width, value
-   *self.plotinfo = {PLOTTVSCL_INFO} ;we need to redraw whole plot!
+   self->recompute ;; we have an external pointer to the image data, so we must
+                   ;; recompute explicitely 
+   self->renew_plot, Range_In=[0, 1], /NASE ;we need to redraw whole plot!
    self->paint
 End
 
 Pro widget_image_factory::height, value
    self->image_factory::height, value
-   *self.plotinfo = {PLOTTVSCL_INFO} ;we need to redraw whole plot!
+   self->recompute ;; we have an external pointer to the image data, so we must
+                   ;; recompute explicitely
+   self->renew_plot, Range_In=[0, 1], /NASE ;we need to redraw whole plot!
    self->paint
 End
 
 Pro widget_image_factory::type, string
    self->image_factory::type, string
+   self->recompute ;; we have an external pointer to the image data, so we must
+                   ;; recompute explicitely
    Widget_Control, self.w_type, SET_DROPLIST_SELECT=(Where(strupcase(*self.types) eq strupcase(string)))[0]
    self->paint
 End
 
 Pro widget_image_factory::size, value
    self->image_factory::size, value
+   self->recompute ;; we have an external pointer to the image data, so we must
+                   ;; recompute explicitely
    Widget_Control, self.w_size, SET_VALUE=value
    self->paint
 End
 
 Pro widget_image_factory::brightness, value
    self->image_factory::brightness, value
+   self->recompute ;; we have an external pointer to the image data, so we must
+                   ;; recompute explicitely
    Widget_Control, self.w_brightness, SET_VALUE=value
    self->paint
 End
@@ -55,16 +65,26 @@ Function widget_image_factory::init, POST_PAINT_HOOK=post_paint_hook, _REF_EXTRA
  
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, "widget_image_factory", _EXTRA=_ref_extra) then return, 0
+   ;; (we let my image container watch the image factory, so we can't use the
+   ;; Init_Superclasses routine):
+   If not self->image_factory::init(_EXTRA=_ref_extra) then return, 0
+   If not $
+    self->widget_image_container::init(IMAGE=self->image_factory::imageptr(), $
+                                       /NASE, $                                    
+                                       _EXTRA=_ref_extra) then begin
+      self->image_factory::cleanup
+      return, 0
+   End
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
 
-   ;; init plotinfo member:
-   self.plotinfo = Ptr_New({PLOTTVSCL_INFO})
+   ;; let the image factory create the image:
+   self->recompute
 
    ;; fill in the types data member:
    self.types = Ptr_New(self->image_factory::types())
+
 
    ;; all widgets we add here will have self as their user-value.
 
@@ -97,10 +117,9 @@ End
 Pro widget_image_factory::cleanup, _REF_EXTRA = _ref_extra
    message, /Info, "I'm dying!"
    Ptr_Free, self.types
-   Ptr_Free, self.plotinfo
 
    Cleanup_Superclasses, self, "widget_image_factory", _EXTRA = _ref_extra
-   ;; note that destroying the basuc_widget_object also destroys the widget.
+   ;; note that destroying the basic_widget_object also destroys the widget.
 End
 
 Pro widget_image_factory::reset
@@ -113,15 +132,14 @@ End
 
 ;; ------------ Public --------------------
 
-;; ------------ Private --------------------
+;; ------------ Protected --------------------
 Pro widget_image_factory::paint_hook_
-   PlotTvScl, self->image(), 0.2, 0.2, $
-    Update_Info=*self.plotinfo, Range_In=[0, 1], /NASE
-   
+   self->widget_image_container::paint_hook_
    If self.post_paint_hook ne "" then Call_Procedure, self.post_paint_hook, self
 End
 
 Pro widget_image_factory::initial_paint_hook_
+   self->widget_image_container::initial_paint_hook_
    ;; make droplist selection consistent with object's image type:
    self->type, self->type()     ;this will also paint the picture.
 End
@@ -130,7 +148,7 @@ End
 Pro widget_image_factory__DEFINE
    dummy = {widget_image_factory, $
             $
-            inherits basic_draw_object, $
+            inherits widget_image_container, $
             inherits image_factory, $
             $
             types: PTR_NEW(), $ ;This will point to a string array containing
@@ -138,8 +156,6 @@ Pro widget_image_factory__DEFINE
             $                   ;image_factory::types() to scan the directory 
             $                   ;whenever the droplist widget should be set!)
             $
-            showit_id: 0l, $
-            plotinfo: Ptr_New(), $ ;This will hold a {PLOTTVSCL_INFO} struct.
             post_paint_hook: "", $
             $
             w_size: 0l, $
