@@ -66,7 +66,7 @@ FUNCTION Check_LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=
 
    Print
    Print, 'Soweit scheint alles in Ordnung.'
-   Print, 'Lernregel: Hebb mit Lernpotential.'
+   Print, 'Lernregel: Hebb mit Decay-Term Lernpotential.'
    Print, 'Es werden Verbindungen zwischen einem Source-Cluster der Groesse ',Zeilenzahl
    Print, 'und einem Target-Cluster der Groesse ',Spaltenzahl, ' gelernt.'
    Print, 'Lernrate: ',Rate
