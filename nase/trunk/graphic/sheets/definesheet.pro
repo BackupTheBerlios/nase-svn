@@ -113,8 +113,8 @@
 ;* dummy = Get_Kbrd(1)
 ;* DestroySheet, sheety
 ;
-; SEE ALSO: <A>ScrollIt</A>, <A>OpenSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>
-;
+; SEE ALSO: <A>ScrollIt</A>, <A>OpenSheet</A>, <A>CloseSheet</A>,
+;           <A>DestroySheet</A>, <A>PSSheet()</A>
 ;-
 
 
@@ -172,6 +172,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
       Default, incremental, 0
       Default, encapsulated, 0
       Default, color, 1
+      Default, pdf, 0
 
       IF NOT Keyword_Set(FILENAME) THEN filename = 'sheet_'+STRING([BYTE(97+25*RANDOMU(seed,10))])
       
