@@ -34,6 +34,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1998/02/27 13:08:18  saam
+;             benutzt nun UTvLCT fuer korrekte Farbauswahl
+;
 ;       Revision 1.6  1998/02/26 14:33:36  kupper
 ;              Setzt jetzt wieder IMMER die Farbtabelle - auch auf 24bit Displays.
 ;
@@ -61,8 +64,8 @@ Pro SetColorIndex, Nr, R, G, B
 ;    My_Color_Map = intarr(!D.Table_Size,3) 
     My_Color_Map = [0]
  
-    TvLCT, My_Color_Map, /GET  
+    UTvLCT, My_Color_Map, /GET  
     My_Color_Map (Nr,*) = [R,G,B]
-    TvLCT,  My_Color_Map
+    UTvLCT,  My_Color_Map
 
 End
