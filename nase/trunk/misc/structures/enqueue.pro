@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/05/19 19:03:33  kupper
+;               VALID für Fixed-Queues implementiert.
+;
 ;        Revision 1.1  1997/11/12 17:11:04  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!
@@ -72,6 +75,7 @@ Pro EnQueue, Queue, Wert, NO_COPY=no_copy
    If contains(Queue.info, 'FIXED_QUEUE', /IGNORECASE) then begin
       Queue.Pointer = (Queue.Pointer+1) mod Queue.Length
       Queue.Q(Queue.Pointer) = Wert
+      Queue.valid = (Queue.valid+1) < Queue.length
    endif
 
    If contains(Queue.info, 'DYNAMIC_QUEUE', /IGNORECASE) then begin

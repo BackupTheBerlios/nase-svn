@@ -86,6 +86,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/05/19 19:03:33  kupper
+;               VALID für Fixed-Queues implementiert.
+;
 ;        Revision 1.1  1997/11/12 17:11:06  kupper
 ;               Schöpfung der komplexen Datentypen.
 ;               Die Liste ist noch nicht vollständig implementiert!
@@ -105,5 +108,9 @@ Function InitFQueue, length, sample
             Pointer: length-1, $ ;Dieser Zeiger weist stets auf das zuletzt
                                 ;beschriebene Element, also auf den
                                 ;Schwanz der Queue.
-            Length : length}
+            Length : length, $
+            valid  : 0l}        ;Hier steht am Anfang die Anzahl der bereits eingereihten Elemente, 
+                                ;solange bis mehr als length Elemente
+                                ;eingereiht wurden. (Falls die
+                                ;Initwerte nicht beachtet werden sollen....)
 End
