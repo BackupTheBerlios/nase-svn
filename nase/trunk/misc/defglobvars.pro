@@ -147,7 +147,7 @@ DefSysV, '!COILPATH', "/vol/data/simu/coil-database"
 ;;;NASEMARK: filesystem_variables ----------------------------------------------
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
-DefSysV, '!NASE_LIB', !NASEPATH+'/shared/'+!VERSION.OS+'_'+!VERSION.ARCH+'/nasec.so', 0
+; -- wird jetzt in check_nase_lib.pro gesetzt! --
 
 ; if set to 1, UOPENW will create directories if they dont exist
 DefSysV, '!CREATEDIR', 0, 0
