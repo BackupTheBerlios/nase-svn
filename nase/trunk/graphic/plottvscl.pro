@@ -52,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.7  1997/12/02 11:27:30  saam
+;           auch [XY]Minor und [XY]TickLen werden nun gesichert
+;
 ;     Revision 2.6  1997/12/02 11:03:22  saam
 ;           BUG: !P.Region wurde umdefiniert, damit veraendern
 ;                sich alle nachfolgenden Plots...
@@ -87,8 +90,13 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                   LEGEND=Legend, ORDER=Order, NASE=Nase, _EXTRA=_extra
 
 
-;-----Sichern der urspruenglichen Region
-oldRegion = !P.Region
+;-----Sichern der urspruenglichen Device-Parameter
+oldRegion   = !P.Region
+oldXTicklen = !X.TickLen 
+oldYTicklen = !Y.TickLen 
+oldXMinor   = !X.Minor
+oldYMinor   = !Y.Minor
+
 
 ;-----Optimale Farbe fuer die Achsen ermitteln:
 bg = GetBGColor()
@@ -208,8 +216,12 @@ IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,Origi
  /Vertical, /Center 
 
 
-;-----Restauration der urspruenglichen Region
-!P.Region = oldRegion
+;-----Restauration der urspruenglichen Device-Parameter
+!P.Region  = oldRegion 
+!X.TickLen = oldXTicklen 
+!Y.TickLen = oldYTicklen 
+!X.Minor   = oldXMinor  
+!Y.Minor   = oldYMinor   
 
 
 ;-----ENDE:
