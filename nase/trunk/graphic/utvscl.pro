@@ -321,7 +321,7 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , _EXTRA=e
 
 
-;;;   ON_ERROR, 2
+   ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
    ;; remeber the size of the array PRIOR to any reforms
