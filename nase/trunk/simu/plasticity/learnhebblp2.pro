@@ -55,6 +55,13 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 2.2  1998/02/05 13:17:42  saam
+;                  + Gewichte und Delays als Listen
+;                  + keine direkten Zugriffe auf DW-Strukturen
+;                  + verbesserte Handle-Handling :->
+;                  + vereinfachte Lernroutinen
+;                  + einige Tests bestanden
+;
 ;       Revision 2.1  1998/01/21 21:54:52  saam
 ;             Aus LearnHebbLP hervorgegangen.
 ;
@@ -72,40 +79,38 @@ PRO LearnHebbLP2, _DW, LP, TARGET_CL=Target_CL,SELF=Self,NONSELF=NonSelf, $
       RETURN
    END
 
-   ; st : total number of source neurons
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
-   ; tsn: the list of source neurons connected to tn
+   ; wi : weight indices belonging to neuron
 
-   IF DW.info EQ 'DW_WEIGHT' THEN BEGIN
+   IF Info(DW) EQ 'SDW_WEIGHT' THEN BEGIN
 
       FOR ti=2,Post(0)+1 DO BEGIN
          tn = Post(ti)
-         IF DW.SSource(tn) NE -1 THEN BEGIN
-            Handle_Value, DW.SSource(tn), tsn
-            deltaw = (GetRecall(LP))(tsn) - alpha
+         IF DW.T2C(tn) NE -1 THEN BEGIN
+            Handle_Value, DW.T2C(tn), wi
+            deltaw = (GetRecall(LP))(DW.C2S(wi)) - alpha
             IF Set(NONSELF) THEN BEGIN
-               self = WHERE(tsn EQ tn, count)
+               self = WHERE(DW.C2S(wi) EQ tn, count)
                IF count NE 0 THEN deltaw(self) = 0.0
             ENDIF
-            DW.Weights(tn, tsn) = (DW.Weights(tn, tsn) + gamma*deltaw) > 0.0
+            DW.W(wi) = (DW.W(wi) + gamma*deltaw) > 0.0
          ENDIF
       ENDFOR
 
    END ELSE BEGIN 
-      IF DW.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+      IF DW.info EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          
          FOR ti=2,Post(0)+1 DO BEGIN
             tn = Post(ti)
-            IF DW.SSource(tn) NE -1 THEN BEGIN
-               Handle_Value, DW.SSource(tn), tsn
-               deltaw = (GetRecall(LP))(tn, tsn) - alpha
+            IF DW.T2C(tn) NE -1 THEN BEGIN
+               Handle_Value, DW.T2C(tn), wi
+               deltaw = (GetRecall(LP))(wi) - alpha
                IF Set(NONSELF) THEN BEGIN
-                  self = WHERE(tsn EQ tn, count)
+                  self = WHERE(DW.C2S(wi) EQ tn, count)
                   IF count NE 0 THEN deltaw(self) = 0.0
                ENDIF
-               DW.Weights(tn, tsn) = (DW.Weights(tn, tsn) + gamma*deltaw) > 0.0
-               Handle_Value, DW.SSource(tn), tsn, /SET
+               DW.W(wi) = (DW.W(wi) + gamma*deltaw) > 0.0
             ENDIF
          ENDFOR
          

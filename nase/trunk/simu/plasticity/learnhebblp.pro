@@ -69,6 +69,13 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.17  1998/02/05 13:17:41  saam
+;                  + Gewichte und Delays als Listen
+;                  + keine direkten Zugriffe auf DW-Strukturen
+;                  + verbesserte Handle-Handling :->
+;                  + vereinfachte Lernroutinen
+;                  + einige Tests bestanden
+;
 ;       Revision 1.16  1997/12/11 14:07:57  saam
 ;             Bug bei Handles korrigiert
 ;
@@ -141,12 +148,6 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
 
    If Not Set(RATE) Then Rate = Entlernrate
    If Not Set(ALPHA) Then Alpha = Lernrate/Entlernrate
-
-   ; update learning potentials
-   ; TotalRecall, LP, DW.Learn
-
-   ; TOTALRECALL sollte vor der Lernregel in der eigentlichen Simulation
-   ; aufgerufen werden, da sonst eventuell zu oft geupdated wird.
  
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then Return
@@ -155,37 +156,35 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
 
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
-   ; tsn: the list of source neurons connected to tn
-
-   IF DW.info EQ 'DW_WEIGHT' THEN BEGIN
+   ; wi : weight indices belonging to neuron
+   IF Info(DW) EQ 'SDW_WEIGHT' THEN BEGIN
 
       FOR ti=2,Post(0)+1 DO BEGIN
          tn = Post(ti)
-         IF DW.SSource(tn) NE -1 THEN BEGIN
-            Handle_Value, DW.SSource(tn), tsn
-            deltaw = Alpha*(GetRecall(LP))(tsn) - DW.Weights(tn, tsn)
+         IF DW.T2C(tn) NE -1 THEN BEGIN
+            Handle_Value, DW.T2C(tn), wi
+            deltaw = Alpha*(GetRecall(LP))(DW.C2S(wi)) - DW.W(wi)
             IF Set(NONSELF) THEN BEGIN
-               self = WHERE(tsn EQ tn, count)
+               self = WHERE(DW.C2S(wi) EQ tn, count)
                IF count NE 0 THEN deltaw(self) = 0.0
             ENDIF
-            DW.Weights(tn, tsn) = DW.Weights(tn, tsn) + Rate*deltaw
+            DW.W(wi) = DW.W(wi) + Rate*deltaw
          ENDIF
       ENDFOR
 
    END ELSE BEGIN 
-      IF DW.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+      IF Info(DW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          
          FOR ti=2,Post(0)+1 DO BEGIN
             tn = Post(ti)
-            IF DW.SSource(tn) NE -1 THEN BEGIN
-               Handle_Value, DW.SSource(tn), tsn
-               deltaw = Alpha*(GetRecall(LP))(tn, tsn) - DW.Weights(tn, tsn)
+            IF DW.T2C(tn) NE -1 THEN BEGIN
+               Handle_Value, DW.T2C(tn), wi
+               deltaw = Alpha*(GetRecall(LP))(wi) - DW.W(wi)
                IF Set(NONSELF) THEN BEGIN
-                  self = WHERE(tsn EQ tn, count)
+                  self = WHERE(C2S(wi) EQ tn, count)
                   IF count NE 0 THEN deltaw(self) = 0.0
                ENDIF
-               DW.Weights(tn, tsn) = DW.Weights(tn, tsn) + Rate*deltaw
-               Handle_Value, DW.SSource(tn), tsn, /SET
+               DW.W(wi) = DW.W(wi) + Rate*deltaw
             ENDIF
          ENDFOR
          

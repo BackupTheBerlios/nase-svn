@@ -74,6 +74,13 @@
 ; MODIFICATION HISTORY: 
 ;
 ; $Log$
+; Revision 2.4  1998/02/05 13:17:40  saam
+;            + Gewichte und Delays als Listen
+;            + keine direkten Zugriffe auf DW-Strukturen
+;            + verbesserte Handle-Handling :->
+;            + vereinfachte Lernroutinen
+;            + einige Tests bestanden
+;
 ; Revision 2.3  1997/12/10 15:56:47  saam
 ;       Es werden jetzt keine Strukturen mehr uebergeben, sondern
 ;       nur noch Tags. Das hat den Vorteil, dass man mehrere
@@ -105,45 +112,44 @@ PRO LearnABS, _DW, $
 
    ; si : index to source neuron
    ; sn : to si belonging source neuron
-   ; tsn: the list of target neurons connected to sn
+   ; wi : weight indices belonging to neuron
 
-   IF DW.info EQ 'DW_WEIGHT' THEN BEGIN
+   IF Info(DW) EQ 'SDW_WEIGHT' THEN BEGIN
 
       FOR si=2,Prae(0)+1 DO BEGIN
          sn = Prae(si)
-         IF DW.STarget(sn) NE -1 THEN BEGIN
-            Handle_Value, DW.STarget(sn), tsn
-            DeltaW = DW.Weights(tsn, sn)-DW.Weights(tsn, sn)-1.0
-            Rauf = Where(Target_Cl.M(tsn) GE Lernamplitude, c1)
+         IF DW.S2C(sn) NE -1 THEN BEGIN
+            Handle_Value, DW.S2C(sn), wi
+            DeltaW = DW.W(wi)-DW.W(wi)-1.0
+            Rauf = Where(Target_Cl.M(C2T(wi)) GE Lernamplitude, c1)
             IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
-            Gleich = Where(Target_Cl.M(tsn) LT Entlernamplitude, c2)
+            Gleich = Where(Target_Cl.M(C2T(wi)) LT Entlernamplitude, c2)
             IF c2 NE 0 THEN DeltaW(Gleich) = 0.0
             IF Set(NONSELF) THEN BEGIN
-               self = WHERE(tsn EQ sn, count)
+               self = WHERE(C2T(wi) EQ sn, count)
                IF count NE 0 THEN deltaw(self) = 0.0
             ENDIF
-            DW.Weights(tsn, sn) = (DW.Weights(tsn, sn) + Rate*deltaw) > 0.0 < Alpha
+            DW.W(wi) = (DW.W(wi) + Rate*deltaw) > 0.0 < Alpha
          ENDIF
       ENDFOR
 
    END ELSE BEGIN 
-      IF DW.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+      IF Info(DW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          
          FOR si=2,Prae(0)+1 DO BEGIN
             sn = Prae(si)
-            IF DW.STarget(sn) NE -1 THEN BEGIN
-               Handle_Value, DW.STarget(tn), tsn
-               DeltaW = DW.Weights(tsn, sn)-DW.Weights(tsn, sn)-1.0
-               Rauf = Where(Target_Cl.M(tsn) GE Lernamplitude, c1)
+            IF DW.S2C(sn) NE -1 THEN BEGIN
+               Handle_Value, DW.S2C(sn), wi
+               DeltaW = DW.W(wi)-DW.W(wi)-1.0
+               Rauf = Where(Target_Cl.M(C2T(wi)) GE Lernamplitude, c1)
                IF c1 NE 0 THEN DeltaW(Rauf) = 1.0
-               Gleich = Where(Target_Cl.M(tsn) LT Entlernamplitude, c2)
+               Gleich = Where(Target_Cl.M(C2T(wi)) LT Entlernamplitude, c2)
                IF c2 NE 0 THEN DeltaW(Gleich) = 0.0
                IF Set(NONSELF) THEN BEGIN
-                  self = WHERE(tsn EQ tn, count)
+                  self = WHERE(C2T(wi) EQ tn, count)
                   IF count NE 0 THEN deltaw(self) = 0.0
                ENDIF
-               DW.Weights(tsn, sn) = DW.Weights(tsn, sn) + Rate*deltaw
-               Handle_Value, DW.STarget(sn), tsn, /SET
+               DW.W(wi) = DW.W(wi) + Rate*deltaw
             ENDIF
          ENDFOR
          

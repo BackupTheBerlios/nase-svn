@@ -51,30 +51,18 @@
 ;
 ;-
 
-FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
-
-
-   IF (SIZE(_Struc))(1) EQ 3 THEN BEGIN
-      Handle_Value, _Struc, Struc, /NO_COPY
-      handle = 1
-   END ELSE BEGIN
-      Struc = _Struc
-      handle = 0
-   END
-
+FUNCTION InitRecall, S, LINEAR=linear, EXPO=expo
 
 
    IF KeyWord_Set(Linear) + Keyword_Set(expo) NE 1 THEN Message, 'you must specify exactly one decay-function'
 
-   IF Struc.info EQ 'DW_DELAY_WEIGHT' OR Struc.info EQ 'DW_WEIGHT' THEN BEGIN
-      xsize = Struc.target_w*Struc.target_h
-      ysize = Struc.source_w*Struc.source_h
+   IF Info(S) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
+      size = WeightCount(S)
    END ELSE BEGIN
-      IF Struc.Info EQ 'LAYER' THEN BEGIN
-         xsize = Struc.w
-         ysize = Struc.h
+      IF Info(S) EQ 'LAYER' THEN BEGIN
+         size = LayerSize(S)
       END ELSE BEGIN
-         Message, 'first argument has to be a delayweigh- or a cluster-structure'
+         Message, 'expected SDW_DELAY_WEIGHT or LAYER structur, but got '+Info(S)+' !'
       END
    END
    
@@ -86,11 +74,8 @@ FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
       LP = { info     : 'e'     ,$
              v        : expo(0) ,$
              dec      : exp(-1./expo(1)) ,$
-             values   : FltArr( xsize, ysize ),$
-             source_s : xsize,$
-             target_s : ysize}
+             values   : FltArr( size )}
 
-      IF Handle THEN Handle_Value, _Struc, Struc, /NO_COPY, /SET
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
@@ -103,11 +88,8 @@ FUNCTION InitRecall, _Struc, LINEAR=linear, EXPO=expo
       LP = { info   : 'l'     ,$
              v      : linear(0) ,$
              dec    : linear(1) ,$
-             values : FltArr( xsize, ysize ),$
-             source_s : xsize,$
-             target_s : ysize}
+             values : FltArr( size )}
       
-      IF Handle THEN Handle_Value, _Struc, Struc, /NO_COPY, /SET
       RETURN, Handle_Create(VALUE=LP, /NO_COPY)
    END
 
