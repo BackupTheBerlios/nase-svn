@@ -23,14 +23,14 @@
 ;*              [,INDEX=Farbindex] [,START=Startindex] 
 ;*              [,/NOALLOC] )
 ;                    
-; INPUTS: Entweder Rot, Grün, Blau: Werte im Bereich 0..255, die die
+; INPUTS:
+;  Rot, Grün, Blau:: Werte im Bereich 0..255, die die
 ;                                   gewünschte Farbe definieren,
-;         oder            Farbname: Ein String mit einem bekannten
+;  Farbname:: Ein String mit einem bekannten
 ;                                   Farbnamen (see <A>Color</A>.)
 ;
-; KEYWORD PARAMETERS:
-;
-;         Farbindex:: Dieser Wert hat nur Bedeutung, wenn man sich auf einem
+; INPUT KEYWORDS:
+;  Farbindex:: Dieser Wert hat nur Bedeutung, wenn man sich auf einem
 ;                          ColorTable-Display befindet. Dann kann hier
 ;                          nämlich der Farbindex angegeben werden, der
 ;                          mit der neuen Farbe belegt werden soll.
@@ -39,13 +39,13 @@
 ;                          begonnen wird, sofern nicht im
 ;                          Schlüsselwort START etwas anderes definiert
 ;                          wird. (S.a. Erläuterung unten)
-;         Startindex:: Dieser Wert hat nur Bedeutung, wenn man sich auf einem
+;  Startindex:: Dieser Wert hat nur Bedeutung, wenn man sich auf einem
 ;                          ColorTable-Display befindet. Dann kann hier
 ;                          nämlich der Startwert für den (also der erste zu
 ;                          belegende) Farbindex angegeben werden, der
 ;                          dann von Aufruf zu Aufruf hochgezählt
 ;                          wird. (S.a. Erläuterung unten)
-;         NOALLOC:: Falls gesetzt, wird bei 8-bit-Displays keine Farbe allokiert,
+;  NOALLOC:: Falls gesetzt, wird bei 8-bit-Displays keine Farbe allokiert,
 ;                          sondern eine moeglichst aehnliche zurueckgegeben. Auf allen
 ;                          anderen Displays wird diese Option ignoriert
 ;
@@ -61,11 +61,13 @@
 ;
 ; SIDE EFFECTS: Die Farbtabelle wird verändert.
 ;
-; RESTRICTIONS: 
-;               WICHTIG: Damit RGB() den Displaytyp richtig ermittelt,
-;                        muß die Farbinformation in der !D-Varible
-;                        etabliert sein. D.h. es muß vorher mindestens
-;                        einmal ein Fenster geöffnet worden sein!
+; RESTRICTIONS:
+;  IMPORTANT: To determine the type of display correctly, the color
+;  information must be established in !D, i.e. the display has to be
+;  opened at least once before using <*>RGB()</*>.<BR>  
+;  The <*>TVLCT</*> command in <*>RGB()</*> cannot be used on the NULL
+;  device. In this case, <*>RGB()</*> skips the colortable loading and
+;  issues a debug message.
 ;
 ; PROCEDURE:
 ;* 1. bestimmen des nächsten freien Farbindex I:
@@ -114,6 +116,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.35  2000/11/30 10:42:17  thiel
+;            Skips TVLCT on NULL devices now.
+;
 ;        Revision 1.34  2000/11/29 14:25:27  thiel
 ;            Header cosmetics.
 ;
@@ -306,7 +311,8 @@ if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
        My_Color_Map = bytarr(!D.Table_Size,3) 
        TvLCT, My_Color_Map, /GET  
        My_Color_Map (index_to_set,*) = [R,G,B]  
-       TvLCT, Temporary(My_Color_Map)
+       IF !D.NAME NE 'NULL' THEN TvLCT, Temporary(My_Color_Map) $
+        ELSE DMsg, 'TVLCT can not be executed on NULL device.'
    END
 
 ;   if not set(index) then begin
