@@ -65,6 +65,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.12  1999/11/17 09:51:01  alshaikh
+;              fehler beim umschalten zwischen weights und efficacy
+;              berichtigt...
+;
 ;        Revision 1.11  1999/11/16 15:14:44  alshaikh
 ;              kann jetzt auch Transmitterfreisetzungswarscheinlichkeiten
 ;              (U_se) darstellen...
@@ -91,6 +95,7 @@ PRO TomWaits_Event, Event
          Case uval.info of
             'TOMWAITS_WEIGHTS': begin
                data.delay = 0
+               data.uses = 0
                ShowWeights, data.DW, ZOOM=data.zoom, WINNR=data.win, PROJECTIVE=data.projective, RECEPTIVE=data.receptive, GET_COLORMODE=get_colormode, GET_INFO=get_info, GET_COLORS=get_colors
                data.colormode = get_colormode
                data.tvinfo = get_info
