@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  WhereAmI
+;  WhereAmI()
 ;
 ; VERSION:
 ;  $Id$
