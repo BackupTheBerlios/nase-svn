@@ -62,6 +62,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/08 16:55:59  kupper
+;        Now catching floating underflows (can appear if TYPE is float, which
+;        is default, and the array is double.)
+;
 ;        Revision 1.2  1999/12/04 12:14:41  thiel
 ;            Stupid /SAMETYPE changed to TYPE.
 ;
@@ -104,6 +108,10 @@ FUNCTION Spassmacher, a, DIMENSIONS=dimensions, TYPE=type
       sparse(1,1:count) = a(actindex)
    END
   
+   
+   ;; Ignore any floating underflows:
+   IF IdlVersion() GT 3 THEN dummy = Check_Math(Mask=32)
+
    RETURN, sparse
 
 
