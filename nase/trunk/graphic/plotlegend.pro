@@ -20,6 +20,7 @@
 ;* PlotLegend, xo, yo, texts
 ;*            [,LCOLORS=...][,TCOLORS=...]
 ;*            [,LSTYLES=...][,LSPREAD=...][,LLENGTH=...]
+;*            [,SSTYLES=...]
 ;*            [,LTGAP=...][,TBASE=...]
 ;*            [,/BOX]
 ;*            [,BCOLOR=...][,BSEP=...][,BSTYLE=...][,BTHICK=...]
@@ -39,6 +40,8 @@
 ;            this color. Default: <*>!P.COLOR</*>.
 ;  LSTYLES:: Array of linestyle indices. Default: increasing index MOD
 ;            6.
+;  SSTYLES:: Array of symbolstyle indices. Default is to omit symbols
+;            at all. 
 ;  LSPREAD:: Spread between text lines in multiples of
 ;            charsize. Default: 1.0.
 ;  LLENGTH:: Length of the sample lines in normal
@@ -96,6 +99,7 @@ PRO PlotLegend, xo, yo, texts $
                 , CHARSIZE=charsize $
                 , LCOLORS=lcolors, TCOLORS=tcolors $
                 , LSTYLES=lstyles $
+                , SSTYLES=sstyles $
                 , LSPREAD=lspread $
                 , LLENGTH=llength $
                 , LTGAP=ltgap $
@@ -119,10 +123,7 @@ PRO PlotLegend, xo, yo, texts $
    IF N_Elements(tcolors) EQ 1 THEN $
     tcolors = Make_Array(number, /INTEGER, VALUE=tcolors)
 
-   ;; theres only 6 possible linestyles
-   Default, lstyles, IndGen(number) MOD 6
 
-   Default, llength, 0.1        ; length of lines, normal
    Default, ltgap, 0.5          ; gap between lines and text, charsize 
    Default, lspread, 1.0        ; separation between lines, charsize
    Default, tbase, 0.3          ; textbaseline relative to lines, charsize
@@ -133,18 +134,35 @@ PRO PlotLegend, xo, yo, texts $
    xcsn = charsize*csn(0) ; take device and user's charsize
    ycsn = charsize*csn(1)
 
-   ;; Calculate line positions
-   xpos = [0.0, llength]+xo
-   ypos = Rebin(lspread*ycsn*Indgen(number),number,2)+yo+ycsn*tbase
 
-   ;; Plot lines
+   IF (SET(sstyles)) AND NOT (SET(lstyles)) THEN BEGIN
+       ; symbols, but no lines
+
+       Default, llength, 0.01           ; space reserved for symbols, normal
+       Default, lstyles, Intarr(number) ; supress lines
+       ;; Calculate symbol positions
+       xpos = xo
+       ypos = Rebin(lspread*ycsn*Indgen(number),number)+yo+ycsn*tbase
+       
+   END ELSE BEGIN
+       ;; theres only 6 possible linestyles
+       Default, lstyles, IndGen(number) MOD 6
+       ;; symstyles default to NO_SYMBOL
+       Default, llength, 0.1    ; length of lines, normal
+       ;; Calculate line positions
+       xpos = [0.0, llength]+xo
+       ypos = Rebin(lspread*ycsn*Indgen(number),number,2)+yo+ycsn*tbase
+   END
+
+   ;; Plot lines and/or symbols
    FOR i=0, number-1 DO BEGIN
-      PlotS, xpos, ypos(i,*), /NORMAL, LINESTYLE=lstyles(i) $
-       ,COLOR=lcolors(i)
+       ; this damn plots either plots symbols or lines ....
+       PlotS, xpos, ypos(i,*), /NORMAL, LINESTYLE=lstyles(i), COLOR=lcolors(i)
+       IF Set(sstyles) THEN PlotS, xpos, ypos(i,*), /NORMAL, PSYM=sstyles(i), COLOR=lcolors(i)
    ENDFOR
 
    ;; Calculate text positions
-   xpos = Replicate(xpos(1),number)+ltgap*xcsn
+   xpos = Replicate(xo+llength,number)+ltgap*xcsn
    ypos = ypos(*,0)-ycsn*tbase
 
    maxwidth = 0.
