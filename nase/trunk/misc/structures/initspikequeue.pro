@@ -35,6 +35,11 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
+;       Mon Aug 18 16:33:26 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Fehler bei Belegung von starts korrigiert, fix(2^x) != 2^(fix(x))
+;
 ;       Thu Aug 14 16:06:05 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -46,7 +51,7 @@
 FUNCTION InitSpikeQueue, INIT_DELAYS=init_delays
 
    Queue={Q     : intarr(n_elements(init_delays)), $
-          starts: fix(2^init_delays)}
+          starts: 2^round(init_delays)}
    
    RETURN, Queue
 
