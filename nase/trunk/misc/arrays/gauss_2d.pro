@@ -1,50 +1,132 @@
 ;+
 ; NAME: Gauss_2D()
 ;
+; AIM: Array with 2-dim gaussian profile. Scaling and warping
+;      possible.
+;
 ; PURPOSE: Erzeugt ein Array mit einer zweidimensionalen Gaußverteilung mit Maximum 1.
 ;
 ; CATEGORY: Allgemein, Kohonen, X-Zellen, Basic
 ;
-; CALLING SEQUENCE: Array = Gauss_2D ( {
-;                                        /AUTOSIZE, {{(sigma|HWB=hwb)}
-;                                        | {XHWB=xhwb,YHWB=yhwb [,phi=phi]}} 
-;                                       |
-;                                        x_Laenge, y_Laenge [(,sigma|,HWB=hwb)|,XHWB=xhwb,YHWB=yhwb] [,x0] [,y0] 
-;                                      }
-;                                      [,/NORM])
+; CALLING SEQUENCE: 
+;   Array = Gauss_2D ( {
+;                       /AUTOSIZE,
+;                       { {sigma|HWB=..} | {XHWB=..,YHWB=..} }
+;                       [,PHI=..] 
+;                      |
+;                       x_Laenge, y_Laenge 
+;                       [(,sigma|,HWB=..)|,XHWB=..,YHWB=..] 
+;                       [,x0|,X0_ARR=..] [,y0|,Y0_ARR=..]
+;                       [,PHI=..]
+;                      }
+;                      [,/NORM]
+;                      [,WARP=.. [,/ABSWARP] [,/GROUNDWIDTH]])
 ;
-; OPTIONAL INPUTS: x_Lange, y_Laenge: Dimensionen des gewünschten Arrays.
-;                                     Für y_Laenge=1 wird ein eindimensionales
-;                                     Array erzeugt.
-;                                     Diese Parameter entfallen bei Gebrauch des 
-;                                     AUTOSIZE-Schluesselwortes (s.u.)
+; OPTIONAL INPUTS:
+;   x_Lange, y_Laenge: Dimensionen des gewünschten Arrays.  Für
+;                      y_Laenge=1 wird ein eindimensionales Array
+;                      erzeugt.  Diese Parameter entfallen bei
+;                      Gebrauch des AUTOSIZE-Schluesselwortes (s.u.)
 ;
-;                  sigma           : Die Standardabweichung in Gitterpunkten. (Default = X_Laenge/6)
-;                  Norm            : Volumen der Gaussmaske auf Eins normiert
-;	  	   HWB		   : Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu sigma angegeben werden.
-;	  	   XHWB, YHWB	   : Die Halbwertsbreite in Gitterpunkten bzgl. x und y (alternativ zu sigma und HWB)
-;                  PHI             : an assymetric distribution can be
-;                                    rotated by an angle of PHI in
-;                                    degree (clockwise). Center of
-;                                    rotation is the array center,
-;                                    shifting (x0,y0 NE 0) is done
-;                                    prior to rotation.
-;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
-;			  	     Feldes. (Genauer: bei Laenge/2.0).
-;                  x0_arr,y0_arr   : wie x0,y0, relativ zur linken oberen Arrayecke
+;   sigma: Die Standardabweichung in Gitterpunkten. (Default =
+;          X_Laenge/6)
 ;
-; KEYWORD PARAMETERS: HWB, x0_arr, y0_arr, s.o.
+;   x0, y0: Die Position der Bergspitze(relativ zum
+;           Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg
+;           in der Mitte des Feldes. (Genauer: bei Laenge/2.0).
 ;
-;                     AUTOSIZE: Wenn gesetzt werden die Ausmaße des
-;                       zurueckgelieferten Arrays auf die sechsfache
-;                       Standardabweichung eingestellt. (D.h. dreifache
-;                       Standardabweichung in beide Richtungen.)
-;                       Die Parameter x_Laenge und y_Laenge duerfen in diesem
-;                       Fall nicht uebergeben werden.
-;                        Es ist zu beachten, dass bei gesetztem AUTOSIZE maximal 
-;                       ein Positionsparameter (sigma) uebergeben werden
-;                       kann. In anderen Faellen ist das Verhalten der Routine undefiniert!
+; KEYWORD PARAMETERS:
+;   X0_ARR, Y0_ARR: wie x0,y0, aber relativ zur linken oberen Arrayecke.
 ;
+;   AUTOSIZE: Wenn gesetzt, werden die Ausmaße des zurueckgelieferten
+;             Arrays auf die sechsfache Standardabweichung
+;             eingestellt. (D.h. dreifache Standardabweichung in beide
+;             Richtungen.)  Die Parameter x_Laenge und y_Laenge
+;             duerfen in diesem Fall nicht uebergeben werden.  Es ist
+;             zu beachten, dass bei gesetztem AUTOSIZE maximal ein
+;             Positionsparameter (sigma) uebergeben werden kann. In
+;             anderen Faellen ist das Verhalten der Routine
+;             undefiniert!
+;
+;   NORM: Volumen der Gaussmaske wird auf eins normiert.
+;
+;   HWB: Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu
+;        sigma angegeben werden.
+;
+;   XHWB, YHWB: Die Halbwertsbreite in Gitterpunkten bzgl. x und y
+;               (alternativ zu sigma und HWB)
+;
+;  PHI: The result will be rotated by the angle specified by that
+;       keyword. Please note that rotation is the last operation,
+;       i.e. this angle adds to the value specified as the warping
+;       direction. Please note also that this value is measured in the
+;       x/y-plane CLOCKWISE from the w-axis (which, by the way, always
+;       is the second coordinate by NASE conventions). The angle is
+;       measured clockwise for compatibility reasons.
+
+;       This argument is passed to the Distance() function. Please
+;       note that, if keyword WARP is used, or if different standard
+;       deviations for the x- and y-direction are specified,
+;       distortion and missing values should be expected, especially
+;       in the corners of the array.
+;       If keyword WARP is not used, and standard deviations are the
+;       same for the x- and y-direction, rotation is computed
+;       directly, resulting in a distortion-free profile, even for tip
+;       locations outside the array boundaries.
+;       Please see Documentation of the Distance() function for
+;       further information.
+;
+;  WARP: Set this keyword to a three element floating array
+;        [angle,strength,ground].
+;        The three values specify warping of the returned gaussian
+;        profile: dissections of the profile are displaced in proportion
+;        to their z-value. This means shearing of the coordinate
+;        system parallel to the x/y-plane in the specified direction.
+;        Please note that shearing is not rotation! Given identical
+;        standard deviations for x- and y-directions, all intersections
+;        parallel to the x/y-plane are circular.
+;
+;        "angle", specified in degrees and measured in the x/y-plane
+;        anti-clockwise from the w-axis (which, by the way, always is
+;        the second coordinate by NASE conventions), is the direction
+;        in which to shear the coordinate system (i.e. the direction
+;        of inclination of the z-axis).
+;
+;        "strength" specifies the amount of shearing.  If the ABSWARP
+;        keyword is not set, this is a value in the range (-1,1),
+;        0 meaning no shearing and 1 meaning the maximum shearing
+;        possible. The maximal shearing is determined by the profile's
+;        standard deviation in the specified direction. Please note
+;        that values of 1.0 and above will yield corrupted results.
+;        If the ABSWARP keyword is set, this value is the slope of the
+;        z-axis. A value of 0 means a rectangular z-axis, i.e. no
+;        shearing. (Please note that the maximum allowed value is the
+;        underlying cone's opening slope in the specified
+;        direction. See description of the Distance() routine for
+;        further explanation.) This and bigger values will yield
+;        corrupted results.
+;        Negative values for "strength" specify shearing in the
+;        opposite direction.
+;
+;        "ground" specifies the center of shearing, i.e. the plane
+;        parallel to the x/y-plane that will not be displaced.
+;        If keyword GROUNDWIDTH is not set, this value is the z-value
+;        of the plane that will not be displaced. 1.0 means the tip of the
+;        cone. All planes with higher z-values will be displaced in
+;        the specified direction, all planes with lower z-values will
+;        be displaced in the opposite direction.
+;        This value must be in (0,1].
+;        If keyword GROUNDWIDTH is set, this value is the width of the
+;        gaussian profile at the plane that will not be displaced,
+;        specified in units of sigma. (I.e., specifying 1.0 for "ground"
+;        means that the plane that dissects the Gaussian at the
+;        standard derivation is not displaced.)
+;        If keyword GROUNDWIDTH is set, "ground" must be in [0,oo).
+;
+;        Please see the examples for a demonstration of the WARP
+;        keyword.
+;
+;  ABSWARP: (see keyword WARP, component "strength".)
 ;
 ; OUTPUTS: Array: Ein ein- oder zweidimensionales Array vom Typ Double und der angegebenen Dimension mit Maximum 1.
 ;
@@ -60,18 +142,42 @@
 ;               kann. In anderen Faellen ist das Verhalten der Routine undefiniert!
 ;
 ;
-; PROCEDURE: Default
+; PROCEDURE: Put a Distance() cone through a Gaussian function.
 ;
+; EXAMPLE: 
+;  SurfIt, /NASE, Gauss_2D (31,31)
+;  SurfIt, /NASE, Gauss_2D (31,21, HWB=2, 5, 5)
 ;
+;  Surfit, /NASE, Gauss_2D(100, 100, 10, -50, 0)
+;  Surfit, /NASE, Gauss_2D(100, 100, 10, -50, 0, PHI=45)
 ;
-; EXAMPLE: Bspl 1:	Int_Surf, Gauss_2D (31,31)
-;	   Bspl 2:	Int_Surf, Gauss_2D (31,21, HWB=2, 5, 5)
-;
-;
+;  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0])
+;  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,0.01])
+;  ;; central shearing plane at width sigma:
+;  for i=-0.99,0.99,0.01 do surface, Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
+;  ;; see it better here:
+;  for i=-0.99,0.99,0.01 do surface, exp(-0.5)<Gauss_2D(30, 30, WARP=[90,i,1.0], /GROUNDWIDTH)
+;  
+;  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,1.0])
+;  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.01])
+;  ;; central shearing plane at height 0.5:
+;  for i=0, 360 do surface, Gauss_2D(30, 30, WARP=[i,0.6,0.5])
+;  ;; see it better here:
+;  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, WARP=[i,0.6,0.5])
+;  
+;  ;; The difference of the two angles:
+;  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[i,0.99,0.01]), zrange=[0,1] 
+;  for i=0, 360 do surface, 0.5<Gauss_2D(30, 30, XHWB=2, YHWB=5, WARP=[0,0.99,0.01], PHI=-i), zrange=[0,1] 
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.20  2000/08/11 14:38:44  kupper
+;        Polished Header. (Not translated, sorry...)
+;        Now using extended form of Distance() to scale to standard
+;        deviation. Warping also supported.
+;        Added documentation for new features, and a lot of examples.
+;
 ;        Revision 1.19  2000/07/19 14:21:48  kupper
 ;        Added auxiliary functions.
 ;        Will be used later :-)
@@ -152,7 +258,8 @@ End
 
 Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
                    sigma,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
-                   X0_ARR=x0_arr, Y0_ARR=y0_arr, PHI=phi ;(optional)
+                   X0_ARR=x0_arr, Y0_ARR=y0_arr, PHI=phi, $
+                   WARP=WARP, ABSWARP=ABSWARP, GROUNDWIDTH=groundwidth
 
    ;; Defaults:
    Default, x0, 0
@@ -162,9 +269,12 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
     message,'Both XHWB and YHWB must be set'
    
    If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
-   If keyword_set(XHWB) then sigmax=xhwb/sqrt(alog(4))
-   If keyword_set(YHWB) then sigmay=yhwb/sqrt(alog(4))
-   
+ 
+   If Keyword_Set(XHWB) then begin
+      sigmax = xhwb/sqrt(alog(4))
+      sigmay = yhwb/sqrt(alog(4))
+   End
+
    If Keyword_Set(AUTOSIZE) then begin
       If Keyword_Set(XHWB) then begin
          xlen = 2*3*sigmax+1
@@ -176,37 +286,74 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
       EndElse
    Endif
     
-   Default, x0_arr, x0+xlen/2d
-   Default, y0_arr, y0+ylen/2d
+   Default, x0_arr, x0 + (xlen-1)/2d
+   Default, y0_arr, y0 + (ylen-1)/2d
    Default, sigma,xlen/6d
+   Default, sigratio, 1d
 
 
+   ;; compute WARP ground value. This is the width of the gauss
+   ;; function with sigma=1 at height WARP[2]. (If you are confused,
+   ;; remember that
+   ;; the result(=y)-values of Distance() are used as the
+   ;; input(=x)-value for computation of the gauss mask!)
+   ;; Furthermore, Distance() will be scaled by sigma, hence the
+   ;; function applied afterwards has sigma=1.
+   If Keyword_Set(WARP) and not Keyword_Set(GROUNDWIDTH) then $
+    WARP[2] = sqrt(-2*alog(WARP[2]))
 
+   ;; Directions are opposite with the gauss function:
+   If Keyword_Set(WARP) then WARP[1] = -WARP[1]
+
+
+   ;; 2-d result, xsigma != ysigma
    IF set(XHWB) THEN BEGIN
-       Default, phi, 0d
 
-       xn = REBIN(Distance(xlen,1, x0_arr, 0.5  ), xlen, ylen, /SAMPLE)
-       yn = REBIN(Distance(1,ylen, 0.5   ,y0_arr), xlen, ylen, /SAMPLE)
-       IF PHI NE 0d THEN BEGIN
-           xn = ROT(xn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
-           yn = ROT(yn,phi,1,xlen/2,ylen/2,CUBIC=-0.5,/PIVOT)
-       END
-       xerg = Gauss_function(xn, sigmax)
-       yerg = Gauss_function(yn, sigmay)
+      dist = Distance(/Quadratic, $
+                      xlen,ylen,x0_arr,y0_arr, $
+                      scale=[sigmax, sigmay], $
+                      phi=phi, $
+                      WARP=WARP, ABSWARP=ABSWARP)
 
-       ERG = temporary(xerg)*temporary(yerg)
-       If Keyword_Set(NORM) then begin
-           i = TOTAL(ERG)
-           ERG = temporary(ERG) / i
-       Endif
-       return, ERG
+      ERG = Gauss_function_x_sigma_quad(dist)
+
+      If Keyword_Set(NORM) then begin
+         i = TOTAL(ERG)
+         ERG = temporary(ERG) / i
+      Endif
+      return, ERG
 
   ENDIF
 
+
+  ;; 1-d result
   if ylen eq 1 then return, $
-   Gauss_function_quad(Distance(/Quadratic, xlen,1,x0_arr,0.5), sigma)           
- 
-  ERG = Gauss_function_quad(Distance(/Quadratic, xlen,ylen,x0_arr,y0_arr), sigma) 
+   Gauss_function_x_sigma_quad(Distance(/Quadratic, $
+                                        xlen,1,x0_arr,0.5, $
+                                        scale=sigma, $
+                                        WARP=WARP, ABSWARP=ABSWARP) $
+                              )
+
+
+  ;; 2-d result, xsigma=ysigma
+  If keyword_set(phi) then begin ;; rotate only center of gauss!
+     p = Scl(cyclic_value(phi, [0, 360]), [0, 2*!DPI], [0, 360])
+     
+     p = -p                     ;Rot counts clockwise by default!
+    
+     newx0 = x0*cos(p)-y0*sin(p)
+     newy0 = x0*sin(p)+y0*cos(p)
+     
+     x0_arr = Temporary(newx0)+(xlen-1)/2d
+     y0_arr = Temporary(newy0)+(ylen-1)/2d
+  endif
+
+  ;; now call Distance without rotation!
+  ERG = Gauss_function_x_sigma_quad(Distance(/Quadratic, $
+                                             xlen,ylen,x0_arr,y0_arr, $
+                                             scale=sigma, $
+                                             WARP=WARP, ABSWARP=ABSWARP) $
+                                   )
   
 
   If Keyword_Set(NORM) then begin
