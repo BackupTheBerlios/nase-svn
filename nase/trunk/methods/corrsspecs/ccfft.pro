@@ -187,11 +187,11 @@ FUNCTION  CCFFT, X, Y,   ShiftAxis,  $
    IF  Keyword_Set(energynorm)  THEN  BEGIN
 
      IF  Keyword_Set(overlapnorm)  THEN  BEGIN
-       XPower  = Float(X)^2               ; power of x
-       YPower  = Float(Y)^2               ; power of y
-       BoxCar  = FltArr(NS,N) + 1         ; a rectangular window to get the energies of epoch sections by cross-correlation
-       XEnergy = CCFFT(XPower , BoxCar)   ; cumulative sums of x power values, computed via cross-correlation
-       YEnergy = CCFFT(BoxCar , YPower)   ; cumulative sums of y power values, computed via cross-correlation
+       XPower  = Float(X)^2                  ; power of x
+       YPower  = Float(Y)^2                  ; power of y
+       BoxCar  = FltArr(NS,N) + 1            ; a rectangular window to get the energies of epoch sections by cross-correlation
+       XEnergy = CCFFT(XPower, BoxCar) > 0   ; cumulative sums of x power values, computed via cross-correlation
+       YEnergy = CCFFT(BoxCar, YPower) > 0   ; cumulative sums of y power values, computed via cross-correlation
        Energy  = sqrt(XEnergy * YEnergy)
        ; Only those epochs are valid whose energy is greater than zero (otherwise the correlation is left zero):
        Valid   = Where(Energy NE 0, NValid)
