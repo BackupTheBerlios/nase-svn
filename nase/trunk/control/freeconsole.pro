@@ -22,6 +22,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.5  2000/10/11 16:48:42  kupper
+;     Removed unnecessary re-setting of handle that is destroyed anyway.
+;     Added FreeQueue call.
+;
 ;     Revision 2.4  2000/09/28 13:23:55  alshaikh
 ;           added AIM
 ;
@@ -45,7 +49,8 @@ IF status.mode EQ 1 THEN BEGIN
     Widget_Control,status.base,/destroy
 END
 
-Handle_Value,_console,status,/no_copy,/set
+FreeQueue, status.viz
+
 Handle_Free,_console
 
 END
