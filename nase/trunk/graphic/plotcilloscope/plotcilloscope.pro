@@ -39,6 +39,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.15  2000/10/30 09:34:13  kupper
+;     Removed NOALLOC keywords from RGB call, is tended to yield weird
+;     colors.
+;
 ;     Revision 2.14  2000/10/01 14:51:23  kupper
 ;     Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -102,7 +106,7 @@ PRO Plotcilloscope, _PS, value
    IF xpos GT 0 THEN BEGIN
       FOR ray=0,PS.rays-1 DO BEGIN
          IF xpos LT PS.time-1 THEN PlotS, [xpos/Float(PS.os),(xpos+1)/Float(PS.os)], [PS.y[ray,xpos],PS.y[ray,xpos+1]], COLOR=!P.Background, NOCLIP=0
-         PlotS, [(xpos-1)/Float(PS.os),xpos/Float(PS.os)], [PS.y[ray,xpos-1],value[ray]], NOCLIP=0, COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray],/NOALLOC)
+         PlotS, [(xpos-1)/Float(PS.os),xpos/Float(PS.os)], [PS.y[ray,xpos-1],value[ray]], NOCLIP=0, COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray])
       END
    END
    PS.y[*,xpos] = value
@@ -132,8 +136,8 @@ PRO Plotcilloscope, _PS, value
 
       plot, [PS.y[0,*]], YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XTICKS=5, XTICKNAME=ticks, /NODATA, XSTYLE=1, _EXTRA=PS._extra
       FOR ray=0,PS.rays-1 DO BEGIN
-         IF xpos GT 0 THEN oplot, FIndGen(xpos+1)/PS.os, PS.y[ray,0:xpos], COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray], /NOALLOC)
-         IF xpos LT PS.time-4 AND PS.t GE PS.time THEN oplot, (Indgen(PS.time-xpos-3)+xpos+3)/Float(PS.OS), PS.y[ray,xpos+3:*], COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray], /NOALLOC)
+         IF xpos GT 0 THEN oplot, FIndGen(xpos+1)/PS.os, PS.y[ray,0:xpos], COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray])
+         IF xpos LT PS.time-4 AND PS.t GE PS.time THEN oplot, (Indgen(PS.time-xpos-3)+xpos+3)/Float(PS.OS), PS.y[ray,xpos+3:*], COLOR=RGB(rayRed[ray],rayGreen[ray],rayBlue[ray])
       END
    END
 
