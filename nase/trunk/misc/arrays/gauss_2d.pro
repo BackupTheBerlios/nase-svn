@@ -172,6 +172,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.27  2001/03/26 15:43:36  kupper
+;        /NORM did not work for 1-dim arrays. Corrected.
+;
 ;        Revision 1.26  2001/01/23 16:16:06  kupper
 ;        Replaced manual check for floating underflow errors by call to new
 ;        IgnoreUnderflows procedure (which is platform independent).
@@ -367,6 +370,11 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
                                            scale=sigma, $
                                            WARP=WARP, ABSWARP=ABSWARP) $
                                  )
+
+      If Keyword_Set(NORM) then begin
+         i = TOTAL(ERG)
+         ERG = temporary(ERG) / i
+      Endif
 
      ;; Ignore any floating underflows:
      IgnoreUnderflows
