@@ -2,32 +2,36 @@
 ; NAME:                
 ;        GetSubArray()
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM: returns a rectangular two-dimensional area of a supplied array
 ; 
 ;
 ; PURPOSE: Returns a two-dimensional sub-array of a suppled array, using a
 ;          convenient call.
 ;
-; CATEGORY: MISC ARRAY
+; CATEGORY:
+;  Array
 ;
 ; CALLING SEQUENCE:
-;   s = GetSubArray(a, width1, width2 [,pos1 ,pos2] [,/CENTER])
+;*   s = GetSubArray(a, width1, width2 [,pos1 ,pos2] [,/CENTER])
 ;
 ; INPUTS:
-;   a: array from which to extract the subarray.
+;   a:: array from which to extract the subarray.
 ;
 ; OPTIONAL INPUTS:
-;   pos1,pos2: Position of subarray's origin (0,0)  relative to
-;              the origin of the mother array.
-;              If Keyword CENTER is set: Position of subarray's
-;              centre relative to the centre of the mother array.
-;              Default: pos1=pos2=0.
+;   pos1,pos2:: Position of subarray's origin (0,0)  relative to
+;               the origin of the mother array.
+;               If Keyword CENTER is set: Position of subarray's
+;               centre relative to the centre of the mother array.
+;               Default: pos1=pos2=0.
 ;
-; KEYWORD PARAMETERS: 
-;   CENTER: Positions denote array centres, not origins.
+; INPUT KEYWORDS: 
+;   CENTER:: Positions denote array centres, not origins.
 ;
 ; OUTPUTS:
-;   s: The sub-array.
+;   s:: The sub-array.
 ;
 ; RESTRICTIONS:
 ;   Sub-array must lie inside the boundaries of the mother array.
@@ -39,31 +43,21 @@
 ;   print, GetSubArray(a,3,3, /CENTER)
 ;
 ; SEE ALSO:
-;   <A HREF="#INSSUBARRAY">InsSubarray()</A>.
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.2  2000/09/25 09:12:54  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 1.1  2000/02/29 13:51:22  kupper
-;     Should work.
-;
-;
+;   <A>InsSubarray</A>.
 ;-
 
-FUNCTION GetSubArray, A, height, width, y, x, CENTER=CENTER
+FUNCTION GetSubArray, A, height, width, y_, x_, CENTER=CENTER
 
    On_Error, 2
 
    If (N_Params() ne 3) and (N_Params() ne 5) then Message, 'Wrong number of ' + $
     'parameters. Check syntax.'
 
-   default, x, 0
-   default, y, 0
+   default, x_, 0
+   default, y_, 0
+
+   x = x_
+   y = y_
 
    sa = SIZE(A)
 
