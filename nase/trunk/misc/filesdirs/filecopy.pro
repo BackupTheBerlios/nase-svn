@@ -17,14 +17,14 @@
 ;  Files
 ;
 ; CALLING SEQUENCE:
-;* FileCopy, src, dest
+;*FileCopy, src, dest
 ;
 ; INPUTS:
 ;   src  :: filepath to source file
 ;   dest :: filepath to destination file or destination directory
 ;
 ; EXAMPLE:
-;* FileCopy, "data1", "data2"
+;*FileCopy, "data1", "data2"
 ;
 ; SEE ALSO:
 ;   <A>FileDel</A>, <A>FileMove</A>
@@ -42,6 +42,6 @@ CASE OS_FAMILY OF
     ELSE     : Console, [OS_FAMILY, " not supported...yet"], /FATAL
 END
 
-Spawn, c+" "+str(src)+" "+str(dest), r
+Spawn, c+' "'+str(src)+'" "'+str(dest)+'"', r
 
 END
