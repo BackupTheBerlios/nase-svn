@@ -79,6 +79,12 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.22  1998/03/16 14:33:16  saam
+;           PS-Output always had a legend even if
+;           unwanted
+;           there is still a bug with COLOR-PS because
+;           of a bug in IDLs TV with the centimeter option
+;
 ;     Revision 2.21  1998/03/13 15:59:48  thiel
 ;            Bugfix: Beschriftung der Achsen funktioniert jetzt
 ;            auch, wenn XRANGE=[A,B] und A > B ist.
@@ -263,7 +269,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;-----Plotten des Koodinatensystems:
    IF Min(XRANGE) LT -1 THEN xtf = 'KeineGebrochenenTicks' ELSE xtf = 'KeineNegativenUndGebrochenenTicks'
    IF Min(YRANGE) LT -1 THEN ytf = 'KeineGebrochenenTicks' ELSE ytf = 'KeineNegativenUndGebrochenenTicks'
-   IF NOT Set(FullSheet) THEN BEGIN 
+   IF NOT Keyword_Set(FullSheet) THEN BEGIN 
       IF PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)+UpRightDevice(0) LT VisualWidth THEN BEGIN
          PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
          PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
@@ -298,7 +304,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
    ;-----Legende, falls erwuenscht:
-   IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
+   IF Keyword_Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
     H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
     V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
     Max=Max(W), Min=Min(W), $
