@@ -6,9 +6,9 @@
 ;
 ; CATEGORY: SIMULATION
 ;
-; CALLING SEQUENCE:  G = Check_LearnHebbSharp(G, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
+; CALLING SEQUENCE:  Check_LearnHebbSharp(G, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
 ;                                    RATE=Rate, ALPHA=Alpha
-;                                    [,/SELF | ,/NONSELF])
+;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
 ;
@@ -26,8 +26,7 @@
 ;                                           werden nicht veraendert,
 ;                                           aber auch nicht Null-gesetzt.
 ;                                           (Siehe InitDW)
-; OUTPUTS: G : die geaendert Gewichtsmatrix
-;          Eine kurze Beschreibung der Wirkungsweise der Funktion bei
+; OUTPUTS: Eine kurze Beschreibung der Wirkungsweise der Funktion bei
 ;          den angegebenen Parametern
 ;
 ; OPTIONAL OUTPUTS: ---
@@ -42,13 +41,18 @@
 ;
 ; PROCEDURE: LayerSize()
 ;
-; EXAMPLE: W = Check_LearnHebbSharp(W, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself)
+; EXAMPLE: Check_LearnHebbSharp, W, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
 ;          veraendert die Matrix W entsprechend dem Zustand des
 ;          Clusters 'Layer', dh es werden Intra-Cluster-Verbindungen
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       Wed Sep 3 16:15:37 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Ab Rev. 1.3 ist diese Funktion eine Prozedur.
 ;
 ;       Mon Aug 18 16:44:07 1997, Mirko Saam
 ;<saam@ax1317.Physik.Uni-Marburg.DE>
@@ -61,7 +65,7 @@
 ;
 ;-
 
-FUNCTION Check_LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
+Pro Check_LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    spaltenzahl = Layersize(Target_CL)
    zeilenzahl = Layersize(Source_CL)
@@ -102,5 +106,6 @@ FUNCTION Check_LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RA
    connections = WHERE(Matrix.Weights NE !NONE, count)
    IF count NE 0 THEN Matrix.Weights(connections) = Matrix.Weights(connections) + Rate*dw(connections)
 
-Return, Matrix
 END
+
+
