@@ -234,7 +234,7 @@ PRO DSim
                                     SYNAPSE: 'FEEDING', $
                                     TYPE: 'EXTERN', $
                                     ;; active during complete simulation
-                                    start: 0, $
+                                    start: 0l, $
                                     stop: simulation.time-1, $
                                     ;; input is repeated after 250 ms
                                     PERIOD: 250, $
@@ -253,7 +253,7 @@ PRO DSim
                                     SYNAPSE: 'DIRECT', $
                                     TYPE: 'EXTERN', $
                                     ;; active during complete simulation
-                                    start: 0, $
+                                    start: 0l, $
                                     stop: simulation.time-1, $
                                     ;; input is repeated after 250 ms
                                     PERIOD: 250, $
