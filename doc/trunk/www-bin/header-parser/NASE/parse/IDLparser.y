@@ -202,7 +202,7 @@ WORD : CVSTAG                           { push(@line, "<PRE>".$1."</PRE>"); }
 					  } else {
                                             $tab='<TR><TD VALIGN=TOP CLASS="keycode">';
 					    if ($colon){ push(@lines, pop(@lines)."</TD></TR>\n"); } 
-					    else { $tab = "<TABLE COLS=2>".$tab; };
+					    else { $tab = "<TABLE><COLGROUP SPAN=2></COLGROUP>".$tab; };
 					    unshift(@line, $tab);
 					    push(@line, "</TD><TD>");
 					    $colon=1;
