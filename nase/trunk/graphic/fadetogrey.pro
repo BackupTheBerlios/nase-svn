@@ -99,6 +99,13 @@
 ;*bitmap=Read_BMP(Getenv('NASEPATH')+'/graphic/alison_greyscale.bmp')
 ;*UTV, bitmap
 ;
+;  Example for operation on array:
+;*plot, indgen(10),color=rgb("green")
+;*a=tvrd(/true)
+;*erase
+;*tvscl,a,/true
+;*utvscl,fadetogrey(a)
+;
 ; SEE ALSO:
 ;  IDL's <C>Read_BMP</C> and <C>Write_BMP</C>, <A>New_Color_Convert</A>.
 ;-
@@ -117,7 +124,7 @@ Function FadeToGrey_True, pic
    New_Color_Convert, $
      reform(pic[0,*,*], n_pixels), $
      reform(pic[1,*,*], n_pixels), $
-     reform((Temporary(pic))[2,*,*], n_pixels), $
+     reform(pic[2,*,*], n_pixels), $
      y, i, c, /RGB_YIC
    
    return, reform(y, dims[1:2], /overwrite)
