@@ -69,8 +69,11 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.11  1997/09/17 10:35:04  saam
+;            kleine Bugs korrigiert
+;
 ;       Revision 1.10  1997/09/17 10:25:52  saam
-;       Listen&Listen in den Trunk gemerged
+;               Listen&Listen in den Trunk gemerged
 ;
 ;
 ;       Fri Sep 12 12:09:30 1997, Mirko Saam
@@ -113,7 +116,7 @@
 ;                '97. Andreas.  neue Keyword-Abfrage und
 ;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
 ;-
-PRO LearnHebbLP, DW, LP, SOURCE_CL=Source_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
+PRO LearnHebbLP, DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
                     LERNRATE=lernrate, ENTLERNRATE=entlernrate
   
 
@@ -121,7 +124,7 @@ PRO LearnHebbLP, DW, LP, SOURCE_CL=Source_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NON
    If Not Set(ALPHA) Then Alpha = Lerrate/Entlernrate
 
    ; update learning potentials
-   TotalRecall, LP, Matrix.Learn
+   TotalRecall, LP, DW.Learn
 
    Handle_Value, Target_Cl.O, Post
    If Post(0) EQ 0 Then Return
