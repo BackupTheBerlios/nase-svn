@@ -83,7 +83,8 @@
 ;*>standard exponential multicolor
 ;
 ; SEE ALSO:
-;  ShowWeights_Scale, PlotTvScl, ShowWeights, ExamineIt
+;  <A>ShowWeights_Scale</A>, <A>PlotTvScl</A>, <A>ShowWeights</A>,
+;  <A>ExamineIt</A>
 ;-
 
 Pro SelectNASETable, number, $
