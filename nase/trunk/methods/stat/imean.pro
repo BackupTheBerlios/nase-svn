@@ -185,7 +185,7 @@ FUNCTION  IMean,   X_, SD, SDM,  $
    ; The standard deviation is computed:
    IF  (N_Params() GE 2) AND NOT(XisComplex)  THEN  BEGIN
      MX = Transpose(ReBin(M, NI, NM, /sample))   ; blowing M up to the size of X
-     IF  NM GE 2  THEN  SD = Sqrt(Total((X-MX)^2,1) / (NM-1))  ELSE  SD = Total((X-MX)^2,1)
+     IF  NM GE 2  THEN  SD = Sqrt([Total((X-MX)^2,1)] / (NM-1))  ELSE  SD = [Total((X-MX)^2,1)]
      SDM = SD / Sqrt(NM)
      SD  = Reform(SD , DimsI, /overwrite)
      SDM = Reform(SDM, DimsI, /overwrite)
