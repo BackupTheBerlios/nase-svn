@@ -24,9 +24,13 @@
 ;
 ; INPUTS: Array : klar!
 ;
-; OPTIONAL INPUTS: XNorm, YNorm : Position der unteren linken Ecke der Plotregion
+; OPTIONAL INPUTS: XNorm, YNorm : Position der unteren linken Ecke des Plotkastens
 ;                                 in Normalkoordinaten.
-;                                 (Plotregion =  Bildbereich plus Rand fuer die Beschriftung)
+;                                 Werden diese Werte angegeben, so hat der Anwender
+;                                 selbst fuer ausreichenden Rand fuer Beschriftungen 
+;                                 zu sorgen. Ohne Angabe von XNorm und YNorm wird
+;                                 der Rand um den Plotkasten analog zur IDL-Plot-Routine
+;                                 ermittelt.  
 ;                  Abszissen-, Ordinatentext : klar!
 ;                  Schriftgroesse: Faktor, der die Schriftgroesse in Bezug auf die
 ;                                  Standardschriftgroesse (1.0) angibt
@@ -72,6 +76,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.14  1997/12/19 15:58:08  thiel
+;            XNorm-, YNorm-Parameter beziehen sich jetzt auf
+;            auf die linke untere Ecke des Plotkastens.
+;
 ;     Revision 2.13  1997/12/18 18:39:37  thiel
 ;            Liefert jetzt auf Wunsch Informationen ueber PlotPosition,
 ;            verwendete Farbe usw.
@@ -189,14 +197,11 @@ IF ArrayWidth GE 15 THEN !X.Minor = 0 ELSE $
 
 
 ;-----Raender und Koordinaten des Ursprungs:
-Default, XPos, 0.0
-Default, YPos, 0.0
-
 IF Keyword_Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
 
-PosDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device)
+IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
+ ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
 
-OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]+PosDevice
 UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
 
 OriginNormal = Convert_Coord(OriginDevice, /Device, /To_Normal)
