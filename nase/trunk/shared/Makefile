@@ -2,6 +2,9 @@
 #   Modification History:
 #
 #         $Log$
+#         Revision 1.9  2001/08/28 15:15:07  kupper
+#         offenbach 28. aug 2001
+#
 #         Revision 1.8  2001/07/17 14:06:27  kupper
 #         tried to implement SunOS platform. Not yet working.
 #
@@ -64,7 +67,7 @@ all :
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
 			"C_LD_FLAGS=-shared" ;; \
 	   "SunOS" ) make libs \
-			"CC=c++" \
+			"CC=gcc" \
 			"CXX=c++" \
 			"C_LD=ld" \
 			"CFLAGS=-fPIC -shared -I$(IDL_DIR)/external" \
