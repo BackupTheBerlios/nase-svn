@@ -62,10 +62,18 @@
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
-; MODIFICATION HISTORY: erste Version vom 30 Juli '97. Andreas.
-;                       neue Keyword-Abfrage und
-;                       Geschwindigkeitsoptimierung. 5. August '97. Andreas. 
-;-
+; MODIFICATION HISTORY: 
+;
+;       Mon Aug 18 16:44:07 1997, Mirko Saam
+;<saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;             Behandlung von nicht vorhandenen Verbindungen
+;
+;
+;
+;		 erste Version vom 30 Juli
+;                '97. Andreas.  neue Keyword-Abfrage und
+;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
 
 FUNCTION LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
@@ -86,7 +94,8 @@ FUNCTION LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,A
    
    If Set(NONSELF) Then dw(Spaltenindex,Spaltenindex)=0
 
-   Matrix.Weights = Matrix.Weights + Rate*dw
+   connections = WHERE(Matrix.Weights NE !NONE, count)
+   IF count NE 0 THEN Matrix.Weights(connections) = Matrix.Weights(connections) + Rate*dw(connections)
    
 Return, Matrix
 END
