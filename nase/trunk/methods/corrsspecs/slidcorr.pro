@@ -104,6 +104,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.11  1999/02/12 15:58:52  gabriel
+;          device, copy an handle sheets angep.
+;
 ;     Revision 1.10  1998/07/01 08:53:55  gabriel
 ;          CROSSCORR korrigiert !?!
 ;
@@ -414,9 +417,9 @@ function slidcorr , xdata , ydata , taxis ,FBAND=fband, WSIZE=wsize , STEPSIZE=s
        
          opensheet,sheet_3
          !P.MULTI = 0
-         device,copy=[0,0,XSIZE-1,YSIZE,0,0,pix_2.winid]
-         device,copy=[0,0,XSIZE-1,YSIZE/2.,0,YSIZE,pix_3.winid]
-         device,copy=[0,0,XSIZE-1,YSIZE,0,YSIZE*1.5,pix_1.winid]
+         device,copy=[0,0,XSIZE-1,YSIZE,0,0,getwinid(pix_2)]
+         device,copy=[0,0,XSIZE-1,YSIZE/2.,0,YSIZE,getwinid(pix_3)]
+         device,copy=[0,0,XSIZE-1,YSIZE,0,YSIZE*1.5,getwinid(pix_1)]
 
          closesheet,sheet_3
           
