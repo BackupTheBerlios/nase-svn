@@ -47,6 +47,9 @@
 ;*> ...but its an ordinary Keyword
 ;*> Keyword TEST NOT set in extra (Slave)
 ;
+; SEE ALSO:
+;   <A>DelTag</A>, <A>ExtraSet</A>, <A>SetTag</A>
+;
 ;-
 FUNCTION ExtraSet, extra, keyword, TAGNR=tagnr
 

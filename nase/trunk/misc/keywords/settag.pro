@@ -46,7 +46,7 @@
 ;*   >B               STRING    'bloedi'
 ;
 ; SEE ALSO:
-;   <A>DelTag</A>
+;   <A>DelTag</A>, <A>ExtraSet</A>
 ;
 ;-
 PRO SetTag, S, TN, TV

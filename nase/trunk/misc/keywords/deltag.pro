@@ -6,7 +6,7 @@
 ; PURPOSE:            Loescht einen Tag aus einer Struktur. War der Tag ein Handle,
 ;                     so wird dieser freigegeben.
 ;
-; CATEGORY:           MISC STRUCTURES
+; CATEGORY:  STRUCTURES
 ;
 ; CALLING SEQUENCE:   DelTag, S, T
 ;
@@ -30,12 +30,19 @@
 ;                     ;    A               INT              1
 ;                     ;    C               INT              3
 ;
-; SEE ALSO:           <A>SetTag</A>, <A>ExtraDiff</A> 
+; SEE ALSO:           <A>SetTag</A>, <A>ExtraDiff</A>, <A>ExtraSet</A> 
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2004/12/17 15:37:42  michler
+;
+;     Modified Files:
+;      	deltag.pro settag.pro extraset.pro
+;
+;     header corrections
+;
 ;     Revision 1.3  2000/09/25 09:13:08  saam
 ;     * added AIM tag
 ;     * update header for some files
