@@ -84,6 +84,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.13  2002/01/14 17:11:38  gabriel
+;            fitting via polynom
+;
 ;     Revision 1.12  2000/09/29 17:52:04  gabriel
 ;          FZT Bug fixed
 ;
@@ -126,7 +129,7 @@
 FUNCTION SPHASEVELOCITY, A, distance_ax, delay_ax, time_ax, ICHISQ=ICHISQ,SUPPORTPOINTS_CRIT=SUPPORTPOINTS_CRIT,$
                          ISUPPORTP=ISUPPORTP, CORRSTRENGTH_CRIT=CORRSTRENGTH_CRIT,$
                          IMED_CORRSTRENGTH=IMED_CORRSTRENGTH,CHISQ_CRIT=CHISQ_CRIT, PLOT=PLOT,$
-                         VERBOSE=VERBOSE,INTERPOL=INTERPOL,PHASE=PHASE
+                         VERBOSE=VERBOSE,INTERPOL=INTERPOL,PHASE=PHASE, OCHI=CHI
 
 COMMON SPHASEVELOCITY_BLOCK, SHEET_1,PLOTFLAG
 
@@ -150,7 +153,8 @@ distance_ax = (lindgen(interpoldim(0))/FLOAT(interpoldim(0)-1)-0.5)*last(distanc
 delay_ax =(lindgen(interpoldim(1))/FLOAT(interpoldim(1)-1)-0.5)*last(delay_ax)*2
 
 iCHISQ = fltarr(sa(3))
-iMED_CORRSTRENGTH = fltarr(sa(3))
+CHI = fltarr(sa(3))
+iMED_CORRSTRENGTH = fltarr(sa(3), 2)
 ISUPPORTP =  fltarr(sa(3))
 vel = fltarr(sa(3))
 default, XSIZE , 300
@@ -188,9 +192,9 @@ FOR i=0 ,sa(3)-1 DO BEGIN
      
       opensheet,pix_1
       !p.multi = 0
-      plottvscl,(1+BYTSCL(tmparray)/255.*FLOAT(!D.TABLE_SIZE-3)),$
+      plottvscl,tmparray,$
        /full,xrange=[ROUND(distance_ax(0))+1,ROUND(last(distance_ax))-1],YRANGE=[delay_ax(0),last(delay_ax)],YTITLE="delay / !8ms!X",$
-       XTITLE="distance / !8mm!X",TITLE="Spatiotemporal Correlation",/NOSCALE
+       XTITLE="distance / !8mm!X",TITLE="Spatiotemporal Correlation"
       inscription,STRING(FORMAT='("Time:", (I5)," ")',ROUND(time_ax(i))),/INSIDE,/RIGHT,/BOTTOM
      
    ENDIF
@@ -198,10 +202,12 @@ FOR i=0 ,sa(3)-1 DO BEGIN
    CHISQ = 200
    max_sdev = 1.
    steig = (last(delay_ax)-delay_ax(0))/(distance_ax(last(findex))-distance_ax(findex(0)))
+   while_flag=0
    ;;max_moment = umoment(tmpmax(findex),SDEV=MAX_SDEV)
    IF verbose EQ 1 THEN console,/msg,"-------------------------------------------------------------"
 
    WHILE (MAX_SDEV GT CORRSTRENGTH_CRIT) OR (CHISQ GT CHISQ_CRIT) DO BEGIN
+      
       ;;Verteilung der Maxima ohne autocorr
       ;;if (N_ELEMENTS(findex)-1)-1*interpol LT 0 then stop
       tmpfindex = (shift(findex,-N_ELEMENTS(findex)/2))(1*interpol:*) 
@@ -213,10 +219,21 @@ FOR i=0 ,sa(3)-1 DO BEGIN
                    FZT(max_moment_FZT(0)-sqrt(max_moment_FZT(1)),1)]
       ;max_moment = umoment(tmpmax(tmpfindex),SDEV=MAX_SDEV )
       MAX_SDEV=(MAX_SDEV_ARR(0)- MAX_SDEV_ARR(1))/2.
+      MAX_SDEV_TMP =  MAX_SDEV
       ;;TMP_MAX_SDEV=MAX_SDEV
       ;;linearer Fit
-      regtmp = linfit(x_indtmp(findex),t_indtmp(findex),CHISQ=CHISQ)  
+      ;;regtmp = linfit(x_indtmp(findex),t_indtmp(findex),CHISQ=CHISQ)  
+      ;;polyfit 
+      regtmp = poly_fit(x_indtmp(findex),t_indtmp(findex), 3,CHISQ=CHISQ, /double)  
+      
       CHISQ = CHISQ/FLOAT(N_ELEMENTS(findex))
+      chi_tmp= sqrt(CHISQ)
+      if while_flag eq 0 then begin
+         chi_tmp_first =  chi_tmp
+         max_moment_first = max_moment
+         MAX_SDEV_TMP_first = MAX_SDEV_TMP
+         while_flag=1
+      endif
       steig = (last(delay_ax)-delay_ax(0))/(distance_ax(last(findex))-distance_ax(findex(0)))
       IF verbose EQ 1 THEN console,/msg,"CHISQ:",CHISQ,'  MEDIAN:',max_moment(0),'  MAX_SDEV:',MAX_SDEV ,'  SUPPORTP:',N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
       IF (MAX_SDEV GT CORRSTRENGTH_CRIT)  OR  (CHISQ GT CHISQ_CRIT) THEN findex = findex(1:N_ELEMENTS(findex)-2)
@@ -229,14 +246,14 @@ FOR i=0 ,sa(3)-1 DO BEGIN
       ENDIF
    ENDWHILE
    ;;steigungkriterium
-   IF N_ELEMENTS(findex)+1 LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) LT abs(steig) THEN BEGIN
+   IF N_ELEMENTS(findex)+1 LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) LT abs(steig)*0.9 THEN BEGIN
       CHISQ = -1
       MAX_SDEV = 0
       IF verbose EQ 1 THEN console,/msg,'Steigung --------> TO THE TRUSH'
    ENDIf
    IF PLOT EQ 1 THEN BEGIN
       oplot,X_indtmp(findex),t_indtmp(findex),PSYM=1
-      IF CHISQ NE -1 THEN oplot,distance_ax,regtmp(0)+regtmp(1)*distance_ax
+      IF CHISQ NE -1 THEN oplot,distance_ax,regtmp(0)+regtmp(1)*distance_ax+regtmp(2)*distance_ax^2+regtmp(3)*distance_ax^3
       
       closesheet,pix_1
       opensheet,pix_2
@@ -260,9 +277,18 @@ FOR i=0 ,sa(3)-1 DO BEGIN
 ;;   IF N_ELEMENTS(findex)+(1*interpol) LT N_ELEMENTS(DISTANCE_AX) AND abs(regtmp(1)) GE abs(steig) AND CHISQ NE -1 THEN BEGIN
 ;;      stop
  ;;  ENDIF
+   if CHISQ eq -1 then begin
+      
+      chi_tmp =  chi_tmp_first
+      max_moment = max_moment_first
+      MAX_SDEV_TMP = MAX_SDEV_TMP_first
+    
+
+   endif
    vel(i) = regtmp(1)
    iCHISQ(i) = CHISQ
-   iMED_CORRSTRENGTH(i) = max_moment(0)
+   chi(i) = chi_tmp
+   iMED_CORRSTRENGTH(i, *) = [ max_moment(0) , MAX_SDEV_TMP^2]
    ISUPPORTP(i) = N_ELEMENTS(findex)/FLOAT(N_ELEMENTS(DISTANCE_AX))
       
 ;stop
