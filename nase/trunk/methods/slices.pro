@@ -9,7 +9,8 @@
 ;                       
 ; CATEGORY:            STAT
 ;
-; CALLING SEQUENCE:    s = SLICES(A [,SSIZE=ssize] [SSHIFT=sshift])
+; CALLING SEQUENCE:    s = SLICES(A [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] $
+;                                 [,TVALUES=tvalues] [,TINDICES=tindices] )
 ;
 ; INPUTS:              A : das zu zerschneidende Array
 ;
@@ -17,7 +18,10 @@
 ;                      SSHIFT      : der Versatz des Fensters (Default: SSIZE/2)
 ;                      SAMPLEPERIOD: die Abtastung des Signals in Sekunden (Default: 0.001s)
 ;
-; OUTPUTS:             ein Array das Form (data,slice_nr), das die Zeitschnitte enthaelt
+; OPTIONAL OUTPUTS:    TVALUES     : gibt die Anfangszeiten der einzelnen Slices zurueck
+;                      TINDICES    : gibt die Arrayindizes der Anfangszeiten der einzelnen Slices zurueck
+;
+; OUTPUTS:             s: ein Array das Form (slice_nr, data), das die Zeitschnitte enthaelt
 ;
 ; EXAMPLE:             
 ;                      a = Indgen(1000)
@@ -28,6 +32,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/06/08 10:06:06  saam
+;           + changed output format: a(slice,data)
+;           + new keywords TVALUES, TINDICES
+;
 ;     Revision 1.2  1998/06/08 09:36:53  saam
 ;           debug messages removed
 ;
@@ -36,7 +44,7 @@
 ;
 ;
 ;-
-FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD
+FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD, TVALUES=tvalues, TINDICES=tindices
 
    On_Error, 2
 
@@ -51,11 +59,16 @@ FUNCTION Slices, A, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=SAMPLEPERIOD
    IF S(0) NE 1 THEN Message, 'this only works for one-dimensional array'
   
    steps = (S(1)-ssize)/sshift
+   tvalues = FLTARR(steps+1)
+   tindices = LONARR(steps+1)
 
-   B =  Make_Array(ssize,steps+1,TYPE=S(2))
+   B =  Make_Array(steps+1,ssize,TYPE=S(2))
    FOR slice=0,steps DO BEGIN
-      B(*,slice) = A(slice*SSHIFT: slice*SSHIFT+SSIZE-1)
+      tvalues(slice) = slice*SSHIFT/OS
+      tindices(slice) = slice*SSHIFT
+      B(slice,*) = A(slice*SSHIFT: slice*SSHIFT+SSIZE-1)
 ;      print, slice*SSHIFT, ':', slice*SSHIFT+SSIZE-1
    END
+
    RETURN, B
 END
