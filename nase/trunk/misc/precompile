@@ -2,5 +2,6 @@ PushD, GetEnv("NASEPATH"); cd to nase
 
 .run misc/arrays/scl
 .run simu/connections/nonone
+.run graphic/widgets/dummy_eventhandler
 
 PopD ;Return to old dir
