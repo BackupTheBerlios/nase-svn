@@ -12,6 +12,7 @@
 ;                                     [,LSKIP=lskip] [,LCONST=lconst]
 ;                                     [,__XX (see below!)]
 ;                                     [,ZZYY (see below!)]
+;                                     [,SKEL=skel]
 ;                                     [,/W] [,VALUES=values]
 ;                                     [,/FAKE] [,/QUIET] [,_EXTRA=e] )
 ;
@@ -39,6 +40,7 @@
 ;                             just assumes a constant value for them
 ;                             (the one they currently have). The
 ;                             Syntax is the same as for LSKIP. 
+;                     SKEL  : iteration separator for filenames (default '_')
 ;                     __XX  : Loop Variables may be modified/set as
 ;                             Keywords. If you have a loop variable
 ;                             ITER, you can change the default value by passing
@@ -66,6 +68,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.8  2000/06/08 10:32:13  saam
+;           + keyword SKEL added
+;
 ;     Revision 1.7  2000/04/12 13:28:41  saam
 ;           modified the undocumented I- and OSKIP
 ;           thing to the more flexible and easier to
@@ -96,11 +101,13 @@
 ;
 ;-
 FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, ltags=ltags, fake=fake, quiet=quiet,$
-                  LSKIP=_lskip, LCONST=_lconst, _EXTRA=e
+                  LSKIP=_lskip, LCONST=_lconst, SKEL=skel, SEP=sep, _EXTRA=e
 
    COMMON ATTENTION
    
    
+   IF ExtraSet(AP.SIMULATION, 'SKEL') THEN Default, skel, AP.SIMULATION.skel ELSE Default, skel, '_'
+   IF ExtraSet(AP.SIMULATION, 'SEP') THEN Default, sep, AP.SIMULATION.sep ELSE Default, sep, '_'
    ; scan AP for loop instructions __?
    TST = ExtraDiff(AP, '__TV', /SUBSTRING, /LEAVE) ; temporary 
    TSN = ExtraDiff(AP, '__TN', /SUBSTRING, /LEAVE)
@@ -132,11 +139,11 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
            ; get current value for the loop to be set constant
            GetHTag, P, TSN.(i), val
            ; a set the loop containing only this value (for correct filenames...)
-           command = "SetTag, TS, '"+StrMid((Tag_Names(TST))(i),4)+"', "+STR(val)
+           command = "SetTag, TS, '"+StrMid((Tag_Names(TST))(i),4,StrLen((Tag_Names(TST))(i))-4)+"', "+STR(val)
            IF NOT Execute(command) THEN Console, "Execute failed: "+command, /FATAL
        END ELSE BEGIN
            ; set normal loop if not in lskip
-           IF NOT Inset(loopc-i, lskip) THEN SetTag, TS, StrMid((Tag_Names(TST))(i),4), TST.(i)  
+           IF NOT Inset(loopc-i, lskip) THEN SetTag, TS, StrMid((Tag_Names(TST))(i),4,StrLen((Tag_Names(TST))(i))-4), TST.(i)  
        END
    END
    DelTag, TS, "____XXX"
@@ -146,7 +153,7 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    uset = ExtraDiff(e, '__', /SUBSTRING)  ; and also removes these keywords!
    IF TYPEOF(uset) EQ 'STRUCT' THEN BEGIN
        FOR i=0, N_Tags(uset)-1 DO BEGIN
-           SetTag, TS, StrMid((Tag_Names(uset))(i),2), uset.(i)
+           SetTag, TS, StrMid((Tag_Names(uset))(i),2, StrLen((Tag_Names(uset))(i))-2), uset.(i)
        END
    END
 
@@ -175,7 +182,7 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
             
             ;ATTENTION
             P = AP
-            P.file = StrCompress(AP.FILE+LoopName(LS), /REMOVE_ALL)  ; pname=pname
+            P.file = StrCompress(AP.FILE+LoopName(LS,SEP=sep)+skel, /REMOVE_ALL)  ; pname=pname
             ;P.pfile = pname
             ;Set loop values, if requested
             FOR i=0, N_Tags(LV)-1 DO BEGIN
@@ -185,11 +192,11 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
             IF TypeOF(kset) EQ 'STRUCT' THEN BEGIN
                 FOR i=0,N_TAGS(kset)-1 DO BEGIN
                     GetHTag, P, kset.(i), val
-                    FOR i=0,N_TAGS(kset)-1 DO IF Set(e) THEN SetTag, e, StrMid((Tag_Names(kset))(i),2), val $
-                                                        ELSE e = Create_Struct(StrMid((Tag_Names(kset))(i),2), val)
+                    FOR i=0,N_TAGS(kset)-1 DO IF Set(e) THEN SetTag, e, StrMid((Tag_Names(kset))(i),2,strlen((Tag_Names(kset))(i))-2), val $
+                                                        ELSE e = Create_Struct(StrMid((Tag_Names(kset))(i),2, StrLen((Tag_Names(kset))(i))-2), val)
                 END
             END
-            IF NOT Keyword_Set(QUIET) THEN Console, LoopName(LS, /PRINT)
+            IF NOT Keyword_Set(QUIET) THEN Console, LoopName(LS, /PRINT, SEP=sep)
             
 ;            IF Keyword_Set(SETVALUES) THEN BEGIN
 ;               IF Set(E) THEN newextra = Create_Struct(e, 'LOOPVALUE', LV) ELSE newextra = {LOOPVALUE : LV}
@@ -218,7 +225,7 @@ FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9, w=w, values=values, lta
    END ELSE BEGIN
       IF NOT Keyword_Set(FAKE) THEN BEGIN
          P = AP
-         P.file = Str(AP.FILE+'_')
+         P.file = Str(AP.FILE+skel)
          
          CASE N_Params() OF
             1: CALL_PROCEDURE, procedure,_EXTRA=e
