@@ -134,6 +134,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.58  1999/11/15 15:52:30  kupper
+;     Sorry, didn't handle the case SETCOL=0 correctly when I
+;     corrected the !P.Background-Bug. Fixed.
+;
 ;     Revision 2.57  1999/11/12 17:06:12  kupper
 ;     Small error.
 ;
@@ -358,6 +362,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    IF NOT Set(_W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
 
+   Default, SETCOL, 1
+
    ;-----Sichern der urspruenglichen Device-Parameter
    oldRegion   = !P.Region
    oldXTicklen = !X.TickLen 
@@ -369,7 +375,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;;-----Wir bitten ShowWeights_Scale vorab schonmal, die
    ;;     Farben richtig zu setzen, damit auch !P.Background
    ;;     stimmt
-   If Keyword_Set(NASE) or Keyword_Set(NEUTRAL) then $
+   If (SETCOL ne 0) and (Keyword_Set(NASE) or Keyword_Set(NEUTRAL)) then $
     forgetit = ShowWeights_Scale(_W, SETCOL=2)
 
 
