@@ -11,6 +11,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/08/30 18:36:31  kupper
+;        Added function type event handler.
+;
 ;        Revision 1.1  1999/06/17 14:11:00  kupper
 ;        Initial revision.
 ;
@@ -19,4 +22,11 @@
 Pro Dummy_EventHandler, Event
    print, "Widget sent event:"
    help, Event, /STRUCTURE
+End
+
+Function Dummy_EventHandler, Event
+   print, "Widget sent event:"
+   help, Event, /STRUCTURE
+
+   return, 0 ;;swallow event
 End
