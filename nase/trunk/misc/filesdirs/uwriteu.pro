@@ -34,14 +34,14 @@
 ;  Structures
 ;
 ; CALLING SEQUENCE:
-;*UWriteU, lun, x, _EXTRA=...
+;*UWriteU, lun, [x0 [,x1...[, x7]]...], _EXTRA=...
 ;
 ; INPUTS:
-;  lun :: a valid, writable <B>LUN</B> (see <A>UOpenW</A> how to
-;         get one). Alternatively you may specify a <B>filename</B> and
-;         <C>UReadU</C> will manage opening and closing automatically. In
-;         this case, only one data structure can be saved.
-;  x   :: the data structure to saved into <*>lun</*>
+;  lun  :: a valid, writable <B>LUN</B> (see <A>UOpenW</A> how to
+;          get one). Alternatively you may specify a <B>filename</B> and
+;          <C>UReadU</C> will manage opening and closing automatically. In
+;          this case, only one data structure can be saved.
+;  x0-7 :: the data structure to saved into <*>lun</*>
 ;
 ; INPUT KEYWORDS:
 ;  _EXTRA:: all keywords will be passed to <A>UOpenW</A>
@@ -125,10 +125,10 @@ END
 
 
 
-PRO UWriteU, _lun, x, _EXTRA=e
+PRO UWriteU, _lun, x0, x1, x2, x3, x4, x5, x6, x7, _EXTRA=e
   ON_Error, 2
 
-  IF N_Params() NE 2 THEN Console, 'two positional arguments expected', /FATAL
+  IF N_Params() LT 2 THEN Console, 'at least two positional arguments expected', /FATAL
   IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenW(_lun,_EXTRA=e) ELSE lun=_lun
 
   ; write version and ID
@@ -136,8 +136,15 @@ PRO UWriteU, _lun, x, _EXTRA=e
   version = version + StrRepeat(" ", 40-StrLen(version))
   WriteU, lun, version ; write a fixed length version string
 
-  _UWriteU, lun, x, _EXTRA=e
-  
 
-  IF TypeOf(_lun) EQ 'STRING' THEN UClose, lun ELSE _lun=lun
+  IF N_Params() GE 2 THEN _UWriteU, lun, x0, _EXTRA=e
+  IF N_Params() GE 3 THEN _UWriteU, lun, x1, _EXTRA=e
+  IF N_Params() GE 4 THEN _UWriteU, lun, x2, _EXTRA=e
+  IF N_Params() GE 5 THEN _UWriteU, lun, x3, _EXTRA=e
+  IF N_Params() GE 6 THEN _UWriteU, lun, x4, _EXTRA=e
+  IF N_Params() GE 7 THEN _UWriteU, lun, x5, _EXTRA=e
+  IF N_Params() GE 8 THEN _UWriteU, lun, x6, _EXTRA=e
+  IF N_Params() GE 9 THEN _UWriteU, lun, x7, _EXTRA=e
+  
+  IF (TypeOf(_lun) EQ 'STRING') THEN UClose, lun ELSE _lun=lun
 END
