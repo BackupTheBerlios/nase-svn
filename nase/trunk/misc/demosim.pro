@@ -41,6 +41,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1998/02/11 14:58:20  saam
+;             Zeitmessung hinzugefuegt
+;
 ;       Revision 1.7  1998/02/09 15:32:59  thiel
 ;              Der Header ist etwas ausfuehrlicher geworden.
 ;
@@ -69,7 +72,7 @@
 ;
 ;-
  
-
+SimTimeInit
 Window, 1, TITLE='weights', XSIZE=320, YSIZE=320
 Window, 2, XSIZE=800, YSIZE=400
 
@@ -135,7 +138,7 @@ Window, 2, XSIZE=800, YSIZE=400
 ;-------------> MAIN SIMULATION ROUTINE
 ;------------->
    Print, 'Starting main simulation loop...'
-   FOR t=0l,10000l DO BEGIN
+   FOR t=0l,2000l DO BEGIN
 
       
 
@@ -195,5 +198,8 @@ Window, 2, XSIZE=800, YSIZE=400
    FreeLayer_1, L2
 
    FreeRecall, LP_L1_l1
+
+   SimTimeStep
+   SimTimeStop
 
 END
