@@ -12,7 +12,7 @@
 ; PURPOSE:
 ;  This routine can be used to return IDL's callstack at the time of
 ;  the call. Information on the callstack (called "traceback
-;  information" in the IDL help) is proviede by IDL's <C>HELP</C>
+;  information" in the IDL help) is provided by IDL's <C>HELP</C>
 ;  command. However, the output of this command is a string array,
 ;  containing routine name, source file and line number all
 ;  intermingled in a single string. <A>callstack()</A> scans this
@@ -65,11 +65,11 @@
 ;  
 ; EXAMPLE:
 ;   1. enter at the prompt:
-;   IDL> print, callstack()
-;   > $MAIN$ (main level code) (unknown)
+;*  print, callstack()
+;*  > $MAIN$ (main level code) (unknown)
 ;   
 ;   2. run a program and interrup anywhere
-;   IDL> print, callstack()
+;*  print, callstack()
 ;   see what happens.
 ;  
 ; SEE ALSO:
