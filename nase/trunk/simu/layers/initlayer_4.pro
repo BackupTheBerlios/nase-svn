@@ -1,0 +1,55 @@
+;+
+; NAME:                 InitLayer_4
+;
+; PURPOSE:              initialisiert eine Neuronenschicht vom Typ 4 (1 Feeding 1ZK, 1 Linking 1ZK, 1 Inihibition 1ZK, Schwelle 2ZK)
+;                       dieser Type unterschiedet sich vom Type durch beliebige Erhoehung der Zeitaufloesung.
+;
+; CATEGORY:             SIMULATION
+;
+; CALLING SEQUENCE:     Layer = InitLayer_4( WIDTH=width, HEIGHT=height, TYPE=type )
+;
+; KEYWORD PARAMETERS:   WIDTH, HEIGHT : Breite und Hoehe des Layers
+;                       TYPE          : Struktur, die neuronenspezifische Parameter enthaelt; definiert in InitPara_2.pro
+;
+; OUTPUTS:              Layer : Struktur, die alle Informationen enthaelt, s.u.
+;
+; EXAMPLE:              para4      = InitPara_4(tauf=10.0, vs=1.0, OVERSAMPLING=10)
+;                       MyLayer = InitLayer_4(width=5, height=5, type=para2)
+;
+; MODIFICATION HISTORY: 
+;
+;      $Log$
+;      Revision 2.1  1998/02/05 13:47:32  saam
+;            Cool
+;
+;
+;-
+
+FUNCTION InitLayer_4, WIDTH=width, HEIGHT=height, TYPE=type
+
+   COMMON Random_Seed, seed
+
+   IF (NOT Keyword_Set(width))  THEN Message, 'Keyword WIDTH expected'
+   IF (NOT Keyword_Set(height)) THEN Message, 'Keyword HEIGHT expected'
+   IF (NOT Keyword_Set(type))   THEN Message, 'Keyword TYPE expected'
+
+   handle = Handle_Create(VALUE=[0, width*height])
+
+   Layer = { info   : 'LAYER'              ,$
+             Type   : '4'                  ,$
+             w      : width                ,$
+             h      : height               ,$
+             para   : type                 ,$
+             decr   : 1                    ,$ ;decides if potentials are to be decremented or not
+             F      : type.ns*Double(RandomU(seed,width*height)) ,$
+             L      : type.ns*Double(RandomU(seed,width*height)) ,$
+             I      : type.ns*Double(RandomU(seed,width*height)) ,$
+             M      : DblArr(width*height) ,$
+             S      : DblArr(width*height) ,$
+             R      : DblArr(width*height) ,$
+             O      : handle               ,$
+             AR     : BytArr(width*height)  }  ; for the absolute refractory period
+
+   RETURN, Layer
+
+END 
