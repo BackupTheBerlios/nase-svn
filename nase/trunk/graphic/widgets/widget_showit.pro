@@ -6,80 +6,82 @@
 ;  individual plot parameters and color tables. 
 ;
 ; PURPOSE: Diese Routine dient der Initialisierung eines Widgets, das ein 
-;          einfaches IDL-Draw-Widget um die Fähigkeit der NASE-<A HREF="./SHEETS/#DEFINESHEET">Sheets</A>
+;          einfaches IDL-Draw-Widget um die Fähigkeit der NASE-Sheets
+;          (siehe <A>DefineSheet()</A>)
 ;          erweitert, die Graphik-Systemvariablen und private Farbtabellen zu 
 ;          speichern.
-;          Auf Pseudocolor-Displays erhält das ShowIt-Widget wie <A HREF="#SCROLLIT">ScrollIt()</A> eine eigene
+;          Auf Pseudocolor-Displays erhält das ShowIt-Widget wie <A>ScrollIt()</A> eine eigene
 ;          Eventhandling-Funktion, die die private Farbtabelle setzt, falls
 ;          der Mauszeiger das jeweilige Fenster "betritt".
 ;          Außerdem übernimmt die zugehörige Routine
-;          <A HREF="#SHOWIT_OPEN">ShowIt_Open</A> die Ermittlung der Window-ID und
+;          <A>ShowIt_Open</A> die Ermittlung der Window-ID und
 ;          bereitet das entsprechende Fenster für die Graphikausgabe vor. 
 ;
 ; CATEGORY: GRAPHIC /WIDGETS
 ;
-; CALLING SEQUENCE: widgetid = Widget_ShowIt(Parent 
-;                                            [, /PRIVATE_COLORS]
-;                                            [any keywords])
+; CALLING SEQUENCE:
+;* widgetid = Widget_ShowIt(Parent 
+;*                          [, /PRIVATE_COLORS]
+;*                          [any keywords])
 ;
-; INPUTS: Parent: Das Eltern-Widget. (Wie Draw-Widgets auch können ShowIt-
+; INPUTS: Parent:: Das Eltern-Widget. (Wie Draw-Widgets auch können ShowIt-
 ;                  Widgets keine Top-Level-Widgets sein. Man muß also immer ein
 ;                  Eltern-Widget angeben.)
 ;
-; KEYWORD PARAMETERS: /PRIVATE_COLORS: Ist dieses Schlüsselwort gesetzt, so
-;                                      wird die private
-;                                      Farbtabelle des Widgets 
-;                                      immer dann gesetzt ,
-;                                      wenn sich der Mauszeiger im 
-;                                      Bereich des Widgets befindet. Zum
-;                                      Speichern der gewünschten Farbtabelle
-;                                      siehe <A HREF="#SHOWIT_CLOSE">ShowIt_Close</A>.
-;
+; INPUT KEYWORDS: /PRIVATE_COLORS:: Ist dieses Schlüsselwort gesetzt, so
+;                                   wird die private
+;                                   Farbtabelle des Widgets 
+;                                   immer dann gesetzt ,
+;                                   wenn sich der Mauszeiger im 
+;                                   Bereich des Widgets befindet. Zum
+;                                   Speichern der gewünschten Farbtabelle
+;                                   siehe <A>ShowIt_Close</A>.<BR>
+;<BR>
 ;                    Folgende weiteren Schlüsselworte werden mittels _EXTRA an die
-;                    dafür zuständigen Widgets weitergereicht:
-;
-;                     ALIGN_BOTTOM
-;                     ALIGN_CENTER 
-;                     ALIGN_LEFT
-;                     ALIGN_RIGHT
-;                     ALIGN_TOP
-;                     APP_SCROLL
-;                     BUTTON_EVENTS
-;                     EVENT_PRO
-;                     EVENT_FUNC
-;                     EXPOSE_EVENTS
-;                     NOTIFY_REALIZE
-;                     KILL_NOTIFY
-;                     FRAME
-;                     GROUP_LEADER
-;                     MAP
-;                     MOTION_EVENTS
-;                     NO_COPY
-;                     UNAME
-;                     UNITS
-;                     UVALUE
-;                     XOFFSET
-;                     YOFFSET                             
-;                     COLOR_MODEL
-;                     COLORS
-;                     GRAPHICS_LEVEL
-;                     RENDERER
-;                     RESOURCE_NAME
-;                     RETAIN
-;                     SCR_XSIZE
-;                     SCR_YSIZE
-;                     SCROLL
-;                     SENSITIVE
-;                     TRACKING_EVENTS
-;                     UNITS
-;                     VIEWPORT_EVENTS
-;                     XSIZE
-;                     YSIZE
-;                     X_SCROLL_SIZE
-;                     Y_SCROLL_SIZE
+;                    dafür zuständigen Widgets weitergereicht:<BR>
+;<BR>
+;                     ALIGN_BOTTOM<BR>
+;                     ALIGN_CENTER <BR>
+;                     ALIGN_LEFT<BR>
+;                     ALIGN_RIGHT<BR>
+;                     ALIGN_TOP<BR>
+;                     APP_SCROLL<BR>
+;                     BUTTON_EVENTS<BR>
+;                     EVENT_PRO<BR>
+;                     EVENT_FUNC<BR>
+;                     EXPOSE_EVENTS<BR>
+;                     NOTIFY_REALIZE<BR>
+;                     KILL_NOTIFY<BR>
+;                     FRAME<BR>
+;                     GROUP_LEADER<BR>
+;                     MAP<BR>
+;                     MOTION_EVENTS<BR>
+;                     NO_COPY<BR>
+;                     UNAME<BR>
+;                     UNITS<BR>
+;                     UVALUE<BR>
+;                     XOFFSET<BR>
+;                     YOFFSET    <BR>                         
+;                     COLOR_MODEL<BR>
+;                     COLORS<BR>
+;                     GRAPHICS_LEVEL<BR>
+;                     RENDERER<BR>
+;                     RESOURCE_NAME<BR>
+;                     RETAIN<BR>
+;                     SCR_XSIZE<BR>
+;                     SCR_YSIZE<BR>
+;                     SCROLL<BR>
+;                     SENSITIVE<BR>
+;                     TRACKING_EVENTS<BR>
+;                     UNITS<BR>
+;                     VIEWPORT_EVENTS<BR>
+;                     XSIZE<BR>
+;                     YSIZE<BR>
+;                     X_SCROLL_SIZE<BR>
+;                     Y_SCROLL_SIZE<BR>
 ;                    Vgl. IDL-Hilfe zu 'Widget_Draw' und 'Widget_Base'
 ;
-; OUTPUTS: widgetid: Die Identifikationsnummer des generierten Widgets.
+; OUTPUTS: widgetid:: Die Identifikationsnummer des generierten Widgets.
 ;
 ; PROCEDURE: Erzeugen eines Draw-Widgets, das in seinem UVALUE-Teil die
 ;            Graphik-Systemvariablen !P, !X, !Y und !Z und die eigene 
@@ -87,61 +89,15 @@
 ;            Event-Handling, das Tracking-Events abfragt und bei Enter-
 ;            Events die eigene Farbpalette setzt.  
 ;
-; EXAMPLE: p=Widget_Base()
-;          s=Widget_ShowIt(p, /PRIVATE_COLORS, XSIZE=500, YSIZE=200)
-;          ShowIt_Open, s
-;          Plot, RandomN(seed,50)
-;          Showit_Close, s   
+; EXAMPLE:
+;*  p=Widget_Base()
+;*  s=Widget_ShowIt(p, /PRIVATE_COLORS, XSIZE=500, YSIZE=200)
+;*  ShowIt_Open, s
+;*  Plot, RandomN(seed,50)
+;*  Showit_Close, s   
 ;
-; SEE ALSO: <A HREF="#SCROLLIT">ScrollIt</A>, <A HREF="./SHEETS/#DEFINESHEET">DefineSheet</A>, <A HREF="./SHEETS/#OPENSHEET">OpenSheet</A>, <A HREF="./SHEETS/#CLOSESHEET">CloseSheet</A>, 
-;           IDL-Online-Hilfe zu 'Widget_Draw'
-;
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.11  2000/10/01 14:51:59  kupper
-;        Added AIM: entries in document header. First NASE workshop rules!
-;
-;        Revision 1.10  2000/03/16 15:13:04  kupper
-;        Added oldwin tag to xtra struct.
-;
-;        Revision 1.9  2000/03/10 20:38:52  kupper
-;        some header formatting.
-;
-;        Revision 1.8  2000/03/10 20:36:10  kupper
-;        Added missing keywords to _extra passing.
-;
-;        Revision 1.7  2000/03/10 20:08:21  kupper
-;        Moved Event_Func to draw-widget in order to provide free Event_Func/Event_Pro
-;        for the compound widget.
-;        Event_Func/Event_Pro keywords are now passed correctly through _extra.
-;        Corrected pass-through of event: event-handler must be 0 for a passed-through
-;        event!
-;
-;        Revision 1.6  2000/02/22 16:28:32  kupper
-;        Had to use ref_extra for selective keyword passing.
-;
-;        Revision 1.5  2000/02/22 16:21:12  kupper
-;        So. Now all Keywords are passed to the proper widgets.
-;
-;        Revision 1.4  2000/02/22 15:52:07  kupper
-;        Keyword NOTIFY_REALIZE is now passed correctly to the base-widget, not the draw
-;        widget!
-;
-;        Revision 1.3  1999/11/16 17:05:13  kupper
-;        Incorporated changes previously made to the sheet/scrollit routines:
-;        Will not produce tracking events for TrueColor or DirectColor
-;        visuals, but will set colortable upon opening in that case.
-;
-;        Revision 1.2  1999/09/06 14:04:56  thiel
-;            Wrapped draw-widget inside base to provide free uservalue.
-;
-;        Revision 1.1  1999/09/01 16:43:53  thiel
-;            Moved from other directory.
-;
-;        Revision 1.1  1999/08/30 09:20:34  thiel
-;            DrawWidgets who rember their colortables. For use with FaceIt.
-;
+; SEE ALSO: <A>ScrollIt</A>, <A>DefineSheet</A>, <A>OpenSheet</A>, <A>CloseSheet</A>, 
+;           IDL-Online-Hilfe zu <C>Widget_Draw</C>
 ;-
 
 
@@ -201,8 +157,8 @@ FUNCTION Widget_ShowIt, Parent, $
    Default, private_colors, 0
    Default, tracking_events, 0
 
-   If Not(PseudoColor_Visual()) then begin
-	message, /INFO, 'This does not look like an 8-bit-display! - Will not produce tracking-events!'
+   If Keyword_Set(PRIVATE_COLORS) and Not(PseudoColor_Visual()) then begin
+	message, /INFO, 'Ignoring /PRIVATE_COLORS - this does not look like an 8-bit-display! '
 	private_colors = 0
    end
 
