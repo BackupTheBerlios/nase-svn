@@ -33,7 +33,7 @@
 ;  FILE:: specifies a file or a list of files to convert. Has no
 ;         effect, if ALL is set
 ;  REMOVEOLD:: removes the EPS files if PDF was successfully generated
-;  ALL:: process all files in a given directory (LINUX/UNIX only)
+;  ALL:: process all files in a given directory
 ;
 ; OUTPUTS:
 ;
@@ -50,8 +50,6 @@
 ; RESTRICTIONS:
 ;  
 ; You have to include the epstopdf-path into your PATH variable.
-; Keyword ALL works only under LINUX/UNIX, because the filelist is
-; generated via BASH shell-script.
 ;
 ;
 ; PROCEDURE:
@@ -68,7 +66,7 @@
 
 pro epstopdf, FILE=file, REMOVEOLD=REMOVEOLD, ALL=ALL
    
-   if set(ALL) then spawn,"for g in *.eps; do echo $g; done",file
+   if set(ALL) then file = findfile("*.eps")
    if not set(FILE) then console, /FATAL, "you have to specifiy at least one filename!"
    
    for i=0, n_elements(file)-1 do begin
