@@ -90,6 +90,8 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    Default,  title, 'Scroll It!'
    Default,  group, 0
    Default,  pixmap, 0
+   Default,  colors, 0
+   Default,  retain, 0
 
    If not Keyword_Set(XDRAWSIZE) then begin
       XDRAWSIZE = XSIZE
