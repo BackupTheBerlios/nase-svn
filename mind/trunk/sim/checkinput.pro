@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/18 09:47:28  saam
+;           bug with period=-1 fixed
+;
 ;     Revision 1.1  2000/01/17 15:00:55  alshaikh
 ;           initial version... there's much to do...
 ;
@@ -133,7 +136,7 @@ Default, NUMBER, 0
    Print, '  '
 
 
-   IF period EQ -1 THEN period = P.time
+   IF period EQ -1 THEN period = P.SIMULATION.time
    
    delta_t =   INN.delta_t      ; resolution in ms
    number_filter =  INn.number_filter
