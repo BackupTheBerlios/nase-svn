@@ -207,6 +207,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/06/16 08:28:32  kupper
+;        Added AUTO_SINGLEDOT mode.
+;
 ;        Revision 1.6  1998/03/14 11:26:46  kupper
 ;               Inputkantentypen -1 und -2 implementiert.
 ;               Kosmetische Änderung an der Visualisierung (dreheung des Surface Plots).
@@ -246,6 +249,7 @@
 
 Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
                WIDTH=width, HEIGHT=height, $
+               AUTO_SINGLEDOT=auto_singledot, $
                AUTO_RANDOMDOTS=auto_randomdots, $
                AUTO_VERTICALEDGE=auto_verticaledge, $
                AUTO_HORIZONTALEDGE=auto_horizontaledge, $
@@ -361,6 +365,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
 
    ;;------------------> I want them all to be defined...
    Default, Picture, fltarr(HEIGHT, WIDTH)
+   Default, AUTO_SINGLEDOT, 0
    Default, AUTO_RANDOMDOTS, 0
    Default, AUTO_VERTICALEDGE, 0
    Default, AUTO_HORIZONTALEDGE, 0
@@ -389,6 +394,7 @@ Function RFScan_Init, INDW=InDW, OUTLAYER=OutLayer, Picture, $
             original:            Picture, $
             picture:             fltarr(HEIGHT, WIDTH), $
             manual:              MANUAL, $
+            auto_singledot :     AUTO_SINGLEDOT, $
             auto_randomdots:     AUTO_RANDOMDOTS, $
             auto_verticaledge:   AUTO_VERTICALEDGE, $
             auto_horizontaledge: AUTO_HORIZONTALEDGE, $
