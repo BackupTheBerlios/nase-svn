@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1999/09/16 12:00:38  thiel
+;            Put FREEDW in the right place.
+;
 ;        Revision 1.3  1999/09/15 08:48:01  thiel
 ;            Added FreeDW befor restoring.
 ;
@@ -73,13 +76,13 @@ PRO haus2_FILEOPEN, dataptr, displayptr, group
       GROUP=group, /MUST_EXIST)
 
 
-   FreeDW, (*dataptr).con_pre_pre
-
    ; Restore data contained in chosen file:
    Restore, filename 
 
    ; Change datastructure:
    (*dataptr).couplampl = save_couplampl
+
+   FreeDW, (*dataptr).con_pre_pre
    (*dataptr).con_pre_pre = RestoreDW(save_con_pre_pre)
    
    ; Update display with values just read:
