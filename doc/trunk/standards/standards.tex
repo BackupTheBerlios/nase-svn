@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.9  2000/09/28 07:59:56  saam
+%       changes to documentation header subsection
+%
 %       Revision 1.8  2000/09/26 14:05:27  saam
 %       changes to directory structure
 %
@@ -142,6 +145,12 @@ A current version of the documentation header can always be found in the doc dir
 
 \verbatiminput{../header.pro}
 
+\begin{itemize}
+\item The use of other identifiers as specified above is strictly prohibited.
+\item Identifiers mentioned above are needed to syntactically parse the header. Don't use them in your descriptions (e.g., \texttt{See also:}), because this
+      confuses scanning and leads to terrible results. Should we restrict tag names to all upper-case, to reduce probability for conflicts?
+\item Should we check to correct parsing during commit?
+\end{itemize}
 
 \subsection{CVS Logs}
 \begin{itemize}
