@@ -9,13 +9,15 @@
 ;
 ;
 ; CALLING SEQUENCE:
-;                  ubar_plot,xdata,ydata,[COLORS=COLORS],[OFFSET=OFFSET],[CENTER=CENTER],[BARSPACE=BARSPACE],[_EXTRA=e]
+;                  ubar_plot,xdata,ydata,[COLORS=COLORS],[OFFSET=OFFSET],[CENTER=CENTER],[BARSPACE=BARSPACE],[OPLOT=OPLOT],[_EXTRA=e]
 ; 
 ; INPUTS:
 ;                  xdata: 1d-Array von der X-Achse 
 ;                  ydata: 1d-Array von der Y-Achse
 ;
 ; OPTIONAL INPUTS:
+;                  xbase:  1d-Array von der X-Achse ohne Luecken, dient der automatischen 
+;                          Bestimmung der Balkenbreite 
 ;                  COLORS: 1d-Array der Farben pro X-Wert. Eine Farbe fuer alle X-Werte erhaelt man,
 ;                          in dem  man COLORS auf einen Farbwert setzt.         
 ;	
@@ -24,6 +26,7 @@
 ;                  CENTER   : Balken werden zentriert um den x-Wert
 ;                  BARSPACE : Abstand zwischen den Balken (default: 0.2 [= 20% der Klassenbreite])
 ;                  SYMMETRIC: Darstellung symmetrisch um die Null 
+;                  OPLOT    : erklaert sich selbst
 ;                  _EXTRA   : alle gewoehnlichen PLOT-OPTIONEN
 ;                  
 ; OUTPUTS:
@@ -37,6 +40,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.6  2000/06/08 10:09:10  gabriel
+;            xbase, keword oplot
+;
 ;     Revision 2.5  1998/07/21 15:41:31  saam
 ;           new keyword SYMMETRIC implemented
 ;
@@ -56,17 +62,20 @@
 ;-
 
 
-PRO ubar_plot,xdata,ydata,COLORS=COLORS,OFFSET=OFFSET,CENTER=CENTER,BARSPACE=BARSPACE,SYMMETRIC=SYMMETRIC,_EXTRA=e
+PRO ubar_plot,xdata,ydata,xbase,COLORS=COLORS,OFFSET=OFFSET,CENTER=CENTER,BARSPACE=BARSPACE,SYMMETRIC=SYMMETRIC,OPLOT=OPLOT,_EXTRA=e
 
 DEFAULT,offset,0
+DEFAULT,OPLOT,0
 DEFAULT,colors,!P.COLOR
 DEFAULT,center,1
 DEFAULT,BARSPACE,0.2
 IF NOT set(ydata) THEN BEGIN 
    ydata = xdata
-   xdata = indgen(N_ELEMENTS(ydata))
+   xdata = lindgen(N_ELEMENTS(ydata))
 END
-
+IF NOT set(xbase) THEN BEGIN
+   xbase = xdata
+END
 IF set(colors) AND N_ELEMENTS(colors) EQ 1 THEN BEGIN
    tmp = intarr(N_ELEMENTS(ydata))
    tmp(*) = colors
@@ -75,49 +84,52 @@ END
 
 
 IF CENTER THEN BEGIN
-   stepl = (FLOAT(xdata(1)-xdata(0))/2.)*(1.-barspace/2) &  stepr = stepl*(1.-barspace/2) 
+   stepl = (FLOAT(xbase(1)-xbase(0))/2.)*(1.-barspace/2) &  stepr = stepl*(1.-barspace/2) 
 END ELSE BEGIN 
-      stepl = barspace/2 & stepr = FLOAT(xdata(1)-xdata(0))*(1.-barspace/2)
+      stepl = barspace/2 & stepr = FLOAT(xbase(1)-xbase(0))*(1.-barspace/2)
 END
 PTMP = !P.MULTI
-;print,!P.MULTI
-CASE 1 OF
-   ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/XSTYLE,_EXTRA=e
-   ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
-   ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
-             maxr = MAX([ABS(xdata(0)-stepl),ABS(MAX(xdata)+stepr)])
-             plot,xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
-          END ELSE BEGIN
-             plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
-          END 
-ENDCASE
-PTMP2 = !P.MULTI
-;print,!P.MULTI
+IF OPLOT EQ 0 THEN BEGIN
 
+   ;;print,!P.MULTI
+   CASE 1 OF
+      ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/XSTYLE,_EXTRA=e
+      ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
+      ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
+         maxr = MAX([ABS(xdata(0)-stepl),ABS(MAX(xdata)+stepr)])
+         plot,xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
+      END ELSE BEGIN
+         plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
+      END 
+   ENDCASE
+   ;;print,!P.MULTI
+ENDIF
+
+PTMP2 = !P.MULTI
 FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN 
    x = [ xdata(i)-stepl,xdata(i)-stepl,xdata(i)+stepr,xdata(i)+stepr ]
    y = [ offset ,ydata(i),ydata(i),offset ]
    polyfill,x,y,COLOR=COLORS(i),NOCLIP=0
 
 END
-
-;;Und Nochmal Drueber
-;print,!P.MULTI
-!P.MULTI = PTMP 
-CASE 1 OF
-   ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/NOERASE,/XSTYLE,_EXTRA=e
-   ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
-   ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
-             maxr = MAX([ABS(xdata(0)-stepl),ABS(MAX(xdata)+stepr)])
-             plot,xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
-          END ELSE BEGIN
-             plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
-          END
-ENDCASE
+;IF OPLOT EQ 0 THEN BEGIN
+   ;;Und Nochmal Drueber
+   ;;print,!P.MULTI
+   !P.MULTI = PTMP 
+   CASE 1 OF
+      ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/NOERASE,/XSTYLE,_EXTRA=e
+      ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
+      ELSE : IF Keyword_Set(SYMMETRIC) THEN BEGIN
+         maxr = MAX([ABS(xdata(0)-stepl),ABS(MAX(xdata)+stepr)])
+         plot,xdata,ydata,/NODATA,XRANGE=[-maxr,maxr],/XSTYLE,_EXTRA=e
+      END ELSE BEGIN
+         plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
+      END
+   ENDCASE
+   
+   ;;print,!P.MULTI
+;ENDIF
 !P.MULTI = PTMP2
-;print,!P.MULTI
-
-
 END
 
 ;xdata = indgen(20)
