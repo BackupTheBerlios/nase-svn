@@ -28,6 +28,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/22 14:52:52  kupper
+;        Changed to use new Distance() function.
+;        The old code was wrong! Inertia() will have produced invalid results!
+;
 ;        Revision 1.1  1999/12/02 18:03:43  saam
 ;              SIC!
 ;
@@ -37,20 +41,20 @@ FUNCTION Inertia, A, COM=com
 
    s = SIZE(A)
    dims = s(0)
-   w = s(1)
-   h = s(2)
+   w = s(2)
+   h = s(1)
 
    tA = total(A)
    
    IF dims NE 2 THEN Message, 'only for 2-d array at the moment, sorry!'
    r = FLTARR(dims)
 
-   com = Schwerpunkt(A)
-   
+   com = round(Schwerpunkt(A))
+
    IF com(0) NE !NONE THEN BEGIN
-      xa = REBIN((FindGen(w) <  (FLOAT(w)-FindGen(w))) - com(0), w, h)
-      ya = TRANSPOSE(REBIN((FindGen(h) <  (FLOAT(w)-FindGen(h))) - com(1), h, w))
-      IF equal(tA , 0.0) THEN return, 0.0 ELSE return, total(A*(xa^2+ya^2))/tA
+      IF equal(tA, 0.0) THEN $
+       return, 0.0 ELSE $
+       return, total( A * Distance(h, w, com(0), com(1)) ) / tA
    END ELSE RETURN, !NONE
 
 END
