@@ -16,7 +16,7 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*  PolyTest
+;*  PolyPSBug
 ;
 ; OUTPUTS:
 ;  Four encapsulated postcript files of different size.  
