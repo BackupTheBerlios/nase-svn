@@ -2,6 +2,9 @@
 ; NAME:
 ;  IMax()
 ;
+; VERSION:
+;  $Id$
+; 
 ; AIM:
 ;  computes maximum function for arbitrary array dimensions
 ;
@@ -54,6 +57,9 @@
 ;
 ; RESTRICTIONS:
 ;   i <= 6 (IDL-Einschraenkung)
+;
+; SEE ALSO:
+;  <A>IMin</A>, <A>IMean</A>, <A>IMoment</A>
 ;
 ; EXAMPLE:       
 ;*A = IndGen(10,10)
