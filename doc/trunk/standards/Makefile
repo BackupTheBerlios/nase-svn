@@ -15,6 +15,9 @@
 # MODIFICATION HISTORY:
 #
 #       $Log$
+#       Revision 1.4  2000/11/16 15:48:47  saam
+#       i modified something, but what?
+#
 #       Revision 1.3  2000/09/26 14:05:27  saam
 #       changes to directory structure
 #
@@ -38,7 +41,7 @@ CLIENTS =
 
 # with .bb ending; make searches then automatically for *.gif,  *.jpg, *.gif and *.tif
 # For example, if you have an image called umbrella.jpg, you specify umbrella.bb
-NONPS_PICS = 
+NONPS_PICS =  memory.bb
 
 # EPS-files must have a ".eps" ending
 PS_PICS = 
@@ -76,7 +79,7 @@ $(MYDVI): $(MYTEX) $(MYBIB) $(NONPS_PICS) $(PS_PICS)
 %.html: %.tex
 	latex2html -split 0 -no_navigation -no_subdir -info '' $*
 %.dvi: %.tex 
-	ln -s ../header.pro ../header.pro.tex
+	ln -sf ../header.pro ../header.pro.tex
 	latex  $* 
 	((grep bibcite $*.aux > /dev/null) && ( bibtex $* ; latex  $* ; latex  $* ) || true )
 	((grep -i rerun *.log > /dev/null) && (latex $*) || true )
