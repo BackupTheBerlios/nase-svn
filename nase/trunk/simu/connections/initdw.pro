@@ -116,6 +116,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.16  1999/07/28 08:23:09  saam
+;             some memory optimizations in the delay-part
+;
 ;       Revision 2.15  1998/12/15 13:02:18  saam
 ;             multiple bugfixes
 ;
@@ -306,16 +309,22 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
    if HasDelay then begin
       
       Default, delay, 0
-      Default, W_INIT, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
-      Default, D_INIT, Replicate( FLOAT(delay),  t_width*t_height, s_width*s_height )
-      
-      _DW = Handle_Create(!MH, VALUE={ info    : 'DW_DELAY_WEIGHT',$
-                                       source_w: s_width,$
-                                       source_h: s_height,$
-                                       target_w: t_width,$
-                                       target_h: t_height,$
-                                       Weights : reform(w_init, t_height*t_width, s_height*s_width), $
-                                       Delays  : reform(d_init, t_height*t_width, s_height*s_width) }, /NO_COPY)
+
+      Default, w_init, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
+      Default, d_init, Replicate( FLOAT(delay),  t_width*t_height, s_width*s_height )
+
+      w_init = reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE)
+      d_init = reform(d_init, t_height*t_width, s_height*s_width, /OVERWRITE)
+
+      tmp = { info    : 'DW_DELAY_WEIGHT',$
+              source_w: s_width,$
+              source_h: s_height,$
+              target_w: t_width,$
+              target_h: t_height,$
+              Weights : temporary(w_init) ,$
+              Delays  : temporary(d_init) }
+
+      _DW = Handle_Create(!MH, VALUE=tmp, /NO_COPY)
    END ELSE BEGIN         
       Default, W_INIT, Replicate( FLOAT(weight), t_width*t_height, s_width*s_height )
       
@@ -324,7 +333,7 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                                       source_h: s_height,$
                                       target_w: t_width,$
                                       target_h: t_height,$
-                                      Weights : reform(w_init, t_height*t_width, s_height*s_width) }, /NO_COPY)
+                                      Weights : reform(w_init, t_height*t_width, s_height*s_width, /OVERWRITE) }, /NO_COPY)
    END
    
 
