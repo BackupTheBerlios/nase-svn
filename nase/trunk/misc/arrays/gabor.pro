@@ -6,13 +6,15 @@
 ;  $Id$
 ;
 ; AIM:
-;  Construct a gabor patch.
+;  Construct a 2-dimensional gabor patch.
 ;
 ; PURPOSE:
 ;  <C>Gabor()</C> returns a square array containing a (real value)
 ;  Gabor patch of zero mean, and of arbitrary wavelength, size, and
 ;  orientation. Optionally, the peak amplitude, or the power of the
-;  whole patch, can be normalized to <*>1.0</*>.
+;  whole patch, can be normalized to <*>1.0</*>.<BR>
+;  See the <A>Gabor1d()</A> function for constructing 1-dimensional
+;  gabor wavelets.
 ;
 ; CATEGORY:
 ;  Array
@@ -54,7 +56,7 @@
 ;  NORM        :: Normalize the gaussian mask that is used to build
 ;                 the gabor patch, for image processing purposes. If
 ;                 <*>/NORM</*> is set, the gaussian mask that is
-;                 multilpied to the cosine function is normalized to a
+;                 multiplied to the cosine function is normalized to a
 ;                 total volume of 1.0 (see also <*>/NORM</*> option of
 ;                 the <A>Gauss_2d</A> function).  This makes
 ;                 convolution results for different wavelengths
@@ -128,7 +130,7 @@
 ;*4. PlotTVScl, /NASE, Gabor(100, ORIENTATION=30, PHASE=0.5*!DPI, WAVELENGTH=50)
 ;
 ; SEE ALSO:
-;  <A>Dog</A>, <A>Gauss_2d</A>
+;  <A>Gabor1d</A>, <A>Dog</A>, <A>Gauss_2d</A>
 ;-
 
 Pro Gabor_rotate_array, result, orientation
