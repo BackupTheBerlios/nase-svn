@@ -31,6 +31,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.5  1998/02/26 14:12:46  saam
+;             Aenderungen der letzten Revision wegen Probleme
+;             mit 32-Bit-Diplay zurueckgenommen
+;
 ;       Revision 1.4  1998/02/23 16:20:41  kupper
 ;              Benutzt jetzt RGB() und kann Farbnamen.
 ;
@@ -46,11 +50,11 @@ Pro SetColorIndex, Nr, R, G, B
    
    if Nr gt !D.Table_Size-1 then message, "Der Farbindex ist nicht verfügbar!"
 
-;    My_Color_Map = intarr(256,3) 
-;    TvLCT, My_Color_Map, /GET  
-;    My_Color_Map (Nr,*) = [R,G,B]
-;    TvLCT,  My_Color_Map
+    My_Color_Map = intarr(256,3) 
+    TvLCT, My_Color_Map, /GET  
+    My_Color_Map (Nr,*) = [R,G,B]
+    TvLCT,  My_Color_Map
 
-   dummy = RGB(INDEX=Nr, R, G, B)
+;   dummy = RGB(INDEX=Nr, R, G, B)
 
 End
