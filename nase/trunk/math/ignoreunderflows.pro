@@ -51,9 +51,10 @@
 ;
 ; RESTRICTIONS:
 ;  Selective reset of math error flags is, apparently, not supported
-;  on the Windows platform (keyword <C>MASK</C> to
+;  on the Windows platform in IDL versions earlier than 5.4 
+;  (keyword <C>MASK</C> to
 ;  <C>CHECK_MATH</C>). Also, the <C>MASK</C> keyword to
-;  <C>CHECK_MATH</C> is unknown in IDL version 3.<BR>
+;  <C>CHECK_MATH</C> is unknown in IDL's Unix version 3.<BR>
 ;  In these cases, calls to <C>IgnoreUnderflows</C> are silently
 ;  skipped. <B>If future versions of IDL support selective flag
 ;  handling for math errors on the windows platform, please adjust
@@ -73,7 +74,12 @@
 ;  <C>CHECK_MATH</C>
 ;-
 
-Pro IgnoreUnderflows
-   If IdlVersion(/float) gt 5.2 then $
-    If !Version.OS_FAMILY ne "Windows" then dummy = Check_Math(Mask=32)
-End
+PRO IgnoreUnderflows
+
+   IF !Version.OS_FAMILY EQ 'Windows' THEN BEGIN
+      IF IdlVersion(/FLOAT) GE 5.4 THEN dummy = Check_Math(Mask=32)
+   ENDIF ELSE BEGIN
+      IF IdlVersion(/FLOAT) GT 5.2 THEN dummy = Check_Math(Mask=32)
+   ENDELSE
+
+END 
