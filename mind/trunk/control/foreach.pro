@@ -44,7 +44,8 @@
 ;  LCONST: While LSKIP skips various loops, LCONST just assumes a
 ;          constant value for them (the one they currently have). The
 ;          syntax is the same as for LSKIP.  
-;  SKEL  : iteration separator for filenames (default '_')
+;  SEP   : iteration separator for filenames (default '_')
+;  SKEL  : string added to filename after iteration info (default '_')
 ;  __XX  : Loop Variables may be modified/set as keywords. If you have
 ;          a loop variable ITER, you can change the default value by passing
 ;          __ITER={whatever_you_like}. ForEach will then use your
@@ -71,9 +72,14 @@
 ; SEE ALSO:
 ;  <A HREF=http://neuro.physik.uni-marburg.de/mind/control#FAKEEACH>fakeeach</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#INITLOOP>initloop</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPVALUE>loopvalue</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/control/loops#LOOPTAGS>looptags</A>
 ;
+;-
+;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/08/14 14:37:14  thiel
+;         Added 'SEP'-Keyword to description in header.
+;
 ;     Revision 1.9  2000/08/11 10:24:52  thiel
 ;         Now it really WAITS for keypress if wanted.
 ;
@@ -107,8 +113,6 @@
 ;     Revision 1.1  1999/12/08 14:38:32  saam
 ;           not fully documented YET (handle/value missing)
 ;
-;
-;-
 
 FUNCTION ForEach, procedure, p1,p2,p3,p4,p5,p6,p7,p8,p9 $
                   , W=w, values=values, ltags=ltags, fake=fake, quiet=quiet $
