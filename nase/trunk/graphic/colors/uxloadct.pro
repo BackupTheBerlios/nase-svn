@@ -83,7 +83,10 @@ Pro UXLoadCt, NCOLORS=ncolors, BOTTOM=bottom, FILE=file, $
    ;;   previous call to XLOADCT, but is not specified now, XLOADCT
    ;;   correctly reads the standard table names, but nevertheless
    ;;   remembers the OLD file when loading the actual colors!
-   COMMON xloadct_com, r0, g0, b0, tfun, state, filename
+   COMMON xloadct_com, r0, g0, b0, tfun, state, filename, cps, psave, pnt, $
+            top, bot, silent, chop, lock, g_lbl, vbot, vtop, g_slider, $
+            gamma, color, use_values, _ncolors, cbot, siz, w_height, show_win, $
+            updt_callback, updt_cb_data
    If not Keyword_Set(FILE) then undef, filename
 
    Default, bottom, 0
