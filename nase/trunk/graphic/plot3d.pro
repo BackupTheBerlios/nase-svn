@@ -19,23 +19,23 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*Plot3d, data [,x [,y]] [,AX=...] [,AZ=...] [,/NOAXIS]
+;* Plot3d, data [,x [,y]] [,AX=...] [,AZ=...] [,/NOAXIS]
 ;
 ; INPUTS:
 ;  data:: A two-dimensional array to be plotted.
 ;
 ; OPTIONAL INPUTS:
-;  x, y:: Vectors specifying the x/y-coordinates of the grid This
+;  x, y:: Vectors specifying the x/y-coordinates of the grid. This
 ;        influences the coordinates themselves, not only the
 ;        annotation of the axis (see second example).
 ;
 ; INPUT KEYWORDS:
 ;  AX:: Rotation of the viewpoint around the x-axis (Default: 10).
 ;  AZ:: Rotation of the viewpoint around the z-axis (Default:  4)
-;  /NOAXIS:: Supress axis output.
+;  /NOAXIS:: Suppress axis output.
 ;
 ; RESTRICTIONS:
-;  AX/AZ should not be chosen too large, since the hiding of the plots
+;  <*>AX</*>/<*>AZ</*> should not be chosen too large, since the hiding of the plots
 ;  may fail then.
 ;
 ; PROCEDURE:
@@ -120,8 +120,8 @@ PRO Plot3d, data, x, _z, AX=ax, AZ=az, NOAXIS=noaxis
    ;-----> OUTPUT RESULT
    ;----->    
    b=TVRD()	        ; Read image.
-   uSET_PLOT, current_device	; Select previous output device.
-   UTV, b	        ; Output the image.
+   USet_Plot, current_device	; Select previous output device.
+   UTVScl, b	        ; Output the image.
 
 END
 
