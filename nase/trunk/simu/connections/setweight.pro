@@ -13,14 +13,15 @@
 ;
 ;
 ;
-; CATEGORY: Simulation
+; CATEGORY: SIMULATION, CONNECTIONS
 ;
 ;
 ;
 ; CALLING SEQUENCE: Gewicht = GetWeight ( D_W_Struktur, Gewicht,
 ;                                         {   ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index )
 ;                                           | ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
-;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
+;                                           | ( ,S_ROW=s_row, S_COL=s_col | ,S_INDEX=s_index ) 
+;                                             ( ,T_ROW=t_row, T_COL=t_col | ,T_INDEX=t_index )
 ;                                         }
 ;                                         [ ,ALL [,LWX ,LWY] [,TRUNCATE [,TRUNC_VALUE]] ]
 ;                                         [ ,TRANSPARENT][,INITSDW]
@@ -78,23 +79,6 @@
 ;                     alles andere: <A HREF="#GETWEIGHT">siehe GetWeight()</A>
 ;
 ;
-;
-; OUTPUTS: ---
-;
-;
-;
-; OPTIONAL OUTPUTS: ---
-;
-;
-;
-; COMMON BLOCKS: ---
-;
-;
-;
-; SIDE EFFECTS: ---
-;
-;
-;
 ; RESTRICTIONS: Die übergebenen Gewichte müssen je nach Kontext
 ;               entweder ein Skalar oder ein Array mit entsprechenden
 ;               Dimensionen (s. GetWeight() ) sein!
@@ -105,13 +89,16 @@
 ;
 ;
 ;
-; EXAMPAMPLE:siehe GetWeight()
+; EXAMPLE:siehe GetWeight()
 ;
 ;
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  1997/12/08 13:48:14  thiel
+;              Druckfehler in der Doku berichtigt.
+;
 ;       Revision 1.10  1997/11/17 17:46:24  gabriel
 ;             INITSDW Keyword eingefuegt
 ;
@@ -144,12 +131,15 @@
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
 ;		Urversion erstellt.
+;
 ;-
 
-Pro SetWeight, V_Matrix, Weight, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
-                                    T_ROW=t_row, T_COL=t_col, T_INDEX=t_index, $
-                                    ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-                                    TRANSPARENT=transparent,INITSDW=initsdw
+PRO SetWeight, V_Matrix, Weight, ALL=All, S_ROW=S_Row, S_COL=S_Col, S_INDEX=S_Index, $
+                                 T_ROW=T_Row, T_COL=T_Col, T_INDEX=T_Index, $
+                                 LWX=lwx, LWY=lwy, TRUNCATE=Truncate, TRUNC_VALUE=Trunc_Value, $
+                                 TRANSPARENT=Transparent, INITSDW=InitSDW
+
+
    if set(TRANSPARENT) then Default, trunc_value, transparent
    s = size(Weight)
 
