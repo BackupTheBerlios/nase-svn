@@ -156,11 +156,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
       ELSE s(1:2) = nt(0,nt(0)+2:nt(0)+3)
    ENDIF ELSE BEGIN
       IF s(0) EQ 1 THEN BEGIN   ; correction for a single spiketrain
-;         modified = 1
-;         nt = REFORM(nt, 1, N_Elements(nt), /OVERWRITE)
          s = [s(0:1), 1, s(2:*)]
       END ELSE BEGIN
-;         modified = 0
          IF s(0) NE 2 THEN Console, /FATAL $
           , 'First argument must be a 2-dim array.'
       END
@@ -186,18 +183,23 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
 
 
 
-   IF Set(XRANGE) THEN xr=[(xrange(0)>0), $
-;                           (xrange(1)<(s(2)-1))] $
-                           (xrange(1)<(s(1)-1))] $
+;; Why should the ranges be limited?
+;   IF Set(XRANGE) THEN xr=[(xrange(0)>0), $
+;;                           (xrange(1)<(s(2)-1))] $
+;                           (xrange(1)<(s(1)-1))] $
+;   ELSE xr = [0,time]
+
+   IF Set(XRANGE) THEN xr=[(xrange(0)), (xrange(1))] $
    ELSE xr = [0,time]
+   
 
    IF Set(YRANGE) THEN BEGIN
-;      yr = [yrange(0) > 0, yrange(1) < (s(1)-1)]
-      yr = [yrange(0) > 0, yrange(1) < (s(2)-1)]
+;; Why should the ranges be limited?
+;      yr = [yrange(0) > 0, yrange(1) < (s(2)-1)]
+      yr = [yrange(0), yrange(1)]
       showneurons = yr(1)-yr(0) ; this is needed to determine size of symbols
       yr = [yr(0)-1,yr(1)+1]
    ENDIF ELSE BEGIN 
-;      showneurons = s(1)-1
       showneurons = s(2)-1
       yr = [-1,allneurons+1]
    ENDELSE
@@ -214,11 +216,8 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
    ;;---------------> plot axis
    IF NOT KEyword_Set(OVERPLOT) THEN BEGIN
        IF KEYWORD_SET(clean) THEN BEGIN
-;           empty=StrArr(25)
-;           FOR i=0,24 DO empty(i)=' '
            Plot, nt, /NODATA, $
              XRANGE=xr+offset, YRANGE=yr, $
-;             XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, $
              XSTYLE=5, YSTYLE=5, YTICKFORMAT=noticks, XTICKFORMAT=noticks, $
              XMINOR=1, YMINOR=1, $
              XTICKLEN=!X.TICKLEN*0.4, YTICKLEN=!Y.TICKLEN*0.4, $
@@ -283,8 +282,6 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
       
    ENDIF ELSE BEGIN ; conventional tn-array
       spikes = where(nt GT level, doplot) ; level check
-      ;; correction for a single spiketrain
-;      IF modified THEN nt = REFORM(nt, /OVERWRITE)
    ENDELSE
 
 
