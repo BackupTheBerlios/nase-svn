@@ -14,6 +14,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.9  2000/06/19 13:23:45  saam
+;           new sysv !CREATEDIR used by uopenw to be allowed
+;           to create nonexistent dirs. default is NO.
+;
 ;     Revision 1.8  2000/03/28 12:52:08  saam
 ;          new SysV !CONSOLE for use with console
 ;
@@ -100,6 +104,9 @@ DefSysV, '!EXECPATHS', ['/bin', '/sbin', '/usr/bin', '/usr/sbin', '/usr/games', 
 
 ; der Pfad zu unserer Shared Library für CALL_EXTERNAL
 DefSysV, '!NASE_LIB', '/vol/lib/nase/nasec.so', 0
+
+; if set to 1, UOPENW will create directories if they dont exist
+DefSysV, '!CREATEDIR', 0, 0
 
 
 ; defines a standard console
