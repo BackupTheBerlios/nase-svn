@@ -25,7 +25,7 @@
 ;* rate = Instantrate( spikes [,SAMPLEPERIOD=...]  
 ;*                            [,/GAUSS] [,SSIZE=...] [,SSHIFT=...]
 ;*                            [,TVALUES=...] [,TINDICES=...] 
-;*                            [,AVERAGE=...])
+;*                            [,AVERAGE=...] [/MEMORYSAVE)
 ;
 ;
 ; INPUTS: 
@@ -50,6 +50,10 @@
 ;         the half width of the rectangular convolution mask. Default: 20ms.
 ;  SSHIFT:: Shift of positions where firing rate is to be
 ;          computed. Default: 1BIN.
+;  /MEMORYSAVE:: Uses a loop for computing the firing rates seperately
+;                for each neuron. This is slower, but needs less
+;                memory than working with the whole
+;                <*>spikes</*>-array at once. Default: <*>MEMORYSAVE=0</*>. 
 ;
 ; OUTPUTS: 
 ;  rate:: Twodimensional array, containing the firing rates at the
@@ -98,8 +102,10 @@
 FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
                       , SSIZE=ssize, SSHIFT=sshift $
                       , TVALUES=tvalues, TINDICES=tindices $
-                      , AVERAGE=average, GAUSS=gauss
+                      , AVERAGE=average, GAUSS=gauss $
+                      , MEMORYSAVE=memorysave
 
+   Default, memorysave, 0
    Default, gauss, 0
    Default, sampleperiod, 0.001
    Default, ssize, 20
@@ -117,6 +123,8 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
    tvalues = tindices*1000.*sampleperiod
 
    IF Keyword_Set(GAUSS) THEN BEGIN
+      IF Keyword_Set(MEMORYSAVE) THEN Console, /WARN $
+       , '/GAUSS with /MEMORYSAVE not yet implemented.' ;; not sure if it makes a difference anyway 
       ;; generate gaussian and convolve
       gausslength = 8*__ssize
       gaussx = FIndGen(gausslength)-gausslength/2
@@ -132,9 +140,20 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
       ;; at edges by adding 0s
       addlength = __ssize
       add = FltArr(addlength, snt[2])
-      newnt = Reform([add, Float(nt), add], snt[4]+(addlength*2*snt[2]))
-      rates = Smooth(newnt, 2*__ssize)/sampleperiod
-      rates = Reform(rates, snt[1]+addlength*2, snt[2], /OVERWRITE)
+
+      rates = [add, Float(nt), add]
+      
+      IF Keyword_Set(MEMORYSAVE) THEN BEGIN
+         FOR i=0, snt[2]-1 DO BEGIN
+            rates(*, i) = Smooth(rates(*, i), 2*__ssize)/sampleperiod
+         ENDFOR
+      ENDIF ELSE BEGIN
+         rates = Reform(rates, snt[4]+(addlength*2*snt[2]), /OVERWRITE)
+         rates = Smooth(rates, 2*__ssize)/sampleperiod
+         rates = Reform(rates, snt[1]+addlength*2, snt[2], /OVERWRITE)
+      ENDELSE ;; Keyword_Set(MEMORYSAVE)
+
+      
       i1 = LIndGen(snt[1])+addlength
       rates = (Temporary(rates))[[i1], *]
 
