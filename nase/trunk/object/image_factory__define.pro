@@ -9,6 +9,9 @@ Function image_factory::image
    Endif
    return, (*self.image)*self.brightness
 End
+Function image_factory::imageptr
+   return, self.image
+End
 
 Function image_factory::width
    return, self.width
