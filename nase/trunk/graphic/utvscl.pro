@@ -373,9 +373,12 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
         Console, 'Array has more than 2 dimensions.', /FATAL
        ;; Add a third dimension to be compatioble to the TRUE color
        ;; option. 
-       ;; this works for one dim array as well, since the original
-       ;; size has been kept in sizeimage_orig 
-       image = Reform(image, sizeimage_orig[1], sizeimage_orig[2], 1, /OVERWRITE)
+       currsize = size(image, /Dimensions)
+       ;; handle 1dim arrays:
+       if size(image, /n_dimensions) eq 2 then $
+         newsize = [currsize, 1] else $
+         newsize = [currsize, 1, 1]
+       image = Reform(image, newsize, /OVERWRITE)
        TRUE=0
    END
 
