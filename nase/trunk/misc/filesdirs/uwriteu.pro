@@ -9,11 +9,22 @@
 ;  saves a data structure in a file (unformatted/binary)
 ;
 ; PURPOSE:
-;  
-;  Remember that
-;  this data is saved in an architecture dependent format, unless you
+;  IDL's <C>WRITEU</C> procedure writes unformatted binary data from an
+;  expression into a file. This is done by directly transferring the
+;  data with no processing of any kind being done to the data. This
+;  causes several problems when saving strings or more complex data
+;  like structures, arrays of structures or structures containing
+;  other structures. <C>UWriteU<C> is a wrapper for <C>WriteU</C> that
+;  cares for all these problems using a special format to save the
+;  data. All data that is saved with this routine will have to be
+;  restored using <A>UReadU</A>.<BR>
+;  Remember that data is saved in an
+;  architecture dependent format, unless you 
 ;  specified <*>/XDR</*> when opening the file. So be sure, that you
-;  use compatible calls for read and write.
+;  use compatible calls for read and write.<BR>
+;  This routine completely replaces and enhances the functionality of
+;  <A>Save2</A> and <A>SaveStruc</A>, but note that all data is saved
+;  binary and save formats are incompatible.
 ;
 ; CATEGORY:
 ;  DataStorage
@@ -26,15 +37,17 @@
 ;*UWriteU, lun, x
 ;
 ; INPUTS:
+;  lun :: a valid, writable <B>LUN</B> (see <A>UOpenW</A> how to
+;         get one). Alternatively you may specify a <B>filename</B> and
+;         <C>UReadU</C> will manage opening and closing automatically. In
+;         this case, only one data structure can be saved.
 ;  x   :: the data structure to saved into <*>lun</*>
-;  lun :: a valid, writable LUN (see <A>UOpenW</A> how to
-;         get one)
 ;
 ; SIDE EFFECTS:
 ;  modifies the file attached to <*>lun</*>
 ;
 ; EXAMPLE:
-;*a={a:1,b:2.,c:"3",d:intarr(4),e:{e:dblarr(1,2,3,4)}}
+;*a={a:1,b:2.,c:'3',d:intarr(4),e:{e:dblarr(1,2,3,4)}}
 ;*uwriteu, 'test.sav', a
 ;*b=ureadu('test.sav')
 ;*help, b, /str
@@ -61,21 +74,15 @@
 ; 
 
 
-PRO UWriteU, _lun, x, _EXTRA=e
+PRO _Uwriteu, lun, x, _EXTRA=e
 
   ON_Error, 2
-
-  
-  IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenW(_lun,_EXTRA=e) ELSE lun=_lun
-
 
   _t=TypeOf(x, INDEX=type)
   IF SubSet(type,[0,10,11]) THEN Console, "can't write type UNDEFINED/POINTER/OBJECT", /FATAL
   sx = SIZE(x)
 
-  ; write version and ID
-  printf, lun, 'UWriteU/$Revision$'
-  
+
   IF ((type EQ 8) AND (sx(N_Elements(sx)-1) EQ 1)) THEN BEGIN
       ; it is a scalar structure
       
@@ -91,12 +98,12 @@ PRO UWriteU, _lun, x, _EXTRA=e
       sName = Tag_Names(X, /STRUCTURE_NAME)
 
       WriteU, lun, LONG(nTags)
-      UWriteU, lun, sName
+      _Uwriteu, lun, sName
       FOR tag=0, nTags-1 DO BEGIN
-          UWriteU, lun, tagName(tag)
+          _Uwriteu, lun, tagName(tag)
           _t = TypeOf(X.(tag), INDEX=type)
           IF SubSet(type, [0,10,11]) THEN Console, 'sorry, tags are not allowed to be UNDEFINED/POINTER/OBJECT', /FATAL
-          UWriteU, lun, X.(tag)
+          _Uwriteu, lun, X.(tag)
       END
 
   END ELSE BEGIN
@@ -106,11 +113,26 @@ PRO UWriteU, _lun, x, _EXTRA=e
       ;; write the data
       CASE TypeOf(x) OF
           'STRING': FOR i=0, N_Elements(x)-1 DO WriteU, lun, LONG(StrLen(x(i))), x(i)
-          'STRUCT': FOR i=0, N_Elements(x)-1 DO UWriteU, lun, x(i)
+          'STRUCT': FOR i=0, N_Elements(x)-1 DO _Uwriteu, lun, x(i)
           ELSE    : WriteU, lun, x
       END
   END
 
+END
+
+
+
+PRO UWriteU, _lun, x, _EXTRA=e
+  ON_Error, 2
+
+  IF N_Params() NE 2 THEN Console, 'two positional arguments expected', /FATAL
+  IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenW(_lun,_EXTRA=e) ELSE lun=_lun
+
+  ; write version and ID
+  printf, lun, 'UWriteU/$Revision$'
+
+  _UWriteU, lun, x, _EXTRA=e
+  
 
   IF TypeOf(_lun) EQ 'STRING' THEN UClose, lun ELSE _lun=lun
 END

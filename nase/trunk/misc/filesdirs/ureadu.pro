@@ -53,15 +53,8 @@
 ;
 ;-
 
-FUNCTION UReadU, _lun, _EXTRA=e
+FUNCTION _UReadU, lun, _EXTRA=e
   ON_Error, 2
-
-  IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenR(_lun,_EXTRA=e) ELSE lun=_lun
-
-  ; write version and ID
-  version = ''
-  readf, lun, version
-  
 
 
   ; read the size structure of the data to be read
@@ -77,14 +70,14 @@ FUNCTION UReadU, _lun, _EXTRA=e
       ReadU, lun, nTags
 
       ; name of the structure, empty string if anonymous
-      sName = UReadU(lun)
+      sName = _ureadu(lun)
       
 
       FOR tag=0, nTags-1 DO BEGIN
-          tagName = UReadU(lun)
+          tagName = _ureadu(lun)
           IF TypeOF(tagName) NE "STRING" THEN Console, 'error in file (no tag name string)'
 
-          tagVal = UReadU(lun)
+          tagVal = _ureadu(lun)
           
           IF tag EQ 0 THEN BEGIN
               x = Create_Struct(tagName, tagVal)
@@ -125,7 +118,7 @@ FUNCTION UReadU, _lun, _EXTRA=e
               END
           END
           8 : BEGIN             ; struct
-              x = UReadU(lun)   ; read first struc
+              x = _ureadu(lun)   ; read first struc
               
               x = Replicate(x, Product(sx(1:sx(0)))) ; fucking REPLICATE doesn't accept a vector of dimensions!
               x = REFORM(x, sx(1:sx(0)), /OVERWRITE) 
@@ -136,6 +129,24 @@ FUNCTION UReadU, _lun, _EXTRA=e
       END
   END
   
+  RETURN, x
+END
+
+
+
+FUNCTION UReadU, _lun, _EXTRA=e
+
+  ON_ERROR, 2
+  IF TypeOf(_lun) EQ 'STRING' THEN lun=UOpenR(_lun,_EXTRA=e) ELSE lun=_lun
+
+  ; read version and ID
+  version = ''
+  readf, lun, version
+
+  if not STRCMP(version, 'UWriteU/', 8) THEN Console, "data not written using UWriteU, can't restore", /FATAL
+
+  x = _ureadu(lun)
+
   IF TypeOf(_lun) EQ 'STRING' THEN UClose, lun ELSE _lun=lun
   RETURN, x
 END
