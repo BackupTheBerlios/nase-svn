@@ -115,7 +115,7 @@
  PROCEDURE: Obtain file-descriptors, set NON-BLOCKING-flag on it, attempt to read a character,
             push it back if seccessfull, reset NON-Blocking-flag
 
- EXAMPLE: ready=CALL_EXTERNAL("foo.so","wait_for_data",lun)
+ EXAMPLE: ready=CALL_EXTERNAL("foo.so","non_block_readable",lun)
 		  if (ready) readf, lun, data
 
  SEE ALSO: -Call routine with no parameters for informational message-
@@ -127,6 +127,9 @@
 ===============================================================================================================
 
         $Log$
+        Revision 1.2  1999/03/05 14:28:32  kupper
+        IDL-Wrapper-Routinen jetzt fertig.
+
         Revision 1.1  1999/03/04 16:36:21  kupper
 
         Erster Commit.
