@@ -1,7 +1,7 @@
 ;+
 ; NAME: SPATIOTEMPCORR
 ;
-; AIM:                 two dimensional timeresolved spatiotemporal correalation histogramm
+; AIM:                 two dimensional timeresolved spatiotemporal correalation histogramm (STCH)
 ;
 ;
 ; PURPOSE:              A two dimensional spatiotemporal correalation function with sliding windows. The result is normed 
@@ -33,13 +33,16 @@
 ;                        POWER:    the power of each sliding window as an array of time 
 ;
 ;
-; EXAMPLE:               SEE: <A HREF="#SPHASEVELOCITY">SPHASEVELOCITY</A>
+; EXAMPLE:               SEE: <A>SPHASEVELOCITY</A>
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/09/28 12:06:13  gabriel
+;          STCH abbreviation inserted
+;
 ;     Revision 1.4  2000/09/28 11:49:57  gabriel
 ;          AIM tag added , message <> console
 ;
