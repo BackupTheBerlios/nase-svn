@@ -39,6 +39,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.7  2000/04/03 12:13:34  saam
+;           + removed side effect in console
+;           + freeconsole now really closes the window
+;
 ;     Revision 2.6  2000/03/29 08:03:37  saam
 ;           stops at the callers position after fatal error
 ;
@@ -63,7 +67,7 @@
 ;
 ;
 
-PRO Console, _console, _message, MSG=msg, WARNING=warning, FATAL=fatal, LEVEL=level, UP=up
+PRO Console, __console, _message, MSG=msg, WARNING=warning, FATAL=fatal, LEVEL=level, UP=up
 
 ON_ERROR,2 
 
@@ -74,10 +78,10 @@ Default, level,10
 
 CASE N_Params() OF
     1: BEGIN                    ;use standard console
-        _message=_console
+        _message=__console
         _console=!CONSOLE
     END 
-    2: ___XXXX=!NONE            ;do nothing
+    2: _console = __console
     ELSE: Message, 'invalid argument count'
 END 
 

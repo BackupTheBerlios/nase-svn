@@ -33,6 +33,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.4  2000/04/03 12:13:34  saam
+;           + removed side effect in console
+;           + freeconsole now really closes the window
+;
 ;     Revision 2.3  2000/03/28 12:36:27  saam
 ;           + added WIN keyword just for comfort
 ;           + added TITLE keyword
@@ -72,18 +76,19 @@ END ELSE BEGIN
 END 
 
 h = { $
-     cons : cons ,$
-     timewid : timewid, $
-     acttime_steps : 0l ,$
-     acttime_ms : 0.0,$
-     act   : 0 ,$
-     mode : mode ,$
-     length : length, $
-     threshold: threshold ,$
-     tolerance: tolerance, $
-     viz   : viz $
+      base: base ,$
+      cons : cons ,$
+      timewid : timewid, $
+      acttime_steps : 0l ,$
+      acttime_ms : 0.0,$
+      act   : 0 ,$
+      mode : mode ,$
+      length : length, $
+      threshold: threshold ,$
+      tolerance: tolerance, $
+      viz   : viz $
     }
- result = Handle_Create(!MH, VALUE=h,/no_copy)
+ result = Handle_Create(VALUE=h,/no_copy)
 
 return, result
 end

@@ -20,6 +20,10 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  2000/04/03 12:13:34  saam
+;           + removed side effect in console
+;           + freeconsole now really closes the window
+;
 ;     Revision 2.2  2000/03/28 12:51:09  saam
 ;           fixed non-working variant
 ;           for non-win mode
@@ -33,8 +37,7 @@ PRO freeconsole, _console
 Handle_Value,_console,status,/no_copy
 
 IF status.mode EQ 1 THEN BEGIN
-    Widget_Control,status.cons,/destroy
-    Widget_Control,status.timewid,/destroy
+    Widget_Control,status.base,/destroy
 END
 
 Handle_Value,_console,status,/no_copy,/set
