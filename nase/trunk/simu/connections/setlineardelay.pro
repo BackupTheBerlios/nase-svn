@@ -71,6 +71,6 @@ Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
 
    SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
               min + (Amp-min)/double(Range)*(Range < Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
-              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=Amp
+              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
 
 end
