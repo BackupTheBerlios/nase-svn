@@ -1,56 +1,76 @@
 ;+
 ; NAME: SetConstWeight
 ;
-; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem Neuron im Source-Layer wegführenden
-;          Verbindungen konstant bis zu einer maximalen Reichweite.
+; PURPOSE: Besetzt in einer gegebenen Delay-Weight-Struktur die von einem 
+;          Neuron im Source-Layer wegführenden Verbindungen konstant bis zu 
+;          einer maximalen Reichweite.
 ;
-; CATEGORY: SIMULATION, CONNECTIONS
+; CATEGORY: SIMULATION / CONNECTIONS
 ;
-; CALLING SEQUENCE: SetConstWeight ( DWS
-;                                   [,Wert] [,Range=Reichweite]
-;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
-;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
-;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ]
-;                                   [,TRANSPARENT] [,INVERSE][,INITSDW] )
+; CALLING SEQUENCE: 
+;   SetConstWeight ( DWS [,Wert] [,Range]
+;      {,S_ROW=Source_Row, S_COL=Source_Col, 
+;        T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
+;     | ,T_ROW=Source_Row, T_COL=Source_Col, 
+;        S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
+;     [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ]
+;     [,TRANSPARENT] [,INVERSE][,INITSDW] )
 ;
 ; INPUTS: DWS     : Eine (initialisierte!) Delay-Weight-Struktur
 ;
 ;         dann ENTWEDER     S_ROW:    Zeilennr des Sourceneurons im Sourcelayer
 ;        (Source->Target)   S_COL:    Spaltennr
-;                           T_HS_ROW: Zeilennr des Targetneurons im Targetlayer, das die max. Verbindungsstärke (Bergspitze) erhält
+;                           T_HS_ROW: Zeilennr des Targetneurons im 
+;                                     Targetlayer, von dessen Position aus der
+;                                     Radius (siehe Parameter 'Range') gemessen
+;                                     wird.
 ;                           T_HS_COL: Spaltennr
 ;           
 ;                  ODER     T_ROW:    Zeilennr des Targetneurons im Targetlayer
 ;        (Target->Source)   T_COL:    Spaltennr
-;                           S_HS_ROW: Zeilennr des Sourceneurons im Sourcelayer, das die max. Verbindungsstärke (Bergspitze) erhält
+;                           S_HS_ROW: Zeilennr des Sourceneurons im 
+;                                     Sourcelayer, von dessen Position aus der
+;                                     Radius (siehe Parameter 'Range') gemessen
+;                                     wird.
 ;                           S_HS_COL: Spaltennr
 ;
 ; OPTIONAL INPUTS: Wert   : Stärke der Verbindungen
-;                  Range  : Reichweite in Gitterpunkten. (Reichweite (Radius) des Kreises) (Default ist 1/6 der Targetlayerhöhe)
+;                  Range  : Reichweite in Gitterpunkten des Neuronengitters. 
+;                           (Radius des Kreises) 
+;                           Default ist 1/6 der Targetlayerhöhe)
 ;	
-; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE, TRANSPARENT, INITSDW : s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
-;                     INVERSE : Setzt Verbindungen ab einer minimalen Reichweite
+; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRUNCATE, TRUNC_VALUE, 
+;                             TRANSPARENT, INITSDW : s.a. <A HREF="#SETWEIGHT">SetWeight()</A>
+;                     INVERSE : Setzt Verbindungen ab einer minimalen 
+;                               Reichweite
 ;
-; SIDE EFFECTS: Die Delays der Delay-Weight-Struktur werden entsprechend geändert.
+; SIDE EFFECTS: Die Delays der Delay-Weight-Struktur werden entsprechend 
+;               geändert.
 ;
 ; PROCEDURE: Default, Setweight
 ;
-; EXAMPLE: SetConstWeight (My_DWS, S_ROW=1, S_COL=2, T_HS_ROW=23, T_HS_COL=17, 10)
+; EXAMPLE: SetConstWeight(My_DWS,S_ROW=1,S_COL=2,T_HS_ROW=23,T_HS_COL=17,10, 3)
 ;
-;              Setzt sie Gewichte, die von Neuron (1,2) ausgehen so, daß sie kegelförmig in den Targetlayer verlaufen,
-;              und zwar am stärksten auf Neuron (23,17).
+;          Setzt sie Gewichte, die von Neuron (1,2) ausgehen auf eine konstante
+;          Stärke von 10, und zwar so, daß sie von Targetneuron (23,17) aus
+;          gesehen die Targetneuronen im Umkreis von 3 Neuronenpositionen
+;          erreichen.
 ;
 ;          Volles Beispiel:
-;                           p = initpara_1()
-;                           l1 = initlayer_1(width=2,  height=3,  type=p)
-;                           l2 = initlayer_1(width=40, height=50, type=p)
-;                           My_DWS = InitDW(s_layer=l1, T_Layer=l2, w_random=[0,1])
-;                           SetConstWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
-;                           ShowWeights, My_DWS, /FROMS,  Groesse=4
+;             
+;          p = initpara_1()
+;          l1 = initlayer_1(width=2,  height=3,  type=p)
+;          l2 = initlayer_1(width=40, height=50, type=p)
+;          My_DWS = InitDW(s_layer=l1, T_Layer=l2, w_random=[0,1])
+;          SetConstWeight, My_DWS, S_ROW=1, S_COL=0, T_HS_ROW=25, t_HS_COL=20
+;          ShowWeights, My_DWS, /FROMS,  Groesse=4
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.12  1999/09/06 13:03:35  thiel
+;           Small header improvement.
+;
 ;       Revision 1.11  1998/11/09 10:40:44  saam
 ;             NOCON (Range) cut radius+1
 ;
