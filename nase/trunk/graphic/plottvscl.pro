@@ -22,6 +22,7 @@
 ;                             [, GET_XTICKS=XTicks]
 ;                             [, GET_YTICKS=YTicks]
 ;                             [, GET_PIXELSIZE=Pixelgroesse]
+;                             [, LAGMARGIN=LEGMARGIN]
 ;                             [, /NEUTRAL]
 ;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
 ;
@@ -54,6 +55,7 @@
 ;                                Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
 ;                     [XY]RANGE: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
 ;                                das erste Element gibt das Minimum, das zweite das Maximum der Achse an                      
+;                     LEGMARGIN: Raum fuer die Legende in Prozent des gesamten Plotbereichs (default: 0.25) 
 ;                     leg_(max|min): alternative Beschriftung der Legende 
 ;                     NEUTRAL:   bewirkt die Darstellung mit NASE-Farbtabellen inclusive Extrabehandlung von
 ;                                !NONE, ohne den ganzen anderen NASE-Schnickschnack
@@ -84,6 +86,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.33  1998/08/04 14:57:06  gabriel
+;          LEGMARGIN KEYWORD eingefuehrt
+;
 ;     Revision 2.32  1998/08/04 14:28:38  gabriel
 ;          Bug bei Convert_Coord nochmals verbessert/korrigiert
 ;
@@ -209,6 +214,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                LEG_MAX=leg_MAX,$
                LEG_MIN=leg_MIN,$
                NEUTRAL=neutral,$
+               LEGMARGIN=LEGMARGIN,$
                _EXTRA=_extra
 
 
@@ -238,7 +244,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    Default, NOSCALE, 0
    Default, ORDER, 0
    Default, LEGEND, 0
-   
+   Default,legmargin,0.25
    W = _W
    IF (Keyword_Set(NASE) OR Keyword_Set(NEUTRAL)) THEN BEGIN
       maxW = Max(W)
@@ -319,9 +325,9 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    
 
    ;-----Raender und Koordinaten des Ursprungs:
-   IF Keyword_Set(LEGEND) THEN LegendRandDevice = 0.25*VisualWidth ELSE LegendRandDevice = 0.0
+   IF Keyword_Set(LEGEND) THEN LegendRandDevice = LEGMARGIN*VisualWidth ELSE LegendRandDevice = 0.0
    
-
+  print,LegendRandDevice
    ;IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
    ;ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
    
@@ -368,7 +374,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
        XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
    ENDIF ELSE BEGIN
-      Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-(LEGEND*0.2*Charsize),plotregion_norm(1,1)], $
+     ;print,LEGEND*0.2*Charsize,LegendRandNorm(0),"Hallo legende"
+      Plot, indgen(2), /NODATA, Color=sc, Position=[OriginNormal(0),OriginNormal(1),plotregion_norm(0,1)-LegendRandNorm(0),plotregion_norm(1,1)], $
        xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
        yrange=YBeschriftung, /ystyle, ytickformat=ytf, $
        XTICK_Get=Get_XTicks, YTICK_GET=Get_YTicks, charsize=charsize,_EXTRA=_extra
