@@ -12,8 +12,8 @@
 ;
 ; CALLING SEQUENCE:   INITIALISIERUNG:    structure = NoisyRhythm([RATE=rate] 
 ;                                                     [,GAUSS=gauss] [,CONST=const]
-;                                                     ( ,LAYER=Layer | ,WIDTH=width, HEIGHT=height )
-;                                                     [,RANDOM=random]
+;                                                     { ,LAYER=Layer | ,WIDTH=width, HEIGHT=height }
+;                                                     [,RANDOM=random], [OVERSAMP=oversamp])
 ;                     NORMAL:             input = NoisyRhythm(structure)
 ;
 ; INPUTS:             structure : eine Struktur, die Informationen ueber den Zustand 
@@ -30,6 +30,7 @@
 ;                     RANDOM: Ist dieses Keyword gesetzt, werden die Pulse stochastisch
 ;                             mit folgenden Nebenbedingungen ausgeloest:
 ;                               Puls bei tp:  tp+1000/Rate <= naechster Puls <= tp+1000/Rate + Random
+;                     OVERSAMP: Beruecksichtigt 1 BIN != 1 ms bei Berechnung der Raten...
 ;                            
 ;
 ; OUTPUTS:            structure : s.o.
@@ -48,6 +49,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.6  1998/01/28 12:28:14  saam
+;           cares about oversampling by new keyword OVERSAMP
+;
 ;     Revision 2.5  1998/01/21 22:11:50  saam
 ;           Erzeugt nun Spass- statt SSpass-Liste
 ;           Neue Keywords
@@ -70,7 +74,7 @@
 ;
 ;-
 FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $ 
-                      WIDTH=width, HEIGHT=height, RANDOM=random, V=v
+                      WIDTH=width, HEIGHT=height, RANDOM=random, V=v, OVERSAMP=oversamp
 
    COMMON Common_Random, seed
    
@@ -79,7 +83,9 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
       Default, rate, 40
       Default, gauss, 0.0
       Default, v, 1.0
+      Default, oversamp, 1.
 
+ 
 
       IF Keyword_Set(LAYER) THEN BEGIN
          size = Layer.w * Layer.h
@@ -101,15 +107,15 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
       END
       IF Set(RANDOM) THEN rand = random ELSE rand = 0
 
-      newInput =  { bins  : LONG(1000./FLOAT(rate)) ,$
-                    sdev  : sdev                    ,$
-                    size  : size                    ,$
-                    time  : 0l                      ,$
-                    spike : LonArr(size)            ,$
-                    next  : LONG(1000./FLOAT(rate)) ,$ ; time of next burst for random
-                    type  : type                    ,$
-                    rand  : rand                    ,$
-                    v     : v                       }
+      newInput =  { bins  : LONG(1000.*oversamp/FLOAT(rate)) ,$
+                    sdev  : sdev*oversamp                    ,$
+                    size  : size                             ,$
+                    time  : 0l                               ,$
+                    spike : LonArr(size)                     ,$
+                    next  : LONG(1000.*oversamp/FLOAT(rate)) ,$ ; time of next burst for random
+                    type  : type                             ,$
+                    rand  : rand                             ,$
+                    v     : v                                 }
 
       RETURN, newInput
    END
