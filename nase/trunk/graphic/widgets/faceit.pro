@@ -11,7 +11,7 @@
 ;          dann regelmäßig und entsprechend den auftretenden Ereignisse (zB 
 ;          Mausklicks auf die Buttons) auf.
 ;
-; CATEGORY: SIMULATION
+; CATEGORY: GRAPHICS / WIDGETS
 ;
 ; CALLING SEQUENCE: FaceIt, name
 ;
@@ -30,15 +30,12 @@
 ;             Hierin sollte der Aufbau der benutzereigenen Widget-Hierarchie
 ;             stattfinden.
 ;          FUNCTION <A HREF="./faceit_demo/#HAUS2_SIMULATE">name_SIMULATE</A>, dataptr 
-;           ---> Return, 1
 ;             Sollte den Simulationskern enthalten: Inputbestimmung, Lernen,
 ;             Berechnen des neuen Netwerkzustands und dergleichen.
-;          FUNCTION <A HREF="./faceit_demo/#HAUS2_DISPLAY">name_DISPLAY</A>, dataptr, displayptr
-;           ---> Return, 1
+;          PRO <A HREF="./faceit_demo/#HAUS2_DISPLAY">name_DISPLAY</A>, dataptr, displayptr
 ;             Hier soll die Darstellung des Netzwerkzustands während der 
 ;             Simulation erfolgen.
-;          FUNCTION <A HREF="./faceit_demo/#HAUS2_USEREVENT">name_USEREVENT</A>, Event
-;           ---> Return, 0
+;          PRO <A HREF="./faceit_demo/#HAUS2_USEREVENT">name_USEREVENT</A>, Event
 ;             Die Reaktion der benutzerdefinierten Widgets auf äußere 
 ;             Ereignisse (Mausklicks, Sliderbewegungen) muß hier festgelegt
 ;             werden.
@@ -50,11 +47,10 @@
 ;             können zuvor gespeicherte Simulationsdaten eingelesen werden.
 ;             (Der 'group'-Parameter dient dem Dateiauswahl-Widget als Eltern-
 ;             teil, ist für den Benutzer uninteressant.)
-;          PRO <A HREF="./faceit_demo/#HAUS2_FILE_SAVE">name_FileSave</A>, dataptr, group
+;          PRO <A HREF="./faceit_demo/#HAUS2_FILESAVE">name_FileSave</A>, dataptr, group
 ;             Der Menüeintrag 'File.Save' ruft diese Routine auf. Der Benutzer
 ;             kann damit bei Bedarf Simulationsdaten speichern.
 ;          FUNCTION <A HREF="./faceit_demo/#HAUS2_KILL_REQUEST">name_KILL_REQUEST</A>, dataptr, displayptr
-;           ---> Return, 1
 ;             Die hierin enthaltenen Befehle werden vor der Zerstörung des
 ;             FaceIt-Widgets ausgeführt. ZB können Datenstrukturen freigegeben
 ;             werden.
@@ -105,12 +101,27 @@
 ;              reagiert auf Knopfdruck vom Benutzer, wenn nötig.
 ;
 ; EXAMPLE: FaceIt, 'haus2'
-;
-; SEE ALSO: siehe oben
+;          Die Beispielsimulation definiert eine Schicht aus 7x7 Neuronen,
+;          die vollständig verbunden sind (allerdings keine direkte Verbindung
+;          eines Neurons mit sich selbst). Die Verbindungstärken sind alle 
+;          gleich, ihre Stärke kann mit einem Schieberegler während der 
+;          Simulation variiert werden. Alle Verbindungen sind verzögert, die 
+;          Initialisierung der Delays ist zufällig gleichverteilt im Intervall
+;          [10ms, 20ms]. 
+;          Die Neuronen erhalten außerdem äußeren Input in Form von Pulsen, 
+;          die alle Neuronen gleichzeitig erregen. Stärke und Periode dieser 
+;          Pulse kann ebenfalls mit Slidern reguliert werden.
+;          Weitere Schieberegler dienen dem Anpassen der Parameter der
+;          dynamischen Schwelle.
+;          Zur Definition der Netzwerkarchitektur siehe auch den Programmtext 
+;          von <A HREF="./faceit_demo/#HAUS2_INITDATA">haus2_INITDATA</A>. 
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.5  1999/09/03 14:23:55  thiel
+;            Changed funcs to procs where possible and improved docu.
+;
 ;        Revision 1.4  1999/09/02 14:56:58  kupper
 ;        Carrected misspelled hyperling.
 ;
@@ -198,10 +209,9 @@ PRO FaceIt_EVENT, Event
                CurrentTime = SysTime(1)
                Widget_Control, UV.W_SimStepTime, SET_VALUE='Duration: '+str(round((CurrentTime-UV.SimAbsTime)*1000))
                UV.SimAbsTime = CurrentTime
-               IF (UV.display) THEN BEGIN 
-                  UV.display = $
-                   Call_FUNCTION(UV.simname+'_DISPLAY', UV.dataptr, UV.displayptr);, UV.W_UserBase) 
-               ENDIF
+               IF (UV.display) THEN $ 
+                  Call_Procedure, UV.simname+'_DISPLAY', $
+                                  UV.dataptr, UV.displayptr
             ENDIF
          END ; WIDGET_TIMER
                                               
@@ -383,7 +393,7 @@ PRO FaceIt, simname
                             /ALIGN_CENTER, $
                             /BASE_ALIGN_CENTER, $
                             /COLUMN, $
-                            EVENT_FUNC=simname+'_USEREVENT' $
+                            EVENT_PRO=simname+'_USEREVENT' $
                            )
    
    
@@ -443,7 +453,7 @@ PRO FaceIt, simname
 
    XMANAGER, CATCH=1-DEBUGMODE
 
-   XMANAGER, "Simulation: "+SimName, W_Base, $
+   XMANAGER, "FaceIt! "+SimName, W_Base, $
     EVENT_HANDLER="FaceIt_EVENT", /NO_BLOCK
 
 
