@@ -61,9 +61,11 @@
 ;                                   Standardschriftgroesse (1.0) angibt
 ;
 ; INPUT KEYWORDS: 
-;     FULLSHEET::Nutzt fuer die Darstellung den ganzen zur Verfuegung stehenden 
-;                Platz aus, TVScl-Pixel sind deshalb in dieser Darstellung in 
-;                der Regel nicht quadratisch.
+;   (FULLSHEET)::DEPRICATED. Equivalent to (1-ISOPOTROPIC). Use
+;                ISOTROPIC instead.
+;     ISOTROPIC::Plot will have square pixels. Note that ISOTROPIC=1
+;                is default for backwards compatibility. Use
+;                ISOTROPIC=0 to explicitely turn off. See also IDL docu of ISOTROPIC.
 ;     NOSCALE::  Schaltet die Intensitaetsskalierung ab. Der Effekt ist identisch
 ;                mit dem Aufruf von <A>PlotTV</A>
 ;                Siehe dazu auch den Unterschied zwischen den Original-IDL-Routinen 
@@ -235,7 +237,8 @@ function __isfloat, value
    return, (type eq 4) or (type eq 5)     
 end 
 
-PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
+PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
+               ISOTROPIC=isotropic, CHARSIZE=Charsize, $
                LEGEND=Legend, ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
                NORDER=norder, NSCALE=nscale, $
                XRANGE=_xrange, YRANGE=_yrange, $
