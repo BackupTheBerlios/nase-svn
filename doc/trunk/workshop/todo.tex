@@ -147,9 +147,6 @@ Rüdiger\\[2cm]
       \item breaks, if /MODAL is set (idl help says, cannot have a
         menu bar on a modal top level base -- did this change
         recently?)
-      \item 
-        In Windows, ExamineIt gives an error message {\textt
-          WIDGET_CONTROL: Microsoft Windows Error: font name too long.}
     \end{itemize}
   \item NaseTv and NaseTvScl are depricated and should be removed.
   \item \texttt{widget\_image\_container}:
@@ -166,6 +163,8 @@ Rüdiger\\[2cm]
       \item In interactive palette selection, when ``function'' is
         selected, the next paint event plots into XLOADCT's window.
     \end{itemize}
+  \item 
+    Modify widgets to consisently use the new global font {\texttt!NASEWIDGETFONT}.
 \end{itemize}
 
 
@@ -260,10 +259,14 @@ compatibility need not be maintained in this case.
 \item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well [FloatWeigh function is now included in DelayWeigh, AT].
 \item The To Do--list on the WWW page needs to be updated by
   hand. [done, now updated automatically, RK]
-  \item The /NASE keyword has inconsistent semantics: sometimes it
-    refers to color scaling, sometimes it refers to transposition
-    only. [implemented semantically clear replacement keywords NORDER
-    and NSCALE, done, RK]
+\item The /NASE keyword has inconsistent semantics: sometimes it
+  refers to color scaling, sometimes it refers to transposition
+  only. [implemented semantically clear replacement keywords NORDER
+  and NSCALE, done, RK]
+\item 
+  In Windows, ExamineIt gives an error message {\texttt
+    WIDGET_CONTROL: Microsoft Windows Error: font name too long.}
+  [font definition is now done OS specific in DefGlobVars, AT] 
 \end{itemize}
 
 
