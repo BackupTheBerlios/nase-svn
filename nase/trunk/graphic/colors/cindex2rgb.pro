@@ -1,5 +1,8 @@
+
 ;+
 ; NAME:                CIndex2RGB
+;
+; VERSION:             $Id$
 ;
 ; AIM: (-outdated-) Compute 8 bit RGB values from a 24 bit Truecolor value.
 ;
@@ -10,11 +13,12 @@
 ;
 ; CATEGORY:            GRAPHIC
 ;
-; CALLING SEQUENCE:    rgb = CIndex2RGB(cindex)
+; CALLING SEQUENCE:    
+;*                     rgb = CIndex2RGB(cindex)
 ;
-; INPUTS:              cindex: ein Color-Index
+; INPUTS:              cindex:: ein Color-Index
 ;
-; OUTPUTS:             rgb:    ein drei-elementiges Array das
+; OUTPUTS:             rgb::    ein drei-elementiges Array das
 ;                              die Rot-, Gruen-, und Blau-
 ;                              Anteile der zug. Farbe enthaelt
 ;
@@ -22,11 +26,14 @@
 ;                      indizes einen sinnvollen Wert
 ;
 ; EXAMPLE:
-;           rgb = CIndex2RGB(2374632)
-;
+;*           rgb = CIndex2RGB(2374632)
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  2000/10/30 10:40:34  gabriel
+;           DEVICE DECOMPOSED is now considered
+;
 ;     Revision 2.4  2000/10/27 18:57:22  gabriel
 ;          TrueColorMode only with colortables (nase restriction)
 ;
@@ -40,17 +47,16 @@
 ;           der Klapperstorch hat's gebracht
 ;
 ;
-;-
+;
 FUNCTION CIndex2RGB, cindex
-   IF !D.Name EQ ScreenDevice() AND !D.N_COLORS EQ 16777216 THEN BEGIN
-      utvlct, R, G, B, /get
-      RETURN, [r(cindex),g(cindex),b(cindex)]
-   end ELSE RETURN, GetColorIndex(cindex) 
-  ; IF !D.Name EQ ScreenDevice() AND !D.N_COLORS EQ 16777216 THEN BEGIN
-  ;    b = cindex / 65536 
-  ;    g = (cindex MOD 65536)/256
-  ;    r = cindex MOD 256
-  ;    RETURN, [r,g,b]
-  ; END ELSE RETURN, GetColorIndex(cindex) 
+   DEVICE, GET_DECOMPOSED=DECOMPOSED
+   IF !D.Name EQ ScreenDevice() AND $ 
+    !D.N_COLORS EQ 16777216 AND $
+    DECOMPOSED EQ 1 THEN BEGIN
+      b = cindex / 65536 
+      g = (cindex MOD 65536)/256
+      r = cindex MOD 256
+      RETURN, [r,g,b]
+   END ELSE RETURN, GetColorIndex(cindex) 
 
 END
