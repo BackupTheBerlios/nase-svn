@@ -79,6 +79,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/02/22 16:28:32  kupper
+;        Had to use ref_extra for selective keyword passing.
+;
 ;        Revision 1.5  2000/02/22 16:21:12  kupper
 ;        So. Now all Keywords are passed to the proper widgets.
 ;
@@ -153,7 +156,7 @@ END
 FUNCTION Widget_ShowIt, Parent, $
                         PRIVATE_COLORS=private_colors, $
                         TRACKING_EVENTS=tracking_events, $
-                        _EXTRA=_extra
+                        _REF_EXTRA=_extra
 
    Default, private_colors, 0
    Default, tracking_events, 0
@@ -178,7 +181,7 @@ FUNCTION Widget_ShowIt, Parent, $
                 }
 
    ; create outer base to have free uservalue:
-   b = Widget_Base(Parent, _EXTRA=["notify_realize", $
+   b = Widget_Base(Parent, _EXTRA=["NOTIFY_REALIZE", $
                                    "kill_notify", $
                                    "frame", $
                                    "no_copy", $
@@ -202,7 +205,6 @@ FUNCTION Widget_ShowIt, Parent, $
                            "scr_ysize", $
                            "scroll", $
                            "sensitive", $
-                           "tracking_events", $
                            "units", $
                            "viewport_events", $
                            "xsize", $
