@@ -24,6 +24,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/19 14:51:00  alshaikh
+;           now EVERY parameter is stored in temp_vals
+;
 ;     Revision 1.2  2000/01/14 14:10:09  alshaikh
 ;           bugfix
 ;
@@ -37,6 +40,7 @@
 FUNCTION iffadein,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_vals,DELTA_t=delta_t,TIME=time
 
 DEFAULT, mode, 1      ; i.e. step
+DEFAULT, time,10.0
 
 Handle_Value,_temp_vals,temp_vals,/no_copy
 
@@ -45,25 +49,29 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
       0: BEGIN                  ; init
 
          step =  1.0/time
-
-      temp_vals =  { $
-                    sim_time : 0l, $
-                    step     : step $
-                    }
-     
          
+         temp_vals =  { $
+                       sim_time : 0d, $
+                       step     : step, $
+                       time     : time, $
+                       delta_t  : delta_t $
+                      }
+     
+          print,'INPUT:filter ''iffadein'' initialized'         
       END 
 
       
       1: BEGIN                    ; step
          
-         IF temp_vals.sim_time LE time THEN  mult_fac= temp_vals.sim_time * temp_vals.step $
+         
+         IF temp_vals.sim_time LE temp_vals.time THEN  mult_fac= temp_vals.sim_time * temp_vals.step $
           ELSE mult_fac = 1
          pattern =  pattern * mult_fac
+         
+       
+ 
+       temp_vals.sim_time =  temp_vals.sim_time + temp_vals.delta_t
 
-       print, temp_vals.sim_time
-
-       temp_vals.sim_time =  temp_vals.sim_time + delta
       END
 
       2: BEGIN

@@ -46,6 +46,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/19 14:51:00  alshaikh
+;           now EVERY parameter is stored in temp_vals
+;
 ;     Revision 1.2  2000/01/14 14:10:10  alshaikh
 ;           bugfix
 ;
@@ -64,6 +67,7 @@ FUNCTION ifrotgrid,MODE=mode,PATTERN=pattern,WIDTH=w,HEIGHT=h,temp_vals=_temp_va
                    DELTA_ALPHA=delta_alpha,$
                    ALPHA =  alpha, $
                    DIV = div
+                    
 
 
 Default, mode, 1      ; i.e. step
@@ -71,6 +75,7 @@ Default, div , 0.0
 Default, fixed,0.0
 Default, random,0.0
 Default, alpha,0.0
+Default, duration,1.0
 
 Handle_Value,_temp_vals,temp_vals,/no_copy
 
@@ -101,7 +106,13 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
                        yoff          : yoff      ,$
                        alpha         : alpha         ,$
                        div           : div,$ 
-                       background    :background  $
+                       dur_counter   : 0.0, $
+                       background    :background  ,$
+                       pattern       : fltarr(h,w), $
+                       h             : h ,$
+                       w             : w,  $
+                       delta_t       : delta_t, $
+                       delta_alpha   : delta_alpha $
                       }
          
 
@@ -114,27 +125,31 @@ Handle_Value,_temp_vals,temp_vals,/no_copy
 ;
       1: BEGIN 
          
-         xoff =  temp_vals.xoff
-         yoff =  temp_vals.yoff
-         background = temp_vals.background
-
-      
-IF random NE 0 THEN angle = round((randomu(seed)*100) MOD div)*2*3.14159/div+alpha $
- ELSE angle =  temp_vals.alpha
-
- 
-       FOR x=-(h/2),h/2 DO BEGIN
-         FOR y=-(w/2),(w/2) DO BEGIN
-            pattern(h/2+x,w/2+y) = background(xoff+x*cos(angle)-y*sin(angle),yoff+x*sin(angle)+y*cos(angle))
-         ENDFOR
-      ENDFOR       
-
-IF fixed EQ 0 THEN angle =  angle + delta_alpha
-         temp_vals.alpha =  angle
-
-
-         temp_vals.sim_time =  temp_vals.sim_time + delta_t
-       END
+        
+            temp_vals.dur_counter = 0
+            xoff =  temp_vals.xoff
+            yoff =  temp_vals.yoff
+            background = temp_vals.background
+            
+            
+            IF random NE 0 THEN angle = round((randomu(seed)*100) MOD div)*2*3.14159/div+alpha $
+            ELSE angle =  temp_vals.alpha
+            
+            
+            FOR x=-(temp_vals.h/2),temp_vals.h/2 DO BEGIN
+               FOR y=-(temp_vals.w/2),(temp_vals.w/2) DO BEGIN
+                  pattern(temp_vals.h/2+x,temp_vals.w/2+y) = background(xoff+x*cos(angle)-y*sin(angle),yoff+x*sin(angle)+y*cos(angle))
+               ENDFOR
+            ENDFOR       
+            
+            IF fixed EQ 0 THEN angle =  angle + temp_vals.delta_alpha
+            temp_vals.alpha =  angle
+            
+         
+         temp_vals.sim_time =  temp_vals.sim_time + temp_vals.delta_t
+         temp_vals.pattern = pattern
+         
+      END
 
 
 ;

@@ -55,6 +55,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/19 14:50:59  alshaikh
+;           now EVERY parameter is stored in temp_vals
+;
 ;     Revision 1.1  2000/01/17 15:05:04  alshaikh
 ;           initial version
 ;
@@ -97,7 +100,8 @@ convol_range_h = h-1
                        range_w  : convol_range_w, $
                        range_h  : convol_range_h, $
                        on_mode  : oncenter, $
-                       OFF_RATE : OFF_RATE $
+                       OFF_RATE : OFF_RATE, $
+                       delta_t  : delta_t $ 
                       }
          
          print,'INPUT:filter ''ifcsur'' initialized'         
@@ -126,7 +130,7 @@ convol_range_h = h-1
                           center=1,/edge_wrap))  > 0 
          
          
-         temp_vals.sim_time =  temp_vals.sim_time + delta_t
+         temp_vals.sim_time =  temp_vals.sim_time + temp_vals.delta_t
          
       END
       
