@@ -49,17 +49,16 @@ Pro image_factory::brightness, value
    self.brightness = value
 End
 
-;; ------------ Constructor & Destructor --------------------
+;; ------------ Constructor, Destructor & Resetter ----------
 Function image_factory::init, HEIGHT=height, WIDTH=width
    message, /Info, "I am created."
    Default, height, 32
    Default, width, 32
    self.height = height
    self.width = width
-   self.size = 1.0
-   self.brightness = 1.0
-   self.type = "gauss"
-   self.recompute = 1
+
+   self->reset                  ;init values
+
    return, 1                    ;TRUE
 End
 
@@ -68,6 +67,12 @@ Pro image_factory::cleanup, _dummy=_dummy
    PTR_FREE, self.image
 End
 
+Pro image_factory::reset
+   self.size = 1.0
+   self.brightness = 1.0
+   self.type = "gauss"
+   self.recompute = 1   
+End
 
 
 ;; ------------ Public --------------------
