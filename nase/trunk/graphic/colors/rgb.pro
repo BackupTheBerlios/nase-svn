@@ -40,14 +40,18 @@
 ;                          anderen Displays wird diese Option ignoriert
 ;
 ;                 
-; OUTPUTS: Auf einem Echtfarb-Display  : Seit der standardmäßigen Verwendung von DECOMPOSED=0
-;                                        wird hier stets der Farbindex !TOPCOLOR, also
-;                                        der höchste der Farbindices, die NASE-Routinen für
-;                                        eigene Zwecke verändern dürfen, mit der entsprechenden 
-;                                        Farbe belegt und zurückgegeben.
-;          Auf einem ColorTable-Display: Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
-;                                        der Farbindex einer moeglichst aehnlichen Farbe bei
-;                                        Keyword NOALLOC
+; OUTPUTS: 
+;          Auf einem Psudoclor-Display (d.h. einem Display mit einer einzigen
+;          Farbtabelle für alle Fenster/Outputs, vgl. <A HREF="../../misc#PSEUDOCOLOR_VISUAL()">Pseudocolor_Visual()</A>):
+;                 Der Farbindex, der mit der neuen Farbe belegt wurde, bzw.
+;                 der Farbindex einer moeglichst aehnlichen Farbe bei
+;                 Keyword NOALLOC
+;          Auf einem nicht-Pseudocolor-Display:
+;                 Seit der standardmäßigen Verwendung von DECOMPOSED=0
+;                 wird hier stets der Farbindex !TOPCOLOR, also
+;                 der höchste der Farbindices, die NASE-Routinen für
+;                 eigene Zwecke verändern dürfen, mit der entsprechenden 
+;                 Farbe belegt und zurückgegeben.
 ;
 ; COMMON BLOCKS: common_RGB, My_freier_Farbindex
 ;                (Wird bisher nur von dieser Funktion verwendet)
@@ -119,6 +123,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.20  2000/03/07 14:35:31  kupper
+;        Pseudocolor_Visual() was called even on non X/WIN-devices (for example, on PS
+;        Color devices). Fixed.
+;        Updated Header.
+;
 ;        Revision 1.19  2000/01/17 14:14:14  kupper
 ;        Changed to reflect new DECOMPOSED=0 standard.
 ;        Always returnes !TOPCOLOR on True-Color-Displays.
@@ -191,69 +200,56 @@ Common common_RGB, My_freier_Farbindex
   
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
+   ;; ---- X or WIN, and not pseudocolor: ---------------------------------------
+   IF ((!D.Name EQ 'X') or (!D.Name EQ 'WIN')) $
+    and not Pseudocolor_Visual() then begin
+      ;;Changed to reflect new usage of DECOMPOSED=0, R Kupper Jan 17 2000
+      ;;       Return, RGB_berechnen(R,G,B)
+      SetColorIndex, !TOPCOLOR, R, G, B
+      Return, !TOPCOLOR
+   endif
+   ;; ---------------------------------------------------------------------------
+
+
+   ;; ---- PS, and !PSGREY set: -------------------------------------------------
    IF (!D.Name EQ 'PS') and !PSGREY THEN BEGIN
       ; korrekte Behandlung nur fuer Grauwertpostscripts 
       New_Color_Convert, R, G, B, y, i, c, /RGB_YIC
       IF !REVERTPSCOLORS THEN RETURN, 255-LONG(y) ELSE RETURN, LONG(y)
    END
+   ;; ---------------------------------------------------------------------------
 
 
-   if PseudoColor_Visual() then begin  ; 256-Farb-Display mit Color-Map   
-      IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
-         myCM = bytarr(!D.Table_Size,3) 
-         TvLCT, myCM, /GET
-         New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
-         New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
-         differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
-         lowestDiff = MIN(differences, bestMatch)
-         RETURN, bestMatch
-      END
+   ;; ---- all other devices: -------------------------------------------------
+   IF Keyword_Set(NOALLOC) THEN BEGIN ; keine Farbe umdefinieren, sondern aehnlichste zurueckgeben
+      myCM = bytarr(!D.Table_Size,3) 
+      TvLCT, myCM, /GET
+      New_Color_Convert, myCM(*,0), myCM(*,1), myCM(*,2), myY, myI, myC, /RGB_YIC
+      New_Color_Convert, R, G, B, Y, I, C, /RGB_YIC
+      differences = (myY - Y)^2 + (myI - I)^2 + (myC - C)^2
+      lowestDiff = MIN(differences, bestMatch)
+      RETURN, bestMatch
+   END
 
-       if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
-          Default, start, 1
-          My_freier_Farbindex = start
-       end
- 
-       My_Color_Map = bytarr(!D.Table_Size,3) 
-       TvLCT, My_Color_Map, /GET  
-          
-       if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
+   if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
+      Default, start, 1
+      My_freier_Farbindex = start
+   end
+   
+   My_Color_Map = bytarr(!D.Table_Size,3) 
+   TvLCT, My_Color_Map, /GET  
+   
+   if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
 
-       My_Color_Map (SetIndex,*) = [R,G,B]  
-       TvLCT, Temporary(My_Color_Map)
-       
-       if not set(index) then begin
-          My_freier_Farbindex = (My_freier_Farbindex+1) mod !D.Table_Size  
-          if My_freier_Farbindex eq 0 then message, /INFORM, "!Farbpalette voll!"  
-          return, My_Freier_Farbindex-1
-       end
-       return,  SetIndex
+   My_Color_Map (SetIndex,*) = [R,G,B]  
+   TvLCT, Temporary(My_Color_Map)
+   
+   if not set(index) then begin
+      My_freier_Farbindex = (My_freier_Farbindex+1) mod !D.Table_Size  
+      if My_freier_Farbindex eq 0 then message, /INFORM, "!Farbpalette voll!"  
+      return, My_Freier_Farbindex-1
+   end
+   return,  SetIndex
+   ;; ---------------------------------------------------------------------------
 
-    endif else begin
-       ;; the following workaround removed on Dec 02 1999, for
-       ;; it corrupted the work of PlotTvScl, as it always
-       ;; loaded the linear colortable, reuslting in a black and 
-       ;; white display of the array!
-       ;; R Kupper
-
-;       v = IDLVersion(/FULL) ; True-Color- od Direct-Color-Visual.
-;       If ( v(0) eq 5 and v(1) eq 0 ) then begin ;workaround for versions IDL 5.1 
-;                                ;which does pass the normal
-;                                ;Plot-colors through the
-;                                ;translation table on
-;                                ;TrueColor-displays!  
-
-;       loadct, 0             ;load linear ramp into translation table
-;       message, /INFO, "Warning: Workaround for True-Color-Displays with IDL 5.0 is active."
-;       endif
-
-;Changed to reflect new usage of DECOMPOSED=0, R Kupper Jan 17 2000
-;       Return, RGB_berechnen(R,G,B)
-       SetColorIndex, !TOPCOLOR, R, G, B
-       Return, !TOPCOLOR
-
-    endelse
-END      
-
-
-
+END
