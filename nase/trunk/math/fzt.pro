@@ -35,6 +35,11 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.2  2000/05/03 16:22:06  saam
+;           improved error handling
+;             + warns if data is too large or small
+;             + warns if direction is illegal
+;
 ;     Revision 2.1  1998/11/20 17:03:45  gabriel
 ;          Die Fisher Z-Trafo (von A.Bruns uebernommen)
 ;
@@ -42,21 +47,23 @@
 ;-
 
 
-FUNCTION  FZT,   Daten, Richtung
+FUNCTION  FZT, data, direction
 
-   Z = DOUBLE(Daten)
-   IF  N_ELEMENTS(Richtung) EQ 0  THEN  Richtung = -1
+   Z = DOUBLE(data)
+   Default, direction, -1
    Eins = 0.999999999D
 
-   IF  Richtung EQ -1  THEN  BEGIN
-       ZuGross = WHERE(Z GT  Eins)
-       IF  TOTAL(ZuGross) NE -1  THEN  Z(ZuGross) =  Eins
-       ZuKlein = WHERE(Z LT -Eins)
-       IF  TOTAL(ZuKlein) NE -1  THEN  Z(ZuKlein) = -Eins
-
-       RETURN,  0.5 * ALOG( (1+Z) / (1-Z) )
-   ENDIF
-
-   IF  Richtung EQ 1  THEN  RETURN,  ( EXP(2*Z) - 1 ) / ( EXP(2*Z) + 1 )
-
+   CASE direction OF
+       -1: BEGIN
+           IF (Max(Z) GT 1.d) OR (Min(Z) LT -1.d) THEN Console, 'data exeeds [-1,1]', /WARN
+           ZuGross = WHERE(Z GT  Eins)
+           IF  TOTAL(ZuGross) NE -1  THEN  Z(ZuGross) =  Eins
+           ZuKlein = WHERE(Z LT -Eins)
+           IF  TOTAL(ZuKlein) NE -1  THEN  Z(ZuKlein) = -Eins
+           
+           RETURN,  0.5 * ALOG( (1+Z) / (1-Z) )
+           END
+       1:  RETURN,  ( EXP(2*Z) - 1 ) / ( EXP(2*Z) + 1 )
+       ELSE: Console, 'direction (second argument) must be 1 or -1', /FATAL
+   END
 END
