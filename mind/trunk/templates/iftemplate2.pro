@@ -41,6 +41,7 @@
 ;                     WIDTH     : width of the input to be created
 ;                     WRAP      : set, if the underlying layer has
 ;                                 toroidal boundary conditions
+;                                 (default: no)
 ;                     LOGIC     : logical operation :
 ;                                 NEW_INPUT = OLD_INPUT #LOGIC# HERE_GENERATED_INPUT 
 ;                                 valid values can be found <A HREF=http://neuro.physik.uni-marburg.de/mind/sim/#OPID>here</A>
@@ -59,6 +60,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.10  2000/06/29 14:57:52  saam
+;           + added defaults for wrap and file
+;
 ;     Revision 1.9  2000/06/29 14:55:21  saam
 ;           + corrected console output
 ;           + new keywords WRAP, FILE
@@ -98,6 +102,8 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
    Default, mode, 1          ; i.e. step
    Default, R   , !NONE
    Default, op  , 'ADD'
+   Default, wrap, 0
+   Default, file, ''
    
    Handle_Value, _TV, TV, /NO_COPY
    CASE mode OF      
