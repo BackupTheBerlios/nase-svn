@@ -6,7 +6,8 @@
 ;
 ; CATEGORY: Visualisierung, Auswertung
 ;
-; CALLING SEQUENCE: ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel] 
+; CALLING SEQUENCE: ExamineIt, Array [,TV_Array] [,ZOOM=Faktor] [,TITLE=Fenstertitel]
+;                                        [,COLOR=PlotColor]
 ;                                        [,XPOS=xoffset] [,YPOS=yoffset]
 ;                                        [,/BOUND] [,/NASE]
 ;                                        [,GROUP=Widget_Leader [,/MODAL]] [,/JUST_REG], [,NO_BLOCK=0]
@@ -32,6 +33,7 @@
 ;                             Bei Nichtangabe wird ein mehr oder weniger
 ;                             guter Default gewählt.
 ;                     TITLE:  Der Fenstertitel. Default: "Examine It!"
+;                     COLOR:  PlotFarbe für die Koordinatensysteme (Default: !P.Color)
 ;                 XPOS,YPOS:  Position von der linken oberen Bildschirmecke (Default: 100,100)
 ;                     BOUND:  Bei Angabe dieses Schlüsselwortes sind
 ;                             die Grenzen der Plotbereiche fest auf
@@ -86,6 +88,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.7  1998/04/08 15:57:09  kupper
+;              COLOR-Keyword hinzugefügt.
+;
 ;       Revision 2.6  1998/04/07 15:20:08  kupper
 ;              Kleiner Darstellungsbug.
 ;
@@ -167,6 +172,7 @@ Pro ExamineIt_Event, Event
                                 ;          "WIDGET_TRACKING" : if Event.Enter eq 1 then Widget_Control, Event.ID, /DRAW_MOTION_EVENTS else Widget_Control, Event.ID, DRAW_MOTION_EVENTS=0
                                 ;          "WIDGET_DRAW"    : begin
          ActWin = !D.Window
+         ActCol = !P.Color
          Widget_Control, Event.Top, GET_UVALUE=topuval
          tvid = topuval.tv_id
          Widget_Control, tvID, GET_UVALUE=info, /NO_COPY ;Jedes meiner Widgets hat als UVALUE eine info-Struktur
@@ -180,6 +186,7 @@ Pro ExamineIt_Event, Event
          Y = info.ysize*ev_n(1)
          ;;--------------------------------
          
+         !P.Color = info.color
          x_arr =  ( X-info.position(0)-info.zoom/2 ) / info.zoom
          y_arr =  ( Y-info.position(1)-info.zoom/2 ) / info.zoom
          x_arr = fix(x_arr) > 0 < (info.width-1)
@@ -282,6 +289,7 @@ Pro ExamineIt_Event, Event
          wset, info.col_win           ;copy and rotate
          tv, rotate(tv, 3)
          wset, Actwin
+         !P.Color = ActCol
                                 ;end
                                 ;       endcase
          ;;-----------Deliver Events to other Widgets?-------------------------
@@ -315,7 +323,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                GROUP=group, JUST_REG=just_reg, NO_Block=no_block, MODAL=modal, $
                GET_BASE=get_base, DELIVER_EVENTS=deliver_events, $
                BOUND=bound, RANGE=range, NASE=nase, $
-               XPOS=xpos, YPOS=ypos
+               XPOS=xpos, YPOS=ypos, COLOR=color
    
    w = reform(_w)               ;Do not change Contents!
    If Keyword_Set(_tv_w) then begin
@@ -348,6 +356,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    Default, deliver_events, [-1]
    Default, xpos, 100
    Default, ypos, 100
+   Default, color, !P.Color
    w_width = (size(w))(1)
    w_height = (size(w))(2)
    if ((size(tv_w))(1) ne w_width) or ((size(tv_w))(2) ne w_height) then message, "Die TV-Version des Feldes muß die gleichen Ausmaße wie das Original-Feld haben!"
@@ -437,7 +446,8 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                                    deliver_events:deliver_events, $
                                    xsize   : win_width, $
                                    ysize   : win_height, $
-                                   nase    : nase}
+                                   nase    : nase, $
+                                   color   : color}
 
 ;   wset, row_win
 ;   plot, w(*, w_height/2), xrange=[0, w_width-1], /XSTYLE, POSITION=gp, XMINOR=gm(0)
