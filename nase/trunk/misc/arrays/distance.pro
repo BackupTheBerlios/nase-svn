@@ -11,7 +11,7 @@
 ;  Arrays, image processing
 ;
 ; CALLING SEQUENCE:
-;  result = Distance( h [,w] [,ch ,cw] ) 
+;  result = Distance( h [,w] [,ch ,cw] [,/QUADRATIC] )
 ;
 ; INPUTS:
 ;  h: Height (first dimension) of the array to return.
@@ -23,7 +23,16 @@
 ;  ch,cw: Center relative to which the distance values are computed. This should 
 ;         be integer values (any fractional part is discarded).
 ;         Default: ch=h/2, cw=w/2.
-;  
+;
+; KEYWORD PARAMETERS:
+;  QUADRATIC: If set, the values returned are quadratic distances.
+;             A call to Distance(..., /QUADRATIC) is completely equivalent to
+;             calling (Distance(...)^2). However, quadratic distances are always 
+;             computed as a sub-result. (In fact, the routine returns the square
+;             root of this value.) Thus, using the QUADRATIC keyword
+;             reduces the computational overhead of taking the root and
+;             restoring the original values afterwards.
+;
 ; OUTPUTS:
 ;  result: Array of floats, containing the distance values.
 ;
@@ -40,12 +49,15 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2000/03/23 13:10:39  kupper
+;        Implemented QUADRATIC keyword.
+;
 ;        Revision 1.1  2000/03/22 15:17:18  kupper
 ;        Often needed...
 ;
 ;-
 
-Function distance, h, w, ch, cw
+Function distance, h, w, ch, cw, QUADRATIC=quadratic
    On_Error, 2
 
    case N_Params() of
@@ -79,8 +91,11 @@ Function distance, h, w, ch, cw
    ya[0:ch] = Rotate(LIndgen(ch+1), 2)
    ya[ch:h-1] = LIndgen(h-ch)
 
-   xa = REBIN( Transpose(Temporary(xa)), h, w)
-   ya = REBIN(           Temporary(ya) , h, w)
+   xa = REBIN( Transpose(Temporary(xa)^2), h, w)
+   ya = REBIN(           Temporary(ya)^2 , h, w)
 
-   return, Sqrt(Temporary(ya)^2+Temporary(xa)^2)
+   If Keyword_Set(QUADRATIC) then $
+    return, Temporary(ya)+Temporary(xa) $
+   else $
+    return, Sqrt(Temporary(ya)+Temporary(xa))
 End
