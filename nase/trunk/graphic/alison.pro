@@ -25,11 +25,14 @@
 ;*array = Alison( [,/NORDER] )
 ;
 ; INPUT KEYWORDS:
-;  NORDER:: 
+;  NORDER:: Request that array ordering shall conform to the NASE
+;           convention: The indexing order will be
+;           <*>[row,column]</*>.
 ;
 ; OUTPUTS:
 ;  array:: Array of floats in the range <*>[0.0,255.0]</*>.
 ;
+; EXAMPLE:
 ;*PlotTvScl, Alison()
 ;-
 
