@@ -32,8 +32,9 @@
 ;  Fonts
 ;  Graphic
 ;  Help
-;  Input
 ;  Image
+;  Input
+;  Internal
 ;  IO
 ;  Layers
 ;  Math
@@ -178,7 +179,7 @@
 ; generates a link named routine pointing to the actual
 ; location OF routine
 ;
-;   <A HREF=routine>text</A> 
+;   <A NREF=routine>text</A> 
 ; generates a link named text pointing to the actual
 ; location OF routine
 ;  
