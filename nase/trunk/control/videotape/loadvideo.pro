@@ -2,8 +2,11 @@
 ; NAME:
 ;  LoadVideo()
 ;
+; VERSION:
+;  $Id$
+;
 ; AIM:
-;  opens an existing video
+;  Opens an existing video.
 ;
 ; PURPOSE:
 ;  Opens an existing video on hard disk. This routine automatically
@@ -20,42 +23,52 @@
 ;*                  [,GET_LENGTH=...] [,GET_SIZE=...] [,GET_TITLE=...]
 ;*                  [,GET_SYSTEM=...] [,GET_STARRING=...]
 ;*                  [,GET_COMPANY=...] [,GET_PRODUCER=...] [,GET_YEAR=...] 
-;*                  [, UDS=...]
-;*                  [, {/VERBOSE | /SHUTUP}] [,ERROR=error])
-; 
+;*                  [,UDS=...]
+;*                  [,{/VERBOSE | /SHUTUP}] [,ERROR=error])
+;
 ; INPUTS:
-;  title      :: filename and title of the video. This parameter is
+;  title      :: Filename and title of the video. This parameter is
 ;                identical with the TITLE keyword. You should only set
 ;                one of both.
 ;
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;   TITLE:: filename and title of the video. This parameter is
 ;           identical with the title parameter. You should only set
 ;           one of both.
 ;   INFO :: Only information about format and content of the
 ;           video will be displayed. The video will not be opened!
-;   EDIT :: The Video will be opened for EDITING (e.g. to append or
-;           modify certain frames). TAKE CARE! Appending must be the 
+;   EDIT :: The video will be opened for <I>editing</I> (e.g. to append or
+;           modify certain frames). <B>Take care!</B> Appending must be the 
 ;           last operation before the final <A>Eject</A>.
-;   SHUTUP:: supresses every informational messages
-; 
-; OUTPUTS: 
-;  V:: a valid video structure
+;   SHUTUP:: Supresses all informational messages.
+;  
 ;
-; OPTIONAL OUTPUT:
-;   ERROR:: true if an error occurred during opening
-;   UDS  :: will contain parameters (saved as structur) saved during video creation
+; OUTPUTS:
+;  V:: A valid video structure.
+;  
+; OPTIONAL OUTPUTS:
+;   GET_xxx:: Determine properties of the video.
+;   ERROR:: True if an error occurred during opening.
+;   UDS  :: Will contain parameters (saved as structure) saved during
+;           video creation.
 ;           This can be used to preserve simulation or other
 ;           relevant parameters.
-;
+;  
 ; SIDE EFFECTS:
-;   open .vid and .vidinf files for read (write with /EDIT)
+;   Open <*>.vid</*> and <*>.vidinf</*> files for read (write with /EDIT).
+;
+; PROCEDURE:
+;  Nothing known about this at the moment.
 ;
 ; EXAMPLE:
 ;* V = LoadVideo (TITLE = 'The quiet Neuron', /VERBOSE)
 ;* dummy = LoadVideo (TITLE = 'The unforgettable Firing', /INFO)
 ;
+; SEE ALSO:
+;  <A>InitVideo</A>, <A>Camcord</A>, <A>Rewind</A>, <A>Eject</A>.
 ;-
+
+
 
 Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
                     GET_LENGTH=get_length, GET_SIZE=get_size, $
