@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/05/22 17:26:54  gabriel
+;          sin x / x = 1 (x=0) fuer IDL 3.6 korrigiert
+;
 ;     Revision 1.2  1998/03/14 13:59:26  saam
 ;           no EDGE_TRUNCATE option during convol
 ;
@@ -70,6 +73,7 @@ FUNCTION Sincerpolate, signal, delta, KSIZE=KSIZE, SINC=sinc
    kernelSize = delta*2*KSIZE+1
 
    t = !Pi*(DIndgen(kernelSize)-kernelSize/2)/DOUBLE(Delta)
+   t(kernelSize/2) = 1.0
    sinc = sin(t)/t
    sinc(kernelSize/2) = 1.0
 
