@@ -61,7 +61,10 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;        $LOG$
+;        $Log$
+;        Revision 1.4  1997/11/10 19:08:44  gabriel
+;             Option: /NORM fuer Volumennormierte Gaussmaske
+;
 ;
 ;        Urversion irgendwann 1995 (?), Rüdiger Kupper
 ;        Keyword HWB zugefügt am 21.7.1997, Rüdiger Kupper
