@@ -64,6 +64,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.7  1998/05/19 12:38:01  kupper
+;               Hoffentlich noch alles heil nach einem CVS-Konflikt.
+;                Glaube, ich hatte das PRINTSTYLE-Keyword implementiert,
+;                und Mirko eine Änderung am !P.BACKGROUND gemacht.
+;
 ;        Revision 2.6  1998/05/18 19:46:42  saam
 ;              minor problem with colortable on true color displays fixed
 ;
@@ -116,8 +121,15 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
       GET_COLORMODE = 1
       If Keyword_Set(SETCOL) then begin
          g = indgen(GET_MAXCOL+1)/double(GET_MAXCOL)*255;1
-         utvlct, g, g, g         ;Grauwerte
-         !REVERTPSCOLORS = 1
+         If !D.NAME eq "PS" then begin
+            If not Keyword_Set(PRINTSTYLE) then begin
+              utvlct, GET_MAXCOL-g, GET_MAXCOL-g, GET_MAXCOL-g
+               !REVERTPSCOLORS = 0
+            endif else begin
+               utvlct, g, g, g
+               !REVERTPSCOLORS = 1
+            endelse
+         endif else utvlct, g, g, g ;Grauwerte
          IF !D.N_COLORS LE 256 THEN !P.BACKGROUND = 0      ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       EndIf
