@@ -130,6 +130,9 @@ END
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  2000/06/08 10:28:58  gabriel
+;             compressed image files now used
+;
 ;     Revision 2.2  1999/05/13 15:35:59  gabriel
 ;          Nochmals angepasst und etwas optimiert
 ;
@@ -221,10 +224,11 @@ CASE 1  OF
           + '.ppm'
          IF j EQ 0 THEN begin
             WRITE_PPM, fileName, image
-            firstfileName = fileName
+            zip,filename
+            firstfileName = fileName+".gz"
 
          END ELSE BEGIN
-            spawn, "ln -s " +firstfileName+ " " + fileName
+            spawn, "ln -s " +firstfileName+ " " + fileName+ ".gz"
          ENDELSE
          PRINT, 'Wrote temporary PPM file for frame ', info.frameNum+1
          info.framenum=info.framenum+1
@@ -252,9 +256,10 @@ CASE 1  OF
                 + '.ppm'
                IF j EQ 0 THEN begin
                   WRITE_PPM, fileName, image
-                  firstfileName = fileName
+                  zip,filename
+                  firstfileName = fileName + ".gs"
                END ELSE BEGIN
-                  spawn, "ln -s " +firstfileName+ " " + fileName
+                  spawn, "ln -s " +firstfileName+ " " + fileName + ".gz"
                ENDELSE
                PRINT, 'Wrote temporary PPM file for frame ', info.frameNum+1
                info.framenum=info.framenum+1
@@ -267,9 +272,11 @@ CASE 1  OF
       PRINTF, unit, 'PATTERN		IBBBBBBBBBBP'
       PRINTF, unit, 'OUTPUT		' + info.mpegFileName
       PRINTF, unit, 'GOP_SIZE	16'
-      PRINTF, unit, 'SLICES_PER_FRAME	5'
+      PRINTF, unit, 'SLICES_PER_FRAME	1'
       PRINTF, unit, 'BASE_FILE_FORMAT	PNM'
-      PRINTF, unit, 'INPUT_CONVERT *'
+
+      PRINTF, unit, 'INPUT_CONVERT gunzip -c *'
+
       PRINTF, unit, 'INPUT_DIR	'+ info.TMPDIR
       PRINTF, unit, 'INPUT'
       PRINTF, unit, 'frame.*.ppm ['+string(FORMAT=formatString,0) + $
@@ -279,9 +286,9 @@ CASE 1  OF
       PRINTF, unit, 'RANGE		5'
       PRINTF, unit, 'PSEARCH_ALG	LOGARITHMIC'
       PRINTF, unit, 'BSEARCH_ALG	SIMPLE'
-      PRINTF, unit, 'IQSCALE		6'
-      PRINTF, unit, 'PQSCALE		6'
-      PRINTF, unit, 'BQSCALE		6'
+      PRINTF, unit, 'IQSCALE		5'
+      PRINTF, unit, 'PQSCALE		5'
+      PRINTF, unit, 'BQSCALE		5'
       PRINTF, unit, 'REFERENCE_FRAME	ORIGINAL'
       PRINTF, unit, 'FORCE_ENCODE_LAST_FRAME'
       FREE_LUN, unit
