@@ -1,39 +1,52 @@
 ;+
 ; NAME: haus2_SIMULATE
 ;
-; PURPOSE: Teilprogramm zur Demonstration der Beutzung von <A HREF="#FACEIT">FaceIt</A>.
+; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="#FACEIT">FaceIt</A>.
 ;          *_SIMULATE sollte den Simulationskern enthalten: Inputbestimmung, 
 ;          Lernen, Berechnen des neuen Netwerkzustands usw werden hier 
-;          durchgeführt.
+;          durchgeführt. *_SIMULATE wird vom FaceIt regelmäßig aufgerufen, 
+;          sobald der Simulationsablauf mit dem START-Button gestartet wurde.
+;          Die Darstellung des Simulationsgeschehens auf dem Bildschirm erfolgt
+;          in der separaten Routine <A HREF="#HAUS2_DISPLAY">*_DISPLAY</A>.
 ;          
 ;          Zum Aufbau einer eigenen Simulation empfiehlt es sich, diese Routine
 ;          zu kopieren, den haus2-Teil des Namens durch den der eigenen
 ;          Simulation zu ersetzen und die Routine nach den eigenen Wünschen 
 ;          abzuwandeln.
 ;
-; CATEGORY: SIMULATION / FACEIT
+; CATEGORY: GRAPHICS / WIDGETS / FACEIT_DEMO
 ;
-; CALLING SEQUENCE: haus2_SIMULATE, dataptr
+; CALLING SEQUENCE: result = haus2_SIMULATE, dataptr
 ;
-; INPUTS: dataptr
+; INPUTS: dataptr: Ein Pointer auf eine Struktur, die alle notwendigen
+;                  Simulationsdaten (Parameter, NASE-Strukturen wie Layer und
+;                  DWs) enthält. Die Struktur muß vom Benutzer in <A HREF="#HAUS2_INITDATA">*_INITDATA</A>
+;                  gefüllt worden sein.
 ;
-; OUTPUTS: 1 (True)
+; OUTPUTS: result: 1 (TRUE), wenn die Simulation weiterlaufen soll,
+;                  0 (FALSE), wenn sie aus irgendeinem programmbedingten
+;                     Grund anhalten soll. 
 ;
-; COMMON BLOCKS:
+; RESTRICTIONS: Die Benutzung der gesamten FaceIt-Architektur ist erst ab 
+;               IDL 5 möglich. 
 ;
-; SIDE EFFECTS:
+; PROCEDURE: 1. Input von außen erzeugen, wenn die Zeit dafür reif ist.
+;            2. Input aus intra-layer-Kopplung mit <A HREF="../../../simu/connections/#DELAYWEIGH">DelayWeigh</A> berechnen.
+;            3. <A HREF="../../../simu/layers/#INPUTLAYER">InputLayer</A> mit den beiden Inputs.
+;            4. <A HREF="../../../simu/layers/#PROCEEDLAYER">ProceedLayer</A>.
+;            5. Counter weiterzählen oder zurücksetzen.
 ;
-; RESTRICTIONS:
+; EXAMPLE: FaceIt, 'haus2'
 ;
-; PROCEDURE:
-;
-; EXAMPLE:
-;
-; SEE ALSO:
+; SEE ALSO: <A HREF="../#FACEIT">FaceIt</A>, <A HREF="#HAUS2_INITDATA">haus2_INITDATA</A>, <A HREF="#HAUS2_DISPLAY">haus2_DISPLAY</A>,
+;           <A HREF="../../../simu/layers/#INPUTLAYER">InputLayer</A>, <A HREF="../../../simu/layers/#PROCEEDLAYER">ProceedLayer</A>, <A HREF="../../../simu/connections/#DELAYWEIGH">DelayWeigh</A>.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/03 14:24:46  thiel
+;            Better docu.
+;
 ;        Revision 1.1  1999/09/01 16:46:31  thiel
 ;            Moved in repository.
 ;
@@ -46,16 +59,19 @@
 
 FUNCTION haus2_SIMULATE, dataptr
 
+;--- CHANGE THE FOLLOWING PART TO BUILD YOUR OWN SIUMLATION: 
+
+   ; Generate external input if period is over:
    IF (*dataptr).counter EQ 0 THEN  $
     inparr=Make_Array((*dataptr).prew*(*dataptr).preh, /FLOAT, VALUE=(*dataptr).extinpampl) $
    ELSE $
     inparr=Make_Array((*dataptr).prew*(*dataptr).preh, /FLOAT, VALUE=0.0)
 
-
+   ; Make sparse version of external input:
    inpspass = Spassmacher(inparr)
    feed_pre = inpspass
 
- 
+   ; Calculate feeding input from intra-layer-connections:
    feed_pre_pre = DelayWeigh( (*dataptr).CON_pre_pre, LayerOut((*dataptr).pre))
 
       
@@ -65,8 +81,13 @@ FUNCTION haus2_SIMULATE, dataptr
    
    ProceedLayer, (*dataptr).pre
 
-   
+   ; Increment counter and reset if period is over:
    (*dataptr).counter = ((*dataptr).counter+1) mod (*dataptr).extinpperiod
    
-   Return, 1                    ;TRUE
+   ; Allow continuation of simulation:
+   Return, 1 ; TRUE
+
+;--- NO CHANGES NECESSARY BELOW THIS LINE.
+
+
 END ; haus2_SIMULATE

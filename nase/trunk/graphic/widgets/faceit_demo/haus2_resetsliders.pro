@@ -1,32 +1,44 @@
 ;+
 ; NAME: haus2_RESETSLIDERS
 ;
-; PURPOSE: Teilprogramm zur Demonstration der Beutzung von <A HREF="#FACEIT">FaceIt</A>.
+; PURPOSE: Teilprogramm zur Demonstration der Benutzung von <A HREF="#FACEIT">FaceIt</A>.
 ;          haus2_RESETSLIDERS ist eine Routine, die der Übersichtlichkeit 
 ;          halber aus <A HREF="#FACEIT">haus2_RESET</A> ausgelagert wurde. Sie ist also zum 
 ;          Funktionieren einer eigenen Simulation nicht unbedingt erforderlich.
 ;          Hier werden nach einem Reset die Slider auf ihre aktuellen Werte 
 ;          gesetzt.
 ;
-; CATEGORY: SIMULATION / FACEIT
+; CATEGORY: GRAPHICS / WIDGETS / FACEIT_DEMO
 ;
 ; CALLING SEQUENCE: haus2_RESETSLIDERS, dataptr, displayptr
 ;
-; INPUTS:dataptr, displayptr
+; INPUTS: dataptr: Ein Pointer auf eine Struktur, die alle notwendigen
+;                  Simulationsdaten (Parameter, NASE-Strukturen wie Layer und
+;                  DWs) enthält.
+;         diplayptr: Ein Zeiger auf die Struktur, die die WidgetIDs der 
+;                    graphischen Elemente und andere wichtige graphische
+;                    Daten enthält (zB Handles auf NASE-Plotcilloscopes oä).
 ;
-; SIDE EFFECTS:
+; RESTRICTIONS: Die Benutzung der gesamten FaceIt-Architektur ist erst ab 
+;               IDL 5 möglich. 
 ;
-; RESTRICTIONS:
+; PROCEDURE: Nach der Neuinitialisierung der Parameter in <A HREF="#HAUS2_RESET">haus2_Reset</A> werden
+;            in dieser Routine mit Hilfe des IDL-Befehls Widget_Control
+;            die Schieberegler auf die geänderten Parameterwerte gesetzt, um
+;            Bildschirmdarstellung und tatsächliche Werte konsistent zu
+;            halten. 
 ;
-; PROCEDURE:
+; EXAMPLE: FaceIt, 'haus2'
 ;
-; EXAMPLE:
-;
-; SEE ALSO:
+; SEE ALSO: <A HREF="../#FACEIT">FaceIt</A>, <A HREF="#HAUS2_RESET">haus2_Reset</A>.
+;           Außerdem IDL-Online-Hilfe zu 'Widget_Control'.
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/09/03 14:24:46  thiel
+;            Better docu.
+;
 ;        Revision 1.1  1999/09/01 16:46:31  thiel
 ;            Moved in repository.
 ;

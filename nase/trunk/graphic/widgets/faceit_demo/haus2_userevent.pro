@@ -18,9 +18,6 @@
 ; INPUTS: event: Eine IDL-Widget-Ereignisstruktur. Siehe dazu auch die IDL-
 ;                Online-Hilfe.
 ;
-; OUTPUTS: 0. Das Ereignis sollte bearbeitet worden sein und wird deshalb
-;             nicht zurückgegeben
-;
 ; RESTRICTIONS: Die gesamte FaceIt-Architektur ist erst unter IDL Version 5 
 ;               lauffähig.
 ;
@@ -33,16 +30,18 @@
 ;               event.value. Damit werden dann die Simulationsparameter
 ;               entsprechend geändert.
 ;            3. Änderungen zum Schluß ins uservalue des base-widgets zurück-
-;               schreiben und das Ereignis löschen.
+;               schreiben.
 ;
 ; EXAMPLE: FaceIt, 'haus2'
 ;
-; SEE ALSO: <A HREF="../#FACEIT">FaceIt</A> und die IDL-Online-Hilfe zum Thema
-;           'Events'. 
+; SEE ALSO: <A HREF="../#FACEIT">FaceIt</A> und die IDL-Online-Hilfe zum Thema 'Events'. 
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  1999/09/03 14:24:46  thiel
+;            Better docu.
+;
 ;        Revision 1.2  1999/09/02 14:38:18  thiel
 ;            Improved documentation.
 ;
@@ -55,8 +54,7 @@
 ;-
 
 
-
-FUNCTION haus2_USEREVENT, event
+PRO haus2_USEREVENT, event
 
 
    ; Get WidgetIDs of w_base and w_userbase from event-structure:
@@ -125,10 +123,6 @@ FUNCTION haus2_USEREVENT, event
       
    ;Write back changes into uservalue of w_base:
    Widget_Control, w_base, SET_UVALUE=uv, /NO_COPY
-
-   ;We handled it, so swallow event
-   Return, 0
-
 
 
 END ; haus2_USEREVENT 
