@@ -72,6 +72,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.18  2000/07/19 14:00:49  kupper
+;        Now making use of Distanc()s quick /QUADRATIC oprion!
+;
 ;        Revision 1.17  2000/07/19 13:54:44  kupper
 ;        Added comment on order of shifting/roztation.
 ;
@@ -125,7 +128,10 @@
 ;-
 
 Function Gauss_function, x, sigma
-   return, exp( -0.5 * (x/float(sigma))^2 )
+   return, exp( -0.5 * ( double(x)^2 / sigma^2 ) )
+End
+Function Gauss_function_quad, x_quad, sigma
+   return, exp( -0.5 * ( double(x_quad) / sigma^2 ) )
 End
 
 Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
@@ -182,9 +188,9 @@ Function Gauss_2D, xlen,ylen, AUTOSIZE=autosize, $
   ENDIF
 
   if ylen eq 1 then return, $
-   Gauss_function(Distance(xlen,1,x0_arr,0.5), sigma)           
+   Gauss_function_quad(Distance(/Quadratic, xlen,1,x0_arr,0.5), sigma)           
  
-  ERG = Gauss_function(Distance(xlen,ylen,x0_arr,y0_arr), sigma) 
+  ERG = Gauss_function_quad(Distance(/Quadratic, xlen,ylen,x0_arr,y0_arr), sigma) 
   
 
   If Keyword_Set(NORM) then begin
