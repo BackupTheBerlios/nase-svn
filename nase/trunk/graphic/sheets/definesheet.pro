@@ -56,6 +56,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.9  1998/05/19 19:28:12  saam
+;           also works for null- and perhaps for ps-sheets now
+;
 ;     Revision 2.8  1998/05/18 18:25:10  kupper
 ;            Multi-Sheets implementiert!
 ;
@@ -115,9 +118,6 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
                 multi : multi ,$
                 extra : e     }
 
-      If keyword_set(multi) then sheet = replicate(sheet, multi(0))
-
-
    END ELSE IF Keyword_Set(PS) THEN BEGIN
 
       Default, incremental, 0
@@ -153,6 +153,8 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       sheet = { type : 'NULL' }
       
    END
+
+   If keyword_set(multi) then sheet = replicate(sheet, multi(0))
 
 
    RETURN, sheet
