@@ -32,6 +32,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.36  1998/03/14 14:12:19  saam
+;             handling of empty dw-structures now works
+;
 ;       Revision 1.35  1998/02/12 10:31:56  thiel
 ;              Da war doch glatt noch ein S2T uebriggeblieben...
 ;
@@ -258,7 +261,7 @@ FUNCTION DelayWeigh, _DW, InHandle
          FOR i=0l,N_Elements(acilo)-1 DO BEGIN
             wi = acilo(i)
             ; get corresponding target index
-            Handle_Value, DW.S2T(asn), tN            
+            tN = DW.C2T(wi)
             vector(tN) = vector(tN) + DW.W(wi)
          END
 
@@ -266,8 +269,9 @@ FUNCTION DelayWeigh, _DW, InHandle
          Handle_Value, _DW, DW, /NO_COPY, /SET 
          RETURN, Spassmacher(vector)
       END ELSE BEGIN
+         tS = DW.target_w*DW.target_h 
          Handle_Value, _DW, DW, /NO_COPY, /SET 
-         RETURN, [0, DW.target_w*DW.target_h]
+         RETURN, [0, tS]
       END
               
       

@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/03/14 14:12:19  saam
+;           handling of empty dw-structures now works
+;
 ;     Revision 2.4  1998/02/05 14:15:47  saam
 ;           loop variable was only int
 ;
@@ -63,7 +66,9 @@ FUNCTION Weights, _DW
    W = Make_Array(tS, sS, /FLOAT, VALUE=!NONE)
 
    Handle_Value, _DW, DW, /NO_COPY
-   FOR wi=0l, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
+   IF NOT (N_Elements(DW.W) EQ 1 AND DW.W(0) EQ !NONE) THEN BEGIN
+      FOR wi=0l, N_Elements(DW.W)-1 DO W(DW.c2t(wi),DW.c2s(wi)) = DW.W(wi)
+   END
    Handle_Value, _DW, DW, /NO_COPY, /SET
    
    RETURN, W

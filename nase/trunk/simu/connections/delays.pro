@@ -27,6 +27,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/03/14 14:12:19  saam
+;           handling of empty dw-structures now works
+;
 ;     Revision 2.3  1998/02/05 14:16:26  saam
 ;           loop variable was integer
 ;
@@ -59,8 +62,9 @@ FUNCTION Delays, _DW
    D = Make_Array(tS, sS, /FLOAT, VALUE=!NONE)
 
    Handle_Value, _DW, DW, /NO_COPY
-   FOR wi=0l, N_Elements(DW.W)-1 DO D(DW.c2t(wi),DW.c2s(wi)) = DW.D(wi)
+   IF NOT (N_Elements(DW.D) EQ 1 AND DW.D(0) EQ 0) THEN BEGIN
+      FOR wi=0l, N_Elements(DW.W)-1 DO D(DW.c2t(wi),DW.c2s(wi)) = DW.D(wi)
+   END
    Handle_Value, _DW, DW, /NO_COPY, /SET
-
    RETURN, D
 END

@@ -24,6 +24,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.7  1998/03/14 14:12:19  saam
+;           handling of empty dw-structures now works
+;
 ;     Revision 2.6  1998/02/11 18:03:37  saam
 ;           neuer Tag brachte keine Effizienz --> wieder weg
 ;
@@ -92,10 +95,10 @@ PRO DW2SDW, _DW
 
    
    ; create delay list if needed
-   IF eWc NE 0 THEN W = DW.Weights(eW) ELSE W = -1
+   IF eWc NE 0 THEN W = DW.Weights(eW) ELSE W = Make_Array(1,1, /FLOAT, VALUE=!NONE)
 
    IF Contains(Info(DW), 'DELAY') THEN BEGIN            
-      IF eWc NE 0 THEN D = DW.Delays(eW) ELSE D = -1
+      IF eWc NE 0 THEN D = DW.Delays(eW) ELSE D = Make_Array(1,1, /FLOAT, VALUE=0)
       
 
       DW = {  info    : 'SDW_DELAY_WEIGHT',$
