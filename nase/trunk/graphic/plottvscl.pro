@@ -22,6 +22,7 @@
 ;                             [, GET_XTICKS=XTicks]
 ;                             [, GET_YTICKS=YTicks]
 ;                             [, GET_PIXELSIZE=Pixelgroesse]
+;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
 ;
 ; INPUTS: Array : klar!
 ;
@@ -52,6 +53,7 @@
 ;                           Orientierung dargestellt, wie auch ShowWeights sie ausgibt.
 ;                     [XY]RANGE: zwei-elementiges Array zur alternative [XY]-Achsenbeschriftung;
 ;                                das erste Element gibt das Minimum, das zweite das Maximum der Achse an                      
+;                     leg_(max|min): alternative Beschriftung der Legende 
 ;
 ; OPTIONAL OUTPUTS: PlotPosition: Ein vierelementiges Array [x0,y0,x1,y1], das die untere linke (x0,y0)
 ;                                  und die obere rechte Ecke (x1,y1) des Bildbereichs in Normalkoordinaten
@@ -79,6 +81,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.25  1998/05/18 19:43:30  saam
+;           alternative legend by new keywords LEG_(MIN|MAX)
+;           new get_position keyword for procedure plot2plus1 (internal)
+;
 ;     Revision 2.24  1998/05/13 15:03:35  kupper
 ;            Farbskalierungs-Bug behoben.
 ;
@@ -170,12 +176,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                GET_COLOR=Get_Color, $
                GET_XTICKS=Get_XTicks, $
                GET_YTICKS=Get_YTicks, $
+               GET_INFO=get_info,$
                GET_PIXELSIZE=Get_PixelSize, $
+               LEG_MAX=leg_MAX,$
+               LEG_MIN=leg_MIN,$
                _EXTRA=_extra
 
 
    IF !D.Name EQ 'NULL' THEN RETURN
-
 
    ;-----Sichern der urspruenglichen Device-Parameter
    oldRegion   = !P.Region
@@ -316,6 +324,18 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    END
    Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
+   GET_INFO = {x0      : 0                ,$
+               y0      : 0                ,$
+               x1      : long(PlotAreaDevice(0)),$
+               y1      : long(PlotAreaDevice(1)),$
+               x00     : long((OriginNormal(0)+TotalPlotWidthNormal*!Y.Ticklen)*!D.X_SIZE),$
+               y00     : long((OriginNormal(1)+TotalPlotWidthNormal*!Y.Ticklen)*!D.Y_SIZE),$ 
+               tvxsize : long(PlotAreaDevice(0)),$
+               tvysize : long(PlotAreaDevice(1)),$
+               subxsize: long(2.0*TotalPlotWidthNormal*!Y.Ticklen*!D.X_SIZE),$
+               subysize: long(2.0*TotalPlotHeightNormal*!X.Ticklen*!D.Y_SIZE)}
+   Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
+   
    ;-----Legende, falls erwuenscht:
    IF Keyword_Set(LEGEND) THEN BEGIN
       IF Keyword_Set(NASE) THEN BEGIN
@@ -341,12 +361,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
              /Vertical, /Center 
          END
       END ELSE BEGIN
+         Default, LEG_MAX, MAX(w)
+         Default, LEG_MIN, MIN(w)
+   
          TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,OriginNormal(1)+TotalPlotHeightNormal/2.0, $
           H_Stretch=TotalPlotWidthNormal/15.0*VisualWidth/(0.5*!D.X_PX_CM), $
           V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
-          Max=Max(W), Min=Min(W), $
+          Max=LEG_MAX, Min=LEG_MIN, $
           CHARSIZE=Charsize, $
-          NOSCALE=NoScale, $
           /Vertical, /Center 
       END
    END
