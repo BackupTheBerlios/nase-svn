@@ -86,6 +86,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.34  1998/08/04 15:02:42  gabriel
+;          Print kommandos auskommentiert
+;
 ;     Revision 2.33  1998/08/04 14:57:06  gabriel
 ;          LEGMARGIN KEYWORD eingefuehrt
 ;
@@ -327,7 +330,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;-----Raender und Koordinaten des Ursprungs:
    IF Keyword_Set(LEGEND) THEN LegendRandDevice = LEGMARGIN*VisualWidth ELSE LegendRandDevice = 0.0
    
-  print,LegendRandDevice
+   ;print,LegendRandDevice
    ;IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
    ;ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
    
