@@ -136,6 +136,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.10  2000/06/08 10:15:40  gabriel
+;             warning for subsampling included
+;
 ;     Revision 1.9  1998/07/20 14:28:04  gabriel
 ;          Da war noch was mit NPARAM
 ;
@@ -409,9 +412,14 @@ FUNCTION wavescan, array,timearr,FBAND=FBAND,WSIZE=WSIZE,STEPSIZE=STEPSIZE,VELCR
             ;stop
          ENDIF
 
-
-         kksize = stepsize
-         tmpMEDAMPL = smooth(MEDAMPL,5) ;;bisschen Glaetten
+         
+         kksize = (wsize/stepsize)
+         IF NOT (kksize GE 3 ) THEN BEGIN
+            kksize = 3
+            print,"Warning: Unterabtastung zu gross" 
+         ENDIF 
+         tmpMEDAMPL = smooth(MEDAMPL, (kksize/2+1) ) ;;bisschen Glaetten
+         ;tmpMEDAMPL =MEDAMPL
          regofinterest = sigvel*0
          astmpvel = selectvel*0
          ;;nur Gebiete auswaehlen deren Wert 98% des lokalen Mittelwerts uebersteigt und
