@@ -9,12 +9,16 @@
 ;   
 ; CATEGORY: GRAPHIC
 ;
-; CALLING SEQUENCE: ShowWeights, Matrix, Dimension, Titel, Fenstergroesse
+; CALLING SEQUENCE: ShowWeights, Matrix, 
+;                                sourcebreite, sourcehoehe,
+;                                targetbreite, targethoehe,
+;                                Titel, Fenstergroesse
 ;
 ; INPUTS: Matrix: Gewichtsmatrix, die dargestellt werden soll, G(Target,Source)
-;         Dimension: Groesse des Layers 
+;         Sourcebreite/-hoehe: Groesse des Source-Layers
+;         Targetbreite/-hoehe: Groesse des Target-Layers
 ;         Titel: Titel des Fensters, das die Darstellung enthaelt 
-;         Fenstergroesse: ein Mass fuer die Vergroesserung der Darstellung
+;         Fenstergroesse: Faktor fuer die Vergroesserung der Darstellung
 ; 
 ; OPTIONAL INPUTS: ---
 ;
@@ -28,22 +32,22 @@
 ;
 ; SIDE EFFECTS: ---
 ;
-; RESTRICTIONS:  bisher sind nur Matrizen zwischen gleich grossen quadratischen Layern darstellbar
+; RESTRICTIONS: ---
 ; 
 ; PROCEDURE: ---
 ;
-; EXAMPLE: ShowWeights, W, 10, 'wunderschoene Matrix', 5
+; EXAMPLE: ShowWeights, W, 10, 10, 10, 10, 'wunderschoene Matrix', 5
 ;          stellt die Matrix W zwischen zwei 10x10-Layern 5-fach
 ;          vergroessert in einem Fenster mit Titel 'wunderschoene
 ;          Matrix' dar.
 ;
-; MODIFICATION HISTORY: Version vom 24. Juli '97, Andreas.
+; MODIFICATION HISTORY: Version vom 25. Juli '97, Andreas.
 ;
 ;-
 
-PRO ShowWeights, Matrix, target_b, target_h, source_b, source_h, titel, gr
+PRO ShowWeights, Matrix, source_b, source_h, target_b, target_h, titel, gr
 
-anzahl = tar_b*tar_h
+anzahl = target_b*target_h
 Max_Amp = max(Matrix)
     
 Matrix_gesp = rotate(Matrix,4)
