@@ -38,8 +38,6 @@
 ;*  Win2 = [0,2,3,3]
 ;*  Win3 = [3,1,4,3]
 ;
-;  
-;
 ; CATEGORY:
 ;  Graphic
 ;  NASE
@@ -47,13 +45,7 @@
 ;  Windows
 ;
 ; CALLING SEQUENCE:
-;*mygrid = GridInit(REGION=region, GRID=grid, WINS=wins)
-;
-; INPUTS:
-; 
-;
-; OPTIONAL INPUTS:
-;  
+;* mygrid = GridInit(REGION=region, GRID=grid, WINS=wins)
 ;
 ; INPUT KEYWORDS:
 ;  REGION:: specifying plotting region (Default [0.,0.,1.,1.])
@@ -63,24 +55,23 @@
 ; OUTPUTS:
 ;  mygrid:: grid structure. can be applied to gridsetwindow
 ;
-; OPTIONAL OUTPUTS:
-;  
-;
-; COMMON BLOCKS:
-;  
-;
 ; SIDE EFFECTS:
-;  
+;  Affects IDL's plotting region. To restore a window's normal
+;  behaviour after usage of the grid, reset the plotting region by
+;  <*>!P.REGION=0</*>.
 ;
 ; RESTRICTIONS:
 ;  to cause IDL not to clear one window, when plotting on another, you
-;  have to apply to all plotting-procedures the /NOERASE keyword
+;  have to apply to all plotting-procedures the <*>/NOERASE</*>
+;  keyword. 
 ;
 ; PROCEDURE:
 ;  wrapper for !p.region
 ;
 ; EXAMPLE:
-;*mygrid = gridinit(region=[0.,0.,0.6,0.6],grid=[5,5],wins=[[0,0,3,1],[0,1,3,2],[0,2,3,3],[3,0,4,3]])
+;*mygrid = gridinit(region=[0.,0.,0.6,0.6] $
+;*                  ,grid=[5,5] $
+;*                  ,wins=[[0,0,3,1],[0,1,3,2],[0,2,3,3],[3,0,4,3]])
 ;*window,0
 ;*gridsetwindow,mygrid,0
 ;*plot, indgen(10),/NOERASE
@@ -90,7 +81,7 @@
 ;*plot,indgen(20),/NOERASE
 ;
 ; SEE ALSO:
-;  <A>gridsetwindow</A>
+;  <A>GridSetWindow</A>
 ;-
 
 
