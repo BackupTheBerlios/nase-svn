@@ -31,6 +31,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  2000/09/01 19:47:52  gabriel
+;            Bug Fix: !Version.OS_Family not exists in IDL Version 3.6x
+;            For IDL Version 3.6 ScreenDevice returns always 'X' as device
+;
 ;        Revision 1.5  2000/08/31 15:01:18  kupper
 ;        oops. Typos.
 ;
@@ -48,7 +52,7 @@
 ;
 ;
 Function ScreenDevice
-
+IF idlversion() GE 4 then begin
    case strupcase(!Version.OS_Family) of
       "MACOS": return, "MAC"
       "VMS": return, "X"
@@ -57,5 +61,5 @@ Function ScreenDevice
       else: Message, "Connot determine windows device - unrecognized " + $
        "operating system."
    endcase
-
+end else return, "X"
 End
