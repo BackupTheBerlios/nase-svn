@@ -131,6 +131,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.13  2000/03/20 17:43:17  kupper
+;        Oho, forgoto to adjust Quit-Menu-code to new parameters of Faceit_Kill_Request.
+;        Fixed.
+;
 ;        Revision 1.12  2000/03/17 11:40:41  kupper
 ;        Now displays also average steptime over last 100 steps.
 ;
@@ -400,8 +404,7 @@ PRO FaceIt_EVENT, Event
 
             'File.Quit' : $
              widget_killed = $
-             FaceIt_KILL_REQUEST(UV.simname, UV.dataptr, UV.displayptr, $
-                                 UV.w_base)
+             FaceIt_KILL_REQUEST(UV)
 
             'File.Save' : $
                Call_Procedure, uv.simname+'_FILESAVE', uv.dataptr, uv.topmenu
