@@ -2,6 +2,9 @@
 ; NAME:
 ;  MSPlot
 ;
+; VESRION:
+;  $Id$
+;
 ; AIM:
 ;  Plot error values as a coloured area around data.
 ;  
@@ -10,7 +13,7 @@
 ;  by drawing a coloured area around the data plot.
 ;  
 ; CATEGORY:
-;  GRAPHICS
+;  Graphic
 ;  
 ; CALLING SEQUENCE:
 ;  MSPlot [,x] ,mean ,sd [,MCOLOR=mcolor] [,SDCOLOR=sdcolor]
@@ -19,14 +22,17 @@
 ;   Axis-procedures.
 ;  
 ; INPUTS:
-;  mean : onedimensional array containing data
-;  sd   : array containing corresponding error values
+;  mean:: onedimensional array containing data
+;  sd:: array containing corresponding error values
 ;  
 ; OPTIONAL INPUTS:
-;  x       : abscissa values corresponding to mean/sd (equidistant, 0..n-1)
-;  mcolor  : colourindex used for plotting the data (default: white)
-;  sdcolor : colourindex used to draw error area (default: darkblue)  
+;  x:: abscissa values corresponding to mean/sd (equidistant, 0..n-1)
+;  mcolor:: colourindex used for plotting the data (default: white)
+;  sdcolor:: colourindex used to draw error area (default: darkblue)  
 ;  
+; RESTRICTIONS:
+;  X- and YTITLE can only be plotted at left and bottom margins.
+;
 ; PROCEDURE:
 ;  + plot empty coordinate system
 ;  + error area via PolyFill
@@ -43,23 +49,6 @@
 ;  
 ; SEE ALSO:
 ;  Standard IDL routines: OPLOTERR, PLOT, PLOTERR
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.4  2000/10/01 14:50:42  kupper
-;     Added AIM: entries in document header. First NASE workshop rules!
-;
-;     Revision 2.3  2000/07/31 15:52:33  thiel
-;         Now XRANGE applies to error area also and
-;         ticks are plotted over error area. Header translated.
-;
-;     Revision 2.2  1999/12/02 14:11:23  saam
-;           returns on error
-;
-;     Revision 2.1  1998/08/11 10:41:26  saam
-;           simple
-;
 ;-
 
 
@@ -70,8 +59,8 @@ PRO MSPLOT, z, zz, zzz $
 
    On_Error, 2
 
-   Default, SDCOLOR, RGB(100,100,200);,/NOALLOC)
-   Default, MCOLOR, RGB(255,255,255);,/NOALLOC)
+   Default, SDCOLOR, RGB(100,100,200)
+   Default, MCOLOR, RGB(255,255,255)
 
    IF N_Params() LT 2 THEN Message, 'wrong number of arguments'
    n = N_Elements(z)
@@ -113,7 +102,9 @@ PRO MSPLOT, z, zz, zzz $
 
    Axis, XRANGE=xrange, XAXIS=0, _EXTRA=e
    Axis, YRANGE=yr, YAXIS=0, _EXTRA=e
+   DelTag, e, 'xtitle'
    Axis, XRANGE=xrange, XAXIS=1, XTICKN=emptytickn, _EXTRA=e
+   DelTag, e, 'ytitle'
    Axis, YRANGE=yr, YAXIS=1, YTICKN=emptytickn, _EXTRA=e
 
 END
