@@ -134,6 +134,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.57  1999/11/12 17:06:12  kupper
+;     Small error.
+;
 ;     Revision 2.56  1999/11/12 16:56:04  kupper
 ;     Now calls ShowWeights_Scale with SETCOL=2 at the beginning.
 ;     This corrects the !P.Background-Bug, which caused wrong
@@ -366,7 +369,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;;-----Wir bitten ShowWeights_Scale vorab schonmal, die
    ;;     Farben richtig zu setzen, damit auch !P.Background
    ;;     stimmt
-   forgetit = ShowWeights_Scale(_W, SETCOL=2)
+   If Keyword_Set(NASE) or Keyword_Set(NEUTRAL) then $
+    forgetit = ShowWeights_Scale(_W, SETCOL=2)
 
 
    If set(PLOTCOL) then sc = plotcol else begin
