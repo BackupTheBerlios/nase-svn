@@ -41,6 +41,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.11  2000/10/03 15:41:55  alshaikh
+;           CALLS-bug fixed
+;
 ;     Revision 2.10  2000/10/03 15:35:04  alshaikh
 ;           LEVEL-bug fixed
 ;
@@ -102,9 +105,7 @@ END
 help, calls=m
 m = m(1)
 
-_called_by = split(m,'/')
-_called_by = _called_by(N_elements(_called_by)-1)
-_called_by =  strmid(_called_by,0,strpos(_called_by,'.pro'))
+_called_by = (split(m,' <'))(0)
 
 
 if level eq -1 then begin 
