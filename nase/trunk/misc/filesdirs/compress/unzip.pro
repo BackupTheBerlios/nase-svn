@@ -35,6 +35,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1998/03/16 14:30:59  saam
+;           the file-check of the gzip-integrity is
+;           broken on alpha (doesn't recognize gzip-
+;           files) and therefore removed
+;
 ;     Revision 2.3  1998/03/13 14:46:11  saam
 ;           more tolerant, now uses zipstat
 ;
@@ -57,17 +62,17 @@ PRO UnZip, filepattern, NOKEEPORG=nokeeporg
       FOR i=0,N_Elements(gzfiles)-1 DO BEGIN
          IF FileExists(gzfiles(i)+suffix, INFO=info) THEN BEGIN
             
-            IF NOT Contains(info, 'gzip') THEN BEGIN 
-               Print, 'UNZIP: file not compressed...renaming to original name...'+file
-               Spawn, 'mv -f '+gzfile+' '+file
-            ENDIF ELSE BEGIN
+;            IF NOT Contains(info, 'gzip') THEN BEGIN 
+;               Print, 'UNZIP: file not compressed...renaming to original name...'+file
+;               Spawn, 'mv -f '+gzfile+' '+file
+;            ENDIF ELSE BEGIN
                IF NOT Keyword_Set(NOKEEPORG) THEN BEGIN
                   Spawn, unzip+' -c '+gzfiles(i)+suffix+' > '+gzfiles(i), r
                ENDIF ELSE BEGIN
                   Spawn, unzip+' -f '+gzfiles(i)+suffix, r
                ENDELSE
                IF r(0) NE '' THEN print, 'GUNZIP: ',r(0)
-            ENDELSE
+;            ENDELSE
             
          ENDIF
       ENDFOR
