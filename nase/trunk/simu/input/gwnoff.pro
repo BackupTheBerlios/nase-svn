@@ -20,8 +20,10 @@
 ;                     OFFSET   : der kontinuierliche, konstante Offset 
 ;                     DEVIATION: die Standardabweichung des weissen Rauschens
 ;                     NORM     : multipliziert das Ergebnis mit dem Faktor Norm
+;                     NOSPASS  : normalerweise wird ein Spassarray zurueckgegeben, mit dieser 
+;                                Option wird ein normales Array zurueckgegeben
 ;
-; OUTPUTS:            Input     : das Float-Array 
+; OUTPUTS:            Input     : das (Spass)-Array 
 ;
 ; COMMON BLOCKS:      Common_Random
 ;
@@ -31,6 +33,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/03/03 17:09:38  saam
+;           new Keyword NOSPASS
+;
 ;     Revision 2.4  1998/01/28 12:25:19  saam
 ;           new keyword NORM
 ;
@@ -46,7 +51,7 @@
 ;-
 
 FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset, DEVIATION=deviation,$
-                 NORM=NORM
+                 NORM=NORM, NOSPASS=NOSPASS
 
    COMMON Common_Random, seed
 
@@ -72,6 +77,6 @@ FUNCTION GwnOff, Layer, LAYER=klayer, WIDTH=width, HEIGHT=height, OFFSET=offset,
 
    signal = norm*(offset + deviation*RandomN(seed, w, h))
    
-   RETURN, SpassMacher(signal)
+   IF NOT Keyword_Set(NOSPASS) THEN RETURN, SpassMacher(signal) ELSE RETURN, signal
    
 END
