@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1998/03/13 09:49:26  saam
+;           set maximum simtimesteps to 1000
+;
 ;     Revision 1.2  1997/11/13 13:59:39  saam
 ;           Graphic nur noch Keyword, Output ins aktuellen Device
 ;
@@ -41,7 +44,7 @@ PRO SimTimeInit, GRAPHIC=graphic, PRINT=print, MAXSTEPS=maxsteps
    COMMON SimTime, stat
    
    
-   Default, maxsteps, 100
+   Default, maxsteps, 1000
    Default, print   ,   0
    Default, graphic ,   0
    
