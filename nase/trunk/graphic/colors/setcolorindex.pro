@@ -37,6 +37,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  2000/10/05 16:01:03  saam
+;       * added warning for trying to set wrong color index
+;
 ;       Revision 1.10  2000/10/01 14:50:57  kupper
 ;       Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -78,8 +81,10 @@
 
 Pro SetColorIndex, Nr, R, G, B
    
-   if Nr gt !D.Table_Size-1 then message, "Der Farbindex ist nicht verfügbar!"
-
+   if Nr gt !D.Table_Size-1 THEN BEGIN
+       Console, "color index out of range", /WARN
+       RETURN
+   END
    If (Size(R))(1) eq 7 then Color, R, /EXIT, RED=R, GREEN=G, BLUE=B
 
    My_Color_Map = intarr(!D.Table_Size,3) ;IDL 3.6
