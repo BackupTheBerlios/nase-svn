@@ -34,6 +34,11 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1999/02/24 15:52:20  saam
+;              there was a certain, very low probability that
+;              an access beyond array dimensions occured; this
+;              is fixed
+;
 ;        Revision 1.1  1999/02/17 19:24:16  saam
 ;              improvement & completely rewritten of all_random:
 ;                + take variable elements from given set
@@ -56,8 +61,8 @@ FUNCTION FracRandom, n, m
 
    ind = LIndGen(n) ; the array where numbers are taken from
    res = [-1]       ; the resulting array
-   FOR i=0, m-1 DO BEGIN
-      xind = long((n-i)*Randomu(seed)) < n
+   FOR i=0l, m-1 DO BEGIN
+      xind = long((n-i)*Randomu(seed)) < (n-i-1 > 0)
       
       res = [res, ind(xind)]
       ;remove the value from ind
