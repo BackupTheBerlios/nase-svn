@@ -10,7 +10,7 @@
 ;                      Leider sehe ich noch keine Moeglichkeit
 ;                      wie Variablen aus MAPLE zurueckgegeben werden koennen.
 ;      
-; CATEGORY:            MISC
+; CATEGORY:            MISC MAPLE
 ;
 ; CALLING SEQUENCE:    Maple, mfile [,OUTPUT=output] [,PARAS=paras] [,/VERBOSE] [,_EXTRA=e]
 ;
@@ -52,6 +52,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  1998/10/18 21:13:13  saam
+;           now handles passing of string-variables correctly
+;
 ;     Revision 1.3  1998/10/18 19:10:56  saam
 ;           new keyword VERBOSE
 ;
@@ -70,13 +73,17 @@ maple   = '/vol/math/maple/bin/maple'
 cat     = '/bin/cat' 
 rsh     = '/usr/bin/rsh' 
 echo    = '/bin/echo' 
+suff    = '.tmp' 
 
 S = ''
 IF Set(e) THEN BEGIN
    tagName  =  Tag_Names(e)
    tagCount = N_Elements(tagName)
    FOR i=0l,tagCount-1 DO BEGIN
-      S = S + STRLOWCASE(tagName(i)) + ':=' + STRCOMPRESS(e.(i),/REMOVE_ALL) + ';'
+      info = SIZE(e.(i))
+      IF info(info(0)+1) EQ 7 THEN tagVal = "`"+e.(i)+"`" $ ; hey, its a string 
+      ELSE tagVal = e.(i)  
+      S = S + STRLOWCASE(tagName(i)) + ':=' + STRCOMPRESS(tagVal,/REMOVE_ALL) + ';'
    END
 END
 IF Set(paras) THEN BEGIN
@@ -86,17 +93,23 @@ IF Set(paras) THEN BEGIN
       S = S + tagName(i) + ':=' + STRCOMPRESS(paras.(i),/REMOVE_ALL) + ';'
    END
 END
+IF S NE '' THEN BEGIN
+   OpenW,lun, mfile+suff, /GET_LUN
+   printf, lun, S
+   Close, lun
+END
 
 IF Keyword_Set(VERBOSE) THEN Print, 'MAPLE: additional variables are ', S
 
 IF FileExists(mfile) THEN BEGIN
-   command = rsh+' '+host+" '(( "+echo+' "'+S+'";'+cat+' '+mfile+';'+echo+' "quit;" ) | '+maple+")'"
-   IF Keyword_Set(VERBOSE) THEN print, 'MAPLE: running MAPLE on '+host+'...'
+   command = rsh+' '+host+" '(( "+cat+' '+mfile+suff+' '+mfile+';'+echo+' "quit;" ) | '+maple+")'"
+  IF Keyword_Set(VERBOSE) THEN print, 'MAPLE: running MAPLE on '+host+'...'
    spawn, command, output
    IF Keyword_Set(VERBOSE) THEN BEGIN
       print, !KEY.UP, 'MAPLE: running MAPLE on '+host+'...done'
       print, 'MAPLE: '+STRCOMPRESS(N_ELEMENTS(OUTPUT),/REMOVE_ALL)+' lines of output'
    END
+   spawn, 'rm '+mfile+suff
 END ELSE Message, "file doesn't exist"
 
 
