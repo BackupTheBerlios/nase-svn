@@ -9,10 +9,10 @@
 ; CATEGORY: Simulation
 ;
 ; CALLING SEQUENCE: SetGaussWeight ( DWS
-;                                   [,Maximum | ,Norm ] [,Sigma | ,HWB=Halbwertsbreite]
+;                                   [,Maximum | ,Norm ] [,Sigma | ,HWB=Halbwertsbreite] 
 ;                                   {  ,S_ROW=Source_Row, S_COL=Source_Col, T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
 ;                                    | ,T_ROW=Source_Row, T_COL=Source_Col, S_HS_ROW=Target_HotSpot_Row, S_HS_COL=Target_HotSpot_Col}
-;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] 
+;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE | LESSTHAN=Abschneidewert ] ]
 ;                                   [,TRANSPARENT])
 ;
 ;
@@ -29,11 +29,15 @@
 ;                           S_HS_ROW: Zeilennr des Sourceneurons im Sourcelayer, das die max. Verbindungsstärke (Bergspitze) erhält
 ;                           S_HS_COL: Spaltennr
 ;
-; OPTIONAL INPUTS: Maximum: Stärke der stärksten Verbindung (Höhe der Bergspitze, default 1)
-;                  Norm   : Volumen der Gaussmaske auf Eins normiert
-;                  Sigma  : Standardabweichung in Gitterpunkten.
-;                           alternativ kann in HWB die Halbwertsbreite angegeben werden.
-;	
+; OPTIONAL INPUTS: Maximum       : Stärke der stärksten Verbindung (Höhe der Bergspitze, default 1)
+;                  Norm          : Volumen der Gaussmaske auf Eins normiert
+;                  Sigma         : Standardabweichung in Gitterpunkten.
+;                                  alternativ kann in HWB die Halbwertsbreite angegeben werden.
+;	            Abschneidewert: Legt fest, wie klein die Gewichte
+;                                  werden duerfen, bevor sie auf !NONE gesetzt werden 
+;                                  ( TRUNC_VALUE wird dann auf !NONE gesetzt !!!)
+;
+;
 ; KEYWORD PARAMETERS: s.o. -  ALL, LWX, LWY, TRANSPARENT : s. SetWeight!
 ;
 ; OUTPUTS: ---
@@ -43,6 +47,8 @@
 ; COMMON BLOCKS: ---
 ;
 ; SIDE EFFECTS: Die Gewichte der Delay-Weight-Struktur werden entsprechend geändert.
+;               Beim setzen von Abschneidewert wird  TRUNC_VALUE auf !NONE gesetzt
+;
 ;
 ; RESTRICTIONS: ---
 ;
@@ -64,6 +70,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.8  1997/11/11 19:43:05  gabriel
+;             Hinzufuegen des KeyWords LessThan (!NONE Verbindungen setzen)
+;
 ;       Revision 1.7  1997/11/10 19:03:30  gabriel
 ;             Option: /NORM fuer Volumennormierte Gaussmaske
 ;
@@ -90,7 +99,7 @@
 ;
 ;-
 
-Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,$
+Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,LESSTHAN=lessthan, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
                        T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
                        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
@@ -98,27 +107,36 @@ Pro SetGaussWeight, DWS, Amp, Sigma, HWB=hwb,NORM=norm ,$
 
    Default, Amp, 1
    IF Keyword_Set(Norm) THEN Amp = 1
-
-
+   
+   IF (set(lessthan) AND set(trunc_value)) THEN  message, 'Keywords: LESSTHAN und TRUNCVALUE koennen nicht gleichzeitig gesetzt werden !'
+   IF set(lessthan) THEN trunc_value =  !NONE
    If set(s_row) or set(s_col) or set(t_hs_row) or set(t_hs_col) then begin ;Wir definieren TOS:
    
       if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
+       GaussMask = Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb,NORM=norm, Y0_ARR=t_hs_col, X0_ARR=t_hs_row)
+       IF set(lessthan) THEN BEGIN
+          g_index = where(GaussMask LT lessthan,g_count)
+          IF g_count GT 0 THEN  GaussMask(g_index) = !NONE 
+       ENDIF
 
-      SetWeight, DWS, S_ROW=s_row, S_COL=s_col, $
-       Amp * Gauss_2D(DWS.target_h, DWS.target_w, Sigma, HWB=hwb,NORM=norm, Y0_ARR=t_hs_col, X0_ARR=t_hs_row), $
-       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-       TRANSPARENT=transparent
+       SetWeight, DWS, S_ROW=s_row, S_COL=s_col, GaussMask, $
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,TRANSPARENT=transparent
 
    endif else begin             ; Wir definieren FROMS:
 
       if not(set(t_row)) or not(set(t_col)) or not(set(s_hs_row)) or not(set(s_hs_col)) then $
        message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
-      
-      SetWeight, DWS, T_ROW=t_row, T_COL=t_col, $
-       Amp * Gauss_2D(DWS.source_h, DWS.source_w, Sigma, HWB=hwb,NORM=norm, Y0_ARR=s_hs_col, X0_ARR=s_hs_row), $
-       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
-       TRANSPARENT=transparent
+
+       GaussMask =Amp * Gauss_2D(DWS.source_h, DWS.source_w, Sigma, HWB=hwb,NORM=norm, Y0_ARR=s_hs_col, X0_ARR=s_hs_row)
+       IF set(lessthan) THEN BEGIN
+          g_index = where(GaussMask LT lessthan,g_count)
+          IF g_count GT 0 THEN  GaussMask(g_index) = !NONE 
+       ENDIF
+
+       SetWeight, DWS, T_ROW=t_row, T_COL=t_col, GaussMask,$
+        ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+        TRANSPARENT=transparent
 
    endelse
 
