@@ -6,32 +6,33 @@
 ;
 ; PURPOSE:            Plots a polar diagram.
 ;
-; CATEGORY:           GRAPHICS
+; CATEGORY:           GRAPHIC
 ;
 ;
-; CALLING SEQUENCE:   PolarPlot, radiusarray, anglearray [,sdevarray]
-;                                [,TITLE=title]   [,CHARSIZE=charsize]
-;                                [,XRANGE=xrange] [,YRANGE=yrange]
-;                                [,XSTYLE=xstyle] [,YSTYLE=ystyle]
-;                                [,MINORANGLETICKS=minorangleticks]
-;                                [,THICK=thick]   [,/CLOSE],
-;                                [,MCOLOR=mcolor] [,SDCOLOR=sdcolor]
-;                                [,SMOOTH=smooth]
-;                                [,ORIGPT=ORIGPT [,DCOLOR=dcolor] ]
+; CALLING SEQUENCE:   
+;*                      PolarPlot, radiusarray, anglearray [,sdevarray]
+;*                                [,TITLE=title][,CHARSIZE=charsize]
+;*                                [,XRANGE=xrange][,YRANGE=yrange]
+;*                                [,XSTYLE=xstyle][,YSTYLE=ystyle]
+;*                                [,MINORANGLETICKS=minorangleticks]
+;*                                [,THICK=thick][,/CLOSE],
+;*                                [,MCOLOR=mcolor][,SDCOLOR=sdcolor]
+;*                                [,SMOOTH=smooth]
+;*                                [,ORIGPT=ORIGPT][,DCOLOR=dcolor]
 ;
-; INPUTS:             radiusarray: array containing the values, that
+; INPUTS:             radiusarray:: array containing the values, that
 ;                                  are plotted as distances from the
 ;                                  orgin of the coordinate system 
-;                     anglearray : the angles corresponding to
+;                     anglearray :: the angles corresponding to
 ;                                  radiusarray in rad (0..2*!Pi)
 ;
-; OPTIONAL INPUTS:    sdevarray  : array containing the standard
+; OPTIONAL INPUTS:    sdevarray  :: array containing the standard
 ;                                  deviation for each value of
 ;                                  radiusarray 
 ;
 ; KEYWORD PARAMETERS:
-;                     title      : Produces a main title centered above the plot window
-;                     charsize   : The overall character size for the
+;                     title      :: Produces a main title centered above the plot window
+;                     charsize   :: The overall character size for the
 ;                                  annotation. This keyword does not
 ;                                  apply when hardware
 ;                                  (i.e. PostScript) fonts are
@@ -41,7 +42,7 @@
 ;                                  1.25 times this parameterThe size
 ;                                  of the characters used to annotate
 ;                                  the axis and its title 
-;                      [xy]range : The desired data range of the axis,
+;                      [xy]range :: The desired data range of the axis,
 ;                                  a 2-element vector. The first
 ;                                  element is the axis minimum, and
 ;                                  the second is the maximum. IDL will
@@ -49,55 +50,60 @@
 ;                                  override can be defeated using the
 ;                                  [XYZ]STYLE keywords. (Default:
 ;                                  [-Max(radiusarray),+Max(radiusarray)]) 
-;                      [xy]style : This keyword allows specification
+;                      [xy]style :: This keyword allows specification
 ;                                  of axis options such as rounding of
 ;                                  tick values and selection of a box
 ;                                  axis. (see IDL-Help, default: 4)
-;                 minorangleticks: Additional axes for for equidistant
+;                 minorangleticks:: Additional axes for for equidistant
 ;                                  angles. minorangleticks=n draws n
 ;                                  subaxes in each quadrant. For n=1 
 ;                                  axes at 45, 135, 225 and 315 dg are
 ;                                  plotted.
-;                           thick: Indicates the line thickness
+;                           thick:: Indicates the line thickness
 ;                                  (normal: 1.0, default: 3.0) 
-;                           close: the endpoint of the plot is
+;                           close:: the endpoint of the plot is
 ;                                  connected to the initial data point.
-;                          smooth: Interpolated the plot between data
+;                          smooth:: Interpolated the plot between data
 ;                                  points (radius,angle) with a
 ;                                  sin(x)/x function. 
 ;                                  Smooth specifies the degree of
 ;                                  interpolation (1 means NO
 ;                                  interpolation). Only works if angle
 ;                                  array ranges over 360 degree.                                  
-;                          mcolor: Color index for the mean data
+;                          mcolor:: Color index for the mean data
 ;                                  points (default: white) 
-;                          dcolor: Color index for the original data
+;                          dcolor:: Color index for the original data
 ;                                  points. This option only works, if
 ;                                  you plot the original data points
 ;                                  using keyword origpt (Default: mcolor).
-;                         sdcolor: Color index for the standard
+;                         sdcolor:: Color index for the standard
 ;                                  deviation (if set, default: dark blue) 
-;                          origpt: original data points are emphasized
+;                          origpt:: original data points are emphasized
 ;                                  by bold dots with a radius of
 ;                                  origpt (default: 0)
 ;
-; PROCEDURE: 0. determines useful plot area
-;            1. scale the plot area appropriate
-;            2. plot mean and standard deviation using opolarplot
-;            3. plot axes
-;            4. plot circle at any tickmarks position (uses ARCS in alien)
-;            5. plot intermediate axes (uses RADII in alien)  
+; PROCEDURE: 
+;            0. determines useful plot area<BR>
+;            1. scale the plot area appropriate<BR>
+;            2. plot mean and standard deviation using opolarplot<BR>
+;            3. plot axes<BR>
+;            4. plot circle at any tickmarks position (uses ARCS in alien)<BR>
+;            5. plot intermediate axes (uses RADII in alien)  <BR>
 ;
-; EXAMPLE: radius = findgen(8)
-;          angle = findgen(8)*2.0*!PI/7.0
-;          PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
-;          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50), SMOOTH=5
+; EXAMPLE: 
+;*          radius = findgen(8)
+;*          angle = findgen(8)*2.0*!PI/7.0
+;*          PolarPlot, radius, angle, MINORANGLETICKS=4, TITLE='Spiralplot'
+;*          OPolarPlot, radius, angle+2, MCOLOR=rgb(200,50,50), SMOOTH=5
 ;
 ;
 ;-
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.25  2003/08/22 15:28:43  gabriel
+;             header
+;
 ;        Revision 2.24  2000/10/01 14:50:42  kupper
 ;        Added AIM: entries in document header. First NASE workshop rules!
 ;
@@ -188,7 +194,7 @@ PRO PolarPlot, radiusarray, anglearray, sdevarray,                              
                _EXTRA=e
 
 
-;On_Error, 2
+On_Error, 2
 
 IF (N_Params() LT 2) OR (N_Params() GT 3) THEN Console, 'wrong parameter count', /FATAL
 IF Set(radiusinterpol) THEN Console, 'keyword RADIUSINTERPOL is undocumented, please document if you need it', /WARN
