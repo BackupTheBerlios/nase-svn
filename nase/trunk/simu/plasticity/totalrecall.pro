@@ -43,6 +43,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.11  1998/11/08 17:51:38  saam
+;             LearnTag added
+;
 ;       Revision 2.10  1998/08/23 12:54:06  saam
 ;             now time-amplitude functionality: second-order-leaky-integrator
 ;
@@ -76,7 +79,7 @@
 ;
 ;-
 
-PRO TotalRecall, _LP, _DW
+PRO TotalRecall, _LP, _DW, LearnTag=LearnTag
 
    Handle_Value, _LP, LP, /NO_COPY
 
@@ -106,8 +109,8 @@ PRO TotalRecall, _LP, _DW
       IF count NE 0 THEN LP.values(nottoosmall(toosmall)) = 0.0
    END
    
-   IF N_Params() GT 1 THEN BEGIN
-      In = LearnAP(_DW)
+   IF N_Params() GT 1 OR Set(LearnTag) THEN BEGIN
+      IF Set(LearnTag) THEN In = LearnTag ELSE In = LearnAP(_DW)
       IF In(0) NE 0 THEN BEGIN
          IF LP.noacc THEN BEGIN
             IF LP.info EQ 'a' THEN BEGIN
