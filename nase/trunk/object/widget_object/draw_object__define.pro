@@ -54,6 +54,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  2001/08/02 14:26:01  kupper
+;        Replaced IDL-style "MESSAGE" commands by NASE-style "Console" calls.
+;
 ;        Revision 1.1  2000/03/13 17:52:28  kupper
 ;        Initial revision
 ;
@@ -64,7 +67,7 @@
 ;; ------------ Constructor, Destructor & Resetter --------------------
 Function draw_object::init, PAINT_HOOK=paint_hook, $
                     INITIAL_PAINT_HOOK=initial_paint_hook, _REF_EXTRA=_ref_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
@@ -82,7 +85,7 @@ Function draw_object::init, PAINT_HOOK=paint_hook, $
 End
 
 Pro draw_object::cleanup, _REF_EXTRA = _ref_extra
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
 
    ;; Cleanup the superclass-portion of the object:
    Cleanup_Superclasses, self, "draw_object", _EXTRA=_ref_extra
