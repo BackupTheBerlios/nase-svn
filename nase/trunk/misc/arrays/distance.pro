@@ -2,64 +2,70 @@
 ; NAME:
 ;  Distance()
 ;
-; AIM: generates array containing distance from a given point. Scaling/shearing possible.
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: 
-;  1. Basic usage: 
+; AIM:
+;  Generates array containing distance from a given point. Scaling/shearing possible.
 ;
-;    Same as DIST(), but without cyclic edges.
+; PURPOSE:
+;  1. Basic usage:<BR> 
 ;
-;    Distance() returns an array with every element set to the
+;    Same as IDL's <C>DIST()</C>, but without cyclic edges.<BR>
+;
+;    <C>Distance()</C> returns an array with every element set to the
 ;    distance this element has to a given point in the array. Distance
-;    is measured -not- accross the edges.
-;    Optionally, the square distance can be returned.
+;    is <I>not</I> measured accross the edges.
+;    Optionally, the square distance can be returned.<BR>
 ;
 ;    For those of us having a more visual view on things: 
-;    Distance() returns a conic profile with a half opening
+;    <C>Distance()</C> returns a conic profile with a half opening
 ;    angle of 45°, open to the top, and it's tip located at a given
 ;    point.
 ;    Optionally, a second order paraboloid can be returned, open to
-;    the top, and it's tip located at a given point.
+;    the top, and it's tip located at a given point.<BR>
 ;
-;  2. Extended usage:
+;  2. Extended usage:<BR>
 ;
-;    In addition to the above described capabilities, Distance() has
+;    In addition to the above described capabilities, <C>Distance()</C> has
 ;    the possibility of scaling the values independently in the x- and
 ;    y-direction, to shear the values in a given direction, and to
-;    rotate the result around the array center.
+;    rotate the result around the array center.<BR>
 ;
-;    I.e., Distance() can return a cone with specified opening angles
+;    I.e., <C>Distance()</C> can return a cone with specified opening angles
 ;    for the x- and y- direction, rotarted in the x/y plane, and in a
-;    coordinate system with an oblique z-axis.
+;    coordinate system with an oblique z-axis.<BR>
 ;
-;    In short: Distance() can return a rotated warped elliptic cone.
-;    
+;    In short: <C>Distance()</C> can return a rotated warped elliptic cone.
+;
 ; CATEGORY:
-;  Arrays, image processing
+;  Array
+;  Image
 ;
 ; CALLING SEQUENCE:
 ;  1. Basic usage:
-;    result = Distance( h [,w] [,ch ,cw] [,/QUADRATIC] )
+;*    result = Distance( h [,w] [,ch ,cw] [,/QUADRATIC] )
 ;
 ;  2. Extended usage:
-;    result = Distance( h [,w] [,ch ,cw] [,/QUADRATIC]
-;                       [,SCALE=..]
-;                       [,WARP=.. [,/ABSWARP]]
-;                       [,PHI=..] )
+;*    result = Distance( h [,w] [,ch ,cw] [,/QUADRATIC]
+;*                       [,SCALE=..]
+;*                       [,WARP=.. [,/ABSWARP]]
+;*                       [,PHI=..] )
 ;
 ; INPUTS:
-;  h: Height (first dimension) of the array to return.
+;  h:: Height (first dimension) of the array to return.
 ;
 ; OPTIONAL INPUTS:
-;  w: Width (second dimension) of the array to return.
+;  w:: Width (second dimension) of the array to return.
 ;     If w is not specified, a square array of dimensions h is returned.
 ;
-;  ch,cw: Center relative to which the distance values are computed. These are
+;  ch,cw:: Center relative to which the distance values are computed. These are
 ;         not required to be integer values, nor to be lacated inside th array.
 ;         Default: ch=(h-1)/2.0, cw=(w-1)/2.0, i.e. the center of the array.
+;  
 ;
-; KEYWORD PARAMETERS:
-;  QUADRATIC: If set, the values returned are quadratic distances.
+; INPUT KEYWORDS:
+;  QUADRATIC:: If set, the values returned are quadratic distances.
 ;             A call to Distance(..., /QUADRATIC) is completely equivalent to
 ;             calling (Distance(...)^2). However, if the WARP keyword
 ;             is not used, quadratic distances are always 
@@ -71,7 +77,7 @@
 ;             computational cost is exactly the same as calling
 ;             Distance(...)^2.)
 ;
-;  SCALE: This keyword determines the opening angle of the returned
+;  SCALE:: This keyword determines the opening angle of the returned
 ;         conic profile. Set this keyword to a scalar floating value
 ;         for symmetric scaling in w- and h-direction. Set it to a two
 ;         element floating array [w_scl,h_scl] to specify independent
@@ -80,7 +86,7 @@
 ;         and means a half opening angle of 45°. A higher value means
 ;         smaller opening angles.
 ;
-;  WARP: Set this keyword to a three element floating array
+;  WARP:: Set this keyword to a three element floating array
 ;        [angle,strength,ground].
 ;        The three values specify warping of the returned conic
 ;        profile: dissections of the cone are displaced in proportion
@@ -88,13 +94,13 @@
 ;        system parallel to the x/y-plane in the specified direction.
 ;        Please note that shearing is not rotation! Given identical
 ;        scale factors for x- and y-directions, all intersections
-;        parallel to the x/y-plane are circular.
+;        parallel to the x/y-plane are circular.<BR>
 ;
 ;        "angle", specified in degrees and measured in the x/y-plane
 ;        anti-clockwise from the w-axis (which, by the way, always is
 ;        the second coordinate by NASE conventions), is the direction
 ;        in which to shear the coordinate system (i.e. the direction
-;        of inclination of the z-axis).
+;        of inclination of the z-axis).<BR>
 ;
 ;        "strength" specifies the amount of shearing.
 ;        If the ABSWARP keyword is not set, this is a value in the
@@ -108,20 +114,20 @@
 ;        cone's opening slope in the specified direction. This and
 ;        bigger values will yield corrupted results.
 ;        Negative values for "strength" specify shearing in the
-;        opposite direction.
+;        opposite direction.<BR>
 ;
 ;        "ground" specifies the center of shearing, i.e. the z-value
 ;        of the plane that will not be displaced. 0 means the tip of
 ;        the cone. All planes with higher z-values will be displaced
 ;        in the specified direction, all planes with lower z-values
-;        will be displaced in the opposite direction.
+;        will be displaced in the opposite direction.<BR>
 ;
 ;        Please see the examples for a demonstration of the WARP
 ;        keyword.
 ;
-;  ABSWARP: (see keyword WARP, component "strength".)
+;  ABSWARP:: (see keyword WARP, component "strength".)
 ;
-;  PHI: The result will be rotated by the angle specified by that
+;  PHI:: The result will be rotated by the angle specified by that
 ;       keyword. Please note that rotation is the last operation,
 ;       i.e. this angle adds to the value specified as the warping
 ;       direction. Please note also that this value is measured in the
@@ -138,13 +144,10 @@
 ;       x- and y-direction, rotation is computed directly, resulting
 ;       in a distortion-free profile, even for tip locations outside
 ;       the array boundaries.
-;       
+;  
 ; OUTPUTS:
-;  result: Array of floats, containing the distance values or the
+;  result:: Array of floats, containing the distance values or the
 ;          warped conic profile.
-;
-; PROCEDURE:
-;  Some array operations. No loops.
 ;
 ; RESTRICTIONS:
 ;  Please note that angles are measured from the w-axis, which is the
@@ -154,66 +157,38 @@
 ;  clockwise due to compatibility reasons. Angles specified in WARP
 ;  are measured anti-clockwise.
 ;
+; PROCEDURE:
+;  Some array operations. No loops.
+;
 ; EXAMPLE:
-;  1. Basic usage:
-;   Surfit, /NASE, Distance(23)
-;   Surfit, /NASE, Distance(23,5,5)
-;   Surfit, /NASE, 50 < Distance(100)
-;   Surfit, /NASE, 2500 < Distance(100, /QUADRATIC)
+; 1. Basic usage:
+;*   Surfit, /NASE, Distance(23)
+;*   Surfit, /NASE, Distance(23,5,5)
+;*   Surfit, /NASE, 50 < Distance(100)
+;*   Surfit, /NASE, 2500 < Distance(100, /QUADRATIC)
+; 2. Extended usage:
+;*   Surfit, /NASE, 50 < Distance(100, SCALE=[0.5,1])
+;*   Surfit, /NASE, 50 < Distance(100, SCALE=[0.5,1], PHI=45)
+;*
+;*   Surfit, /NASE, 50 < Distance(100, 0, -10) 
+;*   Surfit, /NASE, 50 < Distance(100, 0, -10, PHI=45)
+;*
+;*   for i=-0.99,0.99,0.01 do surface, 10<Distance(30, WARP=[90,i,0])
+;*   for i=-0.99,0.99,0.01 do surface, 10<Distance(30, WARP=[90,i,10])
+;*   for i=-0.99,0.99,0.01 do surface, 10<Distance(30, WARP=[90,i,5])
+;*
+;*   for i=0, 360 do surface, 10<Distance(30, WARP=[i,0.99,0])
+;*   for i=0, 360 do surface, 10<Distance(30, WARP=[i,0.99,10])
+;*   for i=0, 360 do surface, 10<Distance(30, WARP=[i,0.99,5])
 ;
-;  2. Extended usage:
-;   Surfit, /NASE, 50 < Distance(100, SCALE=[0.5,1])
-;   Surfit, /NASE, 50 < Distance(100, SCALE=[0.5,1], PHI=45)
-;
-;   Surfit, /NASE, 50 < Distance(100, 0, -10) 
-;   Surfit, /NASE, 50 < Distance(100, 0, -10, PHI=45)
-;
-;   for i=-0.99,0.99,0.01 do surface, 10<Distance(30, WARP=[90,i,0])
-;   for i=-0.99,0.99,0.01 do surface, 10<Distance(30, WARP=[90,i,10])
-;   for i=-0.99,0.99,0.01 do surface, 10<Distance(30, WARP=[90,i,5])
-;
-;   for i=0, 360 do surface, 10<Distance(30, WARP=[i,0.99,0])
-;   for i=0, 360 do surface, 10<Distance(30, WARP=[i,0.99,10])
-;   for i=0, 360 do surface, 10<Distance(30, WARP=[i,0.99,5])
-;
-;   ;; The difference of the two angles:
-;   for i=0, 360 do surface, 10<Distance(30, SCALE=[0.5,1], WARP=[i,0.99,0])
-;   for i=0, 360 do surface, 10<Distance(30, SCALE=[0.5,1], WARP=[0,0.5,0], PHI=-i) 
+; The difference of the two angles:
+;*   for i=0, 360 do surface, 10<Distance(30, SCALE=[0.5,1], WARP=[i,0.99,0])
+;*   for i=0, 360 do surface, 10<Distance(30, SCALE=[0.5,1], WARP=[0,0.5,0], PHI=-i) 
 ;
 ; SEE ALSO:
-;  DIST(), Gauss_2d()
-;  
-; MODIFICATION HISTORY:
-;
-;        $Log$
-;        Revision 1.8  2000/09/25 09:12:54  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.7  2000/09/01 14:16:24  saam
-;              replaced [] by () array calls
-;
-;        Revision 1.6  2000/08/11 14:53:24  kupper
-;        Removed left over comment.
-;
-;        Revision 1.5  2000/08/10 16:44:22  kupper
-;        Corrected msitake in header.
-;
-;        Revision 1.4  2000/08/10 15:58:18  kupper
-;        Completed header and examples.
-;
-;        Revision 1.3  2000/03/23 13:41:34  kupper
-;        cw,ch can now be fractional and located outside tha array.
-;        Added "visual" purpose description.
-;
-;        Revision 1.2  2000/03/23 13:10:39  kupper
-;        Implemented QUADRATIC keyword.
-;
-;        Revision 1.1  2000/03/22 15:17:18  kupper
-;        Often needed...
-;
+;  IDL's <C>DIST()</C>, <A>Gauss_2d()</A>.
 ;-
+
 
 Function distance, xlen, ylen, cx, cy, QUADRATIC=quadratic, $
                    WARP=WARP, $;; [phi,strength,ground]
