@@ -1,123 +1,115 @@
 ;+
-; NAME: Gabor
+; NAME:
+;  Gabor()
 ;
-; AIM: constructs a gabor patch
+; VERSION:
+;  $Id$
 ;
-; PURPOSE: Liefert ein Array mit einem Gabor-Patch bel. Frequenz,
-;          phase, Groesse und Orientierung
+; AIM:
+;  Construct a gabor patch.
 ;
-; CATEGORY: Array, Simulation
+; PURPOSE:
+;  <C>Gabor()</C> returns a square array containing a Gabor patch of
+;  arbitrary wavelength, size, and orientation.
 ;
-; CALLING SEQUENCE: result = Gabor (  size
-;                                    [, HWB         = hwb ]
-;                                    [,/MAXONE ]
-;                                    [, ORIENTATION = orientation ]
-;                                    [, PHASE       = phase ]
-;                                    [, WAVELENGTH  = wavelength ]
-;                                    [,/NICEDETECTOR ] )
-; 
+; CATEGORY:
+;  Array
+;  Graphic
+;  Image
+;  Math
+;  Signals
 ;
-; INPUTS: size: Die Groesse des quadratischen Ergebnisarrays
+; CALLING SEQUENCE:
+;*result = Gabor( size
+;*                [,HMW=...] [,ORIENTATION=...] [,PHASE=...] [,WAVELENGTH=...]
+;*                [,/MAXONE] [,/NICEDETECTOR] )
 ;
-; OPTIONAL INPUTS: HWB         : Durchmesser des Patches
-;                                (Halbwertsbreite der multiplizierten
-;                                Gaussmaske)
-;                                Default: wird von <A HREF="#GAUSS_2D">Gauss_2d()</A> uebernommen.
+; INPUTS:
+;  size:: Size of the (square) array to be returned.
 ;
-;                  ORIENTATION : Orientierung des Patches in Grad.
-;                                Als Default wird ein konzentrischer
-;                                Patch ohne Orientierung erzeugt. Wird 
-;                                ein auf 0 Grad orientierter Patch
-;                                gewuenscht, so muss ORIENTATION=0
-;                                explizit angegeben werden.
+; OPTIONAL INPUTS:
+;  HMW        :: Width of the gabor patch (half mean width of the
+;                gaussmask). <BR>
+;                <I>Default value:</I> Will be taken from <A>Gauss_2d</A>'s
+;                default. 
 ;
-;                  PHASE       : Phasenverschiebung des verwendeten
-;                                Cosinus in Rad. Fuer einen 0 Grad Patch 
-;                                bedeuten positive Werte eine
-;                                Verschiebung nach oben.
-;                                Default: Maximum im Zentrum.
+;  ORIENTATION:: Orientation of the gabor patch, specified in
+;                degrees. If omitted, a concentric patch without
+;                orientation is generated. To get a patch of
+;                <*>0°</*> orientation, set <*>ORIENTATION=0</*> explicitely.
 ;
-;                  WAVELENGTH  : Wellenlaenge des zugrundeliegenden
-;                                Cosinus.
-;                                Default: Groesse des Arrays (size).
+;  PHASE      :: Phase shift of the gabor patch, specified in
+;                radians. For a <*>0°</*> oriented patch, positive values
+;                will shift upwards (for NASE array conventions).<BR>
+;                <I>Default value:</I> Miximum at center of the patch.
 ;
-; KEYWORD PARAMETERS: MAXONE : Wird PHASE ungleich 0 angegeben, so
-;                              liegen die Maxima des Cosinus und der
-;                              Gaussmaske nicht mehr
-;                              uebereinander. Per default wird stets
-;                              das Maximum der Gaussmaske auf 1
-;                              normiert. In diesem Fall ist dann das
-;                              Maximum des Gabor-Patches kleiner als
-;                              1. In Faellen, in denen gewuenscht ist, 
-;                              dass das Maximum des Ergebnisses
-;                              unabhaengig von der Phasenlage gleich 1 ist,
-;                              kann /MAXONE gesetzt werden.
+;  WAVELENGTH :: Wavelength of underlying cosine function, specified
+;                in pixels.<BR>
+;                <I>Default value:</I> Array size (as specified in
+;                <*>size</*> parameter).
 ;
-;               NICEDETECTOR : Gabor-Wavelets eignen sich nur
-;                              begrenzt als
-;                              Orientierungsdetektor, da
-;                              beispielsweise bei einem
-;                              0°-Detektor zwar das
-;                              Gesamtintegral null ist, nicht
-;                              aber auch jede einzelne
-;                              Spaltensulle. Daher reagiert ein
-;                              solcher 0°-Detektor auch
-;                              eingeschränkt auf senkrecht dazu
-;                              orientierte Kanten.
-;                              Wird dieses Schlüsselwort
-;                              gesetzt, so werden die einzelnen
-;                              Spaltensummen auf 0 normiert. Das 
-;                              ist dann zwar kein richtiges
-;                              Gabor-Wavelet mehr, wohl aber ein 
-;                              "sauberer" Orientierungsdetektor.
-;                              Man handlet sich damit allerdings 
-;                              Normierungsschwierigkeiten ein,
-;                              da die Spaltennormierung vor
-;                              einer eventuellen Rotation
-;                              gemacht wird. (Das Gesamtintegral 
-;                              könnte aufgrund von
-;                              Rotationsfehlern dann etwas von
-;                              null abweichen). Für vielfache
-;                              von 90° treten keine solchen
-;                              Fehler auf.
+; INPUT KEYWORDS:
+;  MAXONE      :: If <*>PHASE</*> is different from <*>0</*>, the
+;                 maximum values of the cosine function and the gauss
+;                 mask used to create to gabor patch will not be
+;                 aligned. By default, amplitudes of both functions
+;                 are <*>1.0</*>, which means that the maximum of the
+;                 resulting gabor patch will be smaller than
+;                 <*>1.0</*> in these cases. If the maximum of the
+;                 resulting gabor patch is desired to equal
+;                 <*>1.0</*>, regardless of phase shift, set the
+;                 <*>/MAXONE</*> switch.
 ;
-; OUTPUTS: Ein (size x size) double-Array mit entsprechendem Inhalt.
+;  NICEDETECTOR:: Gabor wavelet have only restricted use as
+;                 orientation detectors, as, for instance, in a <*>0°</*>
+;                 oriented patch the integral (total) of the whole
+;                 patch equals zero, but not so the individual column
+;                 integrals. As a result, a <*>0°</*> oriented detector will
+;                 also detect, to a small amount, <*>90°</*>
+;                 edges.<BR>
+;                 If <*>/NICEDETECTOR</*> is set, the individual
+;                 columns will be scaled to have zero integrals. The
+;                 resulting array is not an exact gabor wavelet, but
+;                 represents a "clean" edge detector. <BR>
+;                 A problem occuring with the <*>/NICEDETECTOR</*>
+;                 option is that of standardization: Individual
+;                 columns are standardized prior to a possible
+;                 rotation of the patch. The total integral of the
+;                 array may differ slightly from zero due to discretization
+;                 errors during rotation. Note that no such errors
+;                 will occur for orientations that are multiples of
+;                 <*>90°</*>.
 ;
-; RESTRICTIONS: Diese Routine leidet wie alle Routinen, bei
-;               denen Arrays rotiert werden, unter
-;               Diskretisierungsproblemen. In diesem Fall hat
-;               das zur Folge, daß bei der Verwendung der
-;               /NICEDETECTOR-Option das Gesamtintegral
-;               geringfügig von null abweichen kann.
+; OUTPUTS:
+;  A <*>size x size</*> array of type DOUBLE, containing the gabor
+;  patch.
 ;
-; PROCEDURE: Verschobene lineare bzw. konzentrische Cosinusfunktion erzeugen und mit Gaussmaske
-;            multiplizieren.
+; RESTRICTIONS:
+;  Like all other routines using array rotations, this routine suffers
+;  from discretization errors. When using the <*>/NICEDETECTOR</*>
+;  option, this may cause the total integral of the resulting array to
+;  differ slightly from zero.
 ;
-; EXAMPLE: 1. PlotTVScl, /NASE, Gabor(100)
-;          2. PlotTVScl, /NASE, Gabor(100, ORIENTATION=0)
-;          3. PlotTVScl, /NASE, Gabor(100, ORIENTATION=30, PHASE=0.5*!DPI)
-;          4. PlotTVScl, /NASE, Gabor(100, ORIENTATION=30, PHASE=0.5*!DPI, WAVELENGTH=50)
+;  <C>Gabor()</C> now behaves like <A>Hill</A> or <A>Distance</A>, as
+;  regards centering:
+;  If, for example, a 0° shifted detecor is requested in an array of even
+;  width, the maximum will not actually be contained in the array, but
+;  values will be adjusted as to virtually meat the correct maximum in
+;  between the middle two points. As a fact, <A>Hill</A> and
+;  <A>Distance</A> are called to produce the correct cosine function.
 ;
-; SEE ALSO: <A HREF="#DOG">DOG()</A>, <A HREF="#GAUSS_2D">Gauss_2d()</A>
+; PROCEDURE:
+;  Create a shifted linear or concentric cosine function, and multiply
+;  it by a gaussian mask.
 ;
-; MODIFICATION HISTORY:
+; EXAMPLE:
+;*1. PlotTVScl, /NASE, Gabor(100)
+;*2. PlotTVScl, /NASE, Gabor(100, ORIENTATION=0)
+;*3. PlotTVScl, /NASE, Gabor(100, ORIENTATION=30, PHASE=0.5*!DPI)
+;*4. PlotTVScl, /NASE, Gabor(100, ORIENTATION=30, PHASE=0.5*!DPI, WAVELENGTH=50)
 ;
-;        $Log$
-;        Revision 1.4  2000/09/25 09:12:54  saam
-;        * added AIM tag
-;        * update header for some files
-;        * fixed some hyperlinks
-;
-;        Revision 1.3  1999/11/19 15:35:18  kupper
-;        Added a "temporary" here and there.
-;        Implemented NICEDETECTOR option.
-;
-;        Revision 1.2  1999/06/28 14:18:14  kupper
-;        Corrected Misttypings...
-;
-;        Revision 1.1  1999/06/28 14:02:19  kupper
-;        Initial Revision.
-;
+; SEE ALSO:
+;  <A>Dog</A>, <A>Gauss_2d</A>
 ;-
 
 Pro Gabor_rotate_array, result, orientation
@@ -133,20 +125,23 @@ Pro Gabor_rotate_array, result, orientation
    endcase
 End
 
-Function Gabor, size, PHASE=phase, ORIENTATION=orientation, WAVELENGTH=wavelength, HWB=hwb, $
+Function Gabor, size, PHASE=phase, ORIENTATION=orientation, $
+                WAVELENGTH=wavelength, $
+                HWB=hwb, HMW=hmw, $
                 MAXONE=maxone, NICEDETECTOR=nicedetector
 
    Default, WAVELENGTH, size
    Default, PHASE, 0
+   Default, HWB, HMW ;; should be english according to NASE conventions.
 
    If Set(ORIENTATION) then begin
-      result = [indgen(round(size/2.0)), -1-reverse(indgen(fix(size/2.0)))]
+      result = Ramp(size, Mean=0, Slope=1)
       result = rebin(temporary(result), size, size, /SAMPLE)
    Endif else begin
-      result = dist(size)
+      result = distance(size)
    Endelse
 
-   result = cos(phase + shift(temporary(result), size/2, size/2)*2*!PI/float(wavelength))
+   result = cos(phase + temporary(result)*2*!PI/float(wavelength))
    result = temporary(result)*gauss_2d(size, size, HWB=hwb)
 
 
