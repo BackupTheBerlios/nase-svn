@@ -59,6 +59,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Thu Aug 28 15:59:56 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		wenn In kein Array ist, erzeugt rebin einen Fehler, daher nun mit [In]
+;
 ;       Wed Aug 27 16:00:02 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -99,7 +104,7 @@ FUNCTION DelayWeigh, DelMat, In
 ;      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
 ;      RETURN, DelMat.Weights # In 
 
-      spikes = Transpose(REBIN(In, (SIZE(DelMat.Weights))(2), (SIZE(DelMat.Weights))(1), /SAMPLE))
+      spikes = Transpose(REBIN([In], (SIZE(DelMat.Weights))(2), (SIZE(DelMat.Weights))(1), /SAMPLE))
                                 ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
                                 ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
       
@@ -114,7 +119,7 @@ FUNCTION DelayWeigh, DelMat, In
 
    END ELSE BEGIN
       
-      tmp = Transpose(REBIN(In, (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
+      tmp = Transpose(REBIN([In], (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
                                 ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
                                 ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
       tmpQU = DelMat.Queue
@@ -131,7 +136,7 @@ FUNCTION DelayWeigh, DelMat, In
       
                                 ; update the learning potential if needed
       IF (SIZE(DelMat.lp))(0) NE 0 THEN BEGIN
-         DelMat.lp =  (DelMat.lp*delmat.dp) + DelMat.vp*spikes
+         DelMat.lp =  ((DelMat.lp - delmat.dp) > 0) + DelMat.vp*spikes
       END
       RETURN, TOTAL(res, 2)
    END   
