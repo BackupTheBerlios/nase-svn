@@ -59,6 +59,13 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.2  2000/08/02 09:58:33  thiel
+;           Forgot Log info.
+;
+;       Revision 1.1  2000/08/01 16:33:15  thiel
+;           Moved from SIMU/LAYERS dir and added dimensions support.
+;
 ;       Thu Sep 11 17:16:46 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
