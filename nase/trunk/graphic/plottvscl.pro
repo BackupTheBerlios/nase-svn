@@ -134,6 +134,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.59  1999/11/15 16:21:33  kupper
+;     Corrected (hope so) handling of XNorm, YNorm positional
+;     parameters.
+;
 ;     Revision 2.58  1999/11/15 15:52:30  kupper
 ;     Sorry, didn't handle the case SETCOL=0 correctly when I
 ;     corrected the !P.Background-Bug. Fixed.
@@ -434,7 +438,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    PLOT,xcoord,ycoord,/XSTYLE,/YSTYLE,/NODATA,COLOR=!P.BACKGROUND, Charsize=Charsize*charcor,_EXTRA=e
    
 
-   plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
+; Commented out following line, as it is instantly overwritten
+; by the next one anyway (left over somehow??)
+; Rüdiger, Nov 15 1999
+
+;   plotregion_norm = convert_coord([ [xcoord(0),ycoord(0)],[xcoord(N_ELEMENTS(xcoord)-1),ycoord(N_ELEMENTS(ycoord)-1)]],/DATA,/TO_NORMAL)
    plotregion_norm = [[!X.WINDOW(0),!Y.WINDOW(0)],[!X.WINDOW(1),!Y.WINDOW(1)]] 
    ;; convert_coord macht bei !P.MULTI Fehler Y Koordinate muss korregiert werden
 ;   IF FLOAT(!P.MULTI(2)) GT 0 AND (ArrayHeight GT ArrayWidth) THEN BEGIN
@@ -499,7 +507,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    ;IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
    ;ELSE OriginDevice = [!X.Margin(0)*!D.X_CH_Size*Charsize,!Y.Margin(0)*!D.Y_CH_Size*Charsize]
    
-   IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([plotregion_norm(0,0)+XPos,plotregion_norm(1,0)+YPos], /Normal, /To_Device) $
+   IF N_Params() EQ 3 THEN OriginDevice = Convert_Coord([XPos,YPos], /Normal, /To_Device) $
    ELSE OriginDevice = [plotregion_device(0,0),plotregion_device(1,0)]
    
    ;;UpRightDevice = [!X.Margin(1)*!D.X_CH_Size*Charsize,!Y.Margin(1)*!D.Y_CH_Size*Charsize]+[LegendRandDevice,0]
@@ -516,7 +524,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    PlotPositionDevice(1) = OriginDevice(1)
    
    ;PixelSizeNormal = [(plotregion_norm(0,1))/float(ArrayWidth+1),(plotregion_norm(1,1))/float(ArrayHeight+1)]
-   PixelSizeNormal = [(plotregion_norm(0,1)-plotregion_norm(0,0)-LegendRandNorm(0,0))/float(ArrayWidth+1),(plotregion_norm(1,1)-plotregion_norm(1,0))/float(ArrayHeight+1)]
+   PixelSizeNormal = [(plotregion_norm(0,1)-OriginNormal(0)-LegendRandNorm(0,0))/float(ArrayWidth+1),(plotregion_norm(1,1)-OriginNormal(1))/float(ArrayHeight+1)]
    ;print,PixelSizeNormal,plotregion_device
    PixelSizeDevice = convert_coord(PixelSizeNormal, /normal, /to_device)
   
@@ -527,17 +535,9 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    PTMP = !P.MULTI
    !P.MULTI(0) = 1
    IF NOT Keyword_Set(FullSheet) THEN BEGIN 
-      IF PixelSizeDevice(1)*(ArrayWidth+1)+UpRightDevice(0) LT VisualWidth THEN BEGIN
-         PlotPositionDevice(2) = PixelSizeDevice(1)*(ArrayWidth+1)+OriginDevice(0)
-         ;PlotPositionDevice(3) = VisualHeight - UpRightDevice(1)
-         PlotPositionDevice(3) = plotregion_device(1,1)
-         ;print, PlotPositionDevice,'hallo1'
-      ENDIF ELSE BEGIN
-         PlotPositionDevice(3) = PixelSizeDevice(0)*(ArrayHeight+1)+OriginDevice(1)
-         ;PlotPositionDevice(2) = VisualWidth - UpRightDevice(0)
-         PlotPositionDevice(2) = plotregion_device(0,1) - LegendRandDevice
-         ;print,PlotPositionDevice,'hallo2'
-      ENDELSE 
+      MinPixelSizeDevice = min(PixelSizeDevice(0:1)) ;PixelSizeDevice contains Z-Value=0
+      PlotPositionDevice(2) = MinPixelSizeDevice*(ArrayWidth+1)+OriginDevice(0)
+      PlotPositionDevice(3) = MinPixelSizeDevice*(ArrayHeight+1)+OriginDevice(1)
 
       Plot, indgen(2), /NODATA, Position=PlotPositionDevice, /Device, Color=sc, $
        xrange=XBeschriftung, /xstyle, xtickformat=xtf, $
