@@ -1,68 +1,69 @@
 ;+
-; NAME:                SaveStruc
+; NAME:               
+;   SaveStruc
 ;
-; AIM:                 stores a structure in a given LUN
+; VERSION:
+;   $Id$
 ;
-; PURPOSE:             Arrays und skalare Datentypen lassen sich einfach
-;                      per PrintF oder WriteU speichern. Dies geht fuer
-;                      Structures nur, wenn man beim Laden die Tags und
-;                      Dimensionen kennt. Leider weiss man das halt nicht
-;                      immer. Die Funktionen SaveStruc und das Komplement 
-;                      LoadStruc heben diese Einschraekung auf.
+; AIM:
+;   stores a structure in a given LUN
 ;
-; CATEGORY:            MISC
+; PURPOSE:
+;   Arrays and scalar data types can easily be stored via
+;   <*>PrintF</*> or <*>WriteU</*>. For structures, this is 
+;   only possible, if one knows the names and sizes of all
+;   tags. SaveStruc and its partner <A>LoadStruc</A> provide
+;   an easy to use extension for this.<BR>
+;   Why not use IDLs <*>Save</*>, instead? Restored structures
+;   always have to have the same name when being restored. This
+;   is complicated, if you use different routines to save and 
+;   restore, because you have to synchronize the naming. It gets
+;   even more complicated, if you want to save several structures. 
 ;
-; CALLING SEQUENCE:    SaveStruc, lun, Struc
+; CATEGORY:
+;  DataStorage
+;  Files
+;  IO
+;  Structures
 ;
-; INPUTS:              lun  : ein gueltiger FilePointer
-;                      Struc: die zu speichernde Struktur
+; CALLING SEQUENCE:
+;*  SaveStruc, lun, Struc
+;
+; INPUTS:
+;   lun  :: a valid file pointer
+;   struc:: the structure to save
 ;
 ; RESTRICTIONS:
-;                      Struc darf keine weitere Struktur oder Array von 
-;                      Structuren enthalten.
+;   Struc <B>must not</B> contain any structure or
+;   array of structures. 
 ;
 ; EXAMPLE:
-;                      a = {tag1:1,$
-;                           hallo:[1,2,3,4,5],$
-;                           shit:['A N','wkjfh','schluess']}
-;                      help, a, /STRUCTURES
-;                      openw, 1, 'testfile'
-;                      savestruc,1,a
-;                      close,1
-;                      openr, 1,'testfile'
-;                      b=loadstruc(1)
-;                      close, 1
-;                      help, b, /STRUCTURES
-;                      
-;                   Screenshot:
-;                      ** Structure <4001f608>, 3 tags, length=64, refs=1:
-;                         TAG1            INT              1
-;                         HALLO           INT       Array(5)
-;                         SHIT            STRING    Array(3)
-;                      ** Structure <4001f408>, 3 tags, length=64, refs=1:
-;                         TAG1            INT              1
-;                         HALLO           INT       Array(5)
-;                         SHIT            STRING    Array(3)
 ;
-; SEE ALSO:         <A HREF="#LOADSTRUC">LoadStruc</A>
+;*  a = {tag1:1,$
+;*       hallo:[1,2,3,4,5],$
+;*       shit:['A N','wkjfh','schluess']}
+;*  help, a, /STRUCTURES
+;*
+;*  >** Structure <4001f608>, 3 tags, length=64, refs=1:
+;*  >   TAG1            INT              1
+;*  >   HALLO           INT       Array(5)
+;*  >   SHIT            STRING    Array(3)
+;*
+;*  uopenw, 1, 'testfile'
+;*  savestruc,1,a
+;*  uclose,1
+;*  uopenr, 1,'testfile'
+;*  b=loadstruc(1)
+;*  uclose, 1
+;*  help, b, /STRUCTURES
+;*                      
+;*  >** Structure <4001f408>, 3 tags, length=64, refs=1:
+;*  >   TAG1            INT              1
+;*  >   HALLO           INT       Array(5)
+;*  >   SHIT            STRING    Array(3)
 ;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.4  2000/09/25 09:13:03  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 2.3  1998/03/13 14:43:20  saam
-;           much faster saving now
-;
-;     Revision 2.2  1997/12/17 16:23:08  saam
-;           Beispiel an veraenderten Aufruf von LoadStruc angepasst
-;
-;     Revision 2.1  1997/11/26 09:18:04  saam
-;           Urversion
-;
+; SEE ALSO:
+;   <A>LoadStruc</A>
 ;
 ;-
 PRO SaveStruc, lun, ST
