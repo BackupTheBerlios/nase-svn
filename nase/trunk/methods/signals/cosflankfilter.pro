@@ -155,8 +155,8 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    IF  (Size(N_ , /type) GE 6) AND (Size(N_ , /type) LE 11)  THEN  Console, '  Argument N is of wrong type', /fatal
    IF  (Size(fS_, /type) GE 6) AND (Size(fS_, /type) LE 11)  THEN  Console, '  Argument fS is of wrong type', /fatal
 
-   N  = Round(N_[0])    ; If N  is an array, only the first value is taken seriously.
-   fS = Float(fS_[0])   ; If fS is an array, only the first value is taken seriously.
+   N  = Round(N_(0))    ; If N  is an array, only the first value is taken seriously.
+   fS = Float(fS_(0))   ; If fS is an array, only the first value is taken seriously.
    fN = fS/2            ; the Nyquist frequency
 
    ; The type of each keyword (if set) is checked:
@@ -168,12 +168,12 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    IF  Set(order_)        THEN  IF  (Size(order_      , /type) GE 6) AND (Size(order_      , /type) LE 11)  THEN  Console, '  Keyword ORDER is of wrong type'      , /fatal
    ; If not set, the default values for each keyword are defined; if set, they are type-converted if necessary. For
    ; "wlow", "whigh", "attenuation" and "order", only the numerical (positive) value is taken:
-   IF  Set(flow_)         THEN  fLow        = Float(flow_[0])              ELSE  fLow        = 0.0
-   IF  Set(fhigh_)        THEN  fHigh       = Float(fhigh_[0])             ELSE  fHigh       = fN
-   IF  Set(wlow_)         THEN  wLow        = Abs(Float(wlow_[0]))         ELSE  wLow        = 1.0
-   IF  Set(whigh_)        THEN  wHigh       = Abs(Float(whigh_[0]))        ELSE  wHigh       = 1.0
-   IF  Set(attenuation_)  THEN  Attenuation = Abs(Float(attenuation_[0]))  ELSE  Attenuation = 3.0
-   IF  Set(order_)        THEN  Order       = Abs(Round(order_[0]))        ELSE  Order       = 0L
+   IF  Set(flow_)         THEN  fLow        = Float(flow_(0))              ELSE  fLow        = 0.0
+   IF  Set(fhigh_)        THEN  fHigh       = Float(fhigh_(0))             ELSE  fHigh       = fN
+   IF  Set(wlow_)         THEN  wLow        = Abs(Float(wlow_(0)))         ELSE  wLow        = 1.0
+   IF  Set(whigh_)        THEN  wHigh       = Abs(Float(whigh_(0)))        ELSE  wHigh       = 1.0
+   IF  Set(attenuation_)  THEN  Attenuation = Abs(Float(attenuation_(0)))  ELSE  Attenuation = 3.0
+   IF  Set(order_)        THEN  Order       = Abs(Round(order_(0)))        ELSE  Order       = 0L
 
    ; If the cut-off frequencies are out of the sensible range, they are confined to the interval [0,fN]:
    IF  (fLow  LT 0)   THEN  Console, '  FLOW was negative. Now set to zero.' , /warning
@@ -212,7 +212,7 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    ;----------------------------------------------------------------------------------------------------------------------
 
    ; Initializing the frequency-domain transfer function and constructing a frequency axis:
-   Filter    = FltArr(N)
+   TransFunc = FltArr(N)
    Frequency = fS * FIndGen(N) / N
    Frequency = Frequency < (fS-Frequency)
 
@@ -227,35 +227,35 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    CASE  1 OF
 
      ((fLow EQ 0) OR (fLow EQ fN)) AND ((fHigh GT 0) AND (fHigh LT fN)) :  BEGIN   ; lowpass
-       Filter[*] = 1
+       TransFunc(*) = 1
        ZeroInd = WHERE( Frequency GT HFlankEnd )
-       IF  HFlankInd[0] NE -1  THEN  Filter[HFlankInd] = COS(!pi/2*(Frequency[HFlankInd]-HFlankBegin)/wHigh)^2
-       IF  ZeroInd[0]   NE -1  THEN  Filter[ZeroInd]   = 0
+       IF  HFlankInd(0) NE -1  THEN  TransFunc(HFlankInd) = COS(!pi/2*(Frequency(HFlankInd)-HFlankBegin)/wHigh)^2
+       IF  ZeroInd(0)   NE -1  THEN  TransFunc(ZeroInd)   = 0
      END
 
      ((fLow GT 0) AND (fLow LT fN)) AND ((fHigh EQ 0) OR (fHigh EQ fN)) :  BEGIN   ; highpass
-       Filter[*] = 1
+       TransFunc(*) = 1
        ZeroInd = WHERE( Frequency LT LFlankBegin )
-       IF  LFlankInd[0] NE -1  THEN  Filter[LFlankInd] = SIN(!pi/2*(Frequency[LFlankInd]-LFlankBegin)/wLow)^2
-       IF  ZeroInd[0]   NE -1  THEN  Filter[ZeroInd]   = 0
+       IF  LFlankInd(0) NE -1  THEN  TransFunc(LFlankInd) = SIN(!pi/2*(Frequency(LFlankInd)-LFlankBegin)/wLow)^2
+       IF  ZeroInd(0)   NE -1  THEN  TransFunc(ZeroInd)   = 0
      END
 
      (fLow GT 0) AND (fLow LT fN) AND (fHigh GT 0) AND (fHigh LT fN) AND (fLow LE fHigh) :  BEGIN   ; bandpass
-       Filter[*] = 1
+       TransFunc(*) = 1
        ZeroInd = WHERE((Frequency LT LFlankBegin) OR (Frequency GT HFlankEnd))
-       IF  LFlankInd[0] NE -1  THEN  Filter[LFlankInd] = SIN(!pi/2*(Frequency[LFlankInd]-LFlankBegin)/wLow)^2
-       IF  HFlankInd[0] NE -1  THEN  Filter[HFlankInd] = COS(!pi/2*(Frequency[HFlankInd]-HFlankBegin)/wHigh)^2 < Filter[HFlankInd]
-       IF  ZeroInd[0]   NE -1  THEN  Filter[ZeroInd]   = 0
+       IF  LFlankInd(0) NE -1  THEN  TransFunc(LFlankInd) = SIN(!pi/2*(Frequency(LFlankInd)-LFlankBegin)/wLow)^2
+       IF  HFlankInd(0) NE -1  THEN  TransFunc(HFlankInd) = COS(!pi/2*(Frequency(HFlankInd)-HFlankBegin)/wHigh)^2 < TransFunc(HFlankInd)
+       IF  ZeroInd(0)   NE -1  THEN  TransFunc(ZeroInd)   = 0
      END
 
      (fLow GT 0) AND (fLow LT fN) AND (fHigh GT 0) AND (fHigh LT fN) AND (fLow GT fHigh) :  BEGIN   ; bandstop
        OneInd = WHERE((Frequency LE HFlankBegin) OR (Frequency GE LFlankEnd))
-       IF  LFlankInd[0] NE -1  THEN  Filter[LFlankInd] = SIN(!pi/2*(Frequency[LFlankInd]-LFlankBegin)/wLow)^2
-       IF  HFlankInd[0] NE -1  THEN  Filter[HFlankInd] = COS(!pi/2*(Frequency[HFlankInd]-HFlankBegin)/wHigh)^2 > Filter[HFlankInd]
-       IF  OneInd[0]    NE -1  THEN  Filter[OneInd]    = 1
+       IF  LFlankInd(0) NE -1  THEN  TransFunc(LFlankInd) = SIN(!pi/2*(Frequency(LFlankInd)-LFlankBegin)/wLow)^2
+       IF  HFlankInd(0) NE -1  THEN  TransFunc(HFlankInd) = COS(!pi/2*(Frequency(HFlankInd)-HFlankBegin)/wHigh)^2 > TransFunc(HFlankInd)
+       IF  OneInd(0)    NE -1  THEN  TransFunc(OneInd)    = 1
      END
 
-     (fLow EQ  0) AND (fHigh EQ fN) :  Filter[*] = 1   ; no filter
+     (fLow EQ  0) AND (fHigh EQ fN) :  TransFunc(*) = 1   ; no filter
 
      ELSE:   ; zero-filter for all other cases (fLow=0 & fHigh=0;  fLow=fN & fHigh=0;  fLow=fN & fHigh=fN)
 
@@ -265,20 +265,20 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
    ; Constructing the time-domain convolution kernel (if keyword TIME is set):
    ;----------------------------------------------------------------------------------------------------------------------
 
-   ; If Total(Filter) is 0, the filter is a zero-filter, and the corresponding time-domain kernel is just one 0.
-   ; If Total(Filter) is N, the filter is =1 everywhere, and the corresponding time-domain kernel is just one 1.
+   ; If Total(TransFunc) is 0, the filter is a zero-filter, and the corresponding time-domain kernel is just one 0.
+   ; If Total(TransFunc) is N, the filter is =1 everywhere, and the corresponding time-domain kernel is just one 1.
    ; In the other cases, the time-domain kernel must be explicitly calculated via an inverse FFT; then afterwards the
    ; optimal order is determined (unless explicitly given by the caller).
    IF  Keyword_Set(time)  THEN  BEGIN
 
-     CASE  Total(Filter)  OF
+     CASE  Total(TransFunc)  OF
 
        0   :  Kernel = [0.0]
 
        N   :  Kernel = [1.0]
 
        ELSE:  BEGIN
-                Kernel = Float(Shift(FFT(Filter,1), N/2)) / N   ; "ideal" time-domain kernel
+                Kernel = Float(Shift(FFT(TransFunc,1), N/2)) / N   ; "ideal" time-domain kernel
                 IF  Order EQ 0  THEN  BEGIN
                   Power  = Kernel^2                               ; instantaneous power of the kernel
                   Energy = Total(Power)                           ; energy of the kernel
@@ -299,7 +299,7 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
                   Order  = Order < Ceil(N/2.0-1)
                   Order_ = Order
                 ENDIF
-                Kernel = Kernel[N/2-Order : N/2+Order]
+                Kernel = Kernel(N/2-Order : N/2+Order)
               END
 
      ENDCASE
@@ -308,7 +308,7 @@ FUNCTION  CosFlankFilter,  N_, fS_,  $
 
    ENDIF  ELSE  $
 
-     Return, Filter
+     Return, TransFunc
 
 
 END
