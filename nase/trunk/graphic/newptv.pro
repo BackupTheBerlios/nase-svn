@@ -146,17 +146,17 @@
 PRO newPTV, first, second, third $
             , XRANGE=xrange, YRANGE=yrange $
             , XTICKLEN=xticklen, YTICKLEN=yticklen $
-, XMINOR=xminor, YMINOR=yminor $
+            , XMINOR=xminor, YMINOR=yminor $
             , TITLE=title, XTITLE=xtitle, YTITLE=ytitle $
             , FITPLOT=fitplot, CORNERS=corners $
             , POLYGON=polygon, ORDER=order $
             , LEGEND=legend, LEGMARGIN=legmargin, LEGCHARSIZE=legcharsize $
-, LEGMIN=legmin, LEGMAX=legmax $
+            , LEGMIN=legmin, LEGMAX=legmax $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth $
-, CHARSIZE=charsize $
+            , CHARSIZE=charsize $
             , _EXTRA=_extra
    
-   ;On_Error, 2
+   ;;On_Error, 2
 
    IF !D.Name EQ 'NULL' THEN RETURN
    
@@ -173,13 +173,15 @@ PRO newPTV, first, second, third $
    Default, charsize, !P.CHARSIZE
 
    IF Keyword_Set(SMOOTH) THEN BEGIN
-       cubic=-0.5
-       minus_one=1
+      cubic=-0.5
+      minus_one=1
    END
 
    IF Keyword_Set(LEGEND) THEN BEGIN
       Default, legmargin,  0.15
       Default, legcharsize, charsize
+      Default, legmin, Str(Min(first), FORMAT='(G0.0)')
+      Default, legmax, Str(Max(first), FORMAT='(G0.0)')
    ENDIF ELSE BEGIN
       legmargin = 0.
    ENDELSE
@@ -206,7 +208,8 @@ PRO newPTV, first, second, third $
 
    IF ((xticklen GE 0.5) OR (yticklen GE 0.5)) $
     AND (NOT Keyword_Set(FITPLOT)) THEN $
-    Console, /WARN, 'TICKLEN GT 0.5 while FITPLOT not set. Plot will be empty or reversed.'
+    Console, /WARN, $
+    'TICKLEN GT 0.5 while FITPLOT not set. Plot will be empty or reversed.'
 
    sf = Size(first)
 
@@ -214,7 +217,8 @@ PRO newPTV, first, second, third $
       IF sf[0] EQ 1 THEN BEGIN
          first = Reform(first,sf[1], 1, /OVER)
       ENDIF
-   ENDIF ELSE Console, /FATAL, 'Only 1- or 2-dimensional arrays can be displayed.'
+   ENDIF ELSE Console, /FATAL $
+    , 'Only 1- or 2-dimensional arrays can be displayed.'
    
    ;; Deal with different parameter combinations and set the ranges
    ;;
@@ -281,7 +285,7 @@ PRO newPTV, first, second, third $
          ENDELSE
          IF Set(YRANGE) THEN BEGIN
             i = Where((third GE yrange[0]) AND (third LE yrange[1]), count)
-           IF count NE 0 THEN BEGIN
+            IF count NE 0 THEN BEGIN
                yr = [i[0], Last(i)]
                yrange = Double(third[yr])
             ENDIF ELSE Console, /FATAL, 'YRANGE wrong.'
@@ -416,8 +420,7 @@ PRO newPTV, first, second, third $
          xticks = 2
          xtickname = [' ', Str(xrange[0], FORMAT='(G0.0)'), ' ']
       ENDIF ELSE $
-;xtinter = (Last(xtg)-xtg[0])/(nx-1)
-xtinter = (xrange[1]-xrange[0])/(nx-1)
+      xtinter = (xrange[1]-xrange[0])/(nx-1)
       ;; no minor tick marks, since each array column is marked by a
       ;; major tick
       Default, xminor, -1
@@ -435,13 +438,12 @@ xtinter = (xrange[1]-xrange[0])/(nx-1)
          yticks = 2
          ytickname = [' ', Str(yrange[0], FORMAT='(G0.0)'), ' ']
       ENDIF ELSE $
-;ytinter = Abs((Last(ytg)-ytg[0]))/(ny-1)
-ytinter = Abs(yrange[1]-yrange[0])/(ny-1)
+      ytinter = Abs(yrange[1]-yrange[0])/(ny-1)
       ;; Abs() because /ORDER may have reversed the annotation
       Default, yminor, -1
    ENDIF ELSE BEGIN
       ytinter = Abs(ytg[1]-ytg[0])
-     Default, yminor, (ny/N_Elements(ytg)) < 5
+      Default, yminor, (ny/N_Elements(ytg)) < 5
    ENDELSE
 
    ;; Draw the axes. In the axis direction, they start and end at the
@@ -449,21 +451,24 @@ ytinter = Abs(yrange[1]-yrange[0])/(ny-1)
    ;; this way. In the other direction, they are displaced such they
    ;; appear below/left the array plot
    Axis, 23., yo, XAXIS=0, /NORMAL, XSTYLE=1 $
-, XTICKINTERVAL=xtinter, XTICKS=xticks, XTICKNAME=xtickname $
+    , XTICKINTERVAL=xtinter, XTICKS=xticks, XTICKNAME=xtickname $
     , XMINOR=xminor, XTICKLEN=xticklen*yfrac, XTITLE=xtitle $
-, CHARSIZE=charsize
+    , CHARSIZE=charsize
 
    Axis, xo, 23., YAXIS=0, /NORMAL, YSTYLE=1 $
-, YTICKINTERVAL=ytinter, YTICKS=yticks, YTICKNAME=ytickname $
+    , YTICKINTERVAL=ytinter, YTICKS=yticks, YTICKNAME=ytickname $
     , YMINOR=yminor, YTICKLEN=yticklen*xfrac, YTITLE=ytitle $
-, CHARSIZE=charsize
+    , CHARSIZE=charsize
 
    Axis, 23., ye, XAXIS=1, /NORMAL, XSTYLE=1, XTICKFORMAT='noticks' $
-    , XTICKS=xticks, XTICKNAME=xtickname , XTICKINTERVAL=xtinter, XMINOR=xminor, XTICKLEN=xticklen*yfrac $
-, CHARSIZE=charsize
+    , XTICKS=xticks, XTICKINTERVAL=xtinter $
+    , XMINOR=xminor, XTICKLEN=xticklen*yfrac $
+    , CHARSIZE=charsize
 
    Axis, xe, 23., YAXIS=1, /NORMAL, YSTYLE=1, YTICKFORMAT='noticks' $
-     , YTICKS=yticks, YTICKINTERVAL=ytinter, YMINOR=yminor, YTICKLEN=yticklen*xfrac, CHARSIZE=charsize
+    , YTICKS=yticks, YTICKINTERVAL=ytinter $
+    , YMINOR=yminor, YTICKLEN=yticklen*xfrac $
+    , CHARSIZE=charsize
 
 
    ;; Add the corners
@@ -481,8 +486,6 @@ ytinter = Abs(yrange[1]-yrange[0])/(ny-1)
 
    ;; plot a legend if requested (modified from PTVS)
    IF Keyword_Set(LEGEND) THEN BEGIN
-      Default, legmin, Str(Min(a), FORMAT='(G0.0)')
-      Default, legmax, Str(Max(a), FORMAT='(G0.0)')
       maxstr = [legmin, legmax]
       x_ch_size = !D.X_CH_SIZE*legcharsize / FLOAT(!D.X_SIZE)
       ;; add 4 character widths for left and right margins
