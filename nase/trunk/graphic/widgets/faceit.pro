@@ -131,6 +131,14 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.15  2000/03/31 12:15:36  kupper
+;        FaceIt_NewUserBase()es are now realized automatically.
+;        Fixed passing of /FLOATING keyword to FaceIt_NewUserBase().
+;
+;        Invented batch-mode.
+;        No documentation yet. Suggest a "real" document describing FaceIt. Header is
+;        just to small. (TO BE DONE!)
+;
 ;        Revision 1.14  2000/03/22 16:55:46  kupper
 ;        Fixed overflow-bug when computing averaged steptime.
 ;
@@ -204,7 +212,7 @@
 
 
 
-Function Faceit_NewUserbase, W_userbase, _EXTRA=_extra
+Function Faceit_NewUserbase, W_userbase, FLOATING=floating, _EXTRA=_extra
    ;; W_userbase is the highest widget in hierarchy that the
    ;; user ever gets his hands on. So he can only give us that
    ;; information. We now need to get out W_Base from it. We
@@ -221,18 +229,26 @@ Function Faceit_NewUserbase, W_userbase, _EXTRA=_extra
    Widget_Control, W_Base, GET_UVALUE=uval
    new_shell = Widget_Base(GROUP_LEADER=W_Base, $
                            UVALUE=W_Base, $
+                           FLOATING=floating, $
                            _EXTRA=_extra) ;event_pro see XMANAGER call below.
    ;; now register this new top level base at the xmanager to
    ;; have it's events processed:
    XMANAGER, "FaceIt! "+uval.simname, new_shell, /NO_BLOCK, EVENT_HANDLER=uval.simname+'_USEREVENT'
    ;; XMANAGER replaces the TLB's EVENT_PRO by this event-handler!
 
-   ;; finally, return the new user-base to the user:
-   return, Widget_Base(new_shell, $
+   ;; create the new user base:
+   new_base = Widget_Base(new_shell, $
                        _EXTRA=_extra)
+
+   ;; store the new user base in the array of user-bases:
+   *uval.UserBases =  [*uval.UserBases, new_base]
+
+   ;; finally, return the new user-base to the user:
+   return, new_base
    ;; by the way: is it okay to use the same _EXTRAs for
    ;; new_shell (a top level base) and the base contained
    ;; therein, or do we have to sort keywords???
+   ;; Well, I had to sort out FLOATING... we`ll see.
 End
 
 
@@ -274,14 +290,61 @@ FUNCTION FaceIt_CreateDisplay, simname, dataptr, W_userbase
 
 END ; FaceIt_CreateDisplay
 
+Pro FaceIt_Set_Display, uv, display ;pass only 1 or 0!!
+   UV.display = display
+   Widget_Control, uv.W_SimDisplay, Set_Value=display
+   
+   ;; toggle sensitivity of userbase. Any widgets that were explicitely frozen
+   ;; in batch mode will not be affected.
+   Widget_Control, UV.W_userbase, SENSITIVE=UV.display
+
+   IF UV.display THEN BEGIN 
+      UV.SimDelay = UV.oldsimdelay
+   ENDIF ELSE BEGIN 
+      UV.oldsimdelay = UV.SimDelay
+      UV.SimDelay = UV.MinSimDelay
+   ENDELSE  
+End
+
+Pro FaceIt_update_percentage, uv; update the percentage display
+   if uv.duration eq 0 then begin
+      Widget_Control, uv.w_percentage, Set_Value=""
+   endif else begin
+      Widget_Control, uv.w_percentage, Set_Value=string(float(uv.stepcounter)/uv.duration*100 $
+                                                      ,format="(I3,'%')")
+   endelse
+End
+Pro FaceIt_Set_Duration, uv, duration ;Sets simulation duration
+   uv.duration = Long(duration)
+   if duration eq 0 then begin
+      Widget_Control, uv.w_duration, Set_Value="Duration: unlimited"
+   endif else begin
+      Widget_Control, uv.w_duration, Set_Value="Duration: "+str(duration)
+   endelse
+   Widget_Control, uv.simprogress, SET_SLIDER_MAX=uv.duration
+   FaceIt_update_percentage, uv
+End ;; FaceIt_Set_Duration
+
+Pro FaceIt_Reset_Counter, uv    ;Resets the simulation time counter.  
+   UV.stepcounter = 0l
+   Widget_Control, UV.W_SimStepCounter, SET_VALUE='Step: '+str(0)
+   Widget_Control, uv.simprogress, SET_VALUE=0
+   FaceIt_update_percentage, uv ;just to update the percentage display!
+End ; FaceIt_Reset_Counter
+
+Pro FaceIt_Start_Simulation, uv
+   IF NOT UV.continue_simulation THEN BEGIN
+      UV.continue_simulation = 1
+      UV.SimAbsTime = SysTime(1)
+      WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
+   ENDIF
+End
 
 
 PRO  FaceIt_RESET, uv
             
    Call_Procedure, UV.simname+'_RESET', UV.dataptr, UV.displayptr
-   UV.stepcounter = 0l
-   Widget_Control, UV.W_SimStepCounter, SET_VALUE='Step: '+str(UV.stepcounter)
-   Widget_Control, uv.simprogress, SET_VALUE=0
+   FaceIt_Reset_Counter, uv
 
 END ; FaceIt_RESET
 
@@ -294,6 +357,10 @@ FUNCTION FaceIt_KILL_REQUEST, UV
       Ptr_Free, UV.SimStepTimeQ
       Ptr_Free, UV.dataptr 
       Ptr_Free, UV.displayptr
+      Ptr_Free, UV.batchptr
+      Ptr_Free, UV.UserBases
+      ;; This will destroy all user-bases, cause they all have w_base as parent
+      ;; or group leader:
       WIDGET_CONTROL, UV.w_base, /DESTROY
       Return, 1
    ENDIF ELSE Return, 0
@@ -309,6 +376,7 @@ PRO FaceIt_EVENT, Event
 
    WIDGET_CONTROL, Event.Top, GET_UVALUE=UV, /NO_COPY
    widget_killed = 0
+   batch_next = 0
   
    EventName =  TAG_NAMES(Event, /STRUCTURE_NAME)
 
@@ -327,18 +395,34 @@ PRO FaceIt_EVENT, Event
                ; Print stepcounter and display progress:
                Widget_Control, UV.W_SimStepCounter, $
                 SET_VALUE='Step: '+str(UV.stepcounter)               
+               FaceIt_update_percentage, uv
                IF (uv.duration GT 0) THEN $
                 Widget_Control, uv.simprogress, SET_VALUE=uv.stepcounter
 
+               ;; call _simulate and stop if it returns false:
                UV.continue_simulation = $
                 Call_FUNCTION(UV.simname+'_SIMULATE', UV.dataptr)
                
+               ;; in batch mode, call monitor and return if it returns false:
+               If UV.batch ne "" then begin
+                  If not Call_Function(UV.batch+"_MONITOR", UV.dataptr, $
+                                       UV.displayptr, UV.batchptr) then begin
+                     Message, /Informational, "Batch exit condition met at step "+str(UV.stepcounter)+"."
+                     batch_next = 1 ;Next batch condition, if batch mode.
+                  endif
+               endif
+               
+               ;; increase stepcounter
                UV.stepcounter = UV.stepcounter+1
 
-               ; Stop if counter has reached duration:
-               IF (uv.duration GT 0) AND uv.stepcounter GT uv.duration THEN $
-                UV.continue_simulation = 0
-               
+               ; if counter has reached duration: stop or call next batch cycle
+               IF (uv.duration GT 0) AND (uv.stepcounter GT uv.duration) THEN begin
+                  If UV.batch eq "" then $
+                   UV.continue_simulation = 0 $
+                  else $
+                   batch_next = 1 ;Next batch condition
+               EndIf
+
                ; Display duration of last cycle(s):
                CurrentTime = SysTime(1)
                LastDuration = round((CurrentTime-UV.SimAbsTime)*1000)
@@ -360,12 +444,7 @@ PRO FaceIt_EVENT, Event
          "WIDGET_KILL_REQUEST" : $
              widget_killed = FaceIt_KILL_REQUEST(UV)
   
-         "SIMULATION_START" : $
-          IF NOT UV.continue_simulation THEN BEGIN
-            UV.continue_simulation = 1
-            UV.SimAbsTime = SysTime(1)
-            WIDGET_CONTROL, UV.W_Base, TIMER=0 ;Initiate next simulation cycle
-         ENDIF ; SIMULATION_START
+         "SIMULATION_START" : FaceIt_Start_Simulation, UV
 
          "SIMULATION_STOP" : UV.continue_simulation = 0
                                               
@@ -392,16 +471,9 @@ PRO FaceIt_EVENT, Event
 
       UV.W_SimReset : FaceIt_RESET, uv
 
-      UV.W_SimDisplay: BEGIN
-         UV.display = Event.Select
-         Widget_Control, UV.W_userbase, SENSITIVE=UV.display
-         IF UV.display THEN BEGIN 
-            UV.SimDelay = UV.oldsimdelay
-         ENDIF ELSE BEGIN 
-            UV.oldsimdelay = UV.SimDelay
-            UV.SimDelay = UV.MinSimDelay
-         ENDELSE  
-      END 
+      UV.W_SimNext : batch_next = 1
+
+      UV.W_SimDisplay: FaceIt_Set_Display, uv, Event.Select 
 
       uv.topmenu: BEGIN
          CASE event.value OF
@@ -431,11 +503,9 @@ PRO FaceIt_EVENT, Event
                help, result, /STRUC
                IF result.ok THEN $
                 IF result.eternal EQ 0 THEN BEGIN
-                  uv.duration = 0l
-                  Widget_Control, uv.simprogress, SET_VALUE=0
+                  FaceIt_Set_Duration, uv, 0
                ENDIF ELSE BEGIN 
-                  uv.duration = Long(result.duration) > 1l
-                  Widget_Control, uv.simprogress, SET_SLIDER_MAX=uv.duration
+                  FaceIt_Set_Duration, uv, result.duration > 1
                ENDELSE
 
             END
@@ -465,6 +535,19 @@ PRO FaceIt_EVENT, Event
  
    ENDCASE 
 
+   ;; In batch mode, call next batch cycle if batch_next is set:
+   If batch_next and (UV.batch ne "") then begin
+      ;; init next batch cycle. If result is -1, exit FaceIt.
+      Message, /Informational, "Calling next batch cycle."
+      new_duration = Call_Function(UV.batch+"_NEXT", UV.dataptr, UV.displayptr, UV.batchptr)
+      If new_duration eq -1 then begin
+         widget_killed = FaceIt_KILL_REQUEST(UV) ;Exit
+      endif else begin
+         FaceIt_Reset_Counter, uv
+         FaceIt_Set_Duration, uv, new_duration
+      endelse
+   End
+
 
    IF NOT(widget_killed) THEN $
     WIDGET_CONTROL, Event.Top, SET_UVALUE=UV, /NO_COPY
@@ -474,13 +557,14 @@ END ; faceit_EVENT
 
 
 
-PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
+PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block, BATCH=batch
 
    COMMON WidgetSimulation, MyFont, MySmallFont
 
    Default, NO_BLOCK, 1
    DEBUGMODE = 1; XMANAGER will terminate on error, if DEBUGMODE is set
    
+   Default, BATCH, ""
 
    minSimDelay = 1e-30; secs
 
@@ -536,9 +620,15 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
    W_SimStepTimeInt = Widget_Label(W_simtimes, FONT=MySmallFont, $
                                 VALUE='L.100: ----')
 
-   simprogress = Widget_Slider(W_SimControl, MINIMUM=0, MAXIMUM=1, $
+   W_SimProgress = Widget_Base(W_simcontrol, /Base_Align_Left, /Column)
+   W_duration = Widget_Label(W_SimProgress, FONT=MySmallFont, $
+                             VALUE='Duration: -------')
+   W_SimProgPer = Widget_Base(W_SimProgress, /Row, /Base_Align_Top)
+   simprogress = Widget_Slider(W_SimProgPer, MINIMUM=0, MAXIMUM=1, $
                               XSIZE=125, TITLE="Simulation Progress", $
-                              FONT=MySmallFont, /SUPPRESS_VALUE)
+                              FONT=MySmallFont, /SUPPRESS_VALUE, Sensitive=0)
+   W_percentage = Widget_Label(W_SimProgPer, FONT=MySmallFont, $
+                             VALUE='---%')
 
    W_SimStart = Widget_Button(W_SimControl, VALUE="Start", FONT=MyFont)
 
@@ -577,6 +667,8 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
       'W_SimStepCounter', W_SimStepCounter, $
       'stepcounter', 0l, $
       'simprogress', simprogress, $
+      'W_percentage', W_percentage, $
+      'W_duration', W_duration, $
       'W_SimStepTime', W_SimStepTime, $
       'W_SimStepTimeInt', W_SimStepTimeInt, $
       'SimStepTimeQ', Ptr_New(InitFQueue(100, 0)), $
@@ -584,12 +676,17 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
       'W_SimStart', W_SimStart, $
       'W_SimStop', W_SimStop, $
       'W_SimReset', W_SimReset, $
+      'W_SimNext', 0l, $
       'W_UserBase', W_UserBase, $
+      'UserBases', Ptr_New([W_UserBase]), $ ;An array of all user-bases.
       'duration', 0l, $ ; duration of simulation in bin, 0 = eternal
       'minSimDelay', minSimDelay, $
       'oldSimDelay', minSimDelay, $
       'SimDelay', minSimDelay, $ ;SimulationDelay/ms
-      'continue_simulation', 0, $ ; Flags
+      'batch', BATCH, $ ; Name of batch control, or ""
+      'batchptr', Ptr_New({freeze:0l}), $; a place for the user to store batch data
+      ;;; Flags:
+      'continue_simulation', 0, $
       'display', 1 $
    )
 
@@ -604,19 +701,38 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
                        userstruct.dataptr, W_UserBase) $
    )
    
-   ;; Now update user value:
-   Widget_Control, W_Base, SET_UVALUE=userstruct
-            
+   ;; If batch mode, init, add NEXT button and freeze user base:
+   If BATCH ne "" then begin
+      Message, /Informational, "Initializing batch mode"
+      duration = Call_Function(BATCH, userstruct.dataptr, $
+                               userstruct.displayptr, userstruct.batchptr)
+      ;; Add the NEXT button:
+      userstruct.W_SimNext  = Widget_Button(W_SimControl, VALUE="Next", FONT=MyFont)
+      ;; turn off display
+      FaceIt_Set_Display, userstruct, 0
+      ;; permanently freeze some widgets if requested:
+      If n_elements((*userstruct.batchptr).freeze) ne 0 then $
+         for i=1, n_elements((*userstruct.batchptr).freeze) do $
+          Widget_Control, (*userstruct.batchptr).freeze[i-1], Sensitive=0
+   Endif else begin
+      duration = 0
+   EndElse
+  
+
+
 
    Message, /INFO, ""
    Message, /INFO, "   ********************************"
    Message, /INFO, "   *** Registering Main Widget  ***"
    Message, /INFO, "   ********************************"
 
-   Widget_Control, W_Base, /REALIZE
+   ;; Realize all user-bases:
+   ;; This will also realize W_Base.
+   For i=1, n_elements(*userstruct.UserBases) do $
+    Widget_Control, (*userstruct.UserBases)[i-1], /REALIZE
 
-   Widget_Control, userstruct.simprogress, SENSITIVE=0
-
+   ;; display and set duration:
+   FaceIt_Set_Duration, userstruct, duration
 
    ;--- display nase-logo:
    ShowIt_Open, userstruct.w_simlogo
@@ -626,7 +742,16 @@ PRO FaceIt, simname, COMPILE=compile, NO_BLOCK=no_block
    ShowIt_Close, userstruct.w_simlogo
 
    loadct, 0                    ;don't leave that ugly logo-colortable...
+
+
+
+   ;;When in batch-mode, autostart the simulation:
+   If BATCH ne "" then FaceIt_Start_Simulation, userstruct
+
    
+   ;; Now update user value:
+   Widget_Control, W_Base, SET_UVALUE=userstruct
+ 
 
    XMANAGER, CATCH=1-DEBUGMODE
 
