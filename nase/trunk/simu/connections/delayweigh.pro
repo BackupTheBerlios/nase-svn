@@ -55,6 +55,7 @@
 ; MODIFICATION HISTORY:   initial version, Mirko Saam, 24.7.97
 ;                         Ergaenzung der zentralen Struktur um Breite und Hoehe der Source- und Target-Cluster, 25.7.97 
 ;                         automatischer cast von INIT_WEIGHTS auf DOUBLE, Mirko Saam, 1.8.97
+;                         Fehlermeldung, wenn delays zu gross, Mirko, 3.8.97
 ;
 ;-
 FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_delays,$
@@ -83,6 +84,7 @@ FUNCTION DelayWeigh, DelMat, In, INIT_WEIGHTS=init_weights, INIT_DELAYS=init_del
                    Weights : DOUBLE(init_weights) ,$
                    Delays  : [-1]          }
       END ELSE BEGIN         
+         IF Max(init_delays) GE 15 THEN Message, 'sorry, delays are too big'
          DelMat = { source_w: source_w,$
                     source_h: source_h,$
                     target_w: target_w,$
