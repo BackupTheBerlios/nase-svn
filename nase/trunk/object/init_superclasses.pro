@@ -35,6 +35,13 @@
 ;               Hence, the INIT methods of all direct superclasses should have
 ;               unique keywords. Otherwise, the keyword is passed to all INIT
 ;               methods it matches.
+;                 Note that all INIT methods must accept at least one keyword
+;               parameter for the _EXTRA-mechanism to work. (IDL issues an
+;               error, if it is tried to pass keywords to a procedure that does
+;               not accept any keyword parameters. This is true even if the passed
+;               _EXTRA parameter doesn't contain any entries at all (sic!)).
+;               If necessary, add something like "dummy=for_extra" to your
+;               function definition. Sorry for this inconvenience.
 ;
 ; PROCEDURE: o Query superclasses using OBJ_CLASS(/SUPERCLASS)
 ;            o Call INIT methods using CALL_METHOD()
@@ -74,6 +81,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/02/21 19:34:23  kupper
+;        Added comment on restriction due to _EXTRA mechanism.
+;
 ;        Revision 1.2  2000/02/21 18:58:50  kupper
 ;        Oops! My example was wrong... sorry.
 ;
