@@ -28,6 +28,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.15  2000/09/28 09:33:16  alshaikh
+;            optional saving of DW-structures (FILE='NULL')
+;
 ;      Revision 1.14  2000/08/08 11:53:59  thiel
 ;          Plotcilloscope now adds th0 to threshold.
 ;
@@ -303,14 +306,13 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
        console,P.CON,  'CONNECTIONS:  '+ curSLayer.NAME+ ' -> '+ curTLayer.NAME+' via '+ curDW.SYNAPSE+', '+curDW.NAME
    END
 
-
    ;--------------> SAVE WEIGHTS BEFORE SIMULATION/LEARNING
    IF Learn THEN BEGIN
        FOR i=0, DWmax DO BEGIN
-           curDW = Handle_Val((P.DWW)(i)) 
-           lun = UOpenW(P.file+'.'+curDW.FILE+'.ini.dw', /ZIP)
-           SaveStruc, lun, SaveDW(CON(i))
-           UClose, lun
+          curDW = Handle_Val((P.DWW)(i)) 
+          lun = UOpenW(P.file+'.'+curDW.FILE+'.ini.dw', /ZIP)
+          SaveStruc, lun, SaveDW(CON(i))
+          UClose, lun
        END
    END
 
@@ -415,9 +417,11 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    END
    FOR i=0, DWmax DO BEGIN
       curDW = Handle_Val((P.DWW)(i)) 
-      lun = UOpenW(P.file+'.'+curDW.FILE+'.dw', /ZIP)
-      SaveStruc, lun, SaveDW(CON(i))
-      UClose, lun
+      IF (curDW.FILE NE 'NULL') THEN BEGIN
+         lun = UOpenW(P.file+'.'+curDW.FILE+'.dw', /ZIP)
+         SaveStruc, lun, SaveDW(CON(i))
+         UClose, lun
+      ENDIF
    END
    
 
