@@ -30,6 +30,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  1997/10/29 15:00:05  saam
+;           das lokale Verzeichnis (nocht die Daten) wurde bisher
+;           nicht geloescht
+;
 ;     Revision 1.2  1997/10/29 13:04:08  saam
 ;           NODEL-Option hinzugefuegt
 ;
@@ -87,6 +91,7 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
 
       IF NOT Keyword_Set(NOZIP) THEN spawn, 'rm -f '+LocalDir+'/'+TARFILE ELSE spawn, 'rm -f '+LocalDir+'/'+TARFILE+'.gz'
       spawn, 'rsh '+RemoteHost+' "cd '+RemoteDir+'; rm -f '+TARFILE+'"' 
+      IF NOT Keyword_Set(NODEL) THEN spawn, 'rm -f '+LocalDir+'/*'
 
    END ELSE BEGIN
       ; data is local
@@ -95,11 +100,11 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
          IF RemoteDir NE LocalDir THEN BEGIN
             ; the user seems to want a local copy
             spawn, 'cp -R '+RemoteDir+'/* '+LocalDir
+            IF NOT Keyword_Set(NODEL) THEN spawn, 'rm -f '+LocalDir
          END
       END
    END
 
-   IF NOT Keyword_Set(NODEL) THEN spawn, 'rm -f '+LocalDir+'/*'
 
    
 END
