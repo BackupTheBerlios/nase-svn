@@ -1,6 +1,8 @@
 ;+
 ; NAME:               PeakPicker
 ;
+; AIM:                identifying peaks and valleys in noisy data (num. method)
+;
 ; PURPOSE:            identifying peaks and valleys in noisy data
 ;
 ; CATEGORY:           STAT
@@ -33,10 +35,13 @@
 ;                     tvalley:        Like tpeak for valleys.
 ;
 ; AUHTOR:             K. Kopecz, A. Steinhage
-;
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/09/28 09:39:10  gabriel
+;          AIM tag added
+;
 ;     Revision 1.2  1998/01/27 16:32:32  saam
 ;           little bug in docu corrected
 ;
@@ -44,7 +49,7 @@
 ;           Header angepasst
 ;
 ;
-;-
+;
 PRO PeakPicker, ydata,tdata, ypeak,tpeak,number, yvalley,tvalley, $
              RelativCrit=RelativeCrit,DataCrit=DataCrit,Intervall=Intervall
 
@@ -61,7 +66,7 @@ PRO PeakPicker, ydata,tdata, ypeak,tpeak,number, yvalley,tvalley, $
    
    ymin=Min(ydata)  &  ymax=Max(ydata)
    If RelativeCrit Then ycrit=RelativeCrit*(ymax-ymin) ; criterion into data range
-   If DataCrit Then ycrit=DataCrit
+   If set(DataCrit) Then ycrit=DataCrit
 
 ;Initialization
 
