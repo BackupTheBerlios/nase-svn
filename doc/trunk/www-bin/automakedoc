@@ -23,6 +23,7 @@ cvs -d $CVSROOT checkout doc
 cd $CVSWORK/doc/standards
 ln -s $CVSWORK/doc/header.pro $CVSWORK/doc/header.pro.tex
 $MAKEDOC standards
+$MAKEDOC cvs
 
 cd $CVSWORK/doc/workshop
 $MAKEDOC workshop
