@@ -9,6 +9,7 @@ use File::Basename;
 use File::Find;
 use NASE::globals;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+use locale;
 
 require Exporter;
 
@@ -16,7 +17,7 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw( makeURL readRoutineIdx createRoutineIdx checkRoutineIdx keylista showedit );
+@EXPORT = qw( makeURL readRoutineIdx createRoutineIdx checkRoutineIdx RoutinesByName RoutinesByCat showedit );
 
 $VERSION = '1.1';
 
@@ -74,68 +75,63 @@ sub makeURL {
 ###################################################################################
 # create file index on disk
 ###################################################################################
-sub createRoutineIdx {
-
-  undef %alpha;
-  undef %aim;
+#sub createRoutineIdx {
+#  undef %alpha;
+#  undef %aim;
   
-  open (IDX, ">$DIRINDEX") || die "can't open $DIRINDEX for write: $!\n";
-  find(\&appendFile, getDocDir());
-  close (IDX) || die "can't close $DIRINDEX: $!\n";
+#  open (IDX, ">$DIRINDEX") || die "can't open $DIRINDEX for write: $!\n";
+#  find(\&appendFile, getDocDir());
+#  close (IDX) || die "can't close $DIRINDEX: $!\n";
    
-  open (IDX, ">$ALPHINDEX") || die "can't open $ALPHINDEX for write: $!\n";
-  foreach (sort keys %alpha){
-    print IDX "$alpha{$_} $aim{$_}\n";
-  }
-  close (IDX) || die "can't close $ALPHINDEX: $!\n";
-  readRoutineIdx($DIRINDEX);
+#  open (IDX, ">$ALPHINDEX") || die "can't open $ALPHINDEX for write: $!\n";
+#  foreach (sort keys %alpha){
+#    print IDX "$alpha{$_} $aim{$_}\n";
+#  }
+#  close (IDX) || die "can't close $ALPHINDEX: $!\n";
+#  readRoutineIdx($DIRINDEX);
 
-}
+#}
 
-sub appendFile {
-  my $DOCDIR=getDocDir();
-  my $aim;
+#sub appendFile {
+#  my $DOCDIR=getDocDir();
+#  my $aim;
   
-  if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
-    my $file = $File::Find::name;
-    $file =~ s/$DOCDIR//; 
-    $file =~ s/^(\/)+//; 
-    print IDX "$file\n";
-    $alpha{basename($file)} = $file;
+#  if (-f && /\.pro$/i && ! /(CVS)|(RCS)/){
+#    my $file = $File::Find::name;
+#    $file =~ s/$DOCDIR//; 
+#    $file =~ s/^(\/)+//; 
+#    print IDX "$file\n";
+#    $alpha{basename($file)} = $file;
     
     
-    open(FILE, "$DOCDIR/$file") || die "can't open $DOCDIR/$file for read: $!\n";
-    # create aim
-    while (<FILE>){	  
-      last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
-      s/^;//;
-      {
-	($aim && /([a-zA-Z0-9_][^\n]+)/i) && do { $aim{basename($file)}=$1; $aim=0; last;};
-	/AIM\s*:\s*\n/i && ($aim = 1); 
-	/AIM\s*:[ \t\n;]*([a-zA-Z0-9_][^\n]+)/i && do {$aim{basename($file)}=$1; $aim=0; last;};
-      }
-    }
+#    open(FILE, "$DOCDIR/$file") || die "can't open $DOCDIR/$file for read: $!\n";
+#    # create aim
+#    while (<FILE>){	  
+#      last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
+#      s/^;//;
+#      {
+#	($aim && /([a-zA-Z0-9_][^\n]+)/i) && do { $aim{basename($file)}=$1; $aim=0; last;};
+#	/AIM\s*:\s*\n/i && ($aim = 1); 
+#	/AIM\s*:[ \t\n;]*([a-zA-Z0-9_][^\n]+)/i && do {$aim{basename($file)}=$1; $aim=0; last;};
+#      }
+#    }
     
-  }
-}
+#  }
+#}
+####################################################################################
+####################################################################################
+####################################################################################
+## read file-index from disk into memory
+##   _calls index creation routine if not on disk
+####################################################################################
+#sub readRoutineIdx{
+#  my ($file) = @_;
 
-
-
-###################################################################################
-###################################################################################
-###################################################################################
-# read file-index from disk into memory
-#   _calls index creation routine if not on disk
-###################################################################################
-sub readRoutineIdx{
-
-  my ($file) = @_;
-
-  createRoutineIdx() unless -r $DIRINDEX;
-  open (IDX, "<$file") || die "can't open $file for read: $!\n";
-  @ridx = <IDX>; chomp @ridx;
-  close (IDX) || die "can't close $file, $!\n";
-}
+#  createRoutineIdx() unless -r $DIRINDEX;
+#  open (IDX, "<$file") || die "can't open $file for read: $!\n";
+#  @ridx = <IDX>; chomp @ridx;
+#  close (IDX) || die "can't close $file, $!\n";
+#}
 
 
 ###################################################################################
@@ -159,15 +155,11 @@ sub checkRoutineIdx {
 }
 
 
-
 ###################################################################################
 ###################################################################################
 ###################################################################################
 # creates HTML files with routines by-name, keywords by-name and by-count
 ###################################################################################
-sub keylista {
-  my ($lastkey, $key);
-
 #  open (IDX, ">".getDocDir()."/".KeyByNameHTML()) || die "can't open ".getDocDir()."/".KeyByNameHTML()." for write: $!\n";
 
 #  print IDX "<HTML><HEAD><TITLE>Keywords by name</TITLE></HEAD><BODY>";
@@ -226,11 +218,22 @@ sub keylista {
 #  close (IDX);
 
 
+
+####################################################################################
+####################################################################################
+####################################################################################
+# Creates a HTML with ROUTINES sorted by NAME
+####################################################################################
+####################################################################################
+####################################################################################
+sub RoutinesByName {
+  my ($lastkey, $key);
+
   open (IDX, ">".getDocDir()."/".RoutinesHTML()) || die "can't open ".getDocDir()."/".RoutinesHTML()." for write: $!\n";
 
-print IDX myHeader(), myBody(),
-          h1("Routines by Name"),p,
-          "<A NAME=top><FONT SIZE=+2>";
+  print IDX myHeader(), myBody(),
+            h1("Routines by Name"),p,
+            "<A NAME=top><FONT SIZE=+2>";
 
   foreach ('_','A'..'Z'){
     print IDX "<A HREF=#$_>$_</A> ";
@@ -258,6 +261,67 @@ print IDX myHeader(), myBody(),
 
   close (IDX);
 }
+
+
+
+####################################################################################
+####################################################################################
+####################################################################################
+# Creates a HTML with ROUTINES sorted by CATEGORY
+####################################################################################
+####################################################################################
+####################################################################################
+sub RoutinesByCat {
+  my ($key, $cat, $data, %cat, $count);
+
+  open (IDX, ">".getDocDir()."/".RoutinesCatHTML()) || die "can't open ".getDocDir()."/".RoutinesCatHTML()." for write: $!\n";
+
+  print IDX myHeader(), myBody(),
+            h1("Routines by Category"),p,
+            "<A NAME=top><FONT SIZE=+2>";
+
+  # create unique list of categories
+  openHread(); 
+  while ((undef, $data) = each %hdata){
+    foreach (split(",",@{$data}[3])){
+      $cat{$_}++;
+    }
+  }
+  
+
+  print IDX '<TABLE COLS=5><TR>'; 
+  $count = 0;
+  foreach (sort keys %cat){    
+    print IDX '<TD CLASS="xmpcode" VALIGN=TOP>', "<A HREF=#$_>$_</A>", "</TD>\n";
+    if (($count % 5) == 4){ print IDX "</TR><TR>"; }
+    $count++;
+  }
+  print IDX "</TR></TABLE></FONT></A>";
+
+
+  # now output all cats and routines
+  print IDX '<TABLE COLS=2>'; 
+  
+  foreach $cat (sort keys %cat){ 
+    # print the new leading category
+    print IDX "<TR><TD><BR><BR><H2><A NAME=$cat>$cat</A><FONT SIZE=-2><A HREF=#top>top</A></FONT></H2></TD></TR>";
+    
+    while (($key, $data) = each %hdata){
+      if (@{$data}[3] =~ /$cat/){
+	print IDX '<TR><TD CLASS="xmpcode" VALIGN=TOP>',
+                  makeURL($key, undef, "routidx"),
+                  '</TD><TD CLASS="xplcode" VALIGN=TOP>',
+                  @{$data}[2],
+                  "</TD></TR>\n";
+      }
+    }
+  }
+  closeHread(); 
+  print IDX "</TABLE>", end_html;
+  
+  close (IDX);
+}
+
 
 
 
