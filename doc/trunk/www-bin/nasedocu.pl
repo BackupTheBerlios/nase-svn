@@ -37,6 +37,7 @@ $fullurl = "$myurl/$sub";    # still without the server stuff
 
 
 
+
 ###################################################################################
 ###################################################################################
 ###################################################################################
@@ -79,9 +80,9 @@ sub updatedoc {
   RoutinesByName();
   print "...done</PRE>";
 
-#  print "generating routine by category...";
-#  RoutinesByCat();
-#  print "...done</PRE>";
+  print "generating routine by category...";
+  RoutinesByCat();
+  print "...done</PRE>";
 
 #  print "generating keyword lists...";
 #  keylista();
@@ -128,7 +129,7 @@ sub showdir {
     @file = sort grep { /\.pro$/i && -f "$DOCDIR/$mydir/$_" } readdir(DIR);
     closedir DIR;      
     
-    print "<BLOCKQUOTE>" if $level;
+    print '<BLOCKQUOTE>' if $level;
 
     foreach (@sdir){
       showdir("$mydir/$_", $targetdir, $level+1);
@@ -157,39 +158,62 @@ if ($P::mode){
     /update/i && do { updatedoc();
 		      last TRUNK;};
     /list/i   && do { print myBody();
-		      print img({src=>"$DOCURL/doc/www-doc/snasedoc.gif",alt=>"[LOGO]",border=>"0"}),br;
+		      print 
+			'<TABLE cellspacing=5 border=0><TR><TD>',
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center><TR><TD>',
+			     img({src=>"$DOCURL/doc/www-doc/snasedoc.gif",alt=>"[LOGO]",border=>"0"}),
+			  "</TD></TR></TABLE>\n",
+			"</TD></TR><TR><TD>\n",
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center><TR><TD>',
+			  '<TR CLASS="title"><TD CLASS="title">Directories</TD></TR>',
+			    '<TR><TD CLASS="left">';
 		      showdir("/",$sub, 0);
 		      print 
-			hr, 
-			a({href=>"/nase.list/", target=>"text"}, "mailing list"), ", ",
-			"routines (", a({href=>$DOCURL.RoutinesHTML(), target=>"text"}, "name"), ", ",
-			a({href=>$DOCURL.RoutinesCatHTML(), target=>"text"}, "category"), "), ",		      
-			"keyword index (",a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), ", ",
-			a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), ")",
-			hr,
-			start_multipart_form(-target=>"text"),
-			textfield(-name=>'QuickSearch', -size=>15, -maxlength=>80),
+			  "</TD></TR></TABLE>\n",
+			"</TD></TR><TR><TD>\n",
+  			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
+			    '<TR CLASS="title"><TD CLASS="title">Indices</TD></TR>',
+			    '<TR><TD CLASS="left">',
+			      "<LI>", a({href=>"/nase.list/", target=>"text"}, "mailing list"), "</LI>",
+			      "<LI>routines by ", a({href=>$DOCURL.RoutinesHTML(), target=>"text"}, "name"), "</LI>",
+			      "<LI>routines by ", a({href=>$DOCURL.RoutinesCatHTML(), target=>"text"}, "category"), "</LI>",
+			      "<LI>keywords by ", a({href=>$DOCURL.KeyByNameHTML(), target=>"text"}, "name"), "</LI>",
+			      "<LI>keywords by ", a({href=>$DOCURL.KeyByCountHTML(), target=>"text"}, "count"), "</LI>  ",
+			  "</TD></TR></TABLE>",
+			"</TD></TR><TR><TD>",
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
+			    '<TR CLASS="title"><TD CLASS="title">Search</TD></TR>',
+			    '<TR><TD CLASS="left">',
+			    start_multipart_form(-target=>"text"),
+			    textfield(-name=>'QuickSearch', -size=>15, -maxlength=>80),
 			#		        hidden(-name=>'mode', -value=>'search'), doesn't work inserts $P::MODE
-			'<INPUT NAME="mode" VALUE="search" TYPE=HIDDEN>',
-			submit(-name=>'Search'),br,
-			checkbox_group(-name=>'sfields',
+			    '<INPUT NAME="mode" VALUE="search" TYPE=HIDDEN>',
+			    checkbox_group(-name=>'sfields',
 				       -values=>['name','aim'],
 				       -defaults=>['name']),
-			endform,
-			hr,
-			"Test the format of your documentation header before checking in!",
-			start_multipart_form(-target=>"text"),
-			filefield(-name=>'filename',-size=>5),
-			'<INPUT NAME="mode" VALUE="check" TYPE=HIDDEN>',
-			submit(-name=>'Check'),
-			endform,
-			hr,
-			font({size=>"-2"}, 
-			     "last update: $lastmod, ",
-			     a({href=>"$myurl?mode=update", target=>"_new"}, "update now")), 
-			br,
-			font({size=>"-2"}, 
-			     '$Id$ ');
+		    	    endform,
+			  "</TD></TR></TABLE>",
+			"</TD></TR><TR><TD>",
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
+			    '<TR CLASS="title"><TD CLASS="title">Check Headers</TD></TR>',
+			    '<TR><TD CLASS="left">',
+			    "Test the format of your documentation header before checking in!",
+			    start_multipart_form(-target=>"text"),
+			    filefield(-name=>'filename',-size=>5),
+			    '<INPUT NAME="mode" VALUE="check" TYPE=HIDDEN>',
+			    submit(-name=>'Check'),
+			    endform,
+			  "</TD></TR></TABLE>",
+			"</TD></TR><TR><TD>",
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
+			  '<TR CLASS="title"><TD CLASS="title">Update</TD></TR>',
+			  '<TR><TD CLASS="left">',
+			    "<LI>last update: $lastmod</LI>",
+			    "<LI>",a({href=>"$myurl?mode=update", target=>"_new"}, "update now"), "</LI>", 
+			    '<LI>$Id$ </LI>',
+			  "</TD></TR></TABLE>",
+			"</TD></TR>",
+			"</TABLE>";
 		      last TRUNK;};
     /text/i   && do { print myBody();
 		      if ($P::file){if ($P::show eq "header") { showHeader(key=>$P::file); };
@@ -224,7 +248,7 @@ if ($P::mode){
 			unlink $chkfile || die "can't unlink $chkfile: $!\n";
                         last TRUNK;
                       };
-    /dir/i   && do { print '<frameset cols="180,*">';
+    /dir/i   && do { print '<frameset cols="250,*">';
 		     print frame({src=>"$fullurl?mode=list", name=>"list"});
 		     print frame({src=>"$fullurl?mode=text&show=aim", name=>"text"});
 		     print '</frameset>';
