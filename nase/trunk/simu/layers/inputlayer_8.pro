@@ -89,13 +89,17 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.2  1999/03/11 09:36:33  thiel
+;             Keywords vergessen.
+;
 ;      Revision 1.1  1999/03/08 09:50:36  thiel
 ;             Neu: InputLayer für Typ-8-Neuronen.
 ;
 ;-
 
 
-PRO InputLayer_8, _layer, CURR1=curr1, SYN1=syn1, SYN2=syn2, SYN3=syn3
+PRO InputLayer_8, _layer, CURR1=curr1, CURR2=curr2, CURR3=curr3, $
+                          SYN1=syn1, SYN2=syn2, SYN3=syn3
 
 
    Handle_Value, _layer, layer, /NO_COPY
