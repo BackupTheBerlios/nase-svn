@@ -69,6 +69,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.21  1998/11/09 10:58:53  saam
+;             adapted to new layer type
+;
 ;       Revision 1.20  1998/11/08 17:52:41  saam
 ;             changed to new layer type
 ;
@@ -159,7 +162,7 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
    If Not Set(RATE) Then Rate = Entlernrate
    If Not Set(ALPHA) Then Alpha = Lernrate/Entlernrate
  
-   Post = Handle_Val(LayerOut(Target_CL))
+   Handle_Value, LayerOut(Target_CL), Post
    If Post(0) EQ 0 Then Return
 
    Handle_Value, _DW, DW, /NO_COPY
