@@ -470,7 +470,7 @@ EndIf
             ;; bildxsize ist die Größe einer Untermatrix in Pixeln,
             ;; inclusive dem einen Pixel für die Trennlinie.
 
-            UTv, MatrixMatrix(*, *, YY, XX), /NASE, /ORDER, $
+            UTv, MatrixMatrix(*, *, YY, XX), /NASE, $
 ;                    $;h_stretch=xGroesse,  v_stretch=yGroesse, $
             /DEVICE, $
               X_SIZE=(bildxsize-1)/!D.X_PX_CM, Y_SIZE=(bildysize-1)/!D.Y_PX_CM, $

@@ -303,7 +303,7 @@ PRO TomWaits_Event, Event
                plot, indgen(10), /NODATA, COLOR=data.colors(2), XTHICK=2, YTHICK=2, POSITION=[0.1, 0.1, 0.9, 0.9]
                nxpixelgr = (convert_coord(data.magnify, 0, 0, /DEVICE, /TO_NORMAL))(0)
                nypixelgr = (convert_coord(0, data.magnify, 0, /DEVICE, /TO_NORMAL))(1)
-               UTv, /NASE, /ORDER, /ALLOWCOLORS, tv_w, 0.1+nxpixelgr/2., 0.1+nypixelgr/2., STRETCH=data.magnify
+               UTv, /NASE, /ALLOWCOLORS, tv_w, 0.1+nxpixelgr/2., 0.1+nypixelgr/2., STRETCH=data.magnify
                PrepareNASEPlot, Restore_old=oldplot
             Endif               ;Left Button
             
