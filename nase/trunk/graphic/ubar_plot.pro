@@ -38,6 +38,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.3  1998/05/12 17:48:24  gabriel
+;          kleinen !P.MULTI Fehler behoben
+;
 ;     Revision 2.2  1998/05/12 14:10:11  gabriel
 ;          Docu erweitert bei COLORS
 ;
@@ -71,13 +74,16 @@ IF CENTER THEN BEGIN
 END ELSE BEGIN 
       stepl = barspace/2 & stepr = FLOAT(xdata(1)-xdata(0))*(1.-barspace/2)
 END
+PTMP = !P.MULTI
+;print,!P.MULTI
 CASE 1 OF
    ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/XSTYLE,_EXTRA=e
    ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
    ELSE :plot,xdata,ydata,/NODATA,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
 
 ENDCASE
-
+PTMP2 = !P.MULTI
+;print,!P.MULTI
 
 FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN 
    x = [ xdata(i)-stepl,xdata(i)-stepl,xdata(i)+stepr,xdata(i)+stepr ]
@@ -85,14 +91,16 @@ FOR i= 0 , N_ELEMENTS(ydata)-1 DO BEGIN
    polyfill,x,y,COLOR=COLORS(i),NOCLIP=0
 END
 ;;Und Nochmal Drueber
+;print,!P.MULTI
+!P.MULTI = PTMP 
 CASE 1 OF
    ExtraSet(e, 'XRANGE'): plot,xdata,ydata,/NODATA,/NOERASE,/XSTYLE,_EXTRA=e
    ExtraSet(e, 'XSTYLE'): plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],_EXTRA=e
    ELSE :plot,xdata,ydata,/NODATA,/NOERASE,XRANGE=[xdata(0)-stepl,MAX(xdata)+stepr],/XSTYLE,_EXTRA=e
 
 ENDCASE
-
-
+!P.MULTI = PTMP2
+;print,!P.MULTI
 
 
 END
@@ -100,4 +108,4 @@ END
 ;xdata = indgen(20)
 ;ydata = RANDOMN(S,20)
 ;ubar_plot,xdata,ydata,/CENTER
-END
+;END
