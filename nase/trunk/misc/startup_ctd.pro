@@ -137,7 +137,7 @@ common commonrandom, seed
       ;;       Perhaps I'll try and ask RSI about it.
       ;;       By the way: DIRECT_COLOR visuals don't work in any
       ;;                   case, still. Just don't ask.
-      DEVICE, BYPASS_TRANSLATION=0
+      if float(strmid(!version.release,0,3)) gt 5.4 then DEVICE, BYPASS_TRANSLATION=0
       WDelete, 0
    endif
 
