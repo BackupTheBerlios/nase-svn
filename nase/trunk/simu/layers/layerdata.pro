@@ -175,6 +175,7 @@ PRO LayerData, _Layer, $
 
       '8' : inhibition = !NONE
       '9' : inhibition = !NONE
+      'GRN' : inhibition = !NONE
      ELSE: IF n GT 1 THEN inhibition = REFORM(Layer.I, Layer.H, Layer.W) ELSE inhibition = Layer.I
    ENDCASE
    
@@ -189,7 +190,8 @@ PRO LayerData, _Layer, $
        ELSE threshold=Layer.R+Layer.S+Layer.Para.th0
       '8' : threshold = !NONE
       '9' : threshold = !NONE
-      'lif' : threshold = layer.para.th0
+      'LIF' : threshold = layer.para.th0
+      'GRN' : threshold = !NONE
       ELSE: IF n GT 1 THEN $
        threshold = REFORM(layer.S+layer.para.th0, Layer.H, Layer.W) $
       ELSE threshold = layer.S+layer.para.th0
