@@ -36,7 +36,7 @@
 ;                as the input fed into the simplecell layer.
 ;  orientation:: The preferred orientation of the simplecells,
 ;                specified in degrees.
-;  wavalength :: The preferred spacial wavelength of the simplecells,
+;  wavelength :: The preferred spacial wavelength of the simplecells,
 ;                specified in pixels.
 ;  phase      :: The preferred spatial phase shift of the simplecells,
 ;                specified in radians.
@@ -61,6 +61,9 @@
 ; OPTIONAL OUTPUTS:
 ;  GET_FILTER:: The RF used for convolution.
 ;
+; RESTRICTIONS:
+;  Wavelength must be at least 2 pixels.<BR>
+; 
 ; PROCEDURE:
 ;  The RF used for convolution is an appropriate <A>Gabor</A>
 ;  patch (see there). The RF is computed from the characteristics, and convolution
@@ -93,11 +96,12 @@ Function Simplecell, pic, orientation, wavelength, phase, $
      "argument."
    assert, Set(wavelength), "Specify filter wavelength as third " + $
      "argument."
+   assert, wavelength ge 2, "Wavelength needs to be at least 2 pixels " + $
+           "to be correctly sampled!"
    assert, Set(phase)
 
    ;; The width of the gabor filter mask is computed as to allow for
    ;; one cycle, i.e. 3*sigma == wavelength.
-   assert, wavelength ge 1
    size = 2*wavelength
    hmw = !sigma2hwb*wavelength/3.0;; triple sigma == wavelength
 
