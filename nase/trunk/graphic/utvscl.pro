@@ -46,6 +46,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1997/11/07 15:56:08  saam
+;         Beginn des Einfuegens des Pos-Arguments
+;
 ;     Revision 2.3  1997/11/06 18:47:17  saam
 ;           Keyword X_Size und Y_Size hinzugefuegt
 ;
@@ -115,7 +118,11 @@ PRO UTvScl, _Image, XNorm, YNorm $
    END ELSE BEGIN ; it is a WINDOW
       IF Set(STRETCH) OR Set(V_STRETCH) OR Set(H_STRETCH) THEN Image = Congrid(Image, xsize*!D.X_PX_CM, ysize*!D.Y_PX_CM)
       Device, BYPASS_TRANSLATION=0
-      TVScl, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+      IF N_Params EQ 2 THEN BEGIN; position implicitely
+         TVScl, Image, xnorm, /CENTIMETERS, _EXTRA=e
+      END ELSE BEGIN
+         TVScl, Image, xpos, ypos, /CENTIMETERS, _EXTRA=e
+      END
       Device, /BYPASS_TRANSLATION
    END
 
