@@ -48,6 +48,7 @@
 ;  Structures
 ;  Widgets
 ;  Windows
+;  Demonstration
 ;
 ; CALLING SEQUENCE:
 ;  Write the calling sequence here. For procedures, use the form
