@@ -86,7 +86,7 @@ End
 
 ;; ------------ Public --------------------
 Function image_factory::types
-   PushD, "/homes/kupper/Promo/Source/image_factory"
+   PushD, FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["object"])
    ;; for platform-independency, use FILEPATH() like in nase-startup!
    methods = FindFile("image_factory__*_.pro")
    PopD
