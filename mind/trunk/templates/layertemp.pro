@@ -1,25 +1,16 @@
 ;+
-; NAME:   layertemp.pro
+; NAME:
+;   LayerTemp
 ;
+; AIM:
+;   Demonstrates the syntax and options of a MIND layer
 ;
-; PURPOSE: Template -> Layers
+; PURPOSE:
+;   Demonstrates the syntax and options of a MIND layer
 ;
-;
-; CATEGORY: Templates
-
-; MODIFICATION HISTORY:
-;
-;
-;     $Log$
-;     Revision 1.3  2000/07/04 08:58:14  saam
-;           added WRAP tag
-;
-;     Revision 1.2  2000/01/25 15:23:16  alshaikh
-;           new layer-structure!
-;
-;     Revision 1.1  2000/01/17 14:58:22  alshaikh
-;           initial version... copied from 'dsim.pro'
-;
+; CATEGORY:
+;  Help
+;  MIND
 ;
 ;-
 
@@ -44,6 +35,7 @@ LW(0) = Handle_Create(!MH, VALUE={INFO   : 'LAYER'           ,$
                                   LEX    : { INFO       : 'LAYEREXTRA',$
                                              REC_O      : [0l, SIMULATION.TIME],$
                                              REC_M      : [0l,0l]              ,$
-                                             REC_MUA    : 1                    ,$
+                                             REC_MUA    : 1                    ,$ ; [bool] records sum of actions potentials
+                                             REC_LFP    : 1                    ,$ ; [bool] records sum of all neurons' membrane potentials 
                                              ANALYZE    : 0                    ,$
                                              SPIKERASTER: 1                    }})

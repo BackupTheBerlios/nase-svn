@@ -239,12 +239,17 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    Vid_O   = LonArr(Lmax+1)
    Vid_M   = LonArr(Lmax+1)
    Vid_MUA = LonArr(Lmax+1)
+   Vid_LFP = LonArr(Lmax+1)
 
    SelVidO = BytArr(Lmax+1)
    SelVidM = BytArr(Lmax+1)
    FOR i=0,Lmax DO BEGIN
-      curLayer = Handle_Val(P.LW(i))
+      Handle_Value, P.LW(i), curLayer, /NO_COPY
       REC = curLayer.LEX
+
+      ; ensure REC_LFP is defined
+      IF NOT ExtraSet(REC, "REC_LFP") THEN SetTag, REC, "REC_LFP", 0
+
       IF ((REC.REC_O(1) GT REC.REC_O(0)) AND (REC.REC_O(0) LT P.SIMULATION.TIME)) THEN BEGIN
          IF N_Elements(REC.REC_O) GT 2 THEN BEGIN
             Vid_O(i) = InitVideo( BytArr(N_Elements(REC.REC_O)-2), TITLE=P.File+'.'+curLayer.FILE+'.o.sim', /SHUTUP, /ZIPPED )
@@ -269,6 +274,11 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          Vid_MUA(i) = InitVideo( 0l, TITLE=P.File+'.'+curLayer.FILE+'.mua.sim', /SHUTUP)
          console, P.CON, 'RECORDING: '+curLayer.NAME+' MUA'
       END
+      IF REC.REC_LFP THEN BEGIN
+         Vid_LFP(i) = InitVideo( 0., TITLE=P.File+'.'+curLayer.FILE+'.lfp.sim', /SHUTUP)
+         console, P.CON, 'RECORDING: '+curLayer.NAME+' LFP'
+      END
+      Handle_Value, P.LW(i), curLayer, /NO_COPY, /SET
    END
 
 
@@ -387,6 +397,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
             dummy = CamCord( Vid_M(i), REFORM(DOUBLE(M), N_Elements(M), /OVERWRITE))
          END
          IF REC.REC_MUA THEN dummy = CamCord( VID_MUA(i), LONG(LayerMUA(L(i))))
+         IF REC.REC_LFP THEN BEGIN
+             LayerData, L(i), POTENTIAL=m
+             dummy = CamCord( VID_LFP(i), FLOAT(TOTAL(m)))
+         END
       END
 
       ;-----> OPERATIONS DONE IN LEARNING MODE
@@ -412,6 +426,7 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       IF ((REC.REC_O(1) GT REC.REC_O(0)) AND (REC.REC_O(0) LT P.SIMULATION.TIME)) THEN Eject, Vid_O(i), /NOLABEL, /SHUTUP
       IF ((REC.REC_M(1) GT REC.REC_M(0)) AND (REC.REC_M(0) LT P.SIMULATION.TIME)) THEN Eject, Vid_M(i), /NOLABEL, /SHUTUP
       IF REC.REC_MUA THEN Eject, VID_MUA(i), /NOLABEL, /SHUTUP
+      IF REC.REC_LFP THEN Eject, VID_LFP(i), /NOLABEL, /SHUTUP
    END
    FOR i=0, DWmax DO BEGIN
       curDW = Handle_Val((P.DWW)(i)) 
@@ -451,8 +466,7 @@ END
 
 
 
-PRO SIM, _EXTRA=e
-   
-   iter = foreach('_SIM', _EXTRA=e)
 
+PRO SIM, _EXTRA=e
+  iter=foreach('_SIM', _EXTRA=e)
 END
