@@ -22,20 +22,23 @@
 ;
 ;
 ; SIDE EFFECTS:   cov removes the mean from each column before calculating the result.
-;
+;                 cov uses as result the same data type as the given input.
 ;
 ; EXAMPLE:
 ;
+;         A = [[-1 ,1, 2]  [-2, 3, 1] [ 4, 0, 3]]
+;         print,cov(FLOAT(A)) 
+;     ;    IDL prints
+;     ;    1.55556      1.88889    -0.888889
+;     ;    1.88889      4.22222    -3.22222
+;     ;   -0.888889    -3.22222     2.88889      
 ;
-;
-;
-;
-; MODIFICATION HISTORY:
+; MODIFICATION HISTORY: 
 ;
 ;
 ;     $Log$
-;     Revision 1.1  1999/07/15 16:11:29  gabriel
-;             Covariance matrix for matrices and vektors
+;     Revision 1.2  1999/07/15 16:20:43  gabriel
+;             Example added
 ;
 ;
 ;-
