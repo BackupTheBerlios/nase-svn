@@ -67,7 +67,10 @@ IF Keyword_Set(WIN) THEN mode=1
 
 viz = InitFQueue(length, "")
 
-IF mode EQ 1 THEN BEGIN 
+IF mode EQ 1 THEN BEGIN
+   ;; PROGRAMMER please keep in mind(!) that any changes done here DO ALSO
+   ;; HAVE TO BE DONE INSIDE "console.pro", where the widget is re-created
+   ;; in case it was closed. Do not forget :-)
    base = widget_base(title=title,/column)
    cons = widget_text(base,xsize=80,ysize=15,/scroll,value=Queue(viz))
    timewid = widget_text(base,xsize=80,ysize=1,value='')
@@ -97,7 +100,8 @@ h = { $
       tolerance: tolerance, $
       filename: file,$
       logfile: !NONE,$ ; this will contain the LUN
-      viz   : viz $
+      viz   : viz, $
+      title: title $
     }
  result = Handle_Create(VALUE=h,/no_copy)
 
