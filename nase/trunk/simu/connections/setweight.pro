@@ -76,6 +76,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.17  1998/11/08 17:45:32  saam
+;             strange bug corrected
+;
 ;       Revision 1.16  1998/05/04 15:14:51  thiel
 ;              Klitzekleiner Bugfix (Tippfehler korrigiert).
 ;
@@ -239,7 +242,7 @@ Pro SetWeight, DW, Weight, All=all, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  
                    W(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(NoRot_Shift(Weight, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
                 endif else begin ;no Truncate
                    if count ne -1 then maske = where(Shift(boolmaske, round(LWY*y), round(LWX*x) )) ;hat transparente stellen 
-                   W(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(Shift(Weight, round(LWY*y), round(LWX*x) ))(maske)
+                   IF (size(maske))(0) NE 0 THEN W(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(Shift(Weight, round(LWY*y), round(LWX*x) ))(maske)
                 endelse
              endfor
           endfor
