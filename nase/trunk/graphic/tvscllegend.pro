@@ -34,6 +34,12 @@
 ;                     MAX/MID/MIN: Beschriftung des maximalen, mittleren und minimalen
 ;                                  Legendenwertes als String oder Zahl 
 ;                                  (Def.: MAX=255, MID='', MIN=0)
+;                     RANGE      : Set this keyword to a two-element
+;                                  array, containing the lowest and
+;                                  the highest color index to use for
+;                                  the legend color range. If omitted,
+;                                  the legend will span the whole
+;                                  color table.
 ;                     NOSCALE    : die Legende wird analog zu Tv nicht skaliert; fuer
 ;                                  eine korrekte Darstellung MUESSEN(!!!!) die Keywords
 ;                                  MIN und MAX uebergeben werden.
@@ -49,6 +55,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.11  2000/09/08 12:45:00  kupper
+;     Added RANGE keyword.
+;
 ;     Revision 2.10  1999/06/06 14:44:33  kupper
 ;     Added documentation for COLOR-Keyword.
 ;
@@ -89,6 +98,7 @@ PRO TvSclLegend, xnorm, ynorm $
                  ,MAX=max, MID=mid, MIN=min $
                  ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom $
                  ,CHARSIZE=Charsize, COLOR=color $
+                 ,RANGE=Range $
                  ,NOSCALE=NOSCALE, _EXTRA = e
    
    
@@ -137,11 +147,14 @@ PRO TvSclLegend, xnorm, ynorm $
    IF Keyword_Set(NOSCALE) THEN BEGIN
       colorarray = (colorarray / MAX(colorarray))*(max-min)+min
       UTv, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
-   END ELSE BEGIN
-      UTvScl, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
-   END
+   ENDif ELSE BEGIN
+      If Keyword_Set(RANGE) then begin
+         UTv, Scl(colorarray, Range), xnorm, ynorm, legend_dims, _EXTRA=e
+      endif else begin
+         UTvScl, colorarray, xnorm, ynorm, legend_dims, _EXTRA=e
+      ENDelse
+   endelse
    
-
 
    type = Size(max)
    IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(max, FORMAT='(G0.0)'), /REMOVE_ALL)
