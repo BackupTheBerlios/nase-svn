@@ -50,7 +50,7 @@
 ; INPUTS:
 ;  val:: The value(s) to be clipped.
 ;  
-; KEYWORD PARAMETERS:
+; INPUT KEYWORDS:
 ;  UPPER, LOWER, TOP, BOTTOM::
 ;    The resulting values are restricted to the range <*>(BOTTOM,TOP)</*>. <BR>
 ;    Values in the range <*>[LOWER,UPPER]</*> stay unchanged. <BR>
