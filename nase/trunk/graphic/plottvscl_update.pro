@@ -109,9 +109,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
       If Keyword_Set(NOSCALE) then BEGIN ;CASE: NSCALE, but do not scale
 ;         print, "NSCALE, NOSCALE"
-         ;; setting NASE in UTv does transpose array, nothing else. 
-;;xxxxx         ;; this should become /NORDER soon!!!
-         UTV, NASE=NORDER, W, Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
+         UTV, NORDER=NORDER, W, Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
           Info.y00_norm, ALLOWCOLORS=allowcolors, $
           X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM,$
           ORDER=order, POLYGON=POLYGON
@@ -119,8 +117,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
       END ELSE BEGIN            ;CASE: NSCALE
 ;         print, "NSCALE"
-         ;; setting NASE in UTv does transpose array, nothing else. 
-         UTV, NASE=NORDER, ALLOWCOLORS=allowcolors, $
+         UTV, NORDER=NORDER, ALLOWCOLORS=allowcolors, $
           ShowWeights_Scale(W,SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -137,7 +134,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
 
       IF Keyword_Set(NEUTRAL) THEN BEGIN ;CASE: NEUTRAL: just scale like NSCALE
 ;         print, "NEUTRAL"
-         UTV, NASE=NORDER, ALLOWCOLORS=allowcolors, $
+         UTV, NORDER=NORDER, ALLOWCOLORS=allowcolors, $
           ShowWeights_Scale(W, SETCOL=setcol, COLORMODE=colormode, GET_COLORMODE=get_colormode, $
                             RANGE_IN=Showweights_Scale_Range_In, GET_RANGE_IN=get_range_in), $
           Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -152,7 +149,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
          
          If Keyword_Set(NOSCALE) then begin ;CASE: No NSCALE, Noscale
 ;            print, "simple NOSCALE"
-            UTV, NASE=NORDER, W, ALLOWCOLORS=allowcolors, $
+            UTV, NORDER=NORDER, W, ALLOWCOLORS=allowcolors, $
              Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
              Info.y00_norm, $
              X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
@@ -184,7 +181,7 @@ PRO PlotTvscl_update, W, Info, INIT=init, RANGE_IN=range_in
             ;; If defined, RANGE_IN overrides the value stored in info:
             Default, Range_In, Info.Range_In
             ;;scale as stored in info 
-               UTVScl, NASE=NORDER, W, TOP=Info.Top, RANGE_IN=Range_In, ALLOWCOLORS=allowcolors, $
+               UTVScl, NORDER=NORDER, W, TOP=Info.Top, RANGE_IN=Range_In, ALLOWCOLORS=allowcolors, $
                 Info.x00_norm, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
                 Info.y00_norm, $
                 X_SIZE=float(Info.x1)/!D.X_PX_CM, Y_SIZE=float(Info.y1)/!D.Y_PX_CM, $
