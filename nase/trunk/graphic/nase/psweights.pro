@@ -10,8 +10,9 @@
 ;
 ; CALLING SEQUENCE: PSWeights, Matrix 
 ;                               {, /FROMS |, /TOS } 
-;                               [, /DELAYS=delays]
-;                               [, WIDTH=Breite] [, HEIGHT=Hoehe,]
+;                               [, /DELAYS]
+;                               [, WIDTH=Breite] [, HEIGHT=Hoehe]
+;                               [, XTITLE=XText][,YTITLE=YText]
 ;                               [, PSFILE='Filename']
 ;                               [, /EPS] [,BPP=bitsperpixel]
 ;                               [, /COLOR]
@@ -28,6 +29,7 @@
 ;                  angegeben, so ist das Bild quadratisch mit der
 ;                  gewuenschten Groesse. 
 ;
+;                  XText, YText: Achsenbeschriftung
 ;                  Filename:     der Name des PostScript-Files, das
 ;                                erzeugt wird. Die Endung .ps bzw .eps wird
 ;                                automatisch angefuegt.
@@ -45,12 +47,6 @@
 ; OUTPUTS: Eine Postscript- (.ps) bzw Encapsulated PostScript- (.eps)
 ;          Datei, die ein Bild der Gewichtsmatrix enthaelt. 
 ;
-; OPTIONAL OUTPUTS: ---
-;
-; COMMON BLOCKS: ---
-;
-; SIDE EFFECTS: ---
-;
 ; RESTRICTIONS: Wird das Schluesselwort COLOR nicht angegeben, so
 ;               erzeugt die Prozedur ein Schwarz/Weiss-Bild der
 ;               Gewichtsmatrix. Bei dieser Darstellung werden nur die absoluten
@@ -60,7 +56,7 @@
 ; PROCEDURE: Set()
 ;
 ; EXAMPLE: TestMatrix=InitDw(S_width=5, S_height=3, t_width=3, t_height=5, W_Random=[0,1])
-;          PSWeights, TestMatrix, PSFILE='beispiel', /TOS, width=10
+;          PSWeights, TestMatrix, PSFILE='beispiel', /TOS, width=10, YTITLE='uebsilon-akse'
 ;
 ;          Hier wird eine Gewichtsmatrix initialisiert und
 ;          anschliessend in einem PostScript-File namens 'beispiel'
@@ -76,6 +72,12 @@
 ;	   PSWeights, TestMatrix, PSFILE='buntesbeispiel', /froms, /COLOR
 ;
 ; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 2.5  1997/10/16 20:37:45  thiel
+;              Die Achsen koennen jetzt beschriftet werden.
+;              Keywords: XTITLE und YTITLE
+;
 ;
 ;       Thu Sep 4 12:09:09 1997, Andreas Thiel
 ;		EPS-Files erhalten jetzt explizit Hoehe und Breite.
@@ -93,7 +95,9 @@
 
 
 
-PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, EPS=eps, BPP=bpp, COLOR=Color
+PRO PSWeights, _Matrix, FROMS=froms, TOS=tos, DELAYS=delays, $
+               XTITLE=XTitle, YTITLE=YTitle, PSFILE=PSFile, WIDTH=Width, HEIGHT=Height, $
+               EPS=eps, BPP=bpp, COLOR=Color
 
 If not keyword_set(FROMS) and not keyword_set(TOS) then message, 'Eins der Schlüsselwörter FROMS oder TOS muß gesetzt sein!'
 
@@ -139,6 +143,10 @@ IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Bere
 min = min(MatrixMatrix)
 max = max(MatrixMatrix)
 
+;-----Zusaetzlichen Rand fuer die Beschriftung vorsehen:
+IF Set(YTITLE) THEN XRand = Width/15.0 ELSE XRand = 0.0
+IF Set(XTITLE) THEN YRand = Height/15.0 ELSE YRand = 0.0
+
 
 SET_PLOT, 'PS'
 
@@ -148,8 +156,8 @@ If Not Set(EPS) Then Begin
     Endif Else Begin
         DEVICE, Filename = PSFile+'.eps'
         DEVICE, /Encapsulated
-        DEVICE, XSize=width
-        DEVICE, YSize=height
+        DEVICE, XSize=Width + XRand
+        DEVICE, YSize=Height + YRand
     Endelse
 
 If Set(COLOR) Then DEVICE, /Color Else DEVICE, Color=0
@@ -228,7 +236,9 @@ plots, [1000.0*(Matrix.Source_w*(Unterbildbreite+Strichbreite)-Strichbreite/2.0)
         1000.0*(Matrix.Source_w*(Unterbildbreite+Strichbreite)-Strichbreite/2.0)], $
          [-1000.0*Strichhoehe/2.0, 1000.0*((Matrix.source_h)*(Unterbildhoehe+Strichhoehe)-Strichhoehe/2.0)], Color=Linienfarbe, /DEVICE 
 
-
+;-----Die Beschriftung (zentriert):
+IF Set(XTITLE) THEN XYOuts, 1000.0*(Width/2.0), 1000.0*(Height+YRand/2.0), XTITLE, ALIGNMENT=0.5, /DEVICE, SIZE=1.0
+IF Set(YTITLE) THEN XYOuts, 1000.0*(Width+XRand/2.0), 1000.0*(Height/2.0), YTITLE, ALIGNMENT=0.5, /DEVICE, ORIENTATION=270, Size=1.0
 
 DEVICE, /Close
 SET_PLOT, 'X'
