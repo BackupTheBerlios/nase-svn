@@ -60,7 +60,9 @@
 ;		Schoepfung
 ;
 ;-
-PRO TotalRecall, LP, In
+PRO TotalRecall, LP, InHandle
+
+   Handle_Value, InHandle, In
 
    IF LP.info EQ 'e' THEN BEGIN
       active = WHERE(LP.values GT !NoMercyForPot, count)
@@ -70,9 +72,7 @@ PRO TotalRecall, LP, In
          IF count NE 0 THEN LP.values(active(toosmall)) = 0.0
       END
       
-      active = WHERE(In NE 0.0, count)
-      ; it is important to know that in already contains the weighted spikes and uis therefore NOT only 0 or 1
-      IF count NE 0 THEN LP.values(active) = LP.values(active) + LP.v
+      IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
    END
 
    IF LP.info EQ 'l' THEN BEGIN
@@ -83,9 +83,7 @@ PRO TotalRecall, LP, In
          IF count NE 0 THEN LP.values(active(toosmall)) = 0.0
       END
 
-      active = WHERE(In NE 0.0, count)
-      ; it is important to know that in already contains the weighted spikes and uis therefore NOT only 0 or 1
-      IF count NE 0 THEN LP.values(active) = LP.values(active) + LP.v
-   END
+      IF In(0) NE 0 THEN LP.values(In(2:In(0)+1)) = LP.values(In(2:In(0)+1)) + LP.v
+  END
 
 END

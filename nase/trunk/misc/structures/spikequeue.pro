@@ -35,6 +35,11 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
+;       Mon Sep 8 12:17:01 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Umstellung auf Sparse beginnt
+;
 ;       Thu Aug 14 16:09:28 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -47,11 +52,19 @@
 ;-
 Function SpikeQueue, Queue, In
 
-	Queue.Q = IShft(Queue.Q, -1)	
+   
+   active = WHERE(Queue.Q NE 0, count)
+   IF count NE 0 THEN Queue.Q(active) = IShft(Queue.Q(active), -1)	
+   
+   IF (In(0) NE 0) THEN BEGIN
+      shortIn = In(2:In(0)+1)
+      Queue.Q(shortIn) = Queue.Q(shortIn) + Queue.starts(shortIn) 
+   END
 
-        active = Where(IN NE 0, count)
-        IF count NE 0 THEN Queue.Q(active) = Queue.Q(active) + Queue.starts(active) 
-
-	return, Queue.Q and 1
-	
-end
+   result = WHERE((Queue.Q AND 1) EQ 1, count)
+   IF count NE 0 THEN BEGIN
+      return, [count, In(1), result]
+   END ELSE BEGIN
+      return, [count, In(1)]
+   END	
+END

@@ -6,22 +6,12 @@
 ;
 ; CATEGORY:               SIMULATION
 ;
-; CALLING SEQUENCE:       OutVector = DelayWeigh( Matrix, InVector)
+; CALLING SEQUENCE:       OutVector = DelayWeigh( Matrix, InHandle)
 ;
-; INPUTS:                 Matrix       : eine zuvor initialisierte Struktur 
-;                         InVector     : Vector mit n Elementen
+; INPUTS:                 Matrix       : eine zuvor mit InitDW initialisierte Struktur 
+;                         InHandle     : Handle auf eine SSparse-Liste, i.a Layer.O
 ;
-; OPTIONAL INPUTS:        ---
-;
-; KEYWORD PARAMETERS:     ---
-;
-; OUTPUTS:                OutVector: ein Vektor mit m Elementen, der den gewichteten (verzoegerten) Output aus der Verbindungsstruktur darstellt
-;
-; OPTIONAL OUTPUTS:       ---
-;
-; COMMON BLOCKS:          ---
-;
-; SIDE EFFECTS:           ---
+; OUTPUTS:                OutVector: Sparse-Vektor, der den gewichteten (verzoegerten) Output aus der Verbindungsstruktur darstellt
 ;
 ; RESTRICTIONS:           Elemente von INIT_DELAYS kleiner 15
 ;                         InVektor enthaelt nur 0 oder 1
@@ -29,22 +19,45 @@
 ; PROCEDURE:              SpikeQueue
 ;
 ; EXAMPLE:
-;                         weights = IntArr(4,12)
-;                         weights(2,5) = 1.0  ; connection from 5 --> 2
-;                         weights(0,6) = 2.0  ; connection from 6 --> 0
-;                         delays = Make_Array(4,12,/BYTE,VALUE=3) ; each connection has a delay of 3 BINs
-;
 ;                         MyDelMat = InitDW(S_WIDTH=2, T_HEIGHT=2, T_WIDTH=6, T_HEIGHT=2, $
 ;                                           WEIGHT=3.0,$
 ;                                           D_CONST=[4,2])
 ;
-;                         InVector = [1,1,1,1,1,1,1]
-;                         OutVector = DelayWeigh ( MyDelMat, InVector)
-;                         print, OutVector
+;                         InHandle = Handle_Create(Vector2SSpass([1,1,1,1,1,1,1]))
+;                         OutVector = DelayWeigh ( MyDelMat, InHandle)
+;                         print, Spass2Vector(OutVector)
 ;
-;                         FOR z=0,6 DO print, DelayWeigh( MyDelMat, [0,0,0,0,0,0,0] )
+;                         FOR z=0,6 DO print, Spass2Vector(DelayWeigh( MyDelMat, Create_Handle(Vector2Spass([0,0,0,0,0,0,0])) ))
 ;
 ; MODIFICATION HISTORY:
+;
+;       $Log$
+;       Revision 1.23  1997/09/17 10:25:47  saam
+;       Listen&Listen in den Trunk gemerged
+;
+;       Revision 1.22.2.9  1997/09/12 11:17:55  saam
+;            noch mehr Spass angepasst
+;
+;       Revision 1.22.2.8  1997/09/12 11:15:10  saam
+;            Anpassung an neubenannte Spass-Routinen
+;
+;
+;       Thu Sep 11 18:58:58 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;       Revision: 1.22.2.7 
+;
+;		Verzoegerter Teil funktioniert auch
+;               Input ist nun ein Handle auf einer SSparse-Liste               
+;
+;       Mon Sep 8 11:50:06 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Unverzoegerter Teil funktioniert
+;
+;       Fri Sep 6 16:49:22 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Beginn der Umstellung auf Sparse-Matrixzen und Vektoren
 ;
 ;       Thu Sep 4 17:08:54 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
@@ -97,63 +110,111 @@
 ;                         waren im foldenden auch wirksam sind, Mirko, 5.8.97
 ;
 ;-
-FUNCTION DelayWeigh, DelMat, In
+FUNCTION DelayWeigh, DelMat, InHandle
    
    
-   IF (N_Elements(In) NE (Size(DelMat.Weights))(2))  AND ((Size(DelMat.Weights))(0) EQ 2) THEN Message, 'input incompatible with definition of matrix' 
-   
+Handle_Value, InHandle, In
+
 ;----- Der Teil ohne Delays:   
-   IF (DelMat.Delays(0) EQ -1) THEN BEGIN
-
-;      ganz alte Variante, ohne nocon !!!!!!!!!!
-;      IF (SIZE(In))(0) EQ 0 THEN In = make_array(1, /BYTE, VALUE=In) 
-;      RETURN, DelMat.Weights # In 
+   IF (DelMat.info EQ 'DW_WEIGHT') THEN BEGIN
 
 
-      DelMat.Learn = In ; Learning with Potentials needs this information
+      IF Handle_Info(DelMat.Learn) THEN Handle_Value, DelMat.Learn, In, /SET $
+      ELSE  DelMat.Learn = Handle_Create(VALUE=In)
 
-      count = 0
-      active = where(In NE 0, count)
-      If count EQ 0 Then Return, FltArr(DeLMat.target_w*DelMat.Target_h)
+      IF In(0) EQ 0 THEN BEGIN
+         result = FltArr(2,1)
+         result(1,0) = DeLMat.target_w*DelMat.Target_h
+         Return, result
                                 ;aus der Funktion rausspringen, wenn
                                 ;ohnehin keine Aktivitaet im Input vorliegt:
+      END
 
-      new = DelMat.Weights(*,active)
-                                ;in new stehen nur noch die Zeilen der
-                                ;Gewichtsmatrix, die ueberhaupt
-                                ;addiert werden muessen
-      count=0
-      noneindex = where(new EQ !NONE, count)
-      If count NE 0 Then new(noneindex) = 0
-                                ; !NONEs werden auf Null gesezt, damit
-                                ; sie bei der Addition nicht stoeren
+      
+      ; asi : active source index
+      ; asn : active source neuron
+      ; tn  : target neurons
+      vector = FltArr(DeLMat.target_w*DelMat.Target_h)
 
-      IF (SIZE(new))(0) EQ 2 THEN RETURN, TOTAL(new, 2) ELSE RETURN, new
-                                ;entweder wird ueber die Zeilen
-                                ;summiert, oder, falls es nur eine
-                                ;Zeile gibt, die zurueckgegeben
-
-  
-
-    
+      FOR asi=2,In(0)+1 DO BEGIN
+         asn = In(asi)
+         IF DelMat.STarget(asn) NE -1 THEN BEGIN
+            Handle_Value, DelMat.STarget(asn), tn
+            vector(tn) = vector(tn) + DelMat.Weights( tn, asn )
+         END
+      END
+      
+      RETURN, vector2spass(vector)
+      
+      
+      
+      
 ;----- Der Teil mit Delays:      
    END ELSE BEGIN
       
-      tmp = Transpose(REBIN([In], (SIZE(DelMat.Delays))(2), (SIZE(DelMat.Delays))(1), /SAMPLE))
-                                ; no direct call of SpikeQueue with DelMat.Queue possible because it's passed by value then !!
-                                ; SpikeQueue returns 1dim array but it is automatically reformed to the dimension of DelMat.weights
-      tmpQU = DelMat.Queue
-      DelMat.Learn = SpikeQueue( tmpQu, tmp )
-      DelMat.Queue = tmpQu
+      ; acili: active connection index list IN
+      ; acilo: active connection index list OUT
+      ; asi  : active source index
+      ; asn  : active source neuron
+      ; atn  : active target neurons
+      ; snc  : total number of source neurons 
+      ; tnc  : total number of target neurons 
+      snc = LONG(DelMat.source_w*DelMat.target_h)
+      tnc = LONG(DelMat.target_w*DelMat.target_h)
+
+      acili_empty = 1 ;TRUE
+
+      FOR asi= 2, In(0)+1 DO BEGIN
+         asn = In(asi)
+         IF DelMat.STarget(asn) NE -1 THEN BEGIN
+            Handle_Value, DelMat.STarget(In(asi)), atn            
+            aci = asn*tnc + atn
+            IF NOT acili_empty THEN BEGIN
+               acili = [acili, aci] 
+            END ELSE BEGIN
+               acili = aci
+               acili_empty = 0
+            END
+         END
+      END
+
       
-      res = FltArr(DelMat.target_w*DelMat.target_h, DelMat.source_w*DelMat.source_h)
-      active = WHERE(DelMat.learn NE 0, count) 
-      IF (count NE 0) THEN res(active) = DelMat.weights(active) ;* spikes(active)
+      IF NOT acili_empty THEN BEGIN
+         acili = [n_elements(acili), snc*tnc, acili]
+      END ELSE BEGIN
+         acili = [0, snc*tnc]
+      END
 
-      noweights = WHERE(res LE !NONE, count)
-      IF count NE 0 THEN res(noweights) = 0
+      tmpQU = DelMat.Queue
+      acilo = SpikeQueue( tmpQu, acili ) 
+      DelMat.Queue = tmpQu
 
-      IF (SIZE(res))(0) EQ 2 THEN RETURN, TOTAL(res, 2) ELSE RETURN, TOTAL(res)
+      IF Handle_Info(DelMat.Learn) THEN Handle_Value, DelMat.Learn, acilo, /SET $
+      ELSE DelMat.Learn = Handle_Create(VALUE=acilo)
+
+      vector = FltArr(tnc)
+
+      IF acilo(0) GT 0 THEN BEGIN
+         counter = 0
+         acilo = acilo(2:acilo(0)+1)
+         
+         FOR source = 0, snc-1 DO BEGIN
+            cutoff = MAX(WHERE( acilo LT (source+1)*tnc))
+            IF cutoff NE -1 THEN BEGIN
+               tn = acilo(0:cutoff) MOD tnc
+               
+               vector(tn) = vector(tn) + DelMat.Weights(acilo(0:cutoff))
+               
+               nel = N_Elements(acilo)-1
+               IF nel GT cutoff THEN acilo = acilo(cutoff+1:nel) ELSE source = snc
+            END
+         END
+         
+         RETURN, norm2spass(vector)
+      END ELSE BEGIN
+         RETURN, [0, tnc]
+      END
+              
 
    END   
 END   

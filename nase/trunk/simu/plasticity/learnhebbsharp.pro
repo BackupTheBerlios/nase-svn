@@ -19,41 +19,48 @@
 ;
 ; CATEGORY: SIMULATION
 ;
-; CALLING SEQUENCE:   LearnHebbSharp, G, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
+; CALLING SEQUENCE:   LearnHebbSharp, G, TARGET_CL=TargetCluster, 
 ;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
 ;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
 ;
-; OPTIONAL INPUTS:
+; KEYWORD PARAMETERS: SOURCE_CL, 
+;                     TARGET_CL     : jeweils eine mit InitLayer_? initialisierter Layer
 ;
-; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend aus beliebigen Neuronen
+;                     RATE          : die Lernrate
+;                     ALPHA         : der Grenzwert, gegen den die
+;                                     Gewichte konvergieren.
+;        alternativ:  LERNRATE      : die Rate, mit der bei korrelierter Aktivität gelernt wird
+;                     ENTLERNRATE   :       "   "    "   "  unkorrelierter    "     entlernt  "
 ;
-;                     RATE                : die Lernrate
-;                     ALPHA               : der Grenzwert, gegen den die
-;                                           Gewichte konvergieren.
-;        alternativ:  LERNRATE            : die Rate, mit der bei korrelierter Aktivität gelernt wird
-;                     ENTLERNRATE         :       "   "    "   "  unkorrelierter    "     entlernt  "
+;                     SELF          : Verbindungen zwischen Neuronen mit gleichen Index 
+;                                     werden gelernt. Dies ist die Default-Einstellung,  
+;                                     /SELF muss also nicht angegeben werden
+;                     NONSELF       : Verbindungen zwischen Neuronen mit gleichem Index
+;                                     werden nicht veraendert,
+;                                     aber auch nicht Null-gesetzt.
+;                                     (Siehe InitDW)
 ;
-;                     SELF                : Verbindungen zwischen Neuronen mit gleichen Index 
-;                                           werden gelernt. Dies ist die Default-Einstellung,  
-;                                           /SELF muss also nicht angegeben werden
-;                     NONSELF             : Verbindungen zwischen Neuronen mit gleichem Index
-;                                           werden nicht veraendert,
-;                                           aber auch nicht Null-gesetzt.
-;                                           (Siehe InitDW)
 ; SIDE EFFECTS: Die Matrix G, die als Parameter G uebergeben wird,
 ;               wird entsprechend der Lernregel geaendert.
 ;
 ; PROCEDURE: LayerSize()
 ;
-; EXAMPLE: LearnHebbSharp, W, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
+; EXAMPLE: LearnHebbSharp, W, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
 ;          veraendert die Matrix W entsprechend dem Zustand des
 ;          Clusters 'Layer', dh es werden Intra-Cluster-Verbindungen
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       $Log$
+;       Revision 1.5  1997/09/17 10:25:53  saam
+;       Listen&Listen in den Trunk gemerged
+;
+;       Revision 1.3.2.2  1997/09/15 08:39:52  saam
+;       Anpassung an Listenstruktur der anderen Routinen
 ;
 ;       Sun Sep 7 16:10:55 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -75,32 +82,54 @@
 ; erste Version vom 5. August '97. Andreas.
 ;
 ;-
-
-PRO LearnHebbSharp, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
-                        LERNRATE=lernrate, ENTLERNRATE=entlernrate
+PRO LearnHebbSharp, DW, SOURCE_CL=Source_Cl, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    Default, rate, entlernrate
    Default, alpha, lernrate/entlernrate
 
-   spaltenindex = where(Target_CL.O,count)
-   If count EQ 0 Then Return, Matrix
 
-   spaltenzahl = Layersize(Target_CL)
-   zeilenzahl = Layersize(Source_CL)
+   Handle_Value, Target_Cl.O, Post
+   If Post(0) EQ 0 Then Return
 
-   ;-----Matrixmultiplikation ist bei wenigen Spikes langsamer...
-   ;opost_diag = bytarr(spaltenzahl,spaltenzahl)
-   ;opost_diag(spaltenindex,spaltenindex) = 1
-   ;dw = opost_diag # (-Matrix.Weights + Alpha*(Target_CL.O#Source_CL.P))
+   ; st : total number of source neurons
+   ; ti : index to target neuron
+   ; tn : to ti belonging target neuron
+   ; tsn: the list of source neurons connected to tn
+   st = LayerSize(Source_Cl)
 
-   dw = fltarr(spaltenzahl,zeilenzahl)
-   source_arr = rebin(reform(Source_CL.O,1,zeilenzahl),spaltenzahl,zeilenzahl,/sample)
-   dw (spaltenindex,*) = Alpha*Source_Arr(spaltenindex,*) - Matrix.Weights(spaltenindex,*)
-   
-   If Set(NONSELF) Then dw(Spaltenindex,Spaltenindex)=0
+   IF DW.info EQ 'DW_WEIGHT' THEN BEGIN
 
-   connections = WHERE(Matrix.Weights NE !NONE, count)
-   IF count NE 0 THEN Matrix.Weights(connections) = Matrix.Weights(connections) + Rate*dw(connections)
+      FOR ti=2,Post(0)+1 DO BEGIN
+         tn = Post(ti)
+         IF DW.SSource(tn) NE -1 THEN BEGIN
+            Handle_Value, DW.SSource(tn), tsn
+            deltaw = Alpha*Post(tsn) - DW.Weights(tn, tsn)
+            IF Set(NONSELF) THEN BEGIN
+               self = WHERE(tsn EQ tn, count)
+               IF count NE 0 THEN deltaw(self) = 0.0
+            ENDIF
+            DW.Weights(tn, tsn) = DW.Weights(tn, tsn) + Rate*deltaw
+         ENDIF
+      ENDFOR
+
+   END ELSE BEGIN 
+      IF DW.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+         
+         FOR ti=2,Post(0)+1 DO BEGIN
+            tn = Post(ti)
+            IF DW.SSource(tn) NE -1 THEN BEGIN
+               Handle_Value, DW.SSource(tn), tsn
+               deltaw = Alpha*Post(tsn) - DW.Weights(tn, tsn)
+               IF Set(NONSELF) THEN BEGIN
+                  self = WHERE(tsn EQ tn, count)
+                  IF count NE 0 THEN deltaw(self) = 0.0
+               ENDIF
+               DW.Weights(tn, tsn) = DW.Weights(tn, tsn) + Rate*deltaw
+            ENDIF
+         ENDFOR
+         
+      END ELSE Message, 'illegal first argument'
+   END
    
 END
 

@@ -54,6 +54,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 1.4  1997/09/17 10:25:55  saam
+;       Listen&Listen in den Trunk gemerged
+;
+;
 ;       Sun Sep 7 23:31:36 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;

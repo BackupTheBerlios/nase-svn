@@ -27,15 +27,14 @@
 ;
 ; CATEGORY: SIMULATION
 ;
-; CALLING SEQUENCE:     LearnHebbLP, G, LP, SOURCE_CL=SourceCluste, TARGET_CL=TargetCluster, 
+; CALLING SEQUENCE:     LearnHebbLP, G, LP, TARGET_CL=TargetCluster, 
 ;                                    { (RATE=Rate, ALPHA=Alpha)  |  (LERNRATE=lernrate, ENTLERNRATE=entlernrate) }
 ;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G  : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
 ;         LP : Eine mit InitDW initialisierte Lernpotential-Struktur
 ;
-; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend
-;                                           aus beliebigen Neuronen.
+; KEYWORD PARAMETERS: TARGET_CL : ein mit InitLayer_? initialisierter Layer
 ;
 ;                     RATE                : die Lernrate
 ;                     ALPHA               : Parameter, der den Grenzwert
@@ -61,13 +60,25 @@
 ;
 ; PROCEDURE: LayerSize(), TotalRecall()
 ;
-; EXAMPLE: LearnHebbLP, W, LP, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
+; EXAMPLE: LearnHebbLP, W, LP, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
 ;          veraendert die Matrix W entsprechend dem Zustand des
 ;          Clusters 'Layer', dh es werden Intra-Cluster-Verbindungen
 ;          gelernt, die Verbindungen der Neuronen auf sich selbst
 ;          bleiben aber unveraendert.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       $Log$
+;       Revision 1.10  1997/09/17 10:25:52  saam
+;       Listen&Listen in den Trunk gemerged
+;
+;
+;       Fri Sep 12 12:09:30 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;       Revision: 1.7.2.5 
+;               Umstellung auf die neue DelayWeigh-Struktur
+;               Angabe des Source_Cl ist obsolet, da alle notwendigen
+;               Informationen auch in LP stehen
 ;
 ;       Wed Sep 10 19:55:04 1997, Andreas Thiel
 ;		DEFAULT funktioniert nicht, wenn ENTLERNRATE nicht
@@ -83,7 +94,7 @@
 ;
 ;		Funktioniert nun auch mit verzoegerten Verbindungen
 ;               Lernpotentiale nun nicht mehr in den Neuronen sondern in separater
-;                  Struktur
+;               Struktur
 ;
 ;       Wed Sep 3 15:50:04 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
@@ -92,7 +103,7 @@
 ;		Rev. 1.5)
 ;
 ;       Mon Aug 18 16:44:07 1997, Mirko Saam
-;<saam@ax1317.Physik.Uni-Marburg.DE>
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
 ;             Behandlung von nicht vorhandenen Verbindungen
 ;
@@ -102,43 +113,58 @@
 ;                '97. Andreas.  neue Keyword-Abfrage und
 ;                Geschwindigkeitsoptimierung. 5. August '97. Andreas.  -
 ;-
-
-PRO LearnHebbLP, Matrix, LP, SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
+PRO LearnHebbLP, DW, LP, SOURCE_CL=Source_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf, $
                     LERNRATE=lernrate, ENTLERNRATE=entlernrate
   
-   ;Default, rate, entlernrate
-   ;Default, alpha, lernrate/entlernrate
+
    If Not Set(RATE) Then Rate = Entlernrate
    If Not Set(ALPHA) Then Alpha = Lerrate/Entlernrate
 
    ; update learning potentials
    TotalRecall, LP, Matrix.Learn
 
-   spaltenindex = where(Target_CL.O,count)
-   If count EQ 0 Then Return
+   Handle_Value, Target_Cl.O, Post
+   If Post(0) EQ 0 Then Return
 
-   spaltenzahl = Layersize(Target_CL)
-   zeilenzahl = Layersize(Source_CL)
+   ; st : total number of source neurons
+   ; ti : index to target neuron
+   ; tn : to ti belonging target neuron
+   ; tsn: the list of source neurons connected to tn
+   st = LP.source_s
 
-   ;-----Matrixmultiplikation ist bei wenigen Spikes langsamer...
-   ;opost_diag = bytarr(spaltenzahl,spaltenzahl)
-   ;opost_diag(spaltenindex,spaltenindex) = 1
-   ;dw = opost_diag # (-Matrix.Weights + Alpha*(Target_CL.O#Source_CL.P))
+   IF DW.info EQ 'DW_WEIGHT' THEN BEGIN
 
-   dw = fltarr(spaltenzahl,zeilenzahl)
+      FOR ti=2,Post(0)+1 DO BEGIN
+         tn = Post(ti)
+         IF DW.SSource(tn) NE -1 THEN BEGIN
+            Handle_Value, DW.SSource(tn), tsn
+            deltaw = Alpha*LP.values(tsn) - DW.Weights(tn, tsn)
+            IF Set(NONSELF) THEN BEGIN
+               self = WHERE(tsn EQ tn, count)
+               IF count NE 0 THEN deltaw(self) = 0.0
+            ENDIF
+            DW.Weights(tn, tsn) = DW.Weights(tn, tsn) + Rate*deltaw
+         ENDIF
+      ENDFOR
 
-   IF Matrix.info EQ 'DW_WEIGHT' THEN BEGIN
-      source_arr = rebin(reform(LP.values,1,zeilenzahl),spaltenzahl,zeilenzahl,/sample)
-      dw (spaltenindex,*) = Alpha*Source_Arr(spaltenindex,*) - Matrix.Weights(spaltenindex,*)
    END ELSE BEGIN 
-      IF Matrix.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
-         dw (spaltenindex,*) = Alpha*LP.values(spaltenindex,*) - Matrix.Weights(spaltenindex,*)
+      IF DW.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+         
+         FOR ti=2,Post(0)+1 DO BEGIN
+            tn = Post(ti)
+            IF DW.SSource(tn) NE -1 THEN BEGIN
+               Handle_Value, DW.SSource(tn), tsn
+               deltaw = Alpha*LP.values(tn, tsn) - DW.Weights(tn, tsn)
+               IF Set(NONSELF) THEN BEGIN
+                  self = WHERE(tsn EQ tn, count)
+                  IF count NE 0 THEN deltaw(self) = 0.0
+               ENDIF
+               DW.Weights(tn, tsn) = DW.Weights(tn, tsn) + Rate*deltaw
+               Handle_Value, DW.SSource(tn), tsn, /SET
+            ENDIF
+         ENDFOR
+         
       END ELSE Message, 'illegal first argument'
    END
 
-   If Set(NONSELF) Then dw(Spaltenindex,Spaltenindex)=0
-
-   connections = WHERE(Matrix.Weights NE !NONE, count)
-   IF count NE 0 THEN Matrix.Weights(connections) = Matrix.Weights(connections) + Rate*dw(connections)
-   
 END

@@ -44,6 +44,13 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Fri Sep 12 11:39:40 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;       $Revision$
+;		
+;               Tags Target_S und Source_S fuer Groesse von Ziel- und Quell-Layer hinzugef"ugt
+;               Daher braucht DelayWeigh nun keinen Source-Cluster mehr
+
 ;       Thu Sep 4 15:32:25 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -77,10 +84,12 @@ FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
       IF expo(0) LE 0.0        THEN Message, 'amplification <= 0 senseless'
       IF expo(1) LE 0.0        THEN Message, 'time-constant <= 0 senseless'
 
-      LP = { info   : 'e'     ,$
-             v      : expo(0) ,$
-             dec    : exp(-1./expo(1)) ,$
-             values : FltArr( xsize, ysize )  }
+      LP = { info     : 'e'     ,$
+             v        : expo(0) ,$
+             dec      : exp(-1./expo(1)) ,$
+             values   : FltArr( xsize, ysize ),$
+             source_s : xsize,$
+             target_s : ysize}
 
       RETURN, LP
    END
@@ -94,7 +103,9 @@ FUNCTION InitRecall, Struc, LINEAR=linear, EXPO=expo
       LP = { info   : 'l'     ,$
              v      : linear(0) ,$
              dec    : linear(1) ,$
-             values : FltArr( xsize, ysize )  }
+             values : FltArr( xsize, ysize ),$
+             source_s : xsize,$
+             target_s : ysize}
       
       RETURN, LP
    END

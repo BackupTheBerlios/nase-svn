@@ -110,7 +110,7 @@ PRO ShowWeights, _Matrix, titel=TITEL, groesse=GROESSE, winnr=WINNR, $
 
    if keyword_set(TOS) then begin ; Source- und Targetlayer vertauschen:
       Matrix = {Weights: Transpose(_Matrix.Weights), $
-                Delays : Transpose(_Matrix.Delays),$
+;                Delays : Transpose(_Matrix.Delays),$
                 source_w: _Matrix.target_w, $
                 source_h: _Matrix.target_h, $
                 target_w: _Matrix.source_w, $

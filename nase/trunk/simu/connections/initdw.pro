@@ -111,6 +111,20 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       $Log$
+;       Revision 2.8  1997/09/17 10:25:50  saam
+;       Listen&Listen in den Trunk gemerged
+;
+; 
+;       Thu Sep 11 18:08:17 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Zwei neue Tags SSource, STarget die Array von Handles sind und folg. Funktion haben:
+;                 SSource(target) liefert ein Array, der zum Neuron target gehoerenden Source-Neurone
+;                 STarget(source) liefert ein Array, der zum Neuron source gehoerenden Target-Neurone
+;               Matrix-Tag entfernt, da Verwendung unklar
+;               Delay-Tag in DW_WEIGHT entfernt, da info-tag Auskunft ueber dessen Existenz gibt
+;
 ;       Sun Sep 7 16:36:04 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -247,11 +261,12 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                  source_h: s_height,$
                  target_w: t_width,$
                  target_h: t_height,$
+                 STarget : LonArr(s_width*s_height),$
+                 SSource : LonArr(t_width*t_height),$
                  Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
-                 Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
+;                 Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
                  Delays  : Replicate( FLOAT(delay), t_width*t_height, s_width*s_height ),$
-                 Queue   : InitSpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ),$
-                 Learn   : BytArr( t_width*t_height, s_width*s_height ) $
+                 Learn   : -1l $
                }
    END ELSE BEGIN         
       DelMat = {info    : 'DW_WEIGHT', $
@@ -259,9 +274,10 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
                 source_h: s_height,$
                 target_w: t_width,$
                 target_h: t_height,$
+                STarget : LonArr(s_width*s_height),$
+                SSource : LonArr(t_width*t_height),$
                 Weights : Replicate( FLOAT(weight), t_width*t_height, s_width*s_height ),$
-                Learn   : BytArr( s_width*s_height ),$
-                Delays  : [-1, -1] $
+                Learn   : -1l $
                }
    END
    
@@ -346,15 +362,30 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
 
 
-      IF HasDelay THEN BEGIN
+;      FOR source=0, s_width*s_height-1 DO BEGIN
+;         wtn = WHERE(DelMat.Weights(*,source) NE !NONE, count)
+;         IF count NE 0 THEN DelMat.STarget(source) = Handle_Create( VALUE=wtn) ELSE DelMat.STarget(source) = -1
+;      ENDFOR 
+      
+;      FOR target=0, t_width*t_height-1 DO BEGIN
+;         wsn = WHERE(DelMat.Weights(target,*) NE !NONE, count)
+;         IF count NE 0 THEN DelMat.SSource(target) = Handle_Create( VALUE=wsn, /NO_COPY) ELSE DelMat.SSource(target) = -1
+;      ENDFOR
 
+
+      Init_SDW, DelMat
+      
+      IF HasDelay THEN BEGIN
+         
          RETURN, {  info    : 'DW_DELAY_WEIGHT', $
                     source_w: DelMat.source_w,$
                     source_h: DelMat.source_h,$
                     target_w: DelMat.target_w,$
                     target_h: DelMat.target_h,$
+                    STarget : DelMat.STarget,$
+                    SSource : DelMat.SSource,$
                     Weights : DelMat.Weights,$
-                    Matrix  : DelMat.Matrix,$
+;                    Matrix  : DelMat.Matrix,$
                     Delays  : DelMat.Delays,$
                     Queue   : InitSpikeQueue( INIT_DELAYS=DelMat.Delays ),$
                     Learn   : DelMat.Learn}
@@ -364,9 +395,3 @@ if keyword_set(TARGET_TO_SOURCE) and keyword_set(SOURCE_TO_TARGET) then message,
 
 
    end
-
-
-
-
-
-
