@@ -24,11 +24,14 @@
 ;*  Help
 ;
 ; CALLING SEQUENCE:
-;*  assert, boolexpr
+;*  assert, boolexpr [,reason]
 ;  
 ; INPUTS:
 ;   boolexpr:: The boolean expression (program invariant) that is
 ;              expected to be fulfilled.
+;   reason:: An optional string describing the reason for a possible
+;            failure of this assertion. This text will be displayed
+;            when the specified assertion fails.
 ;  
 ; SIDE EFFECTS:
 ;   In case of a failed assertion, program executions stops and an
@@ -55,22 +58,21 @@
 ;   Most simple. Check argument for true or false.
 ;  
 ; EXAMPLE:
-;   assert, d ne 0.0 & return, array/d
+;   assert, d ne 0.0, "Division by zero." & return, array/d
 ;   assert, step ne 0 & for i=1,100,step do something
 ;   [..compute prime factors of n..] & assert, Product(result) eq n
 ;  
 ;-
 
-Pro assert, condition
+Pro assert, condition, text
    On_Error, 2 ;;return to caller.
    
    if not condition then begin
-      c = initconsole()
-
       assertionstring = currentline(1)
       assertionstring = str(assertionstring)
       
-      Console, c, /Fatal, PickCaller=1, "FAILED ASSERTION: " + $
-       "'"+assertionstring+"'."
+      Console, /Fatal, PickCaller=1, $
+       ["FAILED ASSERTION: " + "'"+assertionstring+"'.", $
+        "Reason: "+text]
    endif
 End
