@@ -69,6 +69,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.18  1998/02/11 17:57:10  thiel
+;              Benutzt nicht mehr die Info()-Funktion, sondern
+;              den .info-Tag, geht schneller.
+;
 ;       Revision 1.17  1998/02/05 13:17:41  saam
 ;                  + Gewichte und Delays als Listen
 ;                  + keine direkten Zugriffe auf DW-Strukturen
@@ -157,7 +161,7 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
    ; ti : index to target neuron
    ; tn : to ti belonging target neuron
    ; wi : weight indices belonging to neuron
-   IF Info(DW) EQ 'SDW_WEIGHT' THEN BEGIN
+   IF DW.info EQ 'SDW_WEIGHT' THEN BEGIN
 
       FOR ti=2,Post(0)+1 DO BEGIN
          tn = Post(ti)
@@ -173,7 +177,7 @@ PRO LearnHebbLP, _DW, LP, TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NO
       ENDFOR
 
    END ELSE BEGIN 
-      IF Info(DW) EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
+      IF DW.Info EQ 'SDW_DELAY_WEIGHT' THEN BEGIN
          
          FOR ti=2,Post(0)+1 DO BEGIN
             tn = Post(ti)
