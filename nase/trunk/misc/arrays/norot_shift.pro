@@ -115,7 +115,7 @@ function norot_shift,A,S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,WEIGHT = w
 
      2    : BEGIN
          TMPARR = SHIFT( A , S0 )
-         if S0 then  TMPARR(create_index(S0,DIMARR(DIM-1)))  = W
+         if S0 then  TMPARR(create_index(S0,DIMARR(1)))  = W
 
      END
      3    : BEGIN
