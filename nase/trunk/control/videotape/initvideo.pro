@@ -67,6 +67,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.12  2000/06/19 13:08:08  saam
+;             + replaced string processing by an IDL3.6 compatible version
+;
 ;       Revision 2.11  2000/04/03 12:02:56  saam
 ;             Changed Default Values:
 ;       	SYSTEM -> name of the calling routine
@@ -123,8 +126,12 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
 
    help, calls=m
    m = m(1)
-   pos1 = strpos(m,'/', /REVERSE_SEARCH) 
-   Default, system, STRUPCASE(strmid(m,pos1+1,strpos(m,'.pro')-pos1-1))
+
+   _called_by = split(m,'/')
+   _called_by = _called_by(N_elements(_called_by)-1)
+   _called_by =  strmid(_called_by,0,strpos(_called_by,'.pro'))
+
+   Default, system, STRUPCASE(_called_by)
 
    Default, starring, "Nerd ""die NASE"" Neuron"
    Default, company, "AG Neurophysik"
