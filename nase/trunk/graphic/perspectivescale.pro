@@ -11,8 +11,10 @@
 ; PURPOSE:
 ;  Scale the size of an image linearly, by a factor computed from a
 ;  given eye position, and a given visual distance from the eye (along
-;  the z-axis). This procedure works for greyscale or truecolor
-;  images.
+;  the z-axis).<BR>
+;  Optionally, an additional linear scaling factor (specifying the
+;  images "realworld size") may be defined.<BR>
+;  This procedure works for greyscale or truecolor images.
 ;*
 ;*                                  .
 ;*                             .    |
@@ -31,7 +33,7 @@
 ;  Input
 ;
 ; CALLING SEQUENCE:
-;*result = ImageScale( pic, distance [,eye] [,BACKGROUND=...] )
+;*result = ImageScale( pic, distance [,eye] [,SIZEFACTOR=...] [,BACKGROUND=...] )
 ;
 ; INPUTS:
 ;  pic:: The image to be scaled. This must eithe be a 2-dimensional
@@ -44,6 +46,15 @@
 ;  eye:: The eye (i.e., the projecting-) position. Default: <*>1.0</*>
 ;
 ; INPUT KEYWORDS:
+;  SIZEFACTOR:: An optional linear scaling factor, which is applied in
+;               addition (i.e., multiplicatively) to the computed
+;               factor. This allows specifying the (relative) size in
+;               real-world-coordinates of the input image. Hence, the
+;               two parameters <I>real world distance</I> and <I>real
+;               world size</I> of the input image can be specified
+;               independently.<BR>
+;               See the examples below for further carification.
+;
 ;  BACKGROUND:: The value to fill into the space that becomes
 ;               available when the image is shrinked. Default is
 ;               <*>0</*>.
@@ -67,14 +78,22 @@
 ;*PlotTvScl, PerspectiveScale( Coil20(1,0), 10.0, BACKGROUND=100 )
 ;*PlotTvScl, PerspectiveScale( Coil20(1,0), -0.5 )
 ;*undef, ui & for i=5.0,-0.5,-0.05 do PlotTvScl, PerspectiveScale( Coil20(1,0), i), update_info=ui
-;*>
+;*
+;*; examples for the SIZESCALE keyword:
+;*; This is a duck at distance 1.0, and of relative size 1.0:
+;*PlotTvScl, PerspectiveScale( Coil20(1,0), 1.0, SIZEFACTOR=1.0 )
+;*; This is the same duck at distance 2.0:
+;*PlotTvScl, PerspectiveScale( Coil20(1,0), 2.0, SIZEFACTOR=1.0 )
+;*; This is a duck at distance 1.0 again, but which is half the SIZE (in real-world):
+;*PlotTvScl, PerspectiveScale( Coil20(1,0), 1.0, SIZEFACTOR=0.5 )
+;*;Note that the last two images do NOT LOOK THE SAME!
 ;
 ; SEE ALSO:
 ;  <A>ImageScale</A>
 ;-
 
 
-Function PerspectiveScale, pic, d, e, BACKGROUND=background
+Function PerspectiveScale, pic, d, e, BACKGROUND=background,  SIZEFACTOR=sizefactor
 
    Default, e, 1.0
 
@@ -85,7 +104,9 @@ Function PerspectiveScale, pic, d, e, BACKGROUND=background
      '2-element-array,  or a 3-element-array with the first ' + $
      "dimension=3."
    
-   fac = float(e)/(e+d)
+   Default, SIZEFACTOR, 1.0
+
+   fac = float(e)/(e+d) * SIZEFACTOR
 
    If Size(pic, /N_Dimensions) eq 2 then begin
       ;; It's a greyscale picture
