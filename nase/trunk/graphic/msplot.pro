@@ -55,8 +55,8 @@
 ; PROCEDURE:
 ;  + establish coordinate system<BR>
 ;  + error area via PolyFill<BR>
-;  + mean via oplot<BR>
-;  + plot axes again to overwrite error area<BR>
+;  + mean via OPlot<BR>
+;  + plot axes to overwrite error area<BR>
 ;  
 ; EXAMPLE:
 ;*  x  = Indgen(30)/10.
@@ -144,15 +144,39 @@ PRO MSPLOT, z, zz, zzz $
       OPlot, x, m, COLOR=mcolor
    END
 
+   ;; extract titles from extra keywords, because they should not
+   ;; appear at all four axes, but only left and below the plot as usual 
    extratitles = ExtraDiff(extra, ['XTITLE', 'YTITLE'])
-   
+
+   ;; maybe XYTITLE= are not set, then ExtraDiff returns !NONE, which
+   ;; is no structure. In this case, xytitle are set manually to be
+   ;; empty strings.
+   IF Size(extratitles, /TNAME) NE 'STRUCT' THEN BEGIN
+      xtitle = ''
+      ytitle = ''
+   ENDIF ELSE BEGIN ;; at least one of the two keywords is set
+      IF N_TAGS(extratitles) EQ 2 THEN BEGIN ;; both keywords are set
+         xtitle = extratitles.xtitle
+         ytitle = extratitles.ytitle
+      ENDIF ELSE BEGIN
+         IF Tag_Names(extratitles) EQ 'XTITLE' THEN BEGIN ;; xtitle is set, 
+                                                          ;; but ytitle is not
+            xtitle = extratitles.xtitle
+            ytitle = ''
+         ENDIF ELSE BEGIN ;; vice versa
+            xtitle = ''
+            ytitle = extratitles.ytitle
+         ENDELSE ;; Tag_Names(extratitles) EQ 'XTITLE'
+      ENDELSE ;; N_TAGS(extratitles) EQ 2 
+   ENDELSE ;; Size(extratitles, /TNAME) NE 'STRUCT'
+
    ; plot coordinate system only
    IF NOT Keyword_Set(OPLOT) THEN BEGIN 
-      Axis, XAXIS=0, XRANGE=xrange, XSTYLE=xstyle, XTITLE=extratitles.xtitle $
+      Axis, XAXIS=0, XRANGE=xrange, XSTYLE=xstyle, XTITLE=xtitle $
        , _EXTRA=extra
       Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks' $
        , _EXTRA=extra
-      Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, YTITLE=extratitles.ytitle $
+      Axis, YAXIS=0, YRANGE=yrange, YSTYLE=ystyle, YTITLE=ytitle $
        , _EXTRA=extra
       Axis, YAXIS=1, YRANGE=yrange, YSTYLE=ystyle, YTICKFORMAT='noticks' $
        , _EXTRA=extra
