@@ -21,12 +21,20 @@
 ;  undesired (e.g. in <*>nohup</*> sessions, where it would violently
 ;  cause the IDL process to terminate, when the X server process
 ;  dies.) <BR>
-;  The result is computed due to the following rationale:<BR>
-;  o Always allow X connections if session is interactive.<BR>
-;  o Forbid X connections if session is not interactive (e.g. a nohup
-;    session).<BR>
-;  o Even in a non-interactive session, allow X connections, if
-;    environment variable NASELOGO is set to 'TRUE'.<BR>
+;  The result is computed due to the following rationale (the
+;  following points are checked in the given order until the first one
+;  applies):<BR>
+;
+;  o Forbid X connections, if environment variable DISPLAY is not
+;    set or is set to the empty string. (As connecting the X
+;    server would fail anyway.)<BR> 
+;  o Allow X connections, if environment variable NASELOGO is set
+;    to 'TRUE'. (The user has explicitely requested an X
+;    connection.)<BR>
+;  o Allow X connections if session is interactive. (The normal
+;    way to use IDL.)<BR>
+;  o Forbid X connections. (As session is not interactive, e.g. a
+;    nohup session).<BR>
 ; 
 ; CATEGORY:
 ;  ExecutionControl
@@ -48,8 +56,8 @@
 ;  stated there do also apply to <C>XAllowed()</C>.
 ;
 ; PROCEDURE:
-;  Call <A>Interactive()</A> and check for the NASELOGO environment
-;  variable set to 'TRUE'.
+;  Perform checks according to the rationale given above.
+;  Check environment variables and call <A>Interactive()</A>.
 ;
 ; EXAMPLE:
 ;*If XAllowed() then ShowLogo else print, "Welcome to NASE."
@@ -61,13 +69,27 @@
 Function XAllowed
   
    ;; RATIONALE:
+   ;;  The following points are checked in the given order until the
+   ;;  first one applies:
    ;;
-   ;;  o Always allow X-connections if session is interactive.
-   ;;  o Forbid X-connections if session is not interactive (e.g. a nohup
-   ;;    session).
-   ;;  o Even in a non-interactive session, allow X-connections, if
-   ;;    environment variable NASELOGO is set to 'TRUE'.
+   ;;  o Forbid X connections, if environment variable DISPLAY is not
+   ;;    set or is set to the empty string. (As connecting the X
+   ;;    server would fail anyway.)
+   ;;  o Allow X connections, if environment variable NASELOGO is set
+   ;;    to 'TRUE'. (The user has explicitely requested an X
+   ;;    connection.)
+   ;;  o Allow X connections if session is interactive. (The normal
+   ;;    way to use IDL.)
+   ;;  o Forbid X connections. (As session is not interactive, e.g. a
+   ;;    nohup session).
  
-   Return, Interactive() or (StrUpcase(GetEnv("NASELOGO")) eq "TRUE")
+
+   If GetEnv("DISPLAY") eq "" then return, 0
+   
+   If StrUpcase(GetEnv("NASELOGO")) eq "TRUE" then return, 1
+
+   If Interactive() then return, 1
+
+   Return, 0
 
 End
