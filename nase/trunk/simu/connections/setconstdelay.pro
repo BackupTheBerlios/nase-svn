@@ -10,7 +10,7 @@
 ;                                   [,Wert] [,Range=Reichweite]
 ;                                    ,S_ROW=Source_Row, S_COL=Source_Col
 ;                                    ,T_HS_ROW=Target_HotSpot_Row, T_HS_COL=Target_HotSpot_Col
-;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ] )
+;                                   [,ALL [,LWX ,LWY] [TRUNCATE, [,TRUNC_VALUE]] ], [,/INVERSE] )
 ;
 ;
 ; 
@@ -19,6 +19,8 @@
 ;         S_COL:    Spaltennr
 ;         T_HS_ROW: Zeilennr des Targetneurons im Targetlayer, das das Zentrum des Kreises enthaelt
 ;         T_HS_COL: Spaltennr
+;         INVERSE : Setzt Verbindungen ab einer minimalen Reichweite
+;         
 ;
 ; OPTIONAL INPUTS: Wert   : Verzoegerung der Verbindungen
 ;                  Range  : Reichweite in Gitterpunkten. (Reichweite (Radius) des Kreises) (Default ist 1/6 der Targetlayerhöhe)
@@ -52,6 +54,11 @@
 ;
 ; MODIFICATION HISTORY:
 ;
+;       Sun Sep 7 16:36:30 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Keyword Inverse hinzugefuegt
+;
 ;       Thu Aug 14 11:52:03 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -61,13 +68,18 @@
 
 Pro SetConstDelay, DWS, Amp, Range, $
                        S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
-                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, INVERSE=inverse
 
    Default, Range, DWS.target_h/6  
    Default, Amp, 1
 
-   SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
-              Amp*(Range GT Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
-              ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
-
+   IF Keyword_Set(inverse) THEN BEGIN
+      SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
+       Amp*(Range LE Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
+       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+   END ELSE BEGIN
+      SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
+       Amp*(Range GT Shift(Dist(DWS.target_h, DWS.target_w), t_hs_row, t_hs_col)), $
+       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value
+   END
 end
