@@ -14,6 +14,8 @@
 ;
 ;          Merke: DER WERT 0 HAT STETS DIE FARBE SCHWARZ!
 ;
+;          Nichtexistierende Verbindungen (!NONE) werden set Version 1.17 
+;          dunkelblau dargestellt.
 ;   
 ; CATEGORY: GRAPHIC
 ;
@@ -66,6 +68,11 @@
 ;
 ; MODIFICATION HISTORY: 
 ;
+;       Mon Aug 18 19:59:18 1997, Ruediger Kupper
+;       <kupper@sisko.physik.uni-marburg.de>
+;
+;		Nichtexistierende Verbindungen werden jetzt blau dargestell.
+;
 ;       Mon Aug 18 16:58:34 1997, Mirko Saam
 ;       <saam@ax1317.Physik.Uni-Marburg.DE>
 ;
@@ -108,8 +115,8 @@ if keyword_set(TOS) then begin                   ; Source- und Targetlayer verta
 endif else Matrix = _Matrix
 
 
-no_connections = WHERE(Matrix.Weights EQ !NONE, count)
-IF count NE 0 THEN Matrix.Weights(no_connections) = 0.0
+;no_connections = WHERE(Matrix.Weights EQ !NONE, count)
+;IF count NE 0 THEN Matrix.Weights(no_connections) = 0.0
    
 If Not Set(TITEL) Then titel = 'Gewichtsmatrix'
 If Not Set(GROESSE) Then Begin 
@@ -129,11 +136,11 @@ If Not Set(WINNR) Then Begin
 
                       IF XGroesse EQ 0 THEN BEGIN
                          XGroesse = 1
-                         Print, 'ShowWeights: ACHTUNG, horizontale Darstelleung unvollstaendig !!'
+                         Print, 'ShowWeights: ACHTUNG, horizontale Darstellung unvollständig !!'
                       END
                       IF YGroesse EQ 0 THEN BEGIN
                          YGroesse = 1
-                         Print, 'ShowWeights: ACHTUNG, vertikale Darstelleung unvollstaendig !!'
+                         Print, 'ShowWeights: ACHTUNG, vertikale Darstellung unvollständig !!'
                       END
                   EndElse    
 
@@ -145,6 +152,10 @@ END ELSE BEGIN
    MatrixMatrix= reform(Matrix.Weights, Matrix.target_h, Matrix.target_w, Matrix.source_h, Matrix.source_w)
 END
 
+
+no_connections = WHERE(MatrixMatrix EQ !NONE, count)
+IF count NE 0 THEN MatrixMatrix(no_connections) = 0 ;Damits vorerst bei der Berechnung nicht stört!
+
 min = min(MatrixMatrix)
 max = max(MatrixMatrix)
 ts = !D.Table_Size-1
@@ -154,15 +165,18 @@ if min eq 0 and max eq 0 then max = 1; Falls Array nur Nullen enthält!
 if min ge 0 then begin
    g = indgen(ts)/double(ts-1)*255
    tvlct, g, g, g                    ;Grauwerte
-   MatrixMatrix = MatrixMatrix/double(max)*(ts-2)
+   MatrixMatrix = MatrixMatrix/double(max)*(ts-3)
 endif else begin
    g = ((2*indgen(ts)-ts+1) > 0)/double(ts-1)*255
    tvlct, rotate(g, 2), g, bytarr(ts)         ;Rot-Grün
    MatrixMatrix = MatrixMatrix/2.0/double(max([max, -min]))
-   MatrixMatrix = (MatrixMatrix+0.5)*(ts-2)
+   MatrixMatrix = (MatrixMatrix+0.5)*(ts-3)
 endelse
 
-erase, rgb(255,100,0, INDEX=ts-1)
+IF count NE 0 THEN MatrixMatrix(no_connections) = ts-2 ;Das sei der Index für nichtexistente Verbindungen
+
+SetColorIndex, ts-2, 0, 0, 100     ;Blau sei die Farbe für nichtexistente Verbindungen
+erase, rgb(255,100,0, INDEX=ts-1)  ;Orange die für die Trennlinien
 
 
 for YY= 0, Matrix.source_h-1 do begin
