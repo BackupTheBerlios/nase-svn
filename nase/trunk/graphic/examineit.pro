@@ -82,6 +82,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.4  1998/03/31 15:12:25  kupper
+;            IDL-Versionskonflikt (MODAL)
+;
 ;       Revision 2.3  1998/03/31 14:39:31  kupper
 ;              Allerlei Schlüsselwörter hinzugefügt.
 ;       	DELIVER_EVENTS funktioniert noch nicht ganz richtig bei
@@ -264,10 +267,15 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    Default, group, 0
    Default, title, "Examine It!"
 
-   base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
-                      MODAL=modal, $
-                      SPACE=1, $
-                      UVALUE={name:"base"})
+   If fix(!VERSION.Release) ge 5 then $ ;Ab IDL 5 ist MODAL ein BASE-Keyword
+    base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
+                       MODAL=modal, $
+                       SPACE=1, $
+                       UVALUE={name:"base"}) $
+   else base = WIDGET_BASE(GROUP_LEADER=group, /COLUMN, TITLE=title, $
+                           SPACE=1, $
+                           UVALUE={name:"base"})
+
    GET_BASE = base
    
    upper_base = WIDGET_BASE(base, /ROW, $
@@ -329,5 +337,5 @@ Pro ExamineIt, w, tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
 ;   plot, w(*, w_height/2), xrange=[0, w_width-1], /XSTYLE, POSITION=gp, XMINOR=gm(0)
 
    If fix(!VERSION.Release) ge 5 then XMANAGER, 'ExamineIt', Base,NO_BLOCK=no_block, JUST_REG=just_reg $
-    else XMANAGER, "ExamineIt", base, JUST_REG=JUST_REG
+    else XMANAGER, "ExamineIt", base, JUST_REG=JUST_REG, MODAL=modal
 End
