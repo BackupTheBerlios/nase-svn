@@ -11,7 +11,9 @@
 ;
 ;
 ;
-; CALLING SEQUENCE: Array = Gauss_2D (x_Laenge, y_Laenge [,NORM] [,sigma | ,HWB=hwb] [,x0] [,y0] [,BLOW])
+; CALLING SEQUENCE: Array = Gauss_2D ( x_Laenge, y_Laenge [,NORM] 
+;                                      [[,sigma | ,HWB=hwb] | [ ,XHWB=xhwb ,YHWB=yhwb]] 
+;                                      [,x0] [,y0] [,BLOW])
 ;
 ;
 ; 
@@ -21,8 +23,7 @@
 ; OPTIONAL INPUTS: sigma           : Die Standardabweichung in Gitterpunkten. (Default = X_Laenge/6)
 ;                  Norm            : Volumen der Gaussmaske auf Eins normiert
 ;	  	   HWB		   : Die Halbwertsbreite in Gitterpunkten. Kann alternativ zu sigma angegeben werden.
-;                  BLOW            : setzt sigma_x=xlen/6 und sigma_y=ylen/6 (default sigmax=sigmay=xlen/6),  
-;                                    bzw. HWB_x=HWB HWB_y=ylen/xlen*HWB_x
+;	  	   XHWB, YHWB	   : Die Halbwertsbreite in Gitterpunkten bzgl. x und y (alternativ zu sigma und HWB)
 ;	  	   x0, y0	   : Die Position der Bergspitze(reltiv zum Arraymittelpunkt). Für x0=0, y0=0 (Default) liegt der Berg in der Mitte des
 ;			  	     Feldes. (Genauer: bei fix(Laenge/2)).
 ;                  x0_arr,y0_arr   : wie x0,y0, relativ zur linken oberen Arrayecke
@@ -64,6 +65,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.6  1997/11/25 18:07:14  gabriel
+;              Blow geloescht, Halbwertsbreiten fuer x und y hinzugefuegt
+;
 ;        Revision 1.5  1997/11/25 17:03:32  gabriel
 ;              Blow Keyword eingesetzt
 ;
@@ -79,7 +83,7 @@
 
 
 Function Gauss_2D, xlen,ylen, $
-                   sigma,NORM=norm,hwb=HWB, x0, y0,BLOW=blow ,$ ;(optional)
+                   sigma,NORM=norm,hwb=HWB,xhwb=XHWB,yhwb=YHWB, x0, y0,$ ;(optional)
                    X0_ARR=x0_arr, Y0_ARR=y0_arr ;(optional)
 
   ; Defaults:
@@ -87,25 +91,30 @@ Function Gauss_2D, xlen,ylen, $
     Default, y0, 0
     Default, x0_arr, x0+xlen/2d
     Default, y0_arr, y0+ylen/2d
-
-    IF set(BLOW) THEN BEGIN 
-       Default, sigma, (xlen < ylen)/6d
-    END ELSE BEGIN
-       Default, sigma, (xlen)/6d
-    endelse
-
-
-
+    Default,sigma,xlen/6d
+   
   If keyword_set(HWB) then sigma=hwb/sqrt(alog(4))
   
-  if ylen eq 1 then return, exp(-shift(dist(xlen,ylen),x0_arr)^2d / 2d /sigma^2d)           
-  IF set(BLOW) THEN BEGIN
+  IF (set(XHWB) AND NOT set(YHWB)) OR (set(YHWB) AND NOT set(XHWB)) THEN $
+   message,'Both XHWB and YHWB must be set'
+
+  IF set(XHWB) AND set(XHWB) THEN BEGIN
      
-     ERG =  exp(-shift(dist(xlen < ylen , xlen < ylen),x0_arr < y0_arr,x0_arr < y0_arr)^2d / 2d /sigma^2d)  
-     ERG =  congrid(ERG,xlen,ylen)
-  END ELSE BEGIN 
-     ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
-  ENDELSE
+     sigmax=xhwb/sqrt(alog(4))
+     sigmay=yhwb/sqrt(alog(4))
+     xerg = exp(-shift(dist(xlen,1),x0_arr)^2d / 2d /sigmax^2d)
+     yerg = exp(-shift(dist(1,ylen),x0_arr,y0_arr)^2d / 2d /sigmay^2d)
+     xerg = REBIN(xerg,xlen,ylen,/SAMPLE)
+     yerg = REBIN(yerg,xlen,ylen,/SAMPLE)
+     ERG = xerg*yerg
+     return, ERG(*,*)   
+
+  ENDIF
+
+  if ylen eq 1 then return, exp(-shift(dist(xlen,ylen),x0_arr)^2d / 2d /sigma^2d)           
+ 
+  ERG =  exp(-shift(dist(xlen,ylen),x0_arr,y0_arr)^2d / 2d /sigma^2d) 
+  
 
   If set(NORM) then ERG =  ERG /TOTAL(ABS(ERG))
 
