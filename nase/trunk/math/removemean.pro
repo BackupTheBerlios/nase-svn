@@ -74,21 +74,21 @@ FUNCTION  RemoveMean,   X, Dimension
    IF  NOT(Set(X))  THEN  Console, '  Argument not defined.', /fatal
 
    SizeX = Size([X])
-   DimsX = Size([X], /dim)
-   NDims = SizeX[0]
-   TypeX = SizeX[NDims+1]
+   DimsX = Size(X, /dim)
+   TypeX = Size(X, /type)
+   NDims = SizeX(0)
    IF  (TypeX GE 6) AND (TypeX LE 11)  THEN  Console, '  x is of wrong type', /fatal
 
    ; Checking the argument DIMENSION:
    IF  Set(Dimension)  THEN  BEGIN
      IF  (Size(Dimension, /type) GE 6) AND (Size(Dimension, /type) LE 11)  THEN  Console, '  Dimension variable is of wrong type', /fatal
-     Dim = Round(Dimension[0])   ; If DIMENSION is an array, only the first value is taken seriously.
+     Dim = Round(Dimension(0))   ; If DIMENSION is an array, only the first value is taken seriously.
    ENDIF  ELSE  $
      Dim = 0L
    IF  (Dim LT 0) OR (Dim GT NDims)  THEN  Console, '  Specified dimension out of allowed range', /fatal
 
-   IF  Dim EQ 0  THEN  N = SizeX[NDims+2]  $
-                 ELSE  N = SizeX[Dim]       ; number of elements in the specified dimension
+   IF  Dim EQ 0  THEN  N = N_Elements(X)  $
+                 ELSE  N = DimsX(Dim-1)       ; number of elements in the specified dimension
    ; If the number of elements in the specified dimension is 1, subtracting the mean is equivalent to subtracting X
    ; from itself, since for each epoch the mean value is the (only one) value itself. This will be explicitly computed,
    ; but a warning message is given here:
@@ -119,11 +119,11 @@ FUNCTION  RemoveMean,   X, Dimension
    ; way of first generating a 9-element array and then truncating it is just a one-command-line version of handling
    ; the situation that DIMSX has already 8 elements, which would yield the second argument for REPLICATE zero and thus
    ; lead to an error):
-   DX = ([DimsX , Replicate(1,9-NDims)])[0:7]
+   DX = ([DimsX , Replicate(1,9-NDims)])(0:7)
    ; Now M can be "blown up" with the REBIN routine to the same overall size as X; however, the dimension specified by
    ; DIM is now at the last position. (Unfortunately, by the way, the REBIN routine does not accept an array as the
    ; second argument, which makes the command line look somewhat confusing):
-   M = Rebin(M,  DX[DM[0]],DX[DM[1]],DX[DM[2]],DX[DM[3]],DX[DM[4]],DX[DM[5]],DX[DM[6]],DX[DM[7]], /sample)
+   M = Rebin(M,  DX(DM(0)),DX(DM(1)),DX(DM(2)),DX(DM(3)),DX(DM(4)),DX(DM(5)),DX(DM(6)),DX(DM(7)), /sample)
 
    ; The dimension at the last position has to be shifted to the position originally specified by DIM. In principle,
    ; the corresponding permutation vector for the TRANSPOSE routine is not difficult to create; it is just obtained by
@@ -133,12 +133,11 @@ FUNCTION  RemoveMean,   X, Dimension
    ; an error because the permutation vector has more elements than M has dimensions. The permutation vector therefore
    ; has to be truncated correspondingly. Afterwards, the eliminated dimensions are inserted again, using the REFORM
    ; function, in order to restore X's original dimensional structure.
-   IF  (Size(M))[0] NE 8  THEN  BEGIN   ; dimensions were lost because the last dimension has only one element
-     SizeM = Size(M)
-     M = Transpose(Temporary(M), Sort(DM[0:SizeM[0]-1]))
-     M = Reform(M, DimsX, /overwrite)
-   ENDIF  ELSE  $   ; nothing scary has happened during the rebinning => everything all right
-     M = Transpose(Temporary(M), Sort(DM))
+   IF  (Size(M))(0) NE 8  $
+     ; If dimensions were lost because the last dimension has only one element:
+     THEN  M = Reform(Transpose(M, Sort(DM(0:(Size(M))(0)-1))), DimsX, /overwrite)  $
+     ; If nothing scary has happened during the rebinning => everything all right:
+     ELSE  M = Transpose(M, Sort(DM))
 
    Return, X - Temporary(M)
 
