@@ -1,17 +1,49 @@
 ;+
-; NAME:               DEMOSIM
+; NAME: DEMOSIM
 ;
-; PURPOSE:            dieses Demo soll die Benutzung der Routinen InitPara, InitLayer, LayerProceed, Trainspotting, InitDW
+; PURPOSE: Dieses Demonstrationsprogramm soll anhand eines Beispiel-
+;          netzwerks die Benutzung einiger wichtiger N.A.S.E.-Routinen 
+;          verdeutlichen. Im einzelnen sind dies Routinen
+;          
+;          -zur Behandlung von Neuronenschichten: 
+;            <A HREF="file:/vol/neuro/nase/simu/layers/index.html#INITPARA_1">InitPara_1</A>, <A HREF="file:/vol/neuro/nase/simu/layers/index.html#INITLAYER_1">InitLayer_1</A>, <A HREF="file:/vol/neuro/nase/simu/layers/index.html#INPUTLAYER_1">InputLayer_1</A>, <A HREF="file:/vol/neuro/nase/simu/layers/index.html#PROCEEDLAYER_1">ProceedLayer_1</A>,
+;            <A HREF="file:/vol/neuro/nase/simu/layers/index.html#FREELAYER_1">FreeLayer_1</A>
 ;
-; CATEGORY:           DEMO
+;          -zur Behandlung von Verbindungen zwischen Neuronenschichten:
+;            <A HREF="file:/vol/neuro/nase/simu/connections/index.html#INITDW">InitDW</A>, <A HREF="file:/vol/neuro/nase/simu/connections/index.html#DELAYWEIGH">DelayWeigh</A>, <A HREF="file:/vol/neuro/nase/simu/connections/index.html#FREEDW">FreeDW</A>
 ;
+;          -zum Lernen von Verbindungsstaerken:
+;            <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#INITRECALL">InitRecall</A>, <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#TOTALRECALL">TotalRecall</A>, <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#LEARNHEBBLP">LearnHebbLP</A>, <A HREF="file:/vol/neuro/nase/simu/plasticity/index.html#FREERECALL">FreeRecall</A>
+;
+;          -zur graphischen Darstellung:
+;            <A HREF="file:/vol/neuro/nase/graphic/index.html#SHOWWEIGHTS">ShowWeights</A>, <A HREF="file:/vol/neuro/nase/graphic/index.html#TRAINSPOTTING">Trainspotting</A>
+;
+;          Das Beispielnetzwerk besteht aus einer Schicht von 10x10
+;          Neuronen (im Programm L1 genannt) und einem Inhibitionsneuron 
+;          (L2 im Programm).
+;          Die Neuronen in der Schicht erhalten als Feeding-Input ein
+;          Muster, das zwei Quadrate zeigt (I_L1_F), Linking-Input von 
+;          allen anderen Neuronen ihrer Schicht (CON_L1_L1) und inhibito-
+;          rischen Input vom Inhibitionsneuron (CON_L2_L1). Die Gewichte 
+;          der Linking-Verbindungen werden waehrend der Simulation ge-
+;          maess einer Hebb-Lernregel veraendert.
+;          Das Inhibitionsneuron erhaelt Feeding-Input von allen 
+;          Neuronen in der Schicht (CON_L1_L2).
+;          Waehrend der Simulation werden die Spikeaktivitaet in der 
+;          Neuronenschicht und die des Inhibitionsneurons dargestellt.
+;          Ausserdem gezeigt wird die Staerke der Verbindungen innerhalb
+;          der Schicht.
+;          
+; CATEGORY: MISCELLANEOUS
+; 
 ; CALLING SEQUENCE:   .run demosim
-;
-; EXAMPLE:            .run demosim
 ;
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1998/02/09 15:32:59  thiel
+;              Der Header ist etwas ausfuehrlicher geworden.
+;
 ;       Revision 1.6  1998/02/05 13:24:29  saam
 ;             + FreeDW's ergaenzt
 ;             + Bug im Aufruf von InitRecall der letzten Revision korrigiert
@@ -162,6 +194,6 @@ Window, 2, XSIZE=800, YSIZE=400
    FreeLayer_1, L1
    FreeLayer_1, L2
 
-
+   FreeRecall, LP_L1_l1
 
 END
