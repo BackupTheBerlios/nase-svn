@@ -34,6 +34,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/09/01 14:14:41  saam
+;          replaced size by nase typeof
+;          to allow idl 3.6 compatibility
+;
 ;     Revision 1.3  2000/08/11 09:56:44  thiel
 ;         Added XOR support.
 ;
@@ -56,8 +60,7 @@ FUNCTION Operator, op, A, B
       3   : RETURN, A * B
       4   : RETURN, A / B
       5   : BEGIN
-         type = Size(A, /TNAME)
-         IF type EQ 'INT' THEN Return, A XOR B
+         IF typeof(A) EQ 'INT' THEN Return, A XOR B
          resultfix = Fix(A) XOR Fix(B)
          Return, Call_FUNCTION(type, resultfix)
       END
