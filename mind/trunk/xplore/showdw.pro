@@ -20,6 +20,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.4  2000/06/20 10:22:23  saam
+;           + EXTRA arguments are passed to TomWaits
+;           + there is a Default DWindex now
+;
 ;     Revision 1.3  2000/01/14 11:02:21  saam
 ;           changed dw structures to anonymous/handles
 ;
@@ -82,7 +86,7 @@ PRO _ShowDw, DWindex, STOP=stop, _EXTRA=e
    
    Title = Title + 'Fields, '+curDW.NAME
    
-   TomWaits, DW, TITLE=title, NO_BLOCK=0
+   TomWaits, DW, TITLE=title, NO_BLOCK=0, _EXTRA=e
    
    IF Keyword_Set(STOP) THEN STOP
 
@@ -95,6 +99,7 @@ PRO ShowDw, DWindex, _EXTRA=e
 
    COMMON ATTENTION
 
+   Default, DWindex, 0
    iter = foreach('_ShowDW', DWindex, _EXTRA=e)
 
 END
