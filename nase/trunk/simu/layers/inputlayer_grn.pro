@@ -53,6 +53,12 @@
 ;          the respective potentials. E.g. 
 ;*          layer.f=layer.f+feeding*(1+noise*RandomN)
 ;          Default: 0.
+; /CORRECT:: Numerically solve leaky integrator differential equations
+;            using the Exponential Euler Method. This has the
+;            advantage of being invariant when changing time
+;            resolution and gives a steady state that is independent
+;            of the leaky intergator's time constant.
+;
 ; COMMON BLOCKS:
 ;  common_random
 ;
@@ -100,7 +106,10 @@
 ;-
 
 PRO InputLayer_GRN, _Layer, FEEDING=feeding, LINKING=linking $
-                    , NOISE=noise
+                    , NOISE=noise, CORRECT=correct
+
+   Default, noise, 0
+   Default, correct, 0
 
    COMMON COMMON_random, seed
 
@@ -115,32 +124,25 @@ PRO InputLayer_GRN, _Layer, FEEDING=feeding, LINKING=linking $
    IF Set(feeding) THEN BEGIN
       IF feeding(0,0) GT 0 THEN BEGIN
          neurons = feeding(0,1:feeding(0,0))
-         IF Set(NOISE) THEN BEGIN
-            layer.f(neurons) = layer.f(neurons) + $
-             feeding(1,1:feeding(0,0))*(1+noise*RandomN(seed, feeding(0,0)))
-;            layer.f(neurons) = $
-;             feeding(1,1:feeding(0,0))*(1+noise*RandomN(seed, feeding(0,0)))
-         END ELSE BEGIN
-            layer.f(neurons) = layer.f(neurons) + feeding(1,1:feeding(0,0))
-;            layer.f(neurons) = feeding(1,1:feeding(0,0))
-         END
-      END
-   END
-
+         ;; arithmetic if-clauses:
+         ;; if NOISE eq 0. then multiplication with 1 takes place,
+         ;; if CORRECT eq 0 then second factor has no effect
+         layer.f(neurons) = layer.f(neurons) + $
+          feeding(1,1:feeding(0,0)) * $
+          (1.+noise*RandomN(seed, feeding(0,0))) * $
+          (1.-correct*layer.para.df)
+      ENDIF ;; feeding(0,0) GT 0
+   ENDIF ;; Set(feeding)
+   
    IF Set(linking) THEN BEGIN
       IF linking(0,0) GT 0 THEN BEGIN
          neurons = linking(0,1:linking(0,0))
-         IF Set(NOISE) THEN BEGIN
-            layer.l(neurons) = layer.l(neurons) + $
-             linking(1,1:linking(0,0))*(1+noise*RandomN(seed, linking(0,0)))
-;            layer.l(neurons) = $
-;             linking(1,1:linking(0,0))*(1+noise*RandomN(seed, linking(0,0)))
-         END ELSE BEGIN
-            layer.l(neurons) = layer.l(neurons) + linking(1,1:linking(0,0))
-;            layer.l(neurons) = linking(1,1:linking(0,0))
-         END
-      END
-   END
+         layer.l(neurons) = layer.l(neurons) + $
+          linking(1,1:linking(0,0)) * $
+          (1.+noise*RandomN(seed, linking(0,0)))* $
+          (1.-correct*layer.para.dl)
+      ENDIF ;; linking(0,0) GT 0
+   ENDIF ;; Set(linking)
 
    Handle_Value, _layer, layer, /NO_COPY, /SET
 
