@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.5  2000/01/20 10:59:43  alshaikh
+;           problems with trainspottingscope solved
+;
 ;     Revision 1.4  2000/01/19 14:45:12  alshaikh
 ;           oversampling-bug fixed
 ;
@@ -131,7 +134,7 @@ Default, NUMBER, 0
    FOR j=0,INn.number_filter-1 DO BEGIN    
       IF viz_mode[j] EQ 3 THEN BEGIN
          opensheet,sheet,j
-         TS(j) = InitTrainspottingScope(NEURONS=w*h, TIME=period,/nonase)
+         TS(j) = InitTrainspottingScope(NEURONS=w*h, TIME=p.simulation.time/(1000.0*P.SIMULATION.SAMPLE),/nonase)
          closesheet,sheet,j
       END 
       
