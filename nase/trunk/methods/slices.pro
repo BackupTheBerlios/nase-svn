@@ -2,6 +2,8 @@
 ; NAME:
 ;  SLICES
 ;
+;  AIM:   Divides an array into parts of a fixed length and fixed overlap
+;
 ; PURPOSE:
 ;  Divides an array into parts of a fixed length and with fixed
 ;  distance and returns these parts in another array so that they can
@@ -53,11 +55,14 @@
 ;  Trainspotting, Reform(b(3,*,*))
 ;  ; show slice no. 3          
 ;
-; SEE ALSO: <A HREF="./signals/#INSTANTRATE">Instantrate</A>.
-;
+; SEE ALSO: <A>INSTANTRATE</A>.
+;-
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  2000/09/28 09:28:00  gabriel
+;           AIM tag added
+;
 ;     Revision 1.9  2000/09/27 15:59:23  saam
 ;     service commit fixing several doc header violations
 ;
