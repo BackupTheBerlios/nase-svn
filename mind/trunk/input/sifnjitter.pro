@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.6  2000/01/31 09:19:17  saam
+;           print, message -> console
+;
 ;     Revision 1.5  2000/01/28 17:44:10  saam
 ;           just for transfer
 ;
@@ -95,7 +98,7 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
                 delta_t  : delta_t           ,$
                 sim_time : .0d                $
                }
-         print,'SIFnJitter: hmw: '+STR(jitter/delta_t)+' ms, cutoff: '+STR(cut)+', average shift: '+STR(rj/2*delta_t)+' ms'
+         console, P.CON, 'hmw: '+STR(jitter/delta_t)+' ms, cutoff: '+STR(cut)+', average shift: '+STR(rj/2*delta_t)+' ms'
       END
       
       ; STEP
@@ -121,15 +124,15 @@ FUNCTION SIFnjitter, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_T
       
       ; FREE
       2: BEGIN
-         print,'SIFnJitter: done'
+         console, P.CON, 'done'
       END 
 
       ; PLOT
       3: BEGIN
-         print, 'SIFnJitter: display mode not implemented, yet'
+         console, P.CON, 'display mode not implemented, yet', /WARNING
       END
       ELSE: BEGIN
-         Message, 'SIFnJitter: unknown mode'
+         console, P.CON, 'SIFnJitter: unknown mode', /FATAL
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET

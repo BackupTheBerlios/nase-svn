@@ -42,6 +42,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/31 09:19:17  saam
+;           print, message -> console
+;
 ;     Revision 1.1  2000/01/27 10:49:06  saam
 ;            useful
 ;
@@ -68,7 +71,7 @@ FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, 
                 sim_time : .0d                   ,$
                 myop     : opID(op)               $
                }
-         print,'IFconst: '+STR(value)+', '+op         
+         console, P.CON, STR(value)+', '+op
       END
       
       ; STEP
@@ -79,15 +82,15 @@ FUNCTION IFconst, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, 
       
       ; FREE
       2: BEGIN
-         print,'IFconst: done'
+         console, P.CON, 'done'
       END 
 
       ; PLOT
       3: BEGIN
-         print, 'IFconst: display mode not implemented, yet'
+         console, P.CON, 'display mode not implemented, yet', /WARNING
       END
       ELSE: BEGIN
-         Message, 'IFconst: unknown mode'
+         console, P.CON, 'unknown mode', /FATAL
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET

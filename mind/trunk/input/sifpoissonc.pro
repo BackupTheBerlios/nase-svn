@@ -45,6 +45,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/31 09:19:18  saam
+;           print, message -> console
+;
 ;     Revision 1.1  2000/01/24 10:09:24  saam
 ;           created by merging sifpoisson and poissoninput
 ;
@@ -68,8 +71,8 @@ FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
    CASE mode OF
       ; INITIALIZE
       0: BEGIN                  
-         IF (rate LE 0.0) THEN Message, "a negative/zero rate doesn't make sense: rate="+STR(rate)
-         IF ((frac LE 0.0) OR (frac GT 1.0)) THEN Message, "a fraction of "+STR(frac)+" doesn't make sense"
+         IF (rate LE 0.0) THEN console, P.CON, "a negative/zero rate doesn't make sense: rate="+STR(rate), /FATAL
+         IF ((frac LE 0.0) OR (frac GT 1.0)) THEN console, P.CON, "a fraction of "+STR(frac)+" doesn't make sense", /FATAL
 
          TV = {info     : 'SIFpoissonc'             ,$
                w        : w                         ,$
@@ -80,7 +83,7 @@ FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
                delta_t  : delta_t                   ,$
                sim_time : .0d                        }
          
-          print,'SIFpoissonC: ',STR(rate),' Hz, fraction of neurons: ', STR(frac)         
+          console, P.CON, STR(rate),' Hz, fraction of neurons: ', STR(frac)         
       END
       
       ; STEP
@@ -100,10 +103,10 @@ FUNCTION SIFpoissonC, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
 
       ; PLOT
       3: BEGIN
-         print, 'SIFpoissonC: display mode not implemented, yet'
+         console, P.CON, 'display mode not implemented, yet', /WARNING
       END
       ELSE: BEGIN
-         Message, 'SIFpoissonC: unknown mode'
+         console, P.CON, 'unknown mode'
       END
 
    ENDCASE 
