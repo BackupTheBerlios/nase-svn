@@ -9,49 +9,70 @@
 ;  Generate a sheet structure for EPS output.
 ;
 ; PURPOSE:
-;  (When referencing this very routine in the text as well as all IDL
-;  routines, please use <C>RoutineName</C>.)
+;  Generate a sheet structure for EPS output.
 ;
 ; CATEGORY:
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*ProcedureName, par [,optpar] [,/SWITCH] [,KEYWORD=...]
-;*result = FunctionName( par [,optpar] [,/SWITCH] [,KEYWORD=...] )
-;
-; INPUTS:
-;  
-;
-; OPTIONAL INPUTS:
-;  
+;*result = PSSheet( [FILENAME=...][,MULTI=...]
+;*                  [,XMARGIN=...][,YMARGIN=...]
+;*                  [,XOMARGIN=...][,YOMARGIN=...]
+;*                  [,XSIZE=...][,YSIZE=...]
+;*                  [,CHARSIZE=...][,FONTTYPE=...]
+;*                  [, PRODUCER=...] 
+;*                  [,/VERBOSE] )
 ;
 ; INPUT KEYWORDS:
-;  
-;
+;  filename:: String that contains the name of the output file. Ending
+;             ".eps" is added automatically. Default: 'printsheet'
+;  multi:: Array for multiple plot information, see IDL's <*>!P.MULTI</*>
+;          field.
+;  xmargin, ymargin:: Two element arrays indicating margins around
+;                     each plot, in units of charsize. Default:
+;                     <*>xmargin=[7,1.5]</*>, <*>ymargin=[3,0.75]</*>.
+;  xomargin, yomargin:: Two element arrays indicating outer margins
+;                      around the whole sheet. Defaults:
+;                      <*>xomargin=[0,0]</*>, <*>ymargin=[0,0]</*>.
+;  xsize, ysize:: Size of the final EPS-Sheet, in centimeter
+;                 units. Default: <*>xsize=21</*>. Default for
+;                 <*>ysize</*> depends on setting of <*>MULTI</*>. For
+;                 a single plot and two plots on top of each other, it
+;                 is <*>0.5*(Sqrt(5.)-1)*xsize</*>. For three or more
+;                 plots, it is <*>0.25*(Sqrt(5.)-1)*xsize</*> times
+;                 the number of plots.
+; charsize:: The size of the annotation chars. Note that this size is
+;            <i>not</i> reduced as in normal IDL when more than 2
+;            plots appear on the sheet. Default: 1.8.
+; fonttype:: A string specifying the desired type of font used on the
+;            sheet. This can either be 'tt' for truetype fonts and
+;            'ps' for postscript fonts. Default: 'ps'.
+; producer:: A string that is printed at the bottom left of the
+;            resulting EPS sheet. If <*>producer=''</*>, nothing is
+;            printed. If <*>producer='foobar'</*>, "foobar" is printed
+;            together with the current system time. A special value
+;            is <*>"CALLER"</*> wich prints the name of the routine that
+;            called the subsequent <A>CloseSheet</A> together with
+;            systime. Default: <*>/CALLER</*>.
+; /VERBOSE:: Print information into the console.
+; 
 ; OUTPUTS:
+;  result:: A handle that is connected to a EPS-sheet structure.
 ;  
-;
-; OPTIONAL OUTPUTS:
-;  
-;
-; COMMON BLOCKS:
-;  
-;
 ; SIDE EFFECTS:
-;  
-;
-; RESTRICTIONS:
-;  
+;  Some plot attributes are changed, which may influence subsequent
+;  plots on the screen.  
 ;
 ; PROCEDURE:
-;  
+;  Generate a sheet handle via <A>Definesheet()</A>, after setting the
+;  attributes right.
 ;
 ; EXAMPLE:
 ;*
 ;*>
 ;
 ; SEE ALSO:
-;  <A>RoutineName</A>
+;  <A>DefineSheet()</A>, <A>OpenSheet()</A>, <A>CloseSheet()</A>
 ;-
 
 FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
@@ -79,7 +100,6 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
 
    Default, verbose, 0
 
-;   cs = 2. ;; TrueType
    cs = charsize 
 
    xs = 21.
