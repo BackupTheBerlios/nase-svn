@@ -11,8 +11,7 @@
 ;                                    [,/SELF | ,/NONSELF]
 ;
 ; INPUTS: G : Die bisherige Gewichtsmatrix (eine mit DelayWeigh oder InitWeights erzeugte Struktur) 
-;
-; OPTIONAL INPUTS:
+;         LP : Eine mit InitDW initialisierte Lernpotential-Struktur
 ;
 ; KEYWORD PARAMETERS: SOURCE_CL/TARGET_CL : Je ein Cluster bestehend aus
 ;                                           Neuronen, die ein Lernpotential besitzen. (z.B. Typ 3)
@@ -41,7 +40,7 @@
 ;               werden, die mit Lernpotential ausgestattet sind, dh den Tag .P in
 ;               der Struktur besitzen.
 ;
-; PROCEDURE: LayerSize()
+; PROCEDURE: LayerSize(), TotalRecall()
 ;
 ; EXAMPLE: Check_LearnHebbLP, W, Source_CL=Layer, Target_CL=Layer, Rate=0.01, ALPHA=1.0, /Nonself
 ;          veraendert die Matrix W entsprechend dem Zustand des
@@ -50,6 +49,13 @@
 ;          bleiben aber unveraendert.
 ;
 ; MODIFICATION HISTORY: 
+;
+;       Thu Sep 4 17:03:51 1997, Mirko Saam
+;       <saam@ax1317.Physik.Uni-Marburg.DE>
+;
+;		Fktioniert nun auch mit verzoegerten Verbindungen
+;               Lernpotentiale nun nicht mehr in den Neuronen sondern in separater
+;                  Struktur
 ;
 ;       Wed Sep 3 16:13:40 1997, Ruediger Kupper
 ;           <kupper@sisko.physik.uni-marburg.de>
@@ -65,12 +71,12 @@
 ;
 ;-
 
-Pro Check_LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
+Pro Check_LearnHebbLP, Matrix, LP, SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,ALPHA=Alpha,SELF=Self,NONSELF=NonSelf
 
    spaltenzahl = Layersize(Target_CL)
    zeilenzahl = Layersize(Source_CL)
 
-   If Source_Cl.type NE '3' Then Message, 'Diese Lernregel funktioniert nur mit Source-Neuronen, die ein Lernpotential haben (Typ 3).'   
+   If N_Params() NE 2 THEN Message, 'falsche Parameterzahl'   
    If Set(SELF) AND Set(NONSELF) Then Message, 'Die Schluesselworte SELF und NONSELF duerfen nicht beide gleichzeitig angegeben werden.'
    If Set(NONSELF) AND (spaltenzahl NE Zeilenzahl) Then Message, 'Ist NONSELF angegeben, muessen Source- und Target-Cluster gleich gross sein.'
 
@@ -99,9 +105,16 @@ Pro Check_LearnHebbLP, Matrix,SOURCE_CL=Source_CL,TARGET_CL=Target_CL,RATE=Rate,
    ;dw = opost_diag # (-Matrix.Weights + Alpha*(Target_CL.O#Source_CL.P))
 
    dw = fltarr(spaltenzahl,zeilenzahl)
-   source_arr = rebin(reform(Source_CL.P,1,zeilenzahl),spaltenzahl,zeilenzahl,/sample)
-   dw (spaltenindex,*) = Alpha*Source_Arr(spaltenindex,*) - Matrix.Weights(spaltenindex,*)
-   
+
+   IF Matrix.info EQ 'DW_WEIGHT' THEN BEGIN
+      source_arr = rebin(reform(Source_CL.P,1,zeilenzahl),spaltenzahl,zeilenzahl,/sample)
+      dw (spaltenindex,*) = Alpha*Source_Arr(spaltenindex,*) - Matrix.Weights(spaltenindex,*)
+   END ELSE BEGIN
+      IF Matrix.info EQ 'DW_DELAY_WEIGHT' THEN BEGIN
+         dw (spaltenindex,*) = Alpha*LP.values(spaltenindex,*) - Matrix.Weights(spaltenindex,*)
+      END ELSE Message, 'illegal first argument'
+   END
+      
    If Set(NONSELF) Then dw(Spaltenindex,Spaltenindex)=0
 
    connections = WHERE(Matrix.Weights NE !NONE, count)
