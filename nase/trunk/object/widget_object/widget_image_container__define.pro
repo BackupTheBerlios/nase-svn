@@ -31,7 +31,8 @@
 ;                                               
 ; KEYWORD PARAMETERS:
 ;
-;   IMAGE: This keyword must be present.
+;   IMAGE: This keyword must either be present, or the image must be supplied
+;          using the image method, before the widget is realized!
 ;          It might either be
 ;            o a two-dimensional array containing the image data.
 ;              Array contents will be copied into the object.
@@ -143,6 +144,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/03/23 15:01:43  kupper
+;        Added header comment on IMAGE keyword.
+;
 ;        Revision 1.6  2000/03/16 13:23:26  kupper
 ;        Corrected hyperlink.
 ;
