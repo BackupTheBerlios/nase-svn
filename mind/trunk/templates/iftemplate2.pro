@@ -60,6 +60,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.11  2000/08/11 14:24:20  thiel
+;         Contains WRAP and FILE keywords now.
+;
 ;     Revision 1.10  2000/06/29 14:57:52  saam
 ;           + added defaults for wrap and file
 ;
@@ -133,7 +136,7 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
       
       ; FREE
       2: BEGIN
-          Handle_Free, _TV
+;          Handle_Free, _TV
           console, 'done'
       END 
 
