@@ -2,10 +2,10 @@
 ; NAME:
 ;  LRDelays
 ;
-; AIM: MIND wrapper for <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#LEARNDELAYS>LearnDelays</A>. 
+; AIM: MIND wrapper for <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#LEARNDELAYS>LearnDelays</A>. 
 ;  
 ; PURPOSE:
-;  This is the MIND version of the routine <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#LEARNDELAYS>LearnDelays</A>.
+;  This is the MIND version of the routine <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#LEARNDELAYS>LearnDelays</A>.
 ;  It can be used as the 'EXEC' part of an 'EXTERN'al learning rule.
 ;  It evaluates time differences between pre- and postsynaptic spikes
 ;  as a basis for changing conduction delays between neurons.
@@ -22,15 +22,11 @@
 ;  learnfunc: Array containing the learning function with the
 ;             following structure:
 ;             learnfunc=[tmaxpre,tmaxpost,deltapre,deltanull,deltapost]
-;             See <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#INITPRECALL>InitPrecall</A> for details.
+;             See <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A> for details.
 ;
 ;  Note that con, win and _extra are provided by the MIND simulation,
 ;  the only real input the user has to care about is learnfunc.
 ;  
-; KEYWORD PARAMETERS:
-;  SHUTUP: No queue reset warning is printed. See <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#LEARNDELAYS>LearnDelays</A> 
-;          for details.
-;
 ; PROCEDURE:
 ;  Call Learndelays.
 ;  
@@ -59,7 +55,7 @@
 ;  
 ;  
 ; SEE ALSO:
-;  <A HREF="#LRINITPRECALL">LRInitPrecall</A>, <A HREF="#LRTOTALPRECALL">LRTotalPrecall</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity#TOTALPRECALL>TotalPrecall</A>, 
+;  <A HREF="#LRINITPRECALL">LRInitPrecall</A>, <A HREF="#LRTOTALPRECALL">LRTotalPrecall</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#TOTALPRECALL>TotalPrecall</A>, 
 ;  <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#INITPRECALL>InitPrecall</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/simu/plasticity/#LEARNDELAYS>LearnDelays</A>.
 ;  
 ;-
@@ -67,6 +63,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/15 15:18:49  thiel
+;            Hyperlinks & header updated.
+;
 ;        Revision 1.2  2000/09/15 15:17:03  thiel
 ;            SHUTUP-Keyword removed.
 ;
