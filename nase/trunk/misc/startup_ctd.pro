@@ -21,7 +21,8 @@
 ;   Startup_Ctd
 ;
 ; SEE ALSO:
-;   <A>Check_Nase_Lib</A>, <A>DefGlobVars</A>, <A>ShowLogo</A>, <A>ResetCM</A> 
+;   <A>Check_Nase_Lib</A>, <A>DefGlobVars</A>, <A>ShowLogo</A>,
+;   <A>ResetCM</A>, <A>Interactive()</A>, <A>XAllowed()</A>. 
 ;
 ;-
 
@@ -40,7 +41,6 @@ Pro Startup_ctd
    ;; warning: FilePath changes the variable passed to ROOT_DIR
    ;;          argument! Hence, using read-only !NASEPATH.
 
-;   NASEDIRS = FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["alien"]) + separator
    NASEDIRS = FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control"]) + separator
    NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control","counter"]) + separator
    NASEDIRS = NASEDIRS + FilePath("", ROOT_DIR=!NASEPATH, SUBDIRECTORY=["control","loops"]) + separator
@@ -85,39 +85,49 @@ Pro Startup_ctd
    SetEnv, "NASEDIRS="+NASEDIRS ;for compatibility reasons
    !PATH = !PATH+separator+NASEDIRS
 ;------------------------------------------------------------------
-
    defglobvars                  ;Muss vor ShowLogo stehen, weil das UTVLCT benutzt, was die Systemvariablen abfragt
 
    check_NASE_LIB               ;Check NASE C-library, make it if it does'n exist.
 
 
-   ;;NASEMARK:--- Are_we_running_an_interactive_session? -----   
-   stdout_fstat = fstat(-1)
-   if fix(!version.release) lt 4 then $
-    IsInteractiveSession = stdout_fstat.isatty $
-   else $
-    IsInteractiveSession =  stdout_fstat.interactive
-   if NOT IsInteractiveSession then begin
+   ;; We need the following statement to have the next lines compiled
+   ;; properly:
+   FORWARD_FUNCTION Interactive, XAllowed
+
+   ;;NASEMARK:--- Flush_stdin/stdout_in_non_interactive_session -----
+   if NOT Interactive() then begin
       Flush, -2
       Flush, -1
    endif
    ;; --------------------------------------------------------
 
-   ;; --- in a nohup-session, don't connect to X-Server ------
-   ;; --- but always connect to X-Server, if display of ------
-   ;; --- the NASE logo was requested!                  ------
-   ;;NASEMARK---- Show_Logo_on_startup? ----------------------
-   WillShowLogo = (GetEnv("NASELOGO") eq "TRUE") 
-   if IsInteractiveSession or  WillShowLogo then begin
-      ;; try to get it, if available, but no DIRECT_COLOR!
+   ;;NASEMARK:--- Request_TRUECOLOR_device_if_allowed --------
+   ;; --- Connect to X server only if allowed, which is    ---
+   ;; --- determined by the XAllowed() function. If so, do ---
+   ;; --- request the TRUE_COLOR device and set DECOMPOSED ---
+   ;; --- to zero.                                         ---
+   ;; --- XAllowed() returns TRUE also, if an X connection ---
+   ;; --- was expicitely requested by setting the environ- ---
+   ;; --- ment variable NASELOGO='TRUE'.                   ---
+   if XAllowed() then begin
+      ;; try to get TRUE_COLOR, if available, but no DIRECT_COLOR!
       if (!D.NAME EQ 'X') or (!D.NAME EQ 'MAC') THEN DEVICE, TRUE_COLOR=24
       DEVICE, DECOMPOSED=0
    endif
+
    uset_plot, !D.NAME  
-   WillShowLogo = (WillShowLogo or IsInteractiveSession)
-   ;; if it is explicitly not wished:
-   if (GetEnv("NASELOGO") eq "FALSE") then WillShowLogo = 0
-   If WillShowLogo then ShowLogo, SECS=3
+
+   ;;NASEMARK---- Show_Logo_on_startup? ----------------------
+   ;; --- Show logo, if X connections are allowed.         ---
+   ;; --- Furthermore, do not show the logo, if environment---
+   ;; --- variable NASELOGO is explicitely set to 'FALSE'. ---
+   if XAllowed() and (StrUpcase(GetEnv("NASELOGO")) ne "FALSE") then begin
+      ShowLogo, SECS=3
+   endif else begin
+      print, "========================="
+      print, "     Welcome to NASE. "
+      print, "========================="
+   endelse
    ;; --------------------------------------------------------
   
 End
