@@ -1,54 +1,49 @@
 ;+
-; NAME:                SlidCC
+; NAME:
+;  SlidCC()
 ;
-; AIM:                 computes the timeresolved cross correlation beetween two given signals
+; VERSION:
+;  $Id$
+; 
+; AIM:
+;  computes the timeresolved cross correlation beetween two given signals
 ;
-; PURPOSE:             Computes the cross correlation with a sliding window.
+; PURPOSE:
+;  Computes the cross correlation with a sliding window.
 ;
-; CATEGORY:            METHODS CORRS 
+; CATEGORY:
+;  Statistics
+;  Signals
 ;
-; CALLING SEQUENCE:    cc = SlidCC( x,y, PShift [,taxis] [,SSIZE=ssize] [,SSHIFT=sshift] [,SAMPLEPERIOD=sampleperiod] [,/PLOT] [,TITLE=title]
+; CALLING SEQUENCE:
+;* cc = SlidCC( x,y [,PShift [,taxis]] [,SSIZE=...] [,SSHIFT=...] [,SAMPLEPERIOD=...] [,/PLOT] [,TITLE=...]
 ;
-; INPUTS:              x,y   : the two signals to be cross correlated
-;                      PShift: the maximal amount the signals are shifted against each other, default is 64ms
+; INPUTS: 
+;  x,y   :: the two signals to be cross correlated
+;  PShift:: the maximal amount the signals are shifted against each other, default is 64ms
 ;
-; KEYWORD PARAMETERS:  SSIZE        : the size of the time window, default is 128ms  (see SLICES)
-;                      SSHIFT       : the amount the window is shifted, default is SSIZE/2 (see SLICES)
-;                      SAMPLEPERIOD : the period of one sampled value, default is 1ms (see SLICES)
-;                      PLOT         : the result is plotted in a sheet
+; INPUT KEYWORDS:
+;  SSIZE        :: the size of the time window, default is 128ms  (see SLICES)
+;  SSHIFT       :: the amount the window is shifted, default is SSIZE/2 (see SLICES)
+;  SAMPLEPERIOD :: the period of one sampled value, default is 1ms (see SLICES)
+;  PLOT         :: the result is plotted in a sheet
 ;
-; OUTPUTS:             cc   : two-dimensional array (slicenr, tau)
+; OUTPUTS:
+;  cc  :: two-dimensional array (slicenr, tau)
 ;
-; OPTIONAL OUTPUTS:    taxis: the corresponding tau-axis is returned
+; OPTIONAL OUTPUTS: 
+;   taxis:: the corresponding tau-axis is returned
 ;
-; COMMON BLOCKS:       SH_SLIDCC: contains the Sheet for the Plot
+; COMMON BLOCKS: 
+;  SH_SLIDCC: contains the Sheet for the Plot
 ;
 ; PROCEDURE:
-;                      + cut the two signal in slices via SLICES function
-;                      + compute the correlation via the CrossCor function for each slice
-;                      + plot result if wanted
+;  * cut the two signal in slices via SLICES function<BR>
+;  * compute the correlation via the CrossCor function for each slice<BR>
+;  * plot result if wanted
 ;                      
 ; SEE ALSO:
-;                      <A HREF="http://neuro.physik.uni-marburg.de/nase/methods/#SLICES>Slices</A>, <A HREF="http://neuro.physik.uni-marburg.de/nase/methods/corrs+specs/#CROSSCOR>CrossCor</A>
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 1.5  2000/09/28 13:52:42  gabriel
-;          AIM, message <> console
-;
-;     Revision 1.4  2000/06/19 13:09:07  saam
-;           + replaced LExtrac call by nothing
-;
-;     Revision 1.3  1999/12/02 15:08:16  saam
-;           simplified calculation of the real time shift
-;
-;     Revision 1.2  1998/07/15 09:48:24  saam
-;           bug in docu
-;
-;     Revision 1.1  1998/07/15 09:46:36  saam
-;           extensively used and now commited for nase
-;
+;  <A>Slices</A>, <A>CrossCor</A>
 ;
 ;-
 FUNCTION SlidCC, A,B, PShift, taxis, SSIZE=ssize, SSHIFT=sshift, SAMPLEPERIOD=sampleperiod, PLOT=plot, TITLE=title, _EXTRA=e
