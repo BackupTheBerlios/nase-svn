@@ -23,6 +23,9 @@
 ;                  D_GAUSS              : Array [Min,Max,sigma]. Die Delays werden von jedem Source-Neuron umgekehrt gauﬂfˆrmig in den Targetlayer gesetzt (mit Minimum Min, Maximum Max und Standardabw. sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gleichm‰ﬂig verteilt sind (Keyword ALL in SetWeight. Siehe dort!) 
 ;                             W_DOG     : Array [Amp,on_sigma,off_sigma]. Die Gewichte werden von jedem Source-Neuron Maxican-Hat-fˆrmig in den Targetlayer gesetzt (mit Zentrumsamplitude Amp, on_sigma,off_sigma in Gitterpunkten), und zwar so, daﬂ die HotSpots dort gˆeichm‰ﬂig verteilt sind (Keyword ALL)
 ;                  D_NONSELF, W_NONSELF : Sind Source- und Targetlayer gleichgroﬂ (oder identisch), so l‰ﬂt sich mit diesem Keyword das Gewicht/Delay eines Sourceneurons auf das Targetneuron mit gleichem Index auf 0 setzen.	
+;                  LEARN_TAUP, LEARN_VP : Zeitkonstante und Verstaerkung f"ur das Lernpotential (Leckintegrator 1. Ordnung) 
+;                                            LEARN_TAUP muss zur Initialisierung gesetzt werden, LEARN_VP hat Default 1.0 
+;
 ;
 ;
 ;                  Man beachte, daﬂ die Angabe mehrerer W_-
@@ -93,6 +96,11 @@
 ;        
 ; MODIFICATION HISTORY:
 ;
+;       Thu Aug 14 11:23:99 1997, Mirko Saam
+;       <Mirko.Saam@physik.uni-marburg.de>
+;       
+;               Erweiterung um Lernpotentiale analog zu DelayWeigh, Schluesselworte LEARN_TAUP, LEARN_VP
+;
 ;       Thu Aug 7 14:02:04 1997, Ruediger Kupper
 ;       <kupper@sisko.physik.uni-marburg.de>
 ;
@@ -122,17 +130,20 @@
 ;-
 
 Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
-                   S_WIDTH=s_width, S_HEIGHT=s_height, T_WIDTH=t_width, T_HEIGHT=t_height, $
-                   DELAY=delay,                 WEIGHT=weight, $
-                   D_RANDOM=d_random,           W_RANDOM=w_random, $
-                   D_NRANDOM=d_nrandom,         W_NRANDOM=w_nrandom, $
-                   D_GAUSS=d_gauss,             W_GAUSS=w_gauss, $
-                                                W_DOG=w_dog, $
-                   D_LINEAR=d_linear,           W_LINEAR=w_linear, $
-                   D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
-                   D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
-                   D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value
-   
+                 S_WIDTH=s_width, S_HEIGHT=s_height, T_WIDTH=t_width, T_HEIGHT=t_height, $
+                 DELAY=delay,                 WEIGHT=weight, $
+                 D_RANDOM=d_random,           W_RANDOM=w_random, $
+                 D_NRANDOM=d_nrandom,         W_NRANDOM=w_nrandom, $
+                 D_GAUSS=d_gauss,             W_GAUSS=w_gauss, $
+                 W_DOG=w_dog, $
+                 D_LINEAR=d_linear,           W_LINEAR=w_linear, $
+                 D_NONSELF=d_nonself,         W_NONSELF=w_nonself, $
+                 D_TRUNCATE=d_truncate,       W_TRUNCATE=w_truncate, $
+                 D_TRUNC_VALUE=d_trunc_value, W_TRUNC_VALUE=w_trunc_value,$
+                 LEARN_TAUP=learn_taup,       LEARN_VP=learn_vp
+
+
+
    IF set(S_LAYER) THEN BEGIN
       s_width = s_layer.w
       s_height = s_layer.h
@@ -150,25 +161,39 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
 
 ;konstante Belegungen:
    if HasDelay then begin
+      
+                                ; es gibt Delays, also muessen die Lernpotentiale nun in den Verbindungen stehen,
+                                ; (falls gelernt werden soll)
+      IF Keyword_Set(learn_taup) THEN BEGIN
+         Default, learn_vp, 1.0
+         lp = FltArr( t_width*t_height, s_width*s_height )
+      END ELSE BEGIN
+         lp = -1
+      END
+      
+      
       Default, delay, 0
- 
-         DelMat = { source_w: s_width,$
-                    source_h: s_height,$
-                    target_w: t_width,$
-                    target_h: t_height,$
-                    Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
-                    Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
-                    Delays  : Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ),$
-                    Queue   : SpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ) $
-                  }
-      END ELSE BEGIN         
-         DelMat = {source_w: s_width,$
-                   source_h: s_height,$
-                   target_w: t_width,$
-                   target_h: t_height,$
-                   Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
-                   Delays  : [-1, -1] $
-                  }
+      
+      DelMat = { source_w: s_width,$
+                 source_h: s_height,$
+                 target_w: t_width,$
+                 target_h: t_height,$
+                 Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
+                 Matrix  : BytArr( t_width*t_height, s_width*s_height ) ,$
+                 Delays  : Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ),$
+                 Queue   : SpikeQueue( INIT_DELAYS=Replicate( DOUBLE(delay), t_width*t_height, s_width*s_height ) ), $
+                 VP      : FLOAT(learn_vp),$
+                 DP      : exp(-1.0/FLOAT(learn_taup)),$
+                 LP      : lp $
+      }
+   END ELSE BEGIN         
+      DelMat = {source_w: s_width,$
+                source_h: s_height,$
+                target_w: t_width,$
+                target_h: t_height,$
+                Weights : Replicate( DOUBLE(weight), t_width*t_height, s_width*s_height ),$
+                Delays  : [-1, -1] $
+               }
    END
    
 
