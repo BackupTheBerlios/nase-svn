@@ -40,6 +40,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/01/28 09:57:54  saam
+;           now handles oversampling with new keyword OVERSAMP
+;
 ;     Revision 2.4  1998/01/21 21:56:37  saam
 ;           BUG: Abbruch bei t > MAX(Int) ... korrigiert
 ;
@@ -56,12 +59,15 @@
 ;-
 FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
                              RAYS=rays,$
-                             NOSCALEALL=noscaleall, NOSCALEYMIN=noscaleymin, NOSCALEYMAX=noscaleymax
+                             NOSCALEALL=noscaleall, NOSCALEYMIN=noscaleymin, NOSCALEYMAX=noscaleymax,$
+                             OVERSAMP=oversamp
 
+   Default, OVERSAMP, 1
    Default, TIME, 100l
    Default, YMIN, 0.0
    Default, YMAX, 1.0
    Default, Rays, 1
+   time =  time*OVERSAMP
    maxSc = 1
    minSc = 1
    
@@ -80,9 +86,10 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
           t    : 0l            ,$
           time : LONG(time)    ,$
           maxSc: maxSc         ,$
-          minSc: minSc         }
+          minSc: minSc         ,$
+          os   : oversamp      }
    
-   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time], XSTYLE=1
+   plot, PS.y, /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, XTITLE='t [ms]'
 
    RETURN, PS
 END
