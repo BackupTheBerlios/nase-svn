@@ -44,6 +44,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 2.9  2000/10/11 16:14:24  gabriel
+;           Modification History ;- deleted
+;
 ;     Revision 2.8  2000/10/11 12:26:51  gabriel
 ;          BUG fixed: xdata now a local variable
 ;
@@ -69,7 +72,7 @@
 ;          Eine kleine neue Routine
 ;
 ;
-;-
+;
 
 
 PRO ubar_plot,xdata,ydata,xbase,COLORS=COLORS,OFFSET=OFFSET,CENTER=CENTER,BARSPACE=BARSPACE,SYMMETRIC=SYMMETRIC,OPLOT=OPLOT,_EXTRA=e
