@@ -151,7 +151,7 @@ Function Gauss_Fit, x, y, a, NTERMS=nt, ESTIMATES=est
 ;DMS, RSI, Dec, 1983.  DMS, RSI,
 ;Jun, 1995, Added NTERMS keyword.  Result is now float if Y is not
 ;double.  DMS, RSI, Added ESTIMATES keyword.  -
-;
+;-
 
 
 on_error,2                      ;Return to caller if an error occurs
