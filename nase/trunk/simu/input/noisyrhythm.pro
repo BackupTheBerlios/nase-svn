@@ -41,6 +41,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  1997/10/29 09:13:41  saam
+;           Set statt Keyword_Set
+;           Bug beim gleichverteilten Rauschen korrigiert
+;
 ;     Revision 2.1  1997/10/28 14:54:46  saam
 ;           vom Himmel gefallen
 ;
@@ -54,9 +58,8 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
    ; initialization ??
    IF (N_Params() EQ 0) THEN BEGIN
       Default, rate, 40
-      Default, sdev, 0.0
-      Default, gauss, 0.1
-      Default, count, 0
+      Default, gauss, 0.0
+
 
       IF Keyword_Set(LAYER) THEN BEGIN
          size = Layer.w * Layer.h
@@ -68,11 +71,11 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
          END
       END
       
-      IF Keyword_Set(GAUSS) THEN BEGIN
+      IF Set(GAUSS) THEN BEGIN
          sdev = gauss*LONG(1000./FLOAT(rate))
          type = 'Gauss'
       END
-      IF Keyword_Set(CONST) THEN BEGIN
+      IF Set(CONST) THEN BEGIN
          sdev = const*LONG(1000./FLOAT(rate))
          type =  'Const'
       END
@@ -87,13 +90,13 @@ FUNCTION NoisyRhythm, Input, RATE=rate, GAUSS=gauss, CONST=const, LAYER=layer, $
       RETURN, newInput
    END
 
-   IF Keyword_Set(RATE) OR Keyword_Set(SDEV) OR Keyword_Set(LAYER) THEN Message, 'syntax error'
+   IF Keyword_Set(RATE) OR Keyword_Set(SDEV) OR Keyword_Set(LAYER) THEN Message, 'no Parameters allowed in this case'
    
 
    ; generate new spiketimes if needed
    IF (Input.time MOD Input.bins) EQ Input.bins/2 THEN BEGIN
       IF Input.type EQ 'Gauss' THEN Input.spike = Input.time + Input.bins/2 + Input.sdev*RandomN(seed, Input.size)
-      IF Input.type EQ 'Const' THEN Input.spike = Input.time + Input.bins/2 + Input.sdev*RandomU(seed, Input.size)
+      IF Input.type EQ 'Const' THEN Input.spike = Input.time + Input.sdev*RandomU(seed, Input.size)
    END
    
    
