@@ -51,6 +51,9 @@
 ;
 ;
 ;     $Log$
+;     Revision 1.7  2000/06/27 16:12:17  saam
+;           + changed from print to console
+;
 ;     Revision 1.6  2000/01/27 10:50:30  saam
 ;           delete modification history from doc header
 ;
@@ -91,7 +94,7 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
                 sim_time : .0d       ,$
                 myop     : opID(op)   $
                }
-         print,'IFTEMPLATE2: initialized'         
+         console, 'IFTEMPLATE2: initialized'         
       END
       
       ; STEP
@@ -109,15 +112,15 @@ FUNCTION IFtemplate2, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_
       
       ; FREE
       2: BEGIN
-         print,'IFTEMPLATE2: done'
+         console, 'IFTEMPLATE2: done'
       END 
 
       ; PLOT
       3: BEGIN
-         print, 'IFTEMPLATE2: display mode not implemented, yet'
+         console, 'IFTEMPLATE2: display mode not implemented, yet'
       END
       ELSE: BEGIN
-         Message, 'IFTEMPLATE2: unknown mode'
+         console, 'IFTEMPLATE2: unknown mode', /FATAL
       END
    ENDCASE 
    Handle_Value, _TV, TV, /NO_COPY, /SET
