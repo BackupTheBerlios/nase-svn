@@ -14,7 +14,6 @@
 ;  with gx,gy cells in each direction. in units of these grid cells
 ;  one may specifiy plotting regions...
 ;
-;  Example:  best viewed with monospaced font ;-)
 ;
 ;*  ------------------------------------------------------ Window
 ;*  -                                                    -
@@ -94,6 +93,8 @@
 ; SEE ALSO:
 ;  <A>gridsetwindow</A>
 ;-
+
+
 function gridinit, REGION=_region, GRID=_grid, WINS=wins
 
 default, _region, [0., 0., 0.6, 0.6]
