@@ -1,0 +1,313 @@
+%
+% FILE:     cvs (Master)
+%
+% LOCATION: /neuro/data/simu/saam/doc/cvs/
+%
+% AUTHOR:   saam
+%
+% DATE:     Wed Oct  4 13:49:43 CEST 2000
+%
+% MODIFICATION HISTORY:
+%
+%       $Log$
+%       Revision 1.5  2002/03/12 13:03:40  alshaikh
+%             re-added file
+%
+%       Revision 1.3  2002/03/12 12:54:26  alshaikh
+%             changes
+%
+%       Revision 1.2  2000/11/16 15:48:47  saam
+%       i modified something, but what?
+%
+%       Revision 1.1  2000/10/04 12:53:35  saam
+%       prelimilary version
+%
+%
+%-
+\documentclass[12pt]{article}
+
+
+% Page Size & Formatting
+\usepackage[a4paper,dvips]{geometry}           % page layout [twoside]
+\setlength{\parindent}{0pt}                    % dont indent first paragraph
+%\renewcommand{\baselinestretch}{2.0}          % double line spacing
+%\usepackage{showlabels}                       % shows labels on side margin
+\usepackage{showkeys}                          % prints label, ref, cite and bib keys
+\usepackage{draftcopy}                         % displays draft in background of page (ps only!)
+\usepackage{changebar}                         % changebars at margin via \cbstart ... \cbend (ps only!)
+
+
+% References & Citations
+\usepackage{lastpage}                          % access last page by \pageref{LastPage}
+\usepackage[round]{natbib}                     % citestyle: Author (Year) by \cite or Author, Year with \citet
+\usepackage{prettyref}                         % generates references like Figure/Table/Equation x, instead of x 
+\newrefformat{fig}{Figure~\ref{#1}}
+\usepackage{acronym}                           % make sure acronyms are spelled out at least once
+
+% Language
+\usepackage[english]{babel}                    % set the language (german, english, ...)
+\usepackage[latin1]{inputenc}                  % allow special characters directly in source
+
+% Headers & Footers
+\usepackage{fancyheadings}                     % allows individual header and footers
+\pagestyle{fancy}
+\lhead{\tiny \$Header$ $\$}                    % include path/name/date/RCS/CVS-version in header
+\chead{}
+\rhead{}
+%\lfoot{}
+%\cfoot{}
+%\rfoot{}
+
+
+% Fonts
+%\usepackage{times}                            % use times, palatino, ...  ps-fonts instead of cm (dvi won't work!!)
+%\usepackage{soul}                             % typeset text in spaced out way via \st{...} and more
+\usepackage{SIunits}                           % use SI units by their name and produce upright greek symbols
+
+        
+% Figures & Captions
+\usepackage{graphicx}
+\usepackage[footnotesize,nooneline]{caption}
+\DeclareGraphicsRule{.tif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.gif}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.bmp}{eps}{.bb}{`convert #1 eps:-}
+\DeclareGraphicsRule{.jpg}{eps}{.bb}{`convert #1 eps:-}
+% TeX requirements for putting a figure onto a page
+% are rather strict (and therefore seldom fulfilled
+% the following command make the placement of figures
+% more sloppier
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+
+
+% Definitions
+% the way a bind figures into the document:
+\newcommand{\myfig}[5]{\begin{figure}[tbh]\begin{center}\includegraphics[#3]{#2}\caption{\label{#1}{\sc#4.} #5}\end{center}\end{figure}}
+
+
+% define an acronym by: 
+%   \acrodef{CCH}{cross coincidence histogram} 
+% following commands produce the shown output:
+%   \ac{CCH}  -> cross coincidence histogram (CCH)  % for the first appearance 
+%   \ac{CCH}  -> CCH                                % any further appearance
+%   \acf{CCH} -> cross coincidence histogram (CCH)  % always
+%   \acl{CCH} -> cross coincidence histogram        % always
+%   \acs{CCH} -> CCH                                % always
+% you can also make a list of acronyms (see documentation)
+
+
+% integrate figures by:
+%   \myfig{label}{filename}{width,height}{short-title}{description}
+
+
+\begin{document}
+
+\begin{center}
+{\Huge\textbf{Concurrent Versions System}}\\[2cm]
+Version: \$Id$ $\$ \\[0.5cm]
+\end{center}
+This document is a very simple and short introduction to CVS. It
+is written for people working with the NASE/MIND system. Please submit
+notes, comments and corrections.
+
+
+\tableofcontents
+
+
+
+
+
+
+
+
+\section{Other Info}
+
+
+
+\section{Installation}
+
+\subsection{Unix}
+
+Set the CVS-Root-Directory to the following location
+\begin{verbatim}
+bash: export CVSROOT=:ext:username@neuro:/vol/neuro/nase/IDLCVS
+      export CVS_RSH=ssh
+tcsh: setenv CVSROOT :ext:username@neuro:/vol/neuro/nase/IDLCVS
+      export CVS_RSH ssh
+\end{verbatim}
+
+
+\subsection{Windows}
+NASE unter Windows-NT installieren:
+
+* WinCvs starten
+
+* Menü: CvsAdmin|Preferences...|General:
+  Enter the CVSROOT: username@neuro:/vol/neuro/nase/IDLCVS eintragen
+  Authentication: "passwd" file on the cvs server
+
+* CvsAdmin|Login...
+  (Unix-)Passwort eingeben
+  wenn erfolgreich, dann kommt folgende Rückmeldung:
+
+     cvs login
+     (Logging in to michler@neuro)
+
+     *****CVS exited normally with code 0*****
+
+* CvsAdmin|Checkout module...
+  Dialogfenster: zunächst Verzeichnis angeben, wo NASE installiert
+  werden soll
+  nächstes Dialogfenster: unter Checkout settings
+    Enter the module name and path on the server: "nase" auswählen
+  hier besteht nochmals die Möglichkeit, das Verzeichnis auszuwählen
+  dann auf OK klicken.
+
+* unter Systemsteuerung|System|Umgebung Benutzervariable anlegen:
+  Variable = NASEPATH
+  Wert     = [hier den Pfad eintragen, unter dem NASE installiert wurde]
+
+* in IDL: unter File|Preferences...|Path den Nase-Pfad eintragen
+
+* in IDL: unter File|Preferences...|Startup [Pfad\]nase\misc\startup
+eintragen
+
+* IDL neu starten
+
+\section{Basic Actions}
+
+\subsection{Create a local working copy}
+
+Change to an arbitrary location in your home directory, where you want to place the copy of the repository. Type 
+\begin{verbatim}
+cvs checkout nase; cvs checkout mind; cvs checkout mind
+\end{verbatim}
+
+
+\subsection{Update your working copy}
+If you have already checked out a working copy, it may that it is outdated, because other users have 
+added new routines, new features to existing routines or simply bugfixed some code. To get update to
+date just change into a module (\texttt{nase, mind} or \texttt{doc}) and type
+\begin{verbatim}
+  cvs update -d
+\end{verbatim}
+The \texttt{-d} flag ensures, that new directories are also create in your working copy. This update
+is non-destructive: your local modification will be preserved.      
+
+
+\subsection{How to modify a file}
+
+The first thing you should do, is to look if other users already work on the file, you are inteding to change.
+This is done via
+\begin{verbatim}
+cvs editors
+\end{verbatim}
+in the directory, where your file resides. If nobody edits the file, you can tell other to leave their
+hands off that file by
+\begin{verbatim}
+cvs edit filename
+\end{verbatim}
+Your formerly write-protected version of the file is now writable. If you are finished with
+editing, and notice that your changes are nonsense, you can undo your changes and revert to the previous 
+version by
+\begin{verbatim}
+cvs unedit filename
+\end{verbatim}
+If your changes are all right, and tested you can make the new version visible to all others by
+\begin{verbatim}
+cvs commit filename
+\end{verbatim}
+
+
+\subsection{Adding new files}
+
+To add a new file to the repository, just create it at the location, where it should
+reside. Type
+\begin{verbatim}
+cvs add filename
+\end{verbatim}
+To confirm this add, you have to type an additional
+\begin{verbatim}
+cvs commit filename
+\end{verbatim}
+
+
+\subsection{Deleting the whole working copy}
+Sometimes it is useful to delete your local working copy, perhaps because you want to
+change its location on your local harddisk. This is done using
+\begin{verbatim}
+cvs release -d nase
+\end{verbatim}
+This command ensures, that you do not accidentially erase some of your local modifications. Please
+don't just move the working copy, because this confuses CVS.
+
+
+
+\section{Working with Tags and Releases}
+
+
+\subsection{How to create a release}
+Functionality and calling conventions of several routines will change
+in time. Therefore old simulations may not work together with new versions
+of some files. Of you can retrieve the old versions of the files but what
+was their revision number? Remember, that every file has its individual
+revision number. To restore the complete status of a repository or a sample of files, 
+it it possible to create symbolic revision names. This works for single files
+\begin{verbatim}
+cvs tag super-version-name filename
+\end{verbatim}
+or for a whole directory:
+\begin{verbatim}
+cvs tag super-version-name .
+\end{verbatim}
+The tag names must not contain '\$ , . : ; @'.
+
+
+\subsection{How to view existing tags}
+Existing tags, as well as gerneral informations the as file can be displayed
+via
+\begin{verbatim}
+cvs status -v filename
+\end{verbatim}
+
+
+\subsection{Retrieving a specific release}
+\begin{verbatim}
+cvs checkout -r release-5-9-97 nase
+\end{verbatim}
+grabs the complete nase module at the state of 5-9-1997. Another
+possibility to checkout certain files is to specifiy the date:
+\begin{verbatim}
+cvs checkout -D date-string module_or_dir_or_file
+\end{verbatim}
+
+The \texttt{date-string} may be
+
+%<P>Als Datum-String sind Sachen wie</P>
+
+%<UL>
+%<P>'500000 seconds ago', 'last year', 'yesterday', 'January 23, 1987 10:05pm'</P>
+%</UL>
+
+%<P>erlaubt.</P>
+
+%<H2><A NAME="Weitere Infos"></A>Weitere Infos</H2>
+
+%<UL>
+%<LI>Nach dem ersten Checkout gibt es eine IDL-Routine names CVS, die eine
+%einfache graphische Schnittstelle zur Verf&uuml;gung stellt.</LI>
+
+%<LI><A HREF="http://www.cyclic.com/cyclic-pages/CVS-sheet.html">Allgemein</A></LI>, <A HREF="http://www.loria.fr/~molli/cvs-index.html">Auch Allemein</A> 
+
+%<LI><A HREF="http://papaya.nosc.mil/docs/cvstraining/cvstrain.html">Training
+%Manual</A></LI>
+
+%<LI>Manual Pages: <A HREF="http://neuro.physik.uni-marburg.de/cgi-bin/man2html.pp?cgi_command=cvs&cgi_section=1&cgi_keyword=m">cvs(1),
+%</A><A HREF="http://neuro.physik.uni-marburg.de/cgi-bin/man2html.pp?cgi_command=cvs&cgi_section=5&cgi_keyword=m">cvs(5)</A></LI>
+
+%<LI>Manual als <A HREF="cvs.ps">Postscript</A></LI>
+%</UL>
+
+
+\end{document}
