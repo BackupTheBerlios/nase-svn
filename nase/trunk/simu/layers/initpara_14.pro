@@ -37,7 +37,7 @@
 ; EXAMPLE:              para14 = InitPara_14(tauf1=10.0, vs=1.0)
 ;-
 
-FUNCTION InitPara_14, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=taui2, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAPLEPERIOD=sampleperiod
+FUNCTION InitPara_14, TAUF1=tauf1, TAUF2=tauf2, TAUL=taul, TAUI1=taui1, TAUI2=taui2, VR=vr, TAUR=taur, VS=vs, TAUS=taus, TH0=th0, SIGMA=sigma, NOISYSTART=noisystart, SPIKENOISE=spikenoise, SAMPLEPERIOD=sampleperiod
 
    Default, SAMPLEPERIOD, 0.001
    deltat = SAMPLEPERIOD*1000.
