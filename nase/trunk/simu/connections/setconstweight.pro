@@ -51,6 +51,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.10  1998/11/08 17:47:01  saam
+;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
+;             + problem with NOCON corrected
+;
 ;       Revision 1.9  1998/02/05 13:16:05  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -107,12 +111,12 @@ PRO SetConstWeight, DWS, Amp, Range, $
        message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
       
       IF Keyword_Set(INVERSE) THEN BEGIN
-         SetWeight, DWS, (Amp*(Range LE Shift(Dist(th, tw), t_hs_row, t_hs_col))), $
+         SetWeight, DWS, (Amp*(Range LT ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col)))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent
       ENDIF ELSE BEGIN
-         SetWeight, DWS, (Amp*(Range GT Shift(Dist(th, tw), t_hs_row, t_hs_col))), $
+         SetWeight, DWS, (Amp*(Range GE Round(Shift(Dist(th, tw), t_hs_row, t_hs_col)))), $
           S_ROW=S_Row, S_COL=S_Col, $
           ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
           TRANSPARENT=transparent

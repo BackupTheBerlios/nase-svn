@@ -55,6 +55,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.11  1998/11/08 17:47:02  saam
+;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
+;             + problem with NOCON corrected
+;
 ;       Revision 1.10  1998/03/19 12:01:33  kupper
 ;              Bricht jetzt bei eindimensionalen Matrizen nicht mehr ab.
 ;
@@ -143,8 +147,8 @@ PRO SetDelay, DW, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
           t_col = LayerCol(INDEX=t_index, WIDTH=tw, HEIGHT=th)
        end
        if keyword_set(ALL) then begin
-          Default, LWX, DW.source_w/float(tw)
-          Default, LWY, DW.source_h/float(th)
+          Default, LWX, sw/float(tw)
+          Default, LWY, sh/float(th)
 
           for x=-t_col, tw-1-t_col do begin
              for y=-t_row, th-1-t_row do begin
@@ -193,7 +197,7 @@ PRO SetDelay, DW, Delay, S_ROW=s_row, S_COL=s_col, S_INDEX=s_index,  $
                    D(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(NoRot_Shift(Delay, round(LWY*y), round(LWX*x), WEIGHT=TRUNC_VALUE))(maske)
                 endif else begin ;no Truncate
                    if count ne -1 then maske = where(Shift(boolmaske, round(LWY*y), round(LWX*x) )) ;hat transparente stellen 
-                   D(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)
+                   IF (size(maske))(0) NE 0 THEN D(maske, Layerindex(ROW=y+s_row, COL=x+s_col, WIDTH=sw, HEIGHT=sh) )=(Shift(Delay, round(LWY*y), round(LWX*x) ))(maske)
                 endelse
              endfor
           endfor

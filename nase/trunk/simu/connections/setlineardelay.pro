@@ -52,6 +52,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.6  1998/11/08 17:47:03  saam
+;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
+;             + problem with NOCON corrected
+;
 ;       Revision 1.5  1998/02/05 13:16:08  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -93,7 +97,6 @@ Pro SetLinearDelay, DWS, Amp, Range, MIN=min, $
    Default, Amp, 1
    Default, min, 0
    Default, trunc_value, Amp
-
    If set(s_row) or set(s_col) or set(t_hs_row) or set(t_hs_col) then begin ;Wir definieren TOS:
    
       if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $

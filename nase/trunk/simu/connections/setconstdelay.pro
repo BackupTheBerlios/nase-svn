@@ -46,6 +46,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 1.7  1998/11/08 17:47:00  saam
+;             + problems with TARGET_TO_SOURCE and SOURCE_TO_TARGET corrected
+;             + problem with NOCON corrected
+;
 ;       Revision 1.6  1998/02/05 13:16:04  saam
 ;             + Gewichte und Delays als Listen
 ;             + keine direkten Zugriffe auf DW-Strukturen
@@ -81,9 +85,10 @@
 ;-
 
 Pro SetConstDelay, DWS, Amp, Range, $
-                       S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
-                       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, INVERSE=inverse,$
-                       TRANSPARENT=transparent
+                   S_ROW=s_row, S_COL=s_col, T_HS_ROW=t_hs_row, T_HS_COL=t_hs_col, $
+                   T_ROW=t_row, T_COL=t_col, S_HS_ROW=S_hs_row, S_HS_COL=S_hs_col, $
+                   ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, INVERSE=inverse,$
+                   TRANSPARENT=transparent
 
    tw = DWDim(DWS, /TW)
    th = DWDim(DWS, /TH)
@@ -93,14 +98,41 @@ Pro SetConstDelay, DWS, Amp, Range, $
    Default, Range, th/6  
    Default, Amp, 1
 
-   IF Keyword_Set(inverse) THEN BEGIN
-      SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
-       Amp*(Range LE Shift(Dist(th, tw), t_hs_row, t_hs_col)), $
-       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
-   END ELSE BEGIN
-      SetDelay, DWS, S_ROW=s_row, S_COL=s_col, $
-       Amp*(Range GT Shift(Dist(th, tw), t_hs_row, t_hs_col)), $
-       ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, TRANSPARENT=transparent
-   END
+   IF set(s_row) OR set(s_col) OR set(t_hs_row) OR set(t_hs_col) THEN BEGIN ;Wir definieren TOS:
+      
+      if not(set(s_row)) or not(set(s_col)) or not(set(t_hs_row)) or not(set(t_hs_col)) then $
+       message, 'Zur Definition der Source->Target Verbindungen bitte alle vier Schlüsselworte S_ROW, S_COL, T_HS_ROW, T_HS_COL angeben!'
+      
+      IF Keyword_Set(inverse) THEN BEGIN
+         SetDelay, DWS, Amp*(Range LT ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col))),$
+          S_ROW=s_row, S_COL=s_col, $
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,$
+          TRANSPARENT=transparent
+      END ELSE BEGIN
+         SetDelay, DWS, Amp*(Range GE ROUND(Shift(Dist(th, tw), t_hs_row, t_hs_col))),$
+          S_ROW=s_row, S_COL=s_col, $
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value,$
+          TRANSPARENT=transparent
+      END
+
+   ENDIF ELSE BEGIN             ; Wir definieren FROMS:
+      
+      if not(set(t_row)) or not(set(t_col)) or not(set(s_hs_row)) or not(set(s_hs_col)) then $
+       message, 'Zur Definition der Target->Source Verbindungen bitte alle vier Schlüsselworte T_ROW, T_COL, S_HS_ROW, S_HS_COL angeben!'
+      
+      IF Keyword_Set(inverse) THEN BEGIN
+         SetDelay, DWS, T_ROW=t_row, T_COL=t_col, $
+          Amp*((Range LE Shift(Dist(sh, sw), s_hs_row, s_hs_col))), $
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+          TRANSPARENT=transparent
+      END ELSE BEGIN
+         SetDelay, DWS, T_ROW=t_row, T_COL=t_col, $
+          Amp*(Range GT Shift(Dist(sh, sw), s_hs_row, s_hs_col)), $
+          ALL=all, LWX=lwx, LWY=lwy, TRUNCATE=truncate, TRUNC_VALUE=trunc_value, $
+          TRANSPARENT=transparent
+      ENDELSE 
+      
+      
+   ENDELSE 
 
 END
