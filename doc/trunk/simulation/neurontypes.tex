@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.4  2004/09/16 14:00:53  thiel
+%          Update: added types 12 and 14.
+%
 %       Revision 1.3  2001/06/12 13:42:10  thiel
 %          Added GRNeurons to known types.
 %
@@ -305,5 +308,37 @@ Version: \$Id$ $\$
 \item[Output:] \texttt{m = f * (1 + ((l1 - l2) > 0)) - i, o = m GE (s + th0)}
 
 \item[Comments:] SMMN -taul +taul1 +taul2 
+\end{description}
+
+
+
+\section{Shunting Marburg Model Neuron}
+\begin{description}
+\item[Type:] '12'
+
+\item[Parameters:] tauf, taul, taui, taux, vs, taus, th0, sigma, noisystart, 
+              spikenoise
+
+\item[Synapses:] feeding, linking, inhibition, shunting
+
+\item[Output:] \texttt{f = f * exp(-1/tauf * sqrt((1-x) > 0.0)), m = f * (1 + l) - i, o = m GE (s + th0)}
+
+\item[Comments:] SMMN +taux 
+\end{description}
+
+
+
+\section{Two Dendrite Neuron}
+\begin{description}
+\item[Type:] '14'
+
+\item[Parameters:] tauf1, tauf2, taul, taui1, taui2, vs, taus, vr,
+                   taur, th0, sigma, noisystart, spikenoise
+
+\item[Synapses:] feeding1, feeding2, linking, inhibition1, inhibition2
+
+\item[Output:] \texttt{m = (f2 + (1+l) * (f1-i1) / (1+i2)), o = m GE (r+ s + th0)}
+
+\item[Comments:] 
 \end{description}
 \end{document}
