@@ -2,30 +2,30 @@
 ; NAME:                  PowerSpec
 ;
 ; PURPOSE:               Berechnet das Powerspektrum aus einer Zeitreihe
-;                        + Zeitreihe muss eine Aufloesung von 1 BIN haben (bei Marburger Modellneuronen eh nur moeglich!)
-;                        + gefenstert wird delaultmaessig nicht, optional ist ein Hamming-Fenster moeglich 
+;                        + Zeitreihe muss eine Aufloesung von 1 BIN haben 
+;                           (bei Marburger Modellneuronen eh nur moeglich!)
+;                        + gefenstert wird delaultmaessig nicht, optional 
+;                           ist ein Hamming-Fenster moeglich 
 ;
-; CATEGORY:              STAT
+; CATEGORY:              STATISTICS
 ;
-; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING] )
+; CALLING SEQUENCE:      ps = PowerSpec( series [,xaxis] [,/HAMMING][,/DOUBLE] )
 ;
-; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) mit mind. 10 Elementen
+; INPUTS:                series : eine 1-dimensionale Zeitreihe (Zeitaufloesung 1 BIN) 
+;                                  mit mind. 10 Elementen
 ;
-; OPTIONAL INPUTS:       ---
-;
-; KEYWORD PARAMETERS:    HAMMING : vor der Berechnung des Spektrums wird mit der Hamming-Funktion gefenstert (siehe IDL-Hilfe)
+; KEYWORD PARAMETERS:    HAMMING: vor der Berechnung des Spektrums wird mit der 
+;                                  Hamming-Funktion gefenstert (siehe IDL-Hilfe)
+;                        DOUBLE:  rechnet mit doppelter Genauigkeit (dies ist
+;                                  erst ab IDL-Version 4.0 moeglich)
 ;
 ; OUTPUTS:               ps      : das berechnete Powerspektrum
 ;
 ; OPTIONAL OUTPUTS:      xaxis   : gibt die zu ps entsprechenden Frequenzwerte zurueck
 ;
-; COMMON BLOCKS:         ---
-;
 ; SIDE EFFECTS:          Falls xaxis uebergeben wird, wird es neu gesetzt
 ;
 ; RESTRICTIONS:          series muss mind. 10 Elemente enthalten
-;
-; PROCEDURE:             ---
 ;
 ; EXAMPLE:          
 ;                        f1 = 3
@@ -55,7 +55,7 @@
 ;		Schon vorher bestehende Funktion dokumentiert und in den CVS-Baum hinzugefuegt
 ;
 ;-
-FUNCTION PowerSpec, series, xaxis, hamming=HAMMING
+FUNCTION PowerSpec, series, xaxis, hamming=HAMMING, DOUBLE=Double
    
    IF (N_PARAMS() GT 2) OR (N_Params() LT 1) THEN Message, 'wrong number of arguments'
    IF (Size(series))(0) NE 1                 THEN Message, 'wrong format for signal'
@@ -65,6 +65,8 @@ FUNCTION PowerSpec, series, xaxis, hamming=HAMMING
       Print, 'PowerSpec WARNING: time series to short'
       RETURN, -1
    END
+
+   Default, Double, 0
       
    SamplingPeriod = 0.001       ; 1 ms 
    SamplingFreq   = 1.0 / SamplingPeriod
@@ -81,7 +83,8 @@ FUNCTION PowerSpec, series, xaxis, hamming=HAMMING
       HammingNorm = 1.0
    END
    
-   PSpec = FFT(Series0,-1, /DOUBLE)
+   IF Double THEN PSpec = FFT(Series0,-1, /DOUBLE) $
+             ELSE PSpec = FFT(Series0,-1)
    PSpec = ABS( PSpec*CONJ(PSpec) ) * N / HammingNorm
    PSpec = 2*PSpec(0:N/2-1) ; use the symmetry
    PSpec(0) = PSpec(0) + Median^2
