@@ -126,6 +126,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.53  1999/09/22 09:08:31  kupper
+;     Added NEUTRAL Keyword in PlotTvScl_update (forgotten).
+;     Corrected minor bug in legend scaling.
+;
 ;     Revision 2.52  1999/09/22 08:54:07  kupper
 ;     Added hyperling.
 ;
@@ -365,6 +369,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
    default, INTERP, 0
    default, MINUS_ONE, 0
    default, COLORMODE, 0
+   default, NEUTRAL, 0
 
 ; copying of _W is no longer necessary (it is done by
 ; PlotTvScl_update), R Kupper, Sep 22 1999
@@ -549,6 +554,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
 ; Keywords to be passed to PlotTvScl_update:
                order   : ORDER, $
                nase    : NASE, $
+               neutral : NEUTRAL, $
                noscale : NOSCALE, $
                polygon : POLYGON, $
                top     : TOP, $
@@ -556,7 +562,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
                interp  : INTERP, $
               minus_one: MINUS_ONE, $
               colormode: COLORMODE, $
-              setcol  : SETCOL}
+               setcol  : SETCOL}
 
    Get_Position = [(!X.Window)(0), (!Y.Window)(0), (!X.Window)(1), (!Y.Window)(1)]
 
@@ -591,8 +597,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, CHARSIZE=Charsize, $
              /Vertical, /Center, COLOR=sc
          END
       END  ELSE BEGIN; No-NASE
-         Default, LEG_MAX, MAX(w)
-         Default, LEG_MIN, MIN(w)
+         Default, LEG_MAX, MAX(_w)
+         Default, LEG_MIN, MIN(_w)
          IF Keyword_Set(NEUTRAL) THEN BEGIN
             IF (MaxW LT 0) OR (MinW LT 0) THEN BEGIN
                LEG_MAX = MAX([ABS(MaxW),ABS(MinW)])

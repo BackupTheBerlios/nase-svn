@@ -8,25 +8,11 @@
 ; CATEGORY: GRAPHICS / GENERAL
 ;
 ; CALLING SEQUENCE: PlotTvScl_update, Array 
-;                             [, XNorm] [, YNorm]
-;                             [, XTITLE=Abszissentext] [,YTITLE=Ordinatentext]
-;                             [, CHARSIZE=Schriftgroesse]
-;                             [, /FULLSHEET]
 ;                             [, /NOSCALE]
-;                             [, /LEGEND]
 ;                             [, /ORDER]
 ;                             [, /NASE]
-;                             [, XRANGE=xrange] [, YRANGE=yrange]
-;                             [, GET_POSITION=PlotPosition]
-;                             [, GET_COLOR=Farbe]
-;                             [, GET_XTICKS=XTicks]
-;                             [, GET_YTICKS=YTicks]
-;                             [, GET_PIXELSIZE=Pixelgroesse]
-;                             [, LAGMARGIN=LEGMARGIN]
-;                             [, /NEUTRAL]
 ;                             [, /POLYGON]
 ;                             [, CUBIC=cubic] [, /INTERP] [, /MINUS_ONE]
-;                             [, LEG_MAX=leg_max] [, LEG_MIN=leg_min]
 ;                             [, COLORMODE=+/-1] [, SETCOL=0] [, PLOTCOL=PlotColor]
 ;
 ; INPUTS: Array : klar!
@@ -104,6 +90,10 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.2  1999/09/22 09:08:31  kupper
+;     Added NEUTRAL Keyword in PlotTvScl_update (forgotten).
+;     Corrected minor bug in legend scaling.
+;
 ;     Revision 2.1  1999/09/22 08:44:57  kupper
 ;     Ausgelagert aus PlotTvScl.
 ;     Kann nun zum updaten von PlotTvScl-Graphiken benutzt werden.
@@ -111,7 +101,7 @@
 ;-
 
 PRO PlotTvscl_update, _W, Info, $
-             ORDER=Order, NASE=Nase, NOSCALE=NoScale, $
+             ORDER=Order, NASE=Nase, NEUTRAL=neutral, NOSCALE=NoScale, $
              POLYGON=POLYGON,$
              TOP=top,$
              CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, $
@@ -131,6 +121,7 @@ PRO PlotTvscl_update, _W, Info, $
    Default, MINUS_ONE, Info.minus_one
    Default, COLORMODE, Info.colormode
    Default, SETCOL, Info.setcol
+   Default, NEUTRAL, Info.neutral
 
    ;-----Sichern der urspruenglichen Device-Parameter
 ;   oldRegion   = !P.Region
