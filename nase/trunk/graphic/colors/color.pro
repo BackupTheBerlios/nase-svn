@@ -12,6 +12,8 @@
 ;  Sets a color in the color table by specifying color name.
 ;  This routine was originally written by R. Sterner,
 ;  Johns Hopkins University Applied Physics Laboratory.
+;  Since this is a low level routine, you probably want to use <A>RGB</A>,
+;  instead. 
 ;
 ; CATEGORY:
 ;  Color
