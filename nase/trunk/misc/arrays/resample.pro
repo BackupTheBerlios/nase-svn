@@ -22,12 +22,15 @@
 ;  Image
 ;
 ; CALLING SEQUENCE:
-;*result = Resample( image, xsize, ysize )
+;*result = Resample( image, xsize, ysize [,/EDGE_{TRUNCATE|WRAP}] )
 ;
 ; INPUTS:
 ;  image:: image to bre resampled. Must be a two-dimensional floating
 ;          point array.
 ;  {x|y}size:: new x and y size of the returned image.
+;
+; INPUT KEYWORDS:
+;  EDGE_{TRUNCATE|WRAP}: passed to <A>Subsample()</A> for convolution, see IDL's <C>CONVOL</C>.
 ;
 ; EXAMPLE:
 ;*> utvscl, alison()
@@ -40,7 +43,7 @@
 ;  IDL's <C>CONGRID</C>, IDL's <C>REBIN</C>, <A>Subsample</A>
 ;-
 
-Function Resample, A, x, y
+Function Resample, A, x, y, edge_truncate=edge_truncate, edge_wrap=edge_wrap
 
    dim = Size(A, /Dimensions)
 
@@ -50,19 +53,19 @@ Function Resample, A, x, y
                                                            /Minus_One, $
                                                            Cubic=-0.5)
    
-   if (x le dim[0]) and (y le dim[1]) then return, Subsample(A, [dim[0]/float(x), dim[1]/float(y)])
+   if (x le dim[0]) and (y le dim[1]) then return, Subsample(A, [dim[0]/float(x), dim[1]/float(y)], edge_truncate=edge_truncate, edge_wrap=edge_wrap)
 
    ;; now the more complicated case: shrink one dimension, extend
    ;;                                other:
    
    if (x le dim[0]) and (y ge dim[1]) then begin
       tmp = Congrid(A, dim[0], y, /Minus_One, Cubic=-0.5)
-      return, Subsample(Temporary(tmp), [dim[0]/float(x), 1.0])
+      return, Subsample(Temporary(tmp), [dim[0]/float(x), 1.0], edge_truncate=edge_truncate, edge_wrap=edge_wrap)
    endif
 
    if (x ge dim[0]) and (y le dim[1]) then begin
       tmp = Congrid(A, x, dim[1], /Minus_One, Cubic=-0.5)
-      return, Subsample(Temporary(tmp), [1.0, dim[1]/float(y)])
+      return, Subsample(Temporary(tmp), [1.0, dim[1]/float(y)], edge_truncate=edge_truncate, edge_wrap=edge_wrap)
    endif
 
    ;; if we reach this point, something went wrong:
