@@ -110,6 +110,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.24  2000/08/31 10:23:26  kupper
+;        Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
+;
 ;        Revision 1.23  2000/07/24 13:13:17  saam
 ;               + true color display are now similarly handled
 ;                 as color table displays, because using DECOMPOSED=0
@@ -236,8 +239,8 @@ Common common_RGB, My_freier_Farbindex
    if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
 
 
-   ;; ---- X or WIN, and not pseudocolor: ---------------------------------------
-   IF ((!D.Name EQ 'X') OR (!D.Name EQ 'WIN')) AND NOT Pseudocolor_Visual() THEN BEGIN
+   ;; ---- Screen (X, MAC or WIN), and not pseudocolor: ---------------------------------------
+   IF ((!D.Name EQ ScreenDevice()) AND NOT Pseudocolor_Visual() THEN BEGIN
       SetColorIndex, SetIndex, R, G, B  
    ENDIF ELSE BEGIN
    ;; ---- all other devices: -------------------------------------------------   

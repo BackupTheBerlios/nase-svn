@@ -25,6 +25,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.2  2000/08/31 10:23:26  kupper
+;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
+;
 ;     Revision 2.1  1997/11/05 09:54:02  saam
 ;           der Klapperstorch hat's gebracht
 ;
@@ -32,7 +35,7 @@
 ;-
 FUNCTION CIndex2RGB, cindex
 
-   IF !D.Name EQ 'X' AND !D.N_COLORS EQ 16777216 THEN BEGIN
+   IF !D.Name EQ ScreenDevice() AND !D.N_COLORS EQ 16777216 THEN BEGIN
       b = cindex / 65536 
       g = (cindex MOD 65536)/256
       r = cindex MOD 256

@@ -58,6 +58,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  2000/08/31 10:23:28  kupper
+;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
+;
 ;     Revision 2.11  2000/08/30 22:35:29  kupper
 ;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
 ;
@@ -147,12 +150,12 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors
    IF sheet.type EQ 'ps' THEN BEGIN
       IF  sheet.open THEN BEGIN
          Device, /CLOSE
-         Set_Plot, XorWIN()
+         Set_Plot, ScreenDevice()
          sheet.open = 0
       END ELSE Print, 'CloseSheet: Sheet is not open!' 
 
    END ELSE IF sheet.type EQ 'NULL' THEN BEGIN
-      Set_Plot, XorWIN()
+      Set_Plot, ScreenDevice()
    END
       
    If Set(multi_nr) then _sheet(multi_nr) = sheet else _sheet = sheet

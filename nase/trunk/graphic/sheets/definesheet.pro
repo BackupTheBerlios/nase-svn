@@ -82,6 +82,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.19  2000/08/31 10:23:28  kupper
+;     Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
+;
 ;     Revision 2.18  2000/08/30 22:35:29  kupper
 ;     Changed Set_Plot, 'X' to Set_Plot, XorWIN().
 ;
@@ -222,7 +225,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, FILENAME=filename
                 multi    : multi        ,$
                 extra    : e            ,$
                 open     : 0 }
-      Set_Plot, XorWIN()
+      Set_Plot, ScreenDevice()
 
    END ELSE IF Keyword_Set(NULL) THEN BEGIN
      

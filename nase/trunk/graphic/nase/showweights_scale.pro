@@ -126,6 +126,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.19  2000/08/31 10:23:27  kupper
+;        Changed to use ScreenDevice() instead of 'X' in Set_Plot for platform independency.
+;
 ;        Revision 2.18  2000/04/04 12:57:46  saam
 ;              fixed 2 bugs concerning changes of color
 ;              management with true color displays and
@@ -275,7 +278,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
             endelse
 ;            endelse
          endif else uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.POS,NCOLORS=GET_MAXCOL+1;utvlct, g, g, g ;Grauwerte
-         IF (!D.NAME eq "X") THEN !P.BACKGROUND = 0 ;Index für Schwarz
+         IF (!D.NAME eq ScreenDevice()) THEN !P.BACKGROUND = 0 ;Index für Schwarz
          Set_Shading, VALUES=[0, GET_MAXCOL] ;verbleibende Werte für Shading
       Endif
       
@@ -293,7 +296,7 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
          endif else begin       ;dunkle Farbpalette
             uloadct, FILE=GetEnv("NASEPATH")+"/graphic/nase/NaseColors.tbl", !NASETABLE.NEGPOS,NCOLORS=GET_MAXCOL+1;utvlct, rotate(g, 2), g, bytarr(ts) ;Rot-Grün
          endelse
-         IF (!D.NAME eq "X") THEN !P.BACKGROUND = GET_MAXCOL/2  ;Index für Schwarz 
+         IF (!D.NAME eq ScreenDevice()) THEN !P.BACKGROUND = GET_MAXCOL/2  ;Index für Schwarz 
          Set_Shading, VALUES=[GET_MAXCOL/2, GET_MAXCOL] ;Grüne Werte für Shading nehmen
       EndIf
 
