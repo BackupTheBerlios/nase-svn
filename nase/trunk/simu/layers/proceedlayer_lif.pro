@@ -12,7 +12,7 @@
 ;  Compute output of Leaky Integrate and Fire Neurons in current
 ;  timestep. Spikes are generated if the membrane potential exceeds a
 ;  fixed threshold. After spike generation, the membrane potential is
-;  reset to 0.
+;  reset by setting feeding, linking and inhibition to 0.
 ;*  m = f * (1 + l) - i
 ;*  o = m GE th0 
 ;  Input to the neurons has to be transmitted before calling
@@ -72,19 +72,16 @@ COMMON common_random, seed
    Handle_Value, Layer.O, oldOut
    IF oldOut(0) GT 0 THEN BEGIN
       oldOut = oldOut(2:oldOut(0)+1)
-;      IF Keyword_Set(CORRECT) THEN BEGIN
-;         Layer.S(oldOut) = Layer.S(oldOut) + Layer.para.vs/Layer.para.taus
-;      END ELSE BEGIN
-         Layer.F(oldOut) = 0.
-;      END
+      Layer.F(oldOut) = 0.
+      Layer.L(oldOut) = 0.
+      Layer.I(oldOut) = 0.
    END
 
    
    Layer.M = Layer.F*(1.+Layer.L)-Layer.I
    
    IF Layer.para.sigma GT 0.0 THEN Layer.M = Layer.M + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
-
-   layer.m = layer.m <layer.para.th0 >0.
+   
 
    ; do some spike noise by temporarily incresing membrane potential
 ;   spikenoise = WHERE(RandomU(seed, Layer.w*Layer.h) LT Layer.para.sn, c)
