@@ -1,23 +1,38 @@
-;------------------------------------------------------------------------
+;+
+; NAME: XMatEdit
 ;
-;       Name               :
-;       Projekt            :
+; PURPOSE: Interaktives Editieren eines zweidimensionalen Arrays
 ;
-;       Autor              : RÅdiger Kupper
+; CATEGORY: Misc, Arrays
 ;
-;       erstellt am        : 
-;       letze Modifikation :
+; CALLING SEQUENCE: XMatEdit, Matrix, [GROUP=Base_ID]
 ;
-;       Funktion           :
+; INPUTS: Matrix: klar!
 ;
-;------------------------------------------------------------------------
-
-
-; Interaktives Editieren eines zweidimensionalen Arrays
-
+; OPTIONAL Inputs: ID eines Wisgets, das als Parent dienen soll.
+;
+; COMMON BLOCKS: XMAT_Widgets
+;
+; SIDE EFFECTS: Die Matrix wird ver‰ndert.
+;
+; RESTRICTIONS: Matrix muﬂ definiert und zweidimensional sein!
+; 
+; EXAMPLE: m = Indgen(10,10)
+;          XMatEdit, m
+;          Print, m
+;
+; SEE ALSO: XVarEdit (Standard IDL-Routine)
+;
+; MODIFICATION HISTORY:
+;
+;        $Log$
+;        Revision 1.2  1998/02/19 15:31:26  kupper
+;               Header geschrieben.
+;
+;-
 
 PRO MAIN13_Event, Event          
-Common Widgets, Matrix, Felder, MSize        
+Common XMAT_Widgets, Matrix, Felder, MSize        
             
  WIDGET_CONTROL,Event.Id,GET_UVALUE=Ev          
           
@@ -41,7 +56,7 @@ END
           
           
 PRO XMATEDIT, M, GROUP=Group        
-Common Widgets, Matrix, Felder, MSize  
+Common XMAT_Widgets, Matrix, Felder, MSize  
   Matrix=M      
   MSize = Size(M)         
   Felder = lonarr(MSize(1),MSize(2))         
@@ -87,7 +102,7 @@ Common Widgets, Matrix, Felder, MSize
          
 WIDGET_CONTROL, MAIN13, /REALIZE          
           
-  XMANAGER, 'MAIN13', MAIN13  
+  XMANAGER, 'XMatEdit', MAIN13  
     
   M=Matrix                  
 END          
