@@ -37,6 +37,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.6  1998/11/08 14:51:40  saam
+;             + video-structure made a handle
+;             + ZIP-handling replaced by UOpen[RW]
+;
 ;       Revision 2.5  1998/05/13 12:52:08  kupper
 ;              Schreibfehler.
 ;
@@ -60,7 +64,11 @@
 ;
 ;-
 
-Pro Rewind, Video, FrameNumber, VERBOSE=verbose, APPEND=append
+Pro Rewind, _Video, FrameNumber, VERBOSE=verbose, APPEND=append
+
+   ON_ERROR, 2
+
+   Handle_Value, _Video, Video, /NO_COPY
 
    If Keyword_Set(APPEND) then begin
       If Video.VideoMode ne "EDIT" then message, "Das Video ist nicht zum Editieren geöffnet - kein Anhängen möglich!"
@@ -77,4 +85,7 @@ Pro Rewind, Video, FrameNumber, VERBOSE=verbose, APPEND=append
    endif else begin
       message, /inform, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(Video.FramePointer), 1)+'.'
    endelse
+
+   Handle_Value, _Video, Video, /NO_COPY, /SET
+
 End

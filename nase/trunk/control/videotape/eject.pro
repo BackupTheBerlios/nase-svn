@@ -26,6 +26,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.8  1998/11/08 14:51:36  saam
+;             + video-structure made a handle
+;             + ZIP-handling replaced by UOpen[RW]
+;
 ;       Revision 2.7  1998/05/13 12:38:20  kupper
 ;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
 ;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
@@ -47,7 +51,11 @@
 ;		Urversion
 ;
 ;-
-Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
+Pro Eject, _Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
+
+   ON_Error, 2
+
+   Handle_Value, _Video, Video, /NO_COPY
 
    If Video.VideoMode eq 'RECORD' or Video.VideoMode eq 'EDIT' then begin
       If Video.VideoMode eq 'EDIT' then writeu, Video.infounit, max([Video.FramePointer, Video.Length]) else writeu, Video.infounit, Video.FramePointer
@@ -70,16 +78,9 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
             Read, l, PROMPT="LABEL: "
          endwhile 
       endif
-      close, Video.unit
-      close, Video.infounit
-      Free_Lun, Video.unit
-      Free_Lun, Video.infounit
+      UClose, Video.unit
+      UClose, Video.infounit
       
-      IF video.zipped THEN begin
-         message, /INFORM, " ...zipping..."
-         Zip, Video.filename
-         message, /INFORM, " ...done."         
-      endif
    endif else begin             ; VideoMode="PLAY"
       
       if keyword_set(VERBOSE) then begin
@@ -90,17 +91,12 @@ Pro Eject, Video, VERBOSE=verbose, NOLABEL=nolabel, SHUTUP=shutup
       endif ELSE IF NOT Keyword_Set(SHUTUP) THEN  BEGIN
          print, 'Closing Video "'+Video.title+'".'
       end
-      
-      close, Video.unit
-      Free_Lun, Video.unit
+      UClose, Video.unit
 
-      IF Video.zipped THEN begin
-         message, /INFORM, " ...zipfixing..."
-         ZipFix, Video.filename
-         if not !QUIET then print, !Key.up+"                                "+!key.up
-      endif
-         
    endelse
+
+   Handle_Value, _Video, Video, /NO_COPY, /SET
+   Handle_Free, _Video
 
 end
 

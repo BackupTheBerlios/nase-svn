@@ -76,6 +76,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.4  1998/11/08 14:51:39  saam
+;              + video-structure made a handle
+;              + ZIP-handling replaced by UOpen[RW]
+;
 ;        Revision 2.3  1998/05/03 12:56:58  kupper
 ;               HTML-Header-Bug entfernt.
 ;
@@ -90,12 +94,19 @@
 Pro Remaster, Title, SCALE=scale, $
                 PROCESS=process, p1, p2, p3, _EXTRA=_extra
 
+   ON_Error, 2
+   
    if (not set(SCALE)) and (not keyword_set(PROCESS)) then $
     message, "Bitte Skalierungsfaktor mit SCALE oder eine Funktion in PROCESS angeben!"
 
    Video = LoadVideo( Title, /EDIT, $
                       GET_SIZE=FrameSize, GET_TITLE=VideoTitle, GET_LENGTH=VideoLength)
-   Data = Assoc(Video.unit, Make_Array(SIZE=FrameSize, /NOZERO))
+
+   Handle_Value, Video, tmp, /NO_COPY
+   VU =  tmp.unit
+   Handle_Value, Video, tmp, /NO_COPY, /SET
+
+   Data = Assoc(VU, Make_Array(SIZE=FrameSize, /NOZERO))
 
    print, "   ...remastering..."
 

@@ -38,7 +38,11 @@
 ;
 ;-
 
-Function Replay, Video, Anzahl, VERBOSE=verbose
+Function Replay, _Video, Anzahl, VERBOSE=verbose
+
+   ON_Error, 2
+
+   Handle_Value, _Video, Video, /NO_COPY
 
    If Video.VideoMode ne 'PLAY' then message, 'Das Video ist nicht zur Wiedergabe geöffnet!'
 
@@ -52,6 +56,9 @@ Function Replay, Video, Anzahl, VERBOSE=verbose
 
    If keyword_set(VERBOSE) then print, 'Eine weitere Szene im großen Videodrama "'+Video.title+'": Die '+strtrim(string(Video.FramePointer-1), 1)+'.'
 
-   return, Data(Video.FramePointer-1)
+   Result = Data(Video.FramePointer-1)
+   Handle_Value, _Video, Video, /NO_COPY, /SET
+
+   return, Result
 
 End

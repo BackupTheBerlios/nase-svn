@@ -35,6 +35,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.9  1998/11/08 14:51:35  saam
+;             + video-structure made a handle
+;             + ZIP-handling replaced by UOpen[RW]
+;
 ;       Revision 2.8  1998/05/13 12:38:20  kupper
 ;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
 ;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
@@ -54,26 +58,29 @@
 ;
 ;-
 
-Function CamCord, Video, Frame, Anzahl, VERBOSE=verbose
+Function CamCord, _Video, Frame, Anzahl, VERBOSE=verbose
    
    On_Error, 2
 
-   If Video.VideoMode ne 'RECORD' and Video.VideoMode ne "EDIT" then message, 'Das Video ist nicht zum Schreiben geöffnet!'
+   Handle_Value, _Video, Video, /NO_COPY
 
+   If Video.VideoMode ne 'RECORD' and Video.VideoMode ne "EDIT" then message, 'Das Video ist nicht zum Schreiben geöffnet!'
    If a_ne(size([Frame]), Video.FrameSize) then message, 'Frame ist inkompatibel mit dem in InitVideo() angegebenen Muster!'
 
    Default, Anzahl, 1
    If Anzahl ne 1 then message, 'Das "Anzahl"-Argument ist noch nicht implementiert!'
 
    Data = Assoc(Video.unit, Make_Array(SIZE=Video.FrameSize, /NOZERO))
-
    Data(Video.FramePointer) = [Frame]
 
    Video.FramePointer = Video.FramePointer+1
 
    If keyword_set(VERBOSE) then print, 'Eine weitere Szene im großen Videodrama "'+Video.title+'": Die '+strtrim(string(Video.FramePointer-1), 1)+'.'
 
-   Return, Video.FramePointer-1
+   Result = Video.FramePointer-1
+   Handle_Value, _Video, Video, /NO_COPY, /SET
+
+   Return, Result
 
 End
 

@@ -67,6 +67,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.10  1998/11/08 14:51:37  saam
+;             + video-structure made a handle
+;             + ZIP-handling replaced by UOpen[RW]
+;
 ;       Revision 2.9  1998/03/14 13:32:45  saam
 ;             now handles zipped and non-zipped videos
 ;
@@ -102,9 +106,13 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
                     SYSTEM=system, STARRING=starring, COMPANY=company, PRODUCER=producer, YEAR=year, $
                     VERBOSE=verbose, SHUTUP=shutup, ZIPPED=zipped
 
+   On_Error, 2
+
+   ; since videos now use UOpen routines i renamed keyword ZIPPED to ZIP because of constistent keywords
+
    If not(set(Frame)) then message, 'Bitte Musterframe angeben!'
 
-   Default, zipped, 0
+   Default, ZIPPED, 0
    Default, __title, _title
    Default, __title, "The Spiking Neuron"   
    Default, system, "CVS"
@@ -135,24 +143,22 @@ Function InitVideo, Frame, _Title, TITLE=__title, $
    lyear = leer80 & strput, lyear, year
 
 
-   Get_Lun, infounit
-   openw, infounit, infoname
+   infounit = UOpenW(infoname)
    
    writeu, infounit, size([Frame])   ; Das SIZE-Array eines Frames
    writeu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
    ;später wird noch die FrameAnzahl angehängt.
    
-   Get_Lun, unit
-   openw, unit, filename
+   unit = UOpenW(filename, ZIP=ZIPPED)
 
   
-   return, {VideoMode   : 'RECORD', $
-            filename    : filename, $
-            title       : title, $
-            unit        : unit, $
-            infounit    : infounit, $
-            FrameSize   : size([Frame]), $
-            zipped      : zipped,$
-            FramePointer: 0l}
-            
+   tmp =  {VideoMode   : 'RECORD', $
+           filename    : filename, $
+           title       : title, $
+           unit        : unit, $
+           infounit    : infounit, $
+           FrameSize   : size([Frame]), $
+           FramePointer: 0l}
+           
+   RETURN, Handle_Create(!MH, VALUE=tmp, /NO_COPY)
 End

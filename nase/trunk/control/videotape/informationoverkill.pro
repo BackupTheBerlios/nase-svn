@@ -49,12 +49,17 @@ function InformationOverkill, title, $
    Default, video, 'The Spiking Neuron'
 
    vid = loadvideo(video)
+
+   Handle_Value, vid, _vid, /NO_COPY
+   VL = _vid.Length
+   Handle_Value, vid, _vid, /NO_COPY, /SET
+
    
    erg = 0
    If not KeyWord_Set(PROCESS) then begin 
-      for f=1l, vid.Length do erg = erg+replay(vid)
+      for f=1l, VL do erg = erg+replay(vid)
    endif else begin
-      for f=1l, vid.Length do if Set(_EXTRA) then begin
+      for f=1l, VL do if Set(_EXTRA) then begin
          case n_params() of
             1: erg = erg+Call_Function(process, float(replay(vid)), _EXTRA=_extra)
             2: erg = erg+Call_Function(process, float(replay(vid)), p1, _EXTRA=_extra)
@@ -73,7 +78,7 @@ function InformationOverkill, title, $
       endelse
    endelse
    
-   erg = erg/float(vid.Length)
+   erg = erg/float(VL)
 
    eject, vid
 

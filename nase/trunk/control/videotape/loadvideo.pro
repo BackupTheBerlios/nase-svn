@@ -49,6 +49,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;       $Log$
+;       Revision 2.13  1998/11/08 14:51:38  saam
+;             + video-structure made a handle
+;             + ZIP-handling replaced by UOpen[RW]
+;
 ;       Revision 2.12  1998/05/13 12:38:21  kupper
 ;              Das EDIT-Keyword in LoadVideo ist jetzt freigegeben.
 ;               Es kann zum Ändern von oder Anhängen an Videos benutzt werden.
@@ -97,6 +101,9 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
                     GET_COMPANY=get_company, GET_PRODUCER=get_producer, GET_YEAR=get_year, $
                     EDIT=edit, SHUTUP=shutup, ERROR=error
    
+
+   ON_ERROR, 2
+   
    Default, __title, _Title
    Default, __title, "The Spiking Neuron"   
    Default, error  , 0
@@ -106,16 +113,13 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    Parts = str_sep(__title, '/')
    title = Parts(n_elements(Parts)-1)
 
-   c = ZipStat(filename, ZIPFILES=zf, NOZIPFILES=nzf, BOTHFILES=bf)
-   IF nzf(0) NE '-1'  THEN zipped = 0 ELSE zipped = 1
 
    IF NOT fileExists(infoname) THEN BEGIN
       error = 1
       RETURN, -1
    END
 
-   Get_Lun, infounit
-   openr, infounit, infoname
+   infounit = UOpenR(infoname)
    
    dims = 0l & readu, infounit, dims
    rest = lonarr(dims+2) & readu, infounit, rest
@@ -176,13 +180,11 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
         print, '** The Video-Cassette is not labeled.'
       endelse
 
-      close, infounit
-      Free_Lun, infounit
+      UClose(infounit)
       return, 0
    endif
 ;------------------------------------   
-   close, infounit
-   Free_Lun, infounit
+   UClose, infounit
 
            
 
@@ -203,15 +205,10 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
    endif else IF NOT keyword_set(shutup) THEN begin
       print, 'Opening Video "'+title+'".'
    end
-   IF zipped THEN begin
-      message, /INFORM, " ...unzipping..."
-      Unzip, filename
-      if not !QUIET then print, !key.up+"                                                          "+!key.up
-   EndIf
 
-   Get_Lun, unit
+
    If Keyword_Set(EDIT) then begin
-      openu, unit, filename
+      unit = UOpenU(filename)
       VideoMode = 'EDIT'
 
       leer80 = "                                                                                "
@@ -222,32 +219,32 @@ Function LoadVideo, _Title, TITLE=__title, VERBOSE=verbose, INFO=info, $
       lproducer = leer80 & strput, lproducer, producer
       lyear = leer80 & strput, lyear, year
       
-      Get_Lun, infounit
-      openw, infounit, infoname
+      infounit = UOpenW(infoname)
       
       writeu, infounit, FrameSize ; Das SIZE-Array eines Frames
       writeu, infounit, ltitle, lsystem, lstarring, lcompany, lproducer, lyear ;Miscellaneous Info...
                                 ;später wird noch die FrameAnzahl angehängt.
       
    endif else begin
-      openr, unit, filename
+      unit = UOpenR(filename)
       VideoMode = 'PLAY'
       infounit = -1
    endelse
 
-   return, {VideoMode   : VideoMode, $
-            filename    : filename,$
-            title       : title, $
-            year        : year, $
-            company     : company, $
-            unit        : unit, $
-            infounit    : infounit, $
-            FrameSize   : FrameSize, $
-            Length      : Length, $
-            FramePointer: 0l,$
-            zipped      : zipped}
+   tmp = {VideoMode   : VideoMode, $
+          filename    : filename,$
+          title       : title, $
+          year        : year, $
+          company     : company, $
+          unit        : unit, $
+          infounit    : infounit, $
+          FrameSize   : FrameSize, $
+          Length      : Length, $
+          FramePointer: 0l}
    
-End
+   RETURN, Handle_Create(!MH, VALUE=tmp, /NO_COPY)
+
+END
 
 
 
