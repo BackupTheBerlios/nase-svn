@@ -53,7 +53,7 @@ ON_ERROR, 2
    SC = SIZE(C)
    SB = SIZE(B)
 
-   IF (NOT InSet(SB(SB(0)+1), [1,2,3])) OR (Min(B) LT 0) OR (MAX(B) GT 1) THEN Message, 'second signal has to be a spike train!'
+   IF (NOT InSet(SB(SB(0)+1), [1,2,3])) OR (Min(B) LT 0) OR (MAX(B) GT 1) THEN Console, /FATAL, 'Second signal has to be a spike train.'
 
    Default, PShift, 64
    
@@ -63,17 +63,19 @@ ON_ERROR, 2
    ;-----> AVERAGE SIGNAL C AROUND EACH SPIKE
    ;----->
 
-                                ; determine number of signals in c,
-                                ; assume first dimension as time and
-                                ; iterate over the others
-   dc = adims(c)
+   ;; determine number of signals in c,
+   ;; assume first dimension as time and
+   ;; iterate over the others
+;   dc = adims(c)
+   dc = sc(1:sc(0))
    IF N_Elements(dc) GT 1 THEN nc = PRODUCT(dc(1:N_Elements(dc)-1)) ELSE nc=1
 
-                                ; do the same for spike train(s)...
-   db = adims(b)
+   ;; do the same for spike train(s)...
+;   db = adims(b)
+   db = sb(1:sb(0))
    IF N_Elements(db) GT 1 THEN nb = PRODUCT(db(1:N_Elements(db)-1)) ELSE nb=1
 
-   IF nb NE nc THEN Console, "B and C have to have same number of iterations", /FATAL
+   IF nb NE nc THEN Console, "B and C have to have same number of iterations.", /FATAL
 
    c = REFORM(c, dc(0), nc, /OVERWRITE)
    b = REFORM(b, db(0), nb, /OVERWRITE)
@@ -89,9 +91,12 @@ ON_ERROR, 2
    END
    b = REFORM(b, db, /OVERWRITE)
    c = REFORM(c, dc, /OVERWRITE)
-   s = REFORM(S, [2*pshift+1, dc(1:N_ELEMENTS(dc)-1)])
+;   s = REFORM(S, [2*pshift+1, dc(1:N_ELEMENTS(dc)-1)])
+   IF N_Elements(dc) GT 1 THEN $
+    s = REFORM(S, [2*pshift+1, dc(1:N_ELEMENTS(dc)-1)]) $
+   ELSE $
+    s = REFORM(S, 2*pshift+1)
    
-
    t = IndGen(2*PShift+1)-PShift ; time axis is an optional output
 
    RETURN, s
