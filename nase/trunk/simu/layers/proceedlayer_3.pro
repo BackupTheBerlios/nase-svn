@@ -41,7 +41,8 @@
 ; MODIFICATION HISTORY: initial version, Mirko Saam, 22.7.97
 ;                       Ergaenzung um Rauschen des Membranpotentials, Mirko Saam, 25.7.97
 ;                       Schwelle wird jetzt erst im naechsten Zeitschritt erhoeht, Mirko Saam, 29.7.97
-;                       Zusaetzlich Lernpotential (reealisiert als Leckintegrator) Andreas. 29. Juli 97
+;                       Zusaetzlich Lernpotential (realisiert als Leckintegrator) Andreas. 29. Juli 97
+;                       geaenderter Ablauf, LP wird sofort erhoeht. Andreas. 30. Juli '97
 ;- 
 FUNCTION ProceedLayer_3, Layer, FeedingIn, LinkingIn, InhibitionIn
 
@@ -55,9 +56,7 @@ FUNCTION ProceedLayer_3, Layer, FeedingIn, LinkingIn, InhibitionIn
    Layer.L = Layer.L + LinkingIn
    Layer.I = Layer.I + InhibitionIn
    Layer.S = Layer.S + Layer.O*Layer.para.Vs
-   Layer.P = Layer.P + Layer.O*Layer.para.Vp
       
-
    Layer.M = Layer.F*(1.+Layer.L)-Layer.I + Layer.para.sigma*RandomN(seed, Layer.w, Layer.h)
    Layer.O(*) = 0
 
@@ -65,6 +64,10 @@ FUNCTION ProceedLayer_3, Layer, FeedingIn, LinkingIn, InhibitionIn
    IF (count NE 0) THEN BEGIN
       Layer.O(spike) = 1
    END
+
+   ;-----Das Lernpotential wird im gleichen Zeitschritt erhoeht wie der
+   ;-----Output selbst, das ist praktischer fuer die Lernregel
+   Layer.P = Layer.P + Layer.O*Layer.para.Vp
    
    RETURN, Layer.O
 
