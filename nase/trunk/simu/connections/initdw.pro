@@ -177,6 +177,8 @@ Function InitDW, S_LAYER=s_layer, T_LAYER=t_layer, $
          Default, learn_vp, 1.0
          lp = FltArr( t_width*t_height, s_width*s_height )
       END ELSE BEGIN
+         Default, learn_vp, 1.0
+         Default, learn_taup, 10.0
          lp = -1
       END
       
