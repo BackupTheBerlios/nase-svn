@@ -78,7 +78,7 @@ PRO InputLayer_2, Layer, FEEDING=feeding, LINKING=linking, INHIBITION=inhibition
       IF Inhibition(0,0) GT 0 THEN BEGIN
          neurons = Inhibition(0,1:Inhibition(0,0))
          IF Keyword_Set(CORRECT) THEN BEGIN
-            Layer.L(neurons) = Layer.L(neurons) + Linking(1,1:Linking(0,0))/Layer.para.taul
+            Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0))/Layer.para.taui
          END ELSE BEGIN
             Layer.I(neurons) = Layer.I(neurons) + Inhibition(1,1:Inhibition(0,0))
          END
