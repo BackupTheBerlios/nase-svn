@@ -112,6 +112,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.31  2000/10/05 17:31:10  saam
+;        just sets new color index if needed
+;
 ;        Revision 1.30  2000/10/05 16:42:44  saam
 ;        i hate this nfs stuff
 ;
@@ -264,18 +267,18 @@ if set(index)   THEN Console, "keyword INDEX is obsolete, please remove", /WARN
 
 
 
+   ;;; search if color is already in palette
+   currentColorMap = bytarr(!D.Table_Size,3) 
+   TvLCT, currentColorMap, /GET
+   matchIdx = MAX(CutSet(CutSet(WHERE(currentColorMap(*,0) EQ R), WHERE(currentColorMap(*,1) EQ G)), WHERE(currentColorMap(*,2) EQ B)))
+   IF (matchIdx GT -1) THEN RETURN, MAX(matchIdx)
+
+
+   ;;; ok, we have to set a new index
    Default, ucc, -1
-
-;   if Not(Keyword_Set(My_freier_Farbindex))or set(START) then begin
-;      Default, start, 0
-;      My_freier_Farbindex = start
-;   end
-;   if set(index) then SetIndex = index else SetIndex = My_freier_Farbindex
-
-
    ucc = (ucc + 1) MOD (!D.TABLE_SIZE - !TOPCOLOR - 1 - 2) 
-                                ; -2 protects black and white from overwrite
-
+                                ; -2 protects black and white from
+                                ; overwrite
    index_to_set = !TOPCOLOR + 1 + ucc
 
 
