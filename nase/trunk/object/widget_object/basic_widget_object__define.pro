@@ -26,7 +26,7 @@ End
 ;; ------------ Constructor & Destructor --------------------
 Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
                             _REF_EXTRA=_extra
-   message, /Info, "I am created."
+   DMsg, "I am created."
    
    If Keyword_Set(OParent) then Parent = OParent->widget()
 
@@ -52,7 +52,7 @@ Function basic_widget_object::init, PARENT=Parent, OPARENT=OParent, $
 End
 
 Pro basic_widget_object::cleanup, dummy=dummy
-   message, /Info, "I'm dying!"
+   DMsg, "I'm dying!"
    ;; destroy associated widget as well. This would lead to
    ;; infinite recursion as the widget would try to destroy the
    ;; object. Hence, remove KILL_NOTIFY Procedure from the
