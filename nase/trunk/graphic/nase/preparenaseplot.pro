@@ -5,7 +5,7 @@
 ;
 ; CATEGORY: Graphik, Darstellung
 ;
-; CALLING SEQUENCE: PrepareNASEPlot, { (Height, Width [,/CENTER]
+; CALLING SEQUENCE: PrepareNASEPlot, { (Height, Width [,/CENTER] [,/NONASE]
 ;                                             [,/X_ONLY | ,/Y_ONLY] [,GET_OLD=alteParameter])
 ;                                     | (RESTORE_OLD=alteParameter) }
 ;
@@ -21,6 +21,7 @@
 ;                              um einen halben "Pixel" verschoben).
 ;                     /?_ONLY: Parametzer werden nur für x- oder nur
 ;                              für y-Achse gesetzt.
+;                     /NONASE: Tickbeschriftungen werden IDL-üblich gesetzt.
 ;
 ; OPTIONAL OUTPUTS:      alteParameter in GET_OLD: Die Plotparameter, so, wie
 ;                                         sie vor dem Aufruf waren,
@@ -43,6 +44,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 2.2  1998/03/29 18:48:51  kupper
+;               NONASE-Keyword hinzugefügt.
+;
 ;        Revision 2.1  1998/03/29 16:11:08  kupper
 ;               Schöpfung - endlich! Oft hab ich's mir schon gewünscht...
 ;
@@ -50,7 +54,7 @@
 
 Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
                  X_ONLY=x_only, Y_ONLY=y_only, $
-                 CENTER=center
+                 CENTER=center, NONASE=nonase
 
    If Keyword_Set(RESTORE_OLD) then begin
       !X = restore_old.old_X
@@ -76,7 +80,8 @@ Pro PrepareNasePlot, Height, Width, GET_OLD=get_old, RESTORE_OLD=restore_old, $
       !Y.STYLE = 1
       !Y.TICKV = findgen(!Y.TICKS+1)*!Y.MINOR
       If Keyword_Set(CENTER) then !Y.TICKV = !Y.TICKV + 0.5
-      !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
+      If Keyword_Set(NONASE) then !Y.TICKNAME = str(indgen(!Y.TICKS+1)*!Y.MINOR) $
+      else !Y.TICKNAME = str( Height-1-indgen(!Y.TICKS+1)*!Y.MINOR )
    endif
 end
 
