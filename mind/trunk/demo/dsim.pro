@@ -28,7 +28,7 @@
 ; CALLING SEQUENCE:
 ;  DSim & Sim
 ; 
-; OUTPUTS
+; OUTPUTS:
 ;  Different windows displaying behavior of neurons and connections
 ;  structures during the simulation. Results are written into
 ;  different files.
