@@ -6,12 +6,11 @@
 ; CATEGORY:               GRAPHIC
 ;
 ; CALLING SEQUENCE:       Trainspotting, nt [, TITLE=title] [, STRETCH=stretch] [, LEVEL=level] [, WIN=win] [, OFFSET=offset]
+;                                  [,/CLEAN] [, V_STRETCH=v_stretch]
 ;
 ; INPUTS:                  
 ;                         nt      : 2-dimensionales Array, erster Index: Neuronennummern, zweiter Index: Zeit
 ;
-; OPTIONAL INPUTS:        ---
-;	
 ; KEYWORD PARAMETERS:
 ;                        TITLE     : der Title des Plots
 ;                        STRETCH   : Skalierungsfaktor fuer die Groesse der Symbole; wird automatisch angepasst und muss nur selten von
@@ -21,16 +20,7 @@
 ;                        OFFSET    : Zahlenwert, der zur x-Achsenbeschriftung addiert wird; sinnvoll, wenn man nur einen Teil der Zeitachse darstellen will und
 ;                                      der Prozedur, z.B. nt(*,500:1000) uebergibt; dann kann man mit OFFSET=500 die Darstellung korrigieren
 ;                        CLEAN     : unterdrueckt saemtliche Beschriftungen (fuer Weiterbearbeitungen mit anderen Programmen)
-;
-; OUTPUTS:               ---
-;
-; OPTIONAL OUTPUTS:      ---
-;
-; COMMON BLOCKS:         ---
-;
-; SIDE EFFECTS:          ---
-;
-; RESTRICTIONS:          ---
+;                        V_STRETCH : vertikaler Verzerrungsfaktor fuer die Groesse der Symbole; 1.0 (Default) -> Quadrat
 ;
 ; PROCEDURE:             Default
 ;
@@ -39,12 +29,19 @@
 ;                        trainspotting, nt, TITLE='Spikeraster Layer 1', WIN=1, OFFSET=5000
 ;                        trainspotting, nt, WIN=2, STRETCH=0.5,  /CLEAN
 ;
-; MODIFICATION HISTORY:  Urversion erstellt, Mirko, 13.8.97
+; MODIFICATION HISTORY:  
+;
+;     $Log$
+;     Revision 1.3  1997/11/26 09:26:56  saam
+;           Keyword V_STRETCH hinzugefuegt
+;
+;                              
+;                        Urversion erstellt, Mirko, 13.8.97
 ;                        TICKLEN minimal eingestellt, dass Achsenticks nicht mehr sichtbar sind, Mirko, 13.8.97
 ;
 ;-
 
-PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean
+PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSET=offset, CLEAN=clean, V_STRETCH=v_stretch
 
 ;---------------> check syntax  IF (N_PARAMS() LT 1) THEN Message, 'wrong number of arguments'
    IF ((Size(nt))(0) NE 2) THEN Message, 'first arg must be a 2-dim array'
@@ -73,16 +70,20 @@ PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSE
    IF KEYWORD_SET(clean) THEN BEGIN
       empty=StrArr(25)
       for i=0,24 DO empty(i)=' '
-      plot, nt, /NODATA, XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], XSTYLE=1, YSTYLE=1, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001
+      plot, nt, /NODATA, XRANGE=[offset,time+offset+FIX(stretch)], YRANGE=[-FIX(stretch),neurons+FIX(stretch)], XSTYLE=5, YSTYLE=5, YTICKNAME=empty, XTICKNAME=empty, XTICKLEN=0.00001, YTICKLEN=0.00001, XMARGIN=[0.2,0.2], YMARGIN=[0.2,0.2]
    END ELSE BEGIN
-      Plot, nt, /NODATA, CHARSIZE=1.5 ,XRANGE=[offset,time+offset], YRANGE=[-1,neurons+1], XSTYLE=1, YSTYLE=1, $
+      Plot, nt, /NODATA, CHARSIZE=1.5 ,XRANGE=[offset,time+offset+FIX(stretch)], YRANGE=[-FIX(stretch),neurons+FIX(stretch)], XSTYLE=1, YSTYLE=1, $
        XTITLE='Time / BIN', YTITLE='Neuron #', TITLE=title, $
        XTICKLEN=0.00001, YTICKLEN=0.00001
    END
 
 
 ;----------------> define filled square
-   UserSym, [ 0, 0, 4, 4, 0], [ 0, 4, 4, 0, 0], /FILL
+   Default, v_stretch, 1.0
+  
+   height = LONG(4*v_stretch)
+
+   UserSym, [ 0, 0, 4, 4, 0], [ 0, height, height, 0, 0], /FILL
       
 
 ;----------------> plot spikes
@@ -90,6 +91,7 @@ PRO Trainspotting, nt, TITLE=title, STRETCH=stretch, LEVEL=level, WIN=win, OFFSE
    IF (count NE 0) THEN BEGIN
       PlotS, LONG(spikes / FLOAT(neurons+1) + offset), spikes MOD (neurons+1), PSYM=8, SYMSIZE= MAX([MIN([1.0, 35./time])*stretch,0.1])
    END
+
 
 END
 
