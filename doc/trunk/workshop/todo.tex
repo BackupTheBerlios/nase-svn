@@ -139,9 +139,15 @@ Rüdiger\\[2cm]
     \end{itemize}
   \item \texttt{Examineit}:
     \begin{itemize}
-      \item ``bound'' display type fails when array contains !NONE
-        (value -999999).
+      \item When /NASE is not set,``bound'' display type fails when array contains !NONE
+        (value -999999). This originally was a feature, not a bug. But
+        as now UTvScl displays !NONE in blue in any case, it should
+        always be treated as missing.
     \end{itemize}
+  \item NaseTv and NaseTvScl are depricated and should be removed.
+  \item The /NASE keyword has inconsistent semantics: sometimes it
+    refers to color scaling, sometimes it refers to transposition
+    only.
 \end{itemize}
 
 
@@ -171,6 +177,18 @@ Rüdiger\\[2cm]
 \item \texttt{XMatEdit}: obsolete 
 \item \texttt{UOpenR} and partners should use IDLs streaming ZIP functionality.
 WARNING: IDL is only able to zip since V5.3!
+\end{itemize}
+
+
+
+\section{Compatibility Issues}
+The following issues exist for backwards compatibility. The ToDos
+below should be fulfilled as soon as we decide that backwards
+compatibility need not be maintained in this case.
+\begin{itemize}
+  \item !NONE is defined as -999999. As this value could appear by
+    chance in an array, it should be replaced by some special value,
+    for example NaN.
 \end{itemize}
 
 
