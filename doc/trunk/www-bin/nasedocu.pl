@@ -58,6 +58,23 @@ sub updatedoc {
 
 
 
+###################################################################################
+###################################################################################
+###################################################################################
+sub newrout {
+  my $DOCDIR = getDocDir();
+  
+  my @r = `grep ^A /vol/neuro/nase/IDLCVS/CVSROOT/history | grep -i pro\$ | tail -10 | cut -d '|' -f 6`;
+
+  print "<OL>";
+  foreach (reverse @r){
+    chomp;
+    s/\.pro//i;
+    print "<LI>",makeURL($_,undef,'text'),"</LI>";
+  }
+  print "</OL>";
+
+}
 
 
 
@@ -130,14 +147,21 @@ if ($P::mode){
     /list/i   && do { print myHeader(), myBody();
 		      print 
 			'<TABLE cellspacing=5 border=0><TR><TD>',
-			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center><TR><TD>',
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left><TR><TD>',
 			     img({src=>"$DOCURL/doc/www-doc/snasedoc.gif",alt=>"[LOGO]",border=>"0"}),
 			  "</TD></TR></TABLE>\n",
 			"</TD></TR><TR><TD>\n",
-			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=center>',
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
 			  '<TR CLASS="title"><TD CLASS="title">Directories</TD></TR>',
 			    '<TR><TD CLASS="left">';
 		      showdir("/",$sub, 0);
+		      print 
+			  "</TD></TR></TABLE>\n",
+			  "</TD></TR><TR><TD>\n",
+			  '<TABLE cellpadding=1 cellspacing=0 border=0 width="200" align=left>',
+			  '<TR CLASS="title"><TD CLASS="title">New Routines</TD></TR>',
+			    '<TR><TD CLASS="left">';
+		      newrout();
 		      print 
 			  "</TD></TR></TABLE>\n",
 			"</TD></TR><TR><TD>\n",
