@@ -30,6 +30,10 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.10  1998/12/15 12:47:17  saam
+;           - if local dir is not local only a warning
+;             is plotted (instead of a complete stop)
+;
 ;     Revision 1.9  1998/11/13 21:20:40  saam
 ;           now uses readfilename
 ;
@@ -85,7 +89,7 @@ PRO Local2Remote, LocalDir, RemoteDir, NOZIP=nozip, NODEL=nodel
    RemoteHost = Path2Host(RemoteDir)
 
    ; is LocalDir really local?
-   IF Path2Host(LocalDir) NE LocalHost THEN Message, 'Local Dir is not really local' 
+   IF Path2Host(LocalDir) NE LocalHost THEN Message, /INFO, 'Local Dir is not really local' 
   
 ;
 ; --------> COPY DATA FROM LOCALDIR -> REMOTEDIR  (IF NEEDED)
