@@ -82,34 +82,46 @@
 ;                addition, the appropriate NASE color table will be
 ;                loaded, unless <C>SETCOL</C><*>=0</*> is passed. (For
 ;                further information cf. <A>Showweights_Scale</A>.)<BR>
-;                This keyword has no effect, if <C>/NOSCALE</C> is set.
-; If this keyword is set, the <C>TV_Array</C> parameter will be ignored.
-;                     RANGE_IN::
+;                This keyword has no effect, if <C>/NOSCALE</C> is set.<BR>
+;                If this keyword is set, the <C>TV_Array</C> parameter
+;                will be ignored.
+;     RANGE_IN:: A two element array defining<BR>
+;                (1) the lower and upper bound of the plot-windows
+;                    showing the cross-sections of the array, and<BR>
+;                (2) the control points for color scaling:<BR>
+;                    <*>RANGE_IN[0]</*> will be scaled to color index
+;                    <*>0</*>, <*>RANGE_IN[1]</*> will be scaled to
+;                    color index <*>!TOPCOLOR</*>.<BR>
+;                    <I>If <C>/NSCALE</C> (or <C>/NASE</C>) is
+;                    set</I>, the value <*>0</*> will always be scaled
+;                    to the color index corresponding to black in the
+;                    respective NASE color table. The value
+;                    <*>max(abs(RANGE_IN))</*> will be scaled to
+;                    <*>!TOPCOLOR</*>.<BR>
+;                    If <C>/NSCALE</C> (or <C>/NASE</C>) is set, and
+;                    the range passed in <C>RANGE_IN</C> extends into
+;                    the negative, the red/green colortable will be
+;                    loaded, even if the array is positive. (Unless
+;                    <*>SETCOL=0</*> is passed.)
 ;<BR>
-; 
-;                     GROUP::  Eine Widget-ID des Widgets, das als
-;                             Übervater dienen soll.
-;                     MODAL::  Wenn angegeben, ist das Widget modal,
-;                             d.h. alle anderen Widgets sind
-;                             deaktiviert, solange dieses existiert.
-;                             MODAL erfordert die Angabe eines
-;                             Group-Leaders in GROUP.
-;                  JUST_REG::  Wird direkt an den XMANAGER
-;                             weitergereicht und dient dazu, mehrere
-;                             Instanzen von ExamineIt gleichzeitig zu
-;                             benutzen. (Vgl. <A HREF="#SURFIT">SurfIt</A> oder 
-;                             Beispiel.)
-;                  NO_BLOCK::  Wird ab IDL 5 an den XMANAGER
-;                             weitergegeben. (Beschreibung
-;                             s. IDL-Hilfe)
-;                             Der Default ist 1, also kein
-;                             Blocken. Wird Blocken gewünscht, so muß
-;                             NO_BLOCK explizit auf 0 gesetzt werden.
-;             DELIVER_EVENTS:: Hier kann ein Array
-;                             von Widget-Indizes übergeben werden, an die alle 
-;                             ankommenden Events
-;                             weitergereicht werden. (VORSICHT, BUGGY!
-;                             (s.u.))
+;     GROUP:: Eine Widget-ID des Widgets, das als Übervater dienen
+;             soll.
+;     MODAL:: Wenn angegeben, ist das Widget modal, d.h. alle anderen
+;             Widgets sind deaktiviert, solange dieses existiert. 
+;             <C>MODAL</C> erfordert die Angabe eines Group-Leaders in
+;             <C>GROUP</C>.
+;     JUST_REG:: Wird direkt an den <C>XMANAGER</C> weitergereicht und
+;                dient dazu, mehrere Instanzen von <C>ExamineIt</C>
+;                gleichzeitig zu benutzen. (Vgl. <A>SurfIt</A> oder
+;                Beispiel.)
+;     NO_BLOCK:: Wird ab IDL 5 an den <C>XMANAGER</C> weitergegeben. 
+;                (Beschreibung s. IDL-Hilfe) Der Default ist <*>1</*>,
+;                also kein Blocken. Wird Blocken gewünscht, so muß
+;                <C>NO_BLOCK</C> explizit auf <*>0</*> gesetzt werden.
+;     DELIVER_EVENTS:: Hier kann ein Array von Widget-Indizes
+;                      übergeben werden, an die alle ankommenden
+;                      Events weitergereicht werden. (<B>VORSICHT,
+;                      BUGGY!</B> (s.u.))
 ;
 ; PROCEDURE: Nach dem Aufruf kann mit der Maus in der TV-Darstellung
 ;            herumgeklickt oder gefahren werden, wobei der aktuelle
@@ -422,7 +434,10 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
 
    If Keyword_Set(NSCALE) and not Keyword_Set(noscale) then begin
       if keyword_set(RANGE_IN) then begin
+         ;; use red/green table, if range_in extends into negative:
+         if min(range_in) lt 0 then colormode = -1
          tv_w = ShowWeights_Scale(w, SETCOL=setcol, $
+                                  COLORMODE=colormode, $
                                   RANGE_IN=max(abs(RANGE_IN)))
       endif else begin
          tv_w = ShowWeights_Scale(w, SETCOL=setcol)
