@@ -36,6 +36,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.12  1999/10/07 09:42:18  alshaikh
+;           added Keyword SCALE
+;
 ;     Revision 2.11  1998/11/08 14:30:41  saam
 ;           + hyperlink updates
 ;           + the plotcilloscope structure is now
@@ -99,15 +102,19 @@ PRO Plotcilloscope, _PS, value
    newPlot = 0
    maxy = MAX(PS.y)
    miny = MIN(PS.y)
-   IF PS.maxSc AND ((maxy GT 0.90*(PS.maxAx-PS.minAx)+PS.minAx) OR (maxy LT 0.35*(PS.maxAx-PS.minAx)+PS.minAx)) THEN BEGIN
-      PS.maxAX = maxy + 0.4*(maxy-PS.minAx)
+
+
+   IF PS.maxSc AND ((maxy GT (1-PS.scale[0])*(PS.maxAx-PS.minAx)+PS.minAx) OR (maxy LT (1-PS.scale[1])*(PS.maxAx-PS.minAx)+PS.minAx)) THEN BEGIN
+      PS.maxAX = maxy + 0.2*(maxy-PS.minAx)
       newPlot=1
    END
 
-   IF PS.minSc AND ((miny LT 0.10*(PS.maxAx-PS.minAx)+PS.minAx) OR (miny GT 0.65*(PS.maxAx-PS.minAx)+PS.minAx)) THEN BEGIN
-      PS.minAx = miny-0.4*(PS.maxAx-miny)
+   IF PS.minSc AND ((miny LT PS.scale[0]*(PS.maxAx-PS.minAx)+PS.minAx) OR (miny GT PS.scale[1]*(PS.maxAx-PS.minAx)+PS.minAx)) THEN BEGIN
+      PS.minAx = miny-0.2*(PS.maxAx-miny)
       newPLot=1
    END
+
+
 
    IF newPlot OR xpos EQ 0 THEN BEGIN
       ticks = STRCOMPRESS(String((PS.t - (PS.t MOD PS.time))/PS.os), /REMOVE_ALL)

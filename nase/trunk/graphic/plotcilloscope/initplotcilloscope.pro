@@ -12,8 +12,9 @@
 ;                            [,/NOSCALEYMAX] $
 ;                            [-other-Plot-Keywords-] $
 ;                            [,OVERSAMPLING=oversampling]
-;                            [,/INSTANTREFRESH])
-;
+;                            [,/INSTANTREFRESH]
+;                            [,SCALE=scale] )
+;                            
 ; KEYWORD PARAMETERS:  TIME       : die Laenge der dargestellten Zeitachse (Def.:100)
 ;                      RAYS       : die Anzahl der benutzten Strahlen
 ;                      YMIN/YMAX  : anfaengliche Skalierung der Ordinate (Def.:0.0/1.0)
@@ -26,7 +27,13 @@
 ;                                   skaliert werden.
 ;                     OVERSAMPLING: korrekte Umrechnung von BIN in ms bei
 ;                                   ueberabtastenden Neuronen
-;
+;                     SCALE       : Array[upperscl,lowerscl]
+;                                   Umskalierung, wenn sich Graph um mehr als 
+;                                   upperscl*(Abstand oberer/unterer Ordinatenwert) einem dieser Werte 
+;                                   naehert, bzw. wenn er sich um mehr als lowerscl*(...) 
+;                                   davon entfernt. (Def.:[0.1,0.65])
+;       
+
 ;                   Außerdem sind alle Schlüsselworte erlaubt, die
 ;                   auch PLOT nimmt. Der Default für XTITLE ist "t / ms".
 ;
@@ -52,6 +59,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.13  1999/10/07 09:42:17  alshaikh
+;           added Keyword SCALE
+;
 ;     Revision 2.12  1998/11/08 14:30:41  saam
 ;           + hyperlink updates
 ;           + the plotcilloscope structure is now
@@ -97,8 +107,9 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
                              NOSCALEALL=noscaleall, NOSCALEYMIN=noscaleymin, NOSCALEYMAX=noscaleymax,$
                              OVERSAMPLING=oversampling, $
                              INSTANTREFRESH=instantrefresh, $
-                             XTITLE=xtitle, _EXTRA=_extra
-
+                             XTITLE=xtitle, SCALE=scale, $  
+                             _EXTRA=_extra
+                             
    On_Error, 2
 
    Default, OVERSAMPLING, 1
@@ -108,6 +119,9 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
    Default, YMAX, 0.0
    Default, Rays, 1
    Default, XTITLE, 't / ms'
+   Default, scale, [0.1,0.65]
+   
+
    If not keyword_set(_EXTRA) then _extra = {XTITLE: xtitle} else begin
       If not extraset(_extra, "xtitle") then _extra = create_struct(_extra, "xtitle", xtitle)
    EndElse
@@ -123,17 +137,18 @@ FUNCTION InitPlotcilloscope, TIME=time, YMIN=ymin, YMAX=ymax, $
       minSc = 0 
    END
 
-   PS = { info  : 'T_PLOT'      ,$
-          minAx : ymin          ,$
-          maxAx : ymax          ,$
-          y     : Make_Array(rays, time, /FLOAT, VALUE=startvalue), $
-          rays  : rays          ,$
-          t     : 0l            ,$
-          time  : LONG(time)    ,$
-          maxSc : maxSc         ,$
-          minSc : minSc         ,$
-          os    : oversampling  ,$
-          _extra: _extra}
+   PS = { info     : 'T_PLOT'      ,$
+          minAx    : ymin          ,$
+          maxAx    : ymax          ,$
+          y        : Make_Array(rays, time, /FLOAT, VALUE=startvalue), $
+          rays     : rays          ,$
+          t        : 0l            ,$
+          time     : LONG(time)    ,$
+          maxSc    : maxSc         ,$
+          minSc    : minSc         ,$
+          os       : oversampling  ,$
+          scale    : scale         ,$
+          _extra   : _extra}    
    
    plot, [PS.y], /NODATA, YRANGE=[PS.minAx, PS.maxAx], XRANGE=[0,PS.time/PS.os], XSTYLE=1, _EXTRA=_extra
 
