@@ -13,7 +13,7 @@
 ; KEYWORD PARAMETERS: NO_INIT: Führt die neue Version dieser Routine aus.
 ;                              Diese löscht NICHT wie bisher die übergebene
 ;                              DW-Struktur und erzeugt sie neu, sondern setzt
-;                              nur die Gewichte um. Default: NO_INIT=0.
+;                              nur die Gewichte um. Default: NO_INIT=1.
 ;                     DIMENSIONS: Erlaubt die vierdimensionale Angabe der 
 ;                                 Gewichtsmatrix, so wie sie von <A HREF="#WEIGHTS">Weights</A> bei
 ;                                 gesetztem /DIMENSIONS-Keyword geliefert 
@@ -35,6 +35,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.4  1999/08/16 17:06:59  thiel
+;         Now executes new version by default.
+;
 ;     Revision 2.3  1999/08/11 14:21:06  thiel
 ;         Completely new: Does no longer use DW2SDW if /NO_INIT is set.
 ;
@@ -52,10 +55,11 @@
 ;-
 PRO SetWeights, _DW, W, NO_INIT=no_init, DIMENSIONS=dimensions
 
-   Default, no_init, 0
+   Default, no_init, 1
    Default, dimensions, 0
 
    IF Keyword_Set(NO_INIT) THEN BEGIN ; execute new version
+      Message, /INFO, 'NEW version of SetWeights executed.'
 
       ; oldstyle DW-structure:
       IF (Info(_DW) EQ 'DW_WEIGHT') OR (Info(_DW) EQ 'DW_DELAY_WEIGHT') THEN BEGIN
