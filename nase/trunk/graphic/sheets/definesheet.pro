@@ -48,6 +48,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.5  1998/03/12 11:39:58  saam
+;           Bug with window creation in idl5
+;
 ;     Revision 2.4  1998/01/26 13:10:54  thiel
 ;            Erzeugt jetzt hoffentlich keine leeren Seiten mehr.
 ;
@@ -78,7 +81,7 @@ FUNCTION DefineSheet, NULL=null, WINDOW=window, PS=ps, FILENAME=filename, INCREM
       IF Keyword_Set(VERBOSE) THEN Print, 'Defining a new Window.'
       
       sheet = { type  : 'X'   ,$
-                winid : -1    ,$
+                winid : -2    ,$
                 p     : !P    ,$
                 x     : !X    ,$
                 y     : !Y    ,$
