@@ -19,6 +19,13 @@
 ;  -please remove any sections that do not apply-
 ;  
 ; OPTIONAL INPUTS:
+;
+;      STIMSHIFT : for values ne 0 the grid is divided up into two equal-sized grids
+;                  with the right one (provided 0dg orientation) shifted by a phase
+;                  of STIMSHIFT
+;
+;
+;          
 ;  -please remove any sections that do not apply-
 ;  
 ; KEYWORD PARAMETERS:
@@ -54,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.3  2000/09/01 14:24:42  alshaikh
+;              new keyword STIMSHIFT
+;
 ;        Revision 1.2  2000/09/01 10:12:23  saam
 ;              still undoumented
 ;
@@ -61,6 +71,7 @@
 
 FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DELTA_T=delta_t, $
                       LOGIC=op, STIMORIENT=stimorient, DETECTORIENT=detectorient, STIMPERIOD=stimperiod, STIMPHASE=stimphase, $
+                      STIMSHIFT=stimshift,$
                       STEPANGLE=stepangle,$
                       A=a, _EXTRA=e
 
@@ -76,15 +87,25 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
    CASE mode OF      
       ; INITIALIZE
       0: BEGIN      
+
+         print,'bla'
           Default, a, 500.
           Default, stimorient, 0
           Default, detectorient, 0
           Default, stimphase, 0
+          Default, stimshift, 0
           Default, stimperiod, 1
           md = FIX(MAX([w,h])*1.5)
           md = md + ((md+1) MOD 2) + 50
-          y=sin(2*!DPi*((dindgen(md) - md/2)/stimperiod + stimphase/360.d))          
-          lstim=(1+rebin(y,md,md,/SAMPLE))*0.5
+          y1=sin(2*!DPi*((dindgen(md) - md/2)/stimperiod + stimphase/360.d))          
+          y2=sin(2*!DPi*((dindgen(md) - md/2)/stimperiod + (stimphase+stimshift)/360.d))          
+
+          lstim1=(1+rebin(y1,md,md/2,/SAMPLE))*0.5
+          lstim2 =(1+rebin(y2,md,md-md/2,/SAMPLE))*0.5
+          lstim = fltarr(md,md)
+          lstim(*,0:(md/2)-1) = lstim1
+          lstim(*,(md/2):md-1) = lstim2
+
           stim = (rot(lstim,STIMORIENT,1,md/2,md/2,/cubic,/pivot))
           odm=Orient_2d(25, DEGREE=DETECTORIENT-90.)    
           mem = a*((convol(stim, odm))^2)(md/2-h/2:md/2+h/2,md/2-w/2:md/2+w/2)
@@ -96,6 +117,7 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
                   mem          : mem         ,$
                   stimperiod   : stimperiod  ,$
                   stimphase    : stimphase   ,$
+                  stimshift    : stimshift   ,$
                   detectorient : detectorient,$
                   stimorient   : stimorient  ,$
                   stepangle    : stepangle   ,$
@@ -104,7 +126,12 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
                   sim_time     : .0d         ,$
                   myop         : opID(op)     $
                 }
-         Console, 'a='+STR(TV.a)+', grating: '+STR(TV.stimorient)+' dg, detector: '+STR(TV.detectorient)+' dg, spat freq: '+STR(TV.stimperiod)+', phase: '+STR(TV.stimphase)+' dg'
+
+          outputstring =  'a='+STR(TV.a)+', grating: '+STR(TV.stimorient)+' dg, detector: '+STR(TV.detectorient)+' dg, spat freq: '+STR(TV.stimperiod)+', phase: '+STR(TV.stimphase)+' dg'
+
+          IF stimshift NE 0 THEN outputstring = outputstring + 'right half shifted by : '+STR(TV.stimshift)+' dg'
+console, outputstring
+
       END
       
       ; STEP
@@ -113,8 +140,15 @@ FUNCTION IFod, MODE=mode, PATTERN=pattern, WIDTH=w, HEIGHT=h, TEMP_VALS=_TV, DEL
               TV.cangle = (TV.cangle + TV.stepangle) MOD 360
               md = FIX(MAX([TV.w,TV.h])*1.5)
               md = md + ((md+1) MOD 2) + 50
-              y=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + TV.stimphase/360.d))          
-              lstim=(1+rebin(y,md,md,/SAMPLE))*0.5
+              y1=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + TV.stimphase/360.d))          
+              y2=sin(2*!DPi*((dindgen(md) - md/2)/TV.stimperiod + (TV.stimphase+TV.stimshift)/360.d))          
+
+              lstim1=(1+rebin(y1,md,md/2,/SAMPLE))*0.5
+              lstim2 =(1+rebin(y2,md,md-md/2,/SAMPLE))*0.5
+              lstim = fltarr(md,md)
+              lstim(*,0:md/2-1) = lstim1
+              lstim(*,(md/2):md-1) = lstim2
+              
               stim = (rot(lstim,TV.STIMORIENT+TV.cangle,1,md/2,md/2,/cubic,/pivot))
               odm=Orient_2d(25, DEGREE=TV.DETECTORIENT-90.)    
               TV.mem = TV.a*((convol(stim, odm))^2)(md/2-TV.h/2:md/2+TV.h/2,md/2-TV.w/2:md/2+TV.w/2)
