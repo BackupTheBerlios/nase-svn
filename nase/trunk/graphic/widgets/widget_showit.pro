@@ -33,6 +33,8 @@
 ;
 ;                    Folgende weiteren Schlüsselworte werden mittels _EXTRA an die
 ;                    dafür zuständigen Widgets weitergereicht:
+;                     EVENT_PRO
+;                     EVENT_FUNC
 ;                     NOTIFY_REALIZE
 ;                     KILL_NOTIFY
 ;                     FRAME
@@ -79,6 +81,13 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  2000/03/10 20:08:21  kupper
+;        Moved Event_Func to draw-widget in order to provide free Event_Func/Event_Pro
+;        for the compound widget.
+;        Event_Func/Event_Pro keywords are now passed correctly through _extra.
+;        Corrected pass-through of event: event-handler must be 0 for a passed-through
+;        event!
+;
 ;        Revision 1.6  2000/02/22 16:28:32  kupper
 ;        Had to use ref_extra for selective keyword passing.
 ;
@@ -108,11 +117,11 @@
 
 FUNCTION Widget_ShowIt_Event, Event
 
-   ;;event.HANDLER is the id of the outer Base.
-   ;;all information is stored in the UVALUE of its first child
-   FirstChild = Widget_Info(event.HANDLER, /CHILD)
-   Widget_Control, FirstChild, GET_UVALUE=uv
-;   WIDGET_CONTROL, Event.Handler, GET_UVALUE=uv
+   ;;event.HANDLER is the id of the draw widget
+   ;;all information is stored in its UVALUE
+   draw_widget = Event.handler
+   outer_base = Widget_Info(draw_widget, /Parent)
+   Widget_Control, draw_widget, GET_UVALUE=uv
 
    IF (TAG_NAMES(Event, /STRUCTURE_NAME) EQ  "WIDGET_TRACKING") $
     AND uv.private_colors THEN BEGIN ;possibly, the user requested tracking-events, but NOT private_colors!  
@@ -126,7 +135,7 @@ FUNCTION Widget_ShowIt_Event, Event
          uv.YourPalette.R = Red
          uv.YourPalette.G = Green
          uv.YourPalette.B = Blue
-         WIDGET_CONTROL, firstchild, SET_UVALUE=uv
+         WIDGET_CONTROL, draw_widget, SET_UVALUE=uv
                                 ;set private palette:
          UTVLCT, uv.MyPalette.R, uv.MyPalette.G, uv.MyPalette.B 
                                 ;message, /INFO, "Setting private palette"
@@ -143,7 +152,8 @@ FUNCTION Widget_ShowIt_Event, Event
    ENDIF
 
    ; make it look as if the outer base had created the event:
-   event.id = event.handler 
+   event.id = outer_base
+   event.handler = 0
    
    Return, event
   
@@ -181,7 +191,9 @@ FUNCTION Widget_ShowIt, Parent, $
                 }
 
    ; create outer base to have free uservalue:
-   b = Widget_Base(Parent, _EXTRA=["NOTIFY_REALIZE", $
+   b = Widget_Base(Parent, _EXTRA=["event_func", $
+                                   "event_pro", $
+                                   "notify_realize", $
                                    "kill_notify", $
                                    "frame", $
                                    "no_copy", $
@@ -210,7 +222,7 @@ FUNCTION Widget_ShowIt, Parent, $
                            "xsize", $
                            "ysize"])
 
-   Widget_Control, b, EVENT_FUNC='Widget_ShowIt_Event'
+   Widget_Control, d, EVENT_FUNC='Widget_ShowIt_Event'
       
    Return, b
 
