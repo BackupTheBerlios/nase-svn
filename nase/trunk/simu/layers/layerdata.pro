@@ -21,33 +21,32 @@
 ;  Simulation
 ;
 ; CALLING SEQUENCE: 
-;  LayerData, Layer [,TYPE=Type]
-;                   [,WIDTH=Width] [,HEIGHT=Height]
-;                   [,PARAMETERS=Parameters] 
-;                   [,FEEDING=Feeding] 
-;                   [,FFEEDING1=ffeeding1][,SFEEDING=sfeeding] 
-;                   [,LINKING=linking][,ILINKING=ilinking]  
-;                   [,INHIBITION=Inhibition]
-;                   [,SNHIBITION=sinhibition][,FINHIBITION=finhibition]
-;                   [,POTENTIAL=Potential]
-;                   [,THRESHOLD=threshold] 
-;                   [,STHRESHOLD=slow_threshold]
-;                   [,OUTPUT=Output]
+;*  LayerData, layer [,TYPE=Type]
+;*                   [,WIDTH=Width] [,HEIGHT=Height]
+;*                   [,PARAMETERS=Parameters] 
+;*                   [,FEEDING=Feeding] 
+;*                   [,FFEEDING1=ffeeding1][,SFEEDING=sfeeding] 
+;*                   [,LINKING=linking][,ILINKING=ilinking]  
+;*                   [,INHIBITION=Inhibition]
+;*                   [,SNHIBITION=sinhibition][,FINHIBITION=finhibition]
+;*                   [,POTENTIAL=Potential]
+;*                   [,THRESHOLD=threshold] 
+;*                   [,STHRESHOLD=slow_threshold]
+;*                   [,OUTPUT=Output]
 ;
 ; INPUTS:
-;  Layer: Structure initialized by <A>InitLayer</A>.
+;  layer:: Structure initialized by <A>InitLayer</A>.
 ;
 ; OPTIONAL OUTPUTS: 
 ;  type:: Type of neurons in this layer (string).
 ;  width, height:: Dimensions of layer (integer).
 ;  parameters:: Parameters as described by the InitPara function used
 ;               to create the layer.
-;  feeding,
-;  ffeeding1, sfeeding 
-;  linking, ilinking
-;  inhibition, sinhibition, finhibition:: State of corresponding leaky
-;                                         integrators
-;                                         (doublearray[HeightxWidth]) 
+;  feeding:: State of corresponding 
+;  ffeeding1, sfeeding:: leaky integrators
+;  linking, ilinking:: (doublearray[HeightxWidth]) 
+;  inhibition, sinhibition, finhibition::
+; 
 ;  potential:: Membrane potentials (doublearray[HeightxWidth])
 ;              In case the layer is of type '8' (four compartment) neurons,
 ;              potential returns a FltArr(width,height,5) of the
