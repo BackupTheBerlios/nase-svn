@@ -37,7 +37,7 @@
 ; INPUT KEYWORDS:
 ;  SETCOL:: Wird dieses Schlüsselwort auf <*>1</*> gesetzt, so initialisiert
 ;           die Routine auch die Farbtabelle und paßt die Werte von
-;           !P.Background und Set_Shading entsprechend an. (Graustufen
+;           <*>!P.Background</*> und <C>Set_Shading</C> entsprechend an. (Graustufen
 ;           für positive Arrays, Rot/Grün für gemischtwertige.)<BR>
 ;<BR>
 ;           Wird dieses Schlüsselwort auf <*>2</*> gesetzt, so initialisiert
@@ -45,8 +45,6 @@
 ;           <*>!P.Background</*> und <C>Set_Shading</C> entsprechend an. Das Array
 ;           wird NICHT skaliert. Der Rückgabewert ist in diesem Fall
 ;           <*>0</*>.<BR>
-;<BR>
-;           Hat nur Effekt, wenn <C>/NASE</C> oder <C>/NEUTRAL</C> angegeben wurde.
 ;
 ;  COLORMODE:: Mit diesem Schlüsselwort kann unabhängig von den Werten
 ;              im Array die schwarz/weiss-Darstellung (<C>COLORMODE</C><*>=+1</*>)
@@ -72,8 +70,9 @@
 ;             contrary to the <C>RANGE_IN</C> keywords in other
 ;             routines like <A>UTvScl</A> or <A>PlotTvScl</A>.
 ;
-; OUTPUTS: TV_Array: Das geeignet skalierte Array, das direkt mit TV
-;                    oder NASETV dargestellt werden kann.
+; OUTPUTS:
+;  TV_Array:: Das geeignet skalierte Array, das direkt mit
+;             <A>UTV</A> dargestellt werden kann.
 ;
 ; OPTIONAL OUTPUTS:
 ;  GET_MAXCOL:: ShowWeights benutzt die Farben blau für 
@@ -85,17 +84,16 @@
 ;                 letzte verwendbare Index abgefragt werden.<BR>
 ;<BR>
 ;                 <I>The keyword <C>GET_MAXCOL</C> is obsolete, but
-;                 maintained for backwards compatibility.</I><BR>
+;                 maintained for backwards compatibility.<BR>
 ;                 The value returned is always:<BR>
-;                 <*>GET_MAXCOL = !TOPCOLOR</*>
+;                 <*>GET_MAXCOL = !TOPCOLOR</*></I>
 ;  GET_COLORMODE:: Liefert als Ergebnis <*>+1</*>, falls der
 ;                 schwarz/weiss-Modus zur Darstellung
 ;                 benutzt wurde (DW-Matrix enthielt nur
 ;                 positive Werte), und <*>-1</*>, falls der
 ;                 rot/grün-Modus benutzt wurde (DW-Matrix
 ;                 enthielt negative Werte).
-;  GET_RANGE_IN,
-;  GET_RANGE_OUT:: Diese Werte können direkt an den 
+;  GET_RANGE_IN, GET_RANGE_OUT:: Diese Werte können direkt an den 
 ;                 Befehl <A>Scl</A> weitergereicht
 ;                 werden, um weitere Arrays so zu
 ;                 skalieren, daß deren Farbwerte
@@ -107,9 +105,9 @@
 ;                 Originalarray enthalten war).<BR>
 ;<BR>
 ;                 <I>The keyword <C>GET_RANGE_OUT</C> is obsolete, but
-;                 maintained for backwards compatibility.</I><BR>
-;                 The value returned is always:
-;*                GET_RANGE_OUT = [0, !TOPCOLOR]
+;                 maintained for backwards compatibility.<BR>
+;                 The value returned is always:<BR>
+;                 <*>GET_RANGE_OUT = [0, !TOPCOLOR]</*></I>
 ;
 ;<BR>
 ;                 Zur Information: Es gilt die Beziehung<BR>
@@ -126,20 +124,20 @@
 ; PROCEDURE: Aus Showweights, Rev. 2.15 ausgelagert.
 ;
 ; EXAMPLE:
-;*  1. UTV, /NASE, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), ZOOM=10
+;*  1. UTV, /NORDER, ShowWeights_Scale( GetWeight( MyDW, T_INDEX=0 ), /SETCOL ), ZOOM=10
 ;*  2. Window, /FREE, TITLE="Membranpotential"
 ;*     LayerData, MyLayer, POTENTIAL=M
-;*     UTV, /NASE, ShowWeights_Scale( M, /SETCOL), ZOOM=10
+;*     UTV, /NORDER, ShowWeights_Scale( M, /SETCOL), ZOOM=10
 ;*  3. a = gauss_2d(100,100)
 ;*     WINDOW, 0
-;*     UTV, /NASE, ShowWeights_Scale( a, /SETCOL, $
+;*     UTV, ShowWeights_Scale( a, /SETCOL, $
 ;*                                GET_RANGE_IN=ri, GET_RANGE_OUT=ro )
 ;*     WINDOW, 1
-;*     UTV, /NASE, Scl( 0.5*a, ro, ri )
+;*     UTV, Scl( 0.5*a, ro, ri )
 ;*    Die Werte der Arrays in den beiden Fenstern können 
 ;*    nun direkt verglichen werden.
 ;*    Der letzte Befehl ist übrigens identisch mit
-;*     UTV, /NASE, ShowWeights_Scale( 0.5*a, RANGE_IN=ri(1) )
+;*     UTV, ShowWeights_Scale( 0.5*a, RANGE_IN=ri(1) )
 ;
 ; SEE ALSO: <A>ShowWeights()</A>, <A>UTvScl</A>, <A>PlotTvScl</A>.
 ;-
