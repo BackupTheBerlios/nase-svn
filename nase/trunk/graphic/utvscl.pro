@@ -321,11 +321,11 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             , _EXTRA=e
 
 
-   ON_ERROR, 2
+;;;   ON_ERROR, 2
    IF !D.Name EQ 'NULL' THEN RETURN
 
-   ;; remeber the size of the array prior to any reforms
-   sizeimage = Size(__image)
+   ;; remeber the size of the array PRIOR to any reforms
+   sizeimage_orig = Size(__image)
 
    ;;NASE implies NORDER and NSCALE:
    Default, NASE, 0
@@ -374,10 +374,13 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
        ;; Add a third dimension to be compatioble to the TRUE color
        ;; option. 
        ;; this works for one dim array as well, since the original
-       ;; size has been kept in sizeimage 
-       image = Reform(image, sizeimage[1], sizeimage[2], 1, /OVERWRITE)
+       ;; size has been kept in sizeimage_orig 
+       image = Reform(image, sizeimage_orig[1], sizeimage_orig[2], 1, /OVERWRITE)
        TRUE=0
    END
+
+   ;; remeber the size of the array AFTER all reforms
+   sizeimage = Size(Image)
 
 
    IF N_Params() LT 3 AND     Keyword_Set(YCENTER) THEN YNorm = 0.5
@@ -459,12 +462,12 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             ;; extract one slice of the true color array and
             ;; reform to the original size.
             extract = Reform(image(*,*,i), sizeimage[1], sizeimage[2])
-            _Image(*,*,i) = Congrid(extract, (xsize*_smooth(0)) > 1 $
+            _Image(*,*,i) = Congrid(temporary(extract), (xsize*_smooth(0)) > 1 $
                                     , (ysize*_smooth(1)) > 1 $
                                     , CUBIC=cubic, INTERP=interp $
                                     , MINUS_ONE=minus_one)
-         Image = Temporary(_Image)
       endFOR
+      Image = Temporary(_Image)
 
       ENDIF ELSE BEGIN
          IF (CUBIC NE 0.) OR Keyword_Set(INTERP) OR $
@@ -472,11 +475,15 @@ PRO UTvScl, __Image, XNorm, YNorm, Dimension $
             ;; Congrid when POLYGON is set but INTERPOLATION is desired
             _Image = DblArr((xsize*_smooth(0)) > 1 $
                             , (ysize*_smooth(1)) > 1, TRUE > 1)
-            FOR i=0, 2 * (TRUE GT 0) DO $
-             _Image(*,*,i) = Congrid(Image(*,*,i), (xsize*_smooth(0)) > 1 $
-                                     , (ysize*_smooth(1)) > 1, $
-                                     CUBIC=cubic, INTERP=interp $
-                                     , MINUS_ONE=minus_one)
+            FOR i=0, 2 * (TRUE GT 0) DO BEGIN
+               ;; extract one slice of the true color array and
+               ;; reform to the original size.
+               extract = Reform(image(*,*,i), sizeimage[1], sizeimage[2])
+               _Image(*,*,i) = Congrid(temporary(extract), (xsize*_smooth(0)) > 1 $
+                                       , (ysize*_smooth(1)) > 1, $
+                                       CUBIC=cubic, INTERP=interp $
+                                       , MINUS_ONE=minus_one)
+            endfor
             Image = Temporary(_Image)
          ENDIF
       ENDELSE
