@@ -25,6 +25,10 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.7  2000/04/12 15:57:05  thiel
+;           Variable name 'Queue' changed to 'Q' because it was colliding with
+;           function name 'Queue'.
+;
 ;       Revision 1.6  1997/12/02 10:40:22  saam
 ;             Fehler in Hyperlinks korrigiert
 ;
@@ -33,13 +37,13 @@
 ;
 ;
 ;-
-FUNCTION SpikeQueue, Queue, In
+FUNCTION SpikeQueue, Q, In
 
    QIn = In
-   FOR i=1,Queue(0) DO BEGIN
-      Handle_Value, Queue(i), tmpQu
+   FOR i=1,Q(0) DO BEGIN
+      Handle_Value, Q(i), tmpQu
       QIn = BasicSpikeQueue(tmpQu, QIn)
-      Handle_Value, Queue(i), tmpQu, /SET
+      Handle_Value, Q(i), tmpQu, /SET
    END
 
    RETURN, QIn
