@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/14 11:02:01  saam
+;           changed dw structures to anonymous/handles
+;
 ;     Revision 1.1  1999/12/10 09:36:47  saam
 ;           * hope these are all routines needed
 ;           * no test, yet
@@ -74,10 +77,11 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
    COMMON ATTENTION
    COMMON SH_LEARN, LEARNwins, LEARN_1, LEARN_2, LEARN_3, LEARN_4
    
-;   On_Error, 2
+   On_Error, 2
 
    TestInfo, _LS, 'LEARN'
    Handle_Value, _LS, LS, /NO_COPY
+   curDW = Handle_Val(P.DWW(LS.DW))
 
    IF NOT ExtraSet(LS, 'RULE')  THEN Message, 'tag RULE undefined!'
    IF NOT ExtraSet(LS, 'DW')    THEN Message, 'tag DW undefined!'
@@ -131,10 +135,10 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
             
             LEARN_2(LS.index) = DefineSheet(/Window, XDRAWSIZE=width, YDRAWSIZE=height, $
                                             XSIZE=MIN([width,height]), YSIZE=MIN([width,height]), $
-                                            TITLE=P.DWW(LS.DW).NAME)
+                                            TITLE=curDW.NAME)
          END
-         LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=P.DWW(LS.DW).NAME)
-         LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+P.DWW(LS.DW).NAME)
+         LEARN_3(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE=curDW.NAME)
+         LEARN_4(LS.index) = DefineSheet(/Window, XSIZE=300, YSIZE=200, TITLE='Loop Control'+curDW.NAME)
          LEARNwins = 1
       END
    END
@@ -160,8 +164,8 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
    ;----->
    ;-----> INIT LEARNING STRUCTURES
    ;----->
-   curSLayer = Handle_Val(P.LW(P.DWW(LS.DW).SOURCE))
-   curTLayer = Handle_Val(P.LW(P.DWW(LS.DW).TARGET))
+   curSLayer = Handle_Val(P.LW(curDW.SOURCE))
+   curTLayer = Handle_Val(P.LW(curDW.TARGET))
    Print, 'LEARNING: ',curSLayer.NAME, ' -> ', curTLayer.NAME,' with ', LS.RULE
    IF lRule EQ 0 THEN BEGIN
       IL = {TYPE : 0} ; do nothing at all
@@ -197,8 +201,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
 
       OpenSheet, LEARN_3(LS.index)
       xax=indgen(n_elements(lw)-2)-lw(0)-1
-      tmp = (P.DWW(LS.DW))
-      plot, xax, lw(2:n_elements(lw)-2), XSTYLE=1, TITLE='Learning '+tmp.NAME+': BiPoo'
+      plot, xax, lw(2:n_elements(lw)-2), XSTYLE=1, TITLE='Learning '+curDW.NAME+': BiPoo'
       CloseSheet, LEARN_3(LS.index)
    END ELSE Message, 'unknown Learning Rule'
 
@@ -215,7 +218,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
          SetTag, LS, '_CONTROLLER', reg
          SetTag, LS, '_CONT_MW', MeanWeight(CON(LS.DW))
          OpenSheet, LEARN_4(LS.index)
-         PCLC = InitPlotcilloscope(TIME=200, RAYS=2, OVERSAMPLING=1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON), TITLE='Loop Control: '+P.DWW(LS.DW).NAME+'(Error/Corr)')
+         PCLC = InitPlotcilloscope(TIME=200, RAYS=2, OVERSAMPLING=1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON), TITLE='Loop Control: '+curDW.NAME+'(Error/Corr)')
          CloseSheet, LEARN_4(LS.index)
          SetTag, LS, '_PCLC', PCLC
       END
@@ -226,7 +229,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
    ;-----> INIT PLOTTING
    ;----->
    OpenSheet, LEARN_1, LS.index
-   PCW = InitPlotcilloscope(TIME=200, /NOSCALEYMIN, RAYS=2, OVERSAMPLING=1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON), TITLE='Weight Watch '+P.DWW(LS.DW).NAME+' (Mean/Maximum)')
+   PCW = InitPlotcilloscope(TIME=200, /NOSCALEYMIN, RAYS=2, OVERSAMPLING=1./(1000*P.SIMULATION.SAMPLE)/FLOAT(LS.RECCON), TITLE='Weight Watch '+curDW.NAME+' (Mean/Maximum)')
    CloseSheet, LEARN_1, LS.index
    SetTag, LS, '_PCW', PCW
 
@@ -235,7 +238,7 @@ PRO InitLearn, CON, _LS, MaxWin, _EXTRA=e
    ;-----> INIT RECORDING OF WEIGHT CONVERGENCES
    ;----->
    ExampleFrame =  DblArr(3)
-   vidDist = InitVideo( ExampleFrame, TITLE=P.File+'.'+P.DWW(LS.DW).FILE+'.dist', /SHUTUP, /ZIP )
+   vidDist = InitVideo( ExampleFrame, TITLE=P.File+'.'+curDW.FILE+'.dist', /SHUTUP, /ZIP )
    SetTag, LS, '_VIDDIST', vidDist
    distMat = Handle_Create(!MH, VALUE=Weights(CON(LS.DW)))
    SetTag, LS, '_DISTMAT', distMat 

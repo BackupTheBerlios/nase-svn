@@ -15,6 +15,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  2000/01/14 11:02:02  saam
+;           changed dw structures to anonymous/handles
+;
 ;     Revision 1.1  1999/12/10 09:36:48  saam
 ;           * hope these are all routines needed
 ;           * no test, yet
@@ -75,19 +78,20 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
    COMMON SH_LEARN
    
    Handle_Value, _LS, LS, /NO_COPY
+   curDW = Handle_Val(P.DWW(LS.DW))
 
 
    CASE LS.TYPE OF
       1 : BEGIN
          TotalRecall, LS._WIN, CON(LS.DW)
-         LearnHebbLP2, CON(LS.DW), LS._win, Target_CL=L(P.DWW(LS.DW).TARGET), ALPHA=LS.alpha, GAMMA=LS.gamma
+         LearnHebbLP2, CON(LS.DW), LS._win, Target_CL=L(curDW.TARGET), ALPHA=LS.alpha, GAMMA=LS.gamma
       END
       2 : BEGIN
          TotalRecall, LS._WIN, CON(LS.DW)
-         LearnHebbLP4, CON(LS.DW), LS._win, Target_CL=L(P.DWW(LS.DW).TARGET), ALPHA=LS.alpha, GAMMA=LS.gamma
+         LearnHebbLP4, CON(LS.DW), LS._win, Target_CL=L(curDW.TARGET), ALPHA=LS.alpha, GAMMA=LS.gamma
       END
       3 : BEGIN
-         TotalPrecall, LS._win, CON(LS.DW), L(P.DWW(LS.DW).TARGET)
+         TotalPrecall, LS._win, CON(LS.DW), L(curDW.TARGET)
          LearnBiPoo, CON(LS.DW), LS._win, LS._win2
       END
       ELSE: Message, 'this shouldnt happen'
@@ -125,8 +129,7 @@ PRO Learn, L, CON, _LS, t, _EXTRA=e
                   CloseSheet, LEARN_4(LS.index)
                   OpenSheet, LEARN_3(LS.index)
                   xax=indgen(n_elements(LS._WIN2)-2)-LS._WIN2(0)-1
-                  tmp = (P.DWW(LS.DW))
-                  plot, xax, LS._WIN2(2:n_elements(LS._WIN2)-2), XSTYLE=1, TITLE='Learning '+tmp.NAME+': BiPoo'
+                  plot, xax, LS._WIN2(2:n_elements(LS._WIN2)-2), XSTYLE=1, TITLE='Learning '+curDW.NAME+': BiPoo'
                   CloseSheet, LEARN_3(LS.index)
                END
             END

@@ -5,21 +5,24 @@
 ;
 ; CATEGORY:           MIND XPLORE 
 ;
-; CALLING SEQUENCE:   ShowDW [, DWindex] [,/INIT] [,/STOP]
+; CALLING SEQUENCE:   ShowDW [, DWindex] [,/STOP] [_EXTRA=e]
 ;
 ; OPTIONAL INPUTS:    DWindex: the index of the weight structure to be displayed,
 ;                              default is 0
+;                     EXTRA:   see options for <A HREF=http://neuro.physik.uni-marburg.de/mind/internal/#READDW>readdw</A>
 ;
-; KEYWORD PARAMETERS: INIT  : show the initial weight distribution before learning
-;                     STOP  : stop after displaying
+; KEYWORD PARAMETERS: STOP  : stop after displaying
 ;
 ; COMMON BLOCKS:      ATTENTION
 ;
-; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic/nase/#TOMWAITS>tomwaits</A>
+; SEE ALSO:           <A HREF=http://neuro.physik.uni-marburg.de/mind/internal/#READDW>readdw</A>, <A HREF=http://neuro.physik.uni-marburg.de/mind/control/#FOREACH>foreach</A>, <A HREF=http://neuro.physik.uni-marburg.de/nase/graphic/nase/#TOMWAITS>tomwaits</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.3  2000/01/14 11:02:21  saam
+;           changed dw structures to anonymous/handles
+;
 ;     Revision 1.2  2000/01/11 14:16:47  saam
 ;           now use the new readdw routine for data aquisition
 ;
@@ -29,7 +32,7 @@
 ;
 ;
 ;-
-PRO _ShowDw, DWindex, STOP=stop, INIT=init, _EXTRA=e
+PRO _ShowDw, DWindex, STOP=stop, _EXTRA=e
 
    COMMON ATTENTION
    
@@ -65,8 +68,9 @@ PRO _ShowDw, DWindex, STOP=stop, INIT=init, _EXTRA=e
    END
 
    DW = ReadDW(DWIndex, _EXTRA=e)
-   
-   IF P.DWW(DWindex).T2S THEN BEGIN 
+   curDW = Handle_Val(P.DWW(DWindex))
+
+   IF curDW.T2S THEN BEGIN 
       PROJECTIVE = 0
       RECEPTIVE = 1
       Title = 'Receptive '
@@ -76,7 +80,7 @@ PRO _ShowDw, DWindex, STOP=stop, INIT=init, _EXTRA=e
       Title = 'Projective '
    END
    
-   Title = Title + 'Fields, '+P.DWW(DWindex).NAME
+   Title = Title + 'Fields, '+curDW.NAME
    
    TomWaits, DW, TITLE=title, NO_BLOCK=0
    

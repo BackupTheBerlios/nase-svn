@@ -19,6 +19,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;      $Log$
+;      Revision 1.3  2000/01/14 11:02:02  saam
+;            changed dw structures to anonymous/handles
+;
 ;      Revision 1.2  1999/12/10 09:36:48  saam
 ;            * hope these are all routines needed
 ;            * no test, yet
@@ -98,7 +101,10 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
 
    ;-------------> INIT WEIGHTS
    CON = LonArr(DWmax+1)
-   FOR i=0, DWmax DO CON(i) = InitWeights((P.DWW)(i))
+   FOR i=0, DWmax DO BEGIN
+      curDW = Handle_Val((P.DWW)(i))
+      CON(i) = InitWeights(curDW)
+   END
    IF Keyword_Set(WSTOP) THEN stop
 
 
@@ -236,17 +242,19 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
    ;--------------> INIT CONNECTION STRUCTURE 
    ADW = StrArr(DWmax+1) ; automatic DW
    FOR i=0, DWmax DO BEGIN
-      ADW(i) = 'InputLayer, '+STR(L(P.DWW(I).TARGET))+', '+STR(P.DWW(i).SYNAPSE)+'=DelayWeigh(CON('+STR(i)+'), LayerOut(L('+STR(P.DWW(i).SOURCE)+')))'
+      curDW = Handle_Val((P.DWW)(i))
+      ADW(i) = 'InputLayer, '+STR(L(curDW.TARGET))+', '+STR(curDW.SYNAPSE)+'=DelayWeigh(CON('+STR(i)+'), LayerOut(L('+STR(curDW.SOURCE)+')))'
 
-      curSLayer = Handle_Val(P.LW(P.DWW(i).SOURCE))
-      curTLayer = Handle_Val(P.LW(P.DWW(i).TARGET))
-      print, 'CONNECTIONS:  ', curSLayer.NAME, ' -> ', curTLayer.NAME,' via ',P.DWW(i).SYNAPSE,', ',P.DWW(i).NAME
+      curSLayer = Handle_Val(P.LW(curDW.SOURCE))
+      curTLayer = Handle_Val(P.LW(curDW.TARGET))
+      print, 'CONNECTIONS:  ', curSLayer.NAME, ' -> ', curTLayer.NAME,' via ', curDW.SYNAPSE,', ',curDW.NAME
    END
 
 
    ;--------------> SAVE WEIGHTS BEFORE SIMULATION/LEARNING
    FOR i=0, DWmax DO BEGIN
-      lun = UOpenW(P.file+'.'+P.DWW(i).FILE+'.ini.dw', /ZIP)
+      curDW = Handle_Val((P.DWW)(i)) 
+      lun = UOpenW(P.file+'.'+curDW.FILE+'.ini.dw', /ZIP)
       SaveStruc, lun, SaveDW(CON(i))
       UClose, lun
    END
@@ -267,8 +275,9 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
          InputLayer, L(AIN2(i)), _EXTRA=tmp
       END
       FOR i=0, DWmax DO BEGIN
-         tmp = Create_Struct(P.DWW(i).SYNAPSE, DelayWeigh(CON(i), LayerOut(L(P.DWW(i).SOURCE))))
-         InputLayer, L(P.DWW(I).TARGET), _EXTRA=tmp
+         curDW = Handle_Val((P.DWW)(i))  
+         tmp = Create_Struct(curDW.SYNAPSE, DelayWeigh(CON(i), LayerOut(L(curDW.SOURCE))))
+         InputLayer, L(curDW.TARGET), _EXTRA=tmp
       END
       
       ;-------------> LEARN SOMETHING
@@ -348,7 +357,8 @@ PRO _SIM, WSTOP=WSTOP, _EXTRA=e
       IF REC.REC_MUA THEN Eject, VID_MUA(i), /NOLABEL, /SHUTUP
    END
    FOR i=0, DWmax DO BEGIN
-      lun = UOpenW(P.file+'.'+P.DWW(i).FILE+'.dw', /ZIP)
+      curDW = Handle_Val((P.DWW)(i)) 
+      lun = UOpenW(P.file+'.'+curDW.FILE+'.dw', /ZIP)
       SaveStruc, lun, SaveDW(CON(i))
       UClose, lun
    END
