@@ -148,11 +148,15 @@ Function ShowWeights_Scale, Matrix, SETCOL=setcol, GET_MAXCOL=get_maxcol, $
    max = max(MatrixMatrix)
    
    ;;------------------> The Range value will be scaled to white/green:
-   If Keyword_Set(Range_In) then Range = Range_In ;Range_In should not be changed.
-                                ;cannot use "Default", by the way,
-                                ;as Range_In=0 should be
-                                ;interpreted as not set (not as
-                                ;literal 0)
+   ;; Range_In should not be changed:
+;  If Keyword_Set(Range_In) then Range = Range_In ;
+;                                ;cannot use "Default", by the way,
+;                                ;as Range_In=0 should be
+;                                ;interpreted as not set (not as
+;                                ;literal 0)
+   ;; I think the above restriction does not apply any longer:
+   ;; Range_In=0 should be regarded as literal 0, so we use default. RK.
+   Default, Range, Range_In
    Default, Range, max([max, -min]) ; for positive Arrays this equals max.
 
    assert, N_Elements(Range) eq 1, "Range_In must be a non-negativescalar value for this routine."
