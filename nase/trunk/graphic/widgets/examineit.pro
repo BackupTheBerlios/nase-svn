@@ -64,7 +64,7 @@
 ;                             werden.)
 ;                     NORDER::
 ;                    NSCALE::
-;                     RANGE::
+;                     RANGE_IN::
 ;<BR>
 ; 
 ;                     GROUP::  Eine Widget-ID des Widgets, das als
@@ -139,7 +139,7 @@ End
 
 pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
                  NOSCALE=noscale, GET_POSITION=get_position, $
-                 COLOR = color
+                 COLOR = color, RANGE_IN=range_in
    COMPILE_OPT HIDDEN
 
    height = (size(w))(2)
@@ -153,7 +153,7 @@ pro PlotWeights, w, xpos, ypos, zoom, NONASE=nonase, $
    PrepareNASEPlot, RESTORE_OLD=oldplot
    GET_POSITION = devpos
  
-   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale
+   utvscl, w, stretch=zoom, xpos, ypos, /DEVICE, NOSCALE=noscale, RANGE_IN=range_in
 end
 
 Pro examineit_refresh_plots, info, x_arr, y_arr
@@ -209,10 +209,10 @@ Pro examineit_refresh_plots, info, x_arr, y_arr
           ALIGNMENT=0.5, color=minmaxcolor
 
          if keyword_set(info.bound) then begin ;Die Begrenzungswerte für die Plots
-            rowplotmin = info.range(0)
-            colplotmin = info.range(0)
-            rowplotmax = info.range(1)
-            colplotmax = info.range(1)
+            rowplotmin = info.range_in(0)
+            colplotmin = info.range_in(0)
+            rowplotmax = info.range_in(1)
+            colplotmax = info.range_in(1)
          endif else begin
             rowplotmin = 0      ;minrow - Let Plot find it
             rowplotmax = 0      ;maxrow
@@ -370,8 +370,8 @@ End
 Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
                GROUP=group, JUST_REG=just_reg, NO_Block=no_block, MODAL=modal, $
                GET_BASE=get_base, DELIVER_EVENTS=deliver_events, $
-               BOUND=bound, RANGE=range, $
-               NASE=nase, NORDER=norder, NSCALE=nscale, $
+               BOUND=bound, RANGE_IN=range_in, $
+               NASE=nase, SETCOL=setcol, NORDER=norder, NSCALE=nscale, $
                XPOS=xpos, YPOS=ypos, COLOR=color
    
    MyFont = '-adobe-helvetica-bold-r-normal--14-140-75-75-p-82-iso8859-1'
@@ -382,6 +382,9 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    Default, NASE, 0
    Default, NORDER, NASE
    Default, NSCALE, NASE
+   Default, SETCOL, 1;; this is the default in PlotTvScl, so we want
+   ;; to have it the same here. It only applies when NSCALE or NASE is
+   ;; set.
    
 
    If (Size(_w))(0) eq 2 then w = _w $ ;Do not change Contents!
@@ -393,7 +396,7 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
       noscale = 1 
    endif else begin
       If Keyword_Set(NSCALE) then begin
-         tv_w = ShowWeights_Scale(w, /setcol)
+         tv_w = ShowWeights_Scale(w, SETCOL=setcol, RANGE_IN=range_in)
          noscale = 1
       endif else begin
          tv_w = w
@@ -411,8 +414,8 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    ;; COde will break on IDL3, but we don't care any more.
    NoNone, w, Value=!VALUES.D_NAN
 
-   Default, Range, [min(w, /NAN), max(w, /NAN)] 
-   default, bound, 0
+   Default, Range_In, [min(w, /NAN), max(w, /NAN)] 
+   default, bound, 1
    Default, no_block, 1
    Default, modal, 0
    Default, deliver_events, [-1]
@@ -504,7 +507,9 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
    Widget_Control, base, /hourglass
 
    wset, tv_win
-   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, NONASE=1-Keyword_Set(NORDER), COLOR=color, GET_POSITION=gp
+   plotweights, tv_w, xmargin, ymargin, zoom, NOSCALE=noscale, $
+                RANGE_IN=range_in, NONASE=1-Keyword_Set(NORDER), $
+                COLOR=color, GET_POSITION=gp
    WIDGET_CONTROL, base, SET_UVALUE={name: "base", tv_id: tv}
    
    info={name    : "tv", $
@@ -524,13 +529,14 @@ Pro ExamineIt, _w, _tv_w, ZOOM=zoom, TITLE=title, $; DONT_PLOT=dont_plot, $
          wmax    : max(w, /NAN), $
          wmin    : min(w, /NAN), $
          bound   : bound, $
-         range   : range, $
+         range_in: range_in, $
          deliver_events:deliver_events, $
          xsize   : win_width, $
          ysize   : win_height, $
          nase    : nase, $
          norder  : norder, $
          nscale  : nscale, $
+         setcol  : setcol, $
          color   : color, $
          last_y_arr: w_height/2, $
          last_x_arr: w_width/2}
