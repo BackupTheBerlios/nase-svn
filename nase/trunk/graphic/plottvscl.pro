@@ -57,6 +57,9 @@
 ; MODIFICATION HISTORY:
 ;     
 ;     $Log$
+;     Revision 2.12  1997/12/17 15:43:55  thiel
+;            Weitere Verbesserung der /NOSCALE-Behandlung.
+;
 ;     Revision 2.11  1997/12/17 14:45:19  thiel
 ;            Jetzt neu: NOSCALE-Schluesselwort
 ;
@@ -220,6 +223,7 @@ IF Set(LEGEND) THEN TVSclLegend, OriginNormal(0)+TotalPlotWidthNormal*1.15,Origi
  V_Stretch=TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM), $
  Max=Max(W), Min=Min(W), $
  CHARSIZE=Charsize, $
+ NOSCALE=NoScale, $
  /Vertical, /Center 
 
 
