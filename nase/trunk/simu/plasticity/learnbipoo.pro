@@ -1,5 +1,5 @@
 ;+
-; NAME:               LearnBiPoo
+; NAME: LearnBiPoo
 ;
 ; PURPOSE:            Aendern einer Gewichtsmatrix in Abhaengigkeit der
 ;                     Aktivitaeten in Source- und Targetcluster
@@ -59,6 +59,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.3  1999/08/05 14:15:54  thiel
+;           Works correct with multiple changes of the same connection.
+;
 ;       Revision 1.2  1999/07/26 13:19:58  thiel
 ;           Changed according to new InitLearnBiPoo-array contents.
 ;
@@ -90,10 +93,14 @@ PRO LearnBiPoo, _DW, _PC, LW, SELF=Self, NONSELF=NonSelf, DELEARN=delearn
 ;   IF count NE 0 THEN deltaw(self) = 0.0
    
    wi = ConTiming(*,0)
-   DW.W(wi) = (DW.W(wi) + LW(2+ConTiming(*,1)+LW(0))); > 0.0
+   FOR i=0, N_Elements(wi)-1 DO BEGIN
+      DW.W(wi(i)) = ((DW.W(wi(i)) + LW(2+ConTiming(i,1)+LW(0))))
+   ENDFOR
 
 
    Handle_Value, PC.postpre, ConTiming, /NO_COPY, /SET
    Handle_Value, _PC, PC, /NO_COPY, /SET
    Handle_Value, _DW, DW, /NO_COPY, /SET
+
+
 END

@@ -74,12 +74,15 @@
 ;      ProceedLayer, L1
 ;   <Simulationsschleife>
 ;
-; SEE ALSO: <A HREF="#INITPRECALL">InitPrecall</A>, <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>,  <A HREF="#LEARNBIPOO">InitLearnBiPoo</A>.
+; SEE ALSO: <A HREF="#INITPRECALL">InitPrecall</A>, <A HREF="#INITLEARNBIPOO">InitLearnBiPoo</A>,  <A HREF="#LEARNBIPOO">LearnBiPoo</A>.
 ;
 ;
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.2  1999/08/05 14:15:54  thiel
+;           Works correct with multiple changes of the same connection.
+;
 ;       Revision 1.1  1999/07/28 14:49:36  thiel
 ;           Now possible: Delay Adaptation.
 ;
@@ -114,8 +117,16 @@ PRO LearnDelays, _DW, _PC, LW;, SELF=Self, NONSELF=NonSelf;, DELEARN=delearn
 
 ;--- First change DW.D according to deltat contained in ConTiming
 ;    according to learnwindow:
-   DW.D(wi) = ((DW.D(wi) + LW(2+ConTiming(*,1)+LW(0)))) > 0.0
+   
 
+   FOR i=0, N_Elements(wi)-1 DO BEGIN
+      DW.D(wi(i)) = ((DW.D(wi(i)) + LW(2+ConTiming(i,1)+LW(0)))) > 0.0
+;      print, 'i ',i,' DW.D(wi(',i,') ',dw.D(wi(i))
+;      print, 'cont:', ConTiming(i,0), ConTiming(i,1)
+   ENDFOR
+
+   wi = wi(UNIQ(wi, SORT(wi)))
+   
 
 ;--- Now the queue-delays have to be changed also:
 
