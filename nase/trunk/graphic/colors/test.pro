@@ -5,7 +5,7 @@
 ; VERSION:
 ;  $Id$
 ;
-; AIM:
+; AIM: just a test
 ;
 ;
 ; PURPOSE:
