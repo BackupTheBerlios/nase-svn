@@ -80,6 +80,7 @@ PRO MSPLOT, z, zz, zzz $
             , BW=bw, SIMPLE=simple, OPLOT=oplot $
             , XSTYLE=xstyle, YSTYLE=ystyle $
             , XTICKFORMAT=xtickformat, YTICKFORMAT=ytickformat $
+            , YTICK_GET=ytick_get $
             , _EXTRA=extra
 
    On_Error, 2
@@ -147,7 +148,6 @@ PRO MSPLOT, z, zz, zzz $
 
    IF Set(YRANGE) THEN yr=YRANGE ;if not the default is already set above
    
-
    ;; initialize coordinate system, with actually plotting neither
    ;; data nor the axes :
    IF NOT Keyword_Set(OPLOT) THEN $
@@ -231,9 +231,10 @@ PRO MSPLOT, z, zz, zzz $
       Axis, XAXIS=1, XRANGE=xrange, XSTYLE=xstyle, XTICKFORMAT='noticks' $
        , _EXTRA=extra
       Axis, YAXIS=0, YRANGE=yr, YSTYLE=ystyle, YTITLE=ytitle $
-       , YTICKFORMAT=ytickformat, _EXTRA=extra
+       , YTICKFORMAT=ytickformat, YTICK_GET=ytick_get, _EXTRA=extra
       Axis, YAXIS=1, YRANGE=yr, YSTYLE=ystyle, YTICKFORMAT='noticks' $
        , _EXTRA=extra
    ENDIF
  
+
 END
