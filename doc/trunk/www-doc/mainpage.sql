@@ -29,7 +29,7 @@
 <! SQL CONNECT localhost chiefnase misfitme>
 <! SQL DATABASE nase >
 
-<! SQL QUERY "select dayofmonth(date),monthname(date),news, (date > (DATE_SUB(now(),INTERVAL 31 day))) from news order by date desc" q1 >
+<! SQL QUERY "select dayofmonth(date),monthname(date),news from news where (date > (DATE_SUB(now(),INTERVAL 31 day))) order by date desc" q1 >
 <! SQL IF $NUM_ROWS != 0 >
 
 <TABLE COLS=2><TR><TH ALIGN=LEFT WIDTH=130>Recent News</TH><TH WIDTH=400></TH>
