@@ -6,13 +6,13 @@
 ;
 ; CATEGORY:            STAT
 ;
-; CALLING SEQUENCE:    IStimI = Isi(trial [, /HISTO]) 
+; CALLING SEQUENCE:    IStimI = Isi(trial [, HISTO=histo]) 
 ;
 ; INPUTS:              trial: ein eindimensionaler Spiketrain oder ein Spiketrainarray
 ;                             mit Indizes trial(neuron,time)
 ;
-; KEYWORD PARAMETERS:  HISTO  : wenn gesetzt, wird die Summe ueber alle uebergebenen 
-;                               Trials gebildet und zurueckgegeben
+; OPTIONAL OUTPUTS:    HISTO  : wenn gesetzt, wird die Summe ueber alle uebergebenen 
+;                                Trials gebildet und zurueckgegeben
 ;
 ; OUTPUTS:             IStimI : das berechnet ISI-Array oder -Histogramm
 ;
@@ -21,12 +21,15 @@
 ;                      trials(WHERE(RandomU(seed, 100, 1000) GT 0.9)) = 1
 ;                      IStiI = ISI(trials)
 ;                      tvscl, IStiI
-;                      IStiIH = ISI(trials, /HISTO)
+;                      dummy = ISI(trials, HISTO=IStiIH)
 ;                      plot, IStiIH
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 1.2  1998/03/31 11:36:01  saam
+;           now histo is an optional output
+;
 ;     Revision 1.1  1997/11/03 18:12:34  saam
 ;           im archiv gefunden und an Nase angepasst
 ;
@@ -109,15 +112,13 @@ FUNCTION ISI, trial, histo=HISTO
          END
       ENDFOR
 
-      IF KEYWORD_SET(histo) THEN BEGIN
-         RETURN, TOTAL(isi_arr(*,0:max_isi), 1)
-      ENDIF ELSE BEGIN
-         RETURN, isi_arr(*,0:max_isi)
-      ENDELSE
+      histo = TOTAL(isi_arr(*,0:max_isi), 1)
+      RETURN, isi_arr(*,0:max_isi)
 
    ENDIF ELSE BEGIN
 ; one dimensional trial
       tmp = MYISI(trial, isi)
+      histo = isi
       RETURN, isi
    ENDELSE
    
