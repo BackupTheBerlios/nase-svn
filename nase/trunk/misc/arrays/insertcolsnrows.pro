@@ -61,6 +61,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.2  1998/06/28 11:22:51  thiel
+;               Bugfix: eindimensionale Arrays funktionieren jetzt auch.
+;
 ;        Revision 1.1  1998/06/15 19:08:18  thiel
 ;               Wer Extract sagt muss auch Insert sagen.
 ;
@@ -83,14 +86,22 @@ FUNCTION InsertColsnRows, Original, COL_DIST=col_dist, ROW_DIST=row_dist, $
    IF (col_offset GE col_dist) THEN Message, 'Column-offset must be less than distance! Try Again!'
    IF (row_offset GE row_dist) THEN Message, 'Row-offset must be less than distance! Try Again!'
 
-   originalhoehe=(Size(Original))(2)
-   originalbreite=(Size(Original))(1)
+   IF (Size(original))(0) EQ 1 THEN BEGIN ;eindimensionales Array
+      originalhoehe = 1
+      originalbreite = (Size(Original))(1)
+      resulthoehe = originalhoehe*row_dist
+      resultbreite = originalbreite*col_dist
+      result1 = Make_Array(resultbreite,originalhoehe, VALUE=value, TYPE=(Size(original))(2))
+      result2 = Make_Array(resultbreite,resulthoehe, VALUE=value, TYPE=(Size(original))(2))
+   ENDIF ELSE BEGIN
+      originalhoehe=(Size(Original))(2)
+      originalbreite=(Size(Original))(1)
+      resulthoehe = originalhoehe*row_dist
+      resultbreite = originalbreite*col_dist
+      result1 = Make_Array(resultbreite,originalhoehe, VALUE=value, TYPE=(Size(original))(3))
+      result2 = Make_Array(resultbreite,resulthoehe, VALUE=value, TYPE=(Size(original))(3))
+   ENDELSE
 
-   resulthoehe = originalhoehe*row_dist
-   resultbreite = originalbreite*col_dist
-
-   result1 = Make_Array(resultbreite,originalhoehe, VALUE=value, TYPE=(Size(original))(3))
-   result2 = Make_Array(resultbreite,resulthoehe, VALUE=value, TYPE=(Size(original))(3))
 
 ;   If (col_dist GT OriginalBreite) OR (row_dist GT OriginalHoehe) Then $
 ;    Message, 'Distances greater than original arraysize not allowed! Try again!'
