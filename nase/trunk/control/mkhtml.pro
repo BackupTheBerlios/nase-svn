@@ -12,6 +12,9 @@
 ; MODIFICATION HISTORY: 
 ;
 ;       $Log$
+;       Revision 1.13  1998/06/10 15:49:31  neuroadm
+;             new hierarchy
+;
 ;       Revision 1.12  1998/01/22 11:52:31  saam
 ;             Neues Directory alien
 ;
@@ -47,9 +50,13 @@
 PRO MkHTML
 
 Spawn, '/bin/pwd | sed "s/\/a\/ax1303//g"', MainDir
-SubDirs   = ['control','input','graphic','graphic/nonase','misc', $
-             'misc/array', 'misc/structures', 'simu', 'simu/connections',$
-             'simu/layers', 'simu/plasticity', 'stat', 'video+tape', 'alien']
+SubDirs   = ['alien',$
+	     'control','control/counter','control/loops','control/output','control/time','video+tape',$
+	     'graphic','graphic/colors','graphic/nase','graphic/plotcilloscope','graphic/sheets','graphic/support',$
+	     'math',$
+             'methods','methods/fits','methods/corrs+specs','methods/rfscan','methods/signals','methods/stat',$
+             'misc','misc/arrays','misc/files+dirs','misc/handles','misc/keywords','misc/regler','misc/strings','misc/structures',$
+	     'simu','simu/input','simu/connections','simu/layers','simu/plsticity']
 HTMLFile  = 'index.html'
 
 FOR i=0, N_Elements(SubDirs)-1 DO BEGIN
