@@ -81,7 +81,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
                    TITLE=title, $
                    PIXMAP=pixmap, $
                    RETAIN=retain, COLORS=colors, $
-                   GET_BASE=get_base, GROUP=group
+                   GET_BASE=get_base, GROUP=group, KILL_NOTIFY=kill_notify
 
    Default,  xsize, 300
    Default,  ysize, 300
@@ -92,6 +92,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    Default,  pixmap, 0
    Default,  colors, 0
    Default,  retain, 0
+   Default,  kill_notify, ''
 
    If not Keyword_Set(XDRAWSIZE) then begin
       XDRAWSIZE = XSIZE
@@ -108,7 +109,7 @@ Function ScrollIt, XPOS=xpos, YPOS=ypos, XSIZE=xsize, YSIZE=ysize, $
    Draw = Widget_Draw(Base, $
                       XSIZE=xdrawsize, YSIZE=ydrawsize, $
                       X_SCROLL_SIZE=xsize, Y_SCROLL_SIZE=ysize, $
-                      RETAIN=retain, COLORS=colors)
+                      RETAIN=retain, COLORS=colors, KILL_NOTIFY=kill_notify)
 
    Widget_Control, /REALIZE, Base
    Widget_Control, GET_VALUE=Window_ID, Draw
