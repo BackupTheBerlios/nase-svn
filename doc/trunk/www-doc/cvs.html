@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Unix: CVS</TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.0Gold (X11; I; OSF1 V4.0 alpha) [Netscape]">
+   <META NAME="Author" CONTENT="Mirko Saam">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<P><!-- Changed by: saam, 23-May-1996 --><BASE HREF="http://www.physik.uni-marburg.de/bio/mitarbei/saam/cvs.html"><NEXTID N=A12></P>
+
+<H4><A HREF="http://www.uni-marburg.de">Philipps-Universit&auml;t Marburg</A>,
+<A HREF="http://www.physik.uni-marburg.de">FB Physik</A>, <A HREF="http://www.physik.uni-marburg.de/bio/biophys.html">AG
+Neurophysik</A>, <A HREF="linux.html">Unix</A> 
+<HR></H4>
+
+<H1>Concurrent Versions System</H1>
+
+<P>Dies ist eine kleine CVS-Einf&uuml;hrung f&uuml;r Leute, die am Projekt
+N.A.S.E.&nbsp;/&nbsp;M.I.N.D. arbeiten oder wollen. Kein Anspruch auf Vollst&auml;ndigkeit,
+Verbesserungsvorschl&auml;ge werden gerne angenommen.</P>
+
+<UL>
+<LI><A HREF="#Vorbereitungen">Vorbereitungen f&uuml;r N.A.S.E.</A></LI>
+
+<LI><A HREF="#Grundlegende Aktionen">Grundlegende Aktionen</A></LI>
+
+<LI><A HREF="#Tags & Releases">Tags&nbsp;&amp;&nbsp;Releases</A></LI>
+
+<LI><A HREF="#Weitere Infos">Weitere Infos</A></LI>
+</UL>
+
+<H2><A NAME="Vorbereitungen"></A>Vorbereitungen f&uuml;r N.A.S.E.</H2>
+
+<UL>
+<LI>CVS-Root-Directory setzen:<BR>
+<BR>
+bash: export CVSROOT=/usr/ax1303/neuroadm/IDLCVS<BR>
+tcsh: setenv CVSROOT /usr/ax1303/neuroadm/IDLCVS</LI>
+</UL>
+
+<H2><A NAME="Grundlegende Aktionen"></A>Grundlegende Aktionen</H2>
+
+<H3>Erstellen einer Arbeitskopie</H3>
+
+<UL>
+<LI>In ein beliegibes Verzeichnis wechseln, unter dem die Directories und
+Files angelegt werden sollen.</LI>
+
+<UL>
+<P><TT>cvs checkout nase</TT><BR>
+<BR>
+</P>
+</UL>
+</UL>
+
+<H3>Updaten einer Arbeitskopie</H3>
+
+<UL>
+<LI>Hat man bereits eine Arbeitskopie k&ouml;nnte es ja sein, da&szlig;
+jemand anderes Teile des Projekts ver&auml;ndert hat. Um die vorhandene
+Version zu aktualisieren, <I>ohne eigene Ver&auml;nderungen zu &uuml;berschreiben</I>
+benutzt man:</LI>
+
+<UL>
+<P><TT>cvs update nase</TT><BR>
+<BR>
+</P>
+</UL>
+</UL>
+
+<H3>Editieren eines Files</H3>
+
+<UL>
+<LI>Als erstes sollte man &uuml;berpr&uuml;fen, ob nicht bereits jemand
+am gleichen File herumwurschtelt:</LI>
+
+<UL>
+<P><TT>cvs editors</TT></P>
+</UL>
+
+<LI>Wenn nicht, kann man das File zum editieren markieren:</LI>
+
+<UL>
+<P><TT>cvs edit &lt;file&gt;</TT></P>
+</UL>
+
+<LI>Die vorher schreibgesch&uuml;tzte Version ist nun schreibbar. Ist man
+fertig und stellt fest, da&szlig; alle Ver&auml;nderungen Mist sind und
+man lieber den ganzen Quatsch vergessen m&ouml;chte, benutzt man am besten</LI>
+
+<UL>
+<P><TT>cvs unedit &lt;file&gt;</TT><BR>
+</P>
+</UL>
+
+<LI>Fktioniert alles prima, kann man die &Auml;nderungen f&uuml;r alle
+sichtbar machen:</LI>
+
+<UL>
+<P><TT>cvs commit &lt;file&gt;</TT></P>
+</UL>
+</UL>
+
+<H3>Hinzuf&uuml;gen eines neuen Files</H3>
+
+<UL>
+<LI>M&ouml;chte man ein neues File hinzuf&uuml;gen, dann muss man eingeben:</LI>
+
+<UL>
+<P><TT>cvs add &lt;file&gt;</TT></P>
+</UL>
+
+<LI>Damit alle &Auml;nderungen wirksam werden, gibt man dann noch ein abschlie&szlig;endes</LI>
+
+<UL>
+<P><TT>cvs commit &lt;file&gt;</TT></P>
+</UL>
+</UL>
+
+<H3>L&ouml;schen der Arbeitskopie</H3>
+
+<UL>
+<LI>Hat man keine Lust mehr, was zu arbeiten, kann man die Arbeitskopie
+l&ouml;schen:</LI>
+
+<UL>
+<P><TT>cvs release -d nase</TT></P>
+</UL>
+</UL>
+
+<H2><A NAME="Tags & Releases"></A>Tags &amp; Releases</H2>
+
+<H3>Erstellen eines Releases</H3>
+
+<P>Da die Funktionalit&auml;t und die Aufrufkonventionen vieler Routinen
+mit der Zeit ver&auml;ndert wird, kann es vorkommen, da&szlig; alte Simulationen
+mit den neuen Routinen nicht mehr zusammenpassen. M&ouml;chte (oder kann)
+man die Simulationen nicht anpassen, so braucht man die alten Routinen.
+Kein Problem, aber welche Revisionsnummern hatten die ?? CVS bietet die
+M&ouml;glichkeit symbolische Revisionsnamen zu vergeben. Dies funktioniert
+f&uuml;r einzelne Files:</P>
+
+<UL>
+<P><TT>cvs tag &lt;release-tag&gt; simu/delayweigh.pro</TT></P>
+</UL>
+
+<P>und auch rekursiv f&uuml;r alle Files in und unter dem aktuellen Verzeichnis:</P>
+
+<UL>
+<P>cvs tag &lt;release-tag&gt; . </P>
+</UL>
+
+<P>In den Tag-Namen sind die Symbole '$ , . : ; @' nicht zugelassen.</P>
+
+<H3>Anzeigen von Tags</H3>
+
+<P>Die existierenden Tags, sowie allemeine Informationen zu einem CVS-File
+erh&auml;lt man mit:</P>
+
+<UL>
+<P><TT>cvs status -v delayweigh.pro</TT></P>
+</UL>
+
+<H3>Auschecken eines bestimmten Releases</H3>
+
+<UL>
+<P><TT>cvs checkout -r release-5-9-97 nase</TT></P>
+</UL>
+
+<P>Dieses Release gibt's wirklich, kann mal ausprobiert werden.</P>
+
+<P>Eine andere M&ouml;glichkeit besteht darin alle Files auszuchecken,
+den zu einem bestimmten Datum (i.a. dem der Simulation) aktuell waren:</P>
+
+<UL>
+<P>cvs checkout -D &lt;Datum-String&gt; nase</P>
+</UL>
+
+<P>Als Datum-String sind Sachen wie</P>
+
+<UL>
+<P>'500000 seconds ago', 'last year', 'yesterday', 'January 23, 1987 10:05pm'</P>
+</UL>
+
+<P>erlaubt.</P>
+
+<H2><A NAME="Weitere Infos"></A>Weitere Infos</H2>
+
+<UL>
+<LI>Nach dem ersten Checkout gibt es eine IDL-Routine names CVS, die eine
+einfache graphische Schnittstelle zur Verf&uuml;gung stellt.</LI>
+
+<LI><A HREF="http://www.cyclic.com/cyclic-pages/CVS-sheet.html">Allgemein</A></LI>, <A HREF="http://www.loria.fr/~molli/cvs-index.html">Auch Allemein</A> 
+
+<LI><A HREF="http://papaya.nosc.mil/docs/cvstraining/cvstrain.html">Training
+Manual</A></LI>
+
+<LI>Manual Pages: <A HREF="http://neuro.physik.uni-marburg.de/cgi-bin/man2html.pp?cgi_command=cvs&cgi_section=1&cgi_keyword=m">cvs(1),
+</A><A HREF="http://neuro.physik.uni-marburg.de/cgi-bin/man2html.pp?cgi_command=cvs&cgi_section=5&cgi_keyword=m">cvs(5)</A></LI>
+
+<LI>Manual als <A HREF="cvs.ps">Postscript</A></LI>
+</UL>
+
+<P>
+<HR WIDTH="100%"><FONT SIZE=-1><A HREF="mailto:Mirko.Saam@physik.uni-marburg.de">Mirko
+Saam</A></FONT>, <FONT SIZE=-1>5. September 1997</FONT></P>
+
+</BODY>
+</HTML>
