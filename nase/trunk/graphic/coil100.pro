@@ -84,8 +84,9 @@
 ;  necessary, and return in array.
 ;
 ; EXAMPLE:
-;*plottvscl, coil100(1,0), cubic=-0.5
-;*for i=0,360,5 do plottvscl, coil100(1,i), cubic=-0.5, update_info=ui
+;*plottvscl, coil100(1,0,/GREY), cubic=-0.5
+;*tvscl, coil100(1,0), TRUE=1
+;*for i=0,360,5 do tvscl, coil100(1,i), TRUE=1
 ;
 ; SEE ALSO:
 ;  <A>COIL20(), FadeToGrey()</A>
