@@ -81,11 +81,14 @@
 ;              Scl, A, [min(A),max(A)]
 ;              
 ;
-; SEE ALSO: <A HREF="../../alien#SCALEARRAY">ScaleArray()</A>
+; SEE ALSO: <A HREF="../../alien/#SCALEARRAY">ScaleArray()</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.4  1999/09/22 14:42:24  kupper
+;        Grrr. Hyperling again.
+;
 ;        Revision 1.3  1999/09/22 14:36:27  kupper
 ;        Corrected Hyperling.
 ;
