@@ -19,7 +19,7 @@
 ; OUTPUTS:             B : eine anonyme Struktur mit den Tags aus diff, die in A enthalten
 ;                          sind. Hat keines uebereingestimmt wird !NONE zurueckgegeben.
 ;                      A : enthaelt die uebriggebliebenen Tags (falls /LEAVE nicht gesetzt),
-;                          bzw. !NONE, wenn es keine gibt
+;                          bzw. ist undefiniert, wenn es keine mehr gibt
 ;
 ; SIDE EFFECTS:        aus A werden ggf. Tags geloescht
 ;
@@ -38,11 +38,14 @@
 ;
 ;                      A = {a:1, b:2, z:'Haha'}
 ;                      
-; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#DIFFSET">DiffSet</A>
+; SEE ALSO:            <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/arrays/#DIFFSET">DiffSet</A>, <A HREF="http://neuro.physik.uni-marburg.de/nase/misc/#UNDEF">UNDEF</A>
 ;
 ; MODIFICATION HISTORY:
 ;
 ;     $Log$
+;     Revision 2.3  1998/08/14 11:15:30  saam
+;           now returns an undefined variable for B instead of !NONE
+;
 ;     Revision 2.2  1998/08/14 10:10:13  saam
 ;           doc header errors corrected
 ;
@@ -91,7 +94,7 @@ FUNCTION ExtraDiff, extra, keywords, LEAVE=leave
          newextra = Create_Struct(tNames(staytags(0)),extra.(staytags(0)))
          FOR i=1, N_Elements(staytags)-1 DO newextra =  Create_Struct(newextra, tNames(staytags(i)),extra.(staytags(i)))
       END      
-      IF Set(newextra) THEN extra = newextra ELSE extra = !NONE
+      IF Set(newextra) THEN extra = newextra ELSE undef, extra
    END
 
    
