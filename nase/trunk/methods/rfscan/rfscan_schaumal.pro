@@ -3,7 +3,7 @@
 ;
 ; PURPOSE: siehe <A HREF="#RFSCAN_INIT">RFScan_Init()</A>
 ;
-; CALLING SEQUENCE: RFScan_Schaumal, My_RFScan, OutLayer
+; CALLING SEQUENCE: RFScan_Schaumal, My_RFScan, OutLayer [,/NOVISUALIZE]
 ;
 ; INPUTS: My_RFScan: Eine mit <A HREF="#RFSCAN_INIT">RFScan_Init()</A> initialisierte
 ;                    RFScan-Struktur.
@@ -12,6 +12,13 @@
 ;                    Initialisierung angegeben wurde (zumindest muﬂ er 
 ;                    die gleichen Ausmaﬂe haben...)
 ;
+; KEYWORD PARAMETERS: NOVISUALIZE: Wenn gesetzt, wird kein Update der
+;                                  Visualisierung gemacht
+;                                  (zeitsparend)
+;                                  Wurde RFScan_Init ohne VISUALIZE
+;                                  initialisiert, so wird dieses
+;                                  Keyword ignoriert.
+;
 ; EXAMPLE: RFScan_Schaumal, My_RFScan, SimpleCells
 ;
 ; SEE ALSO: <A HREF="#RFSCAN_INIT">RFScan_Init()</A>, <A HREF="#RFSCAN_ZEIGMAL">RFScan_Zeigmal()</A>, <A HREF="#RFSCAN_RETURN">RFScan_Return()</A>
@@ -19,6 +26,9 @@
 ; MODIFICATION HISTORY:
 ;
 ;        $Log$
+;        Revision 1.7  1998/03/23 17:44:09  kupper
+;               NOVISUALIZE implementiert.
+;
 ;        Revision 1.6  1998/03/14 11:26:47  kupper
 ;               Inputkantentypen -1 und -2 implementiert.
 ;               Kosmetische ƒnderung an der Visualisierung (dreheung des Surface Plots).
@@ -49,7 +59,7 @@
 ;
 ;-
 
-Pro RFScan_Schaumal, RFS, OutLayer
+Pro RFScan_Schaumal, RFS, OutLayer, NOVISUALIZE=novisualize
 
    TestInfo, RFS, "RFScan"
 
@@ -62,7 +72,7 @@ Pro RFScan_Schaumal, RFS, OutLayer
    If RFS.OBSERVE_POTENTIALS then LayerData, OutLayer, POTENTIAL=Out
    
    ;;------------------> VISUALIZE?
-   If Keyword_Set(RFS.VISUALIZE) then begin
+   If Keyword_Set(RFS.VISUALIZE) and not Keyword_Set(NOVISUALIZE) then begin
       ActWin = !D.Window
       
       WSet, RFS.WinOut          ;Draw Observed Pattern
