@@ -10,6 +10,9 @@
 % MODIFICATION HISTORY:
 %
 %       $Log$
+%       Revision 1.16  2001/11/27 14:25:25  thiel
+%          FloatWeigh fulfilled.
+%
 %       Revision 1.15  2001/05/08 13:43:10  thiel
 %          RealFileName can be turned off now.
 %
@@ -213,7 +216,6 @@ WARNING: IDL is only able to zip since V5.3!
 \item initialize T2C on demand and in a separate function
 \item extend \texttt{initDW} to work \texttt{SLOW} and \texttt{FAST} version
 \item check the functionality of weight display routines, when T2C is missing
-\item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well
 \item \texttt{N_Spikes} and \texttt{LayerMUA} are redundant. Current status: \texttt{N_Spikes} uses \texttt{LayerMUA} and generates warning.
 \item \texttt{SetWeights} new version doesnt delete \texttt{!NONE} connections properly.
 \end{itemize}
@@ -249,6 +251,7 @@ WARNING: IDL is only able to zip since V5.3!
 \item \texttt{PlotTvScl}: legend only approximately identical with actual coordinate system [see new routine PTVS, done, MS]
 \item \texttt{SimTime}: make it work together with console [done, AT] 
 \item \texttt{RealFileName}: marburg specific actions brake other systems [done, AT]
+\item \texttt{floatWeigh}: commit, leave a message in \texttt{delayWeigh} to perform all changes in \texttt{floatWeigh} as well [FloatWeigh function is now included in DelayWeigh, AT].
 \end{itemize}
 
 
