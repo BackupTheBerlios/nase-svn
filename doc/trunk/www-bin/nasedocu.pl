@@ -23,7 +23,7 @@ import_names('P');
 chop ($hostname = `uname -a`);
 {
   $hostname =~ /neuro/i && do {$CVSROOT="/vol/neuro/nase/IDLCVS"; 
-			       $DOCDIR="/vol/neuro/nase/nasedocu"; 
+			       $DOCDIR="/vol/neuro/nase/www-nase-copy"; 
 			       $CGIROOT="/vol/neuro/www";
 			       $IDXDIR="$DOCDIR";
 			       $HTDOCS="/vol/neuro/www/htdocs/nase";
@@ -127,30 +127,12 @@ sub showlog {
 ###################################################################################
 sub showheader {
 
-  my ($namefound, $file);
+  my ($file);
 
   $file = shift(@_);
   $file .= ".pro" unless $file =~ /\.pro$/i;
   
-#  open(IN, "$file") || die "can't open $file";
-#  print "<PRE>";
-#  while (<IN>){
-#    last if (/;+/) 
-#  }
-#  while (<IN>){
-#    last if (/(;-)|(MODIFICATION HISTORY)|^[^;]/i);
-#    s/^;//;
-
-#    {
-#      /NAME\s*:\s*(\w+)/i && do {if (! $namefound){ print h1("$1 <FONT SIZE=-1><A HREF=$fullurl?file=".lc($1)."&mode=text&show=source>source</A> <A HREF=$fullurl?file=".lc($1)."&mode=text&show=log>modifications</A> ".showedit($file)."</FONT>"); $namefound=1; } else {print;};  last;};
-#      /(SEE\s+ALSO\s*:\s+)(.*)/i && do {print $1, fixhl($2); last; };
-#      print;
-#    }
-#  }
-#  print "</PRE>";
-#  close(IN) || die "can't close $file";
   parseHeader($file);
-  
 }
 
 
@@ -187,12 +169,9 @@ sub showsource {
   {
     local $/;
     $_ = <IN>;
-#    s/\"([^\"]*)\"/\"<FONT COLOR=green>$1<\/FONT>\"/gi;
-#    s/\'([^\']*)\'/\'<FONT COLOR=green>$1<\/FONT>\'/gi;
     foreach $keyword (@keywords){
       s/(\s)$keyword(\s)/$1<FONT COLOR="red">$keyword<\/FONT>$2/gi;
     }
-#    s/;(.*)\n/<FONT COLOR="blue">;$1<\/FONT>\n/gi;
     print;
   }
 
@@ -284,7 +263,7 @@ if ($P::mode){
 				    if ($P::show eq "source") { showsource($DOCDIR."/".$sub."/".$P::file); };
 				    if ($P::show eq "log"   ) { showlog($DOCDIR."/".$sub."/".$P::file);    };
 				  } else {
-				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") || open(IDX, "<".$DOCDIR."/nase/doc/mainpage.html");
+				    open(IDX, "<".$DOCDIR."/".$sub."/"."index.html") || open(IDX, "<".$DOCDIR."/doc/www-doc/mainpage.html");
 				    while(<IDX>){print;};
 				    close(IDX) || die "can't close index: $!\n";
 				    last TRUNK;};
