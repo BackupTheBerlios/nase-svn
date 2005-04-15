@@ -64,7 +64,8 @@
 ;           sequence always starts and ends with the same index. The
 ;           number of elements in <*>result</*> is 
 ;           <*>n^2+1</*> with <*>n</*> being the number of entries
-;           in <*>array</*>, if <*>array</*> was onedimensional, and <*>m</*>,
+;           in <*>array</*>, if <*>array</*> was onedimensional, and
+;           <*>m+1</*>, 
 ;           with <*>m</*> being the number of nonzero elements of
 ;           <*>array</*>, if it was twodimensional.
 ;
