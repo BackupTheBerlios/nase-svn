@@ -51,7 +51,7 @@ sub createTablesIfNotExist {
 	      "Simulation", "Strings", "Structures", "Widgets", "Windows", "_Error");
   # _Error is an internal category that contains doc headers with errors
 
-  if (not grep(/^pro$/, $dbh->func('_ListTables'))){
+  if (not grep(/^`pro`$/, $dbh->tables())){
     $dbh->do ( qq{
 		  CREATE TABLE pro
 		  (  fname   CHAR(80) NOT NULL PRIMARY KEY,
@@ -66,7 +66,7 @@ sub createTablesIfNotExist {
   die "create table routines: $DBI::errstr\n" if $DBI::err;
 
 
-  if (not grep(/^catl$/, $dbh->func('_ListTables'))){
+  if (not grep(/^`catl`$/,$dbh->tables())){
     $dbh->do ( qq{
 		  CREATE TABLE catl
 		  (  cname   CHAR(80) NOT NULL PRIMARY KEY
@@ -86,7 +86,7 @@ sub createTablesIfNotExist {
   die "create table error: $DBI::errstr\n" if $DBI::err;
 
 
-  if (not grep(/^cat$/, $dbh->func('_ListTables'))){
+  if (not grep(/^`cat`$/, $dbh->tables())){
     $dbh->do ( qq{
 		  CREATE TABLE cat
 		  (  fname   CHAR(80) NOT NULL,  # points to fname in pro
