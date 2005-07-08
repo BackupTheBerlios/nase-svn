@@ -57,6 +57,7 @@ PRO UBar_Plot, xdata, ydata, xbase $
                , BARSPACE=BARSPACE, SYMMETRIC=SYMMETRIC, OPLOT=OPLOT $
                , _EXTRA=e
 
+
    On_Error, 2
 
    DEFAULT,offset,0
