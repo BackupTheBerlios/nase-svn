@@ -60,6 +60,7 @@ PRO UBar_Plot, xdata, ydata, xbase $
 
    On_Error, 2
 
+
    DEFAULT,offset,0
    DEFAULT,OPLOT,0
    DEFAULT,colors,!P.COLOR
