@@ -24,7 +24,7 @@
 ; CALLING SEQUENCE:
 ;* newPTV, image [,x [,y]] [,/FITPLOT] [,/ORDER] [,/POLYGON] [,/CORNERS] 
 ;*                   [,CUBIC=...] [,/INTERP] [,/MINUS_ONE] [,/SMOOTH] 
-;*                   [,/LEGEND] [,LEGMARGIN=...]
+;*                   [,/LEGEND] [,LEGMARGIN=...] [/ALLOWCOLORS]
 ;
 ; INPUTS:
 ;  image:: One- or two dimensional array of color indices.
@@ -78,6 +78,7 @@
 ;          passed to <A>TvSclLegend</A> without the leading
 ;          <*>LEG</*>. This can be used to adjust the legend to your
 ;          personal needs. 
+; /ALLOWCOLORS:: Passed to <A>UTVScl</A>.
 ;
 ; OPTIONAL OUTPUTS:
 ;  None yet.
@@ -161,6 +162,7 @@ PRO newPTV, first, second, third $
             , LEGMIN=legmin, LEGMAX=legmax $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth $
             , CHARSIZE=charsize $
+            , ALLOWCOLORS = allowcolors $
             , _EXTRA=_extra
    
    On_Error, 2
@@ -373,7 +375,9 @@ PRO newPTV, first, second, third $
     , ORDER=order $
    ELSE $
     UTVScl, a, xarro, yarro, NORM_X_SIZE=warr, NORM_Y_SIZE=harr $
-    , ORDER=order, /NOSCALE, CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one
+            , ORDER=order, /NOSCALE, CUBIC=cubic, INTERP=interp $
+            , MINUS_ONE=minus_one $
+            , ALLOWCOLORS = allowcolors
 
    ;; have a single number indicating whether the array has a single
    ;; entry, is a single row or column or a normal two dim array
