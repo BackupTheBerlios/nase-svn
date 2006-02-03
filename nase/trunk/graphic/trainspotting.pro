@@ -25,6 +25,7 @@
 ;*                   [,TITLE=...] [,XTITLE=...] [,YTITLE=...]
 ;*                   [,WIN=...] [,LEVEL=...] 
 ;*                   [,XSYMBOLSIZE=...] [YSYMBOLSIZE=...]
+;*                   [,PSYM...][,SYMSIZE=...]
 ;*                   [,/OVERPLOT] [,/CLEAN] 
 ;*                   [,/MUA [,MCOLOR=...]]
 ;*                   [,/SPASS] 
@@ -73,6 +74,12 @@
 ;                              <A NREF=DEFINESHEET>sheets</A>. Defaults: 
 ;                              <*>XSYMBOLSIZE=1 pixel</*>,
 ;                              <*>YSYMBOLSIZE=1/number of neurons</*>.
+;  PSYM:: Use the specified symbol for showing the spikes, not the
+;         default rectangles. For example, triagular or circular spike
+;         symbols may be obtained by using the <A>USym()</A> function. 
+;  SYMSIZE:: Factor for scaling the spike symbols up or down. This is
+;            useful in combination with spike symbols specified by the
+;            user via the <*>PSYM</*> keyword.
 ;  OVERPLOT:: Plots the data into an already existing coordinate system.
 ;  CLEAN :: Suppresses all annotation and axes and draws only
 ;             spikes. This is useful for importing the graphics into other
@@ -109,6 +116,7 @@
 ;* Trainspotting, tn, TITLE='cute spikes', YSYMBOLSIZE=0.02
 ;* Trainspotting, tn, TITLE='real fat spikes', XSYMBOLSIZE=0.02,$
 ;*                                                  YSYMBOLSIZE=0.1
+;* Trainspotting, tn, TITLE='round spikes', PSYM=USym(/CIRC,/FILL),SYMSIZE=.6
 ;
 ; Sparse arrays and ranges:
 ;* stn = Spassmacher(tn, /DIMENSIONS)
@@ -117,7 +125,7 @@
 ;* Trainspotting, stn, /SPASS, xrange=[0.05,0.15], yrange=[5,15], $
 ;*                     OVERSAMP=1000, XTITLE='Time / s'
 ;
-; SEE ALSO: <A>TrainspottingScope</A>, <A>Spassmacher</A>
+; SEE ALSO: <A>TrainspottingScope</A>, <A>Spassmacher</A>, <A>USym()</A>.
 ;
 ;-
 
@@ -130,7 +138,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
                    XTITLE=xtitle, SPASS=spass, $
                    XRANGE=xrange, YRANGE=yrange, $
                    YTICKFORMAT = ytickformat, YMINOR = yminor, $
-                   MUA=mua, MCOLOR=mcolor $
+                   MUA=mua, MCOLOR=mcolor, PSYM = psym, SYMSIZE = symsize $
                    , _EXTRA=_extra
 
    On_Error, 2
@@ -262,12 +270,15 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
    xsizechar = xsizedevice/!D.X_CH_SIZE
    ysizechar = ysizedevice/!D.Y_CH_SIZE
    
-   UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, $
-             -xsizechar/2.0, -xsizechar/2.0], $
-            [-ysizechar/2.0, -ysizechar/2.0, ysizechar/2.0, $
-             ysizechar/2.0, -ysizechar/2.0], $
-            FILL=fill
-   
+   IF NOT Set(PSYM) THEN BEGIN
+      UserSym, [-xsizechar/2.0, xsizechar/2.0, xsizechar/2.0, $
+                -xsizechar/2.0, -xsizechar/2.0], $
+               [-ysizechar/2.0, -ysizechar/2.0, ysizechar/2.0, $
+                ysizechar/2.0, -ysizechar/2.0], $
+               FILL=fill
+      psym = 8
+   ENDIF
+
    
    ;;----------------> plot spikes
    doplot = 1
@@ -332,7 +343,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
             ENDIF ;; Keyword_Set(MUA)
 
             ;; Plot spikes
-            PlotS, x(xi) + offset, y(xi), PSYM=8, SYMSIZE=1.0, COLOR=color
+            PlotS, x(xi) + offset, y(xi), PSYM=psym, SYMSIZE=symsize, COLOR=color
 
          ENDIF
       ENDIF
