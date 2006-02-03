@@ -89,8 +89,9 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
                   , XMARGIN=xmargin, YMARGIN=ymargin $
                   , XOMARGIN=xomargin, YOMARGIN=yomargin $
                   , XSIZE=xsize, YSIZE=ysize $
+                  , THICK=thick $
                   , CHARSIZE=charsize, FONTTYPE=fonttype $
-                  , PRODUCER=producer, PDF=PDF $ 
+                  , PRODUCER=producer, PDF=PDF $
                   , VERBOSE=verbose
 
    Default, filename, 'printsheet'
@@ -99,6 +100,7 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
    Default, ymargin, [3, 0.75]
    Default, xomargin, [0, 0]
    Default, yomargin, [0, 0]
+   Default, thick, 4.
    Default, producer, '/CALLER'
 
    Default, xsize, 21. ;; 0.75\textwidth
@@ -119,7 +121,7 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
    IF multi[2] LE 2 THEN BEGIN
       ys = 0.5*(Sqrt(5.)-1)*xs
    ENDIF ELSE BEGIN
-      ys = multi(2)*0.25*(Sqrt(5.)-1)*xs
+      ys = multi[2]*0.25*(Sqrt(5.)-1.)*xs
    ENDELSE
 
    ;; undo IDL !P.MULTI change of font size if either more than two
@@ -156,9 +158,9 @@ FUNCTION PSSheet, FILENAME=filename, MULTI=multi $
    _sheet.X.OMARGIN = xomargin
    _sheet.Y.OMARGIN = yomargin
 
-   _sheet.P.THICK = 4.
-   _sheet.X.THICK = 4.
-   _sheet.Y.THICK = 4.
+   _sheet.P.THICK = thick
+   _sheet.X.THICK = thick
+   _sheet.Y.THICK = thick
 
    Handle_Value, __sheet, _sheet, /NO_COPY, /SET
 
