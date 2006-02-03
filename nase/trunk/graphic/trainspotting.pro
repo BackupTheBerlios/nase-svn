@@ -141,7 +141,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
                    MUA=mua, MCOLOR=mcolor, PSYM = psym, SYMSIZE = symsize $
                    , _EXTRA=_extra
 
-   ;;foobar
+   ;;foobar foobar
 
    On_Error, 2
 
