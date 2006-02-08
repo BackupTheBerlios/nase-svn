@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w 
 
+use lib /www-bin/header-parser/NASE/parse
 use File::Basename;
 use NASE::parse;
 
@@ -8,7 +9,8 @@ use strict;
 
 my ($dir, @files) = split(" ", $ARGV[0]);
 
-my $fdir = "/vol/neuro/nase/www-nase-copy/$dir";
+# my $fdir = "/vol/neuro/nase/www-nase-copy/$dir";
+my $fdir = "/home/groups/nase/htdocs/wwwcopy/$dir";
 
 my $file;
 foreach $file (@files){
