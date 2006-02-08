@@ -9,7 +9,7 @@ use CGI qw/:standard :html3 :netscape -debug/;
 use CGI::Carp;
 use File::Basename;
 use File::Find;
-use NASE::globals;
+use NASE::globals::globals;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 use locale;
 
