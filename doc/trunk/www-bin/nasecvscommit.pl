@@ -2,7 +2,7 @@
 
 use lib "$ENV{NASEWWWCOPY}/doc/www-bin/header-parser";
 use File::Basename;
-use NASE::parse;
+use NASE::parse::parse;
 
 use diagnostics;
 use strict;
@@ -10,7 +10,7 @@ use strict;
 my ($dir, @files) = split(" ", $ARGV[0]);
 
 # my $fdir = "/vol/neuro/nase/www-nase-copy/$dir";
-my $fdir = "/home/groups/nase/htdocs/wwwcopy/$dir";
+my $fdir = "$ENV{NASEWWWCOPY}/wwwcopy/$dir";
 
 my $file;
 foreach $file (@files){
