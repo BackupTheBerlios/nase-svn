@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w 
 
-use lib /www-bin/header-parser/NASE/parse
+use lib "$ENV{NASEWWWCOPY}/doc/www-bin/header-parser";
 use File::Basename;
 use NASE::parse;
 
