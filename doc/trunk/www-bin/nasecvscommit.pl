@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w 
 
 use lib "$ENV{NASEWWWCOPY}/doc/www-bin/header-parser";
+use lib "$ENV{HOME}/AddPerl/Tie-DBI-1.01/lib";
 use File::Basename;
 use NASE::parse::parse;
 
