@@ -21,15 +21,19 @@
 ;                                                                              
 ; CATEGORY:           MISC EXTRA TAGS STRUCTURE REPLACE
 ;
-; CALLING SEQUENCE:   Extra2Structure, E, S [,/WARN] [,/LEAVE] [,/VERBOSE]
+; CALLING SEQUENCE:   Extra2Structure, E, S [,/WARN] [,/LEAVE] [,/CREATE] [,/VERBOSE]
 ;
 ; INPUTS:             E: Struktur mit den Ersatz-Werten
 ;                     S: Struktur mit den zu ersetzenden Werten
 ;
-; KEYWORD PARAMETERS: LEAVE  : passende Tags werden nicht aus E gestrichen
-;                     VERBOSE: Tratsch...
-;                     WARN   : gibt eine Warnung aus, falls E nach der Ersetzung noch Tags enthaelt (und
-;                              Keyword LEAVE nicht gesetzt wurde)
+; KEYWORD PARAMETERS: 
+;                     LEAVE  :: passende Tags werden nicht aus E
+;                               gestrichen
+;                     CREATE :: nicht passende Tags werden in S
+;                               zusätzlich erzeugt
+;                     VERBOSE:: Tratsch...
+;                     WARN   :: gibt eine Warnung aus, falls E nach der Ersetzung noch Tags enthaelt (und
+;                               Keyword LEAVE nicht gesetzt wurde)
 ;                     
 ; RESTRICTIONS:       Der Typ des entsprechende Tags darf sich nicht veraendern.
 ;
@@ -49,19 +53,8 @@
 ; SEE ALSO:            <A>ExtraDiff</A>
 ;
 ;-
-;
-; MODIFICATION HISTORY:
-;
-;     $Log$
-;     Revision 2.2  2000/09/25 09:13:08  saam
-;     * added AIM tag
-;     * update header for some files
-;     * fixed some hyperlinks
-;
-;     Revision 2.1  1998/08/14 11:32:09  saam
-;           yes!
-;
-PRO Extra2Structure, e, s, WARN=warn, LEAVE=leave, VERBOSE=verbose
+
+PRO Extra2Structure, e, s, WARN=warn, LEAVE=leave, CREATE=create, VERBOSE=verbose
 
    On_Error, 2
 
@@ -76,19 +69,28 @@ PRO Extra2Structure, e, s, WARN=warn, LEAVE=leave, VERBOSE=verbose
 
    ; find matching tag names and replace values for s by e
    FOR et=0,eC-1 DO BEGIN
+      matched = 0
       FOR st=0,sC-1 DO BEGIN
          IF StrUpCase(eTN(et)) EQ  StrUpCase(sTN(st)) THEN BEGIN
             IF Set(matchTN) THEN matchTN = [matchTN, eTN(et)] ELSE matchTN = eTN(et)
             IF Keyword_Set(VERBOSE) THEN print, 'EXTRA2STRUCTURE: Setting ',eTN(et),' from ',s.(st),' to ', e.(et)
             s.(st) = e.(et)
+            matched = 1
          END
       END
+      ;; add left-over tagnames to s:
+      If Keyword_Set(CREATE) and not matched then begin
+         s = create_struct(temporary(s), eTN(et), e.(et))
+         IF Keyword_Set(VERBOSE) THEN print, 'EXTRA2STRUCTURE: ' + $
+           'Creating additional Tag ',eTN(et),'=', e.(et)
+      endif
    END
    
    ; remove matching tagnames from e
    IF NOT Keyword_Set(LEAVE) THEN BEGIN
       dummy = ExtraDiff(e, matchTN)
       IF Keyword_Set(WARN) AND Set(e) THEN Print, 'WARNING!! unprocessed keyword(s): ', Tag_Names(e)
-   END
+   ENDIF
+
 
 END
