@@ -17,8 +17,9 @@
 ;  Graphic
 ;
 ; CALLING SEQUENCE:
-;*  arcs, r [,a1] [,a2] [,x0] [,y0] 
-;*        [/DEVICE | /DATA | /NORM] [COLOR=...] [LINESTYLE=...]
+;*  arcs, r [,a1] [,a2] [,x0] [,y0]
+;*        [,/FILL] [,N_EDGES=...]
+;*        [,/DEVICE | ,/DATA | ,/NORM] [,COLOR=...] [,LINESTYLE=...]
 ;
 ; INPUTS:
 ;   r      :: radii of arcs to draw (data units).
@@ -34,6 +35,25 @@
 ;   NORM      :: use normalized coordinates
 ;   COLOR     :: plot color (scalar or array)
 ;   LINESTYLE :: linestyle (scalar or array)
+;   FILL      :: a filled polygon will be drawn. The center point of
+;                the polygon will be added in this case, so that the
+;                overall shape is a sector.
+;   N_EDGES   :: the polygon will be an N-angle. This refers to the
+;                complete 360 degrees, so the actual numer of edges
+;                you will see depends on a1 and a2. This keyword
+;                defaults to 1440, meaning steps of 0.25°, which will
+;                in all usual cases look like a perfect circle. Please
+;                note, that for smaller numbers of N_EDGES, the final
+;                point drawn may not correspond perfectly with a2,
+;                i.e., only full edges will be drawn, so that the
+;                final angle may not be reached. (This could of course
+;                be implemented, go ahead!).
+;
+; RESTRICTIONS:: Please note, that for smaller numbers of N_EDGES, the
+;                final point drawn may not correspond perfectly with
+;                a2, i.e., only full edges will be drawn, so that the
+;                final angle may not be reached. (This could of course
+;                be implemented, go ahead!).
 ;
 ; EXAMPLE:
 ;* plot, indgen(20)-10,indgen(20)-10
@@ -89,16 +109,17 @@ END
 
 PRO arcs, r, a1, a2, xx, yy,$
           color=clr, linestyle=lstyl, $
-          device=device, data=data, norm=norm
+          device=device, data=data, norm=norm, $
+          fill=fill, n_edges=n_edges
 
   np = n_params(0)
-
+  default, n_edges, 1440;; defaults to sectors of 0.25 degrees
+  
   ;------  Determine coordinate system  -----
   if n_elements(device) eq 0 then device = 0 ; Define flags.
   if n_elements(data)   eq 0 then data   = 0
   if n_elements(norm)   eq 0 then norm   = 0
   if device+data+norm eq 0 then data = 1 ; Default to data.
-  
   
   if n_elements(clr) eq 0 then clr = !p.color
   if n_elements(lstyl) eq 0 then lstyl = !p.linestyle
@@ -125,10 +146,15 @@ PRO arcs, r, a1, a2, xx, yy,$
       yyi = yy(i<nyy)
       clri = clr(i<nclr)
       lstyli = lstyl(i<nlstyl)
-      a = makex(a1i, a2i, 0.25*signum(a2i-a1i))/!radeg
+      a = makex(a1i, a2i, 360.0/n_edges*signum(a2i-a1i))/!radeg
       polrec, ri, a, x, y
-      plots, x + xxi, y + yyi, color=clri, linestyle=lstyli, $
-        data=data, device=device, norm=norm
+      if keyword_set(fill) then begin
+         polyfill, [0, x] + xxi, [0, y] + yyi, color=clri, linestyle=lstyli, $
+                   data=data, device=device, norm=norm
+      endif else begin
+         plots, x + xxi, y + yyi, color=clri, linestyle=lstyli, $
+                data=data, device=device, norm=norm
+      endelse
   endfor
   
 end
