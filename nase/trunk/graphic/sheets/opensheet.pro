@@ -138,9 +138,21 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
 
       If keyword_set(SETCOL) and not(PseudoColor_Visual()) then begin
                                 ;we've got a True-Color-Display, so
-                                ;we have to set the private color table:
-         WIDGET_CONTROL, sheet.DrawId, GET_UVALUE=draw_uval
-         UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B 
+                                ;we have to set the private color
+                                ;table.         
+         
+         WIDGET_CONTROL, sheet.DrawId, GET_UVALUE=draw_uval, /NO_COPY
+         
+                                ;save current palette:
+         UTVLCT, /GET, Red, Green, Blue
+         draw_uval.YourPalette.R = Red
+         draw_uval.YourPalette.G = Green
+         draw_uval.YourPalette.B = Blue
+
+                                ;set private palette:
+         UTVLCT, draw_uval.MyPalette.R, draw_uval.MyPalette.G, draw_uval.MyPalette.B
+
+         WIDGET_CONTROL, sheet.DrawId, SET_UVALUE=draw_uval, /NO_COPY
       End
 
    END ELSE IF sheet.type EQ 'ps' THEN BEGIN

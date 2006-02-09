@@ -1,3 +1,7 @@
+
+
+
+
 ;+
 ; NAME:
 ;  CloseSheet
@@ -36,10 +40,10 @@
 ;                geschlossen werden soll.
 ;
 ; INPUT KEYWORDS:
-;  SAVE_COLORS:: Default: gesetzt. Dieses Schluesselwort hat nur
-;                Effekt, wenn bei <A>DefineSheet()</A> die Option
-;                /PRIVATE_COLORS angegeben wurde. Standardmaessig
-;                speichert <C>CloseSheet</C> dann die jeweils aktuelle
+;  SAVE_COLORS:: Default: gesetzt.
+;                Hat nur Bedeutung für Windows-Sheets auf einem Truecolor-Display.
+;                Standardmaessig
+;                speichert <C>CloseSheet</C> hier die jeweils aktuelle
 ;                Farbtabelle mit den anderen Graphikdaten in der
 ;                Sheet-Struktur ab. In einigen Faellen (beispielsweise
 ;                bei haeufigen Graphik-Updates waehrend interaktiver
@@ -112,14 +116,20 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
    END
 
    If (sheet.type EQ 'X') and keyword_set(SAVE_COLORS) then begin
-                                ;get current palette and Save it in Draw-Widget's UVAL:
+
       WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
+
+                                ;get current palette and Save it in Draw-Widget's UVAL:
       UTVLCT, /GET, Red, Green, Blue
       draw_uval.MyPalette.R = Red
       draw_uval.MyPalette.G = Green
       draw_uval.MyPalette.B = Blue
-      WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
+
+                                ;reset old palette:
+      UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B
     
+      WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
+
    EndIf
 
    IF sheet.type EQ 'ps' THEN BEGIN

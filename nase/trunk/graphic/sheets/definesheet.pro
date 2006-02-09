@@ -19,10 +19,14 @@
 ;  totally suppressed, the null sheet can be used.
 ;  Thus, sheets are a substitution for IDL's own Window-, Set_Plot-
 ;  and Device-calls.<BR>
-;  Sheets remember their individual important plotting parameters by
-;  saving the system variables !X, !Y, and !P to enable their
-;  restauration on reopening. Furthermore, the current colortable is
-;  saved as well.<BR>
+;  Sheets encapsulate their individual important plotting parameters by
+;  saving the system variables !X, !Y, and !P internally.
+;  For window-Sheets on a truecolor-display, the current colortable is
+;  saved as well. Upon opening a sheet, the current values are saved,
+;  and the sheet's private values are set. Upon closing the sheet,
+;  it's private values are stored, and the values are reset to the
+;  state they were before opening the sheet.<BR>
+;
 ;  Since version 2.15, sheets may also be used as child-widgets in
 ;  widget applications.
 ;
@@ -73,14 +77,16 @@
 ;                opening new files with an index added to the
 ;                filename. Otherwise, new graphics overwrite the old output.
 ;  VERBOSE:: <C>DefineSheet()</C> starts to babble.
-;  PRIVATE_COLORS:: Set this option to obtain an individual colormap
-;                   for each sheet. This does only make sense for
+;  PRIVATE_COLORS:: Set this option to have the widgets monitor
+;                   tracking events, and set their private color map
+;                   each time the mouse pointer enters. 
+;                   This does only make sense for
 ;                   window-sheets. The option is passed to
 ;                   <A>ScrollIt()</A> and causes the sheet to compute
 ;                   tracking events, i.e. the colormap is set
 ;                   correctly each time the mouse pointer enters the
-;                   sheet window. Saving the private colormap is
-;                   actually done by <A>CloseSheet</A>. On non-pseudocolor
+;                   sheet window. See there for further details on this keyword.
+;                   On non-pseudocolor
 ;                   displays (TrueColor, DirectColor), this option is ignored.
 ;  OPTIONS:: Options that are understood by the respective device can
 ;            be specified here.
@@ -99,7 +105,22 @@
 ;
 ; RESTRICTIONS:
 ;  Note that the addition of a sheet or scrollit-widget to an existing
-;  widget hierarchy causes IDL (version 5.0.2) to crash.
+;  widget hierarchy causes IDL (version 5.0.2) to crash.<BR>
+;  <BR>
+;  <B>Note to the developer (Ruediger):</B>Note that for saving
+;  colortables of <I>truecolor</I>-window-sheets, the
+;  MyPalette/YourPalette field of the draw widget's
+;  uvalue is used. This same field is also used by the underlying
+;  procedure <A>Scollit()</A> for managing tracking events on
+;  <I>pseudocolor</I> displays. Although the two should (hopefully)
+;  not interfere, this use of the same field for two different
+;  purposes is confusing and should be removed. To be exact, probably
+;  all pseudocolor-handling should be completely removed, since
+;  pseudocolor display are not commonly used any longer, and support
+;  could well be dropped. This would also considerably clean up the code.<BR>
+;  <BR>
+;  Another note: Postscript sheets should perhaps save their
+;                colortable, too. This is not done at the moment.
 ;
 ; EXAMPLE:
 ;* window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
