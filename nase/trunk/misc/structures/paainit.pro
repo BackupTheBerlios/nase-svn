@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  PAAinit
+;  PAAinit (Obsolete. Superceded by <A>class vector</A>!).
 ;
 ; AIM: Create a new pool allocator array.
 ;  
