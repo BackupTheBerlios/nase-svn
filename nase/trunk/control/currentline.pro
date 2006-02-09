@@ -20,7 +20,9 @@
 ;  Help
 ;
 ; CALLING SEQUENCE:
-;* result = currentline( [pick] )
+;* result = currentline( [pick]
+;*                       [, /CONTINUATION | , /INLINE_CONTINUATION]
+;*                       [, /REMOVE_COMMENTS] )
 ;  
 ; OPTIONAL INPUTS:
 ;  pick:: The number of the routine on the callstack that information
@@ -47,10 +49,30 @@
 ;           result will contain <*>"(main level code)"</*>. (see
 ;           example).
 ;  
+; INPUT KEYWORDS:
+;  /CONTINUATION:: If the current logical line of sourcecode is split
+;                  across several physical lines using the
+;                  continuation sign (dollar sign, $), the whole
+;                  logical line is returned. Note: The result returned is a
+;                  scalar string containing linefeeds and carriage
+;                  returns, as well as the continuation ($) signs. It
+;                  is not a string array.
+;
+;  /INLINE_CONTINUATION:: Same as <C>/CONTINUATION</C>, but linebreaks
+;                         and continuation signs are removed.
+;                         Indentations are removed, and line fragments
+;                         pasted. The logical line is returned as
+;                         a single-line string.
+;                         Implies <C>/REMOVE_COMMENTS</C>.
+;
+;  /REMOVE_COMMENTS:: Comments at the returned line of sourcecode are removed.
+;
 ; RESTRICTIONS:
-;  The pick argument must be positive and not larger than the
-;  depth of the callstack.
-;  
+;  o The pick argument must be positive and not larger than the
+;    depth of the callstack.
+;  o <C>/REMOVE_COMMENTS</C> currently does not correctly ignore
+;    semikoli inside quotation marks.
+;
 ; PROCEDURE:
 ;  Get callstack using <A>callstack()</A>, open source files and read
 ;  line form the current position.
@@ -70,7 +92,25 @@
 ;-
 
 
-Function currentline, pickcaller
+Pro currentline_remove_comments_, l
+   ;; this currently does not correctly ignore semikoli inside quotation marks!
+   l = (strsplit(l, ";", /extract))[0]
+   l = strtrim(l)
+End
+
+Function currentline_has_continuation_, l
+   ;; remove comments and the look if last character is a "$".
+   ;; breaks, if currentline_remove_comments_ breaks (see above)
+   l2 = l
+   currentline_remove_comments_, l2
+   return, strmid(l2, strlen(l2)-1, 1) eq "$"
+End
+
+
+Function currentline, pickcaller, $
+                      CONTINUATION=continuation, $
+                      INLINE_CONTINUATION=inline_continuation, $
+                      REMOVE_COMMENTS=remove_comments
 
    if set(pickcaller) then begin
       assert, pickcaller ge 0, "Argument must be positive."
@@ -90,13 +130,37 @@ Function currentline, pickcaller
       if lines(f) eq "(unknown)" then begin
          result(f) = "(main level code)"
       endif else begin
+
          openr, lun, files(f), /Get_Lun
+
+         ;; read first line:
          for i=1, fix(lines(f)) do readf, lun, l
-         close, lun
+         if keyword_set(REMOVE_COMMENTS) or keyword_set(INLINE_CONTINUATION) then currentline_remove_comments_, l
+
          result(f) = l
+
+         ;; read all other lines:
+         If keyword_set(CONTINUATION) then begin
+            while currentline_has_continuation_(l) do begin
+               readf, lun, l
+               if keyword_set(REMOVE_COMMENTS) then currentline_remove_comments_, l
+               result(f) = result(f)+str(10b)+str(13b)+l
+            endwhile
+         endif
+
+         If keyword_set(INLINE_CONTINUATION) then begin
+            while currentline_has_continuation_(l) do begin
+               result(f) = strmid(result(f), 0, strlen(result(f))-1)
+               readf, lun, l
+               currentline_remove_comments_, l
+               result(f) = result(f)+strtrim(l, 1)
+            endwhile
+         endif
+            
+         close, lun
       endelse
    endfor
-
+   
    return, result
 End
 

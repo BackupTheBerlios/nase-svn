@@ -68,13 +68,18 @@ Pro assert, condition, text
    On_Error, 2 ;;return to caller.
    
    if not condition then begin
-      assertionstring = currentline(1)
+      assertionstring = currentline(1, /inline_continuation)
 
       if assertionstring ne "(main level code)" then begin
+         ;; find "ASSERT" in string:
          posbegin = strpos(strupcase(assertionstring), "ASSERT")
-         assertionstring = (split(StrMid(assertionstring, posbegin), $
-                                  ","))(1)
-         assertionstring = (split(assertionstring, ";"))(0)
+         assertionstring = StrMid(assertionstring, posbegin)
+
+         if set(text) then begin
+            ;; remove all behind last comma:
+            posend = strpos(strupcase(assertionstring), /reverse_search, ",")
+            assertionstring = StrMid(assertionstring, 0, posend)
+         endif
          assertionstring = str(assertionstring)
       endif
          
