@@ -86,7 +86,7 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;        $Log$
+;        $Log: init_superclasses.pro,v $
 ;        Revision 1.5  2001/08/02 14:50:33  kupper
 ;        Replaced IDL-style "MESSAGE" calls by NASE-style "Console" commands.
 ;
@@ -107,7 +107,9 @@
 ;-
 
 Function Init_Superclasses, self, classname, _REF_EXTRA=_ref_extra
-   superclasses =  Obj_Class(classname, /SUPERCLASS)
+   superclasses =  Obj_Class(classname, /SUPERCLASS, Count=count)
+   if count eq 0 then return, 1
+
    success = 1
 
    i = 0

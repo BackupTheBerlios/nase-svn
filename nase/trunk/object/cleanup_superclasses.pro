@@ -66,7 +66,7 @@
 ;
 ; MODIFICATION HISTORY:
 ;
-;        $Log$
+;        $Log: cleanup_superclasses.pro,v $
 ;        Revision 1.4  2000/03/12 16:59:16  kupper
 ;        Added classname argument.
 ;        This was necessary to avoid infinite recursion when calling the init methods
@@ -85,7 +85,8 @@
 ;-
 
 Pro Cleanup_Superclasses, self, classname, _REF_EXTRA=_ref_extra
-   superclasses =  Obj_Class(classname, /SUPERCLASS)
+   superclasses =  Obj_Class(classname, /SUPERCLASS, Count=count)
+   if count eq 0 then return
 
    for i=0, n_elements(superclasses)-1 do $ 
        Call_Method,  superclasses[i]+"::CLEANUP", self, _EXTRA=_ref_extra
