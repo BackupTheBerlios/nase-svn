@@ -94,6 +94,10 @@
 ;                                               Wird diese Option benutzt, sollte man sich mit GET_DRAWID die IDs der Widgets liefern
 ;                                               lassen, um Zugriff auf die User-Values der DrawWidgets zu haben. Die Werte der
 ;                                               privaten Colormap finden sich in uvalue.MyPalette.[R|G|B]
+;                                         NOTE: setting of colortable is done by a standard
+;                                               <A>UTVLCT</A>-call, so the protected NASE colors on the top
+;                                               end of the colortable are not touched by this process! The
+;                                               protected colors are global for all Scrollit widgets (and sheets).
 ;                                     NO_BLOCK:: Wird ab IDL 5 an den XMANAGER
 ;                                               weitergegeben. (Beschreibung
 ;                                               s. IDL-Hilfe)
