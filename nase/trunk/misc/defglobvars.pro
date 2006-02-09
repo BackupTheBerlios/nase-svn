@@ -183,8 +183,7 @@ ENDCASE
 DefSysV, '!CREATEDIR', 0, 0
 
 ; os independent file separator
-DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1)
-
+DefSysV, '!FILESEP', StrMid(filepath("", root_dir=" ", SUBDIR=[""]),1,1), 1
 
 
 ; Tells "RealFilename" how to work
