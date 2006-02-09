@@ -10,7 +10,7 @@ use CGI::Carp;
 use File::Basename;
 use File::Find;
 use NASE::globals::globals;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %pro);
 use locale;
 
 require Exporter;
