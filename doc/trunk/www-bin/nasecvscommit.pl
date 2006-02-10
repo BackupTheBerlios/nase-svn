@@ -2,6 +2,7 @@
 
 use lib "$ENV{NASEWWWCOPY}/doc/www-bin/header-parser";
 use lib "$ENV{HOME}/AddPerl/Tie-DBI-1.01/lib";
+use lib "$ENV{HOME}/AddPerl/ParseLex-2.15/lib";
 use File::Basename;
 use Switch;
 use NASE::parse::parse;
