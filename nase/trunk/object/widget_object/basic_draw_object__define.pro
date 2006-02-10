@@ -32,7 +32,6 @@
 ;               [,X_SCROLL_SIZE=x_scroll_size]
 ;               [,Y_SCROLL_SIZE=y_scroll_size]
 ;               [,FRAME=...]
-;               [,SUBFRAME=...]
 ;               [-keywords inherited from <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A>-])
 ;
 ; DESTRUCTION:
@@ -46,8 +45,7 @@
 ; KEYWORD PARAMETERS: 
 ;
 ;   PAINT_INTERVAL   : enables auto-paint with interval secs.
-;   FRAME, SUBFRAME  : Frame thickness of the widget itself, and of
-;                      the included scrollit widget.
+;   FRAME            : Frame thickness of the widget.
 ;
 ;   All remaining keywords are passed to <A HREF="../../graphic/widgets/#WIDGET_SHOWIT">Widget_Showit()</A>.
 ;
@@ -78,20 +76,17 @@
 ;                          network.
 ;   ct, n, ...           : set the color table that is to be used for
 ;                          the display (see IDL's <C>LoadCT</C> for an
-;                          overview of available color tables). <BR>
-;                          The color table is initialized to <*>0</*>
-;                          (linear grey ramp) upon construction of the
-;                          object.<BR>
+;                          overview of available color tables).
+;                          Additional keywords are passed to <A>ULoadCt</A>.<BR>
 ;                          Takes all additional arguments that
 ;                          <A>ULoadCT</A> takes.
-;   ct()                 : return the current color table.<BR>
-;                          The color table is initialized to <*>0</*>
-;                          (liear grey ramp) upon construction of the
-;                          object.<BR>   
-;                          Additional keywords passed to the ct
-;                          setting method are currently not returned.                   
+;   resize, x, y         : resize the complete area of the widget
+;                          (including draw area and button row).
+;                          Inherited from <A HREF="#CLASS BASIC_WIDGET_OBJECT">class
+;                          basic_widget_object</A>).
+;   resize_draw, x, y    : resize the draw area.
 ;
-;   -plus those inherited from class <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A> (see there for details)-
+;   -plus others inherited from class <A HREF="#CLASS BASIC_WIDGET_OBJECT">class basic_widget_object</A> (see there for details)-
 ;
 ;  protected: Protected methods may only be called from within a derived class's
 ;             methods.
@@ -150,7 +145,10 @@
 ;
 ; SIDE EFFECTS: 
 ;
-; RESTRICTIONS: 
+; RESTRICTIONS:
+;   Note (kupper, jan-15-2006): The SUBRFRAME keyword has been reoved,
+;                               since it creates problem with resizing
+;                               and is completely unnecessary.
 ;
 ; PROCEDURE: 
 ;
@@ -166,13 +164,15 @@
 ;; ------------ Widget support routines ---------------------
 Pro BDO_Notify_Realize, id
    COMPILE_OPT HIDDEN
-   On_Error, 2
    Widget_Control, id, Get_Uvalue=object
 
-   showit_open, object->showit()
-   object->set_ct_
+   object->open_draw
+   if object->delayed_paint_request_flag_() then begin
+      object->set_ct_
+      object->delayed_paint_request_flag_, 0
+   endif
    object->initial_paint_hook_
-   showit_close, object->showit(), Save_Colors=object->save_colors_()
+   object->close_draw
 
    Widget_Control, object->showit(), Timer=object->paint_interval()
 End
@@ -225,12 +225,14 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                           PRIVATE_COLORS=private_colors, $
                           BUTTON_EVENTS=button_events, $
                           EXPOSE_EVENTS =expose_events, $ 
-                          MOTION_EVENTS =motion_events, $ 
+                          MOTION_EVENTS =motion_events, $
+                          EVENT_PRO=event_pro, $
+                          EVENT_FUNC=event_func, $
                           COLOR_MODEL =color_model, $ 
                           COLORS = colors, $ 
                           GRAPHICS_LEVEL = graphics_level, $ 
                           RENDERER = renderer, $ 
-                          RETAIN = retaint, $ 
+                          RETAIN = retain, $ 
                           SCR_XSIZE = scr_xsize, $ 
                           SCR_YSIZE = scr_ysize, $ 
                           SCROLL = scroll, $ 
@@ -241,16 +243,27 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                           X_SCROLL_SIZE = x_scroll_size, $ 
                           Y_SCROLL_SIZE = y_scroll_size, $
                           FRAME=frame, $
-                          SUBFRAME=subframe, $
+                          SUBFRAME=subframe, $ ; deprecated and ignored!
                           PALETTE_BUTTON=palette_button
    ;;all other keywords are passed to the base
    ;;constructor through _ref_extra
+
+   If keyword_set(SUBFRAME) then $
+     console, /warning, "The SUBFRAME keyword has been removed and " + $
+              "will be ignored. Use the FRAME keyword instead."
 
    DMsg, "I am created."
 
    ;; Try to initialize the superclass-portion of the
    ;; object. If it fails, exit returning false:
-   If not Init_Superclasses(self, "basic_draw_object", FRAME=frame, _EXTRA=_ref_extra) then return, 0
+   If not Init_Superclasses(self, "basic_draw_object", FRAME=frame, $
+                            /Row, Xpad=0, YPad=0, Space=0, $
+                            X_SCROLL_SIZE = x_scroll_size, $ 
+                            Y_SCROLL_SIZE = y_scroll_size, $
+                            SCROLL = scroll, $ 
+                            SCR_XSIZE = scr_xsize, $ 
+                            SCR_YSIZE = scr_ysize, $ 
+                            _EXTRA=_ref_extra) then return, 0
 
    ;; Try whatever initialization is needed for a MyClass object,
    ;; IN ADDITION to the initialization of the superclasses:
@@ -263,11 +276,12 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
    ;;
    ;; use column subbase for buttons and showit:
    w_column = widget_base(self.widget, UValue=self, $
-                          /Column, Space=0, XPad=0, YPad=0)
+                          /Column, Space=0, XPad=0, YPad=0, Frame=0, $
+                         Event_Pro=Event_Pro, Event_Func=Event_Func)
    ;;
    ;; use row subbase for buttons:
    w_buttons = widget_base(w_column, UValue=self, $
-                           /Row, Space=0, XPad=0, YPad=0)
+                           /Row, Space=0, XPad=0, YPad=0, Frame=0)
 
    ;;
    ;; add button for interactive palette selection:
@@ -282,11 +296,17 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                                              [1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1], $
                                              [1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1], $
                                              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]))
+
+   ;; determine size of the button row for
+   ;; later correct resizing of the draw widget:
+   self.buttonbase_ysize = (widget_info(w_buttons, /geometry)).scr_ysize
+
    ;; let pointer point to something:
    self.ct_extra = ptr_new({dummy:0b})
 
    ;; 
    ;; add showit to present picture
+
    self.w_showit = widget_showit(w_column, Private_Colors=private_colors, $
                                  UValue=self, $
                                  Notify_Realize="BDO_Notify_realize", $
@@ -298,17 +318,12 @@ Function basic_draw_object::init, _REF_EXTRA=_ref_extra, $
                                  COLORS = colors, $ 
                                  GRAPHICS_LEVEL = graphics_level, $ 
                                  RENDERER = renderer, $ 
-                                 RETAIN = retaint, $ 
-                                 SCR_XSIZE = scr_xsize, $ 
-                                 SCR_YSIZE = scr_ysize, $ 
-                                 SCROLL = scroll, $ 
+                                 RETAIN = retain, $ 
                                  TRACKING_EVENTS =tracking_events, $ 
                                  VIEWPORT_EVENTS = viewport_events, $ 
                                  XSIZE = xsize, $ 
                                  YSIZE = ysize, $ 
-                                 X_SCROLL_SIZE = x_scroll_size, $ 
-                                 Y_SCROLL_SIZE = y_scroll_size, $
-                                 FRAME=subframe)
+                                 FRAME=0)
 
    ;; the showit widget will also produce the timer events
 
@@ -354,11 +369,11 @@ Pro basic_draw_object::paint, XCT_CALLBACK_ = xct_callback_
       self.delayed_paint_request_flag = 1;store the request
    endif else begin ;;paint
       If Widget_Info(self.widget, /Realized) then begin
-         showit_open, self.w_showit
+         self->open_draw
          If keyword_set(XCT_CALLBACK_) then $
            self -> xct_callback_hook_ else $
            self -> paint_hook_
-         showit_close, self.w_showit, Save_Colors=self.save_colors
+         self->close_draw
       Endif else begin
          console, /Warning, "Warning: Ignored paint request for unrealized " + $
           "widget-object."
@@ -385,11 +400,29 @@ Pro basic_draw_object::ignore_colors
    self.save_colors = 0
 End
 
+Pro basic_draw_object::open_draw
+   ;; do whetever is needed to open the draw area for output
+   showit_open, self.w_showit
+End
+Pro basic_draw_object::close_draw
+   ;; do whetever is needed to close the draw area after output
+   showit_close, self.w_showit, Save_Colors=self.save_colors
+End
+
+
+
 ;;private:
+Pro basic_draw_object::delayed_paint_request_flag_, f
+   self.delayed_paint_request_flag = f
+End
+Function basic_draw_object::delayed_paint_request_flag_
+   return, self.delayed_paint_request_flag
+End
+
 Pro basic_draw_object::set_ct_
-      showit_open, self.w_showit
+      self->open_draw
       ULoadCt, self.ct, _EXTRA=*(self.ct_extra)
-      showit_close, self.w_showit, Save_Colors=self.save_colors
+      self->close_draw
       self->paint, /XCT_CALLBACK_
 End
 ;;public:
@@ -402,13 +435,19 @@ Pro basic_draw_object::ct, n, _EXTRA=_extra
    If Widget_Info(self.widget, /Realized) then begin
       self->set_ct_
   Endif else begin
-      console, /Debug, "Postponed ct request for unrealized " + $
-          "widget-object."
+     self.delayed_ct_request_flag = 1
+     console, /Debug, "Postponed ct request for unrealized " + $
+              "widget-object."
    endelse
 End
-Function basic_draw_object::ct
-   return, self.ct
-End
+
+; removed, because it does not make much sense to return the table
+; number, when colors may have been changed after laoding the table.
+; Perhaps there should be a methods to set and return "utvlct" in
+; addition to "uloadct".
+;Function basic_draw_object::ct
+;   return, self.ct
+;End
 
 Pro basic_draw_object::xct, _EXTRA=_extra
 
@@ -425,13 +464,33 @@ Pro basic_draw_object::xct, _EXTRA=_extra
       endelse
       
       ;; do it:
-      showit_open, self.w_showit
+      self->open_draw
       UXLoadCt, GROUP=self->widget(), /MODAL, _EXTRA=_extra, UPDATECALLBACK=updatecallback, UPDATECBDATA=updatecbdata
-      showit_close, self.w_showit, Save_Colors=self.save_colors
+      self->close_draw
    Endif else begin
       console, /Warning, "Skipping xct call for unrealized widget."
    endelse
 End
+
+Pro basic_draw_object::resize_draw, x, y
+   COMPILE_OPT IDL2
+   ;; Resize the drawing area to the given values. This differs from
+   ;; basic_widget_object::resize_hook_, which resizes the full area of the
+   ;; widget (including the button row).
+  
+   ;; The default for basic_draw_object is to resize the draw widget
+   ;; accordingly, and then call paint. Override this method as needed
+   ;; for derived classes.
+
+;   dmsg, " basic_draw_object::resize_draw called with x:"+str(x)+", " + $
+;         "y:"+str(y)
+
+   ;; the draw widget is the first child of the showit widget.
+   widget_control, widget_info(/child, self.w_showit), $
+                   XSIZE=x, YSIZE=y
+   self->paint
+End
+
 
 ;; ------------ Private --------------------
 Pro basic_draw_object::xct_callback_hook_
@@ -456,7 +515,32 @@ Function basic_draw_object::save_colors_
    return, self.save_colors
 End
 
+Pro basic_draw_object::resize_hook_, x, y
+   COMPILE_OPT IDL2
+   ;; This is the hook that is called when our widget has been resized
+   ;; through the window manager. This method is only called for
+   ;; non-scrolling top-level-bases (scrolling tlbs are resized, but
+   ;; no action has to been taken by the user). The values passed denote the desired
+   ;; new client area of our widget (everything that is inside the
+   ;; window frame). This method should do anything that must be done
+   ;; to reach this new client size.
+
+   ;; The default for basic_draw_object is to resize the draw widget
+   ;; accordingly. Override this method as needed
+   ;; for derived classes.
+   
+;   dmsg, " basic_draw_object::resize-hook called with x:"+str(x)+", " + $
+;         "y:"+str(y)
+
+   ;; the button row above the draw widget is self.buttonbase_ysize pixels high (hopefully).
+   self->resize_draw, x, (y-self.buttonbase_ysize) > 0
+   ;; resize_draw does also call paint.
+   
+End
+
+
 ;; ------------ Object definition ---------------------------
+
 Pro basic_draw_object__DEFINE
    dummy = {basic_draw_object, $
             $
@@ -469,10 +553,12 @@ Pro basic_draw_object__DEFINE
             $
             prevent_paint_flag: 0b, $
             delayed_paint_request_flag: 0b, $
+            delayed_ct_request_flag: 0b, $
             $
             ct: 0l, $ ;; color table
             ct_extra: ptr_new(), $ ;; extra keywords for ct method
             $
-            b_xct: 0l $ ;; button for interactive palette selection
+            b_xct: 0l, $ ;; button for interactive palette selection
+            buttonbase_ysize: 0l $
            }
 End
