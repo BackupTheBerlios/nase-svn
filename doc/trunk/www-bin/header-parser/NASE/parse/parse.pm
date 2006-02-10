@@ -9,10 +9,10 @@ use File::Basename;
 # just for debug
 #use Data::Dumper;
 
-use NASE::globals::globals;
-use NASE::xref::xref;
+use NASE::globals;
+use NASE::xref;
 use Parse::YYLex;
-use NASE::parse::IDLparser;
+use NASE::IDLparser;
 use locale;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
