@@ -5,7 +5,7 @@ use lib "$ENV{NASEWWWCOPY}/doc/www-bin/perl";
 #use lib "$ENV{HOME}/AddPerl/ParseLex-2.15/lib";
 use File::Basename;
 use Switch;
-use NASE::parse::parse;
+use NASE::parse;
 
 use diagnostics;
 use strict;
