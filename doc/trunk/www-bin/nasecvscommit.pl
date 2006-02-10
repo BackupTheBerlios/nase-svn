@@ -44,8 +44,7 @@ while (defined($line = <STDIN>)) {
 	      print "$base\n";
 	      print "$type\n";
 	      if ($type eq ".pro") {
-#		scanFile(repdir=>$dir, filepath=>"$parts[1]");
-		scanFile();#filepath=>"$parts[1]");
+		scanFile(repdir=>$path, filepath=>"$parts[1]");
 		print "$file: updated/inserted using $parts[1]\n";
 	      } else {
 		print "Not an IDL source file: $type.\n";
