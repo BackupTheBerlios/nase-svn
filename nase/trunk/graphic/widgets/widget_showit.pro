@@ -157,6 +157,7 @@ FUNCTION Widget_ShowIt, Parent, $
    Default, private_colors, 0
    Default, tracking_events, 0
 
+
    If Keyword_Set(PRIVATE_COLORS) and Not(PseudoColor_Visual()) then begin
 	message, /INFO, 'Ignoring /PRIVATE_COLORS - this does not look like an 8-bit-display! '
 	private_colors = 0
@@ -183,7 +184,7 @@ FUNCTION Widget_ShowIt, Parent, $
    ;; we need to check for Parent set explicitely, cause widget_base
    ;; breaks on an unset argument:
    If Set(Parent) then begin
-      b = Widget_Base(Parent, _EXTRA=["align_bottom", $
+      b = Widget_Base(Parent, /Column, XPad=0, YPad=0, Space=0, _EXTRA=["align_bottom", $
                                       "align_left", $
                                       "align_right", $
                                       "align_top", $
@@ -201,7 +202,7 @@ FUNCTION Widget_ShowIt, Parent, $
                                       "xoffset", $
                                       "yoffset"])
    endif else begin
-      b = Widget_Base(_EXTRA=["align_bottom", $
+      b = Widget_Base(/Column, XPad=0, YPad=0, Space=0, _EXTRA=["align_bottom", $
                               "align_left", $
                               "align_right", $
                               "align_top", $
@@ -222,6 +223,7 @@ FUNCTION Widget_ShowIt, Parent, $
 
    ; put draw-widget inside base and store xtra-values in its UVALUE:
    d = Widget_Draw(b, $
+                   FRAME=0, $
                    TRACKING_EVENTS=(private_colors OR tracking_events), $
                    UVALUE=xtrastruct, /NO_COPY, $
                    _EXTRA=["app_scroll", $
