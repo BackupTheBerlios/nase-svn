@@ -73,7 +73,7 @@ Function Read_Image_as_True, filename, IMAGE_INDEX=IMAGE_INDEX
 
       if info.HAS_PALETTE then begin
          ;; it's a coloured palette pic. Blow it up!
-         assert, (info.CHANNELS eq 1), $
+         assert, (info.CHANNELS le 1), $
                  "Image has palette, but more than one channel ("+str(info.CHANNELS)+"). Don't know what " + $
                  "to do!"
          result = make_array(dimension=[3, info.DIMENSIONS], $
