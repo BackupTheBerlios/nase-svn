@@ -5,7 +5,7 @@ use lib "$ENV{NASEWWWCOPY}/doc/www-bin/testperl";
 #use lib "$ENV{HOME}/AddPerl/ParseLex-2.15/lib";
 use File::Basename;
 use Switch;
-use NASE::parse;
+#use NASE::parse;
 
 use diagnostics;
 use strict;
@@ -44,7 +44,7 @@ while (defined($line = <STDIN>)) {
 	      print "$base\n";
 	      print "$type\n";
 	      if ($type eq ".pro") {
-		scanFile(repdir=>$path, filepath=>"$parts[1]");
+#		scanFile(repdir=>$path, filepath=>"$parts[1]");
 		print "$file: updated/inserted using $parts[1]\n";
 	      } else {
 		print "Not an IDL source file: $type.\n";
