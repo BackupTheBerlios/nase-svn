@@ -31,7 +31,7 @@ use strict;
 
 my $line;
 while (defined($line = <STDIN>)) {
-  print STDOUT "Piped from svn update:\n $line\n";
+#  print STDOUT "Piped from svn update:\n $line\n";
   my @parts = split(" ", $line);
   switch ($parts[0]) {
     case "U" {
@@ -44,7 +44,7 @@ while (defined($line = <STDIN>)) {
 	      print "$base\n";
 	      print "$type\n";
 	      if ($type eq ".pro") {
-#		scanFile(repdir=>$path, filepath=>"$parts[1]");
+		scanFile(repdir=>$path, filepath=>"$parts[1]");
 		print "$base: updated/inserted using $parts[1]\n";
 	      } else {
 		print "Not an IDL source file: $type.\n";
