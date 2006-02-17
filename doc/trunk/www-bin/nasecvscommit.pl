@@ -47,7 +47,8 @@ while (defined($line = <STDIN>)) {
 	      my $relativepath =substr($path, $l);
 	      print "$relativepath\n";
 	      if ($type eq ".pro") {
-		scanFile(repdir=>$relativepath, filepath=>"$parts[1]");
+#		scanFile(repdir=>$relativepath, filepath=>"$parts[1]");
+		scanFile(repdir=>$path, filepath=>"$parts[1]");
 		print "$base: updated/inserted using $parts[1]\n";
 	      } else {
 		print "Not an IDL source file: $type.\n";
