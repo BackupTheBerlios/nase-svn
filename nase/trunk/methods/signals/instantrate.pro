@@ -25,8 +25,8 @@
 ;* rate = Instantrate( spikes [,SAMPLEPERIOD=...]  
 ;*                            [,/GAUSS] [,SSIZE=...] [,SSHIFT=...]
 ;*                            [,TVALUES=...] [,TINDICES=...] 
-;*                            [,AVERAGE=...] 
-;*                            [,/SPASS][,/CENTER])
+;*                            [,AVERAGE=...] [WRITE2DISC=...] 
+;*                            [,/SPASS][,/CENTER][/COUNT])
 ;
 ; INPUTS: 
 ;  spikes:: A twodimensional binary array whose entries NE 0 are
@@ -66,6 +66,18 @@
 ;            in the interval <*>[t-ssize/2,t+ssize/2]</*>. If
 ;            <*>CENTER</*> is not set, then the interval <*>[t-ssize,t]</*>
 ;            is used. Default: <*>CENTER=1</*>.
+;  /COUNT:: Set this keyword to obtain integer spike numbers instead of spike
+;           rates. This is intended to return arrays which are less
+;           memory consuming, possibly of only byte type. The routine
+;           automatically generates arrays with the minimum integer type
+;           needed to contain the maximum spike numbers. However, due
+;           to the usage of IDL's <C>SMOOTH()</C> function, a floating point
+;           rate array is in fact allocated during execution of the
+;           routine for non-sparse inputs. This is not the case for
+;           sparse inputs, where memory consumption is kept at a
+;           minimum throughout. The <*>COUNT</*>
+;           option does not work when gaussian smoothing is used (see
+;           <*>/GAUSS</*> keyword).  
 ;
 ; OUTPUTS:
 ;  rate:: Twodimensional array, containing the firing rates at the
@@ -83,10 +95,10 @@
 ;
 ; RESTRICTIONS:
 ;  IDL's <C>Smooth</C> is used, which always increments its
-;  smoothing range by 1 of the range supplied es even. Thus, the actual
+;  smoothing range by 1 of the range supplied is even. Thus, the actual
 ;  width of the rectangular window used to count the spikes is
-;* Round(NOT((ssize*0.001/sampleperiod) MOD 2)+__ssize)
-;  which is always odd.
+;  modified to be always odd. The routine displays a warning message
+;  in this case.
 ; 
 ; PROCEDURE: 
 ;  Construct filter and convolve spiktrain with this. If
@@ -116,17 +128,23 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
                       , TVALUES=tvalues, TINDICES=tindices $
                       , AVERAGE=average, GAUSS=gauss $
                       , CENTER=center, SPASS=spass $
-                      , MEMORYSAVE=memorysave 
+                      , COUNT=count
 
+   Default, count, 0
    Default, spass, 0
    Default, center, 1
    Default, gauss, 0
    Default, sampleperiod, 0.001
    Default, ssize, 20
-   __ssize = ssize*0.001/sampleperiod
 
-   smoothssize = Round(NOT(__ssize MOD 2)+__ssize)
-   IF NOT(__ssize MOD 2) THEN $
+   ;; avoid rounding errors
+   IF sampleperiod EQ 0.001 THEN __ssize=ssize $
+    ELSE __ssize = ssize*0.001/sampleperiod
+
+   rss=Round(__ssize)
+   smoothssize = rss+(~(rss MOD 2)) ;; add one bin if window size is even
+
+   IF ~(rss MOD 2) THEN $
     Console, /WARN, 'Width of window in rate computing is actually ' $
      +Str(smoothssize)+'bins instead of '+Str(Round(__ssize))+'bins.'
 
@@ -139,13 +157,22 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
 
       ;; generate kernel: either gaussian or box
       IF Keyword_Set(GAUSS) THEN BEGIN
+         IF Keyword_Set(count) THEN $
+          Console, /WARN, 'Keyword COUNT is ignored for gaussian kernel.'
          gausslength = 4*__ssize
          gaussx = FIndGen(gausslength)-gausslength/2
          kernel = 2.*Exp(-2.*gaussx^2/__ssize^2)/__ssize/sqrt(2*!PI)
+         ratetype=4 ;; type code of rate array: float
          addlength = gausslength
          halfadd = addlength/2
       ENDIF ELSE BEGIN
-         kernel = Make_Array(smoothssize, /FLOAT, VALUE=1./smoothssize)
+         IF Keyword_Set(count) THEN BEGIN
+            kernel = Make_Array(smoothssize, /BYTE, VALUE=1)
+            ratetype=1 ;; type code of rate array: byte
+         ENDIF ELSE BEGIN
+            kernel = Make_Array(smoothssize, /FLOAT, VALUE=1./smoothssize)
+            ratetype=4 ;; type code of rate array: float
+         ENDELSE
          addlength = smoothssize
          halfadd = addlength/2
       ENDELSE
@@ -170,7 +197,7 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
          ;; again to regain the original array dimensions. The same
          ;; technique is used for non-sparse input as well to avoid
          ;; edge effects. 
-         sizeratearray = [2, 2*addlength+dur, nsweeps, 4 $
+         sizeratearray = [2, 2*addlength+dur, nsweeps, ratetype $
                          , (2*addlength+dur)*nsweeps]
          rates = Make_Array(SIZE=sizeratearray)
 
@@ -181,8 +208,17 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
             i = kidxarr $
                +addlength*(2*isweep+1) $
                +nownt
-            rates[i] = rates[i]+kernel
-         ENDFOR
+            ;; overflow?
+            IF ratetype NE 4 THEN BEGIN
+               newmax=Max(Float(rates[i])+kernel)
+               IF newmax GT (TypeRange(ratetype))[1] THEN BEGIN
+                  ratetype=MinimalIntType(newmax)
+                  DMsg, 'Increasing range. Ratetype is now '+Str(ratetype)
+                  rates=Fix(rates, TYPE=ratetype)
+            ENDIF
+         ENDIF
+         rates[i] = rates[i]+kernel
+      ENDFOR
 
       ENDIF ELSE BEGIN
          ;; two dim sparse input -> SPASS
@@ -193,7 +229,7 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
          IF sdim EQ 1 THEN nsweeps = 1 $
           ELSE nsweeps = nt[0, nt[0, 0]+3]
 
-         sizeratearray = [2, 2*addlength+dur, nsweeps, 4 $
+         sizeratearray = [2, 2*addlength+dur, nsweeps, ratetype $
                          , (2*addlength+dur)*nsweeps]
          rates = Make_Array(SIZE=sizeratearray)
 
@@ -203,6 +239,15 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
             i = kidxarr $
                +addlength*(2*isweep+1) $
                +nownt
+            ;; overflow?
+            IF ratetype NE 4 THEN BEGIN
+               newmax=Max(Float(rates[i])+nt[1, ispike]*kernel)
+               IF newmax GT (TypeRange(ratetype))[1] THEN BEGIN
+                  ratetype=MinimalIntType(newmax)
+                  DMsg, 'Increasing range. Ratetype is now '+Str(ratetype)
+                  rates=Fix(rates, TYPE=ratetype)
+               ENDIF
+            ENDIF
             rates[i] = rates[i]+nt[1, ispike]*kernel
          ENDFOR
 
@@ -221,6 +266,8 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
       addlength = smoothssize
 
       IF Keyword_Set(GAUSS) THEN BEGIN
+         IF Keyword_Set(count) THEN $
+          Console, /WARN, 'Keyword COUNT is ignored for gaussian kernel.'
          add = FltArr(addlength, nsweeps)
          rates = [add, Float(nt), add]
          ;; generate gaussian and convolve
@@ -240,6 +287,11 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
          rates = [add, Float(nt), add]
          rates = Reform(rates, snt[4]+(addlength*2*nsweeps), /OVERWRITE)
          rates = Smooth(rates, smoothssize)
+         IF Keyword_Set(count) THEN BEGIN
+            rates=Round(rates*smoothssize, /L64)
+            maxrate=Max(rates)
+            rates=Fix(rates, TYPE=MinimalIntType(maxrate))
+         ENDIF
          rates = Reform(rates, dur+addlength*2, nsweeps, /OVERWRITE)
 
          ;; old version: beware of edge effects if first or last entry is
@@ -251,19 +303,22 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
 
    ENDELSE ;; Keyword_Set(SPASS)
 
-   IF NOT Keyword_Set(CENTER) THEN $
-    IF (Size(rates))[0] EQ 1 THEN rates = NoRot_Shift(rates, smoothssize/2) $
-     ELSE rates = NoRot_Shift(rates, smoothssize/2, 0)
+   IF NOT Keyword_Set(CENTER) THEN centeroffset=smoothssize/2 $
+   ELSE centeroffset=0
          
-   ;; remove margins to obtain original dimensions
-   i1 = LIndGen(dur)+addlength
-   rates = rates[[i1], *]/sampleperiod
+   ;; indices to remove margins to obtain original dimensions
+   i1 = LIndGen(dur)+addlength-centeroffset
 
    tindices = __sshift*LIndGen(dur/__sshift)
    tvalues = tindices*1000.*sampleperiod
-   
-   IF __sshift NE 1 THEN $
-   rates = rates[tindices, *]
+
+   ;; remove margins to obtain original dimensions
+   rates = rates[[i1], *]
+
+   IF NOT(Keyword_Set(count)) THEN $
+    rates = Temporary(rates/sampleperiod)
+
+   IF __sshift NE 1 THEN rates = rates[tindices, *]
 
    IF nsweeps NE 1 THEN $
     average= Total(rates,2)/nsweeps $ ;; two dimensional array
@@ -271,6 +326,5 @@ FUNCTION InstantRate, nt, SAMPLEPERIOD=sampleperiod $
     average = rates ;; one dimensional array
    
    Return, rates
-
-
+ 
 END
