@@ -28,33 +28,43 @@
 ;  Signals
 ;
 ; CALLING SEQUENCE:
-;* estimate = Zhang( s, r, [,EXTPRIOR=...][,PROBE=...]
-;*                         [,SNBINS=...][,TAU=...][/SPASS]
-;*                         [,/OPTIMAL][,/CENTER][,/VERBOSE]
-;*                         [,GET_MEAN=...][,GET_PRIOR=...] )
+;* estimate = Zhang( s[, r] [,PRIORDIST=...][,PRIORSTRUCT=...]
+;*                          [,PROBERESPONSE=...]
+;*                          [,RATEFILE=...]
+;*                          [,PROBEIDX=...]
+;*                          [,SNBINS=...][,TAU=...][/SPASS]
+;*                          [,/OPTIMAL][,/CENTER][,/VERBOSE]
+;*                          [,GET_MEAN=...][,GET_PRIOR=...] )
 ;
 ; INPUTS:
 ;  s:: A floating point array containing the stimulus as a function of
 ;      time. The stimulus may have multiple dimensions or features, in
 ;      this case, the first dimension of the array <*>s</*> represents
 ;      time, the second dimension contains the stimulus features.
+;
+; OPTIONAL INPUTS:
 ;  r:: Response, i.e. spike trains as a function of time. The format
-;      is <*>r[time,neuron no.]</*>.
+;      is <*>r[time,neuron no.]</*>. Alternatively, the neural
+;      response may be supplied as a file. In this case, <*>r</*> may be
+;      omitted. See keyword <*>RATEFILE</*>. 
 ;
 ; INPUT KEYWORDS:
-;  extprior:: In case of evaluating multiple response arrays that
+;  priordist:: A priori distribution of stimuli...   
+;  priorstruct:: In case of evaluating multiple response arrays that
 ;             share the same stimulus, the <I>a priori</I> distribution of
 ;             stimuli may be computed once and then supplied
 ;             externally using this keyword to save computational
 ;             time. See also optional output <*>get_prior</*>.   
-;  probe:: <C>Zhang()</C> uses the response supplied with this keyword
+;  proberesponse:: <C>Zhang()</C> uses the response supplied with this keyword
 ;          only for estimation, not for the determination
 ;          of firing rates. This may be used to avoid
 ;          overfitting. When set, the result of the function is
 ;          determined by the <*>probe</*> response. Note that the
 ;          algorithm considers the <I>a priori</I>
 ;          distribution of stimuli <*>s</*> used to obtain the mean responses
-;          and the probe responses to be the same.   
+;          and the probe responses to be the same.
+;  ratefile::
+;  probeidx::   
 ;  snbins:: Integer array specifying the number of bins to be used to
 ;           discretize the stimulus. The array needs to have as many
 ;           entries as there are stimulus features.
@@ -210,12 +220,14 @@
 ;; strange fluctuations of estimation depending on tau?
 
 
-FUNCTION Zhang, s, r, EXTPRIOR=extprior $
-                , PROBE=probe, SNBINS=snbins, TAU=tau $
+FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
+                , PROBERESPONSE=proberesponse, SNBINS=snbins, TAU=tau $
 ;                , SMEARTUNING=smeartuning $
                 , OPTIMAL=optimal, CENTER=center $
                 , SPASS=spass $
                 , VERBOSE=verbose $
+                   , RATEFILE=ratefile $
+                   , PROBEIDX=probeidx $
                 , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
    Default, snbins, [11, 11]
@@ -225,6 +237,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    Default, optimal, 0
    Default, verbose, 0
    Default, spass, 0
+   Default, probeidx, 0
 
    ssize = Size(s)
    sdur = ssize(1)
@@ -240,24 +253,23 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
 
    sbinsize = (smax-smin)/(snbins-1)
 
-   IF Set(extprior) THEN BEGIN
+   IF Set(priorstruct) THEN BEGIN
       IF Keyword_Set(VERBOSE) THEN  BEGIN
          Console, /MSG, '.'
-         Console, /MSG, 'External prior supplied.'
+         Console, /MSG, 'Prior structure supplied.'
       ENDIF
-      prior = extprior.pr
-      sbinval = extprior.bv
-      srevidx = extprior.ri
-      totshist = extprior.th
    ENDIF ELSE BEGIN
       IF Keyword_Set(VERBOSE) THEN  BEGIN
          Console, /MSG, '.'
-         Console, /MSG, 'Determining prior.'
+         Console, /MSG, 'Determining prior structure.'
       ENDIF
       shist = HistMD(s, NBINS=snbins $
                      , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
-                     , GET_BINVALUES=sbinval $
-                     , REVERSE_INDICES=srevidx)
+                     , GET_BINVALUES=binvalues $
+                     , REVERSE_INDICES=revidx)
+
+      priorstruct={bv : binvalues $
+                   , ri : revidx}
 
       ;; Set empty and therefore zero prior bins to 1 because
       ;; otherwise they cannot be evaluated when taking the logarithm
@@ -271,124 +283,171 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          shist[peq0] = 1
       ENDIF 
          
-      totshist = Total(shist)
-      prior = shist/totshist
+      priorstruct=Create_Struct(priorstruct, 'th', Total(shist))
+
+      IF Set(priordist) THEN BEGIN
+         IF Keyword_Set(VERBOSE) THEN $
+            Console, /MSG, 'User supplied prior distribution.'
+         IF A_NE(Size(shist, /DIM), Size(priordist, /DIM)) THEN $
+                 Console, /FATAL $
+                          , 'Dimensions of prior distribution not suitable.'
+         priorstruct=Create_Struct(priorstruct $
+                                   , 'pr', priordist/Total(priordist))
+      ENDIF ELSE BEGIN
+         priorstruct=Create_Struct(priorstruct $
+                                   , 'pr', shist/priorstruct.th)
+      ENDELSE
+
       UnDef, shist
 
    ENDELSE
 
-   sp = Size(prior)
+   sp = Size(priorstruct.pr)
    nelemprior = sp[sp[0]+2]
    idxarr = LIndGen(nelemprior)
 
    IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Computing likelihoods.'
 
-   IF Keyword_Set(SPASS) THEN BEGIN
-      IF (Size(r))[0] EQ 1 THEN BEGIN
-         ;; SSPASS
-         sr = [r[r[0]+2], r[r[0]+3:*], 1, r[1]]
-      ENDIF ELSE BEGIN
-         ;; SPASS
-         sr = [r[0, r[0, 0]+1], r[0, r[0, 0]+2], r[0, r[0, 0]+3], 4, r[1, 0]]
-      ENDELSE
-   ENDIF ELSE BEGIN
-      sr = Size(r)
-   ENDELSE
+   
+   IF Set(ratefile) THEN BEGIN
 
-   IF sr[0] GT 1 THEN $
-    nr = sr[2] $ ;; number of responses
-   ELSE $
-    nr = 1 ;; number of responses
+      IF Keyword_Set(SPASS) THEN Console, /FATAL $
+       , 'Keyword SPASS not allowed when reading rates from disc.' 
+
+      ratevideo=LoadVideo(ratefile, UDS=info)
+
+      sr = info.sizearray
+
+      IF sr[0] NE 3 THEN Console, /FATAL $
+       , 'Rate array on disc ist not 3dimensional.' 
+
+      lr = sr[1] 
+      nr = sr[2] ;; number of responses
+      nsweeps = sr[3] ;; number of sweeps
  
-   ;; no longer needed, Instantrate defines rate array anyway
-   ;; srate = sr
-   ;;   srate[srate[0]+1] = 4 ;; make rate array float type
-   ;;   rate = Make_Array(SIZE=srate)
+      sf = [sp[0]+1, sp[1:sp[0]], nr, 4, nelemprior*nr]
+      f = Make_Array(SIZE=sf)
+      sum = Make_Array(SIZE=sp)
 
+      totf=Make_Array(SIZE=sf)
 
-   ;; consider SMOOTH inside InstantRate() can only
-   ;; handle odd window lengths, so correct for this by using
-   ;; realtau which is always odd.   
-   realtau = NOT(tau MOD 2)+tau
-   IF Keyword_Set(VERBOSE) AND NOT(tau MOD 2) THEN $
-    Console, /WARN, 'Width of window in rate computing is actually ' $
-     +Str(realtau)
+      FOR swidx=0, nsweeps-1 DO BEGIN
 
-   rate = InstantRate(r, SSHIFT=1, SSIZE=realtau  $
-    , CENTER=center, SPASS=spass)
- 
-   ;; f is DOUBLE to avoid overflows when potentiation is done later
-   ;; sf = [sp[0]+1, sp[1:sp[0]], nr, 5, nelemprior*nr]
-   ;; f is no longer DOUBLE since log version. Hopefully works...
-   sf = [sp[0]+1, sp[1:sp[0]], nr, 4, nelemprior*nr]
-   f = Make_Array(SIZE=sf)
-   sum = Make_Array(SIZE=sp);, /DOUBLE)
-
-   ;; smeartuning option is not part of the Zhang algorithm
-;   IF Set(smeartuning) THEN BEGIN
-;      IF smeartuning GT 0. THEN BEGIN
-;         xmask = Double(DistMD(IntArr(sdim)+Fix(6*smeartuning+1)))
-;         mask = Exp(-0.5/smeartuning^2*xmask^2)
-;         mask = mask/Total(mask)
-;         sm = Size(mask)
-;         IF Min(sp[1:sp[0]]-sm[1:sm[0]]) LT 0. THEN Console, /FATAL $
-;          , 'SMEARTUNING is too large.'
-;      ENDIF
-;   ENDIF ELSE smeartuning = 0.
-
-   ;; loop of response dimensions
-   FOR rdimidx=0, nr-1 DO BEGIN
-
-      ;; loop of stimulus bins
-      FOR sbinidx=0, nelemprior-1 DO BEGIN
-         ;; stimulus bin not empty?
-         IF srevidx(sbinidx) NE srevidx(sbinidx+1) THEN BEGIN
-            flatf = FlatIndex(sf, [Subscript(sbinidx, SIZE=sp), rdimidx])
-            f[flatf] = $
-;             (UMoment(rate[srevidx[srevidx[sbinidx]:srevidx[sbinidx+1]-1] $
-;                           , rdimidx], ORDER=0))[0]
-             Total(rate[srevidx[srevidx[sbinidx]:srevidx[sbinidx+1]-1] $
-                           , rdimidx])/(srevidx[sbinidx+1]-srevidx[sbinidx])
-         ENDIF ;; stimulus bin not empty
-      ENDFOR ;; sbinidx
-
-      ;; 1dim array with slice consisting of f(*,*,rdimidx)
-      sliceidx = idxarr+rdimidx*nelemprior
-;      fcurrent = Reform(f[sliceidx], sp[1:sp[0]])
-
-      ;; smeartuning option is not part of the Zhang algorithm
-;      IF smeartuning GT 0. THEN BEGIN
-;         fnew = Convol(fcurrent, mask, /EDGE_TRUNC)
-;         f(sliceidx) = fnew
-;         sum = Temporary(sum)+fnew    
-;      ENDIF ELSE BEGIN
-         sum = Temporary(sum)+Reform(f[sliceidx], sp[1:sp[0]])
-;      ENDELSE ;; smeartuning GT 0.
+         ;; loop of response dimensions
+         FOR rdimidx=0, nr-1 DO BEGIN
          
-   ENDFOR ;; rdimidx
+            ;; skip those frames that are later used for probing
+            IF swidx EQ probeidx THEN BEGIN
+               dummy=Replay(ratevideo)
+            ENDIF ELSE BEGIN ;; swidx EQ probeidx 
 
-   ;; compute spike numbers from rates, either for probe or for
-   ;; training stimulus
+               rate=Replay(ratevideo)
 
-; Less memory consuming, but beware of precision when converting to
-; integer type, some 0.999999 may be set to 0
-;   IF Set(probe) THEN $
-;     ni = Fix(InstantRate(probe, SSHIFT=1, SSIZE=tau/2)*realtau*0.001) $
-;   ELSE $
-;    ni = Fix(rate*realtau*0.001)
+               ;; loop of stimulus bins
+               FOR sbinidx=0, nelemprior-1 DO BEGIN
+                  ;; stimulus bin not empty?
+                  IF priorstruct.ri(sbinidx) NE priorstruct.ri(sbinidx+1) THEN BEGIN
+                     flatf = FlatIndex(sf $
+                                       , [Subscript(sbinidx, SIZE=sp) $
+                                          , rdimidx])
+                     f[flatf] = f[flatf] + $
+                                Total(rate $
+                                      [priorstruct.ri[priorstruct.ri[sbinidx]: $
+                                               priorstruct.ri[sbinidx+1]-1]])
+                     ;; count the entries to average later
+                     totf[flatf]=totf[flatf] + $
+                                (priorstruct.ri[sbinidx+1]-priorstruct.ri[sbinidx])
+                  ENDIF ;; stimulus bin not empty
+               ENDFOR ;; sbinidx
+               
+            ENDELSE ;; swidx EQ probeidx 
+            
+         ENDFOR ;; rdimidx
 
-   ;; rate contains now integer spike numbers, this was formerly
-   ;; contained in the variable "ni". To save memory, non-integer rates
-   ;; are now overwritten, because they are no longer needed.
-   IF Set(probe) THEN BEGIN
-      rate = InstantRate(probe, SSHIFT=1, SSIZE=realtau $
-       , CENTER=center, SPASS=spass)*realtau*0.001
-   ENDIF ELSE $
-    rate = Temporary(rate)*realtau*0.001
+      ENDFOR ;; swidx
 
-   ;; use length of probe response instead of length of training
-   ;; response 
-   lr = (Size(rate))[1] 
+      f=Temporary(f)/totf
+
+;; maybe this works for nondisc version too???
+      sum=Total(f,sp[0]+1)
+
+   ENDIF ELSE BEGIN ;; Set(ratefile)
+
+      IF Keyword_Set(SPASS) THEN BEGIN
+         IF (Size(r))[0] EQ 1 THEN BEGIN
+            ;; SSPASS
+            sr = [r[r[0]+2], r[r[0]+3:*], 1, r[1]]
+         ENDIF ELSE BEGIN
+            ;; SPASS
+            sr = [r[0, r[0, 0]+1], r[0, r[0, 0]+2], r[0, r[0, 0]+3], 4, r[1, 0]]
+         ENDELSE
+      ENDIF ELSE BEGIN
+         sr = Size(r)
+      ENDELSE
+
+      IF sr[0] GT 1 THEN $
+       nr = sr[2] $ ;; number of responses
+      ELSE $
+       nr = 1 ;; number of responses
+ 
+      ;; consider SMOOTH inside InstantRate() can only
+      ;; handle odd window lengths, so correct for this by using
+      ;; realtau which is always odd.   
+      realtau = NOT(tau MOD 2)+tau
+      IF Keyword_Set(VERBOSE) AND NOT(tau MOD 2) THEN $
+       Console, /WARN, 'Width of window in rate computing is actually ' $
+                +Str(realtau)
+
+      rate = InstantRate(r, SSHIFT=1, SSIZE=realtau  $
+                         , CENTER=center, SPASS=spass)
+      
+      sf = [sp[0]+1, sp[1:sp[0]], nr, 4, nelemprior*nr]
+      f = Make_Array(SIZE=sf)
+      sum = Make_Array(SIZE=sp)
+
+      ;; loop of response dimensions
+      FOR rdimidx=0, nr-1 DO BEGIN
+         
+         ;; loop of stimulus bins
+         FOR sbinidx=0, nelemprior-1 DO BEGIN
+            ;; stimulus bin not empty?
+            IF priorstruct.ri(sbinidx) NE priorstruct.ri(sbinidx+1) THEN BEGIN
+               flatf = FlatIndex(sf, [Subscript(sbinidx, SIZE=sp), rdimidx])
+               f[flatf] = $
+                Total(rate[priorstruct.ri[priorstruct.ri[sbinidx]:priorstruct.ri[sbinidx+1]-1] $
+                           , rdimidx])/(priorstruct.ri[sbinidx+1]-priorstruct.ri[sbinidx])
+            ENDIF ;; stimulus bin not empty
+         ENDFOR ;; sbinidx
+         
+         ;; 1dim array with slice consisting of f(*,*,rdimidx)
+         ;; sliceidx = idxarr+rdimidx*nelemprior
+         
+         ;; sum = Temporary(sum)+Reform(f[sliceidx], sp[1:sp[0]])
+         
+      ENDFOR ;; rdimidx
+
+      ;; maybe this works for nondisc version too???
+      sum=Total(f,sp[0]+1)
+
+
+      ;; compute spike numbers from rates, either for probe or for
+      ;; training stimulus
+
+      ;; rate contains now integer spike numbers, this was formerly
+      ;; contained in the variable "ni". To save memory, non-integer rates
+      ;; are now overwritten, because they are no longer needed.
+      IF Set(proberesponse) THEN BEGIN
+         rate = InstantRate(proberesponse, SSHIFT=1, SSIZE=realtau $
+                            , CENTER=center, SPASS=spass, /COUNT)
+      ENDIF ELSE $
+       rate = Temporary(rate)*realtau*0.001
+      
+      ;; use length of probe response instead of length of training
+      ;; response 
+      lr = (Size(rate))[1] 
+
+   ENDELSE ;; Set(ratefile)
+
 
    ;; Avoid empty
    ;; and therefore zero tuning bins that cannot be evaluated when
@@ -404,7 +463,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    ;;   esum = Exp(-tau*0.001*sum)
    ;;   ep = esum*prior
    ;;new, logarithmic version
-   bias = ALog(prior)-tau*0.001*sum
+   bias = ALog(priorstruct.pr)-tau*0.001*sum
    lnf = ALog(f)
 
    ;; Start estimation
@@ -416,6 +475,17 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    se = [sdim+1, lr, sdim, 4, sdim*lr]
    estimate = Make_Array(SIZE=se)
    sdimidx = IndGen(sdim)
+
+   ;; rewind video array to probe sweep
+   IF Set(ratefile) THEN BEGIN
+      Rewind, ratevideo, probeidx*nr
+      rate=Make_Array(SIZE=info.sizearray)
+      FOR rdimidx=0, nr-1 DO BEGIN
+         rate[*, rdimidx]=Replay(ratevideo)*info.realtau*0.001
+      ENDFOR
+      Eject, ratevideo
+   ENDIF
+      
 
    FOR t=0l, lr-1 DO BEGIN
       ;; old non log version
@@ -431,8 +501,15 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          ;; new log version
 ;         fcurrent = Reform(lnf[sliceidx], sp[1:sp[0]])
 ;         lnsum = Temporary(lnsum)+fcurrent*rate[t, rdimidx]
-         lnsum = Temporary(lnsum)+ $
-          Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t, rdimidx]
+;          IF Set(ratefile) THEN BEGIN
+;             rate=Replay(ratevideo)*info.realtau*0.001
+;             lnsum = Temporary(lnsum)+ $
+;                     Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t]
+;          ENDIF ELSE BEGIN
+            lnsum = Temporary(lnsum)+ $
+                    Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t, rdimidx]
+;         ENDELSE
+
          IF Min(Finite(lnsum)) LT 1 THEN Console, /FATAL $
           , 'Overflow during potentiation.'
       ENDFOR ;; rdimidx
@@ -460,7 +537,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
          dummy = Max(lnposterior, estidx)
          smultidimidx = Subscript(estidx, SIZE=sp)
         ;; select stimulus values by smultidimidx and return estimate
-         estimate[t, *] = sbinval[smultidimidx+1,sdimidx]
+         estimate[t, *] = priorstruct.bv[smultidimidx+1,sdimidx]
       ENDELSE
 
       IF Keyword_Set(VERBOSE) AND (((t+1) MOD (lr/10)) EQ 0) THEN SimTimeStep
@@ -470,10 +547,7 @@ FUNCTION Zhang, s, r, EXTPRIOR=extprior $
    IF Keyword_Set(VERBOSE) THEN SimTimeStop
 
    get_mean = f
-   get_prior = {pr: prior $
-                , bv: sbinval $
-                , ri: srevidx $
-                , th: totshist}
+   get_prior = priorstruct
 
    Return, estimate
 
