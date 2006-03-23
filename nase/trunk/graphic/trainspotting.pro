@@ -336,7 +336,7 @@ PRO Trainspotting, nt, TITLE=title, LEVEL=level, WIN=win, OFFSET=offset, $
             IF Keyword_Set(MUA) THEN BEGIN
                Default, mcolor, RGB(200,0,0)
                tot = LonArr(s(1))
-               FOR idx=0, s(1)-1 DO BEGIN
+               FOR idx=0l, s(1)-1 DO BEGIN
                   dummy = Where(x(xi) EQ idx, count)
                   tot(idx) = count
                ENDFOR
