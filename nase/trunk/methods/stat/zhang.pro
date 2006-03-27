@@ -317,6 +317,8 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       ratevideo=LoadVideo(ratefile, UDS=info)
 
       sr = info.sizearray
+      tau = info.tau
+      realtau = info.realtau
 
       IF sr[0] NE 3 THEN Console, /FATAL $
        , 'Rate array on disc ist not 3dimensional.' 
