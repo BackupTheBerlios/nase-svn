@@ -233,7 +233,6 @@ Pro vector::reserve, nelements
    ptr_free, self.data
    self.data = newdata
    
-   self.size = nelements
    self.reserved = nelements
 End
 
