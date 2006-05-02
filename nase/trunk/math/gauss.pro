@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;  Gauss()
+;  Gauss_func()
 ;
 ; VERSION:
 ;  $Id$
@@ -15,7 +15,7 @@
 ;  Math
 ;
 ; CALLING SEQUENCE:
-;*y = Gauss( x, mean, sigma )
+;*y = Gauss_func( x, mean, sigma )
 ;
 ; INPUTS:
 ;  x:: the abscissa value
@@ -32,12 +32,12 @@
 ; EXAMPLE:
 ;*
 ;*> x=Ramp(100, left=-7, right=13)
-;*> Plot, x, Gauss(x, 3.0, 3.0)
+;*> Plot, x, Gauss_func(x, 3.0, 3.0)
 ;
 ; SEE ALSO:
-;  <A>Fermi()</A>, IDL's <C>Gauss_*()</C> functions.
+;  <A>Fermi()</A>, <A>Gauss_2d()</A>, IDL's <C>Gauss_*()</C> functions.
 ;-
 
-Function Gauss, x, mean, sigma
+Function Gauss_func, x, mean, sigma
    return, exp( -0.5 * ( (x-mean)^2 / double(sigma)^2 ) )
 End
