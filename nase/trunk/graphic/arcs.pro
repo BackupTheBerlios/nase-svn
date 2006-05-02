@@ -126,6 +126,7 @@ PRO arcs, r, a1, a2, xx, yy,$
   
   if n_elements(clr) eq 0 then clr = !p.color
   if n_elements(lstyl) eq 0 then lstyl = !p.linestyle
+  if n_elements(thick) eq 0 then thick = !p.thick
   
   if np lt 2 then a1 = 0.
   if np lt 3 then a2 = 360.
