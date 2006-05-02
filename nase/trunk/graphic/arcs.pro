@@ -11,7 +11,8 @@
 ; PURPOSE:
 ;  Plots specified arcs or circles on the current plot device.
 ;  This routine was originally written by R. Sterner,
-;  Johns Hopkins University Applied Physics Laboratory.
+;  Johns Hopkins University Applied Physics Laboratory. A lot of
+;  improvements have been added since.
 ;
 ; CATEGORY:
 ;  Graphic
@@ -19,15 +20,16 @@
 ; CALLING SEQUENCE:
 ;*  arcs, r [,a1] [,a2] [,x0] [,y0]
 ;*        [,/FILL] [,N_EDGES=...]
-;*        [,/DEVICE | ,/DATA | ,/NORM] [,COLOR=...] [,LINESTYLE=...]
+;*        [,/DEVICE | ,/DATA | ,/NORM] [,COLOR=...] [,LINESTYLE=...] [,THICK=...]
 ;
 ; INPUTS:
-;   r      :: radii of arcs to draw (data units).
+;   r      :: radii of arcs to draw (data units). This can be an array
+;             or a scalar. If an array is given, several arcs are drawn.
 ;
 ; OPTIONAL INPUTS:
-;   a1     :: start angle of arc (deg counter clockwise from X axis, def=0)
-;   a2     :: end angle of arc (deg counter clockwise from X axis, def=360)
-;   x0,y0  :: optional arc center (default is 0,0)
+;   a1     :: start angle(s) of arc(s) (deg counter clockwise from X axis, def=0)
+;   a2     :: end angle(s) of arc(s) (deg counter clockwise from X axis, def=360)
+;   x0,y0  :: optional arc center(s) (default is 0,0)
 ;
 ; INPUT KEYWORDS:
 ;   DEVICE    :: use device coordinates
@@ -35,6 +37,7 @@
 ;   NORM      :: use normalized coordinates
 ;   COLOR     :: plot color (scalar or array)
 ;   LINESTYLE :: linestyle (scalar or array)
+;   THICK     :: line thickness (scalar or array)
 ;   FILL      :: a filled polygon will be drawn. The center point of
 ;                the polygon will be added in this case, so that the
 ;                overall shape is a sector.
@@ -108,7 +111,7 @@ END
 
 
 PRO arcs, r, a1, a2, xx, yy,$
-          color=clr, linestyle=lstyl, $
+          color=clr, linestyle=lstyl, thick=thick, $
           device=device, data=data, norm=norm, $
           fill=fill, n_edges=n_edges
 
@@ -136,6 +139,7 @@ PRO arcs, r, a1, a2, xx, yy,$
   nyy = n_elements(yy)-1
   nclr = n_elements(clr)-1
   nlstyl = n_elements(lstyl)-1
+  nthick = n_elements(thick)-1
   n = nr>na1>na2>nxx>nyy        ; Overall max.
   
   for i = 0, n do begin   	; loop thru arcs.
@@ -146,13 +150,14 @@ PRO arcs, r, a1, a2, xx, yy,$
       yyi = yy(i<nyy)
       clri = clr(i<nclr)
       lstyli = lstyl(i<nlstyl)
+      thicki = thick(i<nthick)
       a = makex(a1i, a2i, 360.0/n_edges*signum(a2i-a1i))/!radeg
       polrec, ri, a, x, y
       if keyword_set(fill) then begin
-         polyfill, [0, x] + xxi, [0, y] + yyi, color=clri, linestyle=lstyli, $
+         polyfill, [0, x] + xxi, [0, y] + yyi, color=clri, linestyle=lstyli, thick=thicki, $
                    data=data, device=device, norm=norm
       endif else begin
-         plots, x + xxi, y + yyi, color=clri, linestyle=lstyli, $
+         plots, x + xxi, y + yyi, color=clri, linestyle=lstyli, thick=thicki, $
                 data=data, device=device, norm=norm
       endelse
   endfor
