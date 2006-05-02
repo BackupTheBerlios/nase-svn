@@ -88,6 +88,8 @@ PRO showit_close, widid, SAVE_COLORS=save_colors
       If (uservalue.opencount eq 0) then begin
          UWset, uservalue.oldwin
          
+         dmsg, "restoring win: "+str(uservalue.oldwin)
+      
          new = !P
          !P =  uservalue.p
          uservalue.p = new

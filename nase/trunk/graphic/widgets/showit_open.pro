@@ -74,19 +74,31 @@
 
 PRO ShowIt_Open, widid
 
+   dmsg, "--- called. ---"
 
+   ;; determine currently open window:
+   active_window = !D.window
+   dmsg, "active win: "+str(active_window)
+
+   dmsg, "realizing widget..."
    Widget_Control, widid, /REALIZE
+   dmsg, "...done realizing widget"
 
+   ;; get uservalue:
    firstchild = Widget_Info(widid, /CHILD)
    Widget_Control, firstchild, GET_VALUE=winid, GET_UVALUE=uservalue, /NO_COPY
 
    ;; increase opencount
    uservalue.opencount = uservalue.opencount+1
+   dmsg, "new opencount: "+str(uservalue.opencount)
 
    ;; do only store values, if opencount equals 1:
    If (uservalue.opencount eq 1) then begin
-      uservalue.oldwin = !D.window
+      uservalue.oldwin = active_window
       UWSet, winid
+
+      dmsg, "stored old win id: "+str(uservalue.oldwin)
+      dmsg, "stored new win id: "+str(winid)
       
       old = !P
       !P = uservalue.p
@@ -117,4 +129,5 @@ PRO ShowIt_Open, widid
    
    Widget_Control, firstchild, SET_UVALUE=uservalue, /NO_COPY
 
+   dmsg, "--- ready. ---"
 END
