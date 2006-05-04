@@ -163,6 +163,7 @@ PRO newPTV, first, second, third $
             , CUBIC=cubic, INTERP=interp, MINUS_ONE=minus_one, SMOOTH=smooth $
             , CHARSIZE=charsize $
             , ALLOWCOLORS = allowcolors $
+            , NOERASE=noerase $
             , _EXTRA=_extra
    
    On_Error, 2
@@ -331,7 +332,7 @@ PRO newPTV, first, second, third $
    ;; but do not draw 
    ;; anything except a possible title of the plot.
    Plot, IndGen(5), /NODATA, XSTYLE=4, YSTYLE=4 $
-    , TITLE=title, CHARSIZE=charsize
+    , TITLE=title, CHARSIZE=charsize, NOERASE=noerase
 
    xo = !X.WINDOW[0] ;; corners of plot area in normal coords
    yo = !Y.WINDOW[0]
