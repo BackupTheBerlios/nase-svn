@@ -230,7 +230,6 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
                    , PROBEIDX=probeidx $
                 , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
-   Default, snbins, [11, 11]
    Default, tau, 11 ;; ms
    tau = Float(tau)
    Default, center, 0
@@ -239,19 +238,19 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
    Default, spass, 0
    Default, probeidx, 0
 
-   ssize = Size(s)
-   sdur = ssize(1)
-   IF ssize(0) EQ 1 $
-    THEN sdim = 1 $
-   ELSE sdim = ssize(2)
-   IF sdim GT 1 THEN BEGIN
-      smin = IMin(s, 1)
-      smax = IMax(s, 1)
-   ENDIF ELSE BEGIN
-      smin = Min(s, MAX=smax)
-   ENDELSE 
+;    ssize = Size(s)
+;    sdur = ssize(1)
+;    IF ssize(0) EQ 1 $
+;     THEN sdim = 1 $
+;    ELSE sdim = ssize(2)
+;    IF sdim GT 1 THEN BEGIN
+;       smin = IMin(s, 1)
+;       smax = IMax(s, 1)
+;    ENDIF ELSE BEGIN
+;       smin = Min(s, MAX=smax)
+;    ENDELSE 
 
-   sbinsize = (smax-smin)/(snbins-1)
+;    sbinsize = (smax-smin)/(snbins-1)
 
    IF Set(priorstruct) THEN BEGIN
       IF Keyword_Set(VERBOSE) THEN  BEGIN
@@ -263,42 +262,45 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
          Console, /MSG, '.'
          Console, /MSG, 'Determining prior structure.'
       ENDIF
-      shist = HistMD(s, NBINS=snbins $
-                     , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
-                     , GET_BINVALUES=binvalues $
-                     , REVERSE_INDICES=revidx)
 
-      priorstruct={bv : binvalues $
-                   , ri : revidx}
+      priorstruct=ZhangPrior(s, SNBINS=snbins, PRIORDIST=priordist)
 
-      ;; Set empty and therefore zero prior bins to 1 because
-      ;; otherwise they cannot be evaluated when taking the logarithm
-      ;; of the prior later. Empty bins to not appear in the reverse
-      ;; indices.
-      peq0 = Where(shist LE 0, count)
-      IF count NE 0 THEN BEGIN
-         Console, /WARN, Str(count)+' stimulus bins empty.'
-         pne0 = DiffSet(LIndgen(N_Elements(shist)), peq0)  
-         ;; Offset is 1 entry
-         shist[peq0] = 1
-      ENDIF 
+;       shist = HistMD(s, NBINS=snbins $
+;                      , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
+;                      , GET_BINVALUES=binvalues $
+;                      , REVERSE_INDICES=revidx)
+
+;       priorstruct={bv : binvalues $
+;                    , ri : revidx}
+
+;       ;; Set empty and therefore zero prior bins to 1 because
+;       ;; otherwise they cannot be evaluated when taking the logarithm
+;       ;; of the prior later. Empty bins to not appear in the reverse
+;       ;; indices.
+;       peq0 = Where(shist LE 0, count)
+;       IF count NE 0 THEN BEGIN
+;          Console, /WARN, Str(count)+' stimulus bins empty.'
+;          pne0 = DiffSet(LIndgen(N_Elements(shist)), peq0)  
+;          ;; Offset is 1 entry
+;          shist[peq0] = 1
+;       ENDIF 
          
-      priorstruct=Create_Struct(priorstruct, 'th', Total(shist))
+;       priorstruct=Create_Struct(priorstruct, 'th', Total(shist))
 
-      IF Set(priordist) THEN BEGIN
-         IF Keyword_Set(VERBOSE) THEN $
-            Console, /MSG, 'User supplied prior distribution.'
-         IF A_NE(Size(shist, /DIM), Size(priordist, /DIM)) THEN $
-                 Console, /FATAL $
-                          , 'Dimensions of prior distribution not suitable.'
-         priorstruct=Create_Struct(priorstruct $
-                                   , 'pr', priordist/Total(priordist))
-      ENDIF ELSE BEGIN
-         priorstruct=Create_Struct(priorstruct $
-                                   , 'pr', shist/priorstruct.th)
-      ENDELSE
+;       IF Set(priordist) THEN BEGIN
+;          IF Keyword_Set(VERBOSE) THEN $
+;             Console, /MSG, 'User supplied prior distribution.'
+;          IF A_NE(Size(shist, /DIM), Size(priordist, /DIM)) THEN $
+;                  Console, /FATAL $
+;                           , 'Dimensions of prior distribution not suitable.'
+;          priorstruct=Create_Struct(priorstruct $
+;                                    , 'pr', priordist/Total(priordist))
+;       ENDIF ELSE BEGIN
+;          priorstruct=Create_Struct(priorstruct $
+;                                    , 'pr', shist/priorstruct.th)
+;       ENDELSE
 
-      UnDef, shist
+;       UnDef, shist
 
    ENDELSE
 
@@ -474,9 +476,9 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       SimTimeInit, MAXSTEPS=10, /PRINT, CONSOLE=!CONSOLE
    ENDIF
 
-   se = [sdim+1, lr, sdim, 4, sdim*lr]
+   se = [priorstruct.sdim+1, lr, priorstruct.sdim, 4, priorstruct.sdim*lr]
    estimate = Make_Array(SIZE=se)
-   sdimidx = IndGen(sdim)
+   sdimidx = IndGen(priorstruct.sdim)
 
    ;; rewind video array to probe sweep
    IF Set(ratefile) THEN BEGIN
