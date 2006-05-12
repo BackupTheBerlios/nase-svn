@@ -349,8 +349,10 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
 
                ;; loop of stimulus bins
                FOR sbinidx=0, nelemprior-1 DO BEGIN
+
+                  nentries=priorstruct.ri[sbinidx+1]-priorstruct.ri[sbinidx]
                   ;; stimulus bin not empty?
-                  IF priorstruct.ri(sbinidx) NE priorstruct.ri(sbinidx+1) THEN BEGIN
+                  IF nentries NE 0 THEN BEGIN
                      flatf = FlatIndex(sf $
                                        , [Subscript(sbinidx, SIZE=sp) $
                                           , rdimidx])
@@ -359,8 +361,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
                                       [priorstruct.ri[priorstruct.ri[sbinidx]: $
                                                priorstruct.ri[sbinidx+1]-1]])
                      ;; count the entries to average later
-                     totf[flatf]=totf[flatf] + $
-                                (priorstruct.ri[sbinidx+1]-priorstruct.ri[sbinidx])
+                     totf[flatf]=totf[flatf] + nentries
                   ENDIF ;; stimulus bin not empty
                ENDFOR ;; sbinidx
                
@@ -370,7 +371,10 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
 
       ENDFOR ;; swidx
 
-      f=Temporary(f)/totf
+      totnzero=Where(totf NE 0., count)
+;print, count
+      IF count EQ 0 THEN Console, /FATAL, 'No entries for tuning function.' $
+       ELSE f[totnzero]=f[totnzero]/totf[totnzero]
 
 ;; maybe this works for nondisc version too???
       sum=Total(f,sp[0]+1)
