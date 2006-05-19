@@ -69,10 +69,10 @@
 ;                         is already fulfilled, a warning is issued.
 ;
 ;   get(i)             :: return element with index i (starts with 0)
-;   push, x            :: push element x at end of vector. x needs to
+;   push, x [,/NO_COPY]:: push element x at end of vector. x needs to
 ;                         match the correct type.
-;   push_many, [x,...] :: push an array of elements at end of vector.
-;                         Elements need to match the correct type.
+;   push_many, a [,/NO_COPY] :: push an array of elements at end of vector.
+;                               Elements need to match the correct type.
 ;   append, vector     :: appends another vector to the end of this
 ;                         vector. The vectors need to be of matching type.
 ;
@@ -244,7 +244,7 @@ Function vector::get, i
    return, (*self.data)[i]
 End
 
-Pro vector::push, a
+Pro vector::push, a, NO_COPY=NO_COPY
    COMPILE_OPT IDL2
    Common vector_static
 
@@ -255,11 +255,15 @@ Pro vector::push, a
       self.poolsize = self.poolsize*self.incrementfactor
    EndIf
       
-   (*self.data)[newsize-1] = temporary(a)
+   If keyword_set(NO_COPY) then begin
+      (*self.data)[newsize-1] = temporary(a)
+   endif else begin
+      (*self.data)[newsize-1] = a
+   endelse
    self.size = newsize
 End
 
-Pro vector::push_many, a2
+Pro vector::push_many, a2, NO_COPY=NO_COPY
    COMPILE_OPT IDL2
    Common vector_static
 
@@ -275,7 +279,11 @@ Pro vector::push_many, a2
       self->reserve, reserve
    EndIf
       
-   (*self.data)[self.size:newsize-1] = temporary(a2)
+   If keyword_set(NO_COPY) then begin
+      (*self.data)[self.size:newsize-1] = temporary(a2)
+   endif else begin
+      (*self.data)[self.size:newsize-1] = a2
+   endelse
    self.size = newsize
 End
 
