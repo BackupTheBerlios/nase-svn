@@ -99,29 +99,33 @@
 ;
 
 
-Pro Rewind, _Video, FrameNumber, VERBOSE=verbose, SHUTUP=shutup, APPEND=append
+PRO Rewind, _Video, FrameNumber, VERBOSE=verbose, SHUTUP=shutup, APPEND=append
 
    ON_ERROR, 2
 
    Handle_Value, _Video, Video, /NO_COPY
 
-   If Keyword_Set(APPEND) then begin
-      If Video.VideoMode ne "EDIT" then message, "Das Video ist nicht zum Editieren geöffnet - kein Anhängen möglich!"
+   IF Keyword_Set(APPEND) THEN BEGIN
+      IF Video.VideoMode NE "EDIT" THEN $
+       Console, /FATAL $
+                , "Video has not been openend for editing. Appending not possible!"
       Video.FramePointer = Video.Length
-   Endif else begin
-      If Video.VideoMode ne 'PLAY' then message, 'Das Video ist nicht zur Wiedergabe geöffnet!'
-      If FrameNumber ge Video.Length then message, 'Videoende überschritten!'
+   ENDIF ELSE BEGIN 
+      IF Video.VideoMode NE 'PLAY' THEN $
+       Console, /FATAL, 'Video not opened for replay!'
+      IF FrameNumber GE Video.Length THEN $
+       Console, /FATAL, 'End of video has been passed!'
       
       Video.FramePointer = FrameNumber
-   Endelse
+   ENDELSE 
 
 
-   If keyword_set(VERBOSE) then begin
-      print, 'Ah! Eine besonders schöne Szene in "'+Video.title+'": Nummer '+strtrim(string(Video.FramePointer), 1)
-   endif else IF NOT keyword_set(shutup) then begin
-      message, /inform, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(Video.FramePointer), 1)+'.'
-   end
+   IF keyword_set(VERBOSE) THEN BEGIN
+      Print, 'Ah! An exceptionally beautiful scene in "'+Video.title+'": Number '+strtrim(string(Video.FramePointer), 1)
+   ENDIF ELSE IF NOT keyword_set(shutup) THEN BEGIN
+      Console, /MSG, 'Video "'+Video.title+'" is now at Frame #'+strtrim(string(Video.FramePointer), 1)+'.'
+   END 
 
    Handle_Value, _Video, Video, /NO_COPY, /SET
 
-End
+END
