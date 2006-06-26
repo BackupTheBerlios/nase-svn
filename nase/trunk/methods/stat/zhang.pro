@@ -228,6 +228,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
                 , VERBOSE=verbose $
                    , RATEFILE=ratefile $
                    , PROBEIDX=probeidx $
+                , SYMMETRIC=symmetric $
                 , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
    Default, tau, 11 ;; ms
@@ -263,7 +264,8 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
          Console, /MSG, 'Determining prior structure.'
       ENDIF
 
-      priorstruct=ZhangPrior(s, SNBINS=snbins, PRIORDIST=priordist)
+      priorstruct=ZhangPrior(s, SNBINS=snbins, PRIORDIST=priordist $
+                             , SYMMETRIC=symmetric)
 
 ;       shist = HistMD(s, NBINS=snbins $
 ;                      , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
@@ -316,7 +318,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       IF Keyword_Set(SPASS) THEN Console, /FATAL $
        , 'Keyword SPASS not allowed when reading rates from disc.' 
 
-      ratevideo=LoadVideo(ratefile, UDS=info)
+      ratevideo=LoadVideo(ratefile, UDS=info, /SHUTUP)
 
       sr = info.sizearray
       tau = info.tau
@@ -491,7 +493,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       FOR rdimidx=0, nr-1 DO BEGIN
          rate[*, rdimidx]=Replay(ratevideo)*info.realtau*0.001
       ENDFOR
-      Eject, ratevideo
+      Eject, ratevideo, /SHUTUP
    ENDIF
       
 

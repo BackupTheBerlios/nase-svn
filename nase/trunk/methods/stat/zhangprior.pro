@@ -73,7 +73,10 @@
 ;  <A>Zhang()</A>, <A>HistMD()</A>.
 ;-
 
-FUNCTION ZhangPrior, s, SNBINS=snbins, PRIORDIST=priordist
+FUNCTION ZhangPrior, s, SNBINS=snbins, PRIORDIST=priordist $
+ , SYMMETRIC=symmetric
+
+   Default, symmetric, 0
 
    ssize = Size(s)
    sdur = ssize[1]
@@ -83,10 +86,20 @@ FUNCTION ZhangPrior, s, SNBINS=snbins, PRIORDIST=priordist
    ELSE sdim = ssize[2]
 
    IF sdim GT 1 THEN BEGIN
-      smin = IMin(s, 1)
-      smax = IMax(s, 1)
+      IF Keyword_Set(symmetric) THEN BEGIN
+         smax = IMax(Abs(s), 1)
+         smin = -smax
+      ENDIF ELSE BEGIN
+         smin = IMin(s, 1)
+         smax = IMax(s, 1)
+      ENDELSE
    ENDIF ELSE BEGIN
-      smin = Min(s, MAX=smax)
+      IF Keyword_Set(symmetric) THEN BEGIN
+         smax = Max(Abs(s))
+         smin = -smax
+      ENDIF ELSE BEGIN
+         smin = Min(s, MAX=smax)
+      ENDELSE
    ENDELSE 
 
    IF NOT Set(snbins) THEN Console, /FATAL, 'SNBINS need to be specified.'
