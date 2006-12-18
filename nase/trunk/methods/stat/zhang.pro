@@ -63,8 +63,32 @@
 ;          algorithm considers the <I>a priori</I>
 ;          distribution of stimuli <*>s</*> used to obtain the mean responses
 ;          and the probe responses to be the same.
-;  ratefile::
-;  probeidx::   
+;  ratefile:: Supply a filename here that is used to obtain firing
+;             rate information, in case the amount of data is too
+;             large to be kept in memory completely. The firing rate
+;             file has to be generated using the NASE video
+;             function. Its frames are floating type arrays containing
+;             the firing rates of single cells (prototypes) as a function of
+;             time. For multiple cell data, such single cell frames
+;             have to be concatenated within the video. Experimental
+;             repetitions using the same stimulus (sweeps) can then be
+;             concatenated as well, starting with the frame of the
+;             first neuron's firing rates. Thus, correct video
+;             generation looks like this:
+;*
+;*             FOR sweepidx=0, nsweeps-1 DO BEGIN
+;*              FOR prototypeidx=0, nproto-1 DO BEGIN
+;*
+;*               frame=array[timeidx, pridx, swidx]
+;*               frno=CamCord(myvideo, frame)
+;*
+;*              ENDFOR
+;*             ENDFOR
+;*     
+;  probeidx:: For data supplied in a <*>rate file</*> video, this keyword
+;             specifies which of the sweeps is used for
+;             validation, corresponding to the <*>proberesponse</*>
+;             keyword of the case which keeps all data in memory.
 ;  snbins:: Integer array specifying the number of bins to be used to
 ;           discretize the stimulus. The array needs to have as many
 ;           entries as there are stimulus features.
@@ -226,8 +250,8 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
                 , OPTIMAL=optimal, CENTER=center $
                 , SPASS=spass $
                 , VERBOSE=verbose $
-                   , RATEFILE=ratefile $
-                   , PROBEIDX=probeidx $
+                , RATEFILE=ratefile $
+                , PROBEIDX=probeidx $
                 , SYMMETRIC=symmetric $
                 , GET_MEAN=get_mean, GET_PRIOR=get_prior
 
@@ -239,19 +263,6 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
    Default, spass, 0
    Default, probeidx, 0
 
-;    ssize = Size(s)
-;    sdur = ssize(1)
-;    IF ssize(0) EQ 1 $
-;     THEN sdim = 1 $
-;    ELSE sdim = ssize(2)
-;    IF sdim GT 1 THEN BEGIN
-;       smin = IMin(s, 1)
-;       smax = IMax(s, 1)
-;    ENDIF ELSE BEGIN
-;       smin = Min(s, MAX=smax)
-;    ENDELSE 
-
-;    sbinsize = (smax-smin)/(snbins-1)
 
    IF Set(priorstruct) THEN BEGIN
       IF Keyword_Set(VERBOSE) THEN  BEGIN
@@ -266,43 +277,6 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
 
       priorstruct=ZhangPrior(s, SNBINS=snbins, PRIORDIST=priordist $
                              , SYMMETRIC=symmetric)
-
-;       shist = HistMD(s, NBINS=snbins $
-;                      , MIN=smin-0.5*sbinsize, MAX=smax+0.5*sbinsize $
-;                      , GET_BINVALUES=binvalues $
-;                      , REVERSE_INDICES=revidx)
-
-;       priorstruct={bv : binvalues $
-;                    , ri : revidx}
-
-;       ;; Set empty and therefore zero prior bins to 1 because
-;       ;; otherwise they cannot be evaluated when taking the logarithm
-;       ;; of the prior later. Empty bins to not appear in the reverse
-;       ;; indices.
-;       peq0 = Where(shist LE 0, count)
-;       IF count NE 0 THEN BEGIN
-;          Console, /WARN, Str(count)+' stimulus bins empty.'
-;          pne0 = DiffSet(LIndgen(N_Elements(shist)), peq0)  
-;          ;; Offset is 1 entry
-;          shist[peq0] = 1
-;       ENDIF 
-         
-;       priorstruct=Create_Struct(priorstruct, 'th', Total(shist))
-
-;       IF Set(priordist) THEN BEGIN
-;          IF Keyword_Set(VERBOSE) THEN $
-;             Console, /MSG, 'User supplied prior distribution.'
-;          IF A_NE(Size(shist, /DIM), Size(priordist, /DIM)) THEN $
-;                  Console, /FATAL $
-;                           , 'Dimensions of prior distribution not suitable.'
-;          priorstruct=Create_Struct(priorstruct $
-;                                    , 'pr', priordist/Total(priordist))
-;       ENDIF ELSE BEGIN
-;          priorstruct=Create_Struct(priorstruct $
-;                                    , 'pr', shist/priorstruct.th)
-;       ENDELSE
-
-;       UnDef, shist
 
    ENDELSE
 
@@ -325,7 +299,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       realtau = info.realtau
 
       IF sr[0] NE 3 THEN Console, /FATAL $
-       , 'Rate array on disc ist not 3dimensional.' 
+       , 'Rate array on disc is not 3dimensional.' 
 
       lr = sr[1] 
       nr = sr[2] ;; number of responses
@@ -374,11 +348,10 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       ENDFOR ;; swidx
 
       totnzero=Where(totf NE 0., count)
-;print, count
+
       IF count EQ 0 THEN Console, /FATAL, 'No entries for tuning function.' $
        ELSE f[totnzero]=f[totnzero]/totf[totnzero]
 
-;; maybe this works for nondisc version too???
       sum=Total(f,sp[0]+1)
 
    ENDIF ELSE BEGIN ;; Set(ratefile)
@@ -436,7 +409,6 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
          
       ENDFOR ;; rdimidx
 
-      ;; maybe this works for nondisc version too???
       sum=Total(f,sp[0]+1)
 
 
@@ -489,7 +461,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
    ;; rewind video array to probe sweep
    IF Set(ratefile) THEN BEGIN
       Rewind, ratevideo, probeidx*nr
-      rate=Make_Array(SIZE=info.sizearray)
+      rate=Make_Array(lr, nr, /FLOAT)
       FOR rdimidx=0, nr-1 DO BEGIN
          rate[*, rdimidx]=Replay(ratevideo)*info.realtau*0.001
       ENDFOR
@@ -508,17 +480,10 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
          ;; old non log version
          ;; fcurrent = Reform(f(sliceidx), sp(1:sp(0)))
          ;; prod = Temporary(prod)*fcurrent^ni(t, rdimidx)
+
          ;; new log version
-;         fcurrent = Reform(lnf[sliceidx], sp[1:sp[0]])
-;         lnsum = Temporary(lnsum)+fcurrent*rate[t, rdimidx]
-;          IF Set(ratefile) THEN BEGIN
-;             rate=Replay(ratevideo)*info.realtau*0.001
-;             lnsum = Temporary(lnsum)+ $
-;                     Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t]
-;          ENDIF ELSE BEGIN
-            lnsum = Temporary(lnsum)+ $
-                    Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t, rdimidx]
-;         ENDELSE
+         lnsum = Temporary(lnsum)+ $
+                 Reform(lnf[sliceidx], sp[1:sp[0]])*rate[t, rdimidx]
 
          IF Min(Finite(lnsum)) LT 1 THEN Console, /FATAL $
           , 'Overflow during potentiation.'
@@ -546,7 +511,7 @@ FUNCTION Zhang, s, r, PRIORSTRUCT=priorstruct, PRIORDIST=priordist $
       ENDIF ELSE BEGIN
          dummy = Max(lnposterior, estidx)
          smultidimidx = Subscript(estidx, SIZE=sp)
-        ;; select stimulus values by smultidimidx and return estimate
+         ;; select stimulus values by smultidimidx and return estimate
          estimate[t, *] = priorstruct.bv[smultidimidx+1,sdimidx]
       ENDELSE
 
