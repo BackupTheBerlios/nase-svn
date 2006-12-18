@@ -46,7 +46,8 @@
 ;              linestyle=-2 -> no lines between data points
 ;
 ;  psym::      PSym of the first plot, special case and default:<BR>
-;              psym=-1 -> no symbols
+;              psym=-1 -> no symbols, another special case: psym=10 ->
+;              histogram style.
 ;
 ;  color::     Onedimensional array containing color indices of the
 ;             plots. If the number of colors supplied is less than the
@@ -143,13 +144,16 @@ PRO OPlotMaximumFirst, z, zz $
 
    Plot, x, nodata, /NODATA, THICK=thick, XRANGE=xrange, _EXTRA=_extra
 
+   IF PSYM NE 10 THEN $
+    psym=((psym+1)<1)*(((psym+n) MOD maxpsym)- $
+                       2*((linestyle+2)<1)*((psym+n) MOD maxpsym))
+         
    FOR n=0,plotnr-1 DO $
-    OPlot, x, y(*,n) $
-    , PSYM=((psym+1)<1)*(((psym+n) MOD maxpsym)- $
-                         2*((linestyle+2)<1)*((psym+n) MOD maxpsym)) $
-    , LINESTYLE=(linestyle+n) MOD maxlinestyle $
-    , THICK=thick, COLOR=color(n MOD maxcolor)
-
+         OPlot, x, y(*,n) $
+                , PSYM=psym $
+                , LINESTYLE=(linestyle+n) MOD maxlinestyle $
+                , THICK=thick, COLOR=color(n MOD maxcolor)
+   
 END
 
 
