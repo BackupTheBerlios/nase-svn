@@ -46,7 +46,7 @@
 ;*                    [,GET_BASE=Base_ID]
 ;*                    [,PLOT_TITLE=Plottitel]
 ;*                    [,/NASE | ,/NSCALE]
-;*                    [,/GRID]
+;*                    [,/GRID] [,/OVERLAYGRID]
 ;*                    [weitere Shade_Surf- bzw. Surface-Parameter, insbesondere SHADES, LEGO...]
 ;
 ; 
@@ -94,6 +94,9 @@
 ;            cf. IDL help on <C>TvScl</C>).
 ;  /GRID::   Als Plot-Prozedur wird "Surface"
 ;            verwendet, sonst "Shade_Surf"
+;  /OVERLAYGRID:: "Surface" und "Shade_Surf" überlagert. (Note: Does
+;                 currently not work well with the LEGO option!)
+;
 ;<BR> 
 ;  Alle weiteren Parameter werden geeignet an
 ;  Shade_Surf bzw. Surface weitergegeben.
@@ -116,6 +119,9 @@
 ;*
 ;* 2. SurfIt, Gauss_2D(30,30), XPOS=100, /JUST_REG
 ;*    SurfIt, Dist(30,30), XPOS=700, XSIZE=300, YSIZE=300
+;
+; RESTRICTIONS: /OVERLAYGRID does currently not work well with
+ ;              /LEGO. (Needs fixing.)
 ;-
 
 Pro SurfIt_Cleanup, ID
@@ -278,7 +284,7 @@ PRO SurfIt, _data, Parent, $
             DELIVER_EVENTS=deliver_events, GET_BASE=get_base, $
             TITLE=title, PLOT_TITLE=plot_title, $
             NASE=nase, NORDER = norder, $
-            GRID=grid, SHADES=_shades, $
+            GRID=grid, OVERLAYGRID=overlaygrid, SHADES=_shades, $
             AX=ax, AZ=az, $
             _EXTRA=_extra
 
@@ -306,6 +312,7 @@ PRO SurfIt, _data, Parent, $
       center = 1
    endif
    If Keyword_Set(GRID) then plotproc = "SURFACE" else plotproc = "SHADE_SURF"
+   If Keyword_Set(OVERLAYGRID) then plotproc = "SHADE_SURF_GRID"
    Default, no_block, 1
    Default, modal, 0
    If (size(_data))(0) eq 0 then begin
