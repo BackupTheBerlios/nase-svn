@@ -35,7 +35,7 @@
 ;  Changes the 3d-transformation matrix stored in !P.t3d.
 ;
 ; PROCEDURE:
-;  call <C>SHADE_SURF</C>, store tranbsformation matrix, call
+;  call <C>SHADE_SURF</C>, store transformation matrix, call
 ;  <C>SURFACE</C>. Redirect some keywords.
 ;
 ; EXAMPLE:
@@ -53,9 +53,9 @@ Pro Shade_Surf_Grid, z, x, y, title=title, color=color, $
    default, gridcolor, color
 
    case n_params() of
-      1: shade_surf, z,       title=title, color=color, shades=shades, _extra=_e, /save
-      2: shade_surf, z, x,    title=title, color=color, shades=shades, _extra=_e, /save
-      3: shade_surf, z, x, y, title=title, color=color, shades=shades, _extra=_e, /save
+      1: shade_surf, z,       xstyle=1, ystyle=1, zstyle=1, title=title, color=color, shades=shades, _extra=_e, /save
+      2: shade_surf, z, x,    xstyle=1, ystyle=1, zstyle=1, title=title, color=color, shades=shades, _extra=_e, /save
+      3: shade_surf, z, x, y, xstyle=1, ystyle=1, zstyle=1, title=title, color=color, shades=shades, _extra=_e, /save
    endcase
 
    case n_params() of
