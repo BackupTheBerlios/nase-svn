@@ -8,6 +8,10 @@
 ; AIM:
 ;  Define a structure for 2d cartesian coordinates.
 ;
+; RESULT:
+;  Defines a named structure of form
+;  {cartesian2, x:0.0, y:0.0}
+;
 ; CATEGORY:
 ;  Math
 ;
