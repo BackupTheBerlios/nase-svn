@@ -20,11 +20,13 @@
 ;
 ;  <I>Note on clipping:</I><BR>
 ;    Clipped values will be indicated by dark yellow for the upper
-;    bound and very dark yellow for the lower bound. This function
-;    displays all entries inside the array that lie (after a possible
-;    scaling) above <*>!TOPCOLOR</*> or below 0 in the special
-;    yellowish colors. The value <*>!NONE</*> is always displayed in
-;    the standard blue color.
+;    bound and very dark yellow for the lower bound. (The colors can
+;    be changed by setting !ABOVECOLORNAME and !BELOWCOLORNAME to
+;    other color names.) This function displays all entries inside
+;    the array that lie (after a possible scaling) above
+;    <*>!TOPCOLOR</*> or below 0 in the special yellowish colors. 
+;    The value <*>!NONE</*> is always displayed in the standard blue
+;    color.
 ;    If <C>/ALLOWCOLORS</C> is set, at the upper end of the palette,
 ;    only colors above the color table size are clipped, leaving the
 ;    indices between <*>!TOPCOLOR</*> and <*>!D.TABLE_SIZE-1</*>
@@ -241,10 +243,10 @@ Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
    nones = where(result eq !NONE, nonecount)
    
    clips = where(result gt TOPCLIP, count)
-   if (count gt 0) then result[clips] = rgb("dark yellow")
+   if (count gt 0) then result[clips] = rgb(!ABOVECOLORNAME)
    
    clips = where(result lt 0, count)
-   if (count gt 0) then result[clips] = rgb("very dark yellow")
+   if (count gt 0) then result[clips] = rgb(!BELOWCOLORNAME)
    
    ;; restore nones to the correct color:
    if (nonecount gt 0) then result[nones] = rgb("none")

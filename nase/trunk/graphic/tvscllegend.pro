@@ -202,6 +202,57 @@ PRO TvSclLegend, _xnorm, _ynorm $
     , COLOR=color, /NORMAL $
     , LINESTYLE=0, THICK=1.0
 
+   ;; draw rectangles for "above" and "below"
+   If Keyword_Set(VERTICAL) then begin
+      sxpos = xpos
+      sypos = ypos-0.05
+      sxsize = xsize
+      sysize = 0.03
+      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
+      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=color, /NORMAL $
+             , LINESTYLE=0, THICK=1.0
+      sxpos = xpos
+      sypos = ypos+ysize+0.02
+      sxsize = xsize
+      sysize = 0.03
+      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
+      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=color, /NORMAL $
+             , LINESTYLE=0, THICK=1.0
+   endif else begin
+      sxpos = xpos-0.05
+      sypos = ypos
+      sxsize = 0.03
+      sysize = ysize
+      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
+      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=color, /NORMAL $
+             , LINESTYLE=0, THICK=1.0
+      sxpos = xpos+xsize+0.02
+      sypos = ypos
+      sxsize = 0.03
+      sysize = ysize
+      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
+      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+             , COLOR=color, /NORMAL $
+             , LINESTYLE=0, THICK=1.0
+   endelse
+
+
+
    ;; for a reason no-one can know, XYOutS does not know the keyword
    ;; linestyle, although it draws lines. So we have to do it by hand:
    ;; save state of graphics device:
