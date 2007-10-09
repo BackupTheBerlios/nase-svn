@@ -39,7 +39,10 @@
 ;*Scl, old [,range [,range_in]]
 ;
 ; INPUTS:
-;  old:: The array to rescale. The array must contain numeric values.
+;  old:: The array to rescale. The array must contain numeric
+;        values. If the array is if type FLOAT, computation is performed
+;        with FLOAT precision. Otherwise, computation is performed
+;        in DOUBLE precision.
 ;
 ; OPTIONAL INPUTS:
 ;  range   :: Ein zweielementiges Array der Form [P1',P2']. Wenn der
@@ -72,7 +75,12 @@
 ;
 ; PROCEDURE:
 ;  Elementary mathematical operations are performed on the array
-;  contents.
+;  contents. If the input array is of type FLOAT, the Range_In and
+;  Range parameters are converted to type FLOAT before computation.
+;  Otherwise, the Range_In and
+;  Range parameters are converted to type DOUBLE before computation.
+;  This is to avoid mixed DOUBLE and FLOAT arithmetics, which caused
+;  round-off errors in some situations in the past.
 ;
 ; EXAMPLE:
 ;  1. Diese beiden Aufrufe sind identisch:
@@ -105,18 +113,29 @@
 ;  IDL's <C>TvScl</C>, <A>PlotTvScl</A>, <A>PTvS</A>
 ;-
 
-Function Scl, A, Range, Range_In
+Function Scl, A, Range_, Range_In_
 
-   Default, Range,    [0     , !D.Table_Size-1]  
-   Default, Range_In, [min(A), max(A)       ]
+   Default, Range_,    [0     , !D.Table_Size-1]  
+   Default, Range_In_, [min(A), max(A)       ]
+
+   if size(A, /Type) eq 5 then begin
+      ;; A is of type DOUBLE
+      Range    = DOUBLE(Range_)
+      Range_In = DOUBLE(Range_In_)
+   endif else begin
+      ;; A is of any other type
+      Range    = FLOAT(Range_)
+      Range_In = FLOAT(Range_In_)
+   endelse
+     
 
    If Range_In(0) eq Range_In(1) then begin
       console, /Warning, "Target interval is a single point! Returning " + $
                "flat array of value "+str(Range(0))+"."
       return, Make_Array(/FLOAT, SIZE=size(A), VALUE=Range(0))
    endif else begin
-      Return, (A - Range_In(0)) $
-                * FLOAT(Range(1)-Range(0)) $
+      Return, (A - Range_In(0)) $ $
+              * (Range(1)-Range(0)) $
                 / (Range_In(1)-Range_In(0)) $
                 + Range(0)
    endelse
