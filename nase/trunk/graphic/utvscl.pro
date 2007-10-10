@@ -241,14 +241,12 @@ Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
    If Keyword_Set(TRUE) then return, A
 
 
-   result = A
-
    If Keyword_Set(ALLOWCOLORS) then $
       TOPCLIP = !D.TABLE_SIZE-1 else TOPCLIP = !TOPCOLOR 
      
-   ;; keep nones in mind:
-   nones = where(result eq !NONE, nonecount)
-   
+   ;; remove nones, and keep them in mind for later:
+   result = nonone(A, Value=!values.f_nan, Nones=nones, Count=nonecount)
+
    clips = where(result gt TOPCLIP, count)
    if (count gt 0) then begin
       result[clips] = rgb(!ABOVECOLORNAME)
