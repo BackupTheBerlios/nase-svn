@@ -263,6 +263,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                ALLOWCOLORS=allowcolors, $
                _REF_EXTRA=_extra
 
+   Common UTVScl_clipping, CLIPPEDABOVE, CLIPPEDBELOW
+
 ;;   On_Error, 2
    IF NOT Set(_W) THEN Message, 'Argument undefined'
    IF !D.Name EQ 'NULL' THEN RETURN
@@ -320,7 +322,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
       Default, NOSCALE, 0
       Default, ORDER, 0
       Default, LEGEND, 0
-      Default, legmargin, 25
+      Default, legmargin, 5
       Default, Polygon,0
       DEFAULT, top, !TOPCOLOR
       Default, ISOTROPIC, 1-Keyword_Set(FULLSHEET)
@@ -460,7 +462,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
       Get_PixelSize = [2.0*TotalPlotWidthNormal*!Y.Ticklen, 2.0*TotalPlotHeightNormal*!X.Ticklen]
 
       UPDATE_INFO = {PLOTTVSCL_INFO, $
-                     defined : 1b               ,$
+                     defined : 1b,$
+                     $
+                     OriginNormalX:        OriginNormal[0], $
+                     OriginNormalY:        OriginNormal[1], $
+                     $
+                     TotalPlotWidthNormal: TotalPlotWidthNormal, $
+                     TotalPlotHeightNormal:TotalPlotHeightNormal, $
+                     $
                      x1      : long(PlotAreaDevice(0)),$
                      y1      : long(PlotAreaDevice(1)),$
                      $;;
@@ -499,14 +508,14 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                        range_in: [-1d, -1d], $ ; indicates uninitialized color scaling
                        $;;
                        $;;Data needed to (re)produce the legend:
-                       leg_x: OriginNormal[0]+TotalPlotWidthNormal*1.15, $
-                       leg_y: OriginNormal[1]+TotalPlotHeightNormal/2.0, $
-                       leg_stretch: TotalPlotHeightNormal, $;TotalPlotHeightNormal/4.0*VisualHeight/(2.5*!D.Y_PX_CM)*(1+!P.MULTI(2)), $
                        charsize: CHARSIZE, $
                        legend: LEGEND, $
                        leg_min: 0.0, $ ;will be set below, see there!
                        leg_mid_str: '', $ ;will be set below, see there!
-                       leg_max: 0.0 $ ;will be set below, see there!
+                       leg_max: 0.0, $ ;will be set below, see there!
+                     $
+                     clippedabove: -1, $
+                     clippedbelow: -1 $
                        }
 
       GET_INFO = UPDATE_INFO    ;Kept for compatibility
@@ -529,7 +538,11 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
    ;;-----Plotten der UTVScl-Graphik:
    PlotTvScl_update, INIT=init, _W, UPDATE_INFO, RANGE_IN=range_in
 
-   
+   clipping_changed = (CLIPPEDABOVE ne UPDATE_INFO.clippedabove) || (CLIPPEDBELOW ne UPDATE_INFO.clippedbelow)  
+   UPDATE_INFO.clippedabove = CLIPPEDABOVE
+   UPDATE_INFO.clippedbelow = CLIPPEDBELOW
+
+
    ;;------------ Handling of legend: ----------------------------
 
    ;; determine min, mid and max values for (an eventual) legend
@@ -552,13 +565,12 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
 
    EndIf
 
-
    ;;-----Legende plotten, falls erwuenscht und nötig:
    ;; Legende erwünscht?
    If Keyword_Set(UPDATE_INFO.legend) then begin
       ;; die Legende muß gezeichnet werden bei /REDRAW_LEGEND und auch
-      ;; bei /INIT:
-      IF Keyword_Set(INIT) or Keyword_Set(REDRAW_LEGEND)  THEN BEGIN
+      ;; bei /INIT, oder wenn sich das clipping geändert hat:
+      IF Keyword_Set(INIT) or Keyword_Set(REDRAW_LEGEND) or clipping_changed THEN BEGIN
          ;; Ist es ein RE-draw? Dann können sich die Legendenwerte
          ;; geändert haben, und wir müssen die alten auslöschen. wir
          ;; wollen das nicht beim allerersten Aufruf tun
@@ -567,9 +579,9 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
          IF not VERY_FIRST_CALL THEN BEGIN
             ;; first opaque area for legend value plotting, in case this is an
             ;; update (all in normal):
-            fill_left = UPDATE_INFO.leg_x
+            fill_left = UPDATE_INFO.OriginNormalX+UPDATE_INFO.TotalPlotWidthNormal*1.15
             fill_right = 1.0
-            fill_bottom = 0.0
+            fill_bottom = UPDATE_INFO.OriginNormalY
             fill_top = 1.0
             PolyFill, [fill_left, fill_right, fill_right, fill_left], $
                       [fill_bottom, fill_bottom, fill_top, fill_top], $
@@ -577,14 +589,17 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                       color=GetBackground()
          endif
          ;; now draw the legend:
-         TVSclLegend, UPDATE_INFO.leg_x, $
-                      UPDATE_INFO.leg_y, $
-                      Stretch=UPDATE_INFO.leg_stretch, $
+         TVSclLegend, /Vertical, TOP=top, /YCenter, $
+                      UPDATE_INFO.OriginNormalX+UPDATE_INFO.TotalPlotWidthNormal*1.15, $
+                      UPDATE_INFO.OriginNormalY+UPDATE_INFO.TotalPlotHeightNormal/2.0, $
+                      Norm_Y_Size=0.8*UPDATE_INFO.TotalPlotHeightNormal, $
+                      Norm_X_Size=0.1*UPDATE_INFO.TotalPlotHeightNormal, $
                       Max=UPDATE_INFO.leg_max, $
                       Min=UPDATE_INFO.leg_min, $
                       Mid=UPDATE_INFO.leg_mid_str, $
                       CHARSIZE=Charsize, $
-                      /Vertical, /Center, TOP=top
+                      Clippedabove=UPDATE_INFO.clippedabove, $
+                      Clippedbelow=UPDATE_INFO.clippedbelow
       ENDIF
    endif
    ;;----- end handling of legend -------------------------

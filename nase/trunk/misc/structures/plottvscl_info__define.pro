@@ -27,6 +27,13 @@ Pro PLOTTVSCL_INFO__Define
 
    GET_INFO = {PLOTTVSCL_INFO, $
                defined : 0b   ,$ ;used as checkmark for undefined structures
+               $
+               OriginNormalX:        0.0, $
+               OriginNormalY:        0.0, $
+               $
+               TotalPlotWidthNormal: 0.0, $
+               TotalPlotHeightNormal:0.0, $
+               $
                x1      : long(0),$
                y1      : long(0),$
                x00     : long(0),$
@@ -56,14 +63,14 @@ Pro PLOTTVSCL_INFO__Define
                range_in: [-1.0d, -1.0d], $
                        $;;
                        $;;Data needed to (re)produce the legend:
-                       leg_x: 0.0, $
-                       leg_y: 0.0, $
-                       leg_stretch: 0.0, $
                        charsize: 0.0, $
                        legend: 0, $
                        leg_min: 0.0, $
                        leg_mid_str: '', $
-                       leg_max: 0.0 $
+                       leg_max: 0.0, $
+               $
+               clippedabove: 0, $
+               clippedbelow: 0 $
               }
 
 End

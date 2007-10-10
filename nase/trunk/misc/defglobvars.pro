@@ -132,8 +132,13 @@ DefSysV, '!TOPCOLOR', !D.Table_Size-11 ;;; protect some colors from being overwr
 ;; the two following are the names of the colors to be used by
 ;; UTvScl and TvSclLegend to indicate values above or below the
 ;; scaling range
-DefSysV, '!ABOVECOLORNAME', 'dark yellow', 1
-DefSysV, '!BELOWCOLORNAME', 'very dark yellow', 1
+DefSysV, '!ABOVECOLORNAME', 'dark yellow'
+DefSysV, '!BELOWCOLORNAME', 'very dark yellow'
+
+;; the two following are updated with each UTVSCL call and indicate
+;; if values were clipped at the last call
+DefSysV, '!CLIPPEDABOVE', 0
+DefSysV, '!CLIPPEDBELOW', 0
 
 DefSysV, '!NASEP', {!NASEPLT, $ ; according to !P, !PLT of standard IDL
                     TABLESET: {!NASETABLESET, $

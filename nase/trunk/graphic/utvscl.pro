@@ -188,6 +188,7 @@
 ; skalierte Version eines Arrays A zurueck.
 ; NONEs are preserved.
 Function __ScaleArray, A, TOP=top, TRUE=true, RANGE_IN=range_in
+   COMPILE_OPT HIDDEN
    ;; for truecolor, just do scaling to [0,TOP], no special
    ;; handling at all (mimick behaviour of IDL's TVSCL).
    If Keyword_Set(TRUE) then begin
@@ -230,6 +231,12 @@ End
 ; !D.TABLE_SIZE-1 untouched. This allows using the NASE colors that can
 ; be set using the RGB() command.
 Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
+   COMPILE_OPT HIDDEN
+   Common UTVScl_clipping, CLIPPEDABOVE, CLIPPEDBELOW
+
+   CLIPPEDABOVE = 0
+   CLIPPEDBELOW = 0
+
    ;; do nothing at all for truecolor.
    If Keyword_Set(TRUE) then return, A
 
@@ -243,11 +250,17 @@ Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
    nones = where(result eq !NONE, nonecount)
    
    clips = where(result gt TOPCLIP, count)
-   if (count gt 0) then result[clips] = rgb(!ABOVECOLORNAME)
+   if (count gt 0) then begin
+      result[clips] = rgb(!ABOVECOLORNAME)
+      CLIPPEDABOVE = 1
+   endif
    
    clips = where(result lt 0, count)
-   if (count gt 0) then result[clips] = rgb(!BELOWCOLORNAME)
-   
+   if (count gt 0) then begin
+      result[clips] = rgb(!BELOWCOLORNAME)
+      CLIPPEDBELOW = 1
+   endif
+
    ;; restore nones to the correct color:
    if (nonecount gt 0) then result[nones] = rgb("none")
 
@@ -265,7 +278,9 @@ PRO __MultiPolyPlot, A ,XNorm ,Ynorm ,Xsize=X_size, ysize=y_size $
                      RANGE_IN=range_in, $
                      _EXTRA=extra
 
+   COMPILE_OPT HIDDEN
    ON_ERROR, 2
+
    as = size(A)
    xsize = as(1)
    ysize = as(2)

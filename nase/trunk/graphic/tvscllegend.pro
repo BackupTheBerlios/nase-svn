@@ -32,6 +32,7 @@
 ;*  [,STRETCH=...] [,H_STRETCH=...] [,V_STRETCH=...]
 ;*  [,NORM_X_SIZE=...] [, NORM_Y_SIZE=...]
 ;*  [,/[X|Y]CENTER]
+;*  [,/CLIPPEDABOVE], [/CLIPPEDBELOW]
 ;
 ; INPUTS:
 ;  xnorm:: X-position of the legend rectangle's lower left corner in normal
@@ -88,7 +89,11 @@
 ;                procedure, setting <*>[X|Y]CENTER=0</*> does not have
 ;                the desired effect. You rather have to remove the
 ;                <*>[X|Y]CENTER</*> keywords from the call to unset them. 
-;
+;  CLIPPEDABOVE:: Set to display a square at the upper end of legend
+;                 showing the color for values above the scaling range.
+;  CLIPPEDBELOW:: Set to display a square at the lower end of legend
+;                 showing the color for values below the scaling range.
+;  
 ; EXAMPLE:
 ;* Plot, IndGen(10),/NODATA
 ;* TvSclLegend, 0.4, 0.1, NORM_Y_SIZE=0.75, MAX=10, MIN=-10, MID='Null', /VERTICAL, /LEFT
@@ -108,7 +113,9 @@ PRO TvSclLegend, _xnorm, _ynorm $
                  ,RANGE=Range $
                  ,NOSCALE=NOSCALE $
                  , NORM_X_SIZE=norm_x_size, NORM_Y_SIZE=norm_y_size $
-                 , XCENTER=xcenter, YCENTER=ycenter, _EXTRA=e
+                 , XCENTER=xcenter, YCENTER=ycenter $
+                 ,CLIPPEDABOVE=clippedabove, CLIPPEDBELOW=clippedbelow $
+                 ,_EXTRA=e
    
    
    IF !D.NAME EQ 'NULL' THEN RETURN
@@ -147,18 +154,10 @@ PRO TvSclLegend, _xnorm, _ynorm $
          ;; determine space that is needed left to the legend for the text
          IF Keyword_Set(LEFT) THEN $
           xnorm=xnorm + (0.5+MAX(STRLEN([max,mid,min])))*x_ch_size 
-          ;; adding y_ch_size to xnorm was used to reserve space for a
-         ;; possible title, but maybe one does not want this
-         ;; space. Therefore, it is ommitted here and left to the
-         ;; user's responsibility.
-         ;;                                ELSE xnorm=xnorm + y_ch_size
       END
       IF NOT ExtraSet(e, 'YCENTER') THEN BEGIN
          ;; determine space that is needed at the bottom of the legend
-         IF Keyword_Set(CEILING) THEN $
-          ;; no more space for title which is only optional
-          ynorm=ynorm $ ;; + y_ch_size*1.2 $ ;; add space for the title 
-         ELSE $ 
+         IF not Keyword_Set(CEILING) THEN $
           ynorm=ynorm + y_ch_size ;; add space for the annotation
       END
    END
@@ -204,52 +203,60 @@ PRO TvSclLegend, _xnorm, _ynorm $
 
    ;; draw rectangles for "above" and "below"
    If Keyword_Set(VERTICAL) then begin
-      sxpos = xpos
-      sypos = ypos-0.05
-      sxsize = xsize
-      sysize = 0.03
-      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
-      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=color, /NORMAL $
-             , LINESTYLE=0, THICK=1.0
-      sxpos = xpos
-      sypos = ypos+ysize+0.02
-      sxsize = xsize
-      sysize = 0.03
-      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
-      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=color, /NORMAL $
-             , LINESTYLE=0, THICK=1.0
-   endif else begin
-      sxpos = xpos-0.05
-      sypos = ypos
-      sxsize = 0.03
-      sysize = ysize
-      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
-      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=color, /NORMAL $
-             , LINESTYLE=0, THICK=1.0
-      sxpos = xpos+xsize+0.02
-      sypos = ypos
-      sxsize = 0.03
-      sysize = ysize
-      Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
-      PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-             , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-             , COLOR=color, /NORMAL $
-             , LINESTYLE=0, THICK=1.0
-   endelse
+      if keyword_set(CLIPPEDBELOW) then begin
+         sxpos = xpos
+         sypos = ypos-0.05
+         sxsize = xsize
+         sysize = 0.03
+         Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+                   , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+                   , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
+         PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+                , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+                , COLOR=color, /NORMAL $
+                , LINESTYLE=0, THICK=1.0
+      endif
+      if keyword_set(CLIPPEDABOVE) then begin
+         sxpos = xpos
+         sypos = ypos+ysize+0.02
+         sxsize = xsize
+         sysize = 0.03
+         Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+                   , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+                   , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
+         Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                , Color=Color, /Normal $
+                , Linestyle=0, Thick=1.0
+      Endif
+   Endif Else Begin
+      If Keyword_Set(Clippedbelow) Then Begin
+         Sxpos = Xpos-0.05
+         Sypos = Ypos
+         Sxsize = 0.03
+         Sysize = Ysize
+         Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                   , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                   , Color=Rgb(!Belowcolorname), /Normal
+         Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                , Color=Color, /Normal $
+                , Linestyle=0, Thick=1.0
+      Endif
+      If Keyword_Set(Clippedabove) Then Begin
+         Sxpos = Xpos+Xsize+0.02
+         Sypos = Ypos
+         Sxsize = 0.03
+         Sysize = Ysize
+         Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                   , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                   , Color=Rgb(!Abovecolorname), /Normal
+         Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                , Color=Color, /Normal $
+                , Linestyle=0, Thick=1.0
+      Endif
+   Endelse
 
 
 
