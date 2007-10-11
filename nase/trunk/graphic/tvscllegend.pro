@@ -205,11 +205,11 @@ PRO TvSclLegend, _xnorm, _ynorm $
 
    ;; draw rectangles for "above" and "below"
    If Keyword_Set(VERTICAL) then begin
+      sxsize = xsize
+      sysize = 0.03*ysize
       if keyword_set(CLIPPEDBELOW) then begin
          sxpos = xpos
-         sypos = ypos-0.05*ysize
-         sxsize = xsize
-         sysize = 0.03*ysize
+         sypos = ypos-2*sysize
          Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
                    , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
                    , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
@@ -217,12 +217,15 @@ PRO TvSclLegend, _xnorm, _ynorm $
                 , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
                 , COLOR=color, /NORMAL $
                 , LINESTYLE=0, THICK=1.0
+         If keyword_set(Left) then begin
+            XYOuts, sxpos-X_CH_SIZE/2., sypos, "below", /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         endif else begin
+            XYOuts, sxpos+sxsize+X_CH_SIZE/2., sypos, "below", /NORMAL, COLOR=color, CHARSIZE=Charsize
+         endelse
       endif
       if keyword_set(CLIPPEDABOVE) then begin
          sxpos = xpos
-         sypos = ypos+ysize+0.02*ysize
-         sxsize = xsize
-         sysize = 0.03*ysize
+         sypos = ypos+ysize+sysize
          Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
                    , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
                    , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
@@ -230,26 +233,34 @@ PRO TvSclLegend, _xnorm, _ynorm $
                 , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                 , Color=Color, /Normal $
                 , Linestyle=0, Thick=1.0
+         If keyword_set(Left) then begin
+            XYOuts, sxpos-X_CH_SIZE/2., sypos, "above", /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         endif else begin
+            XYOuts, sxpos+sxsize+X_CH_SIZE/2., sypos, "above", /NORMAL, COLOR=color, CHARSIZE=Charsize
+         endelse
       Endif
       if keyword_set(CLIPPEDNONES) then begin
-         sxsize = 0.03*ysize
-         sysize = xsize
-         if keyword_set(Left) then sxpos = xpos-sxsize-0.02*ysize else sxpos = xpos+xsize+0.02*ysize
-         sypos = ypos+ysize*0.5
+         sxpos = xpos
+         sypos = ypos-4*sysize
          Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
                    , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-                   , COLOR=rgb(!NONECOLORNAME), /NORMAL
-         Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
-                , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
-                , Color=Color, /Normal $
-                , Linestyle=0, Thick=1.0
+                   , COLOR=rgb(!Nonecolorname), /NORMAL
+         PlotS, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+                , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+                , COLOR=color, /NORMAL $
+                , LINESTYLE=0, THICK=1.0
+         If keyword_set(Left) then begin
+            XYOuts, sxpos-X_CH_SIZE/2., sypos, "none", /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         endif else begin
+            XYOuts, sxpos+sxsize+X_CH_SIZE/2., sypos, "none", /NORMAL, COLOR=color, CHARSIZE=Charsize
+         endelse
       Endif
    Endif Else Begin
+      Sxsize = 0.03*xsize
+      Sysize = Ysize
       If Keyword_Set(Clippedbelow) Then Begin
-         Sxpos = Xpos-0.05*xsize
+         Sxpos = Xpos-2*sxsize
          Sypos = Ypos
-         Sxsize = 0.03*xsize
-         Sysize = Ysize
          Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
                    , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                    , Color=Rgb(!Belowcolorname), /Normal
@@ -257,12 +268,15 @@ PRO TvSclLegend, _xnorm, _ynorm $
                 , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                 , Color=Color, /Normal $
                 , Linestyle=0, Thick=1.0
+         If  keyword_set(Ceiling) then begin
+            XYOuts, sxpos+sxsize/2, sypos+sysize+Y_CH_SIZE/4, "bel.", /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         endif else begin
+            XYOuts, sxpos+sxsize/2, sypos-Y_CH_SIZE-Y_CH_SIZE/4, "bel.", /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         endelse
       Endif
       If Keyword_Set(Clippedabove) Then Begin
-         Sxpos = Xpos+Xsize+0.02*xsize
+         Sxpos = Xpos+Xsize+sxsize
          Sypos = Ypos
-         Sxsize = 0.03*xsize
-         Sysize = Ysize
          Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
                    , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                    , Color=Rgb(!Abovecolorname), /Normal
@@ -270,23 +284,34 @@ PRO TvSclLegend, _xnorm, _ynorm $
                 , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                 , Color=Color, /Normal $
                 , Linestyle=0, Thick=1.0
+         If  keyword_set(Ceiling) then begin
+            XYOuts, sxpos+sxsize/2, sypos+sysize+Y_CH_SIZE/4, "ab.", /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         endif else begin
+            XYOuts, sxpos+sxsize/2, sypos-Y_CH_SIZE-Y_CH_SIZE/4, "ab.", /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         endelse
       Endif
       if keyword_set(CLIPPEDNONES) then begin
-         sxsize = ysize
-         sysize = 0.03*xsize
-         sxpos = xpos+xsize*0.5
-         If keyword_set(Ceiling) then sypos = ypos+ysize+0.02*xsize else sypos = ypos-sysize-0.02*xsize
-         Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
-                   , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
-                   , COLOR=rgb(!NONECOLORNAME), /NORMAL
+         Sxpos = Xpos-4*sxsize
+         Sypos = Ypos
+         Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                   , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                   , Color=Rgb(!Nonecolorname), /Normal
          Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
                 , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                 , Color=Color, /Normal $
                 , Linestyle=0, Thick=1.0
+         txpos = xpos+xsize*0.5
+         If  keyword_set(Ceiling) then begin
+            XYOuts, sxpos+sxsize/2, sypos+sysize+Y_CH_SIZE/4, "n.", /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         endif else begin
+            XYOuts, sxpos+sxsize/2, sypos-Y_CH_SIZE-Y_CH_SIZE/4, "n.", /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         endelse
       Endif
    Endelse
 
 
+
+   ;; draw labels:
 
    ;; for a reason no-one can know, XYOutS does not know the keyword
    ;; linestyle, although it draws lines. So we have to do it by hand:
@@ -296,17 +321,17 @@ PRO TvSclLegend, _xnorm, _ynorm $
 
    IF Keyword_Set(VERTICAL) THEN BEGIN
       IF Keyword_Set(LEFT) THEN BEGIN
-         XYOuts, xpos-X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos                     , STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
-         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE   , STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          IF Set(TITLE) THEN $
           XYOuts, xpos+xsize*(-1*sameside+1)+(-3*sameside+1)*0.6*Y_CH_SIZE $
           , ypos+0.5*ysize, title, /NORMAL, COLOR=color, ALIGNMENT=0.5 $
           , CHARSIZE=1.2*Charsize, ORIENTATION=-90
       END ELSE BEGIN
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos        -Y_CH_SIZE/2., STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos                     , STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
          XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE/2., STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE   , STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
          IF Set(TITLE) THEN $
           XYOuts, xpos+xsize*sameside+(3*sameside-2)*0.6*Y_CH_SIZE $
           , ypos+0.5*ysize, title, /NORMAL, COLOR=color, ALIGNMENT=0.5 $
@@ -315,14 +340,14 @@ PRO TvSclLegend, _xnorm, _ynorm $
       
    END ELSE BEGIN
       IF Keyword_Set(CEILING) THEN BEGIN
-         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.0, CHARSIZE=Charsize
          XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
-         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          IF Set(TITLE) THEN XYOuts, xpos+xsize/2, ypos-1.2*Y_CH_SIZE*3/4, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize
       END ELSE BEGIN
-         XYOuts, xpos        , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
-         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
-         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos        , ypos-Y_CH_SIZE-Y_CH_SIZE/4, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.0, CHARSIZE=Charsize
+         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE-Y_CH_SIZE/4, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE-Y_CH_SIZE/4, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          IF Set(TITLE) THEN XYOuts, xpos+xsize/2, ypos+ysize+1.2*Y_CH_SIZE/4, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize
       END
    ENDELSE
