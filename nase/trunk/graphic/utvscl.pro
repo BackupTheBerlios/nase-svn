@@ -260,7 +260,7 @@ Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
    endif
 
    ;; restore nones to the correct color:
-   if (nonecount gt 0) then result[nones] = rgb("none")
+   if (nonecount gt 0) then result[nones] = rgb(!NONECOLORNAME)
 
    Return, result
 End

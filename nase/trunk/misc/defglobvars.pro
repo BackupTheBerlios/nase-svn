@@ -130,8 +130,9 @@ DefSysV, '!TOPCOLOR', !D.Table_Size-11 ;;; protect some colors from being overwr
                                        ;;; white and black)
 
 ;; the two following are the names of the colors to be used by
-;; UTvScl and TvSclLegend to indicate values above or below the
+;; UTvScl and TvSclLegend to indicate values !none, and above or below the
 ;; scaling range
+DefSysV, '!NONECOLORNAME', 'none'
 DefSysV, '!ABOVECOLORNAME', 'dark yellow'
 DefSysV, '!BELOWCOLORNAME', 'very dark yellow'
 
