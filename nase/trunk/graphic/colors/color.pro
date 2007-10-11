@@ -24,10 +24,9 @@
 ;   diretctly accessed through <C>Color</C> or better the <A>RGB</A>
 ;   command. To get a list of all known colors, type<BR>
 ;*   Color, /LIST
-;   at the command prompt. Note the special NASE colors 'none' and
-;   'clip', which are used by the NASE diplay commands to indicate
-;   missing values and values that have been clipped due to palette
-;   overflow.
+;   at the command prompt. Note the special NASE color 'none',
+;   which is used by the NASE diplay commands to indicate
+;   missing values.
 ;   To learn a new color, or modify an existing one, type
 ;*   Color, 'name', /LEARN
 ;   and interactively define the color.
