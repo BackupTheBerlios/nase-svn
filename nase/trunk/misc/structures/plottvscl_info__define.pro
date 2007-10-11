@@ -70,7 +70,8 @@ Pro PLOTTVSCL_INFO__Define
                        leg_max: 0.0, $
                $
                clippedabove: 0, $
-               clippedbelow: 0 $
+               clippedbelow: 0, $
+               clippednones: 0 $
               }
 
 End

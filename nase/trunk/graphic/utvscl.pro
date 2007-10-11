@@ -232,10 +232,11 @@ End
 ; be set using the RGB() command.
 Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
    COMPILE_OPT HIDDEN
-   Common UTVScl_clipping, CLIPPEDABOVE, CLIPPEDBELOW
+   Common UTVScl_clipping, CLIPPEDABOVE, CLIPPEDBELOW, CLIPPEDNONES
 
    CLIPPEDABOVE = 0
    CLIPPEDBELOW = 0
+   CLIPPEDNONES = 0
 
    ;; do nothing at all for truecolor.
    If Keyword_Set(TRUE) then return, A
@@ -260,7 +261,10 @@ Function __ClipArray, A, ALLOWCOLORS=allowcolors, TRUE=true
    endif
 
    ;; restore nones to the correct color:
-   if (nonecount gt 0) then result[nones] = rgb(!NONECOLORNAME)
+   if (nonecount gt 0) then begin
+      result[nones] = rgb(!NONECOLORNAME)
+      CLIPPEDNONES = 1
+   endif
 
    Return, result
 End

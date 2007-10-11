@@ -263,7 +263,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                ALLOWCOLORS=allowcolors, $
                _REF_EXTRA=_extra
 
-   Common UTVScl_clipping, CLIPPEDABOVE, CLIPPEDBELOW
+   Common UTVScl_clipping, CLIPPEDABOVE, CLIPPEDBELOW, CLIPPEDNONES
 
 ;;   On_Error, 2
    IF NOT Set(_W) THEN Message, 'Argument undefined'
@@ -515,7 +515,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                        leg_max: 0.0, $ ;will be set below, see there!
                      $
                      clippedabove: -1, $
-                     clippedbelow: -1 $
+                     clippedbelow: -1, $
+                     clippednones: -1 $
                        }
 
       GET_INFO = UPDATE_INFO    ;Kept for compatibility
@@ -538,9 +539,10 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
    ;;-----Plotten der UTVScl-Graphik:
    PlotTvScl_update, INIT=init, _W, UPDATE_INFO, RANGE_IN=range_in
 
-   clipping_changed = (CLIPPEDABOVE ne UPDATE_INFO.clippedabove) || (CLIPPEDBELOW ne UPDATE_INFO.clippedbelow)  
+   clipping_changed = (CLIPPEDABOVE ne UPDATE_INFO.clippedabove) || (CLIPPEDBELOW ne UPDATE_INFO.clippedbelow) || (CLIPPEDNONES ne UPDATE_INFO.clippednones) 
    UPDATE_INFO.clippedabove = CLIPPEDABOVE
    UPDATE_INFO.clippedbelow = CLIPPEDBELOW
+   UPDATE_INFO.clippednones = CLIPPEDNONES
 
 
    ;;------------ Handling of legend: ----------------------------
@@ -599,7 +601,8 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                       Mid=UPDATE_INFO.leg_mid_str, $
                       CHARSIZE=Charsize, $
                       Clippedabove=UPDATE_INFO.clippedabove, $
-                      Clippedbelow=UPDATE_INFO.clippedbelow
+                      Clippedbelow=UPDATE_INFO.clippedbelow, $
+                      Clippednones=UPDATE_INFO.clippednones
       ENDIF
    endif
    ;;----- end handling of legend -------------------------

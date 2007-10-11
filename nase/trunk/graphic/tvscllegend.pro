@@ -32,7 +32,7 @@
 ;*  [,STRETCH=...] [,H_STRETCH=...] [,V_STRETCH=...]
 ;*  [,NORM_X_SIZE=...] [, NORM_Y_SIZE=...]
 ;*  [,/[X|Y]CENTER]
-;*  [,/CLIPPEDABOVE], [/CLIPPEDBELOW]
+;*  [,/CLIPPEDABOVE], [/CLIPPEDBELOW], [/CLIPPEDNONES]
 ;
 ; INPUTS:
 ;  xnorm:: X-position of the legend rectangle's lower left corner in normal
@@ -93,6 +93,8 @@
 ;                 showing the color for values above the scaling range.
 ;  CLIPPEDBELOW:: Set to display a square at the lower end of legend
 ;                 showing the color for values below the scaling range.
+;  CLIPPEDNONES:: Set to display a square besides the legend
+;                 showing the color for the value !NONE.
 ;  
 ; EXAMPLE:
 ;* Plot, IndGen(10),/NODATA
@@ -114,7 +116,7 @@ PRO TvSclLegend, _xnorm, _ynorm $
                  ,NOSCALE=NOSCALE $
                  , NORM_X_SIZE=norm_x_size, NORM_Y_SIZE=norm_y_size $
                  , XCENTER=xcenter, YCENTER=ycenter $
-                 ,CLIPPEDABOVE=clippedabove, CLIPPEDBELOW=clippedbelow $
+                 ,CLIPPEDABOVE=clippedabove, CLIPPEDBELOW=clippedbelow, CLIPPEDNONES=clippednones $
                  ,_EXTRA=e
    
    
@@ -205,9 +207,9 @@ PRO TvSclLegend, _xnorm, _ynorm $
    If Keyword_Set(VERTICAL) then begin
       if keyword_set(CLIPPEDBELOW) then begin
          sxpos = xpos
-         sypos = ypos-0.05
+         sypos = ypos-0.05*ysize
          sxsize = xsize
-         sysize = 0.03
+         sysize = 0.03*ysize
          Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
                    , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
                    , COLOR=rgb(!BELOWCOLORNAME), /NORMAL
@@ -218,9 +220,9 @@ PRO TvSclLegend, _xnorm, _ynorm $
       endif
       if keyword_set(CLIPPEDABOVE) then begin
          sxpos = xpos
-         sypos = ypos+ysize+0.02
+         sypos = ypos+ysize+0.02*ysize
          sxsize = xsize
-         sysize = 0.03
+         sysize = 0.03*ysize
          Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
                    , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
                    , COLOR=rgb(!ABOVECOLORNAME), /NORMAL
@@ -229,11 +231,24 @@ PRO TvSclLegend, _xnorm, _ynorm $
                 , Color=Color, /Normal $
                 , Linestyle=0, Thick=1.0
       Endif
+      if keyword_set(CLIPPEDNONES) then begin
+         sxsize = 0.03*ysize
+         sysize = xsize
+         if keyword_set(Left) then sxpos = xpos-sxsize-0.02*ysize else sxpos = xpos+xsize+0.02*ysize
+         sypos = ypos+ysize*0.5
+         Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+                   , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+                   , COLOR=rgb(!NONECOLORNAME), /NORMAL
+         Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                , Color=Color, /Normal $
+                , Linestyle=0, Thick=1.0
+      Endif
    Endif Else Begin
       If Keyword_Set(Clippedbelow) Then Begin
-         Sxpos = Xpos-0.05
+         Sxpos = Xpos-0.05*xsize
          Sypos = Ypos
-         Sxsize = 0.03
+         Sxsize = 0.03*xsize
          Sysize = Ysize
          Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
                    , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
@@ -244,13 +259,26 @@ PRO TvSclLegend, _xnorm, _ynorm $
                 , Linestyle=0, Thick=1.0
       Endif
       If Keyword_Set(Clippedabove) Then Begin
-         Sxpos = Xpos+Xsize+0.02
+         Sxpos = Xpos+Xsize+0.02*xsize
          Sypos = Ypos
-         Sxsize = 0.03
+         Sxsize = 0.03*xsize
          Sysize = Ysize
          Polyfill, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
                    , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                    , Color=Rgb(!Abovecolorname), /Normal
+         Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
+                , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
+                , Color=Color, /Normal $
+                , Linestyle=0, Thick=1.0
+      Endif
+      if keyword_set(CLIPPEDNONES) then begin
+         sxsize = ysize
+         sysize = 0.03*xsize
+         sxpos = xpos+xsize*0.5
+         If keyword_set(Ceiling) then sypos = ypos+ysize+0.02*xsize else sypos = ypos-sysize-0.02*xsize
+         Polyfill, [sxpos,sxpos+sxsize, sxpos+sxsize,sxpos,sxpos] $
+                   , [sypos,sypos,sypos+sysize,sypos+sysize,sypos] $
+                   , COLOR=rgb(!NONECOLORNAME), /NORMAL
          Plots, [Sxpos,Sxpos+Sxsize, Sxpos+Sxsize,Sxpos,Sxpos] $
                 , [Sypos,Sypos,Sypos+Sysize,Sypos+Sysize,Sypos] $
                 , Color=Color, /Normal $
