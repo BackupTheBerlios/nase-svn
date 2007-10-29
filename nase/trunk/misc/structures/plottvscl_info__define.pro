@@ -68,6 +68,7 @@ Pro PLOTTVSCL_INFO__Define
                        leg_min: 0.0, $
                        leg_mid_str: '', $
                        leg_max: 0.0, $
+                       format: "", $
                $
                clippedabove: 0, $
                clippedbelow: 0, $

@@ -108,6 +108,8 @@
 ;                 !X.MARGIN[1] aufaddiert. Einheit ist die
 ;                 Schriftgröße, s. IDL-Doku von !X.MARGIN
 ;     leg_(max|min):: alternative Beschriftung der Legende 
+;     FORMAT::   Format string for formatting the legend labels (see
+;                IDL's <*>PRINT</*> command).
 ;     POLYGON:: Statt Pixel werden Polygone gezeichnet (gut fuer Postscript)
 ;                 /POLYGON setzt /CUBIC, /INTERP
 ;                 und /MINUS_ONE außer Kraft.
@@ -250,6 +252,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                GET_PIXELSIZE=Get_PixelSize, $
                LEG_MAX=leg_MAX,$
                LEG_MIN=leg_MIN,$
+               FORMAT=format, $
                NEUTRAL=neutral,$
                POLYGON=POLYGON,$
                LEGMARGIN=LEGMARGIN,$
@@ -319,6 +322,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
 
       Default, SETCOL, 1
       Default, Charsize, 1.0
+      Default, format, '(G0.3)'
       Default, NOSCALE, 0
       Default, ORDER, 0
       Default, LEGEND, 0
@@ -513,6 +517,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                        leg_min: 0.0, $ ;will be set below, see there!
                        leg_mid_str: '', $ ;will be set below, see there!
                        leg_max: 0.0, $ ;will be set below, see there!
+                       format: FORMAT, $ ;will be set below, see there!
                      $
                      clippedabove: -1, $
                      clippedbelow: -1, $
@@ -600,6 +605,7 @@ PRO PlotTvscl, _W, XPos, YPos, FULLSHEET=FullSheet, $
                       Min=UPDATE_INFO.leg_min, $
                       Mid=UPDATE_INFO.leg_mid_str, $
                       CHARSIZE=Charsize, $
+                      FORMAT=UPDATE_INFO.format, $
                       Clippedabove=UPDATE_INFO.clippedabove, $
                       Clippedbelow=UPDATE_INFO.clippedbelow, $
                       Clippednones=UPDATE_INFO.clippednones

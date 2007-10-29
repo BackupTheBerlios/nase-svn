@@ -21,6 +21,7 @@
 ; CALLING SEQUENCE:
 ;* TvSclLegend, xnorm, ynorm 
 ;*  [,CHARSIZE=...]
+;*  [,FORMAT=...]
 ;*  [,MAX=...] [,MID=...] [,MIN=...]
 ;*  [,COLOR=...]
 ;*  [,TITLE=...] [,/SAMESIDE]
@@ -57,6 +58,8 @@
 ; INPUT KEYWORDS:
 ;  CHARSIZE:: Factor determining the charsize relative to the standard
 ;             size (default: <*>!P.CHARSIZE</*>).
+;  FORMAT:: Format string for formatting the legend labels (see
+;           IDL's <*>PRINT</*> command).
 ;  RANGE:: Set this keyword to a two-element array, containing the
 ;          lowest and the highest color index to use for the legend
 ;          color range. If omitted, the legend will span the whole
@@ -111,7 +114,7 @@ PRO TvSclLegend, _xnorm, _ynorm $
                  ,MAX=ma, MID=mid, MIN=mi $
                  ,LEFT=left, RIGHT=right, CEILING=ceiling, BOTTOM=bottom $
                  , SAMESIDE=sameside $
-                 ,CHARSIZE=_Charsize, COLOR=color $
+                 ,CHARSIZE=_Charsize, FORMAT=format, COLOR=color $
                  ,RANGE=Range $
                  ,NOSCALE=NOSCALE $
                  , NORM_X_SIZE=norm_x_size, NORM_Y_SIZE=norm_y_size $
@@ -130,11 +133,11 @@ PRO TvSclLegend, _xnorm, _ynorm $
    Default,   mi, range[0]
    Default, _Charsize, !P.CHARSIZE
    CHARSIZE = _CHARSIZE;*sqrt(1./MAX([1.,(!P.MULTI(1)), (!P.MULTI(2))])) 
+   Default, format, '(G0.3)'
    Default, COLOR, GetForeground()
    Default, SAMESIDE, 0
    Default, xcenter, 0
    Default, ycenter, 0
-   
 
    ; average character size in normal coordinated
    x_ch_size = !D.X_CH_SIZE*Charsize / FLOAT(!D.X_SIZE)
@@ -143,11 +146,11 @@ PRO TvSclLegend, _xnorm, _ynorm $
 
    ;; format the legend text
    type = Size(ma)
-   IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(ma, FORMAT='(G0.0)'), /REMOVE_ALL) ELSE max = ma
+   IF type(type(0)+1) NE 7 THEN max = STRCOMPRESS(STRING(ma, FORMAT=format), /REMOVE_ALL) ELSE max = ma
    type = Size(mid)
-   IF type(type(0)+1) NE 7 THEN mid = STRCOMPRESS(STRING(mid, FORMAT='(G0.0)'), /REMOVE_ALL)
+   IF type(type(0)+1) NE 7 THEN mid = STRCOMPRESS(STRING(mid, FORMAT=format), /REMOVE_ALL)
    type = Size(mi)
-   IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(mi, FORMAT='(G0.0)'), /REMOVE_ALL) ELSE min = mi
+   IF type(type(0)+1) NE 7 THEN min = STRCOMPRESS(STRING(mi, FORMAT=format), /REMOVE_ALL) ELSE min = mi
    
    ;; if center is set, the legend color array is centered to xnorm, ynorm
    ;; 
@@ -321,17 +324,17 @@ PRO TvSclLegend, _xnorm, _ynorm $
 
    IF Keyword_Set(VERTICAL) THEN BEGIN
       IF Keyword_Set(LEFT) THEN BEGIN
-         XYOuts, xpos-X_CH_SIZE/2., ypos                     , STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
-         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
-         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE   , STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos                     , min, /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., mid, /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos-X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE   , max, /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          IF Set(TITLE) THEN $
           XYOuts, xpos+xsize*(-1*sameside+1)+(-3*sameside+1)*0.6*Y_CH_SIZE $
           , ypos+0.5*ysize, title, /NORMAL, COLOR=color, ALIGNMENT=0.5 $
           , CHARSIZE=1.2*Charsize, ORIENTATION=-90
       END ELSE BEGIN
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos                     , STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
-         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE   , STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos                     , min, /NORMAL, COLOR=color, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize/2-Y_CH_SIZE/2., mid, /NORMAL, COLOR=color, CHARSIZE=Charsize
+         XYOuts, xpos+xsize+X_CH_SIZE/2., ypos+ysize  -Y_CH_SIZE   , max, /NORMAL, COLOR=color, CHARSIZE=Charsize
          IF Set(TITLE) THEN $
           XYOuts, xpos+xsize*sameside+(3*sameside-2)*0.6*Y_CH_SIZE $
           , ypos+0.5*ysize, title, /NORMAL, COLOR=color, ALIGNMENT=0.5 $
@@ -340,14 +343,14 @@ PRO TvSclLegend, _xnorm, _ynorm $
       
    END ELSE BEGIN
       IF Keyword_Set(CEILING) THEN BEGIN
-         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.0, CHARSIZE=Charsize
-         XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
-         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/4, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos        , ypos+ysize+Y_CH_SIZE/4, min, /NORMAL, COLOR=color, ALIGNMENT=0.0, CHARSIZE=Charsize
+         XYOuts, xpos+xsize/2, ypos+ysize+Y_CH_SIZE/4, mid, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize  , ypos+ysize+Y_CH_SIZE/4, max, /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          IF Set(TITLE) THEN XYOuts, xpos+xsize/2, ypos-1.2*Y_CH_SIZE*3/4, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize
       END ELSE BEGIN
-         XYOuts, xpos        , ypos-Y_CH_SIZE-Y_CH_SIZE/4, STRCOMPRESS(STRING(min), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.0, CHARSIZE=Charsize
-         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE-Y_CH_SIZE/4, STRCOMPRESS(STRING(mid), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
-         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE-Y_CH_SIZE/4, STRCOMPRESS(STRING(max), /REMOVE_ALL), /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
+         XYOuts, xpos        , ypos-Y_CH_SIZE-Y_CH_SIZE/4, min, /NORMAL, COLOR=color, ALIGNMENT=0.0, CHARSIZE=Charsize
+         XYOuts, xpos+xsize/2, ypos-Y_CH_SIZE-Y_CH_SIZE/4, mid, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=Charsize
+         XYOuts, xpos+xsize  , ypos-Y_CH_SIZE-Y_CH_SIZE/4, max, /NORMAL, COLOR=color, ALIGNMENT=1.0, CHARSIZE=Charsize
          IF Set(TITLE) THEN XYOuts, xpos+xsize/2, ypos+ysize+1.2*Y_CH_SIZE/4, title, /NORMAL, COLOR=color, ALIGNMENT=0.5, CHARSIZE=1.2*Charsize
       END
    ENDELSE
