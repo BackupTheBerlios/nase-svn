@@ -135,6 +135,15 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
       old = !Z
       !Z = sheet.z
       sheet.z = old
+      old = !NONECOLORNAME
+      !NONECOLORNAME = sheet.nonecolorname
+      sheet.nonecolorname = old
+      old = !ABOVECOLORNAME
+      !ABOVECOLORNAME = sheet.abovecolorname
+      sheet.abovecolorname = old
+      old = !BELOWCOLORNAME
+      !BELOWCOLORNAME = sheet.belowcolorname
+      sheet.belowcolorname = old
 
       If keyword_set(SETCOL) and not(PseudoColor_Visual()) then begin
                                 ;we've got a True-Color-Display, so
@@ -189,6 +198,15 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
          old = !Z
          !Z = sheet.z
          sheet.z = old
+         old = !NONECOLORNAME
+         !NONECOLORNAME = sheet.nonecolorname
+         sheet.nonecolorname = old
+         old = !ABOVECOLORNAME
+         !ABOVECOLORNAME = sheet.abovecolorname
+         sheet.abovecolorname = old
+         old = !BELOWCOLORNAME
+         !BELOWCOLORNAME = sheet.belowcolorname
+         sheet.belowcolorname = old
       
 
          IF ((NOT !REVERTPSCOLORS) AND (TOTAL(CIndex2RGB(GetBackground()) NE [255,255,255]) NE .0)) THEN BEGIN

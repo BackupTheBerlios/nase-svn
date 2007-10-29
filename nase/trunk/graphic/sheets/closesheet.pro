@@ -113,6 +113,16 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
       new = !Z
       !Z =  sheet.z
       sheet.z = new
+      new = !NONECOLORNAME
+      !NONECOLORNAME = sheet.nonecolorname
+      sheet.nonecolorname = new
+      new = !ABOVECOLORNAME
+      sheet.abovecolorname = new
+      !ABOVECOLORNAME = sheet.abovecolorname
+      new = !BELOWCOLORNAME
+      !BELOWCOLORNAME = sheet.belowcolorname
+      sheet.belowcolorname = new
+
    END
 
    If (sheet.type EQ 'X') and keyword_set(SAVE_COLORS) then begin

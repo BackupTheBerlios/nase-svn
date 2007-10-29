@@ -181,6 +181,9 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
                 x     : !X    ,$
                 y     : !Y    ,$
                 z     : !Z    ,$
+                nonecolorname:  !NONECOLORNAME, $
+                abovecolorname: !ABOVECOLORNAME, $
+                belowcolorname: !BELOWCOLORNAME, $
                 producer: producer ,$
                 multi : multi ,$
                 extra : e     ,$ 
@@ -225,6 +228,9 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
                 x        : !X           ,$
                 y        : !Y           ,$
                 z        : !Z           ,$
+                nonecolorname:  !NONECOLORNAME, $
+                abovecolorname: !ABOVECOLORNAME, $
+                belowcolorname: !BELOWCOLORNAME, $
                 producer: producer ,$
                 multi    : multi        ,$
                 extra    : e            ,$
