@@ -58,7 +58,9 @@
 ;                       <B>WARNING!!</B> This option breaks compatibility with
 ;                       NASE color management and is for <B>internal use only</B>.
 ;
-;              GET::    see IDL Help for tvlct
+;              GET::    see IDL Help for tvlct. If device is the NULL
+;                       device, or connecting to the X device is not
+;                       allowed, (an) array(s) of !VALUES.F_NAN is returned.
 ;              HLS::    see IDL Help for tvlct
 ;              HSV::    see IDL Help for tvlct
 ;
@@ -67,7 +69,7 @@
 ;
 ;-
 
-PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
+PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, GET=get, _EXTRA=extra
 
    ;; ----------------------------
    ;; Do absolutely nothing in the following cases, as code will break
@@ -76,15 +78,19 @@ PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
    ;; Device is the NULL device:
    If Contains(!D.Name, 'NULL', /IGNORECASE) then begin
       printf, -2, "% WARN: (UTVLCT) "+ $
-        "Skipping call on 'NULL' device."
+        "Skipping call on 'NULL' device. If /GET was set, returning array of !VALUES.F_NAN."
       flush, -2
+      if keyword_set(get) and (N_Params() eq 1) then v1 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE, 3)
+      if keyword_set(get) and (N_Params() eq 3) then begin v1 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE) & v2 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE) & v3 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE) & end
       return
    endif
    ;; Device is the X device, but connecting to the X-Server is forbidden:
    If (!D.Name eq 'X') and not XAllowed() then begin
       printf, -2, "% WARN: (UTVLCT) "+ $
-        "Connecting to X server is forbidden. Skipping call on 'X' device."
+        "Connecting to X server is forbidden. Skipping call on 'X' device. If /GET was set, returning array of !VALUES.F_NAN."
       flush, -2
+      if keyword_set(get) and (N_Params() eq 1) then v1 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE, 3)
+      if keyword_set(get) and (N_Params() eq 3) then begin v1 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE) & v2 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE) & v3 = replicate(!VALUES.F_NAN, !D.TABLE_SIZE) & end
       return
    endif
    ;; ----------------------------
@@ -93,7 +99,7 @@ PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
 
    default, sclct, 0
 
-   if not extraset(extra,'get') then begin
+   if not keyword_set(get) then begin
       
       assert, (N_Params() GE 1) AND (N_Params() LE 4), 'wrong number of arguments'
       
@@ -122,21 +128,21 @@ PRO UTvLCt, v1, v2, v3, v4, SCLCT=SCLCT, OVER=over, _EXTRA=extra
       end
 
       CASE N_Params() OF
-         1 : TvLCt, _v,     _EXTRA=extra
-         2 : TvLCt, _v, v2, _EXTRA=extra
-         3 : TvLCt, _v,     _EXTRA=extra
-         4 : TvLCt, _v, v4, _EXTRA=extra
+         1 : TvLCt, _v,     GET=get, _EXTRA=extra
+         2 : TvLCt, _v, v2, GET=get, _EXTRA=extra
+         3 : TvLCt, _v,     GET=get, _EXTRA=extra
+         4 : TvLCt, _v, v4, GET=get, _EXTRA=extra
       ENDCASE
       
    END ELSE BEGIN
       CASE N_Params() OF
          1 : BEGIN
              v1 = bytarr(256,3) 
-             TvLCt, v1,             _EXTRA=extra
+             TvLCt, v1,             GET=get, _EXTRA=extra
          END
-         2 : TvLCt, v1, v2,         _EXTRA=extra
-         3 : TvLCt, v1, v2, v3,     _EXTRA=extra
-         4 : TvLCt, v1, v2, v3, v4, _EXTRA=extra
+         2 : TvLCt, v1, v2,         GET=get, _EXTRA=extra
+         3 : TvLCt, v1, v2, v3,     GET=get, _EXTRA=extra
+         4 : TvLCt, v1, v2, v3, v4, GET=get, _EXTRA=extra
          ELSE: Message, 'wrong number of arguments'
       ENDCASE
 

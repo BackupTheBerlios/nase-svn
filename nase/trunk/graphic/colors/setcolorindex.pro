@@ -13,8 +13,13 @@
 ;  TrueColor displays). To be compliant with the NASE color
 ;  management you better use <A>RGB</A> to define a specific
 ;  color. <B>Never</B> use color indices > <*>!TOPCOLOR</*>, because
-;  this will cause color problems.
-;
+;  this will cause color problems. <BR>
+;  <C>SetColorIndex</C> does not break if it is
+;  called on the NULL device. The call is simply skipped. <BR>
+;  The call is skipped also, if the current device is the X device,
+;  and connecting to the X server is not allowed during this session
+;  (see <A>XAllowed()</A> for details).
+;;
 ; CATEGORY:
 ;  Color
 ;
@@ -43,6 +48,27 @@
 
 Pro SetColorIndex, Nr, R, G, B
    
+   ;; ----------------------------
+   ;; Do absolutely nothing in the following cases, as code will break
+   ;; otherwise:
+   ;;
+   ;; Device is the NULL device:
+   If Contains(!D.Name, 'NULL', /IGNORECASE) then begin
+      printf, -2, "% WARN: (SetColorIndex) "+ $
+        "Skipping call on 'NULL' device."
+      flush, -2
+      return
+   endif
+   ;; Device is the X device, but connecting to the X-Server is forbidden:
+   If (!D.Name eq 'X') and not XAllowed() then begin
+      printf, -2, "% WARN: (SetColorIndex) "+ $
+        "Connecting to X server is forbidden. Skipping call on 'X' device."
+      flush, -2
+      return
+   endif
+   ;; ----------------------------
+
+
    if Nr gt !D.Table_Size-1 THEN BEGIN
        Console, "color index out of range", /WARN
        RETURN
