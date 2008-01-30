@@ -39,23 +39,7 @@
 ;           <A>DefineSheet</A>, <A>CloseSheet</A>, <A>DestroySheet</A>.
 ;-
 
-;PRO _sheetkilled, id            ;This is only called for Top-Level-Sheets,
-;                                ;not for Sheets that belong to a Parent Widget.
-
-;   COMMON ___SHEET_KILLS, sk
-
-;   Widget_Control, id, GET_UVAL=uval;Get user-value of scrollit-draw-widget.
-   
-;   IF uval.Window_ID GT 128 THEN Message, 'WinID > 128 !'
-;   IF sk(uval.Window_ID) NE 0 THEN Message, 'Sheet already killed !'
-
-;   sk(uval.Window_ID) = 1
-;END
-
-
 PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
-
-   COMMON ___SHEET_KILLS, sk
 
    On_Error, 2
    Default, setcol, 1
@@ -70,9 +54,7 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
      
       ; does window already exist?? then set it active
       exists = 0
-;      IF sheet.winid NE -2 THEN BEGIN
       IF sheet.DrawID NE -2 THEN BEGIN
-;         IF sk(winid) EQ 0 THEN begin ;Sheet is not killed
          If Widget_Info(sheet.DrawID, /VALID_ID) then begin;Sheet is not killed
             Widget_Control, sheet.DrawID, /REALIZE
             Widget_Control, sheet.DrawID, GET_VAL=winid
@@ -97,7 +79,6 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
             sheet.DrawID = did
             If (sheet.parent eq -1) then begin ;Sheet is already realized, get winid for _sheetkilled
                Widget_Control, sheet.DrawID, GET_VALUE=winid
-;               sk(winid) = 0
             Endif 
          Endif else begin       ;multi
             IF (SIZE(sheet.extra))(0) EQ 0 THEN BEGIN
@@ -111,36 +92,43 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
             END
             for i=1, sheet.multi(0) do begin
                _sheet(i-1).widid = tid
-               ;_sheet(i-1).winid = winids(i-1)
                _sheet(i-1).drawid = did(i-1)
-;               If (sheet.parent eq -1) then begin ;Sheet is already realized, get winid for _sheetkilled
-;                  Widget_Control, _sheet(i-1).drawid, GET_VALUE=winid
-;                  sk(winid) = 0
-;               Endif 
             Endfor 
             sheet = _sheet(multi_nr)
          Endelse                ;multi
       END                       ;create new
       Widget_Control, sheet.DrawId, GET_VALUE=winid
       UWset, winid
+
+
+      UTVLCT, /GET, Red, Green, Blue
+      UTVLCT, sheet.MyPalette.R, sheet.MyPalette.G, sheet.MyPalette.B
+      sheet.MyPalette = {R:Temporary(Red), G:Temporary(Green), B:Temporary(Blue)}
+
       old = !P
       !P = sheet.p
       sheet.p = old
+
       old = !X
       !X = sheet.x
       sheet.x = old
+
       old = !Y 
       !Y = sheet.y
       sheet.y = old
+
       old = !Z
       !Z = sheet.z
       sheet.z = old
+
       old = !NONECOLORNAME
       !NONECOLORNAME = sheet.nonecolorname
       sheet.nonecolorname = old
+
       old = !ABOVECOLORNAME
       !ABOVECOLORNAME = sheet.abovecolorname
       sheet.abovecolorname = old
+
       old = !BELOWCOLORNAME
       !BELOWCOLORNAME = sheet.belowcolorname
       sheet.belowcolorname = old
@@ -186,28 +174,37 @@ PRO OpenSheet, __sheet, multi_nr, SETCOL=setcol
             Device, FILENAME=file, ENCAPSULATED=sheet.eps, COLOR=sheet.color, _EXTRA=sheet.extra
          END
 
+         UTVLCT, /GET, Red, Green, Blue
+         UTVLCT, sheet.MyPalette.R, sheet.MyPalette.G, sheet.MyPalette.B
+         sheet.MyPalette = {R:Temporary(Red), G:Temporary(Green), B:Temporary(Blue)}
+
          old = !P
          !P = sheet.p
          sheet.p = old
+
          old = !X
          !X = sheet.x
          sheet.x = old
+
          old = !Y 
          !Y = sheet.y
          sheet.y = old
+
          old = !Z
          !Z = sheet.z
          sheet.z = old
+
          old = !NONECOLORNAME
          !NONECOLORNAME = sheet.nonecolorname
          sheet.nonecolorname = old
+
          old = !ABOVECOLORNAME
          !ABOVECOLORNAME = sheet.abovecolorname
          sheet.abovecolorname = old
+
          old = !BELOWCOLORNAME
          !BELOWCOLORNAME = sheet.belowcolorname
          sheet.belowcolorname = old
-      
 
          IF ((NOT !REVERTPSCOLORS) AND (TOTAL(CIndex2RGB(GetBackground()) NE [255,255,255]) NE .0)) THEN BEGIN
                                 ; the user wants all colors as on the

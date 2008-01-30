@@ -41,7 +41,6 @@
 ;
 ; INPUT KEYWORDS:
 ;  SAVE_COLORS:: Default: gesetzt.
-;                Hat nur Bedeutung für Windows-Sheets auf einem Truecolor-Display.
 ;                Standardmaessig
 ;                speichert <C>CloseSheet</C> hier die jeweils aktuelle
 ;                Farbtabelle mit den anderen Graphikdaten in der
@@ -101,46 +100,41 @@ PRO CloseSheet, __sheet, multi_nr, SAVE_COLORS=save_colors, FILE=file
 
    IF sheet.type EQ 'ps' OR sheet.type EQ 'X' THEN BEGIN ;it is PS or
                                                          ;a Window
+   If keyword_set(SAVE_COLORS) then begin
+      UTVLCT, /GET, Red, Green, Blue
+      UTVLCT, sheet.MyPalette.R, sheet.MyPalette.G, sheet.MyPalette.B
+      sheet.MyPalette = {R:Temporary(Red), G:Temporary(Green), B:Temporary(Blue)}
+   endif
+
       new = !P
       !P =  sheet.p
       sheet.p = new
+
       new = !X
       !X =  sheet.x
       sheet.x = new
+
       new = !Y
       !Y =  sheet.y 
       sheet.y = new
+
       new = !Z
       !Z =  sheet.z
       sheet.z = new
+
       new = !NONECOLORNAME
       !NONECOLORNAME = sheet.nonecolorname
       sheet.nonecolorname = new
+
       new = !ABOVECOLORNAME
       sheet.abovecolorname = new
       !ABOVECOLORNAME = sheet.abovecolorname
+
       new = !BELOWCOLORNAME
       !BELOWCOLORNAME = sheet.belowcolorname
       sheet.belowcolorname = new
 
    END
-
-   If (sheet.type EQ 'X') and keyword_set(SAVE_COLORS) then begin
-
-      WIDGET_CONTROL, sheet.DrawID, GET_UVALUE=draw_uval, /NO_COPY
-
-                                ;get current palette and Save it in Draw-Widget's UVAL:
-      UTVLCT, /GET, Red, Green, Blue
-      draw_uval.MyPalette.R = Red
-      draw_uval.MyPalette.G = Green
-      draw_uval.MyPalette.B = Blue
-
-                                ;reset old palette:
-      UTVLCT, draw_uval.YourPalette.R, draw_uval.YourPalette.G, draw_uval.YourPalette.B
-    
-      WIDGET_CONTROL, sheet.DrawID, SET_UVALUE=draw_uval, /NO_COPY      
-
-   EndIf
 
    IF sheet.type EQ 'ps' THEN BEGIN
       IF  sheet.open THEN BEGIN

@@ -107,20 +107,15 @@
 ;  Note that the addition of a sheet or scrollit-widget to an existing
 ;  widget hierarchy causes IDL (version 5.0.2) to crash.<BR>
 ;  <BR>
-;  <B>Note to the developer (Ruediger):</B>Note that for saving
-;  colortables of <I>truecolor</I>-window-sheets, the
-;  MyPalette/YourPalette field of the draw widget's
-;  uvalue is used. This same field is also used by the underlying
-;  procedure <A>Scollit()</A> for managing tracking events on
-;  <I>pseudocolor</I> displays. Although the two should (hopefully)
-;  not interfere, this use of the same field for two different
-;  purposes is confusing and should be removed. To be exact, probably
-;  all pseudocolor-handling should be completely removed, since
-;  pseudocolor display are not commonly used any longer, and support
-;  could well be dropped. This would also considerably clean up the code.<BR>
-;  <BR>
-;  Another note: Postscript sheets should perhaps save their
-;                colortable, too. This is not done at the moment.
+;  <B>Note to the developer (Ruediger):</B>Note that in addition to
+;  saving colortables in the sheet structure, the underlying
+;  procedure <A>Scollit()</A>, too, saves the palette in the uvalue
+;  of the draw widget for managing tracking events on
+;  <I>pseudocolor</I> displays. The two should (hopefully) not
+;  interfere. But probably, all pseudocolor-handling should be
+;  completely removed, since pseudocolor display are not commonly
+;  used any longer, and support could well be dropped. This would
+;  also considerably clean up the code.<BR>
 ;
 ; EXAMPLE:
 ;* window_sheet = DefineSheet( /WINDOW, /VERBOSE, XSIZE=300, YSIZE=100, XPOS=500, COLORS=256)
@@ -171,12 +166,14 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
       
       IF Keyword_Set(VERBOSE) THEN Console, /MSG, 'Defining a new window.'
       
+      UTVLCT, /GET, Red, Green, Blue
       sheet = { type  : 'X'   ,$;;meaning it is a window (X or WIN Device)
                 $               ;no longer in here, since scrollits may
                 $               ;not be realized at once:
                 $               ;winid : -2l    ,$
                 widid : -2l    ,$
-                drawid: -2l    ,$ ;The id of the draw widget for saving of palette!
+                drawid : -2l    ,$
+                MyPalette: {R: Red, G: Green, B: Blue}, $
                 p     : !P    ,$
                 x     : !X    ,$
                 y     : !Y    ,$
@@ -217,6 +214,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
           e = {BITS_PER_PIXEL : 8}
       END
       uSet_Plot, 'ps'      
+      UTVLCT, /GET, Red, Green, Blue
       sheet = { type     : 'ps'         ,$
                 filename : filename     ,$ ;contains the filepath prototype 
                 curfile  : ''           ,$ ;stores the current filename if there is one  
@@ -224,6 +222,7 @@ FUNCTION DefineSheet, Parent, NULL=null, WINDOW=window, PS=ps, PDF=pdf $
                 eps      : encapsulated ,$
                 pdf      : pdf         , $
                 color    : color        ,$
+                MyPalette: {R: Red, G: Green, B: Blue}, $
                 p        : !P           ,$
                 x        : !X           ,$
                 y        : !Y           ,$
